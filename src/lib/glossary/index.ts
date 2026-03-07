@@ -5,7 +5,6 @@
  */
 
 export * from './types';
-export { fetchGlossary, clearGlossaryCache, getCachedLocales } from './fetcher';
 export { findGlossaryMatches, applyGlossaryToTranslation, getGlossarySuggestions } from './matcher';
 
 // WordPress.org CSV-based glossary fetching

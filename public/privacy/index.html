@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GlossBoss Privacy</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #eef3ef;
+        --panel: #fcfefc;
+        --text: #16211b;
+        --muted: #52615a;
+        --border: #c9d8cf;
+        --accent: #1f5f4d;
+      }
+
+      body {
+        margin: 0;
+        font-family: 'IBM Plex Sans', 'Segoe UI', sans-serif;
+        background: radial-gradient(circle at top, #f8fffb 0%, var(--bg) 60%);
+        color: var(--text);
+      }
+
+      main {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 48px 20px 64px;
+      }
+
+      article {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 28px;
+        box-shadow: 0 20px 50px rgba(22, 33, 27, 0.08);
+      }
+
+      h1,
+      h2 {
+        margin-top: 0;
+      }
+
+      p,
+      li {
+        line-height: 1.6;
+        color: var(--muted);
+      }
+
+      a {
+        color: var(--accent);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <article>
+        <h1>GlossBoss Privacy</h1>
+        <p>
+          GlossBoss is designed to keep most work in your browser. This page summarizes the data the
+          app stores locally and the data that is sent to backend services when you use optional
+          cloud features.
+        </p>
+
+        <h2>Browser storage</h2>
+        <ul>
+          <li>
+            Editor state, draft data, glossary preferences, and some UI settings are stored in your
+            browser’s local storage.
+          </li>
+          <li>
+            If you enter a personal DeepL API key, it is kept in this browser’s session storage by
+            default and cleared when you close all GlossBoss tabs. If you explicitly enable the
+            option to remember the key, it is also stored in local storage on that browser until you
+            clear it.
+          </li>
+        </ul>
+
+        <h2>Feedback submissions</h2>
+        <ul>
+          <li>
+            The feedback form sends your submission to a Supabase Edge Function protected by
+            Cloudflare Turnstile.
+          </li>
+          <li>
+            Submitted data can include the feedback title, details, filename, browser user agent,
+            app version, page URL, and optional contact email.
+          </li>
+          <li>Feedback is converted into a GitHub issue for project triage.</li>
+        </ul>
+
+        <h2>Third-party services</h2>
+        <ul>
+          <li>
+            DeepL is used for machine translation and glossary management when you enable
+            translation features.
+          </li>
+          <li>
+            WordPress.org services are used to fetch glossary CSV exports, plugin metadata, and
+            plugin source references.
+          </li>
+          <li>
+            Supabase Edge Functions proxy glossary CSV exports and plugin source lookups. The
+            WordPress.org plugin info API is currently fetched directly from your browser because
+            that endpoint already supports CORS and does not require server-managed secrets.
+          </li>
+        </ul>
+
+        <h2>Your controls</h2>
+        <ul>
+          <li>You can clear saved DeepL credentials from the settings dialog.</li>
+          <li>
+            You can clear glossary caches and local drafts from the app by removing browser storage
+            for this site.
+          </li>
+          <li>You can avoid entering an email address when sending feedback.</li>
+        </ul>
+
+        <p>
+          The corresponding source code for this deployment should be available from its operator.
+        </p>
+      </article>
+    </main>
+  </body>
+</html>

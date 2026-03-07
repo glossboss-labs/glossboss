@@ -5,8 +5,9 @@
  * DeepL handles context-aware translation with proper grammar.
  */
 
-import type { Glossary } from './types';
 import { getDeepLClient } from '@/lib/deepl';
+import { debugError, debugLog } from '@/lib/debug';
+import type { Glossary } from '@/lib/glossary/types';
 
 /** Storage key for glossary mapping */
 const GLOSSARY_MAPPING_KEY = 'glossboss-deepl-glossary-mapping';
@@ -135,11 +136,11 @@ export async function syncGlossaryToDeepL(
     .map((e) => ({ source: e.term.trim(), target: e.translation.trim() }));
 
   if (validEntries.length === 0) {
-    console.log('[DeepL Sync] No valid entries to sync');
+    debugLog('[DeepL Sync] No valid entries to sync');
     return null;
   }
 
-  console.log(
+  debugLog(
     `[DeepL Sync] ${validEntries.length} unique entries (${wpGlossary.entries.length - validEntries.length} duplicates removed)`,
   );
 
@@ -154,18 +155,18 @@ export async function syncGlossaryToDeepL(
     // Validate cached glossary still exists in DeepL. If deleted remotely, recreate it.
     try {
       await client.getGlossary(existing.glossaryId);
-      console.log('[DeepL Sync] Glossary unchanged, using existing:', existing.glossaryId);
+      debugLog('[DeepL Sync] Glossary unchanged, using existing:', existing.glossaryId);
       onProgress?.('Using cached glossary');
       return existing.glossaryId;
     } catch {
-      console.log('[DeepL Sync] Cached glossary missing in DeepL, recreating...');
+      debugLog('[DeepL Sync] Cached glossary missing in DeepL, recreating...');
       delete mapping[locale];
       saveMapping(mapping);
     }
   }
 
   if (forceResync) {
-    console.log('[DeepL Sync] Force resync requested, recreating glossary');
+    debugLog('[DeepL Sync] Force resync requested, recreating glossary');
     onProgress?.('Force resyncing to DeepL...');
   } else {
     onProgress?.('Syncing glossary to DeepL...');
@@ -178,15 +179,15 @@ export async function syncGlossaryToDeepL(
     try {
       const existingGlossaries = await client.listGlossaries();
       for (const g of existingGlossaries) {
-        console.log('[DeepL Sync] Deleting glossary:', g.glossaryId, g.name);
+        debugLog('[DeepL Sync] Deleting glossary:', g.glossaryId, g.name);
         try {
           await client.deleteGlossary(g.glossaryId);
         } catch (e) {
-          console.log('[DeepL Sync] Could not delete glossary:', g.glossaryId, e);
+          debugLog('[DeepL Sync] Could not delete glossary:', g.glossaryId, e);
         }
       }
     } catch (e) {
-      console.log('[DeepL Sync] Could not list glossaries:', e);
+      debugLog('[DeepL Sync] Could not list glossaries:', e);
       // Still try to delete the cached one
       if (existing?.glossaryId) {
         try {
@@ -201,7 +202,7 @@ export async function syncGlossaryToDeepL(
     const targetLang = wpLocaleToDeepL(locale);
     const name = `WordPress ${locale.toUpperCase()} - ${new Date().toISOString().split('T')[0]}`;
 
-    console.log('[DeepL Sync] Creating glossary:', { name, entries: validEntries.length });
+    debugLog('[DeepL Sync] Creating glossary:', { name, entries: validEntries.length });
     onProgress?.(`Creating glossary with ${validEntries.length} terms...`);
 
     const result = await client.createGlossary({
@@ -211,7 +212,7 @@ export async function syncGlossaryToDeepL(
       entries: validEntries,
     });
 
-    console.log('[DeepL Sync] Glossary created:', result);
+    debugLog('[DeepL Sync] Glossary created:', result);
 
     // Save mapping
     mapping[locale] = {
@@ -226,7 +227,7 @@ export async function syncGlossaryToDeepL(
 
     return result.glossaryId;
   } catch (error) {
-    console.error('[DeepL Sync] Failed to sync glossary:', error);
+    debugError('[DeepL Sync] Failed to sync glossary:', error);
     onProgress?.('Failed to sync glossary');
     throw error;
   }

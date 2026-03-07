@@ -11,6 +11,7 @@
 
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import {
+  Box,
   Paper,
   Group,
   Stack,
@@ -24,12 +25,7 @@ import {
   Loader,
   ActionIcon,
   UnstyledButton,
-  Modal,
-  TextInput,
-  Table,
-  ScrollArea,
   Switch,
-  Box,
 } from '@mantine/core';
 import {
   BookOpen,
@@ -37,7 +33,6 @@ import {
   AlertCircle,
   ChevronDown,
   ChevronRight,
-  Search,
   Eye,
   Check,
   X,
@@ -48,36 +43,13 @@ import {
   hasGlossaryCache,
   type FetchResult,
 } from '@/lib/glossary/wp-fetcher';
-import { findGlossaryMatches } from '@/lib/glossary/matcher';
+import { GlossaryTermsPreview, GlossaryViewerModal } from '@/components/glossary/shared';
+import {
+  COMMON_GLOSSARY_LOCALES,
+  GLOSSARY_ENFORCEMENT_KEY,
+  GLOSSARY_SELECTED_LOCALE_KEY,
+} from '@/components/glossary/constants';
 import type { Glossary } from '@/lib/glossary/types';
-
-/** localStorage keys */
-const SELECTED_LOCALE_KEY = 'glossboss-selected-glossary-locale';
-const ENFORCEMENT_ENABLED_KEY = 'glossboss-glossary-enforcement';
-
-/** Common WordPress locales with their display names */
-const COMMON_LOCALES = [
-  { value: 'nl', label: 'Dutch (nl)' },
-  { value: 'de', label: 'German (de)' },
-  { value: 'fr', label: 'French (fr)' },
-  { value: 'es', label: 'Spanish (es)' },
-  { value: 'it', label: 'Italian (it)' },
-  { value: 'pt-br', label: 'Portuguese - Brazil (pt-br)' },
-  { value: 'ru', label: 'Russian (ru)' },
-  { value: 'ja', label: 'Japanese (ja)' },
-  { value: 'zh-cn', label: 'Chinese - China (zh-cn)' },
-  { value: 'ko', label: 'Korean (ko)' },
-  { value: 'ar', label: 'Arabic (ar)' },
-  { value: 'he', label: 'Hebrew (he)' },
-  { value: 'pl', label: 'Polish (pl)' },
-  { value: 'sv', label: 'Swedish (sv)' },
-  { value: 'nb', label: 'Norwegian (nb)' },
-  { value: 'da', label: 'Danish (da)' },
-  { value: 'fi', label: 'Finnish (fi)' },
-  { value: 'cs', label: 'Czech (cs)' },
-  { value: 'tr', label: 'Turkish (tr)' },
-  { value: 'uk', label: 'Ukrainian (uk)' },
-];
 
 /** Sync status types */
 type SyncStatus = 'idle' | 'syncing' | 'ready' | 'failed';
@@ -103,167 +75,6 @@ interface GlossaryPanelProps {
   selectedSourceText?: string | null;
 }
 
-/** Glossary viewer modal component */
-function GlossaryViewerModal({
-  glossary,
-  opened,
-  onClose,
-}: {
-  glossary: Glossary;
-  opened: boolean;
-  onClose: () => void;
-}) {
-  const [search, setSearch] = useState('');
-
-  const filteredEntries = useMemo(() => {
-    if (!search.trim()) {
-      return glossary.entries;
-    }
-    const query = search.toLowerCase();
-    return glossary.entries.filter(
-      (entry) =>
-        entry.term.toLowerCase().includes(query) ||
-        entry.translation.toLowerCase().includes(query) ||
-        entry.partOfSpeech?.toLowerCase().includes(query) ||
-        entry.comment?.toLowerCase().includes(query),
-    );
-  }, [glossary.entries, search]);
-
-  return (
-    <Modal
-      opened={opened}
-      onClose={onClose}
-      title={
-        <Group gap="sm">
-          <BookOpen size={20} />
-          <Text fw={600}>WordPress Glossary</Text>
-          <Badge color="blue" variant="light">
-            {glossary.targetLocale.toUpperCase()}
-          </Badge>
-          <Badge color="gray" variant="light">
-            {glossary.entries.length} terms
-          </Badge>
-        </Group>
-      }
-      size="xl"
-      styles={{ body: { padding: 0 } }}
-    >
-      <Stack gap={0}>
-        <Box p="sm" style={{ borderBottom: '1px solid var(--mantine-color-gray-3)' }}>
-          <TextInput
-            placeholder="Search terms..."
-            leftSection={<Search size={16} />}
-            value={search}
-            onChange={(e) => setSearch(e.currentTarget.value)}
-            size="sm"
-          />
-          {search && (
-            <Text size="xs" c="dimmed" mt="xs">
-              Showing {filteredEntries.length} of {glossary.entries.length} terms
-            </Text>
-          )}
-        </Box>
-
-        <ScrollArea h={400}>
-          <Table striped highlightOnHover>
-            <Table.Thead
-              style={{ position: 'sticky', top: 0, background: 'var(--mantine-color-body)' }}
-            >
-              <Table.Tr>
-                <Table.Th style={{ width: '25%' }}>Term (EN)</Table.Th>
-                <Table.Th style={{ width: '25%' }}>Translation</Table.Th>
-                <Table.Th style={{ width: '15%' }}>Type</Table.Th>
-                <Table.Th style={{ width: '35%' }}>Notes</Table.Th>
-              </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>
-              {filteredEntries.map((entry, index) => (
-                <Table.Tr key={`${entry.term}-${index}`}>
-                  <Table.Td>
-                    <Text size="sm" fw={500}>
-                      {entry.term}
-                    </Text>
-                  </Table.Td>
-                  <Table.Td>
-                    <Text size="sm">
-                      {entry.translation || (
-                        <Text span c="dimmed">
-                          —
-                        </Text>
-                      )}
-                    </Text>
-                  </Table.Td>
-                  <Table.Td>
-                    {entry.partOfSpeech ? (
-                      <Badge size="xs" variant="light" color="gray">
-                        {entry.partOfSpeech}
-                      </Badge>
-                    ) : (
-                      <Text size="sm" c="dimmed">
-                        —
-                      </Text>
-                    )}
-                  </Table.Td>
-                  <Table.Td>
-                    <Text size="xs" c="dimmed" lineClamp={2}>
-                      {entry.comment || '—'}
-                    </Text>
-                  </Table.Td>
-                </Table.Tr>
-              ))}
-              {filteredEntries.length === 0 && (
-                <Table.Tr>
-                  <Table.Td colSpan={4}>
-                    <Text size="sm" c="dimmed" ta="center" py="md">
-                      No terms match your search
-                    </Text>
-                  </Table.Td>
-                </Table.Tr>
-              )}
-            </Table.Tbody>
-          </Table>
-        </ScrollArea>
-      </Stack>
-    </Modal>
-  );
-}
-
-/** Preview of glossary terms for selected row */
-function TermsPreview({ sourceText, glossary }: { sourceText: string; glossary: Glossary }) {
-  const matches = useMemo(() => {
-    if (!sourceText || !glossary) return [];
-    return findGlossaryMatches(sourceText, glossary);
-  }, [sourceText, glossary]);
-
-  if (matches.length === 0) {
-    return (
-      <Text size="xs" c="dimmed" fs="italic">
-        No glossary terms in selected text
-      </Text>
-    );
-  }
-
-  const displayMatches = matches.slice(0, 5);
-  const remaining = matches.length - 5;
-
-  return (
-    <Group gap={6} wrap="wrap">
-      {displayMatches.map((match, i) => (
-        <Tooltip key={i} label={`"${match.term}" → "${match.translation}"`} color="dark">
-          <Badge size="xs" variant="light" color="blue" style={{ cursor: 'help' }}>
-            {match.term} → {match.translation}
-          </Badge>
-        </Tooltip>
-      ))}
-      {remaining > 0 && (
-        <Text size="xs" c="dimmed">
-          +{remaining} more
-        </Text>
-      )}
-    </Group>
-  );
-}
-
 export function GlossaryPanel({
   onGlossaryLoaded,
   onGlossaryCleared,
@@ -278,7 +89,7 @@ export function GlossaryPanel({
   const [isExpanded, setIsExpanded] = useState(false);
   const [selectedLocale, setSelectedLocale] = useState<string>(() => {
     try {
-      const stored = localStorage.getItem(SELECTED_LOCALE_KEY);
+      const stored = localStorage.getItem(GLOSSARY_SELECTED_LOCALE_KEY);
       return stored || initialLocale || '';
     } catch {
       return initialLocale || '';
@@ -291,7 +102,7 @@ export function GlossaryPanel({
   const [viewerOpened, setViewerOpened] = useState(false);
   const [enforcementEnabled, setEnforcementEnabled] = useState<boolean>(() => {
     try {
-      const stored = localStorage.getItem(ENFORCEMENT_ENABLED_KEY);
+      const stored = localStorage.getItem(GLOSSARY_ENFORCEMENT_KEY);
       return stored !== 'false'; // Default to true
     } catch {
       return true;
@@ -335,9 +146,9 @@ export function GlossaryPanel({
   useEffect(() => {
     try {
       if (selectedLocale) {
-        localStorage.setItem(SELECTED_LOCALE_KEY, selectedLocale);
+        localStorage.setItem(GLOSSARY_SELECTED_LOCALE_KEY, selectedLocale);
       } else {
-        localStorage.removeItem(SELECTED_LOCALE_KEY);
+        localStorage.removeItem(GLOSSARY_SELECTED_LOCALE_KEY);
       }
     } catch {
       // Ignore storage errors
@@ -346,7 +157,7 @@ export function GlossaryPanel({
 
   useEffect(() => {
     try {
-      localStorage.setItem(ENFORCEMENT_ENABLED_KEY, String(enforcementEnabled));
+      localStorage.setItem(GLOSSARY_ENFORCEMENT_KEY, String(enforcementEnabled));
     } catch {
       // Ignore storage errors
     }
@@ -549,7 +360,7 @@ export function GlossaryPanel({
               <Group gap="sm" align="flex-end">
                 <Select
                   label="Language"
-                  data={COMMON_LOCALES}
+                  data={COMMON_GLOSSARY_LOCALES}
                   value={selectedLocale}
                   onChange={handleLocaleChange}
                   placeholder="Select or type locale..."
@@ -602,7 +413,7 @@ export function GlossaryPanel({
                   <Text size="xs" fw={500} mb={4}>
                     Terms in selected row:
                   </Text>
-                  <TermsPreview sourceText={selectedSourceText} glossary={glossary} />
+                  <GlossaryTermsPreview sourceText={selectedSourceText} glossary={glossary} />
                 </Box>
               )}
 

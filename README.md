@@ -1,67 +1,96 @@
 # GlossBoss
 
-PO file editor with DeepL integration and WordPress glossary support. Built with React, Mantine, and Supabase Edge Functions.
+GlossBoss is a browser-based translation editor for gettext `.po` / `.pot` files and i18next JSON resources. It combines local draft recovery, DeepL-powered machine translation, and WordPress glossary/source tooling in a single React app.
+
+The project is open source under `AGPL-3.0-only`.
 
 ## Features
 
-- Upload and edit `.po` / `.pot` translation files
-- Bulk translation via DeepL API (free or pro)
-- WordPress glossary import with DeepL glossary sync
-- Glossary enforcement and analysis on translations
-- Tri-state filters (untranslated, translated, fuzzy, modified, MT, manual)
-- Auto-save drafts to localStorage
-- Encoding detection (UTF-8, Latin-1, etc.)
-- Download edited files as UTF-8
+- Edit gettext `.po` and `.pot` files in the browser
+- Import and export i18next JSON resources
+- Translate entries and batches through DeepL
+- Load WordPress.org glossary data and sync it to DeepL glossaries
+- Inspect WordPress plugin source references through proxied SVN lookups
+- Auto-save local drafts in the browser
+- Submit product feedback through a protected backend flow
 
-## Tech Stack
+## Stack
 
-- **Frontend:** React 18, TypeScript, Mantine UI, Zustand, Tailwind CSS v4
-- **Backend:** Supabase Edge Functions (Deno)
-- **Build:** Vite + SWC
+- React 19
+- TypeScript
+- Vite 7
+- Mantine 8
+- Zustand
+- Supabase Edge Functions
+- Cloudflare Pages
+- Bun
 
-## Setup
+## Local setup
 
 ```bash
-bun install
-cp .env.example .env  # Add your Supabase URL and anon key
+bun install --frozen-lockfile
+cp .env.example .env
 bun run dev
 ```
 
-## Cloudflare Git Deployment
+Client-side environment variables:
 
-This repository deploys automatically to Cloudflare Pages via GitHub Actions on:
+```bash
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key
+VITE_TURNSTILE_SITE_KEY=your-cloudflare-turnstile-site-key
 
-- Push to `main` (production deployment)
-- Pull requests into `main` (preview deployment)
+# Local development only
+# VITE_FEEDBACK_BYPASS_TURNSTILE=true
+```
 
-Add these GitHub repository secrets to enable deployment:
+## Scripts
+
+```bash
+bun run dev
+bun run lint
+bun run format
+bun run format:check
+bun run typecheck
+bun run test
+bun run test:coverage
+bun run build
+bun run preview
+```
+
+## Deployment model
+
+### Frontend
+
+The frontend is built with Vite and deployed to Cloudflare Pages.
+
+GitHub Actions in `.github/workflows/cloudflare-pages.yml` deploy:
+
+- `main` pushes to production
+- pull requests into `main` to preview branches
+
+Required GitHub repository secrets for the frontend build:
 
 - `CLOUDFLARE_ACCOUNT_ID`
-- `CLOUDFLARE_API_TOKEN` (with Pages edit permissions for the `glossboss` project)
+- `CLOUDFLARE_API_TOKEN`
 - `VITE_SUPABASE_URL`
 - `VITE_SUPABASE_ANON_KEY`
 - `VITE_TURNSTILE_SITE_KEY`
 
-## Environment Variables
+### Backend
 
-```dotenv
-VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_ANON_KEY=your-anon-or-publishable-key
-VITE_TURNSTILE_SITE_KEY=your-cloudflare-turnstile-site-key
-```
+Supabase Edge Functions proxy external services and keep server-managed secrets out of the browser.
 
 `VITE_SUPABASE_ANON_KEY` supports both legacy JWT anon keys and newer `sb_publishable_*` keys.
 
-## Edge Functions
+Functions:
 
-Four Supabase Edge Functions proxy external APIs to avoid CORS and keep keys secure:
+- `deepl-translate`
+- `wp-glossary`
+- `wp-source`
+- `feedback-issue`
 
-- **`deepl-translate`** — Proxies DeepL API requests (translate, glossary CRUD, usage stats). Accepts a user-provided API key or falls back to a `DEEPL_KEY` secret.
-- **`wp-glossary`** — Fetches WordPress.org glossary CSV exports.
-- **`wp-source`** — Fetches plugin source files and listings from WordPress SVN.
-- **`feedback-issue`** — Validates Turnstile, rate limits incoming requests, and creates GitHub issues in a private repository.
-
-### Deploy Edge Functions
+Deploy them with the Supabase CLI:
 
 ```bash
 bunx supabase link --project-ref <your-project-ref>
@@ -71,54 +100,71 @@ bunx supabase functions deploy wp-source --no-verify-jwt
 bunx supabase functions deploy feedback-issue --no-verify-jwt
 ```
 
-### Feedback Pipeline Setup
+GitHub Actions in `.github/workflows/supabase-functions.yml` automatically deploy the Edge
+Functions on pushes to `main` when files under `supabase/functions/` change. This is the path used
+for merged changes landing on `main`.
 
-The feedback modal submits to `feedback-issue`, which creates issues in GitHub without exposing your repository.
+Required Supabase secrets / environment variables:
 
-Required Supabase secrets:
+- `ALLOWED_ORIGINS`
+- `TURNSTILE_SECRET`
+- `GITHUB_TOKEN`
+
+Optional Supabase secrets:
+
+- `DEEPL_KEY`
+- `GITHUB_OWNER`
+- `GITHUB_REPO`
+- `ALLOW_TURNSTILE_BYPASS`
+
+Required GitHub repository secrets for the Supabase deployment workflow:
+
+- `SUPABASE_ACCESS_TOKEN`
+- `SUPABASE_PROJECT_REF`
+
+Example:
 
 ```bash
-bunx supabase secrets set GITHUB_TOKEN=ghp_xxx
+bunx supabase secrets set ALLOWED_ORIGINS=https://glossboss.example,https://preview.glossboss.example
 bunx supabase secrets set TURNSTILE_SECRET=your-turnstile-secret
+bunx supabase secrets set GITHUB_TOKEN=your-fine-grained-token
+bunx supabase secrets set DEEPL_KEY=your-server-side-deepl-key
 ```
 
-Optional overrides:
+## Security notes
 
-```bash
-bunx supabase secrets set GITHUB_OWNER=toineenzo
-bunx supabase secrets set GITHUB_REPO=glossboss
-```
+- Edge functions reject requests from origins not listed in `ALLOWED_ORIGINS`.
+- `feedback-issue` uses Cloudflare Turnstile plus best-effort in-memory rate limiting.
+- DeepL personal API keys can be stored locally in the browser if the user chooses to save them.
+- For shared or untrusted machines, saved DeepL keys should be removed after use.
 
-Local-only Turnstile bypass for development:
+If you find a security issue, please follow `SECURITY.md` instead of opening a public issue.
 
-```bash
-bunx supabase secrets set ALLOW_TURNSTILE_BYPASS=true
-```
+## Privacy
+
+The app stores drafts and some settings in browser local storage. Optional feedback submissions can create GitHub issues and may include a contact email if the user provides one.
 
 In local Vite dev mode, the frontend automatically falls back to a bypass token (`dev-bypass`) when `VITE_TURNSTILE_SITE_KEY` is not set.
 
 Set `VITE_FEEDBACK_BYPASS_TURNSTILE=true` in your local `.env` if you want to force bypass even when a site key is present.
 
-GitHub token requirements:
+See `/privacy/` and `NOTICE.md`.
 
-- Use a fine-grained personal access token scoped to the target repository.
-- Grant **Issues: Read and write** permissions.
+## Project structure
 
-## Project Structure
-
-```
+```text
 src/
   components/
-    editor/        # EditorTable, FilterToolbar, TranslateToolbar, etc.
-    ui/            # Reusable UI components
-    SettingsModal  # DeepL settings, glossary management
   lib/
-    deepl/         # DeepL API client and settings
-    glossary/      # Glossary parsing, analysis, enforcement, DeepL sync
-    po/            # PO file parser and serializer
-    storage/       # Draft persistence
-  pages/           # Route pages
-  stores/          # Zustand editor store
+  pages/
+  stores/
 supabase/
-  functions/       # Edge functions (deepl-translate, wp-glossary)
+  functions/
+public/
 ```
+
+## Open source
+
+- License: `LICENSE`
+- Contributing guide: `CONTRIBUTING.md`
+- Security policy: `SECURITY.md`

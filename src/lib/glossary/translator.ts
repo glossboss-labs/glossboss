@@ -9,6 +9,7 @@
  */
 
 import type { Glossary, GlossaryEntry } from './types';
+import { debugLog } from '@/lib/debug';
 
 /** Placeholder format that DeepL won't translate */
 const PLACEHOLDER_PREFIX = '⟦GLOSS';
@@ -241,27 +242,27 @@ export function createGlossaryAwareTranslator(
       return translateFn(sourceText);
     }
 
-    console.log('[Glossary] Prepared text:', preparedText);
-    console.log(
+    debugLog('[Glossary] Prepared text:', preparedText);
+    debugLog(
       '[Glossary] Placeholders:',
       [...placeholders.entries()].map(
         ([id, info]) =>
-          `${id}: "${info.entry.term}" → "${info.entry.translation}" (${info.capitalization})`,
+          `${id}: "${info.entry.term}" -> "${info.entry.translation}" (${info.capitalization})`,
       ),
     );
 
     // Step 2: Translate with placeholders
     const translated = await translateFn(preparedText);
 
-    console.log('[Glossary] DeepL result:', translated);
+    debugLog('[Glossary] DeepL result:', translated);
 
     // Step 3: Replace placeholders with glossary translations
     const { text: finalText, appliedTerms } = restoreGlossaryTerms(translated, placeholders);
 
-    console.log('[Glossary] Final text:', finalText);
-    console.log(
+    debugLog('[Glossary] Final text:', finalText);
+    debugLog(
       '[Glossary] Applied terms:',
-      appliedTerms.map((e) => `${e.term} → ${e.translation}`),
+      appliedTerms.map((entry) => `${entry.term} -> ${entry.translation}`),
     );
 
     return finalText;

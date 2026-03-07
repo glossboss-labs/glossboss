@@ -67,6 +67,7 @@ import type { TargetLanguage, SourceLanguage } from '@/lib/deepl/types';
 import type { FeedbackIssueSuccess } from '@/lib/feedback';
 import type { Glossary } from '@/lib/glossary/types';
 import { batchAnalyzeTranslations, syncGlossaryToDeepL } from '@/lib/glossary';
+import { debugError, debugLog } from '@/lib/debug';
 import {
   saveDraft,
   loadDraft,
@@ -374,9 +375,9 @@ export default function Index() {
         const glossaryId = await syncGlossaryToDeepL(loadedGlossary, setGlossarySyncStatus);
         setDeeplGlossaryId(glossaryId);
         setDeeplTermCount(loadedGlossary.entries.length);
-        console.log('[Glossary] DeepL glossary ID:', glossaryId);
+        debugLog('[Glossary] DeepL glossary ID:', glossaryId);
       } catch (error) {
-        console.error('[Glossary] Failed to sync to DeepL:', error);
+        debugError('[Glossary] Failed to sync to DeepL:', error);
         setGlossarySyncStatus('Sync failed - using fallback');
         setDeeplTermCount(0);
         // Continue without DeepL glossary - translations will still work, just without glossary enforcement
@@ -413,9 +414,9 @@ export default function Index() {
       const glossaryId = await syncGlossaryToDeepL(glossaryToSync, setGlossarySyncStatus, true);
       setDeeplGlossaryId(glossaryId);
       setDeeplTermCount(glossaryToSync.entries.length);
-      console.log('[Glossary] Force resync complete, DeepL glossary ID:', glossaryId);
+      debugLog('[Glossary] Force resync complete, DeepL glossary ID:', glossaryId);
     } catch (error) {
-      console.error('[Glossary] Force resync failed:', error);
+      debugError('[Glossary] Force resync failed:', error);
       setGlossarySyncStatus('Sync failed - using fallback');
       setDeeplTermCount(0);
     }
@@ -471,7 +472,7 @@ export default function Index() {
 
       if (saved) {
         setLastAutoSave(Date.now());
-        console.log('[Drafts] Auto-saved draft');
+        debugLog('[Drafts] Auto-saved draft');
       }
     }, 2000);
 
@@ -545,7 +546,7 @@ export default function Index() {
           const poFile = parseI18nextJSON(text, file.name);
           loadFile(poFile, 'i18next');
 
-          console.log(`[i18next] Parsed ${poFile.entries.length} entries from ${file.name}`);
+          debugLog(`[i18next] Parsed ${poFile.entries.length} entries from ${file.name}`);
         } else {
           // Handle PO/POT file
           // Read file as ArrayBuffer for encoding detection
@@ -558,7 +559,7 @@ export default function Index() {
           setEncodingInfo({ encoding, confidence, method });
 
           // Log encoding detection result
-          console.log(`[Encoding] Detected: ${encoding} (${confidence} confidence, via ${method})`);
+          debugLog(`[Encoding] Detected: ${encoding} (${confidence} confidence, via ${method})`);
 
           // Parse the decoded content
           const result = parsePOFileWithDiagnostics(content, file.name);
@@ -600,11 +601,11 @@ export default function Index() {
           const detected = detectPluginSlug(result.file.header, file.name);
           if (detected) {
             useSourceStore.getState().setAutoDetectedSlug(detected.slug, detected.version);
-            console.log('[Source] Auto-detected plugin:', detected.slug, detected.version);
+            debugLog('[Source] Auto-detected plugin:', detected.slug, detected.version);
           }
 
           // Log stats for debugging
-          console.log('[PO Parser] Stats:', result.stats);
+          debugLog('[PO Parser] Stats:', result.stats);
         }
       } catch (err) {
         setErrors([
@@ -639,7 +640,7 @@ export default function Index() {
     setIsFromDraft(true);
     setPendingDraft(null);
 
-    console.log('[Drafts] Restored from draft');
+    debugLog('[Drafts] Restored from draft');
   }, [pendingDraft, loadFile]);
 
   /**
@@ -651,7 +652,7 @@ export default function Index() {
     }
     setPendingDraft(null);
     setIsFromDraft(false);
-    console.log('[Drafts] Discarded draft, using fresh file');
+    debugLog('[Drafts] Discarded draft, using fresh file');
   }, [pendingDraft]);
 
   /**
@@ -1490,6 +1491,49 @@ export default function Index() {
             </MotionDiv>
           )}
         </Stack>
+
+        <Group
+          justify="space-between"
+          mt="xl"
+          pt="md"
+          style={{ borderTop: '1px solid var(--mantine-color-default-border)' }}
+        >
+          <Text size="xs" c="dimmed">
+            GlossBoss v{__APP_VERSION__}
+          </Text>
+          <Group gap="md">
+            <Text
+              component="a"
+              href="https://github.com/toineenzo/glossboss"
+              target="_blank"
+              rel="noopener noreferrer"
+              size="xs"
+              c="dimmed"
+            >
+              Source
+            </Text>
+            <Text
+              component="a"
+              href="/license/"
+              target="_blank"
+              rel="noopener noreferrer"
+              size="xs"
+              c="dimmed"
+            >
+              License
+            </Text>
+            <Text
+              component="a"
+              href="/privacy/"
+              target="_blank"
+              rel="noopener noreferrer"
+              size="xs"
+              c="dimmed"
+            >
+              Privacy
+            </Text>
+          </Group>
+        </Group>
       </Container>
 
       {/* Settings Modal */}

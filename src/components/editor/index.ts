@@ -12,4 +12,3 @@ export { TranslateButton } from './TranslateButton';
 export { TranslateToolbar } from './TranslateToolbar';
 export { GlossaryPanel } from './GlossaryPanel';
 export { GlossaryIndicator, GlossaryTermHighlight } from './GlossaryIndicator';
-export { SourceContext } from './SourceContext';

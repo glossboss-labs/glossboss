@@ -6,6 +6,7 @@
  */
 
 import type { POEntry, POHeader } from '@/lib/po/types';
+import { debugError, debugLog, debugWarn } from '@/lib/debug';
 
 /** Storage key prefix for drafts */
 const DRAFT_KEY_PREFIX = 'po-editor-draft:';
@@ -86,7 +87,7 @@ function loadDraftIndex(): DraftIndex {
       return JSON.parse(data);
     }
   } catch (error) {
-    console.warn('[Drafts] Failed to load draft index:', error);
+    debugWarn('[Drafts] Failed to load draft index:', error);
   }
   return { drafts: [] };
 }
@@ -98,7 +99,7 @@ function saveDraftIndex(index: DraftIndex): void {
   try {
     localStorage.setItem(DRAFT_INDEX_KEY, JSON.stringify(index));
   } catch (error) {
-    console.warn('[Drafts] Failed to save draft index:', error);
+    debugWarn('[Drafts] Failed to save draft index:', error);
   }
 }
 
@@ -129,12 +130,12 @@ function updateDraftIndex(draft: DraftData | null, filename: string): void {
  */
 export function saveDraft(data: Omit<DraftData, 'savedAt' | 'version'>): boolean {
   if (!isStorageAvailable()) {
-    console.warn('[Drafts] localStorage not available');
+    debugWarn('[Drafts] localStorage not available');
     return false;
   }
 
   if (!data.filename) {
-    console.warn('[Drafts] Cannot save draft without filename');
+    debugWarn('[Drafts] Cannot save draft without filename');
     return false;
   }
 
@@ -148,10 +149,10 @@ export function saveDraft(data: Omit<DraftData, 'savedAt' | 'version'>): boolean
     const key = getDraftKey(data.filename);
     localStorage.setItem(key, JSON.stringify(draft));
     updateDraftIndex(draft, data.filename);
-    console.log(`[Drafts] Saved draft for: ${data.filename}`);
+    debugLog(`[Drafts] Saved draft for: ${data.filename}`);
     return true;
   } catch (error) {
-    console.error('[Drafts] Failed to save draft:', error);
+    debugError('[Drafts] Failed to save draft:', error);
     return false;
   }
 }
@@ -176,15 +177,15 @@ export function loadDraft(filename: string): DraftData | null {
 
     // Check if draft is too old
     if (Date.now() - draft.savedAt > DRAFT_MAX_AGE_MS) {
-      console.log(`[Drafts] Draft for ${filename} is expired, removing`);
+      debugLog(`[Drafts] Draft for ${filename} is expired, removing`);
       deleteDraft(filename);
       return null;
     }
 
-    console.log(`[Drafts] Loaded draft for: ${filename}`);
+    debugLog(`[Drafts] Loaded draft for: ${filename}`);
     return draft;
   } catch (error) {
-    console.error('[Drafts] Failed to load draft:', error);
+    debugError('[Drafts] Failed to load draft:', error);
     return null;
   }
 }
@@ -213,10 +214,10 @@ export function deleteDraft(filename: string): boolean {
     const key = getDraftKey(filename);
     localStorage.removeItem(key);
     updateDraftIndex(null, filename);
-    console.log(`[Drafts] Deleted draft for: ${filename}`);
+    debugLog(`[Drafts] Deleted draft for: ${filename}`);
     return true;
   } catch (error) {
-    console.error('[Drafts] Failed to delete draft:', error);
+    debugError('[Drafts] Failed to delete draft:', error);
     return false;
   }
 }
@@ -245,7 +246,7 @@ export function deleteAllDrafts(): void {
   }
 
   localStorage.removeItem(DRAFT_INDEX_KEY);
-  console.log('[Drafts] Deleted all drafts');
+  debugLog('[Drafts] Deleted all drafts');
 }
 
 /**
@@ -272,7 +273,7 @@ export function cleanupExpiredDrafts(): number {
 
   if (cleanedCount > 0) {
     saveDraftIndex({ drafts: validDrafts });
-    console.log(`[Drafts] Cleaned up ${cleanedCount} expired drafts`);
+    debugLog(`[Drafts] Cleaned up ${cleanedCount} expired drafts`);
   }
 
   return cleanedCount;

@@ -7,18 +7,36 @@ import {
   type FeedbackContext,
   type FeedbackType,
 } from '../_shared/feedback-template.ts';
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-};
+import {
+  fetchWithTimeout,
+  forbiddenOrigin,
+  isAbortError,
+  isAllowedOrigin,
+  jsonResponse,
+  methodNotAllowed,
+  optionsResponse,
+  parseJsonBody,
+  requireJsonRequest,
+  sanitizeUpstreamError,
+  validateRequestOrigin,
+} from '../_shared/http.ts';
 
 const RATE_LIMIT_WINDOW_MS = 5 * 60 * 1000;
 const RATE_LIMIT_PER_IP = 6;
 const RATE_LIMIT_GLOBAL = 150;
 const TURNSTILE_FETCH_TIMEOUT_MS = 8000;
 const GITHUB_FETCH_TIMEOUT_MS = 12000;
+
+const TITLE_MAX_LENGTH = 160;
+const TEXT_MAX_LENGTH = 8000;
+const TURNSTILE_TOKEN_MAX_LENGTH = 4096;
+const EMAIL_MAX_LENGTH = 320;
+const WEBSITE_MAX_LENGTH = 2048;
+const PAGE_URL_MAX_LENGTH = 2000;
+const USER_AGENT_MAX_LENGTH = 500;
+const APP_VERSION_MAX_LENGTH = 100;
+const FILENAME_MAX_LENGTH = 200;
+const SUBMITTED_AT_MAX_LENGTH = 100;
 
 const ipRequestLog = new Map<string, number[]>();
 const globalRequestLog: number[] = [];
@@ -38,21 +56,6 @@ interface ErrorResponse {
   ok: false;
   code: string;
   message: string;
-}
-
-function jsonResponse(
-  body: Record<string, unknown>,
-  status: number = 200,
-  extra: HeadersInit = {},
-) {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: {
-      ...corsHeaders,
-      ...extra,
-      'Content-Type': 'application/json',
-    },
-  });
 }
 
 function nowMs(): number {
@@ -88,9 +91,9 @@ function pruneOldRequests(timestamp: number): void {
     ipRequestLog.set(ip, filtered);
   }
 
-  while (globalRequestLog.length > 0 && globalRequestLog[0] < threshold) {
-    globalRequestLog.shift();
-  }
+  const filteredGlobalEntries = globalRequestLog.filter((entry) => entry >= threshold);
+  globalRequestLog.length = 0;
+  globalRequestLog.push(...filteredGlobalEntries);
 }
 
 function checkRateLimit(ip: string): { allowed: boolean; retryAfter?: number } {
@@ -123,32 +126,17 @@ function isNonEmptyString(value: unknown): value is string {
   return typeof value === 'string' && value.trim().length > 0;
 }
 
-function isAbortError(error: unknown): boolean {
-  return (
-    (error instanceof DOMException && error.name === 'AbortError') ||
-    (error instanceof Error && error.name === 'AbortError')
-  );
-}
-
-async function fetchWithTimeout(
-  url: string,
-  timeoutMs: number,
-  init?: RequestInit,
-): Promise<Response> {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-  try {
-    return await fetch(url, { ...init, signal: controller.signal });
-  } finally {
-    clearTimeout(timeoutId);
-  }
-}
-
 function parseFeedbackType(value: unknown): FeedbackType | null {
-  if (value === 'bug' || value === 'feature') {
-    return value;
+  return value === 'bug' || value === 'feature' ? value : null;
+}
+
+function isAllowedPageUrl(pageUrl: string): boolean {
+  try {
+    const url = new URL(pageUrl);
+    return isAllowedOrigin(url.origin);
+  } catch {
+    return false;
   }
-  return null;
 }
 
 function parseContext(value: unknown): FeedbackContext | null {
@@ -161,16 +149,17 @@ function parseContext(value: unknown): FeedbackContext | null {
   const submittedAt = value.submittedAt;
 
   if (!isNonEmptyString(appVersion)) return null;
-  if (!isNonEmptyString(pageUrl)) return null;
+  if (!isNonEmptyString(pageUrl) || !isAllowedPageUrl(pageUrl)) return null;
   if (!isNonEmptyString(userAgent)) return null;
   if (!isNonEmptyString(submittedAt)) return null;
 
   return {
-    appVersion: trimAndLimit(appVersion, 100),
-    pageUrl: trimAndLimit(pageUrl, 2000),
-    filename: typeof filename === 'string' ? trimAndLimit(filename, 200) : undefined,
-    userAgent: trimAndLimit(userAgent, 500),
-    submittedAt: trimAndLimit(submittedAt, 100),
+    appVersion: trimAndLimit(appVersion, APP_VERSION_MAX_LENGTH),
+    pageUrl: trimAndLimit(pageUrl, PAGE_URL_MAX_LENGTH),
+    filename:
+      typeof filename === 'string' ? trimAndLimit(filename, FILENAME_MAX_LENGTH) : undefined,
+    userAgent: trimAndLimit(userAgent, USER_AGENT_MAX_LENGTH),
+    submittedAt: trimAndLimit(submittedAt, SUBMITTED_AT_MAX_LENGTH),
   };
 }
 
@@ -186,9 +175,9 @@ function parseBugDetails(value: unknown): BugFeedbackDetails | null {
   if (!isNonEmptyString(expectedBehavior)) return null;
 
   return {
-    whatHappened: trimAndLimit(whatHappened, 8000),
-    stepsToReproduce: trimAndLimit(stepsToReproduce, 8000),
-    expectedBehavior: trimAndLimit(expectedBehavior, 8000),
+    whatHappened: trimAndLimit(whatHappened, TEXT_MAX_LENGTH),
+    stepsToReproduce: trimAndLimit(stepsToReproduce, TEXT_MAX_LENGTH),
+    expectedBehavior: trimAndLimit(expectedBehavior, TEXT_MAX_LENGTH),
   };
 }
 
@@ -204,13 +193,15 @@ function parseFeatureDetails(value: unknown): FeatureFeedbackDetails | null {
   if (!isNonEmptyString(useCase)) return null;
 
   return {
-    problem: trimAndLimit(problem, 8000),
-    proposedSolution: trimAndLimit(proposedSolution, 8000),
-    useCase: trimAndLimit(useCase, 8000),
+    problem: trimAndLimit(problem, TEXT_MAX_LENGTH),
+    proposedSolution: trimAndLimit(proposedSolution, TEXT_MAX_LENGTH),
+    useCase: trimAndLimit(useCase, TEXT_MAX_LENGTH),
   };
 }
 
-function parseRequestBody(value: unknown): { ok: true; data: FeedbackRequest } | ErrorResponse {
+export function parseRequestBody(
+  value: unknown,
+): { ok: true; data: FeedbackRequest } | ErrorResponse {
   if (!isObject(value)) {
     return { ok: false, code: 'INVALID_PAYLOAD', message: 'Request body must be a JSON object.' };
   }
@@ -225,14 +216,10 @@ function parseRequestBody(value: unknown): { ok: true; data: FeedbackRequest } |
   }
 
   if (!isNonEmptyString(value.title)) {
-    return {
-      ok: false,
-      code: 'INVALID_PAYLOAD',
-      message: 'Field "title" is required.',
-    };
+    return { ok: false, code: 'INVALID_PAYLOAD', message: 'Field "title" is required.' };
   }
 
-  const title = trimAndLimit(value.title, 160);
+  const title = trimAndLimit(value.title, TITLE_MAX_LENGTH);
   if (title.length < 3) {
     return {
       ok: false,
@@ -246,7 +233,7 @@ function parseRequestBody(value: unknown): { ok: true; data: FeedbackRequest } |
     return {
       ok: false,
       code: 'INVALID_PAYLOAD',
-      message: 'Field "context" is missing required values.',
+      message: 'Field "context" is missing required values or has an invalid page URL.',
     };
   }
 
@@ -257,8 +244,6 @@ function parseRequestBody(value: unknown): { ok: true; data: FeedbackRequest } |
       message: 'Field "turnstileToken" is required.',
     };
   }
-
-  const website = typeof value.website === 'string' ? value.website : '';
 
   const details =
     type === 'bug' ? parseBugDetails(value.details) : parseFeatureDetails(value.details);
@@ -272,9 +257,8 @@ function parseRequestBody(value: unknown): { ok: true; data: FeedbackRequest } |
 
   let contactEmail: string | undefined;
   if (typeof value.contactEmail === 'string' && value.contactEmail.trim()) {
-    const email = trimAndLimit(value.contactEmail, 320);
-    const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    if (!emailValid) {
+    const email = trimAndLimit(value.contactEmail, EMAIL_MAX_LENGTH);
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return {
         ok: false,
         code: 'INVALID_PAYLOAD',
@@ -293,8 +277,9 @@ function parseRequestBody(value: unknown): { ok: true; data: FeedbackRequest } |
       contactEmail,
       allowFollowUp: value.allowFollowUp === true,
       context,
-      turnstileToken: trimAndLimit(value.turnstileToken, 4096),
-      website: trimAndLimit(website, 2048),
+      turnstileToken: trimAndLimit(value.turnstileToken, TURNSTILE_TOKEN_MAX_LENGTH),
+      website:
+        typeof value.website === 'string' ? trimAndLimit(value.website, WEBSITE_MAX_LENGTH) : '',
     },
   };
 }
@@ -312,32 +297,24 @@ async function verifyTurnstile(token: string, ip: string): Promise<boolean> {
     body.set('remoteip', ip);
   }
 
-  let response: Response;
   try {
-    response = await fetchWithTimeout(
+    const response = await fetchWithTimeout(
       'https://challenges.cloudflare.com/turnstile/v0/siteverify',
       TURNSTILE_FETCH_TIMEOUT_MS,
       {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: body.toString(),
       },
     );
+
+    if (!response.ok) return false;
+    const result = (await response.json().catch(() => ({}))) as { success?: boolean };
+    return result.success === true;
   } catch (error) {
-    if (isAbortError(error)) {
-      return false;
-    }
+    if (isAbortError(error)) return false;
     throw error;
   }
-
-  if (!response.ok) {
-    return false;
-  }
-
-  const result = (await response.json().catch(() => ({}))) as { success?: boolean };
-  return result.success === true;
 }
 
 function hasLabelValidationError(payload: unknown): boolean {
@@ -349,18 +326,12 @@ function hasLabelValidationError(payload: unknown): boolean {
   }
 
   const errors = Array.isArray(payload.errors) ? payload.errors : [];
-  for (const error of errors) {
-    if (!isObject(error)) continue;
-    const field = typeof error.field === 'string' ? error.field : '';
-    if (field === 'labels') {
-      return true;
-    }
-  }
-
-  return false;
+  return errors.some((error) => isObject(error) && error.field === 'labels');
 }
 
-async function createGitHubIssue(payload: FeedbackRequest): Promise<{ issueNumber: number }> {
+async function createGitHubIssue(
+  payload: FeedbackRequest,
+): Promise<{ issueNumber: number; issueUrl: string }> {
   const token = Deno.env.get('GITHUB_TOKEN');
   if (!token) {
     throw new Error('GITHUB_TOKEN is not configured.');
@@ -368,8 +339,8 @@ async function createGitHubIssue(payload: FeedbackRequest): Promise<{ issueNumbe
 
   const owner = Deno.env.get('GITHUB_OWNER') || 'toineenzo';
   const repo = Deno.env.get('GITHUB_REPO') || 'glossboss';
-
   const url = `https://api.github.com/repos/${owner}/${repo}/issues`;
+
   const requestHeaders = {
     Accept: 'application/vnd.github+json',
     Authorization: `Bearer ${token}`,
@@ -396,12 +367,15 @@ async function createGitHubIssue(payload: FeedbackRequest): Promise<{ issueNumbe
       });
     } catch (error) {
       if (isAbortError(error)) {
-        throw new Error('GitHub API request timed out. Please try again.', { cause: error });
+        throw new Error('GitHub API request timed out.', { cause: error });
       }
       throw error;
     }
-    const result = await response.json().catch(() => ({}));
-    return { response, result };
+
+    return {
+      response,
+      result: await response.json().catch(() => ({})),
+    };
   };
 
   let { response, result } = await postIssue(requestBody);
@@ -416,30 +390,50 @@ async function createGitHubIssue(payload: FeedbackRequest): Promise<{ issueNumbe
   if (!response.ok) {
     const message =
       isObject(result) && typeof result.message === 'string'
-        ? result.message
+        ? sanitizeUpstreamError(result.message, 'GitHub issue creation failed.')
         : `GitHub issue creation failed with HTTP ${response.status}`;
     throw new Error(message);
   }
 
-  if (!isObject(result) || typeof result.number !== 'number') {
+  if (
+    !isObject(result) ||
+    typeof result.number !== 'number' ||
+    typeof result.html_url !== 'string'
+  ) {
     throw new Error('GitHub returned an unexpected issue response.');
   }
 
-  return {
-    issueNumber: result.number,
-  };
+  return { issueNumber: result.number, issueUrl: result.html_url };
 }
 
-Deno.serve(async (req: Request) => {
+export async function handleFeedbackIssueRequest(req: Request): Promise<Response> {
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return optionsResponse(req);
   }
 
   if (req.method !== 'POST') {
+    return methodNotAllowed(req);
+  }
+
+  const originValidation = validateRequestOrigin(req);
+  if (originValidation.allowedOrigins.length === 0) {
     return jsonResponse(
-      { ok: false, code: 'METHOD_NOT_ALLOWED', message: 'Only POST is allowed.' },
-      405,
+      req,
+      {
+        ok: false,
+        code: 'SERVER_MISCONFIGURED',
+        message: 'Feedback backend is not configured correctly.',
+      },
+      { status: 500 },
     );
+  }
+  if (!originValidation.allowed) {
+    return forbiddenOrigin(req);
+  }
+
+  const jsonError = requireJsonRequest(req);
+  if (jsonError) {
+    return jsonError;
   }
 
   try {
@@ -447,71 +441,93 @@ Deno.serve(async (req: Request) => {
     const rateCheck = checkRateLimit(ip);
     if (!rateCheck.allowed) {
       return jsonResponse(
+        req,
         {
           ok: false,
           code: 'RATE_LIMITED',
           message: 'Too many feedback submissions. Please try again later.',
         },
-        429,
-        { 'Retry-After': String(rateCheck.retryAfter ?? 60) },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': String(rateCheck.retryAfter ?? 60),
+          },
+        },
       );
     }
 
-    const body = await req.json().catch(() => null);
+    const body = await parseJsonBody(req);
     const parsed = parseRequestBody(body);
-
     if (!parsed.ok) {
-      return jsonResponse(parsed, 400);
+      return jsonResponse(req, parsed, { status: 400 });
     }
 
     if (parsed.data.website) {
-      return jsonResponse({ ok: false, code: 'BOT_DETECTED', message: 'Invalid request.' }, 400);
+      return jsonResponse(
+        req,
+        { ok: false, code: 'BOT_DETECTED', message: 'Invalid request.' },
+        { status: 400 },
+      );
     }
 
     const bypassEnabled = Deno.env.get('ALLOW_TURNSTILE_BYPASS') === 'true';
     const isBypassToken = parsed.data.turnstileToken === 'dev-bypass';
-
     if (!(bypassEnabled && isBypassToken)) {
       const verified = await verifyTurnstile(parsed.data.turnstileToken, ip);
       if (!verified) {
         return jsonResponse(
+          req,
           {
             ok: false,
             code: 'TURNSTILE_FAILED',
             message: 'Verification failed. Please try again.',
           },
-          400,
+          { status: 400 },
         );
       }
     }
 
     const issue = await createGitHubIssue(parsed.data);
-
-    return jsonResponse({
+    return jsonResponse(req, {
       ok: true,
       issueNumber: issue.issueNumber,
+      issueUrl: issue.issueUrl,
     });
   } catch (error) {
+    if (error instanceof SyntaxError) {
+      return jsonResponse(
+        req,
+        { ok: false, code: 'INVALID_PAYLOAD', message: 'Request body is not valid JSON.' },
+        { status: 400 },
+      );
+    }
+
     const message = error instanceof Error ? error.message : 'Unknown feedback function error';
 
     if (message.includes('TURNSTILE_SECRET') || message.includes('GITHUB_TOKEN')) {
       return jsonResponse(
+        req,
         {
           ok: false,
           code: 'SERVER_MISCONFIGURED',
           message: 'Feedback backend is not configured correctly.',
         },
-        500,
+        { status: 500 },
       );
     }
 
     return jsonResponse(
+      req,
       {
         ok: false,
         code: 'INTERNAL_ERROR',
-        message,
+        message: sanitizeUpstreamError(message, 'Feedback request failed.'),
       },
-      500,
+      { status: 500 },
     );
   }
-});
+}
+
+if (import.meta.main && typeof Deno !== 'undefined' && typeof Deno.serve === 'function') {
+  Deno.serve(handleFeedbackIssueRequest);
+}

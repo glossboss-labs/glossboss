@@ -6,3 +6,4 @@ dist
 supabase/.temp/
 coverage/
 .wrangler/
+package-lock.json
