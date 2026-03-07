@@ -6,6 +6,7 @@
  */
 
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
 import type { ParsedReference } from '@/lib/wp-source/references';
 import type { DirectoryEntry } from '@/lib/wp-source/fetcher';
 import {
@@ -29,6 +30,7 @@ export interface SourceState {
   directoryTree: DirectoryEntry[] | null;
   browsingPath: string;
   isLoadingDirectory: boolean;
+  directoryError: string | null;
   /** Resolved base path from SVN (e.g. "trunk" or "tags/8.4.2") */
   resolvedBasePath: string | null;
 }
@@ -44,6 +46,8 @@ export interface SourceActions {
   clearSource: () => void;
 }
 
+const STORAGE_KEY = 'glossboss-source-store';
+
 const initialState: SourceState = {
   pluginSlug: null,
   autoDetectedSlug: null,
@@ -56,6 +60,7 @@ const initialState: SourceState = {
   directoryTree: null,
   browsingPath: '',
   isLoadingDirectory: false,
+  directoryError: null,
   resolvedBasePath: null,
 };
 
@@ -64,90 +69,131 @@ export function getEffectiveSlug(state: SourceState): string | null {
   return state.pluginSlug || state.autoDetectedSlug;
 }
 
-export const useSourceStore = create<SourceState & SourceActions>()((set, get) => ({
-  ...initialState,
+export const useSourceStore = create<SourceState & SourceActions>()(
+  persist(
+    (set, get) => ({
+      ...initialState,
 
-  setPluginSlug: (slug: string | null) => {
-    const prev = getEffectiveSlug(get());
-    set({ pluginSlug: slug, isSlugValid: null });
+      setPluginSlug: (slug: string | null) => {
+        const prev = getEffectiveSlug(get());
+        set({ pluginSlug: slug, isSlugValid: null });
 
-    // Clear cache if slug changed
-    const next = slug || get().autoDetectedSlug;
-    if (prev !== next) {
-      clearCache();
-      set({ sourceContent: null, directoryTree: null, browsingPath: '' });
-    }
-  },
+        // Clear cache if effective slug changed
+        const next = slug || get().autoDetectedSlug;
+        if (prev !== next) {
+          clearCache();
+          set({
+            sourceContent: null,
+            directoryTree: null,
+            browsingPath: '',
+            directoryError: null,
+            resolvedBasePath: null,
+          });
+        }
+      },
 
-  setAutoDetectedSlug: (slug: string | null, version?: string | null) => {
-    set({ autoDetectedSlug: slug, pluginVersion: version ?? null, isSlugValid: null });
-  },
+      setAutoDetectedSlug: (slug: string | null, version?: string | null) => {
+        const prev = get();
+        const nextVersion = version ?? null;
+        const prevEffectiveSlug = getEffectiveSlug(prev);
+        const nextEffectiveSlug = prev.pluginSlug || slug;
+        const versionChanged = prev.pluginVersion !== nextVersion;
+        const effectiveSlugChanged = prevEffectiveSlug !== nextEffectiveSlug;
 
-  setActiveReference: (ref: ParsedReference | null) => {
-    set({ activeReference: ref, sourceContent: null, sourceError: null });
+        set({ autoDetectedSlug: slug, pluginVersion: nextVersion, isSlugValid: null });
 
-    if (ref) {
-      get().fetchSource(ref.path);
-    }
-  },
+        // Version and effective-slug changes can both invalidate cached source content.
+        if (versionChanged || effectiveSlugChanged) {
+          clearCache();
+          set({
+            sourceContent: null,
+            directoryTree: null,
+            browsingPath: '',
+            directoryError: null,
+            resolvedBasePath: null,
+          });
+        }
+      },
 
-  fetchSource: async (path: string) => {
-    const slug = getEffectiveSlug(get());
-    if (!slug) return;
+      setActiveReference: (ref: ParsedReference | null) => {
+        set({ activeReference: ref, sourceContent: null, sourceError: null });
 
-    set({ isLoadingSource: true, sourceError: null });
+        if (ref) {
+          get().fetchSource(ref.path);
+        }
+      },
 
-    try {
-      const result = await fetchSourceFile(slug, path, get().pluginVersion);
-      set({
-        sourceContent: result.content,
-        resolvedBasePath: result.basePath,
-        isLoadingSource: false,
-      });
-    } catch (err) {
-      set({
-        sourceContent: null,
-        isLoadingSource: false,
-        sourceError: err instanceof Error ? err.message : 'Failed to fetch source',
-      });
-    }
-  },
+      fetchSource: async (path: string) => {
+        const slug = getEffectiveSlug(get());
+        if (!slug) return;
 
-  fetchDirectory: async (path: string) => {
-    const slug = getEffectiveSlug(get());
-    if (!slug) return;
+        set({ isLoadingSource: true, sourceError: null });
 
-    set({ isLoadingDirectory: true, browsingPath: path });
+        try {
+          const result = await fetchSourceFile(slug, path, get().pluginVersion);
+          set({
+            sourceContent: result.content,
+            resolvedBasePath: result.basePath,
+            isLoadingSource: false,
+          });
+        } catch (err) {
+          set({
+            sourceContent: null,
+            isLoadingSource: false,
+            sourceError: err instanceof Error ? err.message : 'Failed to fetch source',
+          });
+        }
+      },
 
-    try {
-      const result = await fetchDirectoryListing(slug, path, get().pluginVersion);
-      set({
-        directoryTree: result.entries,
-        resolvedBasePath: result.basePath,
-        isLoadingDirectory: false,
-      });
-    } catch {
-      set({ directoryTree: null, isLoadingDirectory: false });
-    }
-  },
+      fetchDirectory: async (path: string) => {
+        const slug = getEffectiveSlug(get());
+        if (!slug) return;
 
-  validateCurrentSlug: async () => {
-    const slug = getEffectiveSlug(get());
-    if (!slug) {
-      set({ isSlugValid: null });
-      return;
-    }
+        set({ isLoadingDirectory: true, browsingPath: path, directoryError: null });
 
-    try {
-      const valid = await validateSlug(slug);
-      set({ isSlugValid: valid });
-    } catch {
-      set({ isSlugValid: false });
-    }
-  },
+        try {
+          const result = await fetchDirectoryListing(slug, path, get().pluginVersion);
+          set({
+            directoryTree: result.entries,
+            resolvedBasePath: result.basePath,
+            isLoadingDirectory: false,
+            directoryError: null,
+          });
+        } catch (err) {
+          set({
+            directoryTree: null,
+            isLoadingDirectory: false,
+            directoryError: err instanceof Error ? err.message : 'Failed to load directory listing',
+          });
+        }
+      },
 
-  clearSource: () => {
-    clearCache();
-    set(initialState);
-  },
-}));
+      validateCurrentSlug: async () => {
+        const slug = getEffectiveSlug(get());
+        if (!slug) {
+          set({ isSlugValid: null });
+          return;
+        }
+
+        try {
+          const valid = await validateSlug(slug);
+          set({ isSlugValid: valid });
+        } catch {
+          set({ isSlugValid: false });
+        }
+      },
+
+      clearSource: () => {
+        clearCache();
+        set(initialState);
+      },
+    }),
+    {
+      name: STORAGE_KEY,
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({
+        pluginSlug: state.pluginSlug,
+      }),
+    },
+  ),
+);

@@ -20,6 +20,50 @@ function isValidSlug(slug: string): boolean {
   return /^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug);
 }
 
+/**
+ * Normalize an incoming source path and detect embedded base-path prefixes.
+ * Accepts references that may include slug prefixes and/or "trunk"/"tags/x.y.z".
+ */
+function normalizeRequestPath(
+  rawPath: string,
+  slug: string,
+): { cleanPath: string; basePathOverride: string | null } {
+  let clean = rawPath.replace(/\\/g, '/').trim();
+  clean = clean.replace(/^\/+/, '').replace(/\/{2,}/g, '/');
+
+  while (clean.startsWith('./')) {
+    clean = clean.slice(2);
+  }
+
+  const wpPrefix = `wp-content/plugins/${slug}/`;
+  if (clean.toLowerCase().startsWith(wpPrefix.toLowerCase())) {
+    clean = clean.slice(wpPrefix.length);
+  }
+
+  const slugPrefix = `${slug}/`;
+  if (clean.toLowerCase().startsWith(slugPrefix.toLowerCase())) {
+    clean = clean.slice(slugPrefix.length);
+  }
+
+  if (clean === 'trunk') {
+    return { cleanPath: '', basePathOverride: 'trunk' };
+  }
+
+  if (clean.startsWith('trunk/')) {
+    return { cleanPath: clean.slice('trunk/'.length), basePathOverride: 'trunk' };
+  }
+
+  const tagMatch = clean.match(/^tags\/([^/]+)(?:\/(.*))?$/);
+  if (tagMatch) {
+    return {
+      cleanPath: tagMatch[2] ?? '',
+      basePathOverride: `tags/${tagMatch[1]}`,
+    };
+  }
+
+  return { cleanPath: clean, basePathOverride: null };
+}
+
 /** Parse SVN HTML directory listing into entries */
 function parseDirectoryListing(html: string): { name: string; isDir: boolean }[] {
   const entries: { name: string; isDir: boolean }[] = [];
@@ -51,9 +95,119 @@ function parseDirectoryListing(html: string): { name: string; isDir: boolean }[]
 
 const SVN_BASE = 'https://plugins.svn.wordpress.org';
 const FETCH_HEADERS = { 'User-Agent': 'GlossBoss/1.0 (WordPress Translation Editor)' };
+const FETCH_TIMEOUT_MS = 8000;
 
 /** Cache of resolved base paths (slug → "trunk" or "tags/x.y.z") */
 const basePathCache = new Map<string, string>();
+const tagsCache = new Map<string, string[]>();
+const fileExistsCache = new Map<string, boolean>();
+const legacyTagPathCache = new Map<string, string | null>();
+
+async function fetchWithTimeout(url: string, init?: RequestInit): Promise<Response> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+  try {
+    return await fetch(url, { ...init, signal: controller.signal });
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
+/** Compare version-like tag names ("8.4.2" > "7.4.8") */
+function compareTagVersions(a: string, b: string): number {
+  const parse = (v: string) =>
+    v.split(/[.-]/).map((p) => (/^\d+$/.test(p) ? Number(p) : p.toLowerCase()));
+  const pa = parse(a);
+  const pb = parse(b);
+  const len = Math.max(pa.length, pb.length);
+
+  for (let i = 0; i < len; i++) {
+    const xa = pa[i] ?? 0;
+    const xb = pb[i] ?? 0;
+
+    if (typeof xa === 'number' && typeof xb === 'number') {
+      if (xa !== xb) return xa - xb;
+      continue;
+    }
+
+    const sa = String(xa);
+    const sb = String(xb);
+    if (sa !== sb) return sa < sb ? -1 : 1;
+  }
+
+  return 0;
+}
+
+/** Fetch and cache tags sorted newest first */
+async function getPluginTags(slug: string): Promise<string[]> {
+  const cached = tagsCache.get(slug);
+  if (cached) return cached;
+
+  const res = await fetchWithTimeout(`${SVN_BASE}/${slug}/tags/`, { headers: FETCH_HEADERS });
+  if (!res.ok) return [];
+
+  const html = await res.text();
+  const tags = parseDirectoryListing(html)
+    .filter((e) => e.isDir && /^[\d]/.test(e.name))
+    .map((e) => e.name)
+    .sort((a, b) => compareTagVersions(b, a));
+
+  tagsCache.set(slug, tags);
+  return tags;
+}
+
+/** Check file existence with cache */
+async function fileExists(url: string): Promise<boolean> {
+  const cached = fileExistsCache.get(url);
+  if (cached !== undefined) return cached;
+
+  try {
+    const res = await fetchWithTimeout(url, { method: 'HEAD', headers: FETCH_HEADERS });
+    const exists = res.ok;
+    fileExistsCache.set(url, exists);
+    return exists;
+  } catch {
+    fileExistsCache.set(url, false);
+    return false;
+  }
+}
+
+/**
+ * Find a closest older tag that still contains `cleanPath`.
+ * Useful when references were generated from older source trees.
+ */
+async function findLegacyTagPath(
+  slug: string,
+  cleanPath: string,
+  currentBasePath: string,
+): Promise<string | null> {
+  if (!currentBasePath.startsWith('tags/') || !cleanPath) return null;
+
+  const cacheKey = `${slug}|${currentBasePath}|${cleanPath}`;
+  const cached = legacyTagPathCache.get(cacheKey);
+  if (cached !== undefined) return cached;
+
+  const currentTag = currentBasePath.replace(/^tags\//, '');
+  const tags = await getPluginTags(slug);
+  if (tags.length === 0) {
+    legacyTagPathCache.set(cacheKey, null);
+    return null;
+  }
+
+  // Search newest→oldest, but skip tags newer than current tag.
+  const candidates = tags.filter((tag) => compareTagVersions(tag, currentTag) <= 0).slice(0, 160);
+  for (const tag of candidates) {
+    const url = `${SVN_BASE}/${slug}/tags/${tag}/${cleanPath}`;
+    if (await fileExists(url)) {
+      const resolved = `tags/${tag}`;
+      legacyTagPathCache.set(cacheKey, resolved);
+      return resolved;
+    }
+  }
+
+  legacyTagPathCache.set(cacheKey, null);
+  return null;
+}
 
 /**
  * Resolve the base path for a plugin.
@@ -64,7 +218,7 @@ async function resolveBasePath(slug: string): Promise<string> {
   if (cached) return cached;
 
   // Check if trunk has content
-  const trunkRes = await fetch(`${SVN_BASE}/${slug}/trunk/`, { headers: FETCH_HEADERS });
+  const trunkRes = await fetchWithTimeout(`${SVN_BASE}/${slug}/trunk/`, { headers: FETCH_HEADERS });
   if (trunkRes.ok) {
     const html = await trunkRes.text();
     const entries = parseDirectoryListing(html);
@@ -75,7 +229,7 @@ async function resolveBasePath(slug: string): Promise<string> {
   }
 
   // Trunk is empty or missing — find the latest tag
-  const tagsRes = await fetch(`${SVN_BASE}/${slug}/tags/`, { headers: FETCH_HEADERS });
+  const tagsRes = await fetchWithTimeout(`${SVN_BASE}/${slug}/tags/`, { headers: FETCH_HEADERS });
   if (tagsRes.ok) {
     const html = await tagsRes.text();
     const tags = parseDirectoryListing(html)
@@ -130,32 +284,73 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // If a specific version is requested, try that tag first
+    const { cleanPath, basePathOverride } = normalizeRequestPath(path || '', slug);
+
+    // If path already specifies trunk/tags, trust that explicit base path.
     let basePath: string;
-    if (version && /^[\d][\d.]*(-[\w.]+)?$/.test(version)) {
-      // Check if the requested tag exists
+    if (basePathOverride) {
+      basePath = basePathOverride;
+    } else if (version && /^[\d][\d.]*(-[\w.]+)?$/.test(version)) {
+      // If a specific version is requested, try that tag first.
       const tagUrl = `${SVN_BASE}/${slug}/tags/${version}/`;
-      const tagRes = await fetch(tagUrl, { headers: FETCH_HEADERS });
-      if (tagRes.ok) {
-        basePath = `tags/${version}`;
-      } else {
-        // Fall back to auto-resolution
-        basePath = await resolveBasePath(slug);
-      }
+      const tagRes = await fetchWithTimeout(tagUrl, { headers: FETCH_HEADERS });
+      basePath = tagRes.ok ? `tags/${version}` : await resolveBasePath(slug);
     } else {
       basePath = await resolveBasePath(slug);
     }
-    const cleanPath = (path || '').replace(/^\/+/, '');
-    const svnUrl = `${SVN_BASE}/${slug}/${basePath}/${cleanPath}`;
+
+    let svnUrl = cleanPath
+      ? `${SVN_BASE}/${slug}/${basePath}/${cleanPath}`
+      : `${SVN_BASE}/${slug}/${basePath}/`;
 
     console.log(`Fetching: ${svnUrl} (list: ${!!list}, base: ${basePath})`);
 
-    const response = await fetch(svnUrl, { headers: FETCH_HEADERS });
+    const attemptedBasePaths = [basePath];
+    let response = await fetchWithTimeout(svnUrl, { headers: FETCH_HEADERS });
+
+    // If a tagged version misses a file, retry trunk as a pragmatic fallback.
+    if (response.status === 404 && cleanPath && !basePathOverride && basePath.startsWith('tags/')) {
+      const fallbackBasePath = 'trunk';
+      const fallbackUrl = `${SVN_BASE}/${slug}/${fallbackBasePath}/${cleanPath}`;
+      console.log(`Retrying with fallback: ${fallbackUrl}`);
+      const fallbackRes = await fetchWithTimeout(fallbackUrl, { headers: FETCH_HEADERS });
+      if (fallbackRes.ok) {
+        basePath = fallbackBasePath;
+        svnUrl = fallbackUrl;
+        response = fallbackRes;
+        attemptedBasePaths.push(fallbackBasePath);
+      }
+    }
+
+    // If still not found, attempt to locate the same path in the closest older tag.
+    if (response.status === 404 && cleanPath && basePath.startsWith('tags/')) {
+      const legacyBasePath = await findLegacyTagPath(slug, cleanPath, basePath);
+      if (legacyBasePath) {
+        const legacyUrl = `${SVN_BASE}/${slug}/${legacyBasePath}/${cleanPath}`;
+        console.log(`Retrying with legacy tag: ${legacyUrl}`);
+        const legacyRes = await fetchWithTimeout(legacyUrl, { headers: FETCH_HEADERS });
+        if (legacyRes.ok) {
+          basePath = legacyBasePath;
+          svnUrl = legacyUrl;
+          response = legacyRes;
+          attemptedBasePaths.push(legacyBasePath);
+        }
+      }
+    }
 
     if (!response.ok) {
       if (response.status === 404) {
         return new Response(
-          JSON.stringify({ error: `Not found: ${slug}/${basePath}/${cleanPath}` }),
+          JSON.stringify({
+            error: `Not found: ${slug}/${basePath}/${cleanPath}`,
+            hint: 'This source reference may point to a file removed in newer plugin versions.',
+            details: {
+              slug,
+              path: cleanPath,
+              attemptedBasePaths,
+              requestedVersion: version ?? null,
+            },
+          }),
           { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
         );
       }

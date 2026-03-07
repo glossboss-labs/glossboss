@@ -4,6 +4,7 @@
  * Fetches source files and directory listings from plugins.svn.wordpress.org
  * via edge function proxy. Includes in-memory caching.
  */
+import { normalizeSourcePath } from './references';
 
 /** Directory entry from SVN listing */
 export interface DirectoryEntry {
@@ -14,9 +15,136 @@ export interface DirectoryEntry {
 /** In-memory cache for source files and directory listings (stores JSON strings) */
 const fileCache = new Map<string, string>();
 const dirCache = new Map<string, string>();
+const pluginVersionsCache = new Map<string, string[]>();
+const legacyVersionCache = new Map<string, string | null>();
 
 /** Fetch timeout in milliseconds */
 const FETCH_TIMEOUT_MS = 30000;
+
+/** Build a version-aware cache key */
+function getCacheKey(slug: string, path: string, version?: string | null): string {
+  const normalizedPath = path.replace(/^\/+/, '');
+  const versionPart = version ?? 'auto';
+  return `${slug}@${versionPart}/${normalizedPath}`;
+}
+
+function compareVersions(a: string, b: string): number {
+  const parse = (v: string) =>
+    v.split(/[.-]/).map((part) => (/^\d+$/.test(part) ? Number(part) : part.toLowerCase()));
+  const pa = parse(a);
+  const pb = parse(b);
+  const len = Math.max(pa.length, pb.length);
+
+  for (let i = 0; i < len; i++) {
+    const xa = pa[i] ?? 0;
+    const xb = pb[i] ?? 0;
+
+    if (typeof xa === 'number' && typeof xb === 'number') {
+      if (xa !== xb) return xa - xb;
+      continue;
+    }
+
+    const sa = String(xa);
+    const sb = String(xb);
+    if (sa !== sb) return sa < sb ? -1 : 1;
+  }
+
+  return 0;
+}
+
+/** Parse and format error payload from edge function response */
+async function readEdgeError(response: Response): Promise<string> {
+  const data = await response.json().catch(() => ({}));
+  const attempts = Array.isArray(data?.details?.attemptedBasePaths)
+    ? ` Tried: ${data.details.attemptedBasePaths.join(', ')}.`
+    : '';
+  const hint = typeof data.hint === 'string' ? ` ${data.hint}` : '';
+  return (data.error || `HTTP ${response.status}`) + hint + attempts;
+}
+
+async function fetchPluginVersions(slug: string): Promise<string[]> {
+  const cached = pluginVersionsCache.get(slug);
+  if (cached) return cached;
+
+  try {
+    const response = await fetch(
+      `https://api.wordpress.org/plugins/info/1.2/?action=plugin_information&slug=${encodeURIComponent(slug)}`,
+    );
+    if (!response.ok) return [];
+
+    const data = await response.json();
+    const versionsObj = data?.versions as Record<string, string> | undefined;
+    if (!versionsObj || typeof versionsObj !== 'object') return [];
+
+    const versions = Object.keys(versionsObj)
+      .filter((v) => /^[\d]/.test(v))
+      .sort((a, b) => compareVersions(b, a));
+
+    pluginVersionsCache.set(slug, versions);
+    return versions;
+  } catch {
+    return [];
+  }
+}
+
+function extractVersionFromError(message: string): string | null {
+  const match = message.match(/\/tags\/([^/]+)\//);
+  return match ? match[1] : null;
+}
+
+async function findLegacySourceInBatches(
+  slug: string,
+  path: string,
+  candidates: string[],
+  batchSize: number = 10,
+): Promise<{ version: string; result: FetchSourceResult } | null> {
+  for (let i = 0; i < candidates.length; i += batchSize) {
+    const batch = candidates.slice(i, i + batchSize);
+    const batchResults = await Promise.all(
+      batch.map(async (candidateVersion) => ({
+        candidateVersion,
+        response: await tryFetchSource(slug, path, candidateVersion),
+      })),
+    );
+
+    for (const item of batchResults) {
+      if (item.response.ok) {
+        return { version: item.candidateVersion, result: item.response.result };
+      }
+    }
+  }
+
+  return null;
+}
+
+async function tryFetchSource(
+  slug: string,
+  path: string,
+  version?: string | null,
+): Promise<
+  { ok: true; result: FetchSourceResult } | { ok: false; status: number; message: string }
+> {
+  const body: Record<string, unknown> = { slug, path };
+  if (version) body.version = version;
+
+  const response = await fetchFromEdge(body);
+  if (!response.ok) {
+    return {
+      ok: false,
+      status: response.status,
+      message: await readEdgeError(response),
+    };
+  }
+
+  const data = await response.json();
+  return {
+    ok: true,
+    result: {
+      content: data.content as string,
+      basePath: (data.basePath as string) || 'trunk',
+    },
+  };
+}
 
 /**
  * Get the edge function URL for wp-source
@@ -82,28 +210,68 @@ export async function fetchSourceFile(
   path: string,
   version?: string | null,
 ): Promise<FetchSourceResult> {
-  const cacheKey = `${slug}/${path}`;
+  const normalized = normalizeSourcePath(path, slug);
+  const pathVersion = normalized.basePath?.startsWith('tags/')
+    ? normalized.basePath.slice('tags/'.length)
+    : null;
+  const effectiveVersion = version ?? pathVersion;
+  const requestPath = normalized.path;
+
+  const cacheKey = getCacheKey(slug, requestPath, effectiveVersion);
 
   const cached = fileCache.get(cacheKey);
   if (cached !== undefined) return JSON.parse(cached);
 
-  const body: Record<string, unknown> = { slug, path };
-  if (version) body.version = version;
-  const response = await fetchFromEdge(body);
-
-  if (!response.ok) {
-    const data = await response.json().catch(() => ({}));
-    throw new Error(data.error || `HTTP ${response.status}`);
+  const firstAttempt = await tryFetchSource(slug, requestPath, effectiveVersion);
+  if (firstAttempt.ok) {
+    fileCache.set(cacheKey, JSON.stringify(firstAttempt.result));
+    return firstAttempt.result;
   }
 
-  const data = await response.json();
-  const result: FetchSourceResult = {
-    content: data.content as string,
-    basePath: (data.basePath as string) || 'trunk',
-  };
+  // Legacy fallback for stale references: try older plugin versions when
+  // a file no longer exists in the current tagged release.
+  if (firstAttempt.status === 404) {
+    const inferredVersion = extractVersionFromError(firstAttempt.message);
+    const referenceVersion = effectiveVersion ?? inferredVersion;
+    const legacyKey = `${slug}|${referenceVersion ?? 'auto'}|${requestPath}`;
+    const hasLegacyCache = legacyVersionCache.has(legacyKey);
+    const cachedLegacyVersion = legacyVersionCache.get(legacyKey);
 
-  fileCache.set(cacheKey, JSON.stringify(result));
-  return result;
+    if (hasLegacyCache) {
+      if (cachedLegacyVersion) {
+        const cachedAttempt = await tryFetchSource(slug, requestPath, cachedLegacyVersion);
+        if (cachedAttempt.ok) {
+          fileCache.set(cacheKey, JSON.stringify(cachedAttempt.result));
+          return cachedAttempt.result;
+        }
+      } else {
+        throw new Error(firstAttempt.message);
+      }
+    }
+
+    const versions = await fetchPluginVersions(slug);
+    const candidates =
+      referenceVersion !== null
+        ? versions.filter((v) => compareVersions(v, referenceVersion) < 0).slice(0, 180)
+        : versions.slice(0, 180);
+
+    const legacyHit = await findLegacySourceInBatches(slug, requestPath, candidates, 10);
+    if (legacyHit) {
+      console.info(
+        `[Source] Using legacy tag ${legacyHit.version} for missing reference ${slug}:${requestPath}`,
+      );
+      legacyVersionCache.set(legacyKey, legacyHit.version);
+      fileCache.set(cacheKey, JSON.stringify(legacyHit.result));
+      return legacyHit.result;
+    }
+
+    console.warn(
+      `[Source] Could not resolve missing reference via legacy tags ${slug}:${requestPath} (from ${referenceVersion ?? 'auto'})`,
+    );
+    legacyVersionCache.set(legacyKey, null);
+  }
+
+  throw new Error(firstAttempt.message);
 }
 
 /**
@@ -115,7 +283,7 @@ export async function fetchDirectoryListing(
   path: string,
   version?: string | null,
 ): Promise<FetchDirResult> {
-  const cacheKey = `${slug}/${path}`;
+  const cacheKey = getCacheKey(slug, path, version);
 
   const cached = dirCache.get(cacheKey);
   if (cached !== undefined) return JSON.parse(cached);
@@ -125,8 +293,7 @@ export async function fetchDirectoryListing(
   const response = await fetchFromEdge(body);
 
   if (!response.ok) {
-    const data = await response.json().catch(() => ({}));
-    throw new Error(data.error || `HTTP ${response.status}`);
+    throw new Error(await readEdgeError(response));
   }
 
   const data = await response.json();
@@ -145,6 +312,7 @@ export async function fetchDirectoryListing(
 export function clearCache(): void {
   fileCache.clear();
   dirCache.clear();
+  legacyVersionCache.clear();
 }
 
 /**

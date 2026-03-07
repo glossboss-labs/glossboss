@@ -7,10 +7,12 @@
 export {
   parseReference,
   parseReferences,
+  normalizeSourcePath,
   detectPluginSlug,
   buildTracUrl,
   buildSvnUrl,
   type ParsedReference,
+  type NormalizedSourcePath,
   type DetectedPlugin,
 } from './references';
 
