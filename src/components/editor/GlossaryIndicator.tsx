@@ -28,7 +28,7 @@ function TermDetails({ terms }: { terms: TermAnalysisResult[] }) {
           <Text size="xs" fw={600} c="orange.3">Needs review:</Text>
           {issues.map((term, i) => (
             <Text key={i} size="xs">
-              {term.term} â <Text span c="orange.3">{term.expectedTranslation}</Text>
+              {term.term} → <Text span c="orange.3">{term.expectedTranslation}</Text>
             </Text>
           ))}
         </>
@@ -38,7 +38,7 @@ function TermDetails({ terms }: { terms: TermAnalysisResult[] }) {
           <Text size="xs" fw={600} c="green.4" mt={issues.length > 0 ? 4 : 0}>OK:</Text>
           {verified.map((term, i) => (
             <Text key={i} size="xs">
-              {term.term} â <Text span c="green.4">{term.expectedTranslation}</Text>
+              {term.term} → <Text span c="green.4">{term.expectedTranslation}</Text>
             </Text>
           ))}
         </>
@@ -97,7 +97,7 @@ export function GlossaryTermHighlight({
     <Tooltip 
       label={
         <Text size="xs">
-          {term.term} â {term.expectedTranslation}
+          {term.term} → {term.expectedTranslation}
         </Text>
       }
       position="top"

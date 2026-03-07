@@ -112,9 +112,10 @@ interface TranslateToolbarProps {
   sourceLang?: SourceLanguage;
   targetLang?: TargetLanguage;
   onLanguageChange?: (source: SourceLanguage | undefined, target: TargetLanguage) => void;
+  deeplGlossaryId?: string | null;
 }
 
-export function TranslateToolbar({ onLanguageChange }: TranslateToolbarProps) {
+export function TranslateToolbar({ onLanguageChange, deeplGlossaryId }: TranslateToolbarProps) {
   const { 
     header, 
     entries, 
@@ -282,7 +283,8 @@ export function TranslateToolbar({ onLanguageChange }: TranslateToolbarProps) {
           const translations = await client.translateBatch(
             texts,
             targetLang as TargetLanguage,
-            sourceLang ? sourceLang as SourceLanguage : undefined
+            sourceLang ? sourceLang as SourceLanguage : undefined,
+            deeplGlossaryId ?? undefined
           );
           
           batch.forEach((job, idx) => {
@@ -319,7 +321,7 @@ export function TranslateToolbar({ onLanguageChange }: TranslateToolbarProps) {
       setIsRetranslateMode(false);
       cancelRef.current = false;
     }
-  }, [targetLang, sourceLang, updateEntry, updateEntryPlural, markAsMachineTranslated, skipManualEdits, manualEditIds, machineTranslatedIds]);
+  }, [targetLang, sourceLang, deeplGlossaryId, updateEntry, updateEntryPlural, markAsMachineTranslated, skipManualEdits, manualEditIds, machineTranslatedIds]);
   
   const handleBulkTranslate = useCallback(() => {
     handleTranslate(untranslatedEntries, false);
@@ -347,7 +349,7 @@ export function TranslateToolbar({ onLanguageChange }: TranslateToolbarProps) {
         detail={manualEditCount > 0 && skipManualEdits 
           ? `${manualEditCount} manually edited entries will be skipped.`
           : manualEditCount > 0 
-            ? `â ï¸ ${manualEditCount} manually edited entries will be overwritten!`
+            ? `⚠️ ${manualEditCount} manually edited entries will be overwritten!`
             : 'Consider downloading a backup first.'
         }
         confirmLabel="Retranslate All"
@@ -388,7 +390,7 @@ export function TranslateToolbar({ onLanguageChange }: TranslateToolbarProps) {
               disabled={!hasApiKey}
             />
             
-            <Text c="dimmed" pb={8}>â</Text>
+            <Text c="dimmed" pb={8}>→</Text>
             
             <Select
               label="Target language"

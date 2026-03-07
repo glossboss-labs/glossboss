@@ -1,12 +1,12 @@
 /**
- * EXAMPLE PAGE â Reference for AI-generated pages.
+ * EXAMPLE PAGE — Reference for AI-generated pages.
  * Delete this file when building your app. It exists to show correct patterns.
  */
 
-// â ï¸ Static imports only â no React.lazy()
+// ⚠️ Static imports only — no React.lazy()
 import { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router'; // â ï¸ 'react-router', NOT 'react-router-dom'
-import { supabase } from '@/integrations/supabase/client'; // â ï¸ Path alias
+import { useNavigate, useParams } from 'react-router'; // ⚠️ 'react-router', NOT 'react-router-dom'
+import { supabase } from '@/integrations/supabase/client'; // ⚠️ Path alias
 
 interface Item {
 	id: string;
@@ -15,17 +15,17 @@ interface Item {
 }
 
 export default function ExamplePage() {
-	// â ï¸ ALL hooks at top, before any conditional returns
+	// ⚠️ ALL hooks at top, before any conditional returns
 	const { id } = useParams();
 	const navigate = useNavigate();
-	const [items, setItems] = useState<Item[]>([]); // â ï¸ Initialize as empty array, not undefined
+	const [items, setItems] = useState<Item[]>([]); // ⚠️ Initialize as empty array, not undefined
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
 	useEffect(() => {
 		async function fetchItems() {
 			if (!supabase) {
-				// â ï¸ Supabase client can be null â always check
+				// ⚠️ Supabase client can be null — always check
 				setError('Database not connected');
 				setLoading(false);
 				return;
@@ -39,7 +39,7 @@ export default function ExamplePage() {
 			if (fetchError) {
 				setError(fetchError.message);
 			} else {
-				setItems(data ?? []); // â ï¸ Fallback to empty array
+				setItems(data ?? []); // ⚠️ Fallback to empty array
 			}
 			setLoading(false);
 		}
@@ -47,7 +47,7 @@ export default function ExamplePage() {
 		fetchItems();
 	}, []);
 
-	// â ï¸ navigator.clipboard is BLOCKED in sandbox. Use execCommand fallback.
+	// ⚠️ navigator.clipboard is BLOCKED in sandbox. Use execCommand fallback.
 	const handleCopy = (text: string) => {
 		const textarea = document.createElement('textarea');
 		textarea.value = text;
@@ -59,16 +59,16 @@ export default function ExamplePage() {
 		document.body.removeChild(textarea);
 	};
 
-	// â ï¸ Conditional returns AFTER all hooks
+	// ⚠️ Conditional returns AFTER all hooks
 	if (loading) return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
 	if (error) return <div className="p-4 text-red-500">{error}</div>;
 
 	return (
-		// â ï¸ Use gap-*, not space-y-*
+		// ⚠️ Use gap-*, not space-y-*
 		<div className="flex flex-col gap-4 p-6 max-w-2xl mx-auto">
 			<h1 className="text-2xl font-bold">Items {id && `(${id})`}</h1>
 
-			{/* â ï¸ Guard array operations with ?? [] */}
+			{/* ⚠️ Guard array operations with ?? [] */}
 			{(items ?? []).map((item) => (
 				<div key={item.id} className="p-4 border border-border rounded-lg">
 					<p className="font-medium">{item.name}</p>

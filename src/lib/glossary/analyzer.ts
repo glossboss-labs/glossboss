@@ -53,9 +53,9 @@ export interface GlossaryAnalysisResult {
  * Compound words like "Standaardsjabloon" do NOT match "sjabloon".
  * 
  * Examples:
- * - "Dit is een sjabloon" contains "sjabloon" â
- * - "Standaardsjabloon" does NOT contain "sjabloon" as standalone â
- * - "sjabloon-bestand" contains "sjabloon" â (hyphen is boundary)
+ * - "Dit is een sjabloon" contains "sjabloon" ✓
+ * - "Standaardsjabloon" does NOT contain "sjabloon" as standalone ✗
+ * - "sjabloon-bestand" contains "sjabloon" ✓ (hyphen is boundary)
  */
 function translationContainsTerm(translation: string, expectedTerm: string): boolean {
   if (!translation || !expectedTerm) return false;

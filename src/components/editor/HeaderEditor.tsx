@@ -96,7 +96,7 @@ const LANGUAGE_CODES = [
 { code: 'mr', name: 'Marathi' },
 { code: 'mn', name: 'Mongolian' },
 { code: 'ne', name: 'Nepali' },
-{ code: 'nb', name: 'Norwegian BokmÃ¥l' },
+{ code: 'nb', name: 'Norwegian Bokmål' },
 { code: 'nn', name: 'Norwegian Nynorsk' },
 { code: 'no', name: 'Norwegian' },
 { code: 'fa', name: 'Persian' },
@@ -331,7 +331,7 @@ function PluralFormsSelector({
             setShowCustomInput(false);
           }
         }}
-        placeholder={isCustomValue ? "Custom value set â select to change" : "Select plural form for your language..."}
+        placeholder={isCustomValue ? "Custom value set — select to change" : "Select plural form for your language..."}
         searchable
         clearable={false}
         nothingFoundMessage="No matching plural form"

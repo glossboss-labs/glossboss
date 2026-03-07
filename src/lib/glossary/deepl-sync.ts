@@ -161,15 +161,26 @@ export async function syncGlossaryToDeepL(
   }
   
   try {
-    // Delete old glossary if exists
-    if (existing?.glossaryId) {
-      console.log('[DeepL Sync] Deleting old glossary:', existing.glossaryId);
-      onProgress?.('Removing old glossary...');
-      try {
-        await client.deleteGlossary(existing.glossaryId);
-      } catch (e) {
-        // Ignore deletion errors (glossary might not exist)
-        console.log('[DeepL Sync] Could not delete old glossary:', e);
+    // Delete ALL existing glossaries to avoid "Too many glossaries" error
+    // (DeepL free tier has a strict limit)
+    onProgress?.('Cleaning up old glossaries...');
+    try {
+      const existingGlossaries = await client.listGlossaries();
+      for (const g of existingGlossaries) {
+        console.log('[DeepL Sync] Deleting glossary:', g.glossaryId, g.name);
+        try {
+          await client.deleteGlossary(g.glossaryId);
+        } catch (e) {
+          console.log('[DeepL Sync] Could not delete glossary:', g.glossaryId, e);
+        }
+      }
+    } catch (e) {
+      console.log('[DeepL Sync] Could not list glossaries:', e);
+      // Still try to delete the cached one
+      if (existing?.glossaryId) {
+        try {
+          await client.deleteGlossary(existing.glossaryId);
+        } catch {}
       }
     }
     

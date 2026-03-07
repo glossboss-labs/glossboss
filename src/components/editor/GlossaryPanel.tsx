@@ -163,15 +163,15 @@ function GlossaryViewerModal({
               {filteredEntries.map((entry, index) => (
                 <Table.Tr key={`${entry.term}-${index}`}>
                   <Table.Td><Text size="sm" fw={500}>{entry.term}</Text></Table.Td>
-                  <Table.Td><Text size="sm">{entry.translation || <Text span c="dimmed">â</Text>}</Text></Table.Td>
+                  <Table.Td><Text size="sm">{entry.translation || <Text span c="dimmed">—</Text>}</Text></Table.Td>
                   <Table.Td>
                     {entry.partOfSpeech ? (
                       <Badge size="xs" variant="light" color="gray">{entry.partOfSpeech}</Badge>
                     ) : (
-                      <Text size="sm" c="dimmed">â</Text>
+                      <Text size="sm" c="dimmed">—</Text>
                     )}
                   </Table.Td>
-                  <Table.Td><Text size="xs" c="dimmed" lineClamp={2}>{entry.comment || 'â'}</Text></Table.Td>
+                  <Table.Td><Text size="xs" c="dimmed" lineClamp={2}>{entry.comment || '—'}</Text></Table.Td>
                 </Table.Tr>
               ))}
               {filteredEntries.length === 0 && (
@@ -218,11 +218,11 @@ function TermsPreview({
       {displayMatches.map((match, i) => (
         <Tooltip 
           key={i} 
-          label={`"${match.term}" â "${match.translation}"`}
+          label={`"${match.term}" → "${match.translation}"`}
           color="dark"
         >
           <Badge size="xs" variant="light" color="blue" style={{ cursor: 'help' }}>
-            {match.term} â {match.translation}
+            {match.term} → {match.translation}
           </Badge>
         </Tooltip>
       ))}

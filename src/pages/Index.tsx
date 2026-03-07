@@ -915,7 +915,7 @@ export default function Index() {
           {filename && <FilterToolbar />}
           
           {/* Translate toolbar for DeepL integration */}
-          {filename && <TranslateToolbar onLanguageChange={handleLanguageChange} />}
+          {filename && <TranslateToolbar onLanguageChange={handleLanguageChange} deeplGlossaryId={glossaryEnforcementEnabled ? deeplGlossaryId : null} />}
           
           {/* Editor table or empty state */}
           {filename ?

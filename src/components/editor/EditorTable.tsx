@@ -396,7 +396,7 @@ function TranslationCell({
  */
 function ContextCell({ entry }: { entry: POEntry }) {
   if (!entry.msgctxt) {
-    return <Text size="sm" c="dimmed">â</Text>;
+    return <Text size="sm" c="dimmed">—</Text>;
   }
 
   return (
@@ -499,7 +499,7 @@ function MetaCell({ entry }: { entry: POEntry }) {
       )}
       
       {!flags.length && !hasReferences && !hasComments && (
-        <Text size="xs" c="dimmed">â</Text>
+        <Text size="xs" c="dimmed">—</Text>
       )}
     </Stack>
   );
@@ -606,10 +606,10 @@ export function EditorTable({
   );
   const filterQuery = useEditorStore(state => state.filterQuery);
   
-  // Re-compute filtered entries when filters or query change
+  // Re-compute filtered entries when filters, query, or entries change
   const filteredEntries = useMemo(() => {
     return getFilteredEntries();
-  }, [getFilteredEntries, activeFiltersKey, filterQuery]);
+  }, [getFilteredEntries, activeFiltersKey, filterQuery, entries]);
   
   // Pagination state with localStorage persistence
   const [rowsPerPage, setRowsPerPage] = useLocalStorage<string>({
@@ -718,7 +718,7 @@ export function EditorTable({
                 aria-label="Rows per page"
               />
               <Text size="sm" c="dimmed">
-                Showing {startItem}â{endItem} of {filteredEntries.length} entries
+                Showing {startItem}–{endItem} of {filteredEntries.length} entries
               </Text>
             </Group>
             

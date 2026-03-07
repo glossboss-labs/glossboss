@@ -19,7 +19,7 @@ import {
   Stack,
 } from '@mantine/core';
 import { motion, AnimatePresence } from 'motion/react';
-import { Search, X, FileQuestion, CheckCircle, AlertTriangle, Pencil, Bot, Edit3, Eye, EyeOff } from 'lucide-react';
+import { Search, X, FileQuestion, CheckCircle, AlertTriangle, Pencil, Bot, Edit3 } from 'lucide-react';
 import { useEditorStore, type FilterType, type FilterState } from '@/stores/editor-store';
 import { popVariants, springTransition } from '@/lib/motion';
 
@@ -43,60 +43,31 @@ const FILTERS: FilterConfig[] = [
 /** Get tooltip text based on current filter state */
 function getTooltipText(label: string, state: FilterState | null): string {
   if (state === 'include') {
-    return `Showing only ${label.toLowerCase()} â¢ Click to exclude`;
+    return `Showing only ${label.toLowerCase()} • Click to exclude`;
   }
   if (state === 'exclude') {
-    return `Hiding ${label.toLowerCase()} â¢ Click to clear filter`;
+    return `Hiding ${label.toLowerCase()} • Click to clear filter`;
   }
   return `Click to show only ${label.toLowerCase()}`;
 }
 
 /** Get badge variant and style based on filter state */
-function getBadgeStyle(state: FilterState | null, color: string): {
+function getBadgeStyle(state: FilterState | null, _color: string): {
   variant: 'filled' | 'light' | 'outline';
   style: React.CSSProperties;
 } {
-  if (state === 'include') {
-    return {
-      variant: 'filled',
-      style: {
-        cursor: 'pointer',
-        userSelect: 'none',
-        flexShrink: 0,
-      },
-    };
-  }
-  if (state === 'exclude') {
-    return {
-      variant: 'outline',
-      style: {
-        cursor: 'pointer',
-        userSelect: 'none',
-        flexShrink: 0,
-        textDecoration: 'line-through',
-        opacity: 0.7,
-      },
-    };
-  }
-  return {
-    variant: 'light',
-    style: {
-      cursor: 'pointer',
-      userSelect: 'none',
-      flexShrink: 0,
-    },
+  const base: React.CSSProperties = {
+    cursor: 'pointer',
+    userSelect: 'none',
+    flexShrink: 0,
   };
-}
-
-/** Get state indicator icon */
-function StateIndicator({ state }: { state: FilterState | null }) {
   if (state === 'include') {
-    return <Eye size={10} style={{ marginLeft: 4 }} />;
+    return { variant: 'light', style: { ...base, borderWidth: 2, borderStyle: 'solid', borderColor: 'currentColor' } };
   }
   if (state === 'exclude') {
-    return <EyeOff size={10} style={{ marginLeft: 4 }} />;
+    return { variant: 'light', style: { ...base, opacity: 0.45, textDecoration: 'line-through' } };
   }
-  return null;
+  return { variant: 'light', style: base };
 }
 
 export function FilterToolbar() {
@@ -192,7 +163,7 @@ export function FilterToolbar() {
           <Group gap="sm" wrap="nowrap" style={{ flexShrink: 0 }}>
             <Group gap="xs" wrap="nowrap">
               <Text size="sm" c="dimmed">{stats.total} entries</Text>
-              <Text size="sm" c="dimmed">â¢</Text>
+              <Text size="sm" c="dimmed">•</Text>
               <motion.span
                 key={percentage}
                 initial={{ scale: 1.2, color: 'var(--mantine-color-blue-filled)' }}
@@ -256,7 +227,7 @@ export function FilterToolbar() {
                         color={filter.color}
                         size="lg"
                         leftSection={<Icon size={14} />}
-                        rightSection={<StateIndicator state={filterState} />}
+
                         style={badgeStyle.style}
                         onClick={() => toggleFilter(filter.id)}
                       >
@@ -287,7 +258,7 @@ export function FilterToolbar() {
                           color="blue"
                           size="lg"
                           leftSection={<Bot size={14} />}
-                          rightSection={<StateIndicator state={filterState} />}
+  
                           style={badgeStyle.style}
                           onClick={() => toggleFilter('machine-translated')}
                         >
@@ -319,7 +290,7 @@ export function FilterToolbar() {
                           color="grape"
                           size="lg"
                           leftSection={<Edit3 size={14} />}
-                          rightSection={<StateIndicator state={filterState} />}
+  
                           style={badgeStyle.style}
                           onClick={() => toggleFilter('manual-edit')}
                         >

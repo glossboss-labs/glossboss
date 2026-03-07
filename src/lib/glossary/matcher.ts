@@ -82,10 +82,10 @@ function calculateConfidence(entry: GlossaryEntry, matchedText: string): number 
  * must appear exactly in the source text (ignoring case) to be matched.
  * 
  * Examples:
- * - Glossary term "page" matches source "Page" â
- * - Glossary term "page" does NOT match source "pages" â
- * - Glossary term "pages" does NOT match source "page" â
- * - Glossary term "access" does NOT match source "accessing" â
+ * - Glossary term "page" matches source "Page" ✓
+ * - Glossary term "page" does NOT match source "pages" ✗
+ * - Glossary term "pages" does NOT match source "page" ✗
+ * - Glossary term "access" does NOT match source "accessing" ✗
  * 
  * @param text - Source text to search
  * @param glossary - Glossary to match against
