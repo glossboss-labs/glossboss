@@ -38,6 +38,8 @@ Add these GitHub repository secrets to enable deployment:
 
 - `CLOUDFLARE_ACCOUNT_ID`
 - `CLOUDFLARE_API_TOKEN` (with Pages edit permissions for the `glossboss` project)
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_ANON_KEY`
 
 ## Environment Variables
 
