@@ -40,7 +40,6 @@ import {
   Anchor,
   ActionIcon,
   SegmentedControl,
-  Portal,
   useMantineTheme,
 } from '@mantine/core';
 import { useLocalStorage, useMediaQuery } from '@mantine/hooks';
@@ -107,7 +106,6 @@ const DATA_COLUMN_LABELS: Record<DataColumnKey, string> = {
 };
 const DEFAULT_COLUMN_WIDTHS = [72, 210, 320, 320, 220];
 const MIN_COLUMN_WIDTH = 60; // minimum proportion
-const HEADER_DRAG_ACTIVATION_DISTANCE = 4;
 
 /**
  * Resizable column header with drag handle
@@ -172,7 +170,6 @@ function ResizableTh({
         position: 'relative',
         userSelect: 'none',
         textAlign: align,
-        cursor: dataColumnKey ? (isDragging ? 'grabbing' : 'grab') : undefined,
         opacity: isDragging ? 0.55 : 1,
         transform: isDragging ? 'scale(0.985)' : 'translateX(0)',
         transition: 'transform 180ms cubic-bezier(0.22, 1, 0.36, 1), opacity 140ms ease',
@@ -375,7 +372,14 @@ function EditableField({
   const handleClick = useCallback(() => {
     setEditValue(value);
     setIsEditing(true);
-    setTimeout(() => textareaRef.current?.focus(), 0);
+    setTimeout(() => {
+      const textarea = textareaRef.current;
+      if (textarea) {
+        textarea.focus();
+        const len = value.length;
+        textarea.setSelectionRange(len, len);
+      }
+    }, 0);
   }, [value]);
 
   const handleBlur = useCallback(() => {
@@ -1530,7 +1534,6 @@ export function EditorTable({
   const getFilteredEntries = useEditorStore((state) => state.getFilteredEntries);
   const visibleColumns = useEditorStore((state) => state.visibleColumns);
   const columnOrder = useEditorStore((state) => state.columnOrder);
-  const moveColumnToIndex = useEditorStore((state) => state.moveColumnToIndex);
   const sortField = useEditorStore((state) => state.sortField);
   const sortDirection = useEditorStore((state) => state.sortDirection);
   const activeReference = useSourceStore((state) => state.activeReference);
@@ -1557,20 +1560,6 @@ export function EditorTable({
   const [pendingFocusEntryId, setPendingFocusEntryId] = useState<string | null>(null);
   const [expandedMobileEntryIds, setExpandedMobileEntryIds] = useState<Set<string>>(new Set());
   const [inspectorMode, setInspectorMode] = useState<'context' | 'browse'>('context');
-  const draggingHeaderColumnRef = useRef<DataColumnKey | null>(null);
-  const [draggingHeaderColumn, setDraggingHeaderColumn] = useState<DataColumnKey | null>(null);
-  const [dropIndicator, setDropIndicator] = useState<{
-    column: DataColumnKey;
-    position: 'before' | 'after';
-  } | null>(null);
-  const dragPreviewRef = useRef<HTMLDivElement | null>(null);
-  const dragPreviewPositionRef = useRef({ x: 0, y: 0 });
-  const [headerDragPreview, setHeaderDragPreview] = useState<{
-    column: DataColumnKey;
-    label: string;
-    width: number;
-    height: number;
-  } | null>(null);
 
   // Refs for stable handleKeyDown callback (avoids re-creating and re-rendering all rows)
   const navRef = useRef({
@@ -1660,135 +1649,6 @@ export function EditorTable({
     },
     [setColumnWidths, visibleColumnKeys],
   );
-
-  const getDropTargetAtPoint = useCallback(
-    (clientX: number, clientY: number, draggedColumn: DataColumnKey) => {
-      const hovered = document.elementFromPoint(clientX, clientY) as HTMLElement | null;
-      const header = hovered?.closest('th[data-column-key]') as HTMLElement | null;
-      if (!header) return null;
-
-      const targetColumn = header.dataset.columnKey as DataColumnKey | undefined;
-      if (!targetColumn || targetColumn === draggedColumn) return null;
-
-      const rect = header.getBoundingClientRect();
-      const position = clientX < rect.left + rect.width / 2 ? 'before' : 'after';
-      return { column: targetColumn, position } as const;
-    },
-    [],
-  );
-
-  const handleHeaderPointerDown = useCallback(
-    (columnKey: DataColumnKey, e: ReactPointerEvent<HTMLTableCellElement>) => {
-      if (e.button !== 0) return;
-
-      // Leave the right edge free for resize interactions.
-      const rect = e.currentTarget.getBoundingClientRect();
-      if (e.clientX > rect.right - 12) return;
-
-      e.preventDefault();
-      const startX = e.clientX;
-      const startY = e.clientY;
-      const offsetX = e.clientX - rect.left;
-      const offsetY = e.clientY - rect.top;
-      const body = document.body;
-      const previousUserSelect = body.style.userSelect;
-      const previousCursor = body.style.cursor;
-      let didActivateDrag = false;
-      let cleanedUp = false;
-
-      const onPointerMove = (ev: PointerEvent) => {
-        const distance = Math.hypot(ev.clientX - startX, ev.clientY - startY);
-        if (!didActivateDrag && distance < HEADER_DRAG_ACTIVATION_DISTANCE) {
-          return;
-        }
-
-        if (!didActivateDrag) {
-          didActivateDrag = true;
-          draggingHeaderColumnRef.current = columnKey;
-          setDraggingHeaderColumn(columnKey);
-          body.style.userSelect = 'none';
-          body.style.cursor = 'grabbing';
-          setHeaderDragPreview({
-            column: columnKey,
-            label: DATA_COLUMN_LABELS[columnKey],
-            width: rect.width,
-            height: rect.height,
-          });
-        }
-
-        const nextX = ev.clientX - offsetX;
-        const nextY = ev.clientY - offsetY;
-        dragPreviewPositionRef.current = { x: nextX, y: nextY };
-        if (dragPreviewRef.current) {
-          dragPreviewRef.current.style.transform = `translate3d(${nextX}px, ${nextY}px, 0)`;
-        }
-
-        const nextTarget = getDropTargetAtPoint(ev.clientX, ev.clientY, columnKey);
-        setDropIndicator((prev) => {
-          if (!nextTarget) {
-            return prev ? null : prev;
-          }
-          if (prev?.column === nextTarget.column && prev.position === nextTarget.position) {
-            return prev;
-          }
-          return nextTarget;
-        });
-      };
-
-      const cleanup = () => {
-        if (cleanedUp) return;
-        cleanedUp = true;
-        draggingHeaderColumnRef.current = null;
-        setDraggingHeaderColumn(null);
-        setDropIndicator(null);
-        setHeaderDragPreview(null);
-        body.style.userSelect = previousUserSelect;
-        body.style.cursor = previousCursor;
-        window.removeEventListener('pointermove', onPointerMove);
-        window.removeEventListener('pointerup', onPointerUp);
-        window.removeEventListener('pointercancel', onPointerCancel);
-      };
-
-      const onPointerUp = (ev: PointerEvent) => {
-        if (!didActivateDrag) {
-          cleanup();
-          return;
-        }
-
-        const draggedColumn = draggingHeaderColumnRef.current;
-        if (draggedColumn) {
-          const target = getDropTargetAtPoint(ev.clientX, ev.clientY, draggedColumn);
-          if (target) {
-            const fromIndex = columnOrder.indexOf(draggedColumn);
-            let toIndex = columnOrder.indexOf(target.column);
-
-            if (target.position === 'after') {
-              toIndex += 1;
-            }
-            if (fromIndex !== -1 && fromIndex < toIndex) {
-              toIndex -= 1;
-            }
-
-            moveColumnToIndex(draggedColumn, toIndex);
-          }
-        }
-
-        cleanup();
-      };
-      const onPointerCancel = () => cleanup();
-
-      window.addEventListener('pointermove', onPointerMove);
-      window.addEventListener('pointerup', onPointerUp, { once: true });
-      window.addEventListener('pointercancel', onPointerCancel, { once: true });
-    },
-    [columnOrder, getDropTargetAtPoint, moveColumnToIndex],
-  );
-
-  useEffect(() => {
-    if (!headerDragPreview || !dragPreviewRef.current) return;
-    const { x, y } = dragPreviewPositionRef.current;
-    dragPreviewRef.current.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-  }, [headerDragPreview]);
 
   // Pagination state with localStorage persistence
   const [rowsPerPage, setRowsPerPage] = useLocalStorage<string>({
@@ -2113,137 +1973,92 @@ export function EditorTable({
           </Group>
           <Group align="flex-start" wrap="nowrap" gap="md">
             <Box style={{ flex: 1, minWidth: 0 }}>
-              <ScrollArea h={600} type="auto">
-                <Table
-                  ref={tableRef}
-                  striped
-                  highlightOnHover
-                  verticalSpacing="md"
-                  style={{ tableLayout: 'fixed' }}
-                  data-testid="editor-table-desktop"
-                >
-                  <Table.Thead
-                    style={{
-                      position: 'sticky',
-                      top: 0,
-                      zIndex: 10,
-                      background: 'var(--mantine-color-body)',
-                    }}
-                  >
-                    <Table.Tr>
-                      {visibleColumnKeys.map((columnKey, i) => {
-                        const nextColumn = visibleColumnKeys[i + 1];
-                        const isDataColumn = columnKey !== 'select';
-                        const indicatorPosition =
-                          isDataColumn && dropIndicator?.column === columnKey
-                            ? dropIndicator.position
-                            : undefined;
-                        const label =
-                          columnKey === 'select' ? (
-                            <Checkbox
-                              key="select-all-checkbox-input"
-                              checked={allFilteredSelected}
-                              indeterminate={someFilteredSelected}
-                              onChange={(e) => handleSelectAllFiltered(e.currentTarget.checked)}
-                              aria-label="Select all filtered entries"
-                              data-testid="select-all-checkbox"
-                            />
-                          ) : columnKey === 'status' ? (
-                            DATA_COLUMN_LABELS.status
-                          ) : columnKey === 'source' ? (
-                            DATA_COLUMN_LABELS.source
-                          ) : columnKey === 'translation' ? (
-                            DATA_COLUMN_LABELS.translation
-                          ) : (
-                            DATA_COLUMN_LABELS.signals
-                          );
-
-                        return (
-                          <ResizableTh
-                            key={columnKey}
-                            widthPercent={columnPercentByKey[columnKey]}
-                            isLast={!nextColumn}
-                            onResize={
-                              nextColumn
-                                ? (delta) => handleColumnResize(columnKey, nextColumn, delta)
-                                : undefined
-                            }
-                            align={columnKey === 'select' ? 'center' : 'left'}
-                            isDragging={draggingHeaderColumn === columnKey}
-                            dropIndicatorPosition={indicatorPosition}
-                            dataColumnKey={isDataColumn ? columnKey : undefined}
-                            onCellPointerDown={
-                              isDataColumn
-                                ? (e) => handleHeaderPointerDown(columnKey, e)
-                                : undefined
-                            }
-                          >
-                            {typeof label === 'string' ? (
-                              label
-                            ) : (
-                              <Box
-                                style={{
-                                  display: 'flex',
-                                  justifyContent: 'center',
-                                  alignItems: 'center',
-                                }}
-                              >
-                                {label}
-                              </Box>
-                            )}
-                          </ResizableTh>
-                        );
-                      })}
-                    </Table.Tr>
-                  </Table.Thead>
-                  <Table.Tbody>
-                    {paginatedEntries.map((entry) => (
-                      <EntryRow
-                        key={entry.id}
-                        entry={entry}
-                        isChecked={selectedEntryIds.has(entry.id)}
-                        visibleDataColumns={visibleDataColumns}
-                        onToggleSelection={(checked) => setEntrySelection(entry.id, checked)}
-                        onSelect={onEntrySelect}
-                        onKeyDown={handleKeyDown}
-                      />
-                    ))}
-                  </Table.Tbody>
-                </Table>
-              </ScrollArea>
-            </Box>
-            {headerDragPreview && (
-              <Portal>
-                <div
-                  ref={dragPreviewRef}
+              <Table
+                ref={tableRef}
+                striped
+                highlightOnHover
+                verticalSpacing="md"
+                style={{ tableLayout: 'fixed' }}
+                data-testid="editor-table-desktop"
+              >
+                <Table.Thead
                   style={{
-                    position: 'fixed',
-                    left: 0,
+                    position: 'sticky',
                     top: 0,
-                    width: headerDragPreview.width,
-                    height: headerDragPreview.height,
-                    pointerEvents: 'none',
-                    zIndex: 1200,
-                    borderRadius: 8,
-                    border: '1px solid var(--mantine-color-blue-4)',
-                    background:
-                      'color-mix(in srgb, var(--mantine-color-body) 84%, var(--mantine-color-blue-light) 16%)',
-                    boxShadow:
-                      '0 12px 30px color-mix(in srgb, black 22%, transparent), 0 2px 10px color-mix(in srgb, black 18%, transparent)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    paddingInline: 12,
-                    fontWeight: 600,
-                    color: 'var(--mantine-color-text)',
-                    backdropFilter: 'blur(2px)',
-                    willChange: 'transform',
-                    transition: 'transform 90ms cubic-bezier(0.22, 1, 0.36, 1)',
+                    zIndex: 10,
+                    background: 'var(--mantine-color-body)',
                   }}
                 >
-                  {headerDragPreview.label}
-                </div>
-              </Portal>
-            )}
+                  <Table.Tr>
+                    {visibleColumnKeys.map((columnKey, i) => {
+                      const nextColumn = visibleColumnKeys[i + 1];
+                      const isDataColumn = columnKey !== 'select';
+                      const label =
+                        columnKey === 'select' ? (
+                          <Checkbox
+                            key="select-all-checkbox-input"
+                            checked={allFilteredSelected}
+                            indeterminate={someFilteredSelected}
+                            onChange={(e) => handleSelectAllFiltered(e.currentTarget.checked)}
+                            aria-label="Select all filtered entries"
+                            data-testid="select-all-checkbox"
+                          />
+                        ) : columnKey === 'status' ? (
+                          DATA_COLUMN_LABELS.status
+                        ) : columnKey === 'source' ? (
+                          DATA_COLUMN_LABELS.source
+                        ) : columnKey === 'translation' ? (
+                          DATA_COLUMN_LABELS.translation
+                        ) : (
+                          DATA_COLUMN_LABELS.signals
+                        );
+
+                      return (
+                        <ResizableTh
+                          key={columnKey}
+                          widthPercent={columnPercentByKey[columnKey]}
+                          isLast={!nextColumn}
+                          onResize={
+                            nextColumn
+                              ? (delta) => handleColumnResize(columnKey, nextColumn, delta)
+                              : undefined
+                          }
+                          align={columnKey === 'select' ? 'center' : 'left'}
+                          dataColumnKey={isDataColumn ? columnKey : undefined}
+                        >
+                          {typeof label === 'string' ? (
+                            label
+                          ) : (
+                            <Box
+                              style={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                              }}
+                            >
+                              {label}
+                            </Box>
+                          )}
+                        </ResizableTh>
+                      );
+                    })}
+                  </Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
+                  {paginatedEntries.map((entry) => (
+                    <EntryRow
+                      key={entry.id}
+                      entry={entry}
+                      isChecked={selectedEntryIds.has(entry.id)}
+                      visibleDataColumns={visibleDataColumns}
+                      onToggleSelection={(checked) => setEntrySelection(entry.id, checked)}
+                      onSelect={onEntrySelect}
+                      onKeyDown={handleKeyDown}
+                    />
+                  ))}
+                </Table.Tbody>
+              </Table>
+            </Box>
 
             {inspectorOpen && (
               <>
@@ -2277,9 +2092,9 @@ export function EditorTable({
                   style={{
                     flexShrink: 0,
                     position: 'sticky',
-                    top: 0,
-                    height: 600,
-                    maxHeight: 600,
+                    top: 16,
+                    height: 'calc(100vh - 32px)',
+                    maxHeight: 'calc(100vh - 32px)',
                     overflow: 'hidden',
                     display: 'flex',
                     flexDirection: 'column',
