@@ -22,9 +22,9 @@ PO file editor with DeepL integration and WordPress glossary support. Built with
 ## Setup
 
 ```bash
-npm install
+bun install
 cp .env.example .env  # Add your Supabase URL and anon key
-npm run dev
+bun run dev
 ```
 
 ## Environment Variables
@@ -44,9 +44,9 @@ Two Supabase Edge Functions proxy external APIs to avoid CORS and keep keys secu
 ### Deploy Edge Functions
 
 ```bash
-npx supabase link --project-ref <your-project-ref>
-npx supabase functions deploy deepl-translate --no-verify-jwt
-npx supabase functions deploy wp-glossary --no-verify-jwt
+bunx supabase link --project-ref <your-project-ref>
+bunx supabase functions deploy deepl-translate --no-verify-jwt
+bunx supabase functions deploy wp-glossary --no-verify-jwt
 ```
 
 ## Project Structure
