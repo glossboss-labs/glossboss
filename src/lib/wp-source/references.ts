@@ -13,6 +13,12 @@ export interface ParsedReference {
   line: number | null;
 }
 
+/** Normalized source path with optional explicit base-path override */
+export interface NormalizedSourcePath {
+  path: string;
+  basePath: string | null;
+}
+
 /**
  * Parse a single source reference string (e.g., "includes/class-foo.php:123")
  */
@@ -52,6 +58,52 @@ export function parseReferences(references: string[]): ParsedReference[] {
   }
 
   return parsed;
+}
+
+/**
+ * Normalize a source path from PO references.
+ * Supports references that may already include:
+ * - plugin slug prefix
+ * - "wp-content/plugins/<slug>/"
+ * - "trunk/" or "tags/<version>/"
+ */
+export function normalizeSourcePath(path: string, slug?: string | null): NormalizedSourcePath {
+  let clean = path.replace(/\\/g, '/').trim();
+  clean = clean.replace(/^\/+/, '').replace(/\/{2,}/g, '/');
+
+  while (clean.startsWith('./')) {
+    clean = clean.slice(2);
+  }
+
+  if (slug) {
+    const wpPrefix = `wp-content/plugins/${slug}/`;
+    if (clean.toLowerCase().startsWith(wpPrefix.toLowerCase())) {
+      clean = clean.slice(wpPrefix.length);
+    }
+
+    const slugPrefix = `${slug}/`;
+    if (clean.toLowerCase().startsWith(slugPrefix.toLowerCase())) {
+      clean = clean.slice(slugPrefix.length);
+    }
+  }
+
+  if (clean === 'trunk') {
+    return { path: '', basePath: 'trunk' };
+  }
+
+  if (clean.startsWith('trunk/')) {
+    return { path: clean.slice('trunk/'.length), basePath: 'trunk' };
+  }
+
+  const tagMatch = clean.match(/^tags\/([^/]+)(?:\/(.*))?$/);
+  if (tagMatch) {
+    return {
+      path: tagMatch[2] ?? '',
+      basePath: `tags/${tagMatch[1]}`,
+    };
+  }
+
+  return { path: clean, basePath: null };
 }
 
 /**
@@ -144,8 +196,11 @@ export function buildTracUrl(
   line?: number,
   basePath: string = 'trunk',
 ): string {
-  const cleanPath = path.replace(/^\/+/, '');
-  const url = `https://plugins.trac.wordpress.org/browser/${slug}/${basePath}/${cleanPath}`;
+  const normalized = normalizeSourcePath(path, slug);
+  const effectiveBasePath = normalized.basePath ?? basePath;
+  const cleanPath = normalized.path.replace(/^\/+/, '');
+  const root = `https://plugins.trac.wordpress.org/browser/${slug}/${effectiveBasePath}`;
+  const url = cleanPath ? `${root}/${cleanPath}` : `${root}/`;
   return line ? `${url}#L${line}` : url;
 }
 
@@ -154,6 +209,9 @@ export function buildTracUrl(
  * @param basePath - "trunk" or "tags/x.y.z" (defaults to "trunk")
  */
 export function buildSvnUrl(slug: string, path: string, basePath: string = 'trunk'): string {
-  const cleanPath = path.replace(/^\/+/, '');
-  return `https://plugins.svn.wordpress.org/${slug}/${basePath}/${cleanPath}`;
+  const normalized = normalizeSourcePath(path, slug);
+  const effectiveBasePath = normalized.basePath ?? basePath;
+  const cleanPath = normalized.path.replace(/^\/+/, '');
+  const root = `https://plugins.svn.wordpress.org/${slug}/${effectiveBasePath}`;
+  return cleanPath ? `${root}/${cleanPath}` : `${root}/`;
 }
