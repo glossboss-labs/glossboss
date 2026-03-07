@@ -34,9 +34,10 @@ jobs:
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_TURNSTILE_SITE_KEY: ${{ secrets.VITE_TURNSTILE_SITE_KEY }}
         run: |
-          if [ -z "$VITE_SUPABASE_URL" ] || [ -z "$VITE_SUPABASE_ANON_KEY" ]; then
-            echo "::error::Missing VITE_SUPABASE_URL and/or VITE_SUPABASE_ANON_KEY repository secrets."
+          if [ -z "$VITE_SUPABASE_URL" ] || [ -z "$VITE_SUPABASE_ANON_KEY" ] || [ -z "$VITE_TURNSTILE_SITE_KEY" ]; then
+            echo "::error::Missing VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY, and/or VITE_TURNSTILE_SITE_KEY repository secrets."
             exit 1
           fi
 
@@ -44,6 +45,7 @@ jobs:
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_TURNSTILE_SITE_KEY: ${{ secrets.VITE_TURNSTILE_SITE_KEY }}
         run: bun run build
 
       - name: Deploy to Cloudflare Pages
