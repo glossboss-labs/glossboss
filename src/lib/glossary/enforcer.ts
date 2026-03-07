@@ -132,7 +132,7 @@ export function applyGlossaryToTranslation(
       // Check if this is actually a compound (longer than just the term)
       if (compoundWord.toLowerCase() !== lowerExpected && compoundWord.length > entry.translation.length) {
         // It's a compound word - split it
-        // e.g., "Standaardsjabloon" â "Standaard sjabloon"
+        // e.g., "Standaardsjabloon" → "Standaard sjabloon"
         const prefix = result.substring(wordStart, compoundIndex);
         const term = entry.translation;
         // Preserve original casing of the term from the compound
@@ -142,10 +142,10 @@ export function applyGlossaryToTranslation(
         // Reconstruct with space
         let replacement: string;
         if (prefix && !suffix) {
-          // Prefix compound: "Standaardsjabloon" â "Standaard sjabloon"
+          // Prefix compound: "Standaardsjabloon" → "Standaard sjabloon"
           replacement = prefix + ' ' + originalTerm;
         } else if (!prefix && suffix) {
-          // Suffix compound: "sjabloonbestand" â "sjabloon bestand"
+          // Suffix compound: "sjabloonbestand" → "sjabloon bestand"
           replacement = originalTerm + ' ' + suffix;
         } else {
           // Both or neither - just use the term
