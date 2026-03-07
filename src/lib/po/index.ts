@@ -25,6 +25,9 @@ export { parsePOFile, parsePOFileWithDiagnostics, validatePOFile, isPOFileConten
 // Serializer
 export { serializePOFile, exportEntriesToJSON, calculatePOFileSize } from './serializer';
 
+// Merge
+export { mergePotIntoPo, type MergeResult } from './merge';
+
 // Encoding
 export {
   detectAndDecode,
