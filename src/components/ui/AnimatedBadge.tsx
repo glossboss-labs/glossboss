@@ -1,14 +1,12 @@
 /**
  * Animated Badge Component
- * 
+ *
  * Status badges with pop-in animations.
  */
 
 import { Badge, type BadgeProps } from '@mantine/core';
 import { motion } from 'motion/react';
 import { popVariants } from '@/lib/motion';
-
-const MotionBadge = motion.create(Badge);
 
 export interface AnimatedBadgeProps extends BadgeProps {
   /** Whether to animate on mount */
@@ -17,26 +15,26 @@ export interface AnimatedBadgeProps extends BadgeProps {
   delay?: number;
 }
 
-export function AnimatedBadge({ 
-  animate = true, 
+export function AnimatedBadge({
+  animate = true,
   delay = 0,
   children,
-  ...props 
+  ...props
 }: AnimatedBadgeProps) {
   if (!animate) {
     return <Badge {...props}>{children}</Badge>;
   }
 
   return (
-    <MotionBadge
-      {...props}
+    <motion.div
       variants={popVariants}
       initial="hidden"
       animate="visible"
       exit="exit"
       transition={{ delay }}
+      style={{ display: 'inline-block' }}
     >
-      {children}
-    </MotionBadge>
+      <Badge {...props}>{children}</Badge>
+    </motion.div>
   );
 }

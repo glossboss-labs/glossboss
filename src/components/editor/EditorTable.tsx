@@ -5,21 +5,17 @@
  * Uses standard rendering (virtualization removed for stability).
  */
 
-import { useState, useCallback, useRef, KeyboardEvent, createContext, useContext, useMemo, memo, useEffect } from 'react';
+import { useState, useCallback, useRef, type KeyboardEvent, createContext, useContext, useMemo, memo, useEffect } from 'react';
 import { Table, Badge, Text, Stack, Group, Box, Paper, Tooltip, Textarea, ScrollArea, Pagination, Select } from '@mantine/core';
 import { useLocalStorage } from '@mantine/hooks';
-import { motion, AnimatePresence } from 'motion/react';
 import { MessageSquare, FileCode, Pencil, Bot, Edit3 } from 'lucide-react';
 import { useEditorStore } from '@/stores';
 import type { POEntry } from '@/lib/po';
 import { getTranslationStatus, type TranslationStatus } from '@/types';
 import { TranslateButton } from './TranslateButton';
 import { GlossaryIndicator } from './GlossaryIndicator';
-import { popVariants } from '@/lib/motion';
 import type { TargetLanguage, SourceLanguage } from '@/lib/deepl/types';
 import type { Glossary } from '@/lib/glossary/types';
-
-const MotionDiv = motion.div;
 
 /** Rows per page options */
 const ROWS_PER_PAGE_OPTIONS = [
