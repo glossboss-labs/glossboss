@@ -34,6 +34,7 @@ import {
   Checkbox,
   Collapse,
   UnstyledButton,
+  Button,
   Divider,
   Loader,
   Anchor,
@@ -53,6 +54,8 @@ import {
   ChevronUp,
   ExternalLink,
   X,
+  PanelRightOpen,
+  PanelRightClose,
 } from 'lucide-react';
 import { useEditorStore, useSourceStore, getEffectiveSlug } from '@/stores';
 import type { POEntry } from '@/lib/po';
@@ -68,6 +71,7 @@ import type { Glossary, GlossaryAnalysisResult } from '@/lib/glossary/types';
 /** localStorage key for skip-translated navigation setting */
 export const NAV_SKIP_TRANSLATED_KEY = 'glossboss-nav-skip-translated';
 const INSPECTOR_WIDTH_KEY = 'glossboss-inspector-width';
+const INSPECTOR_OPEN_KEY = 'glossboss-inspector-open';
 const INSPECTOR_DEFAULT_WIDTH = 500;
 const INSPECTOR_MIN_WIDTH = 380;
 const INSPECTOR_MAX_WIDTH = 780;
@@ -538,46 +542,6 @@ function SourceCell({ entry }: { entry: POEntry }) {
   }
 
   return <HighlightedText>{entry.msgid}</HighlightedText>;
-}
-
-/**
- * Read-only translation preview for table rows
- */
-function TranslationPreviewCell({ entry }: { entry: POEntry }) {
-  const hasPlural = Boolean(entry.msgidPlural);
-
-  const renderValue = (value: string) => {
-    if (!value.trim()) {
-      return (
-        <Text size="sm" c="dimmed">
-          —
-        </Text>
-      );
-    }
-
-    return <HighlightedText>{value}</HighlightedText>;
-  };
-
-  if (hasPlural) {
-    const plurals = entry.msgstrPlural ?? [];
-    const displayForms = plurals.length >= 2 ? plurals : ['', ''];
-
-    return (
-      <Stack gap={4}>
-        {displayForms.map((form, index) => (
-          <Box key={`${entry.id}-preview-plural-${index}`} style={{ flex: 1, minWidth: 0 }}>
-            {renderValue(form)}
-          </Box>
-        ))}
-      </Stack>
-    );
-  }
-
-  return (
-    <Stack gap={4}>
-      <Box style={{ flex: 1, minWidth: 0 }}>{renderValue(entry.msgstr)}</Box>
-    </Stack>
-  );
 }
 
 function SignalsOverviewCell({
@@ -1263,12 +1227,14 @@ const EntryRow = memo(function EntryRow({
   visibleDataColumns,
   onToggleSelection,
   onSelect,
+  onKeyDown,
 }: {
   entry: POEntry;
   isChecked: boolean;
   visibleDataColumns: DataColumnKey[];
   onToggleSelection: (checked: boolean) => void;
   onSelect?: (sourceText: string) => void;
+  onKeyDown?: (e: KeyboardEvent<HTMLTextAreaElement>, fieldId: string) => void;
 }) {
   /* Column widths are handled by table-layout: fixed + <col> widths from thead */
   const {
@@ -1364,8 +1330,9 @@ const EntryRow = memo(function EntryRow({
             <Table.Td
               key={`${entry.id}-translation`}
               style={{ verticalAlign: 'top', padding: '12px 8px', overflow: 'hidden' }}
+              onClick={(e) => e.stopPropagation()}
             >
-              <TranslationPreviewCell entry={entry} />
+              <TranslationCell entry={entry} onKeyDown={onKeyDown} />
             </Table.Td>
           );
         }
@@ -1832,6 +1799,10 @@ export function EditorTable({
     key: INSPECTOR_WIDTH_KEY,
     defaultValue: INSPECTOR_DEFAULT_WIDTH,
   });
+  const [inspectorOpen, setInspectorOpen] = useLocalStorage<boolean>({
+    key: INSPECTOR_OPEN_KEY,
+    defaultValue: true,
+  });
   const [currentPage, setCurrentPage] = useState(1);
 
   // Calculate pagination
@@ -2126,253 +2097,283 @@ export function EditorTable({
           ))}
         </Stack>
       ) : (
-        <Group align="flex-start" wrap="nowrap" gap="md">
-          <Box style={{ flex: 1, minWidth: 0 }}>
-            <ScrollArea h={600} type="auto">
-              <Table
-                ref={tableRef}
-                striped
-                highlightOnHover
-                verticalSpacing="md"
-                style={{ tableLayout: 'fixed' }}
-                data-testid="editor-table-desktop"
-              >
-                <Table.Thead
+        <Stack gap="xs">
+          <Group justify="flex-end">
+            <Button
+              variant={inspectorOpen ? 'light' : 'subtle'}
+              size="xs"
+              leftSection={
+                inspectorOpen ? <PanelRightClose size={14} /> : <PanelRightOpen size={14} />
+              }
+              onClick={() => setInspectorOpen(!inspectorOpen)}
+              data-testid="toggle-inspector-btn"
+            >
+              {inspectorOpen ? 'Hide info' : 'More info'}
+            </Button>
+          </Group>
+          <Group align="flex-start" wrap="nowrap" gap="md">
+            <Box style={{ flex: 1, minWidth: 0 }}>
+              <ScrollArea h={600} type="auto">
+                <Table
+                  ref={tableRef}
+                  striped
+                  highlightOnHover
+                  verticalSpacing="md"
+                  style={{ tableLayout: 'fixed' }}
+                  data-testid="editor-table-desktop"
+                >
+                  <Table.Thead
+                    style={{
+                      position: 'sticky',
+                      top: 0,
+                      zIndex: 10,
+                      background: 'var(--mantine-color-body)',
+                    }}
+                  >
+                    <Table.Tr>
+                      {visibleColumnKeys.map((columnKey, i) => {
+                        const nextColumn = visibleColumnKeys[i + 1];
+                        const isDataColumn = columnKey !== 'select';
+                        const indicatorPosition =
+                          isDataColumn && dropIndicator?.column === columnKey
+                            ? dropIndicator.position
+                            : undefined;
+                        const label =
+                          columnKey === 'select' ? (
+                            <Checkbox
+                              key="select-all-checkbox-input"
+                              checked={allFilteredSelected}
+                              indeterminate={someFilteredSelected}
+                              onChange={(e) => handleSelectAllFiltered(e.currentTarget.checked)}
+                              aria-label="Select all filtered entries"
+                              data-testid="select-all-checkbox"
+                            />
+                          ) : columnKey === 'status' ? (
+                            DATA_COLUMN_LABELS.status
+                          ) : columnKey === 'source' ? (
+                            DATA_COLUMN_LABELS.source
+                          ) : columnKey === 'translation' ? (
+                            DATA_COLUMN_LABELS.translation
+                          ) : (
+                            DATA_COLUMN_LABELS.signals
+                          );
+
+                        return (
+                          <ResizableTh
+                            key={columnKey}
+                            widthPercent={columnPercentByKey[columnKey]}
+                            isLast={!nextColumn}
+                            onResize={
+                              nextColumn
+                                ? (delta) => handleColumnResize(columnKey, nextColumn, delta)
+                                : undefined
+                            }
+                            align={columnKey === 'select' ? 'center' : 'left'}
+                            isDragging={draggingHeaderColumn === columnKey}
+                            dropIndicatorPosition={indicatorPosition}
+                            dataColumnKey={isDataColumn ? columnKey : undefined}
+                            onCellPointerDown={
+                              isDataColumn
+                                ? (e) => handleHeaderPointerDown(columnKey, e)
+                                : undefined
+                            }
+                          >
+                            {typeof label === 'string' ? (
+                              label
+                            ) : (
+                              <Box
+                                style={{
+                                  display: 'flex',
+                                  justifyContent: 'center',
+                                  alignItems: 'center',
+                                }}
+                              >
+                                {label}
+                              </Box>
+                            )}
+                          </ResizableTh>
+                        );
+                      })}
+                    </Table.Tr>
+                  </Table.Thead>
+                  <Table.Tbody>
+                    {paginatedEntries.map((entry) => (
+                      <EntryRow
+                        key={entry.id}
+                        entry={entry}
+                        isChecked={selectedEntryIds.has(entry.id)}
+                        visibleDataColumns={visibleDataColumns}
+                        onToggleSelection={(checked) => setEntrySelection(entry.id, checked)}
+                        onSelect={onEntrySelect}
+                        onKeyDown={handleKeyDown}
+                      />
+                    ))}
+                  </Table.Tbody>
+                </Table>
+              </ScrollArea>
+            </Box>
+            {headerDragPreview && (
+              <Portal>
+                <div
+                  ref={dragPreviewRef}
                   style={{
-                    position: 'sticky',
+                    position: 'fixed',
+                    left: 0,
                     top: 0,
-                    zIndex: 10,
-                    background: 'var(--mantine-color-body)',
+                    width: headerDragPreview.width,
+                    height: headerDragPreview.height,
+                    pointerEvents: 'none',
+                    zIndex: 1200,
+                    borderRadius: 8,
+                    border: '1px solid var(--mantine-color-blue-4)',
+                    background:
+                      'color-mix(in srgb, var(--mantine-color-body) 84%, var(--mantine-color-blue-light) 16%)',
+                    boxShadow:
+                      '0 12px 30px color-mix(in srgb, black 22%, transparent), 0 2px 10px color-mix(in srgb, black 18%, transparent)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    paddingInline: 12,
+                    fontWeight: 600,
+                    color: 'var(--mantine-color-text)',
+                    backdropFilter: 'blur(2px)',
+                    willChange: 'transform',
+                    transition: 'transform 90ms cubic-bezier(0.22, 1, 0.36, 1)',
                   }}
                 >
-                  <Table.Tr>
-                    {visibleColumnKeys.map((columnKey, i) => {
-                      const nextColumn = visibleColumnKeys[i + 1];
-                      const isDataColumn = columnKey !== 'select';
-                      const indicatorPosition =
-                        isDataColumn && dropIndicator?.column === columnKey
-                          ? dropIndicator.position
-                          : undefined;
-                      const label =
-                        columnKey === 'select' ? (
-                          <Checkbox
-                            key="select-all-checkbox-input"
-                            checked={allFilteredSelected}
-                            indeterminate={someFilteredSelected}
-                            onChange={(e) => handleSelectAllFiltered(e.currentTarget.checked)}
-                            aria-label="Select all filtered entries"
-                            data-testid="select-all-checkbox"
-                          />
-                        ) : columnKey === 'status' ? (
-                          DATA_COLUMN_LABELS.status
-                        ) : columnKey === 'source' ? (
-                          DATA_COLUMN_LABELS.source
-                        ) : columnKey === 'translation' ? (
-                          DATA_COLUMN_LABELS.translation
-                        ) : (
-                          DATA_COLUMN_LABELS.signals
-                        );
+                  {headerDragPreview.label}
+                </div>
+              </Portal>
+            )}
 
-                      return (
-                        <ResizableTh
-                          key={columnKey}
-                          widthPercent={columnPercentByKey[columnKey]}
-                          isLast={!nextColumn}
-                          onResize={
-                            nextColumn
-                              ? (delta) => handleColumnResize(columnKey, nextColumn, delta)
-                              : undefined
-                          }
-                          align={columnKey === 'select' ? 'center' : 'left'}
-                          isDragging={draggingHeaderColumn === columnKey}
-                          dropIndicatorPosition={indicatorPosition}
-                          dataColumnKey={isDataColumn ? columnKey : undefined}
-                          onCellPointerDown={
-                            isDataColumn ? (e) => handleHeaderPointerDown(columnKey, e) : undefined
-                          }
-                        >
-                          {typeof label === 'string' ? (
-                            label
-                          ) : (
-                            <Box
-                              style={{
-                                display: 'flex',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                              }}
-                            >
-                              {label}
-                            </Box>
-                          )}
-                        </ResizableTh>
-                      );
-                    })}
-                  </Table.Tr>
-                </Table.Thead>
-                <Table.Tbody>
-                  {paginatedEntries.map((entry) => (
-                    <EntryRow
-                      key={entry.id}
-                      entry={entry}
-                      isChecked={selectedEntryIds.has(entry.id)}
-                      visibleDataColumns={visibleDataColumns}
-                      onToggleSelection={(checked) => setEntrySelection(entry.id, checked)}
-                      onSelect={onEntrySelect}
-                    />
-                  ))}
-                </Table.Tbody>
-              </Table>
-            </ScrollArea>
-          </Box>
-          {headerDragPreview && (
-            <Portal>
-              <div
-                ref={dragPreviewRef}
-                style={{
-                  position: 'fixed',
-                  left: 0,
-                  top: 0,
-                  width: headerDragPreview.width,
-                  height: headerDragPreview.height,
-                  pointerEvents: 'none',
-                  zIndex: 1200,
-                  borderRadius: 8,
-                  border: '1px solid var(--mantine-color-blue-4)',
-                  background:
-                    'color-mix(in srgb, var(--mantine-color-body) 84%, var(--mantine-color-blue-light) 16%)',
-                  boxShadow:
-                    '0 12px 30px color-mix(in srgb, black 22%, transparent), 0 2px 10px color-mix(in srgb, black 18%, transparent)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  paddingInline: 12,
-                  fontWeight: 600,
-                  color: 'var(--mantine-color-text)',
-                  backdropFilter: 'blur(2px)',
-                  willChange: 'transform',
-                  transition: 'transform 90ms cubic-bezier(0.22, 1, 0.36, 1)',
-                }}
-              >
-                {headerDragPreview.label}
-              </div>
-            </Portal>
-          )}
-
-          <Box
-            role="separator"
-            aria-orientation="vertical"
-            aria-label="Resize inspector"
-            onPointerDown={handleInspectorResizeStart}
-            onDoubleClick={() => setInspectorWidth(INSPECTOR_DEFAULT_WIDTH)}
-            style={{
-              width: 8,
-              alignSelf: 'stretch',
-              cursor: 'col-resize',
-              borderRadius: 6,
-              backgroundColor: 'var(--mantine-color-default-border)',
-              opacity: 0.35,
-              transition: 'opacity 120ms ease',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.opacity = '0.8';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.opacity = '0.35';
-            }}
-          />
-
-          <Paper
-            withBorder
-            p="sm"
-            w={inspectorWidth}
-            style={{
-              flexShrink: 0,
-              position: 'sticky',
-              top: 0,
-              height: 600,
-              maxHeight: 600,
-              overflow: 'hidden',
-              display: 'flex',
-              flexDirection: 'column',
-            }}
-          >
-            <Stack gap="sm" pt={2} style={{ height: '100%', minHeight: 0 }}>
-              <Group justify="space-between" align="center">
-                <Text fw={600} size="sm">
-                  String Inspector
-                </Text>
-                <Tooltip label={selectedInspectorLabel} disabled={!selectedEntry} position="bottom">
-                  <Text size="xs" c="dimmed" maw="58%" ta="right" truncate="end">
-                    {selectedInspectorLabel}
-                  </Text>
-                </Tooltip>
-              </Group>
-
-              <Group justify="space-between" align="center">
-                <SegmentedControl
-                  size="xs"
-                  value={inspectorMode}
-                  onChange={(value) => setInspectorMode(value as 'context' | 'browse')}
-                  data={[
-                    { label: 'Context', value: 'context' },
-                    { label: 'Browse', value: 'browse' },
-                  ]}
+            {inspectorOpen && (
+              <>
+                <Box
+                  role="separator"
+                  aria-orientation="vertical"
+                  aria-label="Resize inspector"
+                  onPointerDown={handleInspectorResizeStart}
+                  onDoubleClick={() => setInspectorWidth(INSPECTOR_DEFAULT_WIDTH)}
+                  style={{
+                    width: 8,
+                    alignSelf: 'stretch',
+                    cursor: 'col-resize',
+                    borderRadius: 6,
+                    backgroundColor: 'var(--mantine-color-default-border)',
+                    opacity: 0.35,
+                    transition: 'opacity 120ms ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.opacity = '0.8';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.opacity = '0.35';
+                  }}
                 />
 
-                {inspectorMode === 'context' && activeReference && (
-                  <Tooltip label="Clear active source reference">
-                    <ActionIcon variant="subtle" size="sm" onClick={() => setActiveReference(null)}>
-                      <X size={14} />
-                    </ActionIcon>
-                  </Tooltip>
-                )}
-              </Group>
-
-              <Divider />
-
-              <Box style={{ flex: 1, minHeight: 0 }}>
-                {inspectorMode === 'browse' ? (
-                  <Paper withBorder style={{ overflow: 'hidden', height: '100%' }}>
-                    <SourceBrowser listingMaxHeight={420} viewerMaxHeight={420} />
-                  </Paper>
-                ) : (
-                  <ScrollArea h="100%" type="auto" offsetScrollbars="y">
-                    {selectedEntry && selectedStatus ? (
-                      <Stack gap="sm">
-                        <Stack gap={6}>
-                          <Text size="xs" fw={600} c="dimmed">
-                            Translation
-                          </Text>
-                          <TranslationCell
-                            entry={selectedEntry}
-                            onKeyDown={handleKeyDown}
-                            translateButtonSize="md"
-                            translateButtonDisplay="icon"
-                          />
-                        </Stack>
-
-                        <Divider />
-
-                        <EntryDetailsPanel
-                          entry={selectedEntry}
-                          status={selectedStatus}
-                          isModified={selectedIsModified}
-                          isMT={selectedIsMT}
-                          isManualEdit={selectedIsManualEdit}
-                          hasGlossaryTerms={selectedHasGlossaryTerms}
-                          onActivateReference={handleInspectorReference}
-                        />
-                      </Stack>
-                    ) : (
-                      <Text size="sm" c="dimmed">
-                        Select a row to inspect context and metadata.
+                <Paper
+                  withBorder
+                  p="sm"
+                  w={inspectorWidth}
+                  style={{
+                    flexShrink: 0,
+                    position: 'sticky',
+                    top: 0,
+                    height: 600,
+                    maxHeight: 600,
+                    overflow: 'hidden',
+                    display: 'flex',
+                    flexDirection: 'column',
+                  }}
+                >
+                  <Stack gap="sm" pt={2} style={{ height: '100%', minHeight: 0 }}>
+                    <Group justify="space-between" align="center">
+                      <Text fw={600} size="sm">
+                        String Inspector
                       </Text>
-                    )}
-                  </ScrollArea>
-                )}
-              </Box>
-            </Stack>
-          </Paper>
-        </Group>
+                      <Tooltip
+                        label={selectedInspectorLabel}
+                        disabled={!selectedEntry}
+                        position="bottom"
+                      >
+                        <Text size="xs" c="dimmed" maw="58%" ta="right" truncate="end">
+                          {selectedInspectorLabel}
+                        </Text>
+                      </Tooltip>
+                    </Group>
+
+                    <Group justify="space-between" align="center">
+                      <SegmentedControl
+                        size="xs"
+                        value={inspectorMode}
+                        onChange={(value) => setInspectorMode(value as 'context' | 'browse')}
+                        data={[
+                          { label: 'Context', value: 'context' },
+                          { label: 'Browse', value: 'browse' },
+                        ]}
+                      />
+
+                      {inspectorMode === 'context' && activeReference && (
+                        <Tooltip label="Clear active source reference">
+                          <ActionIcon
+                            variant="subtle"
+                            size="sm"
+                            onClick={() => setActiveReference(null)}
+                          >
+                            <X size={14} />
+                          </ActionIcon>
+                        </Tooltip>
+                      )}
+                    </Group>
+
+                    <Divider />
+
+                    <Box style={{ flex: 1, minHeight: 0 }}>
+                      {inspectorMode === 'browse' ? (
+                        <Paper withBorder style={{ overflow: 'hidden', height: '100%' }}>
+                          <SourceBrowser listingMaxHeight={420} viewerMaxHeight={420} />
+                        </Paper>
+                      ) : (
+                        <ScrollArea h="100%" type="auto" offsetScrollbars="y">
+                          {selectedEntry && selectedStatus ? (
+                            <Stack gap="sm">
+                              <Stack gap={6}>
+                                <Text size="xs" fw={600} c="dimmed">
+                                  Translation
+                                </Text>
+                                <TranslationCell
+                                  entry={selectedEntry}
+                                  onKeyDown={handleKeyDown}
+                                  translateButtonSize="md"
+                                  translateButtonDisplay="icon"
+                                />
+                              </Stack>
+
+                              <Divider />
+
+                              <EntryDetailsPanel
+                                entry={selectedEntry}
+                                status={selectedStatus}
+                                isModified={selectedIsModified}
+                                isMT={selectedIsMT}
+                                isManualEdit={selectedIsManualEdit}
+                                hasGlossaryTerms={selectedHasGlossaryTerms}
+                                onActivateReference={handleInspectorReference}
+                              />
+                            </Stack>
+                          ) : (
+                            <Text size="sm" c="dimmed">
+                              Select a row to inspect context and metadata.
+                            </Text>
+                          )}
+                        </ScrollArea>
+                      )}
+                    </Box>
+                  </Stack>
+                </Paper>
+              </>
+            )}
+          </Group>
+        </Stack>
       )}
 
       {/* Pagination controls */}

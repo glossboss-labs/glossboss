@@ -4,6 +4,7 @@
  * Unified settings panel for:
  * - DeepL API key configuration
  * - Glossary management (load, view, configure)
+ * - Display preferences (container width)
  */
 
 import { useState, useCallback, useEffect } from 'react';
@@ -42,6 +43,7 @@ import {
   Eye,
   Keyboard,
   GitBranch,
+  Monitor,
 } from 'lucide-react';
 import {
   getDeepLSettings,
@@ -61,6 +63,7 @@ import {
 } from '@/components/glossary/constants';
 import type { Glossary } from '@/lib/glossary/types';
 import { NAV_SKIP_TRANSLATED_KEY } from '@/components/editor/EditorTable';
+import { CONTAINER_WIDTH_OPTIONS, type ContainerWidth } from '@/lib/container-width';
 
 /** Keyboard shortcut definitions */
 const KEYBINDS: { keys: string[][]; action: string; description?: string }[] = [
@@ -209,6 +212,8 @@ interface SettingsModalProps {
   selectedSourceText?: string | null;
   branchChipEnabled?: boolean;
   onBranchChipEnabledChange?: (enabled: boolean) => void;
+  containerWidth?: ContainerWidth;
+  onContainerWidthChange?: (width: ContainerWidth) => void;
 }
 
 export function SettingsModal({
@@ -226,6 +231,8 @@ export function SettingsModal({
   selectedSourceText,
   branchChipEnabled = true,
   onBranchChipEnabledChange,
+  containerWidth = 'xl',
+  onContainerWidthChange,
 }: SettingsModalProps) {
   const isDevelopment = import.meta.env.DEV;
 
@@ -412,6 +419,9 @@ export function SettingsModal({
             </Tabs.Tab>
             <Tabs.Tab value="keybinds" leftSection={<Keyboard size={14} />}>
               Keyboard Shortcuts
+            </Tabs.Tab>
+            <Tabs.Tab value="display" leftSection={<Monitor size={14} />}>
+              Display
             </Tabs.Tab>
             {isDevelopment && (
               <Tabs.Tab
@@ -714,6 +724,40 @@ export function SettingsModal({
           {/* Keyboard Shortcuts Tab */}
           <Tabs.Panel value="keybinds">
             <KeyboardShortcutsPanel />
+          </Tabs.Panel>
+
+          {/* Display Tab */}
+          <Tabs.Panel value="display">
+            <Stack gap="md">
+              <Text size="sm" c="dimmed">
+                Adjust the appearance of the editor to suit your screen and preferences.
+              </Text>
+
+              <Paper p="md" withBorder>
+                <Stack gap="sm">
+                  <div>
+                    <Text size="sm" fw={500}>
+                      Container width
+                    </Text>
+                    <Text size="xs" c="dimmed">
+                      Controls the maximum width of the main content area. Use a wider setting on
+                      large monitors, or full width to use all available space.
+                    </Text>
+                  </div>
+
+                  <SegmentedControl
+                    value={containerWidth}
+                    onChange={(value) => onContainerWidthChange?.(value as ContainerWidth)}
+                    data={CONTAINER_WIDTH_OPTIONS.map((opt) => ({
+                      value: opt.value,
+                      label: opt.label,
+                    }))}
+                    fullWidth
+                    size="xs"
+                  />
+                </Stack>
+              </Paper>
+            </Stack>
           </Tabs.Panel>
 
           {isDevelopment && (

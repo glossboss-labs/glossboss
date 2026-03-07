@@ -76,6 +76,7 @@ import {
   cleanupExpiredDrafts,
   type DraftData,
 } from '@/lib/storage';
+import { CONTAINER_WIDTH_KEY, type ContainerWidth } from '@/lib/container-width';
 const appIcon = '/icon.svg';
 
 const MotionDiv = motion.div;
@@ -323,6 +324,11 @@ export default function Index() {
   const [branchChipEnabled, setBranchChipEnabled] = useLocalStorage<boolean>({
     key: DEV_BRANCH_CHIP_STORAGE_KEY,
     defaultValue: true,
+    getInitialValueInEffect: false,
+  });
+  const [containerWidth, setContainerWidth] = useLocalStorage<ContainerWidth>({
+    key: CONTAINER_WIDTH_KEY,
+    defaultValue: 'xl',
     getInitialValueInEffect: false,
   });
 
@@ -1069,7 +1075,11 @@ export default function Index() {
         )}
       </Transition>
 
-      <Container size="xl" py="xl">
+      <Container
+        size={containerWidth === '100%' ? undefined : containerWidth}
+        fluid={containerWidth === '100%'}
+        py="xl"
+      >
         <Stack gap="lg">
           {/* Header */}
           <MotionDiv
@@ -1552,6 +1562,8 @@ export default function Index() {
         selectedSourceText={selectedSourceText}
         branchChipEnabled={branchChipEnabled}
         onBranchChipEnabledChange={setBranchChipEnabled}
+        containerWidth={containerWidth}
+        onContainerWidthChange={setContainerWidth}
       />
 
       {isDevelopment && branchChipEnabled && <DevBranchChip branch={__GIT_BRANCH__} />}
