@@ -34,6 +34,7 @@ import {
   Download,
   Trash2,
   AlertTriangle,
+  MessageSquare,
   FileUp,
   Check,
   RotateCcw,
@@ -43,13 +44,8 @@ import {
   Moon,
   ChevronDown,
 } from 'lucide-react';
-import {
-  EditorTable,
-  FilterToolbar,
-  HeaderEditor,
-  TranslateToolbar,
-  SourceContext,
-} from '@/components/editor';
+import { EditorTable, FilterToolbar, HeaderEditor, TranslateToolbar } from '@/components/editor';
+import { FeedbackModal } from '@/components/feedback';
 import { SettingsModal } from '@/components/SettingsModal';
 import { ConfirmModal } from '@/components/ui';
 import { useEditorStore, useSourceStore } from '@/stores';
@@ -102,6 +98,11 @@ interface MergeInfo {
   updatedMeta: number;
 }
 
+/** Feedback submit success info */
+interface FeedbackInfo {
+  issueNumber: number;
+}
+
 /** Pending draft info for recovery prompt */
 interface PendingDraft {
   draft: DraftData;
@@ -143,6 +144,9 @@ export default function Index() {
   const [confirmClearOpen, setConfirmClearOpen] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState<DownloadInfo | null>(null);
   const [mergeSuccess, setMergeSuccess] = useState<MergeInfo | null>(null);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [feedbackSuccess, setFeedbackSuccess] = useState<FeedbackInfo | null>(null);
+  const [feedbackError, setFeedbackError] = useState<string | null>(null);
   const [translateSourceLang, setTranslateSourceLang] = useState<SourceLanguage | undefined>(
     undefined,
   );
@@ -814,7 +818,7 @@ export default function Index() {
           <Notification
             icon={<Check size={18} />}
             color="blue"
-            title="Updated from POT"
+            title="Updated"
             onClose={() => setMergeSuccess(null)}
             style={{
               ...styles,
@@ -832,6 +836,60 @@ export default function Index() {
                 ? ` (${mergeSuccess.updatedMeta} with updated references)`
                 : ''}
             </Text>
+          </Notification>
+        )}
+      </Transition>
+
+      {/* Feedback success notification */}
+      <Transition
+        mounted={feedbackSuccess !== null}
+        transition="slide-left"
+        duration={200}
+        timingFunction="ease"
+      >
+        {(styles) => (
+          <Notification
+            icon={<Check size={18} />}
+            color="teal"
+            title="Feedback submitted"
+            onClose={() => setFeedbackSuccess(null)}
+            style={{
+              ...styles,
+              position: 'fixed',
+              top: 20,
+              right: 20,
+              zIndex: 1000,
+              minWidth: 300,
+            }}
+          >
+            <Text size="sm">Thanks. Issue #{feedbackSuccess?.issueNumber} was created.</Text>
+          </Notification>
+        )}
+      </Transition>
+
+      {/* Feedback error notification */}
+      <Transition
+        mounted={feedbackError !== null}
+        transition="slide-left"
+        duration={200}
+        timingFunction="ease"
+      >
+        {(styles) => (
+          <Notification
+            icon={<AlertTriangle size={18} />}
+            color="red"
+            title="Feedback failed"
+            onClose={() => setFeedbackError(null)}
+            style={{
+              ...styles,
+              position: 'fixed',
+              top: 20,
+              right: 20,
+              zIndex: 1000,
+              minWidth: 320,
+            }}
+          >
+            <Text size="sm">{feedbackError}</Text>
           </Notification>
         )}
       </Transition>
@@ -953,7 +1011,11 @@ export default function Index() {
                           </Menu>
                         </Group>
 
-                        <Tooltip label="Merge a POT template to update source strings">
+                        <Tooltip
+                          multiline
+                          w={340}
+                          label="Update this file using a .pot template. Existing translations are kept when source strings still match, new strings are added, and obsolete strings are removed."
+                        >
                           <motion.div {...buttonStates}>
                             <FileButton onChange={handlePotUpload} accept=".pot">
                               {(props) => (
@@ -962,37 +1024,60 @@ export default function Index() {
                                   variant="light"
                                   {...props}
                                 >
-                                  Update from POT
+                                  Update
                                 </Button>
                               )}
                             </FileButton>
                           </motion.div>
                         </Tooltip>
-
-                        <motion.div {...buttonStates}>
-                          <Button
-                            leftSection={<Trash2 size={16} />}
-                            variant="subtle"
-                            color="red"
-                            onClick={handleClearClick}
-                          >
-                            Clear
-                          </Button>
-                        </motion.div>
                       </Group>
                     </MotionDiv>
                   )}
                 </AnimatePresence>
 
-                <ThemeToggle />
-
-                <Tooltip label="Settings">
+                <Tooltip label="Share feedback">
                   <motion.div {...buttonStates}>
-                    <ActionIcon variant="default" size="lg" onClick={() => setSettingsOpen(true)}>
-                      <Settings size={18} />
-                    </ActionIcon>
+                    <Button
+                      variant="default"
+                      leftSection={<MessageSquare size={16} />}
+                      onClick={() => setFeedbackOpen(true)}
+                    >
+                      Feedback
+                    </Button>
                   </motion.div>
                 </Tooltip>
+
+                <ThemeToggle />
+
+                <Menu position="bottom-end" withinPortal>
+                  <Menu.Target>
+                    <Tooltip label="Settings and actions">
+                      <motion.div {...buttonStates}>
+                        <ActionIcon variant="default" size="lg">
+                          <Settings size={18} />
+                        </ActionIcon>
+                      </motion.div>
+                    </Tooltip>
+                  </Menu.Target>
+                  <Menu.Dropdown>
+                    <Menu.Label>Settings</Menu.Label>
+                    <Menu.Item
+                      leftSection={<Settings size={14} />}
+                      onClick={() => setSettingsOpen(true)}
+                    >
+                      Open settings
+                    </Menu.Item>
+                    <Menu.Divider />
+                    <Menu.Label>Actions</Menu.Label>
+                    <Menu.Item
+                      color="red"
+                      leftSection={<Trash2 size={14} />}
+                      onClick={handleClearClick}
+                    >
+                      Clear editor
+                    </Menu.Item>
+                  </Menu.Dropdown>
+                </Menu>
               </Group>
             </Group>
           </MotionDiv>
@@ -1137,37 +1222,35 @@ export default function Index() {
             </Group>
           )}
 
-          {/* Header editor (replaces old file info section) */}
-          {filename && <HeaderEditor encodingInfo={encodingInfo} />}
-
-          {/* Glossary status indicator (quick view) */}
-          {filename && glossary && (
-            <Group gap="xs">
-              <Badge color="green" variant="light" size="sm" leftSection={<Check size={10} />}>
-                Glossary: {glossary.entries.length} terms ({glossary.targetLocale})
-              </Badge>
-              {deeplGlossaryId && (
-                <Badge color="blue" variant="light" size="sm">
-                  DeepL synced
-                </Badge>
-              )}
-            </Group>
-          )}
-
-          {/* Filter toolbar */}
-          {filename && <FilterToolbar />}
-
-          {/* Translate toolbar for DeepL integration */}
+          {/* Header and control workspace */}
           {filename && (
-            <TranslateToolbar
-              onLanguageChange={handleLanguageChange}
-              deeplGlossaryId={glossaryEnforcementEnabled ? deeplGlossaryId : null}
-              glossary={glossary}
-            />
-          )}
+            <Stack gap="sm">
+              <HeaderEditor encodingInfo={encodingInfo} />
 
-          {/* Source context panel */}
-          {filename && <SourceContext />}
+              {/* Glossary status indicator (quick view) */}
+              {glossary && (
+                <Group gap="xs">
+                  <Badge color="green" variant="light" size="sm" leftSection={<Check size={10} />}>
+                    Glossary: {glossary.entries.length} terms ({glossary.targetLocale})
+                  </Badge>
+                  {deeplGlossaryId && (
+                    <Badge color="blue" variant="light" size="sm">
+                      DeepL synced
+                    </Badge>
+                  )}
+                </Group>
+              )}
+
+              <Stack gap="sm">
+                <FilterToolbar />
+                <TranslateToolbar
+                  onLanguageChange={handleLanguageChange}
+                  deeplGlossaryId={glossaryEnforcementEnabled ? deeplGlossaryId : null}
+                  glossary={glossary}
+                />
+              </Stack>
+            </Stack>
+          )}
 
           {/* Editor table or empty state */}
           {filename ? (
@@ -1249,6 +1332,21 @@ export default function Index() {
         deeplGlossaryId={deeplGlossaryId}
         deeplTermCount={deeplTermCount}
         selectedSourceText={selectedSourceText}
+      />
+
+      <FeedbackModal
+        opened={feedbackOpen}
+        onClose={() => setFeedbackOpen(false)}
+        currentFilename={filename}
+        onSubmitted={(result) => {
+          setFeedbackSuccess({ issueNumber: result.issueNumber });
+          setFeedbackError(null);
+          window.setTimeout(() => setFeedbackSuccess(null), 5000);
+        }}
+        onSubmitError={(message) => {
+          setFeedbackError(message);
+          window.setTimeout(() => setFeedbackError(null), 6000);
+        }}
       />
     </Box>
   );

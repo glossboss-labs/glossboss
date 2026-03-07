@@ -46,14 +46,17 @@ Add these GitHub repository secrets to enable deployment:
 ```
 VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your-anon-key
+VITE_TURNSTILE_SITE_KEY=your-cloudflare-turnstile-site-key
 ```
 
 ## Edge Functions
 
-Two Supabase Edge Functions proxy external APIs to avoid CORS and keep keys secure:
+Four Supabase Edge Functions proxy external APIs to avoid CORS and keep keys secure:
 
 - **`deepl-translate`** — Proxies DeepL API requests (translate, glossary CRUD, usage stats). Accepts a user-provided API key or falls back to a `DEEPL_KEY` secret.
 - **`wp-glossary`** — Fetches WordPress.org glossary CSV exports.
+- **`wp-source`** — Fetches plugin source files and listings from WordPress SVN.
+- **`feedback-issue`** — Validates Turnstile, rate limits incoming requests, and creates GitHub issues in a private repository.
 
 ### Deploy Edge Functions
 
@@ -61,7 +64,40 @@ Two Supabase Edge Functions proxy external APIs to avoid CORS and keep keys secu
 bunx supabase link --project-ref <your-project-ref>
 bunx supabase functions deploy deepl-translate --no-verify-jwt
 bunx supabase functions deploy wp-glossary --no-verify-jwt
+bunx supabase functions deploy wp-source --no-verify-jwt
+bunx supabase functions deploy feedback-issue --no-verify-jwt
 ```
+
+### Feedback Pipeline Setup
+
+The feedback modal submits to `feedback-issue`, which creates issues in GitHub without exposing your repository.
+
+Required Supabase secrets:
+
+```bash
+bunx supabase secrets set GITHUB_TOKEN=ghp_xxx
+bunx supabase secrets set TURNSTILE_SECRET=your-turnstile-secret
+```
+
+Optional overrides:
+
+```bash
+bunx supabase secrets set GITHUB_OWNER=toineenzo
+bunx supabase secrets set GITHUB_REPO=glossboss
+```
+
+Local-only Turnstile bypass for development:
+
+```bash
+bunx supabase secrets set ALLOW_TURNSTILE_BYPASS=true
+```
+
+Then set `VITE_FEEDBACK_BYPASS_TURNSTILE=true` in your local `.env` to use the bypass token (`dev-bypass`) during local testing.
+
+GitHub token requirements:
+
+- Use a fine-grained personal access token scoped to the target repository.
+- Grant **Issues: Read and write** permissions.
 
 ## Project Structure
 
