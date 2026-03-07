@@ -1,5 +1,7 @@
 import '@testing-library/jest-dom/vitest';
 
+(globalThis as { __APP_VERSION__?: string }).__APP_VERSION__ = 'test-version';
+
 if (!window.matchMedia) {
   window.matchMedia = (query: string) =>
     ({

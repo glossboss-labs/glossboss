@@ -30,9 +30,16 @@ import {
   CheckCheck,
   BookCheck,
   RotateCcw,
+  WandSparkles,
 } from 'lucide-react';
 import { useEditorStore } from '@/stores';
 import { getDeepLClient, hasUserApiKey } from '@/lib/deepl';
+import {
+  DEEPL_GLOSSARY_FALLBACK_EVENT,
+  formatDeepLError,
+  isGlossaryNotFoundError,
+  notifyGlossaryFallback,
+} from '@/lib/deepl/errors';
 import { analyzeTranslation } from '@/lib/glossary';
 import { ConfirmModal } from '@/components/ui';
 import { slideUpVariants, buttonStates, popVariants } from '@/lib/motion';
@@ -175,6 +182,7 @@ export function TranslateToolbar({
   const [isRetranslateMode, setIsRetranslateMode] = useState(false);
   const [skipManualEdits, setSkipManualEdits] = useState(true);
   const [bulkActionMessage, setBulkActionMessage] = useState<string | null>(null);
+  const [glossaryFallbackNotice, setGlossaryFallbackNotice] = useState<string | null>(null);
   const cancelRef = useRef(false);
   const batchCountRef = useRef(0);
 
@@ -197,6 +205,23 @@ export function TranslateToolbar({
       );
     }
   }, [targetLang, sourceLang, onLanguageChange]);
+
+  // Show inline banner whenever glossary fallback is triggered by any translate action
+  useEffect(() => {
+    const handleFallback = (event: Event) => {
+      const custom = event as CustomEvent<{ context?: 'single' | 'bulk' }>;
+      const context = custom.detail?.context;
+      setGlossaryFallbackNotice(
+        context === 'bulk'
+          ? 'Glossary not found in DeepL. Continued bulk translation without glossary. Re-sync in Settings is recommended.'
+          : 'Glossary not found in DeepL. This translation was done without glossary. Re-sync in Settings is recommended.',
+      );
+    };
+
+    window.addEventListener(DEEPL_GLOSSARY_FALLBACK_EVENT, handleFallback as EventListener);
+    return () =>
+      window.removeEventListener(DEEPL_GLOSSARY_FALLBACK_EVENT, handleFallback as EventListener);
+  }, []);
 
   // Find untranslated entries
   const untranslatedEntries = useMemo(
@@ -279,6 +304,7 @@ export function TranslateToolbar({
       const client = getDeepLClient();
       let completed = 0;
       let failed = 0;
+      let activeGlossaryId = deeplGlossaryId ?? undefined;
 
       try {
         interface TranslationJob {
@@ -286,10 +312,10 @@ export function TranslateToolbar({
           text: string;
           isPlural: boolean;
           pluralIndex?: number;
-          originalPluralForms?: string[];
         }
 
         const jobs: TranslationJob[] = [];
+        const entryById = new Map(entriesToTranslate.map((entry) => [entry.id, entry]));
 
         for (const entry of entriesToTranslate) {
           // Skip manual edits if option is enabled and we're in retranslate mode
@@ -316,7 +342,6 @@ export function TranslateToolbar({
                   text: index === 0 ? entry.msgid : entry.msgidPlural!,
                   isPlural: true,
                   pluralIndex: index,
-                  originalPluralForms: displayForms,
                 });
               }
             });
@@ -349,26 +374,73 @@ export function TranslateToolbar({
 
           const batch = jobs.slice(i, i + batchSize);
           const texts = batch.map((j) => j.text);
+          const effectiveSourceLang = activeGlossaryId
+            ? ((sourceLang || 'EN') as SourceLanguage)
+            : sourceLang
+              ? (sourceLang as SourceLanguage)
+              : undefined;
 
           try {
-            const translations = await client.translateBatch(
-              texts,
-              targetLang as TargetLanguage,
-              sourceLang ? (sourceLang as SourceLanguage) : undefined,
-              deeplGlossaryId ?? undefined,
-            );
+            let translations: string[];
+            try {
+              translations = await client.translateBatch(
+                texts,
+                targetLang as TargetLanguage,
+                effectiveSourceLang,
+                activeGlossaryId,
+              );
+            } catch (batchErr) {
+              if (activeGlossaryId && isGlossaryNotFoundError(batchErr)) {
+                // Disable glossary for remaining batches when DeepL reports stale glossary.
+                activeGlossaryId = undefined;
+                notifyGlossaryFallback('bulk');
+                translations = await client.translateBatch(
+                  texts,
+                  targetLang as TargetLanguage,
+                  sourceLang ? (sourceLang as SourceLanguage) : undefined,
+                  undefined,
+                );
+              } else {
+                throw batchErr;
+              }
+            }
+
+            const pluralUpdates = new Map<string, string[]>();
+            const translatedEntryIds = new Set<string>();
 
             batch.forEach((job, idx) => {
-              if (translations[idx]) {
-                if (job.isPlural && job.pluralIndex !== undefined) {
-                  const newPlurals = [...(job.originalPluralForms || ['', ''])];
-                  newPlurals[job.pluralIndex] = translations[idx];
-                  updateEntryPlural(job.entryId, newPlurals);
-                } else {
-                  updateEntry(job.entryId, translations[idx]);
+              const translated = translations[idx];
+              if (!translated) return;
+
+              if (job.isPlural && job.pluralIndex !== undefined) {
+                let nextPlurals = pluralUpdates.get(job.entryId);
+                if (!nextPlurals) {
+                  const existing = entryById.get(job.entryId)?.msgstrPlural ?? [];
+                  nextPlurals = existing.length >= 2 ? [...existing] : ['', ''];
                 }
-                markAsMachineTranslated(job.entryId);
+                while (nextPlurals.length <= job.pluralIndex) {
+                  nextPlurals.push('');
+                }
+                nextPlurals[job.pluralIndex] = translated;
+                pluralUpdates.set(job.entryId, nextPlurals);
+                translatedEntryIds.add(job.entryId);
+                return;
               }
+
+              updateEntry(job.entryId, translated);
+              translatedEntryIds.add(job.entryId);
+            });
+
+            pluralUpdates.forEach((plurals, entryId) => {
+              updateEntryPlural(entryId, plurals);
+              const entry = entryById.get(entryId);
+              if (entry) {
+                entry.msgstrPlural = plurals;
+              }
+            });
+
+            translatedEntryIds.forEach((entryId) => {
+              markAsMachineTranslated(entryId, Boolean(activeGlossaryId));
             });
 
             completed += batch.length;
@@ -392,7 +464,7 @@ export function TranslateToolbar({
           setError(`${failed} translations failed`);
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Translation failed');
+        setError(formatDeepLError(err));
       } finally {
         setIsTranslating(false);
         setIsRetranslateMode(false);
@@ -506,6 +578,30 @@ export function TranslateToolbar({
       />
 
       <Stack gap="sm">
+        <AnimatePresence>
+          {glossaryFallbackNotice && (
+            <MotionDiv variants={slideUpVariants} initial="hidden" animate="visible" exit="exit">
+              <Alert color="yellow" withCloseButton onClose={() => setGlossaryFallbackNotice(null)}>
+                <Text size="xs">{glossaryFallbackNotice}</Text>
+              </Alert>
+            </MotionDiv>
+          )}
+        </AnimatePresence>
+
+        <Group justify="space-between" align="center" wrap="wrap">
+          <Group gap="xs">
+            <WandSparkles size={14} />
+            <Text size="sm" fw={600}>
+              Machine Translation
+            </Text>
+          </Group>
+          <Text size="xs" c="dimmed">
+            {selectedEntryIds.size > 0
+              ? `${selectedEntryIds.size} selected`
+              : `${untranslatedEntries.length} untranslated`}
+          </Text>
+        </Group>
+
         {/* API Key Warning */}
         <AnimatePresence>
           {!hasApiKey && (
