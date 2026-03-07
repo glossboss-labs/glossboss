@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MantineProvider } from '@mantine/core';
@@ -7,28 +7,38 @@ import { FeedbackModal } from './FeedbackModal';
 import type { FeedbackIssueRequest, FeedbackIssueSuccess } from '@/lib/feedback';
 
 function renderModal(props: Partial<ComponentProps<typeof FeedbackModal>> = {}) {
-  const onClose = props.onClose ?? vi.fn();
+  const { onClose = vi.fn(), ...restProps } = props;
+  const defaultProps: ComponentProps<typeof FeedbackModal> = {
+    opened: true,
+    onClose,
+    resolveTurnstileToken: async () => 'turnstile-token',
+    submitFeedbackRequest: async () => ({
+      ok: true,
+      issueNumber: 123,
+      issueUrl: 'https://example.com/123',
+    }),
+  };
 
   return {
     onClose,
     ...render(
       <MantineProvider>
-        <FeedbackModal
-          opened
-          onClose={onClose}
-          resolveTurnstileToken={props.resolveTurnstileToken ?? (async () => 'turnstile-token')}
-          submitFeedbackRequest={
-            props.submitFeedbackRequest ??
-            (async () => ({ ok: true, issueNumber: 123, issueUrl: 'https://example.com/123' }))
-          }
-          {...props}
-        />
+        <FeedbackModal {...defaultProps} {...restProps} onClose={onClose} />
       </MantineProvider>,
     ),
   };
 }
 
+const testEnv = import.meta.env as Record<string, string | undefined>;
+const originalTurnstileSiteKey = testEnv.VITE_TURNSTILE_SITE_KEY;
+const originalFeedbackBypass = testEnv.VITE_FEEDBACK_BYPASS_TURNSTILE;
+
 describe('FeedbackModal', () => {
+  afterEach(() => {
+    testEnv.VITE_TURNSTILE_SITE_KEY = originalTurnstileSiteKey;
+    testEnv.VITE_FEEDBACK_BYPASS_TURNSTILE = originalFeedbackBypass;
+  });
+
   it('blocks submit when required bug fields are missing', async () => {
     const user = userEvent.setup();
     const submitMock = vi.fn<(payload: FeedbackIssueRequest) => Promise<FeedbackIssueSuccess>>();
@@ -142,5 +152,29 @@ describe('FeedbackModal', () => {
 
     expect(await screen.findByText('Too many requests')).toBeInTheDocument();
     expect(onClose).not.toHaveBeenCalled();
+  });
+
+  it('auto-enables local bypass when site key is missing in dev', async () => {
+    testEnv.VITE_TURNSTILE_SITE_KEY = '';
+    testEnv.VITE_FEEDBACK_BYPASS_TURNSTILE = 'false';
+
+    renderModal({ resolveTurnstileToken: undefined });
+
+    expect(
+      await screen.findByText('Turnstile site key not set. Using local development bypass.'),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /send feedback/i })).toBeEnabled();
+  });
+
+  it('shows standard bypass message when bypass flag is explicitly enabled', async () => {
+    testEnv.VITE_TURNSTILE_SITE_KEY = '1x00000000000000000000AA';
+    testEnv.VITE_FEEDBACK_BYPASS_TURNSTILE = 'true';
+
+    renderModal({ resolveTurnstileToken: undefined });
+
+    expect(
+      await screen.findByText('Turnstile bypass enabled for local development.'),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /send feedback/i })).toBeEnabled();
   });
 });

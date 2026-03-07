@@ -69,9 +69,11 @@ export function FeedbackModal({
 
   const turnstileControllerRef = useRef<TurnstileController | null>(null);
 
-  const turnstileSiteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY;
+  const turnstileSiteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY?.trim() ?? '';
+  const hasTurnstileSiteKey = turnstileSiteKey.length > 0;
   const bypassTurnstile =
-    import.meta.env.DEV && import.meta.env.VITE_FEEDBACK_BYPASS_TURNSTILE === 'true';
+    import.meta.env.DEV &&
+    (import.meta.env.VITE_FEEDBACK_BYPASS_TURNSTILE === 'true' || !hasTurnstileSiteKey);
 
   const turnstileReady = useMemo(() => {
     if (resolveTurnstileToken) return true;
@@ -431,7 +433,9 @@ export function FeedbackModal({
 
           {bypassTurnstile && (
             <Text size="xs" c="yellow">
-              Turnstile bypass enabled for local development.
+              {hasTurnstileSiteKey
+                ? 'Turnstile bypass enabled for local development.'
+                : 'Turnstile site key not set. Using local development bypass.'}
             </Text>
           )}
 

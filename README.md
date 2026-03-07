@@ -40,6 +40,7 @@ Add these GitHub repository secrets to enable deployment:
 - `CLOUDFLARE_API_TOKEN` (with Pages edit permissions for the `glossboss` project)
 - `VITE_SUPABASE_URL`
 - `VITE_SUPABASE_ANON_KEY`
+- `VITE_TURNSTILE_SITE_KEY`
 
 ## Environment Variables
 
@@ -92,7 +93,9 @@ Local-only Turnstile bypass for development:
 bunx supabase secrets set ALLOW_TURNSTILE_BYPASS=true
 ```
 
-Then set `VITE_FEEDBACK_BYPASS_TURNSTILE=true` in your local `.env` to use the bypass token (`dev-bypass`) during local testing.
+In local Vite dev mode, the frontend automatically falls back to a bypass token (`dev-bypass`) when `VITE_TURNSTILE_SITE_KEY` is not set.
+
+Set `VITE_FEEDBACK_BYPASS_TURNSTILE=true` in your local `.env` if you want to force bypass even when a site key is present.
 
 GitHub token requirements:
 
