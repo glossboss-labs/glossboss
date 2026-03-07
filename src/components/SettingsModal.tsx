@@ -45,6 +45,7 @@ import {
   Search,
   Eye,
   Keyboard,
+  GitBranch,
 } from 'lucide-react';
 import {
   getDeepLSettings,
@@ -397,6 +398,8 @@ interface SettingsModalProps {
   deeplGlossaryId?: string | null;
   deeplTermCount?: number;
   selectedSourceText?: string | null;
+  branchChipEnabled?: boolean;
+  onBranchChipEnabledChange?: (enabled: boolean) => void;
 }
 
 export function SettingsModal({
@@ -412,7 +415,11 @@ export function SettingsModal({
   deeplGlossaryId,
   deeplTermCount,
   selectedSourceText,
+  branchChipEnabled = true,
+  onBranchChipEnabledChange,
 }: SettingsModalProps) {
+  const isDevelopment = import.meta.env.DEV;
+
   // DeepL API settings state
   const [apiKey, setApiKey] = useState('');
   const [apiType, setApiType] = useState<DeepLApiType>('free');
@@ -595,6 +602,18 @@ export function SettingsModal({
             <Tabs.Tab value="keybinds" leftSection={<Keyboard size={14} />}>
               Keyboard Shortcuts
             </Tabs.Tab>
+            {isDevelopment && (
+              <Tabs.Tab
+                value="development"
+                leftSection={<GitBranch size={14} />}
+                style={{
+                  border: '1px dotted var(--mantine-color-orange-5)',
+                  borderRadius: 'var(--mantine-radius-md)',
+                }}
+              >
+                Development
+              </Tabs.Tab>
+            )}
           </Tabs.List>
 
           {/* DeepL API Tab */}
@@ -862,6 +881,57 @@ export function SettingsModal({
           <Tabs.Panel value="keybinds">
             <KeyboardShortcutsPanel />
           </Tabs.Panel>
+
+          {isDevelopment && (
+            <Tabs.Panel value="development">
+              <Stack gap="md">
+                <Alert color="orange" variant="light" icon={<GitBranch size={16} />}>
+                  <Text size="sm" fw={600}>
+                    Development Mode Only
+                  </Text>
+                  <Text size="sm">
+                    These tools only appear while running the app locally in development and are not
+                    shown in production.
+                  </Text>
+                </Alert>
+
+                <Paper p="md" withBorder>
+                  <Stack gap="sm">
+                    <Group justify="space-between" align="flex-start">
+                      <div>
+                        <Text size="sm" fw={500}>
+                          Branch status chip
+                        </Text>
+                        <Text size="xs" c="dimmed">
+                          Show the current git branch in a small floating chip at the bottom right
+                          of the site.
+                        </Text>
+                      </div>
+
+                      <Badge variant="light" color="gray">
+                        {__GIT_BRANCH__}
+                      </Badge>
+                    </Group>
+
+                    <Switch
+                      label="Show branch chip"
+                      description="Only visible while running the app in development mode"
+                      checked={branchChipEnabled}
+                      onChange={(e) => onBranchChipEnabledChange?.(e.currentTarget.checked)}
+                      styles={{
+                        track: {
+                          transition: 'background-color 0.2s ease, border-color 0.2s ease',
+                        },
+                        thumb: {
+                          transition: 'transform 0.2s ease, left 0.2s ease',
+                        },
+                      }}
+                    />
+                  </Stack>
+                </Paper>
+              </Stack>
+            </Tabs.Panel>
+          )}
         </Tabs>
       </Modal>
 
