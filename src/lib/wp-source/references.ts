@@ -61,18 +61,33 @@ export function parseReferences(references: string[]): ParsedReference[] {
  * 1. From `projectIdVersion` header: "Plugin Name 1.0" → "plugin-name"
  * 2. From filename: "plugin-name-nl_NL.po" → "plugin-name"
  */
-export function detectPluginSlug(header: POHeader, filename: string): string | null {
+export interface DetectedPlugin {
+  slug: string;
+  version: string | null;
+}
+
+export function detectPluginSlug(header: POHeader, filename: string): DetectedPlugin | null {
   // Strategy 1: From Project-Id-Version header
   if (header.projectIdVersion) {
     const slug = slugFromProjectId(header.projectIdVersion);
-    if (slug) return slug;
+    const version = extractVersion(header.projectIdVersion);
+    if (slug) return { slug, version };
   }
 
   // Strategy 2: From filename
   const slug = slugFromFilename(filename);
-  if (slug) return slug;
+  if (slug) return { slug, version: null };
 
   return null;
+}
+
+/**
+ * Extract version number from Project-Id-Version header.
+ * Pattern: "Plugin Name 1.0.2" → "1.0.2"
+ */
+function extractVersion(projectIdVersion: string): string | null {
+  const match = projectIdVersion.match(/[\s_-]+v?([\d][\d.]*(?:-[\w.]+)?)\s*$/);
+  return match ? match[1] : null;
 }
 
 /**
@@ -121,17 +136,24 @@ function slugFromFilename(filename: string): string | null {
 
 /**
  * Build a URL to plugins.trac.wordpress.org for viewing source.
+ * @param basePath - "trunk" or "tags/x.y.z" (defaults to "trunk")
  */
-export function buildTracUrl(slug: string, path: string, line?: number): string {
+export function buildTracUrl(
+  slug: string,
+  path: string,
+  line?: number,
+  basePath: string = 'trunk',
+): string {
   const cleanPath = path.replace(/^\/+/, '');
-  const url = `https://plugins.trac.wordpress.org/browser/${slug}/trunk/${cleanPath}`;
+  const url = `https://plugins.trac.wordpress.org/browser/${slug}/${basePath}/${cleanPath}`;
   return line ? `${url}#L${line}` : url;
 }
 
 /**
  * Build a URL to plugins.svn.wordpress.org for fetching raw files.
+ * @param basePath - "trunk" or "tags/x.y.z" (defaults to "trunk")
  */
-export function buildSvnUrl(slug: string, path: string): string {
+export function buildSvnUrl(slug: string, path: string, basePath: string = 'trunk'): string {
   const cleanPath = path.replace(/^\/+/, '');
-  return `https://plugins.svn.wordpress.org/${slug}/trunk/${cleanPath}`;
+  return `https://plugins.svn.wordpress.org/${slug}/${basePath}/${cleanPath}`;
 }

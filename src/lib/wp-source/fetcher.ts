@@ -11,9 +11,9 @@ export interface DirectoryEntry {
   isDir: boolean;
 }
 
-/** In-memory cache for source files and directory listings */
+/** In-memory cache for source files and directory listings (stores JSON strings) */
 const fileCache = new Map<string, string>();
-const dirCache = new Map<string, DirectoryEntry[]>();
+const dirCache = new Map<string, string>();
 
 /** Fetch timeout in milliseconds */
 const FETCH_TIMEOUT_MS = 30000;
@@ -61,17 +61,35 @@ async function fetchFromEdge(body: Record<string, unknown>): Promise<Response> {
   }
 }
 
+/** Result from fetching a source file */
+export interface FetchSourceResult {
+  content: string;
+  basePath: string;
+}
+
+/** Result from fetching a directory listing */
+export interface FetchDirResult {
+  entries: DirectoryEntry[];
+  basePath: string;
+}
+
 /**
  * Fetch a source file's contents.
  * Results are cached in memory.
  */
-export async function fetchSourceFile(slug: string, path: string): Promise<string> {
+export async function fetchSourceFile(
+  slug: string,
+  path: string,
+  version?: string | null,
+): Promise<FetchSourceResult> {
   const cacheKey = `${slug}/${path}`;
 
   const cached = fileCache.get(cacheKey);
-  if (cached !== undefined) return cached;
+  if (cached !== undefined) return JSON.parse(cached);
 
-  const response = await fetchFromEdge({ slug, path });
+  const body: Record<string, unknown> = { slug, path };
+  if (version) body.version = version;
+  const response = await fetchFromEdge(body);
 
   if (!response.ok) {
     const data = await response.json().catch(() => ({}));
@@ -79,23 +97,32 @@ export async function fetchSourceFile(slug: string, path: string): Promise<strin
   }
 
   const data = await response.json();
-  const content = data.content as string;
+  const result: FetchSourceResult = {
+    content: data.content as string,
+    basePath: (data.basePath as string) || 'trunk',
+  };
 
-  fileCache.set(cacheKey, content);
-  return content;
+  fileCache.set(cacheKey, JSON.stringify(result));
+  return result;
 }
 
 /**
  * Fetch a directory listing.
  * Results are cached in memory.
  */
-export async function fetchDirectoryListing(slug: string, path: string): Promise<DirectoryEntry[]> {
+export async function fetchDirectoryListing(
+  slug: string,
+  path: string,
+  version?: string | null,
+): Promise<FetchDirResult> {
   const cacheKey = `${slug}/${path}`;
 
   const cached = dirCache.get(cacheKey);
-  if (cached) return cached;
+  if (cached !== undefined) return JSON.parse(cached);
 
-  const response = await fetchFromEdge({ slug, path: path || '', list: true });
+  const body: Record<string, unknown> = { slug, path: path || '', list: true };
+  if (version) body.version = version;
+  const response = await fetchFromEdge(body);
 
   if (!response.ok) {
     const data = await response.json().catch(() => ({}));
@@ -103,10 +130,13 @@ export async function fetchDirectoryListing(slug: string, path: string): Promise
   }
 
   const data = await response.json();
-  const entries = data.entries as DirectoryEntry[];
+  const result: FetchDirResult = {
+    entries: data.entries as DirectoryEntry[],
+    basePath: (data.basePath as string) || 'trunk',
+  };
 
-  dirCache.set(cacheKey, entries);
-  return entries;
+  dirCache.set(cacheKey, JSON.stringify(result));
+  return result;
 }
 
 /**
@@ -118,13 +148,20 @@ export function clearCache(): void {
 }
 
 /**
- * Check if a plugin slug exists on plugins.svn.wordpress.org.
- * Returns true if the slug's root directory is accessible.
+ * Check if a plugin slug exists on WordPress.org.
+ * Uses the public Plugin API which supports CORS (no proxy needed).
  */
 export async function validateSlug(slug: string): Promise<boolean> {
   try {
-    await fetchDirectoryListing(slug, '');
-    return true;
+    const response = await fetch(
+      `https://api.wordpress.org/plugins/info/1.2/?action=plugin_information&slug=${encodeURIComponent(slug)}`,
+    );
+
+    if (!response.ok) return false;
+
+    const data = await response.json();
+    // The API returns an object with "error" for invalid slugs
+    return !data.error;
   } catch {
     return false;
   }

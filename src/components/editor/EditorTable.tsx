@@ -33,10 +33,10 @@ import {
   Select,
 } from '@mantine/core';
 import { useLocalStorage } from '@mantine/hooks';
-import { MessageSquare, FileCode, Pencil, Bot, Edit3, Eye } from 'lucide-react';
+import { MessageSquare, FileCode, Pencil, Bot, Edit3 } from 'lucide-react';
 import { useEditorStore, useSourceStore, getEffectiveSlug } from '@/stores';
 import type { POEntry } from '@/lib/po';
-import { parseReferences, buildTracUrl } from '@/lib/wp-source';
+import { parseReferences } from '@/lib/wp-source';
 import { getTranslationStatus, type TranslationStatus } from '@/types';
 import { TranslateButton } from './TranslateButton';
 import { GlossaryIndicator } from './GlossaryIndicator';
@@ -750,46 +750,25 @@ function MetaCell({ entry }: { entry: POEntry }) {
       )}
 
       {hasReferences && pluginSlug && (
-        <Stack gap={2}>
-          {parsedRefs.map((ref, i) => (
-            <Group key={i} gap={4} wrap="nowrap">
-              <Tooltip label={`${ref.path}${ref.line ? `:${ref.line}` : ''}`}>
-                <Text
-                  component="a"
-                  href={buildTracUrl(pluginSlug, ref.path, ref.line ?? undefined)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  size="xs"
-                  c="blue"
-                  style={{
-                    textDecoration: 'none',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                    maxWidth: 80,
-                    display: 'block',
-                  }}
-                  onClick={(e: React.MouseEvent) => e.stopPropagation()}
-                >
-                  {ref.path.split('/').pop()}
-                  {ref.line ? `:${ref.line}` : ''}
-                </Text>
-              </Tooltip>
-              <Tooltip label="View source context">
-                <Box
-                  component="span"
-                  style={{ cursor: 'pointer', display: 'inline-flex', flexShrink: 0 }}
-                  onClick={(e: React.MouseEvent) => {
-                    e.stopPropagation();
-                    setActiveReference(ref);
-                  }}
-                >
-                  <Eye size={12} style={{ opacity: 0.5 }} />
-                </Box>
-              </Tooltip>
-            </Group>
-          ))}
-        </Stack>
+        <Tooltip
+          label={parsedRefs.map((r) => `${r.path}${r.line ? `:${r.line}` : ''}`).join('\n')}
+          multiline
+          maw={300}
+        >
+          <Group
+            gap={4}
+            style={{ cursor: 'pointer' }}
+            onClick={(e: React.MouseEvent) => {
+              e.stopPropagation();
+              setActiveReference(parsedRefs[0]);
+            }}
+          >
+            <FileCode size={12} opacity={0.5} />
+            <Text size="xs" c="dimmed" style={{ textDecoration: 'underline dotted' }}>
+              {parsedRefs.length} ref{parsedRefs.length !== 1 ? 's' : ''}
+            </Text>
+          </Group>
+        </Tooltip>
       )}
 
       {hasReferences && !pluginSlug && (
