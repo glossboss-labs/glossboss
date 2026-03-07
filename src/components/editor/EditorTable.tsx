@@ -43,6 +43,69 @@ const TranslateSettingsContext = createContext<TranslateSettings>({
   glossaryEnforcementEnabled: false
 });
 
+/**
+ * Regex to match code-like tokens in translation strings:
+ * - Printf: %s, %d, %1$s, %-10.2f, etc.
+ * - PHP/named: %(name)s
+ * - Positional braces: {0}, {name}, {{variable}}
+ * - HTML tags: <br/>, <a href="...">, </strong>, etc.
+ * - Escape sequences: \n, \t, \r, \\
+ */
+const CODE_TOKEN_RE = /(%(?:\d+\$)?[-+0 #]*(?:\*|\d+)?(?:\.(?:\*|\d+))?(?:hh?|ll?|[ljztL])?[diouxXeEfFgGaAcspn%]|%\([^)]+\)[diouxXeEfFgGaAcspn]|\{\{?\w+\}?\}?|\{\d+\}|<\/?[a-zA-Z][a-zA-Z0-9]*(?:\s[^>]*)?\s*\/?>|\\[nrt\\])/g;
+
+/**
+ * Renders text with code-like tokens highlighted
+ */
+function HighlightedText({ children, dimmed }: { children: string; dimmed?: boolean }) {
+  const parts: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  CODE_TOKEN_RE.lastIndex = 0;
+  while ((match = CODE_TOKEN_RE.exec(children)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(children.slice(lastIndex, match.index));
+    }
+    parts.push(
+      <Text
+        key={match.index}
+        component="code"
+        size="xs"
+        style={{
+          fontFamily: 'var(--mantine-font-family-monospace)',
+          backgroundColor: 'var(--mantine-color-default-hover)',
+          border: '1px solid var(--mantine-color-default-border)',
+          borderRadius: 3,
+          padding: '1px 4px',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        {match[0]}
+      </Text>
+    );
+    lastIndex = match.index + match[0].length;
+  }
+
+  if (lastIndex < children.length) {
+    parts.push(children.slice(lastIndex));
+  }
+
+  // No tokens found, return plain text
+  if (parts.length === 1 && typeof parts[0] === 'string') {
+    return (
+      <Text component="span" size="sm" style={{ whiteSpace: 'pre-wrap' }} c={dimmed ? 'dimmed' : undefined}>
+        {children}
+      </Text>
+    );
+  }
+
+  return (
+    <Text component="span" size="sm" style={{ whiteSpace: 'pre-wrap' }} c={dimmed ? 'dimmed' : undefined}>
+      {parts}
+    </Text>
+  );
+}
+
 /** Status badge colors */
 const STATUS_COLORS: Record<TranslationStatus, string> = {
   translated: 'green',
@@ -130,9 +193,17 @@ function EditableField({
 
   if (isEditing) {
     return (
-      <Box>
+      <Box
+        style={{
+          margin: '-6px -8px',
+          padding: 2,
+          borderRadius: 6,
+          backgroundColor: 'var(--mantine-color-blue-light)',
+          boxShadow: '0 0 0 2px var(--mantine-color-blue-filled)',
+        }}
+      >
         {isPlural && pluralIndex !== undefined && (
-          <Text component="span" size="xs" c="dimmed" mb={4} style={{ display: 'block' }}>
+          <Text component="span" size="xs" c="dimmed" mb={4} ml={6} style={{ display: 'block' }}>
             [{pluralIndex}]
           </Text>
         )}
@@ -150,7 +221,9 @@ function EditableField({
           styles={{
             input: {
               fontFamily: 'inherit',
-              fontSize: 'var(--mantine-font-size-sm)'
+              fontSize: 'var(--mantine-font-size-sm)',
+              border: 'none',
+              backgroundColor: 'var(--mantine-color-body)',
             }
           }}
           data-field-id={fieldId}
@@ -184,16 +257,10 @@ function EditableField({
           [{pluralIndex}]
         </Text>
       )}
-      <Text
-        component="span"
-        size="sm"
-        style={{ whiteSpace: 'pre-wrap' }}
-        c={isEmpty ? 'dimmed' : undefined}
-      >
-        {isEmpty ? placeholder : value}
-      </Text>
-      {isEmpty && (
-        <Pencil size={12} style={{ marginLeft: 6, opacity: 0.5, verticalAlign: 'middle' }} />
+      {isEmpty ? (
+        <Pencil size={14} style={{ opacity: 0.35, verticalAlign: 'middle' }} />
+      ) : (
+        <HighlightedText>{value}</HighlightedText>
       )}
     </Box>
   );
@@ -210,21 +277,17 @@ function SourceCell({ entry }: { entry: POEntry }) {
       <Stack gap={4}>
         <Group gap={4}>
           <Badge size="xs" variant="light" color="gray">singular</Badge>
-          <Text size="sm" style={{ whiteSpace: 'pre-wrap' }}>{entry.msgid}</Text>
+          <HighlightedText>{entry.msgid}</HighlightedText>
         </Group>
         <Group gap={4}>
           <Badge size="xs" variant="light" color="gray">plural</Badge>
-          <Text size="sm" style={{ whiteSpace: 'pre-wrap' }}>{entry.msgidPlural}</Text>
+          <HighlightedText>{entry.msgidPlural!}</HighlightedText>
         </Group>
       </Stack>
     );
   }
-  
-  return (
-    <Text size="sm" style={{ whiteSpace: 'pre-wrap' }}>
-      {entry.msgid}
-    </Text>
-  );
+
+  return <HighlightedText>{entry.msgid}</HighlightedText>;
 }
 
 /**
