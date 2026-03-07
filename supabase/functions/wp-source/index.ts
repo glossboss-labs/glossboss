@@ -49,6 +49,64 @@ function parseDirectoryListing(html: string): { name: string; isDir: boolean }[]
   return entries;
 }
 
+const SVN_BASE = 'https://plugins.svn.wordpress.org';
+const FETCH_HEADERS = { 'User-Agent': 'GlossBoss/1.0 (WordPress Translation Editor)' };
+
+/** Cache of resolved base paths (slug → "trunk" or "tags/x.y.z") */
+const basePathCache = new Map<string, string>();
+
+/**
+ * Resolve the base path for a plugin.
+ * Tries trunk first; if trunk is empty, falls back to the latest tag.
+ */
+async function resolveBasePath(slug: string): Promise<string> {
+  const cached = basePathCache.get(slug);
+  if (cached) return cached;
+
+  // Check if trunk has content
+  const trunkRes = await fetch(`${SVN_BASE}/${slug}/trunk/`, { headers: FETCH_HEADERS });
+  if (trunkRes.ok) {
+    const html = await trunkRes.text();
+    const entries = parseDirectoryListing(html);
+    if (entries.length > 0) {
+      basePathCache.set(slug, 'trunk');
+      return 'trunk';
+    }
+  }
+
+  // Trunk is empty or missing — find the latest tag
+  const tagsRes = await fetch(`${SVN_BASE}/${slug}/tags/`, { headers: FETCH_HEADERS });
+  if (tagsRes.ok) {
+    const html = await tagsRes.text();
+    const tags = parseDirectoryListing(html)
+      .filter((e) => e.isDir)
+      .map((e) => e.name);
+
+    if (tags.length > 0) {
+      // Sort by version (semver-like), pick the last one
+      const latest = tags
+        .sort((a, b) => {
+          const pa = a.split('.').map(Number);
+          const pb = b.split('.').map(Number);
+          for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
+            const diff = (pa[i] || 0) - (pb[i] || 0);
+            if (diff !== 0) return diff;
+          }
+          return 0;
+        })
+        .pop()!;
+
+      const basePath = `tags/${latest}`;
+      basePathCache.set(slug, basePath);
+      return basePath;
+    }
+  }
+
+  // Default to trunk even if empty
+  basePathCache.set(slug, 'trunk');
+  return 'trunk';
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -56,7 +114,7 @@ Deno.serve(async (req: Request) => {
 
   try {
     const body = await req.json();
-    const { slug, path, list } = body;
+    const { slug, path, list, version } = body;
 
     if (!slug) {
       return new Response(JSON.stringify({ error: 'Missing required field: slug' }), {
@@ -72,23 +130,34 @@ Deno.serve(async (req: Request) => {
       );
     }
 
+    // If a specific version is requested, try that tag first
+    let basePath: string;
+    if (version && /^[\d][\d.]*(-[\w.]+)?$/.test(version)) {
+      // Check if the requested tag exists
+      const tagUrl = `${SVN_BASE}/${slug}/tags/${version}/`;
+      const tagRes = await fetch(tagUrl, { headers: FETCH_HEADERS });
+      if (tagRes.ok) {
+        basePath = `tags/${version}`;
+      } else {
+        // Fall back to auto-resolution
+        basePath = await resolveBasePath(slug);
+      }
+    } else {
+      basePath = await resolveBasePath(slug);
+    }
     const cleanPath = (path || '').replace(/^\/+/, '');
-    const svnUrl = `https://plugins.svn.wordpress.org/${slug}/trunk/${cleanPath}`;
+    const svnUrl = `${SVN_BASE}/${slug}/${basePath}/${cleanPath}`;
 
-    console.log(`Fetching: ${svnUrl} (list: ${!!list})`);
+    console.log(`Fetching: ${svnUrl} (list: ${!!list}, base: ${basePath})`);
 
-    const response = await fetch(svnUrl, {
-      headers: {
-        'User-Agent': 'GlossBoss/1.0 (WordPress Translation Editor)',
-      },
-    });
+    const response = await fetch(svnUrl, { headers: FETCH_HEADERS });
 
     if (!response.ok) {
       if (response.status === 404) {
-        return new Response(JSON.stringify({ error: `Not found: ${slug}/trunk/${cleanPath}` }), {
-          status: 404,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
+        return new Response(
+          JSON.stringify({ error: `Not found: ${slug}/${basePath}/${cleanPath}` }),
+          { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+        );
       }
       return new Response(JSON.stringify({ error: `SVN returned HTTP ${response.status}` }), {
         status: response.status,
@@ -100,14 +169,14 @@ Deno.serve(async (req: Request) => {
     if (list || !cleanPath || cleanPath.endsWith('/')) {
       const html = await response.text();
       const entries = parseDirectoryListing(html);
-      return new Response(JSON.stringify({ entries }), {
+      return new Response(JSON.stringify({ entries, basePath }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
     // File content mode
     const content = await response.text();
-    return new Response(JSON.stringify({ content }), {
+    return new Response(JSON.stringify({ content, basePath }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {

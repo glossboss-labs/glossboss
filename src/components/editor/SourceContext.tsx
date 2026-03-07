@@ -176,6 +176,7 @@ function SourceViewer({
   }, [targetLine, content]);
 
   const slug = useSourceStore((s) => getEffectiveSlug(s));
+  const basePath = useSourceStore((s) => s.resolvedBasePath) ?? 'trunk';
 
   return (
     <Stack gap={0}>
@@ -193,7 +194,7 @@ function SourceViewer({
           <Tooltip label="Open in Trac">
             <ActionIcon
               component="a"
-              href={buildTracUrl(slug, filePath, targetLine ?? undefined)}
+              href={buildTracUrl(slug, filePath, targetLine ?? undefined, basePath)}
               target="_blank"
               rel="noopener noreferrer"
               variant="subtle"

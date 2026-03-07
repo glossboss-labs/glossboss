@@ -11,6 +11,7 @@ export {
   buildTracUrl,
   buildSvnUrl,
   type ParsedReference,
+  type DetectedPlugin,
 } from './references';
 
 export {
@@ -19,4 +20,6 @@ export {
   clearCache,
   validateSlug,
   type DirectoryEntry,
+  type FetchSourceResult,
+  type FetchDirResult,
 } from './fetcher';

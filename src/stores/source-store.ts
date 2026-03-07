@@ -19,6 +19,8 @@ import {
 export interface SourceState {
   pluginSlug: string | null;
   autoDetectedSlug: string | null;
+  /** Version from PO header (e.g. "8.4.2") — used to fetch the matching tag */
+  pluginVersion: string | null;
   isSlugValid: boolean | null;
   activeReference: ParsedReference | null;
   sourceContent: string | null;
@@ -27,12 +29,14 @@ export interface SourceState {
   directoryTree: DirectoryEntry[] | null;
   browsingPath: string;
   isLoadingDirectory: boolean;
+  /** Resolved base path from SVN (e.g. "trunk" or "tags/8.4.2") */
+  resolvedBasePath: string | null;
 }
 
 /** Source store actions */
 export interface SourceActions {
   setPluginSlug: (slug: string | null) => void;
-  setAutoDetectedSlug: (slug: string | null) => void;
+  setAutoDetectedSlug: (slug: string | null, version?: string | null) => void;
   setActiveReference: (ref: ParsedReference | null) => void;
   fetchSource: (path: string) => Promise<void>;
   fetchDirectory: (path: string) => Promise<void>;
@@ -43,6 +47,7 @@ export interface SourceActions {
 const initialState: SourceState = {
   pluginSlug: null,
   autoDetectedSlug: null,
+  pluginVersion: null,
   isSlugValid: null,
   activeReference: null,
   sourceContent: null,
@@ -51,6 +56,7 @@ const initialState: SourceState = {
   directoryTree: null,
   browsingPath: '',
   isLoadingDirectory: false,
+  resolvedBasePath: null,
 };
 
 /** Get the effective slug (manual override or auto-detected) */
@@ -73,8 +79,8 @@ export const useSourceStore = create<SourceState & SourceActions>()((set, get) =
     }
   },
 
-  setAutoDetectedSlug: (slug: string | null) => {
-    set({ autoDetectedSlug: slug, isSlugValid: null });
+  setAutoDetectedSlug: (slug: string | null, version?: string | null) => {
+    set({ autoDetectedSlug: slug, pluginVersion: version ?? null, isSlugValid: null });
   },
 
   setActiveReference: (ref: ParsedReference | null) => {
@@ -92,8 +98,12 @@ export const useSourceStore = create<SourceState & SourceActions>()((set, get) =
     set({ isLoadingSource: true, sourceError: null });
 
     try {
-      const content = await fetchSourceFile(slug, path);
-      set({ sourceContent: content, isLoadingSource: false });
+      const result = await fetchSourceFile(slug, path, get().pluginVersion);
+      set({
+        sourceContent: result.content,
+        resolvedBasePath: result.basePath,
+        isLoadingSource: false,
+      });
     } catch (err) {
       set({
         sourceContent: null,
@@ -110,8 +120,12 @@ export const useSourceStore = create<SourceState & SourceActions>()((set, get) =
     set({ isLoadingDirectory: true, browsingPath: path });
 
     try {
-      const entries = await fetchDirectoryListing(slug, path);
-      set({ directoryTree: entries, isLoadingDirectory: false });
+      const result = await fetchDirectoryListing(slug, path, get().pluginVersion);
+      set({
+        directoryTree: result.entries,
+        resolvedBasePath: result.basePath,
+        isLoadingDirectory: false,
+      });
     } catch {
       set({ directoryTree: null, isLoadingDirectory: false });
     }
