@@ -1,21 +1,60 @@
 /**
  * Editor Table Component
- * 
+ *
  * Translation table with inline editing, animations, and status badges.
  * Uses standard rendering (virtualization removed for stability).
  */
 
-import { useState, useCallback, useRef, type KeyboardEvent, createContext, useContext, useMemo, memo, useEffect, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react';
-import { Table, Badge, Text, Stack, Group, Box, Paper, Tooltip, Textarea, ScrollArea, Pagination, Select } from '@mantine/core';
+import {
+  useState,
+  useCallback,
+  useRef,
+  type KeyboardEvent,
+  createContext,
+  useContext,
+  useMemo,
+  memo,
+  useEffect,
+  type CSSProperties,
+  type PointerEvent as ReactPointerEvent,
+} from 'react';
+import {
+  Table,
+  Badge,
+  Text,
+  Stack,
+  Group,
+  Box,
+  Paper,
+  Tooltip,
+  Textarea,
+  ScrollArea,
+  Pagination,
+  Select,
+} from '@mantine/core';
 import { useLocalStorage } from '@mantine/hooks';
-import { MessageSquare, FileCode, Pencil, Bot, Edit3 } from 'lucide-react';
-import { useEditorStore } from '@/stores';
+import { MessageSquare, FileCode, Pencil, Bot, Edit3, Eye } from 'lucide-react';
+import { useEditorStore, useSourceStore, getEffectiveSlug } from '@/stores';
 import type { POEntry } from '@/lib/po';
+import { parseReferences, buildTracUrl } from '@/lib/wp-source';
 import { getTranslationStatus, type TranslationStatus } from '@/types';
 import { TranslateButton } from './TranslateButton';
 import { GlossaryIndicator } from './GlossaryIndicator';
 import type { TargetLanguage, SourceLanguage } from '@/lib/deepl/types';
 import type { Glossary } from '@/lib/glossary/types';
+
+/** localStorage key for skip-translated navigation setting */
+export const NAV_SKIP_TRANSLATED_KEY = 'glossboss-nav-skip-translated';
+
+/** Check if an entry needs translation (untranslated or fuzzy) */
+function entryNeedsTranslation(entry: POEntry): boolean {
+  if (entry.flags.includes('fuzzy')) return true;
+  if (entry.msgidPlural) {
+    const plurals = entry.msgstrPlural ?? [];
+    return plurals.length < 2 || plurals.some((p) => !p.trim());
+  }
+  return !entry.msgstr.trim();
+}
 
 /** Rows per page options */
 const ROWS_PER_PAGE_OPTIONS = [
@@ -48,29 +87,32 @@ function ResizableTh({
   const handleRef = useRef<HTMLDivElement>(null);
   const startXRef = useRef(0);
 
-  const onPointerDown = useCallback((e: ReactPointerEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    startXRef.current = e.clientX;
-    const target = e.currentTarget;
-    target.setPointerCapture(e.pointerId);
+  const onPointerDown = useCallback(
+    (e: ReactPointerEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      e.stopPropagation();
+      startXRef.current = e.clientX;
+      const target = e.currentTarget;
+      target.setPointerCapture(e.pointerId);
 
-    const onPointerMove = (ev: globalThis.PointerEvent) => {
-      const delta = ev.clientX - startXRef.current;
-      if (delta !== 0) {
-        onResize?.(delta);
-        startXRef.current = ev.clientX;
-      }
-    };
+      const onPointerMove = (ev: globalThis.PointerEvent) => {
+        const delta = ev.clientX - startXRef.current;
+        if (delta !== 0) {
+          onResize?.(delta);
+          startXRef.current = ev.clientX;
+        }
+      };
 
-    const onPointerUp = () => {
-      target.removeEventListener('pointermove', onPointerMove);
-      target.removeEventListener('pointerup', onPointerUp);
-    };
+      const onPointerUp = () => {
+        target.removeEventListener('pointermove', onPointerMove);
+        target.removeEventListener('pointerup', onPointerUp);
+      };
 
-    target.addEventListener('pointermove', onPointerMove);
-    target.addEventListener('pointerup', onPointerUp);
-  }, [onResize]);
+      target.addEventListener('pointermove', onPointerMove);
+      target.addEventListener('pointerup', onPointerUp);
+    },
+    [onResize],
+  );
 
   return (
     <Table.Th style={{ width: widthPercent, position: 'relative', userSelect: 'none' }}>
@@ -119,7 +161,7 @@ const TranslateSettingsContext = createContext<TranslateSettings>({
   sourceLang: null,
   glossary: null,
   deeplGlossaryId: null,
-  glossaryEnforcementEnabled: false
+  glossaryEnforcementEnabled: false,
 });
 
 /**
@@ -130,7 +172,8 @@ const TranslateSettingsContext = createContext<TranslateSettings>({
  * - HTML tags: <br/>, <a href="...">, </strong>, etc.
  * - Escape sequences: \n, \t, \r, \\
  */
-const CODE_TOKEN_RE = /(%(?:\d+\$)?[-+0 #]*(?:\*|\d+)?(?:\.(?:\*|\d+))?(?:hh?|ll?|[ljztL])?[diouxXeEfFgGaAcspn%]|%\([^)]+\)[diouxXeEfFgGaAcspn]|\{\{?\w+\}?\}?|\{\d+\}|<\/?[a-zA-Z][a-zA-Z0-9]*(?:\s[^>]*)?\s*\/?>|\\[nrt\\])/g;
+const CODE_TOKEN_RE =
+  /(%(?:\d+\$)?[-+0 #]*(?:\*|\d+)?(?:\.(?:\*|\d+))?(?:hh?|ll?|[ljztL])?[diouxXeEfFgGaAcspn%]|%\([^)]+\)[diouxXeEfFgGaAcspn]|\{\{?\w+\}?\}?|\{\d+\}|<\/?[a-zA-Z][a-zA-Z0-9]*(?:\s[^>]*)?\s*\/?>|\\[nrt\\])/g;
 
 /**
  * Renders text with code-like tokens highlighted
@@ -140,8 +183,8 @@ function HighlightedText({ children, dimmed }: { children: string; dimmed?: bool
   let lastIndex = 0;
   let match: RegExpExecArray | null;
 
-  CODE_TOKEN_RE.lastIndex = 0;
-  while ((match = CODE_TOKEN_RE.exec(children)) !== null) {
+  const re = new RegExp(CODE_TOKEN_RE.source, CODE_TOKEN_RE.flags);
+  while ((match = re.exec(children)) !== null) {
     if (match.index > lastIndex) {
       parts.push(children.slice(lastIndex, match.index));
     }
@@ -160,7 +203,7 @@ function HighlightedText({ children, dimmed }: { children: string; dimmed?: bool
         }}
       >
         {match[0]}
-      </Text>
+      </Text>,
     );
     lastIndex = match.index + match[0].length;
   }
@@ -172,14 +215,24 @@ function HighlightedText({ children, dimmed }: { children: string; dimmed?: bool
   // No tokens found, return plain text
   if (parts.length === 1 && typeof parts[0] === 'string') {
     return (
-      <Text component="span" size="sm" style={{ whiteSpace: 'pre-wrap' }} c={dimmed ? 'dimmed' : undefined}>
+      <Text
+        component="span"
+        size="sm"
+        style={{ whiteSpace: 'pre-wrap' }}
+        c={dimmed ? 'dimmed' : undefined}
+      >
         {children}
       </Text>
     );
   }
 
   return (
-    <Text component="span" size="sm" style={{ whiteSpace: 'pre-wrap' }} c={dimmed ? 'dimmed' : undefined}>
+    <Text
+      component="span"
+      size="sm"
+      style={{ whiteSpace: 'pre-wrap' }}
+      c={dimmed ? 'dimmed' : undefined}
+    >
       {parts}
     </Text>
   );
@@ -189,14 +242,14 @@ function HighlightedText({ children, dimmed }: { children: string; dimmed?: bool
 const STATUS_COLORS: Record<TranslationStatus, string> = {
   translated: 'green',
   untranslated: 'red',
-  fuzzy: 'yellow'
+  fuzzy: 'yellow',
 };
 
 /** Status badge labels */
 const STATUS_LABELS: Record<TranslationStatus, string> = {
   translated: 'Translated',
   untranslated: 'Untranslated',
-  fuzzy: 'Fuzzy'
+  fuzzy: 'Fuzzy',
 };
 
 /** Flag badge colors */
@@ -207,7 +260,7 @@ const FLAG_COLORS: Record<string, string> = {
   'php-format': 'violet',
   'no-php-format': 'gray',
   'python-format': 'violet',
-  'no-python-format': 'gray'
+  'no-python-format': 'gray',
 };
 
 /**
@@ -221,7 +274,7 @@ function EditableField({
   entryId,
   fieldId,
   isPlural = false,
-  pluralIndex
+  pluralIndex,
 }: {
   value: string;
   placeholder?: string;
@@ -250,25 +303,28 @@ function EditableField({
     }
   }, [editValue, value, onChange]);
 
-  const handleKeyDown = useCallback((e: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Escape') {
-      setEditValue(value);
-      setIsEditing(false);
-      e.preventDefault();
-    } else if (e.key === 'Tab') {
-      if (editValue !== value) {
-        onChange(editValue);
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLTextAreaElement>) => {
+      if (e.key === 'Escape') {
+        setEditValue(value);
+        setIsEditing(false);
+        e.preventDefault();
+      } else if (e.key === 'Tab') {
+        if (editValue !== value) {
+          onChange(editValue);
+        }
+        setIsEditing(false);
+        onKeyDown?.(e, fieldId);
+      } else if (e.key === 'Enter' && !e.shiftKey) {
+        if (editValue !== value) {
+          onChange(editValue);
+        }
+        setIsEditing(false);
+        onKeyDown?.(e, fieldId);
       }
-      setIsEditing(false);
-      onKeyDown?.(e, fieldId);
-    } else if (e.key === 'Enter' && !e.shiftKey) {
-      if (editValue !== value) {
-        onChange(editValue);
-      }
-      setIsEditing(false);
-      onKeyDown?.(e, fieldId);
-    }
-  }, [editValue, value, onChange, onKeyDown, fieldId]);
+    },
+    [editValue, value, onChange, onKeyDown, fieldId],
+  );
 
   if (isEditing) {
     const sharedStyles: CSSProperties = {
@@ -333,7 +389,7 @@ function EditableField({
                 boxShadow: 'none',
                 position: 'relative',
                 zIndex: 1,
-              }
+              },
             }}
             data-field-id={fieldId}
             data-entry-id={entryId}
@@ -353,7 +409,7 @@ function EditableField({
         margin: '-6px -8px',
         borderRadius: 4,
         minHeight: 32,
-        transition: 'background-color 150ms ease'
+        transition: 'background-color 150ms ease',
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.backgroundColor = 'var(--mantine-color-default-hover)';
@@ -381,16 +437,20 @@ function EditableField({
  */
 function SourceCell({ entry }: { entry: POEntry }) {
   const hasPlural = Boolean(entry.msgidPlural);
-  
+
   if (hasPlural) {
     return (
       <Stack gap={4}>
         <Group gap={4}>
-          <Badge size="xs" variant="light" color="gray">singular</Badge>
+          <Badge size="xs" variant="light" color="gray">
+            singular
+          </Badge>
           <HighlightedText>{entry.msgid}</HighlightedText>
         </Group>
         <Group gap={4}>
-          <Badge size="xs" variant="light" color="gray">plural</Badge>
+          <Badge size="xs" variant="light" color="gray">
+            plural
+          </Badge>
           <HighlightedText>{entry.msgidPlural!}</HighlightedText>
         </Group>
       </Stack>
@@ -405,66 +465,78 @@ function SourceCell({ entry }: { entry: POEntry }) {
  */
 function TranslationCell({
   entry,
-  onKeyDown
+  onKeyDown,
 }: {
   entry: POEntry;
   onKeyDown?: (e: KeyboardEvent<HTMLTextAreaElement>, fieldId: string) => void;
 }) {
-  const updateEntry = useEditorStore(state => state.updateEntry);
-  const updateEntryPlural = useEditorStore(state => state.updateEntryPlural);
-  const markAsMachineTranslated = useEditorStore(state => state.markAsMachineTranslated);
-  const clearMachineTranslated = useEditorStore(state => state.clearMachineTranslated);
-  const getGlossaryAnalysis = useEditorStore(state => state.getGlossaryAnalysis);
-  
+  const updateEntry = useEditorStore((state) => state.updateEntry);
+  const updateEntryPlural = useEditorStore((state) => state.updateEntryPlural);
+  const markAsMachineTranslated = useEditorStore((state) => state.markAsMachineTranslated);
+  const clearMachineTranslated = useEditorStore((state) => state.clearMachineTranslated);
+  const getGlossaryAnalysis = useEditorStore((state) => state.getGlossaryAnalysis);
+
   // Use individual selectors for reactive state
-  const isMT = useEditorStore(state => state.machineTranslatedIds.has(entry.id));
+  const isMT = useEditorStore((state) => state.machineTranslatedIds.has(entry.id));
   const usedGlossary = useEditorStore(
-    state => state.machineTranslationMeta.get(entry.id)?.usedGlossary ?? false
+    (state) => state.machineTranslationMeta.get(entry.id)?.usedGlossary ?? false,
   );
-  
+
   const translateSettings = useContext(TranslateSettingsContext);
   const hasPlural = Boolean(entry.msgidPlural);
-  const pluralForms = entry.msgstrPlural ?? [];
+  const pluralForms = useMemo(() => entry.msgstrPlural ?? [], [entry.msgstrPlural]);
   const glossaryAnalysis = getGlossaryAnalysis(entry.id);
 
-  const handleSingularChange = useCallback((value: string) => {
-    updateEntry(entry.id, value);
-    if (isMT) {
-      clearMachineTranslated(entry.id);
-    }
-  }, [entry.id, updateEntry, isMT, clearMachineTranslated]);
+  const handleSingularChange = useCallback(
+    (value: string) => {
+      updateEntry(entry.id, value);
+      if (isMT) {
+        clearMachineTranslated(entry.id);
+      }
+    },
+    [entry.id, updateEntry, isMT, clearMachineTranslated],
+  );
 
-  const handlePluralChange = useCallback((index: number, value: string) => {
-    const newPlurals = [...pluralForms];
-    while (newPlurals.length <= index) {
-      newPlurals.push('');
-    }
-    newPlurals[index] = value;
-    updateEntryPlural(entry.id, newPlurals);
-    if (isMT) {
-      clearMachineTranslated(entry.id);
-    }
-  }, [entry.id, pluralForms, updateEntryPlural, isMT, clearMachineTranslated]);
+  const handlePluralChange = useCallback(
+    (index: number, value: string) => {
+      const newPlurals = [...pluralForms];
+      while (newPlurals.length <= index) {
+        newPlurals.push('');
+      }
+      newPlurals[index] = value;
+      updateEntryPlural(entry.id, newPlurals);
+      if (isMT) {
+        clearMachineTranslated(entry.id);
+      }
+    },
+    [entry.id, pluralForms, updateEntryPlural, isMT, clearMachineTranslated],
+  );
 
-  const handleTranslated = useCallback((translatedText: string, withGlossary?: boolean) => {
-    updateEntry(entry.id, translatedText);
-    markAsMachineTranslated(entry.id, withGlossary);
-  }, [entry.id, updateEntry, markAsMachineTranslated]);
+  const handleTranslated = useCallback(
+    (translatedText: string, withGlossary?: boolean) => {
+      updateEntry(entry.id, translatedText);
+      markAsMachineTranslated(entry.id, withGlossary);
+    },
+    [entry.id, updateEntry, markAsMachineTranslated],
+  );
 
-  const handlePluralTranslated = useCallback((index: number, translatedText: string, withGlossary?: boolean) => {
-    const newPlurals = [...pluralForms];
-    while (newPlurals.length <= index) {
-      newPlurals.push('');
-    }
-    newPlurals[index] = translatedText;
-    updateEntryPlural(entry.id, newPlurals);
-    markAsMachineTranslated(entry.id, withGlossary);
-  }, [entry.id, pluralForms, updateEntryPlural, markAsMachineTranslated]);
+  const handlePluralTranslated = useCallback(
+    (index: number, translatedText: string, withGlossary?: boolean) => {
+      const newPlurals = [...pluralForms];
+      while (newPlurals.length <= index) {
+        newPlurals.push('');
+      }
+      newPlurals[index] = translatedText;
+      updateEntryPlural(entry.id, newPlurals);
+      markAsMachineTranslated(entry.id, withGlossary);
+    },
+    [entry.id, pluralForms, updateEntryPlural, markAsMachineTranslated],
+  );
 
   if (hasPlural) {
     const displayForms = pluralForms.length >= 2 ? pluralForms : ['', ''];
     const sourceTexts = displayForms.map((_, index) =>
-      index === 0 ? entry.msgid : entry.msgidPlural!
+      index === 0 ? entry.msgid : entry.msgidPlural!,
     );
 
     return (
@@ -489,28 +561,38 @@ function TranslationCell({
                 currentTranslation={form}
                 targetLang={translateSettings.targetLang}
                 sourceLang={translateSettings.sourceLang ?? undefined}
-                glossaryId={translateSettings.glossaryEnforcementEnabled ? (translateSettings.deeplGlossaryId ?? undefined) : undefined}
-                onTranslated={(text, withGlossary) => handlePluralTranslated(index, text, withGlossary)}
+                glossaryId={
+                  translateSettings.glossaryEnforcementEnabled
+                    ? (translateSettings.deeplGlossaryId ?? undefined)
+                    : undefined
+                }
+                onTranslated={(text, withGlossary) =>
+                  handlePluralTranslated(index, text, withGlossary)
+                }
                 size="sm"
               />
             )}
           </Group>
         ))}
-        
+
         {/* MT badge under translation */}
         {isMT && (
-          <Tooltip label={usedGlossary ? "Machine translated with glossary" : "Machine translated by DeepL"}>
-            <Badge 
-              size="xs" 
-              variant="light" 
-              color={usedGlossary ? "teal" : "blue"} 
+          <Tooltip
+            label={
+              usedGlossary ? 'Machine translated with glossary' : 'Machine translated by DeepL'
+            }
+          >
+            <Badge
+              size="xs"
+              variant="light"
+              color={usedGlossary ? 'teal' : 'blue'}
               leftSection={<Bot size={10} />}
             >
-              {usedGlossary ? "MT + Glossary" : "Machine translated"}
+              {usedGlossary ? 'MT + Glossary' : 'Machine translated'}
             </Badge>
           </Tooltip>
         )}
-        
+
         <GlossaryIndicator analysis={glossaryAnalysis ?? null} />
       </Stack>
     );
@@ -534,27 +616,33 @@ function TranslationCell({
             currentTranslation={entry.msgstr}
             targetLang={translateSettings.targetLang}
             sourceLang={translateSettings.sourceLang ?? undefined}
-            glossaryId={translateSettings.glossaryEnforcementEnabled ? (translateSettings.deeplGlossaryId ?? undefined) : undefined}
+            glossaryId={
+              translateSettings.glossaryEnforcementEnabled
+                ? (translateSettings.deeplGlossaryId ?? undefined)
+                : undefined
+            }
             onTranslated={handleTranslated}
             size="sm"
           />
         )}
       </Group>
-      
+
       {/* MT badge under translation */}
       {isMT && (
-        <Tooltip label={usedGlossary ? "Machine translated with glossary" : "Machine translated by DeepL"}>
-          <Badge 
-            size="xs" 
-            variant="light" 
-            color={usedGlossary ? "teal" : "blue"} 
+        <Tooltip
+          label={usedGlossary ? 'Machine translated with glossary' : 'Machine translated by DeepL'}
+        >
+          <Badge
+            size="xs"
+            variant="light"
+            color={usedGlossary ? 'teal' : 'blue'}
             leftSection={<Bot size={10} />}
           >
-            {usedGlossary ? "MT + Glossary" : "Machine translated"}
+            {usedGlossary ? 'MT + Glossary' : 'Machine translated'}
           </Badge>
         </Tooltip>
       )}
-      
+
       <GlossaryIndicator analysis={glossaryAnalysis ?? null} />
     </Stack>
   );
@@ -565,7 +653,11 @@ function TranslationCell({
  */
 function ContextCell({ entry }: { entry: POEntry }) {
   if (!entry.msgctxt) {
-    return <Text size="sm" c="dimmed">—</Text>;
+    return (
+      <Text size="sm" c="dimmed">
+        —
+      </Text>
+    );
   }
 
   return (
@@ -578,13 +670,13 @@ function ContextCell({ entry }: { entry: POEntry }) {
 /**
  * Status badges component
  */
-const StatusBadges = memo(function StatusBadges({ 
-  entry, 
-  isModified, 
+const StatusBadges = memo(function StatusBadges({
+  entry,
+  isModified,
   isManualEdit,
   hasGlossaryTerms,
-}: { 
-  entry: POEntry; 
+}: {
+  entry: POEntry;
   isModified: boolean;
   isManualEdit: boolean;
   hasGlossaryTerms: boolean;
@@ -596,7 +688,7 @@ const StatusBadges = memo(function StatusBadges({
       <Badge color={STATUS_COLORS[status]} size="sm" variant="filled">
         {STATUS_LABELS[status]}
       </Badge>
-      
+
       {/* Secondary indicators */}
       {(isModified || isManualEdit || hasGlossaryTerms) && (
         <Group gap={4} wrap="wrap">
@@ -607,7 +699,7 @@ const StatusBadges = memo(function StatusBadges({
               </Badge>
             </Tooltip>
           )}
-          
+
           {isManualEdit && (
             <Tooltip label="Manually edited - protected from bulk translation">
               <Badge size="xs" variant="light" color="grape" leftSection={<Pencil size={10} />}>
@@ -615,7 +707,7 @@ const StatusBadges = memo(function StatusBadges({
               </Badge>
             </Tooltip>
           )}
-          
+
           {hasGlossaryTerms && (
             <Tooltip label="Contains glossary terms">
               <Badge size="xs" variant="dot" color="violet">
@@ -630,12 +722,20 @@ const StatusBadges = memo(function StatusBadges({
 });
 
 /**
- * Meta column with flags, references, and comments
+ * Meta column with flags, references, and comments.
+ * When a plugin slug is set, references become clickable links.
  */
 function MetaCell({ entry }: { entry: POEntry }) {
   const hasReferences = entry.references.length > 0;
   const hasComments = entry.translatorComments.length > 0;
   const flags = entry.flags.filter((f) => f !== 'fuzzy');
+  const pluginSlug = useSourceStore((s) => getEffectiveSlug(s));
+  const setActiveReference = useSourceStore((s) => s.setActiveReference);
+
+  const parsedRefs = useMemo(
+    () => (hasReferences ? parseReferences(entry.references) : []),
+    [hasReferences, entry.references],
+  );
 
   return (
     <Stack gap={4}>
@@ -648,27 +748,77 @@ function MetaCell({ entry }: { entry: POEntry }) {
           ))}
         </Group>
       )}
-      
-      {hasReferences && (
+
+      {hasReferences && pluginSlug && (
+        <Stack gap={2}>
+          {parsedRefs.map((ref, i) => (
+            <Group key={i} gap={4} wrap="nowrap">
+              <Tooltip label={`${ref.path}${ref.line ? `:${ref.line}` : ''}`}>
+                <Text
+                  component="a"
+                  href={buildTracUrl(pluginSlug, ref.path, ref.line ?? undefined)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  size="xs"
+                  c="blue"
+                  style={{
+                    textDecoration: 'none',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    maxWidth: 80,
+                    display: 'block',
+                  }}
+                  onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                >
+                  {ref.path.split('/').pop()}
+                  {ref.line ? `:${ref.line}` : ''}
+                </Text>
+              </Tooltip>
+              <Tooltip label="View source context">
+                <Box
+                  component="span"
+                  style={{ cursor: 'pointer', display: 'inline-flex', flexShrink: 0 }}
+                  onClick={(e: React.MouseEvent) => {
+                    e.stopPropagation();
+                    setActiveReference(ref);
+                  }}
+                >
+                  <Eye size={12} style={{ opacity: 0.5 }} />
+                </Box>
+              </Tooltip>
+            </Group>
+          ))}
+        </Stack>
+      )}
+
+      {hasReferences && !pluginSlug && (
         <Tooltip label={entry.references.join('\n')} multiline maw={300}>
           <Group gap={4} style={{ cursor: 'help' }}>
             <FileCode size={12} opacity={0.5} />
-            <Text size="xs" c="dimmed">{entry.references.length} ref{entry.references.length !== 1 ? 's' : ''}</Text>
+            <Text size="xs" c="dimmed">
+              {entry.references.length} ref{entry.references.length !== 1 ? 's' : ''}
+            </Text>
           </Group>
         </Tooltip>
       )}
-      
+
       {hasComments && (
         <Tooltip label={entry.translatorComments.join('\n')} multiline maw={300}>
           <Group gap={4} style={{ cursor: 'help' }}>
             <MessageSquare size={12} opacity={0.5} />
-            <Text size="xs" c="dimmed">{entry.translatorComments.length} comment{entry.translatorComments.length !== 1 ? 's' : ''}</Text>
+            <Text size="xs" c="dimmed">
+              {entry.translatorComments.length} comment
+              {entry.translatorComments.length !== 1 ? 's' : ''}
+            </Text>
           </Group>
         </Tooltip>
       )}
-      
+
       {!flags.length && !hasReferences && !hasComments && (
-        <Text size="xs" c="dimmed">—</Text>
+        <Text size="xs" c="dimmed">
+          —
+        </Text>
       )}
     </Stack>
   );
@@ -687,15 +837,15 @@ const EntryRow = memo(function EntryRow({
   onSelect?: (sourceText: string) => void;
 }) {
   /* Column widths are handled by table-layout: fixed + <col> widths from thead */
-  const { 
-    selectedEntryId, 
-    selectEntry, 
-    dirtyEntryIds, 
+  const {
+    selectedEntryId,
+    selectEntry,
+    dirtyEntryIds,
     machineTranslatedIds,
     manualEditIds,
     getGlossaryAnalysis,
   } = useEditorStore();
-  
+
   const isSelected = selectedEntryId === entry.id;
   const isModified = dirtyEntryIds.has(entry.id);
   const isMT = machineTranslatedIds.has(entry.id);
@@ -715,6 +865,7 @@ const EntryRow = memo(function EntryRow({
   return (
     <Table.Tr
       ref={rowRef}
+      data-entry-id={entry.id}
       onClick={handleClick}
       style={{
         cursor: 'pointer',
@@ -723,7 +874,9 @@ const EntryRow = memo(function EntryRow({
           : isUntranslated
             ? 'var(--mantine-color-red-light)'
             : undefined,
-        borderLeft: isModified ? '4px solid var(--mantine-color-orange-5)' : '4px solid transparent',
+        borderLeft: isModified
+          ? '4px solid var(--mantine-color-orange-5)'
+          : '4px solid transparent',
       }}
     >
       <Table.Td style={{ verticalAlign: 'top', padding: '12px 8px', overflow: 'hidden' }}>
@@ -762,28 +915,51 @@ export interface EditorTableProps {
   onEntrySelect?: (sourceText: string) => void;
 }
 
-export function EditorTable({ 
-  targetLang = null, 
-  sourceLang = null, 
-  glossary = null, 
+export function EditorTable({
+  targetLang = null,
+  sourceLang = null,
+  glossary = null,
   deeplGlossaryId = null,
   glossaryEnforcementEnabled = false,
-  onEntrySelect
+  onEntrySelect,
 }: EditorTableProps) {
-  const entries = useEditorStore(state => state.entries);
-  const filename = useEditorStore(state => state.filename);
-  const getFilteredEntries = useEditorStore(state => state.getFilteredEntries);
+  const entries = useEditorStore((state) => state.entries);
+  const filename = useEditorStore((state) => state.filename);
+  const selectEntry = useEditorStore((state) => state.selectEntry);
+  const getFilteredEntries = useEditorStore((state) => state.getFilteredEntries);
   // Subscribe to activeFilters changes - serialize to detect any change
-  const activeFiltersKey = useEditorStore(state => 
-    JSON.stringify(Array.from(state.activeFilters.entries()))
+  const activeFiltersKey = useEditorStore((state) =>
+    JSON.stringify(Array.from(state.activeFilters.entries())),
   );
-  const filterQuery = useEditorStore(state => state.filterQuery);
-  
+  const filterQuery = useEditorStore((state) => state.filterQuery);
+
   // Re-compute filtered entries when filters, query, or entries change
   const filteredEntries = useMemo(() => {
     return getFilteredEntries();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getFilteredEntries, activeFiltersKey, filterQuery, entries]);
-  
+
+  // Navigation: skip already-translated entries on Ctrl/Cmd+Enter
+  const [skipTranslated] = useLocalStorage<boolean>({
+    key: NAV_SKIP_TRANSLATED_KEY,
+    defaultValue: true,
+  });
+
+  // Pending entry to focus after page change
+  const [pendingFocusEntryId, setPendingFocusEntryId] = useState<string | null>(null);
+
+  // Refs for stable handleKeyDown callback (avoids re-creating and re-rendering all rows)
+  const navRef = useRef({
+    filteredEntries,
+    skipTranslated,
+    currentPage: 1,
+    rowsPerPageNum: 50,
+    onEntrySelect,
+  });
+  navRef.current.filteredEntries = filteredEntries;
+  navRef.current.skipTranslated = skipTranslated;
+  navRef.current.onEntrySelect = onEntrySelect;
+
   // Column widths (proportional) with localStorage persistence
   const [columnWidths, setColumnWidths] = useLocalStorage<number[]>({
     key: 'po-editor-column-widths',
@@ -791,38 +967,42 @@ export function EditorTable({
   });
 
   // Ensure stored widths have the right length (in case columns were added/removed)
-  const safeWidths = columnWidths.length === COLUMN_KEYS.length ? columnWidths : DEFAULT_COLUMN_WIDTHS;
+  const safeWidths =
+    columnWidths.length === COLUMN_KEYS.length ? columnWidths : DEFAULT_COLUMN_WIDTHS;
   const totalWidth = safeWidths.reduce((a, b) => a + b, 0);
-  const columnPercents = safeWidths.map(w => `${(w / totalWidth * 100).toFixed(2)}%`);
+  const columnPercents = safeWidths.map((w) => `${((w / totalWidth) * 100).toFixed(2)}%`);
 
   const tableRef = useRef<HTMLTableElement>(null);
 
-  const handleColumnResize = useCallback((colIndex: number, deltaX: number) => {
-    // Double-click sentinel: reset all columns to defaults
-    if (!isFinite(deltaX)) {
-      setColumnWidths(DEFAULT_COLUMN_WIDTHS);
-      return;
-    }
-
-    setColumnWidths(prev => {
-      const widths = [...(prev.length === COLUMN_KEYS.length ? prev : DEFAULT_COLUMN_WIDTHS)];
-      const tableWidth = tableRef.current?.offsetWidth ?? 1000;
-      const total = widths.reduce((a, b) => a + b, 0);
-      // Convert pixel delta to proportion delta
-      const proportionDelta = (deltaX / tableWidth) * total;
-
-      const newLeft = widths[colIndex] + proportionDelta;
-      const newRight = widths[colIndex + 1] - proportionDelta;
-
-      if (newLeft < MIN_COLUMN_WIDTH || newRight < MIN_COLUMN_WIDTH) {
-        return prev;
+  const handleColumnResize = useCallback(
+    (colIndex: number, deltaX: number) => {
+      // Double-click sentinel: reset all columns to defaults
+      if (!isFinite(deltaX)) {
+        setColumnWidths(DEFAULT_COLUMN_WIDTHS);
+        return;
       }
 
-      widths[colIndex] = newLeft;
-      widths[colIndex + 1] = newRight;
-      return widths;
-    });
-  }, [setColumnWidths]);
+      setColumnWidths((prev) => {
+        const widths = [...(prev.length === COLUMN_KEYS.length ? prev : DEFAULT_COLUMN_WIDTHS)];
+        const tableWidth = tableRef.current?.offsetWidth ?? 1000;
+        const total = widths.reduce((a, b) => a + b, 0);
+        // Convert pixel delta to proportion delta
+        const proportionDelta = (deltaX / tableWidth) * total;
+
+        const newLeft = widths[colIndex] + proportionDelta;
+        const newRight = widths[colIndex + 1] - proportionDelta;
+
+        if (newLeft < MIN_COLUMN_WIDTH || newRight < MIN_COLUMN_WIDTH) {
+          return prev;
+        }
+
+        widths[colIndex] = newLeft;
+        widths[colIndex + 1] = newRight;
+        return widths;
+      });
+    },
+    [setColumnWidths],
+  );
 
   // Pagination state with localStorage persistence
   const [rowsPerPage, setRowsPerPage] = useLocalStorage<string>({
@@ -830,16 +1010,16 @@ export function EditorTable({
     defaultValue: '50',
   });
   const [currentPage, setCurrentPage] = useState(1);
-  
+
   // Calculate pagination
   const rowsPerPageNum = parseInt(rowsPerPage, 10);
   const totalPages = Math.ceil(filteredEntries.length / rowsPerPageNum);
-  
+
   // Reset to page 1 when filters change or rows per page changes
   useEffect(() => {
     setCurrentPage(1);
   }, [filteredEntries.length, rowsPerPage]);
-  
+
   // Get paginated entries
   const paginatedEntries = useMemo(() => {
     const startIndex = (currentPage - 1) * rowsPerPageNum;
@@ -847,41 +1027,109 @@ export function EditorTable({
     return filteredEntries.slice(startIndex, endIndex);
   }, [filteredEntries, currentPage, rowsPerPageNum]);
 
-  const translateSettings: TranslateSettings = useMemo(() => ({
-    targetLang,
-    sourceLang,
-    glossary,
-    deeplGlossaryId,
-    glossaryEnforcementEnabled
-  }), [targetLang, sourceLang, glossary, deeplGlossaryId, glossaryEnforcementEnabled]);
+  // Keep navRef in sync with pagination state
+  navRef.current.currentPage = currentPage;
+  navRef.current.rowsPerPageNum = rowsPerPageNum;
 
-  const handleKeyDown = useCallback((e: KeyboardEvent<HTMLTextAreaElement>, fieldId: string) => {
-    if (e.key === 'Tab' || (e.key === 'Enter' && !e.shiftKey)) {
-      e.preventDefault();
-      const allFields = document.querySelectorAll('[data-field-id]');
-      const fieldArray = Array.from(allFields);
-      const currentIndex = fieldArray.findIndex((el) => el.getAttribute('data-field-id') === fieldId);
-      if (currentIndex === -1) return;
+  const translateSettings: TranslateSettings = useMemo(
+    () => ({
+      targetLang,
+      sourceLang,
+      glossary,
+      deeplGlossaryId,
+      glossaryEnforcementEnabled,
+    }),
+    [targetLang, sourceLang, glossary, deeplGlossaryId, glossaryEnforcementEnabled],
+  );
 
-      let nextIndex: number;
-      if (e.key === 'Tab' && e.shiftKey) {
-        nextIndex = currentIndex > 0 ? currentIndex - 1 : fieldArray.length - 1;
-      } else {
-        nextIndex = currentIndex < fieldArray.length - 1 ? currentIndex + 1 : 0;
-      }
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLTextAreaElement>, fieldId: string) => {
+      // Ctrl/Cmd+Enter: navigate to next entry (optionally skip translated)
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        const {
+          filteredEntries: allEntries,
+          skipTranslated: skip,
+          rowsPerPageNum: rpp,
+        } = navRef.current;
 
-      const nextField = fieldArray[nextIndex] as HTMLElement;
-      if (nextField) {
-        const wrapper = nextField.closest('.editable-text-wrapper');
-        if (wrapper) {
-          (wrapper as HTMLElement).click();
-        } else {
-          nextField.focus();
+        // Extract entry ID from field ID (format: "{entryId}-singular" or "{entryId}-plural-N")
+        const currentEntryId = fieldId.replace(/-(singular|plural-\d+)$/, '');
+        const curIdx = allEntries.findIndex((entry) => entry.id === currentEntryId);
+        if (curIdx === -1) return;
+
+        // Find next entry, optionally skipping already-translated ones
+        let nextEntry: POEntry | null = null;
+        const len = allEntries.length;
+        for (let offset = 1; offset < len; offset++) {
+          const candidate = allEntries[(curIdx + offset) % len];
+          if (!skip || entryNeedsTranslation(candidate)) {
+            nextEntry = candidate;
+            break;
+          }
         }
-        nextField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (!nextEntry) return;
+
+        // Select the entry and navigate to its page
+        selectEntry(nextEntry.id);
+        navRef.current.onEntrySelect?.(nextEntry.msgid);
+        const nextIndex = allEntries.indexOf(nextEntry);
+        const targetPage = Math.floor(nextIndex / rpp) + 1;
+        if (targetPage !== navRef.current.currentPage) {
+          setCurrentPage(targetPage);
+        }
+        setPendingFocusEntryId(nextEntry.id);
+        return;
       }
-    }
-  }, []);
+
+      // Tab / Enter: navigate between fields sequentially
+      if (e.key === 'Tab' || (e.key === 'Enter' && !e.shiftKey)) {
+        e.preventDefault();
+        const allFields = document.querySelectorAll('[data-field-id]');
+        const fieldArray = Array.from(allFields);
+        const currentIndex = fieldArray.findIndex(
+          (el) => el.getAttribute('data-field-id') === fieldId,
+        );
+        if (currentIndex === -1) return;
+
+        let nextIndex: number;
+        if (e.key === 'Tab' && e.shiftKey) {
+          nextIndex = currentIndex > 0 ? currentIndex - 1 : fieldArray.length - 1;
+        } else {
+          nextIndex = currentIndex < fieldArray.length - 1 ? currentIndex + 1 : 0;
+        }
+
+        const nextField = fieldArray[nextIndex] as HTMLElement;
+        if (nextField) {
+          const wrapper = nextField.closest('.editable-text-wrapper');
+          if (wrapper) {
+            (wrapper as HTMLElement).click();
+          } else {
+            nextField.focus();
+          }
+          nextField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }
+    },
+    [selectEntry, setCurrentPage],
+  );
+
+  // Focus the pending entry's translation field after page change / render
+  useEffect(() => {
+    if (!pendingFocusEntryId) return;
+    const raf = requestAnimationFrame(() => {
+      const row = document.querySelector(`tr[data-entry-id="${pendingFocusEntryId}"]`);
+      if (row) {
+        const wrapper = row.querySelector('.editable-text-wrapper') as HTMLElement | null;
+        if (wrapper) {
+          wrapper.click();
+        }
+        row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      setPendingFocusEntryId(null);
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [pendingFocusEntryId, paginatedEntries]);
 
   if (!filename) {
     return null;
@@ -894,8 +1142,21 @@ export function EditorTable({
   return (
     <TranslateSettingsContext.Provider value={translateSettings}>
       <ScrollArea h={600} type="auto">
-        <Table ref={tableRef} striped highlightOnHover verticalSpacing="md" style={{ tableLayout: 'fixed' }}>
-          <Table.Thead style={{ position: 'sticky', top: 0, zIndex: 10, background: 'var(--mantine-color-body)' }}>
+        <Table
+          ref={tableRef}
+          striped
+          highlightOnHover
+          verticalSpacing="md"
+          style={{ tableLayout: 'fixed' }}
+        >
+          <Table.Thead
+            style={{
+              position: 'sticky',
+              top: 0,
+              zIndex: 10,
+              background: 'var(--mantine-color-body)',
+            }}
+          >
             <Table.Tr>
               {(['Status', 'Source', 'Translation', 'Context', 'Meta'] as const).map((label, i) => (
                 <ResizableTh
@@ -921,7 +1182,7 @@ export function EditorTable({
           </Table.Tbody>
         </Table>
       </ScrollArea>
-      
+
       {/* Pagination controls */}
       {filteredEntries.length > 0 && (
         <Paper p="sm" mt="md" withBorder>
@@ -939,7 +1200,7 @@ export function EditorTable({
                 Showing {startItem}–{endItem} of {filteredEntries.length} entries
               </Text>
             </Group>
-            
+
             {totalPages > 1 && (
               <Pagination
                 value={currentPage}
@@ -952,7 +1213,7 @@ export function EditorTable({
           </Group>
         </Paper>
       )}
-      
+
       {/* Empty state for filtered results */}
       {filteredEntries.length === 0 && entries.length > 0 && (
         <Paper p="xl" withBorder mt="md">
