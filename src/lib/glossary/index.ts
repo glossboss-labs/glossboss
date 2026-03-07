@@ -1,6 +1,6 @@
 /**
  * WordPress Glossary Integration
- * 
+ *
  * Fetch and apply WordPress translation glossaries.
  */
 
@@ -11,13 +11,13 @@ export { findGlossaryMatches, applyGlossaryToTranslation, getGlossarySuggestions
 // WordPress.org CSV-based glossary fetching
 export { parseGlossaryCSV, isValidGlossaryCSV } from './csv-parser';
 export type { ParseResult } from './csv-parser';
-export { 
-  fetchWPGlossary, 
-  clearWPGlossaryCache, 
+export {
+  fetchWPGlossary,
+  clearWPGlossaryCache,
   getCachedWPGlossaryLocales,
   hasGlossaryCache,
   buildGlossaryURL,
-  type FetchResult 
+  type FetchResult,
 } from './wp-fetcher';
 
 // Glossary analysis

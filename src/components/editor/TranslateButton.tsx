@@ -1,6 +1,6 @@
 /**
  * Translate Button Component
- * 
+ *
  * Button to translate a single entry using DeepL.
  * Supports DeepL native glossary for context-aware translation.
  * Shows loading state and handles errors.
@@ -62,19 +62,19 @@ export function TranslateButton({
 
     try {
       const client = getDeepLClient();
-      
+
       // When using a glossary, source_lang is REQUIRED by DeepL
       // Default to 'EN' since WordPress glossaries are English source
-      const effectiveSourceLang = glossaryId ? (sourceLang || 'EN') : sourceLang;
-      
+      const effectiveSourceLang = glossaryId ? sourceLang || 'EN' : sourceLang;
+
       // Use DeepL's native glossary support if available
       const result = await client.translateText(text, targetLang, effectiveSourceLang, glossaryId);
-      
+
       const usedGlossary = Boolean(glossaryId);
       if (usedGlossary) {
         console.log('[DeepL] Translated with glossary:', glossaryId);
       }
-      
+
       // If there's existing translation, show confirmation first
       if (hasExistingTranslation) {
         setPendingTranslation(result);
@@ -91,7 +91,17 @@ export function TranslateButton({
     } finally {
       setIsLoading(false);
     }
-  }, [text, targetLang, sourceLang, glossaryId, onTranslated, onError, isLoading, disabled, hasExistingTranslation]);
+  }, [
+    text,
+    targetLang,
+    sourceLang,
+    glossaryId,
+    onTranslated,
+    onError,
+    isLoading,
+    disabled,
+    hasExistingTranslation,
+  ]);
 
   const handleConfirm = useCallback(() => {
     if (pendingTranslation) {
@@ -119,12 +129,7 @@ export function TranslateButton({
   if (error) {
     return (
       <Tooltip label={`Error: ${error}. Click to retry.`} color="red" multiline w={200}>
-        <ActionIcon
-          size={size}
-          variant="subtle"
-          color="red"
-          onClick={doTranslate}
-        >
+        <ActionIcon size={size} variant="subtle" color="red" onClick={doTranslate}>
           <AlertCircle size={iconSize} />
         </ActionIcon>
       </Tooltip>
@@ -133,22 +138,16 @@ export function TranslateButton({
 
   // Show confirmation popover when there's existing translation
   return (
-    <Popover 
-      opened={showConfirm} 
-      onClose={handleCancel}
-      position="top"
-      withArrow
-      shadow="md"
-    >
+    <Popover opened={showConfirm} onClose={handleCancel} position="top" withArrow shadow="md">
       <Popover.Target>
-        <Tooltip 
-          label={glossaryId ? "Translate with DeepL + Glossary" : "Translate with DeepL"} 
+        <Tooltip
+          label={glossaryId ? 'Translate with DeepL + Glossary' : 'Translate with DeepL'}
           color="dark"
         >
           <ActionIcon
             size={size}
             variant="light"
-            color={glossaryId ? "teal" : "blue"}
+            color={glossaryId ? 'teal' : 'blue'}
             onClick={doTranslate}
             disabled={disabled || !text.trim()}
           >
@@ -156,12 +155,14 @@ export function TranslateButton({
           </ActionIcon>
         </Tooltip>
       </Popover.Target>
-      
+
       <Popover.Dropdown>
         <Stack gap="xs" maw={280}>
           <Group gap="xs">
             <AlertTriangle size={16} color="var(--mantine-color-orange-6)" />
-            <Text size="sm" fw={500}>Replace existing translation?</Text>
+            <Text size="sm" fw={500}>
+              Replace existing translation?
+            </Text>
           </Group>
           <Text size="xs" c="dimmed">
             This will overwrite your current translation with the DeepL result.

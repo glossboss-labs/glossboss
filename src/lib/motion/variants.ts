@@ -1,6 +1,6 @@
 /**
  * Motion Animation Utilities
- * 
+ *
  * Reusable animation variants and configurations for Motion (Framer Motion).
  * Provides consistent, spring-based animations throughout the app.
  */
@@ -58,13 +58,13 @@ export const fadeVariants: Variants = {
 /** Fade with slight scale */
 export const fadeScaleVariants: Variants = {
   hidden: { opacity: 0, scale: 0.95 },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     scale: 1,
     transition: springTransition,
   },
-  exit: { 
-    opacity: 0, 
+  exit: {
+    opacity: 0,
     scale: 0.95,
     transition: quickFade,
   },
@@ -73,13 +73,13 @@ export const fadeScaleVariants: Variants = {
 /** Slide up (for modals, notifications) */
 export const slideUpVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     y: 0,
     transition: gentleSpring,
   },
-  exit: { 
-    opacity: 0, 
+  exit: {
+    opacity: 0,
     y: 10,
     transition: quickFade,
   },
@@ -88,14 +88,14 @@ export const slideUpVariants: Variants = {
 /** Slide down (for dropdowns) */
 export const slideDownVariants: Variants = {
   hidden: { opacity: 0, y: -10, scale: 0.98 },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     y: 0,
     scale: 1,
     transition: springTransition,
   },
-  exit: { 
-    opacity: 0, 
+  exit: {
+    opacity: 0,
     y: -10,
     scale: 0.98,
     transition: quickFade,
@@ -105,13 +105,13 @@ export const slideDownVariants: Variants = {
 /** Slide from right (for sidebars, panels) */
 export const slideRightVariants: Variants = {
   hidden: { opacity: 0, x: 20 },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     x: 0,
     transition: gentleSpring,
   },
-  exit: { 
-    opacity: 0, 
+  exit: {
+    opacity: 0,
     x: 20,
     transition: quickFade,
   },
@@ -120,13 +120,13 @@ export const slideRightVariants: Variants = {
 /** Pop in (for badges, icons) */
 export const popVariants: Variants = {
   hidden: { opacity: 0, scale: 0.5 },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     scale: 1,
     transition: snappySpring,
   },
-  exit: { 
-    opacity: 0, 
+  exit: {
+    opacity: 0,
     scale: 0.5,
     transition: quickFade,
   },
@@ -135,12 +135,12 @@ export const popVariants: Variants = {
 /** List item stagger animation */
 export const listItemVariants: Variants = {
   hidden: { opacity: 0, y: 10 },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     y: 0,
     transition: springTransition,
   },
-  exit: { 
+  exit: {
     opacity: 0,
     transition: quickFade,
   },
@@ -168,12 +168,12 @@ export const staggerContainerVariants: Variants = {
 /** Table row animation */
 export const tableRowVariants: Variants = {
   hidden: { opacity: 0, x: -10 },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     x: 0,
     transition: springTransition,
   },
-  exit: { 
+  exit: {
     opacity: 0,
     x: -10,
     transition: quickFade,
@@ -192,7 +192,7 @@ export const shakeVariants: Variants = {
 export const pulseVariants: Variants = {
   pulse: {
     scale: [1, 1.05, 1],
-    transition: { 
+    transition: {
       duration: 0.3,
       ease: 'easeInOut',
     },
@@ -240,11 +240,7 @@ export function getStaggerDelay(index: number, baseDelay = 0.03): number {
 /**
  * Create custom spring with specific settings
  */
-export function createSpring(
-  stiffness = 400,
-  damping = 30,
-  mass = 1
-): Transition {
+export function createSpring(stiffness = 400, damping = 30, mass = 1): Transition {
   return {
     type: 'spring',
     stiffness,

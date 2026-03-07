@@ -31,7 +31,9 @@ import {
   Table,
   ScrollArea,
   Box,
+  Kbd,
 } from '@mantine/core';
+import { useLocalStorage } from '@mantine/hooks';
 import {
   Key,
   BookOpen,
@@ -54,6 +56,7 @@ import {
 import { fetchWPGlossary, clearWPGlossaryCache, type FetchResult } from '@/lib/glossary/wp-fetcher';
 import { findGlossaryMatches } from '@/lib/glossary/matcher';
 import type { Glossary } from '@/lib/glossary/types';
+import { NAV_SKIP_TRANSLATED_KEY } from '@/components/editor/EditorTable';
 
 /** localStorage keys */
 const SELECTED_LOCALE_KEY = 'glossboss-selected-glossary-locale';

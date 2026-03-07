@@ -1,6 +1,6 @@
 /**
  * Empty State Component
- * 
+ *
  * Animated placeholder for empty content areas.
  */
 
@@ -19,10 +19,10 @@ export interface EmptyStateProps {
   iconColor?: string;
 }
 
-export function EmptyState({ 
-  icon: Icon, 
-  title, 
-  description, 
+export function EmptyState({
+  icon: Icon,
+  title,
+  description,
   action,
   iconColor = 'gray',
 }: EmptyStateProps) {
@@ -39,16 +39,18 @@ export function EmptyState({
       <ThemeIcon size={64} radius="xl" variant="light" color={iconColor}>
         <Icon size={32} />
       </ThemeIcon>
-      
+
       <Stack align="center" gap={4}>
-        <Title order={4} c="dimmed">{title}</Title>
+        <Title order={4} c="dimmed">
+          {title}
+        </Title>
         {description && (
           <Text size="sm" c="dimmed" ta="center" maw={300}>
             {description}
           </Text>
         )}
       </Stack>
-      
+
       {action && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}

@@ -1,6 +1,6 @@
 /**
  * Translate Toolbar Component
- * 
+ *
  * Language selection and bulk translation controls with safeguards.
  * Integrates with DeepL via secure edge function.
  */
@@ -103,7 +103,9 @@ function mapToDeepLCode(poLang: string): string | null {
   const directMatch = TARGET_LANGUAGES.find((l) => l.value === code);
   if (directMatch) return directMatch.value;
   const baseCode = code.split('-')[0];
-  const baseMatch = TARGET_LANGUAGES.find((l) => l.value === baseCode || l.value.startsWith(baseCode + '-'));
+  const baseMatch = TARGET_LANGUAGES.find(
+    (l) => l.value === baseCode || l.value.startsWith(baseCode + '-'),
+  );
   if (baseMatch) return baseMatch.value;
   return null;
 }
@@ -116,19 +118,16 @@ interface TranslateToolbarProps {
 }
 
 export function TranslateToolbar({ onLanguageChange, deeplGlossaryId }: TranslateToolbarProps) {
-  const { 
-    header, 
-    entries, 
-    updateEntry, 
-    updateEntryPlural, 
-    markAsMachineTranslated, 
-    getStats,
-    getOverwriteWarningCount,
+  const {
+    header,
+    entries,
+    updateEntry,
+    updateEntryPlural,
+    markAsMachineTranslated,
     manualEditIds,
     machineTranslatedIds,
   } = useEditorStore();
-  const stats = getStats();
-  
+
   // Infer target language from PO header
   const inferredTarget = useMemo(() => {
     if (header?.language) {
@@ -136,7 +135,7 @@ export function TranslateToolbar({ onLanguageChange, deeplGlossaryId }: Translat
     }
     return null;
   }, [header?.language]);
-  
+
   const [sourceLang, setSourceLang] = useState<string>('');
   const [targetLang, setTargetLang] = useState<string>(inferredTarget ?? '');
   const [isTranslating, setIsTranslating] = useState(false);
@@ -158,181 +157,203 @@ export function TranslateToolbar({ onLanguageChange, deeplGlossaryId }: Translat
     if (inferredTarget && !targetLang) {
       setTargetLang(inferredTarget);
     }
-  }, [inferredTarget]);
-  
+  }, [inferredTarget]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Notify parent of language changes
   useEffect(() => {
     if (targetLang) {
       onLanguageChange?.(
-        sourceLang ? sourceLang as SourceLanguage : undefined, 
-        targetLang as TargetLanguage
+        sourceLang ? (sourceLang as SourceLanguage) : undefined,
+        targetLang as TargetLanguage,
       );
     }
   }, [targetLang, sourceLang, onLanguageChange]);
-  
+
   // Find untranslated entries
-  const untranslatedEntries = useMemo(() => 
-    entries.filter((e) => {
-      if (!e.msgid.trim()) return false;
-      if (e.msgidPlural) {
-        const plurals = e.msgstrPlural ?? [];
-        return plurals.length < 2 || plurals.some((p) => !p.trim());
-      }
-      return !e.msgstr.trim();
-    }),
-    [entries]
+  const untranslatedEntries = useMemo(
+    () =>
+      entries.filter((e) => {
+        if (!e.msgid.trim()) return false;
+        if (e.msgidPlural) {
+          const plurals = e.msgstrPlural ?? [];
+          return plurals.length < 2 || plurals.some((p) => !p.trim());
+        }
+        return !e.msgstr.trim();
+      }),
+    [entries],
   );
 
   // All translatable entries (for retranslate all)
-  const allTranslatableEntries = useMemo(() =>
-    entries.filter((e) => e.msgid.trim()),
-    [entries]
-  );
-  
+  const allTranslatableEntries = useMemo(() => entries.filter((e) => e.msgid.trim()), [entries]);
+
   // Count of manual edits that would be overwritten
   const manualEditCount = useMemo(() => {
-    return allTranslatableEntries.filter(e => 
-      manualEditIds.has(e.id) && !machineTranslatedIds.has(e.id)
+    return allTranslatableEntries.filter(
+      (e) => manualEditIds.has(e.id) && !machineTranslatedIds.has(e.id),
     ).length;
   }, [allTranslatableEntries, manualEditIds, machineTranslatedIds]);
 
-  const handleSourceChange = useCallback((value: string | null) => {
-    const newSource = value || '';
-    setSourceLang(newSource);
-    onLanguageChange?.(newSource as SourceLanguage || undefined, targetLang as TargetLanguage);
-  }, [targetLang, onLanguageChange]);
-  
-  const handleTargetChange = useCallback((value: string | null) => {
-    const newTarget = value || '';
-    setTargetLang(newTarget);
-    onLanguageChange?.(sourceLang as SourceLanguage || undefined, newTarget as TargetLanguage);
-  }, [sourceLang, onLanguageChange]);
-  
+  const handleSourceChange = useCallback(
+    (value: string | null) => {
+      const newSource = value || '';
+      setSourceLang(newSource);
+      onLanguageChange?.((newSource as SourceLanguage) || undefined, targetLang as TargetLanguage);
+    },
+    [targetLang, onLanguageChange],
+  );
+
+  const handleTargetChange = useCallback(
+    (value: string | null) => {
+      const newTarget = value || '';
+      setTargetLang(newTarget);
+      onLanguageChange?.((sourceLang as SourceLanguage) || undefined, newTarget as TargetLanguage);
+    },
+    [sourceLang, onLanguageChange],
+  );
+
   const handleCancel = useCallback(() => {
     cancelRef.current = true;
   }, []);
 
   // Generic translate handler
-  const handleTranslate = useCallback(async (entriesToTranslate: typeof entries, overwriteAll: boolean) => {
-    if (!targetLang || entriesToTranslate.length === 0) return;
-    
-    setIsTranslating(true);
-    setIsRetranslateMode(overwriteAll);
-    setError(null);
-    setProgress(0);
-    setTranslateCount(0);
-    setFailedCount(0);
-    cancelRef.current = false;
-    batchCountRef.current = 0;
-    
-    const client = getDeepLClient();
-    let completed = 0;
-    let failed = 0;
-    
-    try {
-      interface TranslationJob {
-        entryId: string;
-        text: string;
-        isPlural: boolean;
-        pluralIndex?: number;
-        originalPluralForms?: string[];
-      }
-      
-      const jobs: TranslationJob[] = [];
-      
-      for (const entry of entriesToTranslate) {
-        // Skip manual edits if option is enabled and we're in retranslate mode
-        if (overwriteAll && skipManualEdits && manualEditIds.has(entry.id) && !machineTranslatedIds.has(entry.id)) {
-          continue;
+  const handleTranslate = useCallback(
+    async (entriesToTranslate: typeof entries, overwriteAll: boolean) => {
+      if (!targetLang || entriesToTranslate.length === 0) return;
+
+      setIsTranslating(true);
+      setIsRetranslateMode(overwriteAll);
+      setError(null);
+      setProgress(0);
+      setTranslateCount(0);
+      setFailedCount(0);
+      cancelRef.current = false;
+      batchCountRef.current = 0;
+
+      const client = getDeepLClient();
+      let completed = 0;
+      let failed = 0;
+
+      try {
+        interface TranslationJob {
+          entryId: string;
+          text: string;
+          isPlural: boolean;
+          pluralIndex?: number;
+          originalPluralForms?: string[];
         }
-        
-        if (entry.msgidPlural) {
-          const plurals = entry.msgstrPlural ?? ['', ''];
-          const displayForms = plurals.length >= 2 ? plurals : ['', ''];
-          
-          displayForms.forEach((form, index) => {
-            if (overwriteAll || !form.trim()) {
+
+        const jobs: TranslationJob[] = [];
+
+        for (const entry of entriesToTranslate) {
+          // Skip manual edits if option is enabled and we're in retranslate mode
+          if (
+            overwriteAll &&
+            skipManualEdits &&
+            manualEditIds.has(entry.id) &&
+            !machineTranslatedIds.has(entry.id)
+          ) {
+            continue;
+          }
+
+          if (entry.msgidPlural) {
+            const plurals = entry.msgstrPlural ?? ['', ''];
+            const displayForms = plurals.length >= 2 ? plurals : ['', ''];
+
+            displayForms.forEach((form, index) => {
+              if (overwriteAll || !form.trim()) {
+                jobs.push({
+                  entryId: entry.id,
+                  text: index === 0 ? entry.msgid : entry.msgidPlural!,
+                  isPlural: true,
+                  pluralIndex: index,
+                  originalPluralForms: displayForms,
+                });
+              }
+            });
+          } else {
+            if (overwriteAll || !entry.msgstr.trim()) {
               jobs.push({
                 entryId: entry.id,
-                text: index === 0 ? entry.msgid : entry.msgidPlural!,
-                isPlural: true,
-                pluralIndex: index,
-                originalPluralForms: displayForms,
+                text: entry.msgid,
+                isPlural: false,
               });
             }
-          });
-        } else {
-          if (overwriteAll || !entry.msgstr.trim()) {
-            jobs.push({
-              entryId: entry.id,
-              text: entry.msgid,
-              isPlural: false,
-            });
           }
         }
-      }
-      
-      const totalJobs = jobs.length;
-      const batchSize = 10;
-      
-      for (let i = 0; i < jobs.length; i += batchSize) {
-        if (cancelRef.current) break;
-        
-        const batch = jobs.slice(i, i + batchSize);
-        const texts = batch.map(j => j.text);
-        
-        try {
-          const translations = await client.translateBatch(
-            texts,
-            targetLang as TargetLanguage,
-            sourceLang ? sourceLang as SourceLanguage : undefined,
-            deeplGlossaryId ?? undefined
-          );
-          
-          batch.forEach((job, idx) => {
-            if (translations[idx]) {
-              if (job.isPlural && job.pluralIndex !== undefined) {
-                const newPlurals = [...(job.originalPluralForms || ['', ''])];
-                newPlurals[job.pluralIndex] = translations[idx];
-                updateEntryPlural(job.entryId, newPlurals);
-              } else {
-                updateEntry(job.entryId, translations[idx]);
-              }
-              markAsMachineTranslated(job.entryId);
-            }
-          });
-          
-          completed += batch.length;
-        } catch (batchErr) {
-          failed += batch.length;
-          console.error('Batch translation failed:', batchErr);
-        }
-        
-        setProgress(Math.round(((completed + failed) / totalJobs) * 100));
-        setTranslateCount(completed);
-        setFailedCount(failed);
 
-        // Signal usage refresh every other batch
-        batchCountRef.current++;
-        if (batchCountRef.current % 2 === 0) {
-          window.dispatchEvent(new Event('deepl-usage-refresh'));
+        const totalJobs = jobs.length;
+        const batchSize = 10;
+
+        for (let i = 0; i < jobs.length; i += batchSize) {
+          if (cancelRef.current) break;
+
+          const batch = jobs.slice(i, i + batchSize);
+          const texts = batch.map((j) => j.text);
+
+          try {
+            const translations = await client.translateBatch(
+              texts,
+              targetLang as TargetLanguage,
+              sourceLang ? (sourceLang as SourceLanguage) : undefined,
+              deeplGlossaryId ?? undefined,
+            );
+
+            batch.forEach((job, idx) => {
+              if (translations[idx]) {
+                if (job.isPlural && job.pluralIndex !== undefined) {
+                  const newPlurals = [...(job.originalPluralForms || ['', ''])];
+                  newPlurals[job.pluralIndex] = translations[idx];
+                  updateEntryPlural(job.entryId, newPlurals);
+                } else {
+                  updateEntry(job.entryId, translations[idx]);
+                }
+                markAsMachineTranslated(job.entryId);
+              }
+            });
+
+            completed += batch.length;
+          } catch (batchErr) {
+            failed += batch.length;
+            console.error('Batch translation failed:', batchErr);
+          }
+
+          setProgress(Math.round(((completed + failed) / totalJobs) * 100));
+          setTranslateCount(completed);
+          setFailedCount(failed);
+
+          // Signal usage refresh every other batch
+          batchCountRef.current++;
+          if (batchCountRef.current % 2 === 0) {
+            window.dispatchEvent(new Event('deepl-usage-refresh'));
+          }
         }
+
+        if (failed > 0) {
+          setError(`${failed} translations failed`);
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Translation failed');
+      } finally {
+        setIsTranslating(false);
+        setIsRetranslateMode(false);
+        cancelRef.current = false;
+        // Signal final usage refresh
+        window.dispatchEvent(new Event('deepl-usage-refresh'));
       }
-      
-      if (failed > 0) {
-        setError(`${failed} translations failed`);
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Translation failed');
-    } finally {
-      setIsTranslating(false);
-      setIsRetranslateMode(false);
-      cancelRef.current = false;
-      // Signal final usage refresh
-      window.dispatchEvent(new Event('deepl-usage-refresh'));
-    }
-  }, [targetLang, sourceLang, deeplGlossaryId, updateEntry, updateEntryPlural, markAsMachineTranslated, skipManualEdits, manualEditIds, machineTranslatedIds]);
-  
+    },
+    [
+      targetLang,
+      sourceLang,
+      deeplGlossaryId,
+      updateEntry,
+      updateEntryPlural,
+      markAsMachineTranslated,
+      skipManualEdits,
+      manualEditIds,
+      machineTranslatedIds,
+    ],
+  );
+
   const handleBulkTranslate = useCallback(() => {
     handleTranslate(untranslatedEntries, false);
   }, [handleTranslate, untranslatedEntries]);
@@ -341,12 +362,12 @@ export function TranslateToolbar({ onLanguageChange, deeplGlossaryId }: Translat
     setConfirmRetranslateOpen(false);
     handleTranslate(allTranslatableEntries, true);
   }, [handleTranslate, allTranslatableEntries]);
-  
+
   if (!entries.length) return null;
-  
+
   // Count already translated entries
   const translatedCount = allTranslatableEntries.length - untranslatedEntries.length;
-  
+
   return (
     <Paper p="sm" withBorder>
       {/* Retranslate confirmation modal */}
@@ -356,11 +377,12 @@ export function TranslateToolbar({ onLanguageChange, deeplGlossaryId }: Translat
         onConfirm={handleRetranslateAll}
         title="Retranslate all entries?"
         message={`This will overwrite ${translatedCount} existing translations with new machine translations.`}
-        detail={manualEditCount > 0 && skipManualEdits 
-          ? `${manualEditCount} manually edited entries will be skipped.`
-          : manualEditCount > 0 
-            ? `⚠️ ${manualEditCount} manually edited entries will be overwritten!`
-            : 'Consider downloading a backup first.'
+        detail={
+          manualEditCount > 0 && skipManualEdits
+            ? `${manualEditCount} manually edited entries will be skipped.`
+            : manualEditCount > 0
+              ? `⚠️ ${manualEditCount} manually edited entries will be overwritten!`
+              : 'Consider downloading a backup first.'
         }
         confirmLabel="Retranslate All"
         confirmColor="orange"
@@ -371,12 +393,7 @@ export function TranslateToolbar({ onLanguageChange, deeplGlossaryId }: Translat
         {/* API Key Warning */}
         <AnimatePresence>
           {!hasApiKey && (
-            <MotionDiv
-              variants={slideUpVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-            >
+            <MotionDiv variants={slideUpVariants} initial="hidden" animate="visible" exit="exit">
               <Alert color="yellow" icon={<Key size={16} />}>
                 <Text size="sm">Add your DeepL API key in Settings to enable translations.</Text>
               </Alert>
@@ -399,9 +416,11 @@ export function TranslateToolbar({ onLanguageChange, deeplGlossaryId }: Translat
               size="sm"
               disabled={!hasApiKey}
             />
-            
-            <Text c="dimmed" pb={8}>→</Text>
-            
+
+            <Text c="dimmed" pb={8}>
+              →
+            </Text>
+
             <Select
               label="Target language"
               description={inferredTarget ? `Detected: ${inferredTarget}` : 'Select target'}
@@ -416,7 +435,7 @@ export function TranslateToolbar({ onLanguageChange, deeplGlossaryId }: Translat
               disabled={!hasApiKey}
             />
           </Group>
-          
+
           <Group gap="sm">
             <AnimatePresence mode="wait">
               {isTranslating ? (
@@ -447,12 +466,20 @@ export function TranslateToolbar({ onLanguageChange, deeplGlossaryId }: Translat
                   exit="exit"
                 >
                   <Group gap="sm">
-                    <Tooltip label={manualEditCount > 0 ? `${manualEditCount} manual edits will be ${skipManualEdits ? 'skipped' : 'overwritten'}` : 'Retranslate all entries'}>
+                    <Tooltip
+                      label={
+                        manualEditCount > 0
+                          ? `${manualEditCount} manual edits will be ${skipManualEdits ? 'skipped' : 'overwritten'}`
+                          : 'Retranslate all entries'
+                      }
+                    >
                       <motion.div {...buttonStates}>
                         <Button
                           leftSection={<RefreshCw size={16} />}
                           onClick={() => setConfirmRetranslateOpen(true)}
-                          disabled={!targetLang || allTranslatableEntries.length === 0 || !hasApiKey}
+                          disabled={
+                            !targetLang || allTranslatableEntries.length === 0 || !hasApiKey
+                          }
                           variant="subtle"
                           color="orange"
                         >
@@ -476,16 +503,11 @@ export function TranslateToolbar({ onLanguageChange, deeplGlossaryId }: Translat
             </AnimatePresence>
           </Group>
         </Group>
-        
+
         {/* Skip manual edits option */}
         <AnimatePresence>
           {manualEditCount > 0 && !isTranslating && (
-            <MotionDiv
-              variants={slideUpVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-            >
+            <MotionDiv variants={slideUpVariants} initial="hidden" animate="visible" exit="exit">
               <Group gap="xs">
                 <Checkbox
                   size="xs"
@@ -494,7 +516,9 @@ export function TranslateToolbar({ onLanguageChange, deeplGlossaryId }: Translat
                   label={
                     <Group gap={4}>
                       <ShieldAlert size={14} />
-                      <Text size="xs">Protect {manualEditCount} manual edits from bulk translation</Text>
+                      <Text size="xs">
+                        Protect {manualEditCount} manual edits from bulk translation
+                      </Text>
                     </Group>
                   }
                 />
@@ -502,7 +526,7 @@ export function TranslateToolbar({ onLanguageChange, deeplGlossaryId }: Translat
             </MotionDiv>
           )}
         </AnimatePresence>
-        
+
         {/* Progress bar during bulk translation */}
         <AnimatePresence>
           {isTranslating && (
@@ -518,7 +542,9 @@ export function TranslateToolbar({ onLanguageChange, deeplGlossaryId }: Translat
                   {isRetranslateMode ? 'Retranslating' : 'Translating'}... {translateCount}
                   {failedCount > 0 ? ` (${failedCount} failed)` : ''}
                 </Text>
-                <Text size="sm" fw={500}>{progress}%</Text>
+                <Text size="sm" fw={500}>
+                  {progress}%
+                </Text>
               </Group>
               <Progress
                 value={progress}
@@ -529,16 +555,11 @@ export function TranslateToolbar({ onLanguageChange, deeplGlossaryId }: Translat
             </MotionStack>
           )}
         </AnimatePresence>
-        
+
         {/* Error display */}
         <AnimatePresence>
           {error && !isTranslating && (
-            <MotionDiv
-              variants={slideUpVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-            >
+            <MotionDiv variants={slideUpVariants} initial="hidden" animate="visible" exit="exit">
               <Alert
                 color="red"
                 icon={<AlertCircle size={16} />}
@@ -550,27 +571,18 @@ export function TranslateToolbar({ onLanguageChange, deeplGlossaryId }: Translat
             </MotionDiv>
           )}
         </AnimatePresence>
-        
+
         {/* Success message */}
         <AnimatePresence>
           {!isTranslating && translateCount > 0 && !error && (
-            <MotionDiv
-              variants={slideUpVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-            >
+            <MotionDiv variants={slideUpVariants} initial="hidden" animate="visible" exit="exit">
               <Alert color="green" withCloseButton onClose={() => setTranslateCount(0)}>
                 Successfully translated {translateCount} entries
               </Alert>
             </MotionDiv>
           )}
         </AnimatePresence>
-
       </Stack>
     </Paper>
   );
 }
-
-export { SOURCE_LANGUAGES, TARGET_LANGUAGES, mapToDeepLCode };
-export type { SourceLanguage, TargetLanguage };

@@ -1,6 +1,6 @@
 /**
  * Glossary Panel Component
- * 
+ *
  * Enhanced UI for WordPress.org glossary integration:
  * - Locale selector (with custom input)
  * - Load/refresh/clear controls
@@ -31,15 +31,25 @@ import {
   Switch,
   Box,
 } from '@mantine/core';
-import { BookOpen, RefreshCw, AlertCircle, ChevronDown, ChevronRight, Search, Eye, Check, X } from 'lucide-react';
-import { 
-  fetchWPGlossary, 
+import {
+  BookOpen,
+  RefreshCw,
+  AlertCircle,
+  ChevronDown,
+  ChevronRight,
+  Search,
+  Eye,
+  Check,
+  X,
+} from 'lucide-react';
+import {
+  fetchWPGlossary,
   clearWPGlossaryCache,
   hasGlossaryCache,
-  type FetchResult 
+  type FetchResult,
 } from '@/lib/glossary/wp-fetcher';
 import { findGlossaryMatches } from '@/lib/glossary/matcher';
-import type { Glossary, GlossaryEntry } from '@/lib/glossary/types';
+import type { Glossary } from '@/lib/glossary/types';
 
 /** localStorage keys */
 const SELECTED_LOCALE_KEY = 'glossboss-selected-glossary-locale';
@@ -97,7 +107,7 @@ interface GlossaryPanelProps {
 function GlossaryViewerModal({
   glossary,
   opened,
-  onClose
+  onClose,
 }: {
   glossary: Glossary;
   opened: boolean;
@@ -110,11 +120,12 @@ function GlossaryViewerModal({
       return glossary.entries;
     }
     const query = search.toLowerCase();
-    return glossary.entries.filter((entry) =>
-      entry.term.toLowerCase().includes(query) ||
-      entry.translation.toLowerCase().includes(query) ||
-      entry.partOfSpeech?.toLowerCase().includes(query) ||
-      entry.comment?.toLowerCase().includes(query)
+    return glossary.entries.filter(
+      (entry) =>
+        entry.term.toLowerCase().includes(query) ||
+        entry.translation.toLowerCase().includes(query) ||
+        entry.partOfSpeech?.toLowerCase().includes(query) ||
+        entry.comment?.toLowerCase().includes(query),
     );
   }, [glossary.entries, search]);
 
@@ -126,8 +137,12 @@ function GlossaryViewerModal({
         <Group gap="sm">
           <BookOpen size={20} />
           <Text fw={600}>WordPress Glossary</Text>
-          <Badge color="blue" variant="light">{glossary.targetLocale.toUpperCase()}</Badge>
-          <Badge color="gray" variant="light">{glossary.entries.length} terms</Badge>
+          <Badge color="blue" variant="light">
+            {glossary.targetLocale.toUpperCase()}
+          </Badge>
+          <Badge color="gray" variant="light">
+            {glossary.entries.length} terms
+          </Badge>
         </Group>
       }
       size="xl"
@@ -148,10 +163,12 @@ function GlossaryViewerModal({
             </Text>
           )}
         </Box>
-        
+
         <ScrollArea h={400}>
           <Table striped highlightOnHover>
-            <Table.Thead style={{ position: 'sticky', top: 0, background: 'var(--mantine-color-body)' }}>
+            <Table.Thead
+              style={{ position: 'sticky', top: 0, background: 'var(--mantine-color-body)' }}
+            >
               <Table.Tr>
                 <Table.Th style={{ width: '25%' }}>Term (EN)</Table.Th>
                 <Table.Th style={{ width: '25%' }}>Translation</Table.Th>
@@ -162,22 +179,44 @@ function GlossaryViewerModal({
             <Table.Tbody>
               {filteredEntries.map((entry, index) => (
                 <Table.Tr key={`${entry.term}-${index}`}>
-                  <Table.Td><Text size="sm" fw={500}>{entry.term}</Text></Table.Td>
-                  <Table.Td><Text size="sm">{entry.translation || <Text span c="dimmed">—</Text>}</Text></Table.Td>
+                  <Table.Td>
+                    <Text size="sm" fw={500}>
+                      {entry.term}
+                    </Text>
+                  </Table.Td>
+                  <Table.Td>
+                    <Text size="sm">
+                      {entry.translation || (
+                        <Text span c="dimmed">
+                          —
+                        </Text>
+                      )}
+                    </Text>
+                  </Table.Td>
                   <Table.Td>
                     {entry.partOfSpeech ? (
-                      <Badge size="xs" variant="light" color="gray">{entry.partOfSpeech}</Badge>
+                      <Badge size="xs" variant="light" color="gray">
+                        {entry.partOfSpeech}
+                      </Badge>
                     ) : (
-                      <Text size="sm" c="dimmed">—</Text>
+                      <Text size="sm" c="dimmed">
+                        —
+                      </Text>
                     )}
                   </Table.Td>
-                  <Table.Td><Text size="xs" c="dimmed" lineClamp={2}>{entry.comment || '—'}</Text></Table.Td>
+                  <Table.Td>
+                    <Text size="xs" c="dimmed" lineClamp={2}>
+                      {entry.comment || '—'}
+                    </Text>
+                  </Table.Td>
                 </Table.Tr>
               ))}
               {filteredEntries.length === 0 && (
                 <Table.Tr>
                   <Table.Td colSpan={4}>
-                    <Text size="sm" c="dimmed" ta="center" py="md">No terms match your search</Text>
+                    <Text size="sm" c="dimmed" ta="center" py="md">
+                      No terms match your search
+                    </Text>
                   </Table.Td>
                 </Table.Tr>
               )}
@@ -190,13 +229,7 @@ function GlossaryViewerModal({
 }
 
 /** Preview of glossary terms for selected row */
-function TermsPreview({ 
-  sourceText, 
-  glossary 
-}: { 
-  sourceText: string; 
-  glossary: Glossary;
-}) {
+function TermsPreview({ sourceText, glossary }: { sourceText: string; glossary: Glossary }) {
   const matches = useMemo(() => {
     if (!sourceText || !glossary) return [];
     return findGlossaryMatches(sourceText, glossary);
@@ -216,18 +249,16 @@ function TermsPreview({
   return (
     <Group gap={6} wrap="wrap">
       {displayMatches.map((match, i) => (
-        <Tooltip 
-          key={i} 
-          label={`"${match.term}" → "${match.translation}"`}
-          color="dark"
-        >
+        <Tooltip key={i} label={`"${match.term}" → "${match.translation}"`} color="dark">
           <Badge size="xs" variant="light" color="blue" style={{ cursor: 'help' }}>
             {match.term} → {match.translation}
           </Badge>
         </Tooltip>
       ))}
       {remaining > 0 && (
-        <Text size="xs" c="dimmed">+{remaining} more</Text>
+        <Text size="xs" c="dimmed">
+          +{remaining} more
+        </Text>
       )}
     </Group>
   );
@@ -298,7 +329,7 @@ export function GlossaryPanel({
       }
     };
     restoreGlossary();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Persist settings
   useEffect(() => {
@@ -308,13 +339,17 @@ export function GlossaryPanel({
       } else {
         localStorage.removeItem(SELECTED_LOCALE_KEY);
       }
-    } catch {}
+    } catch {
+      // Ignore storage errors
+    }
   }, [selectedLocale]);
 
   useEffect(() => {
     try {
       localStorage.setItem(ENFORCEMENT_ENABLED_KEY, String(enforcementEnabled));
-    } catch {}
+    } catch {
+      // Ignore storage errors
+    }
     onEnforcementChange?.(enforcementEnabled);
   }, [enforcementEnabled, onEnforcementChange]);
 
@@ -323,31 +358,34 @@ export function GlossaryPanel({
     if (initialLocale && initialLocale !== selectedLocale && !glossary) {
       setSelectedLocale(initialLocale);
     }
-  }, [initialLocale]);
+  }, [initialLocale]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleLoad = useCallback(async (forceRefresh = false) => {
-    if (!selectedLocale) return;
-    setIsLoading(true);
-    setError(null);
+  const handleLoad = useCallback(
+    async (forceRefresh = false) => {
+      if (!selectedLocale) return;
+      setIsLoading(true);
+      setError(null);
 
-    try {
-      const result: FetchResult = await fetchWPGlossary(selectedLocale, forceRefresh);
-      if (result.glossary) {
-        setGlossary(result.glossary);
-        setFromCache(result.fromCache);
-        onGlossaryLoaded?.(result.glossary);
-        if (result.error) setError(result.error);
-      } else {
-        setError(result.error || 'Failed to load glossary');
+      try {
+        const result: FetchResult = await fetchWPGlossary(selectedLocale, forceRefresh);
+        if (result.glossary) {
+          setGlossary(result.glossary);
+          setFromCache(result.fromCache);
+          onGlossaryLoaded?.(result.glossary);
+          if (result.error) setError(result.error);
+        } else {
+          setError(result.error || 'Failed to load glossary');
+          setGlossary(null);
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Unknown error');
         setGlossary(null);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
-      setGlossary(null);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [selectedLocale, onGlossaryLoaded]);
+    },
+    [selectedLocale, onGlossaryLoaded],
+  );
 
   const handleClear = useCallback(() => {
     if (selectedLocale) {
@@ -359,26 +397,31 @@ export function GlossaryPanel({
     onGlossaryCleared?.();
   }, [selectedLocale, onGlossaryCleared]);
 
-  const handleLocaleChange = useCallback((value: string | null) => {
-    const newLocale = value || '';
-    setSelectedLocale(newLocale);
-    if (newLocale !== selectedLocale) {
-      setGlossary(null);
-      setError(null);
-      setFromCache(false);
-    }
-  }, [selectedLocale]);
+  const handleLocaleChange = useCallback(
+    (value: string | null) => {
+      const newLocale = value || '';
+      setSelectedLocale(newLocale);
+      if (newLocale !== selectedLocale) {
+        setGlossary(null);
+        setError(null);
+        setFromCache(false);
+      }
+    },
+    [selectedLocale],
+  );
 
   // Render sync status indicator
   const renderSyncStatus = () => {
     if (!glossary) return null;
-    
+
     switch (syncState) {
       case 'syncing':
         return (
           <Group gap={4}>
             <Loader size={12} />
-            <Text size="xs" c="dimmed">Syncing to DeepL...</Text>
+            <Text size="xs" c="dimmed">
+              Syncing to DeepL...
+            </Text>
           </Group>
         );
       case 'ready':
@@ -389,9 +432,9 @@ export function GlossaryPanel({
               DeepL ready{deeplTermCount ? ` (${deeplTermCount} terms)` : ''}
             </Text>
             <Tooltip label="Force recreate glossary on DeepL" color="dark">
-              <Button 
-                size="compact-xs" 
-                variant="subtle" 
+              <Button
+                size="compact-xs"
+                variant="subtle"
                 color="gray"
                 onClick={() => onForceResync?.(glossary)}
               >
@@ -404,7 +447,9 @@ export function GlossaryPanel({
         return (
           <Group gap={4}>
             <X size={12} color="var(--mantine-color-red-6)" />
-            <Text size="xs" c="red">Sync failed</Text>
+            <Text size="xs" c="red">
+              Sync failed
+            </Text>
             <Button size="compact-xs" variant="subtle" onClick={() => onGlossaryLoaded?.(glossary)}>
               Retry
             </Button>
@@ -425,46 +470,78 @@ export function GlossaryPanel({
               <Group gap="xs">
                 {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                 <BookOpen size={16} />
-                <Text size="sm" fw={500}>Glossary</Text>
-                
+                <Text size="sm" fw={500}>
+                  Glossary
+                </Text>
+
                 {glossary && (
                   <>
                     <Badge color="green" size="xs" variant="light">
                       {glossary.entries.length} terms
                     </Badge>
-                    <Text size="xs" c="dimmed">({glossary.targetLocale})</Text>
-                    {fromCache && <Badge color="gray" size="xs" variant="light">cached</Badge>}
+                    <Text size="xs" c="dimmed">
+                      ({glossary.targetLocale})
+                    </Text>
+                    {fromCache && (
+                      <Badge color="gray" size="xs" variant="light">
+                        cached
+                      </Badge>
+                    )}
                   </>
                 )}
-                
+
                 {!glossary && !isLoading && (
-                  <Text size="xs" c="dimmed">Not loaded</Text>
+                  <Text size="xs" c="dimmed">
+                    Not loaded
+                  </Text>
                 )}
               </Group>
             </UnstyledButton>
-            
+
             <Group gap="xs">
               {isLoading ? (
                 <Loader size="xs" />
               ) : glossary ? (
                 <>
                   <Tooltip label="Refresh from WordPress.org" color="dark">
-                    <ActionIcon size="sm" variant="subtle" onClick={(e) => { e.stopPropagation(); handleLoad(true); }}>
+                    <ActionIcon
+                      size="sm"
+                      variant="subtle"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleLoad(true);
+                      }}
+                    >
                       <RefreshCw size={14} />
                     </ActionIcon>
                   </Tooltip>
-                  <Button size="xs" variant="subtle" color="gray" onClick={(e) => { e.stopPropagation(); handleClear(); }}>
+                  <Button
+                    size="xs"
+                    variant="subtle"
+                    color="gray"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleClear();
+                    }}
+                  >
                     Clear
                   </Button>
                 </>
               ) : selectedLocale ? (
-                <Button size="xs" variant="light" onClick={(e) => { e.stopPropagation(); handleLoad(false); }}>
+                <Button
+                  size="xs"
+                  variant="light"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleLoad(false);
+                  }}
+                >
                   Load
                 </Button>
               ) : null}
             </Group>
           </Group>
-          
+
           {/* Expanded content */}
           <Collapse in={isExpanded}>
             <Stack gap="sm" pt="xs">
@@ -482,7 +559,7 @@ export function GlossaryPanel({
                   size="xs"
                   nothingFoundMessage="Type a custom locale code"
                 />
-                
+
                 {glossary && (
                   <Button
                     size="xs"
@@ -494,7 +571,7 @@ export function GlossaryPanel({
                   </Button>
                 )}
               </Group>
-              
+
               {/* Enforcement toggle */}
               {glossary && (
                 <Box>
@@ -503,9 +580,13 @@ export function GlossaryPanel({
                     checked={enforcementEnabled}
                     onChange={(e) => setEnforcementEnabled(e.currentTarget.checked)}
                     label="Apply glossary terms during translation"
-                    description={enforcementEnabled ? "DeepL will use glossary for consistent terminology" : "Translations without glossary enforcement"}
+                    description={
+                      enforcementEnabled
+                        ? 'DeepL will use glossary for consistent terminology'
+                        : 'Translations without glossary enforcement'
+                    }
                   />
-                  
+
                   {/* Sync status */}
                   {enforcementEnabled && (
                     <Box mt="xs" ml={54}>
@@ -514,15 +595,17 @@ export function GlossaryPanel({
                   )}
                 </Box>
               )}
-              
+
               {/* Selected row preview */}
               {glossary && selectedSourceText && (
                 <Box>
-                  <Text size="xs" fw={500} mb={4}>Terms in selected row:</Text>
+                  <Text size="xs" fw={500} mb={4}>
+                    Terms in selected row:
+                  </Text>
                   <TermsPreview sourceText={selectedSourceText} glossary={glossary} />
                 </Box>
               )}
-              
+
               {/* Error */}
               {error && !isLoading && (
                 <Alert
@@ -539,7 +622,7 @@ export function GlossaryPanel({
           </Collapse>
         </Stack>
       </Paper>
-      
+
       {/* Glossary viewer modal */}
       {glossary && (
         <GlossaryViewerModal

@@ -1,6 +1,6 @@
 /**
  * LocalStorage Persistence Utilities
- * 
+ *
  * Handles saving and loading editor state from LocalStorage.
  * Used by Zustand persist middleware and for manual state management.
  */
@@ -31,7 +31,7 @@ export function isStorageAvailable(): boolean {
 export function getStorageUsage(): number {
   let total = 0;
   for (const key in localStorage) {
-    if (localStorage.hasOwnProperty(key)) {
+    if (Object.prototype.hasOwnProperty.call(localStorage, key)) {
       total += localStorage.getItem(key)?.length ?? 0;
     }
   }
@@ -59,15 +59,15 @@ export function isStorageNearLimit(threshold = 0.9): boolean {
  */
 export function clearEditorStorage(): void {
   const keysToRemove: string[] = [];
-  
+
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
     if (key?.startsWith('po-editor-')) {
       keysToRemove.push(key);
     }
   }
-  
-  keysToRemove.forEach(key => localStorage.removeItem(key));
+
+  keysToRemove.forEach((key) => localStorage.removeItem(key));
 }
 
 /**
@@ -75,7 +75,7 @@ export function clearEditorStorage(): void {
  */
 export function exportStorageState(): string {
   const state: Record<string, string> = {};
-  
+
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
     if (key?.startsWith('po-editor-')) {
@@ -85,7 +85,7 @@ export function exportStorageState(): string {
       }
     }
   }
-  
+
   return JSON.stringify(state, null, 2);
 }
 
@@ -95,13 +95,13 @@ export function exportStorageState(): string {
 export function importStorageState(backup: string): boolean {
   try {
     const state = JSON.parse(backup);
-    
+
     for (const [key, value] of Object.entries(state)) {
       if (key.startsWith('po-editor-') && typeof value === 'string') {
         localStorage.setItem(key, value);
       }
     }
-    
+
     return true;
   } catch {
     return false;

@@ -1,6 +1,6 @@
 /**
  * Filter Toolbar Component
- * 
+ *
  * Unified toolbar with search, tri-state filter chips, and progress indicator.
  * Filter chips cycle through: neutral -> show only -> don't show -> neutral
  */
@@ -19,7 +19,16 @@ import {
   Stack,
 } from '@mantine/core';
 import { motion, AnimatePresence } from 'motion/react';
-import { Search, X, FileQuestion, CheckCircle, AlertTriangle, Pencil, Bot, Edit3 } from 'lucide-react';
+import {
+  Search,
+  X,
+  FileQuestion,
+  CheckCircle,
+  AlertTriangle,
+  Pencil,
+  Bot,
+  Edit3,
+} from 'lucide-react';
 import { useEditorStore, type FilterType, type FilterState } from '@/stores/editor-store';
 import { getDeepLClient, hasUserApiKey } from '@/lib/deepl';
 import type { UsageStats } from '@/lib/deepl/types';
@@ -54,7 +63,7 @@ function getTooltipText(label: string, state: FilterState | null): string {
 }
 
 /** Get badge variant and style based on filter state */
-function getBadgeStyle(state: FilterState | null, _color: string): {
+function getBadgeStyle(state: FilterState | null): {
   variant: 'filled' | 'light' | 'outline';
   style: React.CSSProperties;
 } {
@@ -64,7 +73,10 @@ function getBadgeStyle(state: FilterState | null, _color: string): {
     flexShrink: 0,
   };
   if (state === 'include') {
-    return { variant: 'light', style: { ...base, borderWidth: 2, borderStyle: 'solid', borderColor: 'currentColor' } };
+    return {
+      variant: 'light',
+      style: { ...base, borderWidth: 2, borderStyle: 'solid', borderColor: 'currentColor' },
+    };
   }
   if (state === 'exclude') {
     return { variant: 'light', style: { ...base, opacity: 0.45, textDecoration: 'line-through' } };
@@ -94,7 +106,10 @@ export function FilterToolbar() {
   useEffect(() => {
     if (!apiKeyConfigured) return;
     const fetchUsage = () => {
-      getDeepLClient().getUsage().then(setUsage).catch(() => {});
+      getDeepLClient()
+        .getUsage()
+        .then(setUsage)
+        .catch(() => {});
     };
     fetchUsage();
     // Listen for refresh events from TranslateToolbar
@@ -104,22 +119,20 @@ export function FilterToolbar() {
 
   // Debounced search
   const [localQuery, setLocalQuery] = useState(filterQuery);
-  
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setFilterQuery(localQuery);
     }, 200);
     return () => clearTimeout(timer);
   }, [localQuery, setFilterQuery]);
-  
+
   // Sync local state with store
   useEffect(() => {
     setLocalQuery(filterQuery);
   }, [filterQuery]);
-  
-  const percentage = stats.total > 0 
-    ? Math.round((stats.translated / stats.total) * 100) 
-    : 0;
+
+  const percentage = stats.total > 0 ? Math.round((stats.translated / stats.total) * 100) : 0;
 
   const handleClearSearch = useCallback(() => {
     setLocalQuery('');
@@ -175,16 +188,23 @@ export function FilterToolbar() {
             onChange={(e) => setLocalQuery(e.currentTarget.value)}
             style={{ flex: 1, maxWidth: 320 }}
           />
-          
+
           {/* Progress indicator */}
           <Group gap="sm" wrap="nowrap" style={{ flexShrink: 0 }}>
             <Group gap="xs" wrap="nowrap">
-              <Text size="sm" c="dimmed">{stats.total} entries</Text>
-              <Text size="sm" c="dimmed">•</Text>
+              <Text size="sm" c="dimmed">
+                {stats.total} entries
+              </Text>
+              <Text size="sm" c="dimmed">
+                •
+              </Text>
               <motion.span
                 key={percentage}
                 initial={{ scale: 1.2, color: 'var(--mantine-color-blue-filled)' }}
-                animate={{ scale: 1, color: percentage === 100 ? 'var(--mantine-color-green-filled)' : 'inherit' }}
+                animate={{
+                  scale: 1,
+                  color: percentage === 100 ? 'var(--mantine-color-green-filled)' : 'inherit',
+                }}
                 transition={springTransition}
               >
                 <Text size="sm" fw={500} component="span">
@@ -193,11 +213,7 @@ export function FilterToolbar() {
               </motion.span>
             </Group>
             <Box style={{ width: 100 }}>
-              <motion.div
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                style={{ originX: 0 }}
-              >
+              <motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} style={{ originX: 0 }}>
                 <Progress
                   value={percentage}
                   size="sm"
@@ -213,7 +229,8 @@ export function FilterToolbar() {
         {/* DeepL token usage */}
         {usage && (
           <Text size="xs" c="dimmed" ta="right">
-            DeepL usage: {usage.characterCount.toLocaleString()} / {usage.characterLimit.toLocaleString()}
+            DeepL usage: {usage.characterCount.toLocaleString()} /{' '}
+            {usage.characterLimit.toLocaleString()}
           </Text>
         )}
 
@@ -225,7 +242,7 @@ export function FilterToolbar() {
                 const filterState = activeFilters.get(filter.id) ?? null;
                 const count = getFilterCount(filter.id);
                 const Icon = filter.icon;
-                const badgeStyle = getBadgeStyle(filterState, filter.color);
+                const badgeStyle = getBadgeStyle(filterState);
 
                 // Don't show modified filter if count is 0
                 if (filter.id === 'modified' && count === 0) {
@@ -251,7 +268,6 @@ export function FilterToolbar() {
                         color={filter.color}
                         size="lg"
                         leftSection={<Icon size={14} />}
-
                         style={badgeStyle.style}
                         onClick={() => toggleFilter(filter.id)}
                       >
@@ -262,19 +278,14 @@ export function FilterToolbar() {
                 );
               })}
             </AnimatePresence>
-            
+
             {/* MT count badge - clickable filter */}
             <AnimatePresence>
               {stats.machineTranslated > 0 && (
-                <MotionDiv
-                  variants={popVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                >
+                <MotionDiv variants={popVariants} initial="hidden" animate="visible" exit="exit">
                   {(() => {
                     const filterState = activeFilters.get('machine-translated') ?? null;
-                    const badgeStyle = getBadgeStyle(filterState, 'blue');
+                    const badgeStyle = getBadgeStyle(filterState);
                     return (
                       <Tooltip label={getTooltipText('Machine translated', filterState)}>
                         <Badge
@@ -282,7 +293,6 @@ export function FilterToolbar() {
                           color="blue"
                           size="lg"
                           leftSection={<Bot size={14} />}
-  
                           style={badgeStyle.style}
                           onClick={() => toggleFilter('machine-translated')}
                         >
@@ -294,19 +304,14 @@ export function FilterToolbar() {
                 </MotionDiv>
               )}
             </AnimatePresence>
-            
+
             {/* Manual edits badge - clickable filter */}
             <AnimatePresence>
               {stats.manualEdits > 0 && (
-                <MotionDiv
-                  variants={popVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                >
+                <MotionDiv variants={popVariants} initial="hidden" animate="visible" exit="exit">
                   {(() => {
                     const filterState = activeFilters.get('manual-edit') ?? null;
-                    const badgeStyle = getBadgeStyle(filterState, 'grape');
+                    const badgeStyle = getBadgeStyle(filterState);
                     return (
                       <Tooltip label={getTooltipText('Manual edits', filterState)}>
                         <Badge
@@ -314,7 +319,6 @@ export function FilterToolbar() {
                           color="grape"
                           size="lg"
                           leftSection={<Edit3 size={14} />}
-  
                           style={badgeStyle.style}
                           onClick={() => toggleFilter('manual-edit')}
                         >
@@ -344,7 +348,10 @@ export function FilterToolbar() {
                 >
                   Clear filters
                   {hasActiveFilters && filteredCount !== stats.total && (
-                    <Text span c="dimmed" size="sm"> ({filteredCount} shown)</Text>
+                    <Text span c="dimmed" size="sm">
+                      {' '}
+                      ({filteredCount} shown)
+                    </Text>
                   )}
                 </Text>
               </MotionDiv>

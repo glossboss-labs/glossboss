@@ -48,7 +48,7 @@ const theme = createTheme({
 
 /**
  * App-wide providers
- * 
+ *
  * - MantineProvider: UI component library
  * - Add additional providers here as needed (e.g., notifications)
  */

@@ -1,6 +1,6 @@
 /**
  * PO File Library
- * 
+ *
  * Utilities for parsing and serializing GNU gettext .po files.
  */
 
@@ -20,12 +20,7 @@ export type {
 } from './types';
 
 // Parser
-export { 
-  parsePOFile, 
-  parsePOFileWithDiagnostics,
-  validatePOFile,
-  isPOFileContent,
-} from './parser';
+export { parsePOFile, parsePOFileWithDiagnostics, validatePOFile, isPOFileContent } from './parser';
 
 // Serializer
 export { serializePOFile, exportEntriesToJSON, calculatePOFileSize } from './serializer';
