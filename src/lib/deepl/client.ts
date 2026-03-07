@@ -15,6 +15,7 @@ import type {
   DeepLGlossary,
 } from './types';
 import { getDeepLSettings } from './settings';
+import { buildSupabaseFunctionHeaders } from '@/lib/supabase-function-headers';
 
 /**
  * Get the Supabase function URL for DeepL translation
@@ -63,14 +64,7 @@ export function createDeepLClient(config: DeepLClientConfig = {}) {
     const settings = getDeepLSettings();
 
     try {
-      const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-      };
-
-      if (anonKey) {
-        headers['Authorization'] = `Bearer ${anonKey}`;
-        headers['apikey'] = anonKey;
-      }
+      const headers = buildSupabaseFunctionHeaders(anonKey);
 
       // Include user's API key and type if configured
       const requestBody: Record<string, unknown> = {
