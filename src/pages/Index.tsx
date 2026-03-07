@@ -34,6 +34,7 @@ import {
   Download,
   Trash2,
   AlertTriangle,
+  MessageSquare,
   FileUp,
   Check,
   RotateCcw,
@@ -50,6 +51,7 @@ import {
   TranslateToolbar,
   SourceContext,
 } from '@/components/editor';
+import { FeedbackModal } from '@/components/feedback';
 import { SettingsModal } from '@/components/SettingsModal';
 import { ConfirmModal } from '@/components/ui';
 import { useEditorStore, useSourceStore } from '@/stores';
@@ -102,6 +104,12 @@ interface MergeInfo {
   updatedMeta: number;
 }
 
+/** Feedback submit success info */
+interface FeedbackInfo {
+  issueNumber: number;
+  issueUrl: string;
+}
+
 /** Pending draft info for recovery prompt */
 interface PendingDraft {
   draft: DraftData;
@@ -143,6 +151,9 @@ export default function Index() {
   const [confirmClearOpen, setConfirmClearOpen] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState<DownloadInfo | null>(null);
   const [mergeSuccess, setMergeSuccess] = useState<MergeInfo | null>(null);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [feedbackSuccess, setFeedbackSuccess] = useState<FeedbackInfo | null>(null);
+  const [feedbackError, setFeedbackError] = useState<string | null>(null);
   const [translateSourceLang, setTranslateSourceLang] = useState<SourceLanguage | undefined>(
     undefined,
   );
@@ -836,6 +847,72 @@ export default function Index() {
         )}
       </Transition>
 
+      {/* Feedback success notification */}
+      <Transition
+        mounted={feedbackSuccess !== null}
+        transition="slide-left"
+        duration={200}
+        timingFunction="ease"
+      >
+        {(styles) => (
+          <Notification
+            icon={<Check size={18} />}
+            color="teal"
+            title="Feedback submitted"
+            onClose={() => setFeedbackSuccess(null)}
+            style={{
+              ...styles,
+              position: 'fixed',
+              top: 20,
+              right: 20,
+              zIndex: 1000,
+              minWidth: 300,
+            }}
+          >
+            <Text size="sm">Thanks. Issue #{feedbackSuccess?.issueNumber} was created.</Text>
+            {feedbackSuccess?.issueUrl && (
+              <Text
+                component="a"
+                href={feedbackSuccess.issueUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                size="sm"
+                mt={4}
+              >
+                Open issue
+              </Text>
+            )}
+          </Notification>
+        )}
+      </Transition>
+
+      {/* Feedback error notification */}
+      <Transition
+        mounted={feedbackError !== null}
+        transition="slide-left"
+        duration={200}
+        timingFunction="ease"
+      >
+        {(styles) => (
+          <Notification
+            icon={<AlertTriangle size={18} />}
+            color="red"
+            title="Feedback failed"
+            onClose={() => setFeedbackError(null)}
+            style={{
+              ...styles,
+              position: 'fixed',
+              top: 20,
+              right: 20,
+              zIndex: 1000,
+              minWidth: 320,
+            }}
+          >
+            <Text size="sm">{feedbackError}</Text>
+          </Notification>
+        )}
+      </Transition>
+
       <Container size="xl" py="xl">
         <Stack gap="lg">
           {/* Header */}
@@ -983,6 +1060,18 @@ export default function Index() {
                     </MotionDiv>
                   )}
                 </AnimatePresence>
+
+                <Tooltip label="Share feedback">
+                  <motion.div {...buttonStates}>
+                    <Button
+                      variant="default"
+                      leftSection={<MessageSquare size={16} />}
+                      onClick={() => setFeedbackOpen(true)}
+                    >
+                      Feedback
+                    </Button>
+                  </motion.div>
+                </Tooltip>
 
                 <ThemeToggle />
 
@@ -1249,6 +1338,21 @@ export default function Index() {
         deeplGlossaryId={deeplGlossaryId}
         deeplTermCount={deeplTermCount}
         selectedSourceText={selectedSourceText}
+      />
+
+      <FeedbackModal
+        opened={feedbackOpen}
+        onClose={() => setFeedbackOpen(false)}
+        currentFilename={filename}
+        onSubmitted={(result) => {
+          setFeedbackSuccess({ issueNumber: result.issueNumber, issueUrl: result.issueUrl });
+          setFeedbackError(null);
+          window.setTimeout(() => setFeedbackSuccess(null), 5000);
+        }}
+        onSubmitError={(message) => {
+          setFeedbackError(message);
+          window.setTimeout(() => setFeedbackError(null), 6000);
+        }}
       />
     </Box>
   );
