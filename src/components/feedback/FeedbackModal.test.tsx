@@ -62,6 +62,7 @@ describe('FeedbackModal', () => {
   it('submits valid feedback and closes with a reset form', async () => {
     const user = userEvent.setup();
     const onClose = vi.fn();
+    window.history.pushState({}, '', '/editor?token=secret#fragment');
     const submitMock = vi
       .fn<(payload: FeedbackIssueRequest) => Promise<FeedbackIssueSuccess>>()
       .mockResolvedValue({
@@ -104,12 +105,14 @@ describe('FeedbackModal', () => {
         context: expect.objectContaining({
           appVersion: 'test-version',
           filename: 'nl.po',
+          pageUrl: 'http://localhost:3000/editor',
         }),
       }),
     );
 
     expect(onClose).toHaveBeenCalledTimes(1);
     expect(screen.getByPlaceholderText('Short summary of the issue')).toHaveValue('');
+    window.history.pushState({}, '', '/');
   });
 
   it('shows submission errors from backend', async () => {

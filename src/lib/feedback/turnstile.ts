@@ -77,7 +77,7 @@ export async function createTurnstileController(
     | {
         resolve: (token: string) => void;
         reject: (reason?: unknown) => void;
-        timeoutId: number;
+        timeoutId: ReturnType<typeof setTimeout>;
       }
     | undefined;
 

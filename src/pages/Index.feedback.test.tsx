@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AppProviders } from '@/providers';
-import Index from './Index';
+import Index from '@/pages/Index';
 import { useEditorStore } from '@/stores/editor-store';
 import { useSourceStore } from '@/stores/source-store';
 

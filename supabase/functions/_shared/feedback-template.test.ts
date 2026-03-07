@@ -55,6 +55,6 @@ describe('feedback issue template', () => {
     expect(body).toContain('## Proposed Solution');
     expect(body).toContain('## Use Case');
     expect(body).toContain('- **Allow Follow-Up:** No');
-    expect(body).toContain('- **Contact Email:** Not provided');
+    expect(body).not.toContain('Contact Email');
   });
 });

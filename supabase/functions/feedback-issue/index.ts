@@ -333,6 +333,7 @@ async function createGitHubIssue(
     throw new Error('GITHUB_TOKEN is not configured.');
   }
 
+  // Intentional default target for this project; env vars allow overrides.
   const owner = Deno.env.get('GITHUB_OWNER') || 'toineenzo';
   const repo = Deno.env.get('GITHUB_REPO') || 'glossboss';
 

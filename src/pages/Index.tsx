@@ -68,6 +68,7 @@ import type { ParseIssue } from '@/lib/po';
 import { parseI18nextJSON, isI18nextContent, serializeToI18next } from '@/lib/i18next';
 import type { FileFormat } from '@/stores';
 import type { TargetLanguage, SourceLanguage } from '@/lib/deepl/types';
+import type { FeedbackIssueSuccess } from '@/lib/feedback';
 import type { Glossary } from '@/lib/glossary/types';
 import { batchAnalyzeTranslations, syncGlossaryToDeepL } from '@/lib/glossary';
 import {
@@ -104,11 +105,7 @@ interface MergeInfo {
   updatedMeta: number;
 }
 
-/** Feedback submit success info */
-interface FeedbackInfo {
-  issueNumber: number;
-  issueUrl: string;
-}
+type FeedbackInfo = Pick<FeedbackIssueSuccess, 'issueNumber' | 'issueUrl'>;
 
 /** Pending draft info for recovery prompt */
 interface PendingDraft {
