@@ -3,3 +3,17 @@
 @import 'tailwindcss';
 
 @import './theme.css' layer(theme);
+
+/* Smooth light/dark mode crossfade overlay */
+.theme-transition-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  pointer-events: none;
+  animation: theme-fade 0.3s ease forwards;
+}
+
+@keyframes theme-fade {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
