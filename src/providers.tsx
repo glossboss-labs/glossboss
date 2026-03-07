@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { MantineProvider, createTheme } from '@mantine/core';
 
 // Import Mantine styles
@@ -9,6 +9,20 @@ import '@mantine/core/styles.css';
  * Lightweight, clean defaults focused on usability
  */
 const theme = createTheme({
+  colors: {
+    dark: [
+      '#e5e5e5',
+      '#a3a3a3',
+      '#525252',
+      '#404040',
+      '#262626',
+      '#1a1a1a',
+      '#141414',
+      '#0a0a0a',
+      '#050505',
+      '#020202',
+    ],
+  },
   primaryColor: 'blue',
   fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
   defaultRadius: 'sm',

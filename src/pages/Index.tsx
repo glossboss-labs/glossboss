@@ -24,10 +24,12 @@ import {
   Notification,
   ActionIcon,
   ThemeIcon,
-  Transition } from
+  Transition,
+  useMantineColorScheme,
+  useComputedColorScheme } from
 '@mantine/core';
 import { motion, AnimatePresence } from 'motion/react';
-import { Upload, Download, Trash2, AlertTriangle, FileUp, Check, RotateCcw, X, Settings, FileText, Sparkles } from 'lucide-react';
+import { Upload, Download, Trash2, AlertTriangle, FileUp, Check, RotateCcw, X, Settings, FileText, Sparkles, Sun, Moon } from 'lucide-react';
 import { EditorTable, FilterToolbar, HeaderEditor, TranslateToolbar } from '@/components/editor';
 import { SettingsModal } from '@/components/SettingsModal';
 import { ConfirmModal } from '@/components/ui';
@@ -44,11 +46,8 @@ import type { TargetLanguage, SourceLanguage } from '@/lib/deepl/types';
 import type { Glossary } from '@/lib/glossary/types';
 import { batchAnalyzeTranslations, syncGlossaryToDeepL } from '@/lib/glossary';
 import { saveDraft, loadDraft, hasDraft, deleteDraft, formatDraftAge, cleanupExpiredDrafts, type DraftData } from '@/lib/storage';
-import appIcon from '@/assets/uploads/icon.svg';
+const appIcon = '/icon.svg';
 
-const MotionBox = motion.create(Box);
-const MotionStack = motion.create(Stack);
-const MotionPaper = motion.create(Paper);
 const MotionDiv = motion.div;
 
 /** Encoding info for display */
@@ -68,6 +67,34 @@ interface DownloadInfo {
 interface PendingDraft {
   draft: DraftData;
   filename: string;
+}
+
+function ThemeToggle() {
+  const { setColorScheme } = useMantineColorScheme();
+  const computedColorScheme = useComputedColorScheme('light');
+
+  const toggleColorScheme = () => {
+    const oldBg = getComputedStyle(document.body).backgroundColor;
+    setColorScheme(computedColorScheme === 'dark' ? 'light' : 'dark');
+    const overlay = document.createElement('div');
+    overlay.className = 'theme-transition-overlay';
+    overlay.style.backgroundColor = oldBg;
+    document.body.appendChild(overlay);
+    overlay.addEventListener('animationend', () => overlay.remove());
+  };
+
+  return (
+    <Tooltip label={computedColorScheme === 'dark' ? 'Light mode' : 'Dark mode'}>
+      <motion.div {...buttonStates}>
+        <ActionIcon
+          variant="default"
+          size="lg"
+          onClick={toggleColorScheme}>
+          {computedColorScheme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+        </ActionIcon>
+      </motion.div>
+    </Tooltip>
+  );
 }
 
 export default function Index() {
@@ -737,6 +764,8 @@ export default function Index() {
                   }
                 </AnimatePresence>
                 
+                <ThemeToggle />
+
                 <Tooltip label="Settings">
                   <motion.div {...buttonStates}>
                     <ActionIcon
@@ -935,19 +964,21 @@ export default function Index() {
 
             </MotionDiv> :
 
-          <MotionPaper
-            p={rem(60)}
-            withBorder
+          <MotionDiv
             variants={fadeScaleVariants}
             initial="hidden"
             animate="visible"
+            onClick={handleEmptyStateClick}
+            style={{ cursor: 'pointer' }}>
+
+          <Paper
+            p={rem(60)}
+            withBorder
             style={{
               borderStyle: 'dashed',
               borderWidth: 2,
               borderColor: 'var(--mantine-color-blue-4)',
-              cursor: 'pointer'
-            }}
-            onClick={handleEmptyStateClick}>
+            }}>
 
               <Stack align="center" gap="lg">
                 <img data-ev-id="ev_1ff14ea799"
@@ -971,7 +1002,8 @@ export default function Index() {
                   <Badge variant="filled" color="blue">.pot</Badge>
                 </Group>
               </Stack>
-            </MotionPaper>
+            </Paper>
+            </MotionDiv>
           }
         </Stack>
       </Container>
