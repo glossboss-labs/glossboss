@@ -27,6 +27,18 @@ cp .env.example .env  # Add your Supabase URL and anon key
 bun run dev
 ```
 
+## Cloudflare Git Deployment
+
+This repository deploys automatically to Cloudflare Pages via GitHub Actions on:
+
+- Push to `main` (production deployment)
+- Pull requests into `main` (preview deployment)
+
+Add these GitHub repository secrets to enable deployment:
+
+- `CLOUDFLARE_ACCOUNT_ID`
+- `CLOUDFLARE_API_TOKEN` (with Pages edit permissions for the `glossboss` project)
+
 ## Environment Variables
 
 ```
