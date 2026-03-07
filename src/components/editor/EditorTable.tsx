@@ -31,6 +31,7 @@ import {
   ScrollArea,
   Pagination,
   Select,
+  Checkbox,
 } from '@mantine/core';
 import { useLocalStorage } from '@mantine/hooks';
 import { MessageSquare, FileCode, Pencil, Bot, Edit3 } from 'lucide-react';
@@ -66,8 +67,8 @@ const ROWS_PER_PAGE_OPTIONS = [
 ];
 
 /** Column definitions with default proportional widths */
-const COLUMN_KEYS = ['status', 'source', 'translation', 'context', 'meta'] as const;
-const DEFAULT_COLUMN_WIDTHS = [130, 420, 420, 100, 120];
+const COLUMN_KEYS = ['select', 'status', 'source', 'translation', 'context', 'meta'] as const;
+const DEFAULT_COLUMN_WIDTHS = [80, 130, 420, 420, 100, 120];
 const MIN_COLUMN_WIDTH = 60; // minimum proportion
 
 /**
@@ -78,11 +79,13 @@ function ResizableTh({
   widthPercent,
   onResize,
   isLast,
+  align = 'left',
 }: {
   children: React.ReactNode;
   widthPercent: string;
   onResize?: (deltaX: number) => void;
   isLast: boolean;
+  align?: 'left' | 'center';
 }) {
   const handleRef = useRef<HTMLDivElement>(null);
   const startXRef = useRef(0);
@@ -115,7 +118,14 @@ function ResizableTh({
   );
 
   return (
-    <Table.Th style={{ width: widthPercent, position: 'relative', userSelect: 'none' }}>
+    <Table.Th
+      style={{
+        width: widthPercent,
+        position: 'relative',
+        userSelect: 'none',
+        textAlign: align,
+      }}
+    >
       {children}
       {!isLast && (
         <div
@@ -808,10 +818,14 @@ function MetaCell({ entry }: { entry: POEntry }) {
  */
 const EntryRow = memo(function EntryRow({
   entry,
+  isChecked,
+  onToggleSelection,
   onKeyDown,
   onSelect,
 }: {
   entry: POEntry;
+  isChecked: boolean;
+  onToggleSelection: (checked: boolean) => void;
   onKeyDown?: (e: KeyboardEvent<HTMLTextAreaElement>, fieldId: string) => void;
   onSelect?: (sourceText: string) => void;
 }) {
@@ -858,6 +872,21 @@ const EntryRow = memo(function EntryRow({
           : '4px solid transparent',
       }}
     >
+      <Table.Td
+        style={{
+          verticalAlign: 'middle',
+          padding: '8px 8px',
+          overflow: 'hidden',
+          textAlign: 'center',
+        }}
+      >
+        <Checkbox
+          checked={isChecked}
+          onChange={(e) => onToggleSelection(e.currentTarget.checked)}
+          onClick={(e) => e.stopPropagation()}
+          aria-label={`Select entry ${entry.msgid}`}
+        />
+      </Table.Td>
       <Table.Td style={{ verticalAlign: 'top', padding: '12px 8px', overflow: 'hidden' }}>
         <StatusBadges
           entry={entry}
@@ -905,6 +934,9 @@ export function EditorTable({
   const entries = useEditorStore((state) => state.entries);
   const filename = useEditorStore((state) => state.filename);
   const selectEntry = useEditorStore((state) => state.selectEntry);
+  const selectedEntryIds = useEditorStore((state) => state.selectedEntryIds);
+  const setEntrySelection = useEditorStore((state) => state.setEntrySelection);
+  const setSelectedEntries = useEditorStore((state) => state.setSelectedEntries);
   const getFilteredEntries = useEditorStore((state) => state.getFilteredEntries);
   // Subscribe to activeFilters changes - serialize to detect any change
   const activeFiltersKey = useEditorStore((state) =>
@@ -1005,6 +1037,34 @@ export function EditorTable({
     const endIndex = startIndex + rowsPerPageNum;
     return filteredEntries.slice(startIndex, endIndex);
   }, [filteredEntries, currentPage, rowsPerPageNum]);
+
+  const filteredEntryIds = useMemo(
+    () => filteredEntries.map((entry) => entry.id),
+    [filteredEntries],
+  );
+  const filteredEntryIdSet = useMemo(() => new Set(filteredEntryIds), [filteredEntryIds]);
+  const selectedFilteredCount = useMemo(
+    () => filteredEntryIds.filter((id) => selectedEntryIds.has(id)).length,
+    [filteredEntryIds, selectedEntryIds],
+  );
+  const allFilteredSelected =
+    filteredEntryIds.length > 0 && selectedFilteredCount === filteredEntryIds.length;
+  const someFilteredSelected = selectedFilteredCount > 0 && !allFilteredSelected;
+
+  const handleSelectAllFiltered = useCallback(
+    (checked: boolean) => {
+      if (checked) {
+        const merged = new Set(selectedEntryIds);
+        filteredEntryIds.forEach((id) => merged.add(id));
+        setSelectedEntries(Array.from(merged));
+        return;
+      }
+
+      const remaining = Array.from(selectedEntryIds).filter((id) => !filteredEntryIdSet.has(id));
+      setSelectedEntries(remaining);
+    },
+    [selectedEntryIds, filteredEntryIds, filteredEntryIdSet, setSelectedEntries],
+  );
 
   // Keep navRef in sync with pagination state
   navRef.current.currentPage = currentPage;
@@ -1120,6 +1180,14 @@ export function EditorTable({
 
   return (
     <TranslateSettingsContext.Provider value={translateSettings}>
+      {selectedEntryIds.size > 0 && (
+        <Group gap={6} mb={6}>
+          <Text size="xs" c="dimmed">
+            {selectedEntryIds.size} selected
+          </Text>
+        </Group>
+      )}
+
       <ScrollArea h={600} type="auto">
         <Table
           ref={tableRef}
@@ -1137,14 +1205,39 @@ export function EditorTable({
             }}
           >
             <Table.Tr>
-              {(['Status', 'Source', 'Translation', 'Context', 'Meta'] as const).map((label, i) => (
+              {(
+                [
+                  <Checkbox
+                    key="select-all-checkbox-input"
+                    checked={allFilteredSelected}
+                    indeterminate={someFilteredSelected}
+                    onChange={(e) => handleSelectAllFiltered(e.currentTarget.checked)}
+                    aria-label="Select all filtered entries"
+                    data-testid="select-all-checkbox"
+                  />,
+                  'Status',
+                  'Source',
+                  'Translation',
+                  'Context',
+                  'Meta',
+                ] as const
+              ).map((label, i) => (
                 <ResizableTh
-                  key={label}
+                  key={typeof label === 'string' ? label : 'select'}
                   widthPercent={columnPercents[i]}
                   isLast={i === COLUMN_KEYS.length - 1}
                   onResize={(delta) => handleColumnResize(i, delta)}
+                  align={i === 0 ? 'center' : 'left'}
                 >
-                  {label}
+                  {typeof label === 'string' ? (
+                    label
+                  ) : (
+                    <Box
+                      style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+                    >
+                      {label}
+                    </Box>
+                  )}
                 </ResizableTh>
               ))}
             </Table.Tr>
@@ -1154,6 +1247,8 @@ export function EditorTable({
               <EntryRow
                 key={entry.id}
                 entry={entry}
+                isChecked={selectedEntryIds.has(entry.id)}
+                onToggleSelection={(checked) => setEntrySelection(entry.id, checked)}
                 onKeyDown={handleKeyDown}
                 onSelect={onEntrySelect}
               />

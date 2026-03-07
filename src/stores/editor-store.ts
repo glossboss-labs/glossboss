@@ -65,6 +65,9 @@ export interface EditorState {
   /** Currently selected entry ID */
   selectedEntryId: string | null;
 
+  /** IDs of entries selected for bulk operations */
+  selectedEntryIds: Set<string>;
+
   /** Search query for filtering */
   filterQuery: string;
 
@@ -95,11 +98,29 @@ export interface EditorActions {
   /** Toggle fuzzy flag on an entry */
   toggleFuzzy: (entryId: string) => void;
 
+  /** Clear fuzzy flag for a batch of entries (approve) */
+  clearFuzzyBatch: (entryIds: string[]) => void;
+
+  /** Add fuzzy flag for a batch of entries (unapprove) */
+  addFuzzyBatch: (entryIds: string[]) => void;
+
   /** Update header metadata field */
   updateHeader: (field: string, value: string) => void;
 
   /** Select an entry */
   selectEntry: (entryId: string | null) => void;
+
+  /** Toggle an entry in the bulk selection set */
+  toggleEntrySelection: (entryId: string) => void;
+
+  /** Set bulk selection state for a specific entry */
+  setEntrySelection: (entryId: string, selected: boolean) => void;
+
+  /** Replace the full bulk selection set */
+  setSelectedEntries: (entryIds: string[]) => void;
+
+  /** Clear all bulk selections */
+  clearSelectedEntries: () => void;
 
   /** Set filter query */
   setFilterQuery: (query: string) => void;
@@ -189,6 +210,7 @@ const initialState: EditorState = {
   machineTranslationMeta: new Map(),
   glossaryAnalysis: new Map(),
   selectedEntryId: null,
+  selectedEntryIds: new Set(),
   filterQuery: '',
   activeFilters: new Map(),
   filterMode: 'all',
@@ -279,6 +301,7 @@ export const useEditorStore = create<EditorState & EditorActions>()(
           machineTranslationMeta: new Map(),
           glossaryAnalysis: new Map(),
           selectedEntryId: file.entries[0]?.id ?? null,
+          selectedEntryIds: new Set(),
           filterQuery: '',
           activeFilters: new Map(),
           filterMode: 'all',
@@ -345,6 +368,76 @@ export const useEditorStore = create<EditorState & EditorActions>()(
         });
       },
 
+      clearFuzzyBatch: (entryIds: string[]) => {
+        if (entryIds.length === 0) return;
+
+        set((state) => {
+          const targetIds = new Set(entryIds);
+          const dirtyEntryIds = new Set(state.dirtyEntryIds);
+          let changed = false;
+
+          const entries = state.entries.map((entry) => {
+            if (!targetIds.has(entry.id) || !entry.flags.includes('fuzzy')) {
+              return entry;
+            }
+
+            changed = true;
+            dirtyEntryIds.add(entry.id);
+
+            return {
+              ...entry,
+              flags: entry.flags.filter((flag) => flag !== 'fuzzy'),
+              isDirty: true,
+            };
+          });
+
+          if (!changed) {
+            return {};
+          }
+
+          return {
+            entries,
+            dirtyEntryIds,
+            hasUnsavedChanges: true,
+          };
+        });
+      },
+
+      addFuzzyBatch: (entryIds: string[]) => {
+        if (entryIds.length === 0) return;
+
+        set((state) => {
+          const targetIds = new Set(entryIds);
+          const dirtyEntryIds = new Set(state.dirtyEntryIds);
+          let changed = false;
+
+          const entries = state.entries.map((entry) => {
+            if (!targetIds.has(entry.id) || entry.flags.includes('fuzzy')) {
+              return entry;
+            }
+
+            changed = true;
+            dirtyEntryIds.add(entry.id);
+
+            return {
+              ...entry,
+              flags: [...entry.flags, 'fuzzy'],
+              isDirty: true,
+            };
+          });
+
+          if (!changed) {
+            return {};
+          }
+
+          return {
+            entries,
+            dirtyEntryIds,
+            hasUnsavedChanges: true,
+          };
+        });
+      },
+
       updateHeader: (field: string, value: string) => {
         set((state) => ({
           header: {
@@ -357,6 +450,38 @@ export const useEditorStore = create<EditorState & EditorActions>()(
 
       selectEntry: (entryId: string | null) => {
         set({ selectedEntryId: entryId });
+      },
+
+      toggleEntrySelection: (entryId: string) => {
+        set((state) => {
+          const selectedEntryIds = new Set(state.selectedEntryIds);
+          if (selectedEntryIds.has(entryId)) {
+            selectedEntryIds.delete(entryId);
+          } else {
+            selectedEntryIds.add(entryId);
+          }
+          return { selectedEntryIds };
+        });
+      },
+
+      setEntrySelection: (entryId: string, selected: boolean) => {
+        set((state) => {
+          const selectedEntryIds = new Set(state.selectedEntryIds);
+          if (selected) {
+            selectedEntryIds.add(entryId);
+          } else {
+            selectedEntryIds.delete(entryId);
+          }
+          return { selectedEntryIds };
+        });
+      },
+
+      setSelectedEntries: (entryIds: string[]) => {
+        set({ selectedEntryIds: new Set(entryIds) });
+      },
+
+      clearSelectedEntries: () => {
+        set({ selectedEntryIds: new Set() });
       },
 
       setFilterQuery: (query: string) => {
@@ -432,6 +557,7 @@ export const useEditorStore = create<EditorState & EditorActions>()(
           machineTranslationMeta: new Map(),
           glossaryAnalysis: new Map(),
           selectedEntryId: mergedEntries[0]?.id ?? null,
+          selectedEntryIds: new Set(),
           hasUnsavedChanges: true,
         });
       },
@@ -720,6 +846,9 @@ export const useEditorStore = create<EditorState & EditorActions>()(
 
         // Initialize glossaryAnalysis as empty Map (not persisted, recalculated on demand)
         state.glossaryAnalysis = new Map();
+
+        // Initialize selectedEntryIds as empty Set (not persisted)
+        state.selectedEntryIds = new Set();
       },
     },
   ),

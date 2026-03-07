@@ -1162,6 +1162,7 @@ export default function Index() {
             <TranslateToolbar
               onLanguageChange={handleLanguageChange}
               deeplGlossaryId={glossaryEnforcementEnabled ? deeplGlossaryId : null}
+              glossary={glossary}
             />
           )}
 

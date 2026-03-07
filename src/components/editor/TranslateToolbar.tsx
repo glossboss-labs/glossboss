@@ -17,17 +17,33 @@ import {
   Alert,
   Checkbox,
   Tooltip,
+  Badge,
 } from '@mantine/core';
 import { motion, AnimatePresence } from 'motion/react';
-import { Zap, AlertCircle, Square, RefreshCw, ShieldAlert, Key } from 'lucide-react';
+import {
+  Zap,
+  AlertCircle,
+  Square,
+  RefreshCw,
+  ShieldAlert,
+  Key,
+  CheckCheck,
+  BookCheck,
+  RotateCcw,
+} from 'lucide-react';
 import { useEditorStore } from '@/stores';
 import { getDeepLClient, hasUserApiKey } from '@/lib/deepl';
+import { analyzeTranslation } from '@/lib/glossary';
 import { ConfirmModal } from '@/components/ui';
-import { slideUpVariants, buttonStates } from '@/lib/motion';
+import { slideUpVariants, buttonStates, popVariants } from '@/lib/motion';
 import type { TargetLanguage, SourceLanguage } from '@/lib/deepl/types';
+import type { Glossary, GlossaryAnalysisResult } from '@/lib/glossary/types';
+import { shouldAutoTranslateEntry } from './translate-utils';
 
 const MotionDiv = motion.div;
 const MotionStack = motion.create(Stack);
+
+type TranslateMode = 'untranslated' | 'overwrite-all' | 'selected-empty-or-fuzzy';
 
 /** DeepL supported languages */
 const SOURCE_LANGUAGES: Array<{ value: string; label: string }> = [
@@ -115,9 +131,14 @@ interface TranslateToolbarProps {
   targetLang?: TargetLanguage;
   onLanguageChange?: (source: SourceLanguage | undefined, target: TargetLanguage) => void;
   deeplGlossaryId?: string | null;
+  glossary?: Glossary | null;
 }
 
-export function TranslateToolbar({ onLanguageChange, deeplGlossaryId }: TranslateToolbarProps) {
+export function TranslateToolbar({
+  onLanguageChange,
+  deeplGlossaryId,
+  glossary = null,
+}: TranslateToolbarProps) {
   const {
     header,
     entries,
@@ -126,6 +147,13 @@ export function TranslateToolbar({ onLanguageChange, deeplGlossaryId }: Translat
     markAsMachineTranslated,
     manualEditIds,
     machineTranslatedIds,
+    selectedEntryIds,
+    setSelectedEntries,
+    clearSelectedEntries,
+    clearFuzzyBatch,
+    addFuzzyBatch,
+    setGlossaryAnalysisBatch,
+    getFilteredEntries,
   } = useEditorStore();
 
   // Infer target language from PO header
@@ -146,6 +174,7 @@ export function TranslateToolbar({ onLanguageChange, deeplGlossaryId }: Translat
   const [confirmRetranslateOpen, setConfirmRetranslateOpen] = useState(false);
   const [isRetranslateMode, setIsRetranslateMode] = useState(false);
   const [skipManualEdits, setSkipManualEdits] = useState(true);
+  const [bulkActionMessage, setBulkActionMessage] = useState<string | null>(null);
   const cancelRef = useRef(false);
   const batchCountRef = useRef(0);
 
@@ -174,17 +203,33 @@ export function TranslateToolbar({ onLanguageChange, deeplGlossaryId }: Translat
     () =>
       entries.filter((e) => {
         if (!e.msgid.trim()) return false;
-        if (e.msgidPlural) {
-          const plurals = e.msgstrPlural ?? [];
-          return plurals.length < 2 || plurals.some((p) => !p.trim());
-        }
-        return !e.msgstr.trim();
+        if (e.flags.includes('fuzzy')) return false;
+        return shouldAutoTranslateEntry(e);
       }),
     [entries],
   );
 
   // All translatable entries (for retranslate all)
   const allTranslatableEntries = useMemo(() => entries.filter((e) => e.msgid.trim()), [entries]);
+
+  // Currently filtered entries (across all pages)
+  const filteredEntries = getFilteredEntries();
+
+  const selectedEntries = useMemo(
+    () => allTranslatableEntries.filter((entry) => selectedEntryIds.has(entry.id)),
+    [allTranslatableEntries, selectedEntryIds],
+  );
+
+  const selectedAutoTranslateEntries = useMemo(
+    () => selectedEntries.filter((entry) => shouldAutoTranslateEntry(entry)),
+    [selectedEntries],
+  );
+
+  const selectedFuzzyCount = useMemo(
+    () => selectedEntries.filter((entry) => entry.flags.includes('fuzzy')).length,
+    [selectedEntries],
+  );
+  const selectedNonFuzzyCount = selectedEntries.length - selectedFuzzyCount;
 
   // Count of manual edits that would be overwritten
   const manualEditCount = useMemo(() => {
@@ -217,12 +262,14 @@ export function TranslateToolbar({ onLanguageChange, deeplGlossaryId }: Translat
 
   // Generic translate handler
   const handleTranslate = useCallback(
-    async (entriesToTranslate: typeof entries, overwriteAll: boolean) => {
+    async (entriesToTranslate: typeof entries, mode: TranslateMode) => {
       if (!targetLang || entriesToTranslate.length === 0) return;
+      const overwriteAll = mode === 'overwrite-all';
 
       setIsTranslating(true);
       setIsRetranslateMode(overwriteAll);
       setError(null);
+      setBulkActionMessage(null);
       setProgress(0);
       setTranslateCount(0);
       setFailedCount(0);
@@ -258,9 +305,12 @@ export function TranslateToolbar({ onLanguageChange, deeplGlossaryId }: Translat
           if (entry.msgidPlural) {
             const plurals = entry.msgstrPlural ?? ['', ''];
             const displayForms = plurals.length >= 2 ? plurals : ['', ''];
+            const shouldTranslateAllForms =
+              mode === 'overwrite-all' ||
+              (mode === 'selected-empty-or-fuzzy' && entry.flags.includes('fuzzy'));
 
             displayForms.forEach((form, index) => {
-              if (overwriteAll || !form.trim()) {
+              if (shouldTranslateAllForms || !form.trim()) {
                 jobs.push({
                   entryId: entry.id,
                   text: index === 0 ? entry.msgid : entry.msgidPlural!,
@@ -271,7 +321,11 @@ export function TranslateToolbar({ onLanguageChange, deeplGlossaryId }: Translat
               }
             });
           } else {
-            if (overwriteAll || !entry.msgstr.trim()) {
+            if (
+              mode === 'overwrite-all' ||
+              !entry.msgstr.trim() ||
+              (mode === 'selected-empty-or-fuzzy' && entry.flags.includes('fuzzy'))
+            ) {
               jobs.push({
                 entryId: entry.id,
                 text: entry.msgid,
@@ -282,6 +336,12 @@ export function TranslateToolbar({ onLanguageChange, deeplGlossaryId }: Translat
         }
 
         const totalJobs = jobs.length;
+        if (totalJobs === 0) {
+          setIsTranslating(false);
+          setIsRetranslateMode(false);
+          return;
+        }
+
         const batchSize = 10;
 
         for (let i = 0; i < jobs.length; i += batchSize) {
@@ -355,13 +415,69 @@ export function TranslateToolbar({ onLanguageChange, deeplGlossaryId }: Translat
   );
 
   const handleBulkTranslate = useCallback(() => {
-    handleTranslate(untranslatedEntries, false);
+    handleTranslate(untranslatedEntries, 'untranslated');
   }, [handleTranslate, untranslatedEntries]);
 
   const handleRetranslateAll = useCallback(() => {
     setConfirmRetranslateOpen(false);
-    handleTranslate(allTranslatableEntries, true);
+    handleTranslate(allTranslatableEntries, 'overwrite-all');
   }, [handleTranslate, allTranslatableEntries]);
+
+  const handleSelectAllFiltered = useCallback(() => {
+    const merged = new Set(selectedEntryIds);
+    filteredEntries.forEach((entry) => merged.add(entry.id));
+    setSelectedEntries(Array.from(merged));
+  }, [selectedEntryIds, filteredEntries, setSelectedEntries]);
+
+  const handleSelectedAutoTranslate = useCallback(() => {
+    handleTranslate(selectedAutoTranslateEntries, 'selected-empty-or-fuzzy');
+  }, [handleTranslate, selectedAutoTranslateEntries]);
+
+  const handleGlossaryCheckSelected = useCallback(() => {
+    if (!glossary || selectedEntries.length === 0) return;
+
+    const analyses = new Map<string, GlossaryAnalysisResult>();
+    selectedEntries.forEach((entry) => {
+      analyses.set(entry.id, analyzeTranslation(entry.msgid, entry.msgstr, glossary, entry.id));
+    });
+
+    setGlossaryAnalysisBatch(analyses);
+
+    const withTerms = Array.from(analyses.values()).filter((analysis) => analysis.terms.length > 0);
+    const needsReviewRows = withTerms.filter((analysis) => analysis.needsReviewCount > 0).length;
+
+    if (withTerms.length === 0) {
+      setBulkActionMessage('Glossary check complete: no glossary terms found in selected rows.');
+      return;
+    }
+
+    if (needsReviewRows === 0) {
+      setBulkActionMessage('Glossary check complete: all selected rows match glossary terms.');
+      return;
+    }
+
+    setBulkActionMessage(
+      `Glossary check complete: ${needsReviewRows} selected row(s) need review.`,
+    );
+  }, [glossary, selectedEntries, setGlossaryAnalysisBatch]);
+
+  const handleApproveSelected = useCallback(() => {
+    clearFuzzyBatch(Array.from(selectedEntryIds));
+    setBulkActionMessage(
+      selectedFuzzyCount > 0
+        ? `Approved ${selectedFuzzyCount} row(s): fuzzy flag cleared.`
+        : 'No selected fuzzy rows to approve.',
+    );
+  }, [clearFuzzyBatch, selectedEntryIds, selectedFuzzyCount]);
+
+  const handleUnapproveSelected = useCallback(() => {
+    addFuzzyBatch(Array.from(selectedEntryIds));
+    setBulkActionMessage(
+      selectedNonFuzzyCount > 0
+        ? `Unapproved ${selectedNonFuzzyCount} row(s): fuzzy flag added.`
+        : 'No selected rows available to unapprove.',
+    );
+  }, [addFuzzyBatch, selectedEntryIds, selectedNonFuzzyCount]);
 
   if (!entries.length) return null;
 
@@ -401,39 +517,49 @@ export function TranslateToolbar({ onLanguageChange, deeplGlossaryId }: Translat
           )}
         </AnimatePresence>
 
-        <Group justify="space-between" align="flex-end" wrap="wrap">
-          <Group gap="sm" align="flex-end">
+        <Group justify="space-between" align="center" wrap="wrap">
+          <Group gap="xs" align="center">
+            <Text size="xs" c="dimmed" fw={500}>
+              From
+            </Text>
             <Select
-              label="Source language"
-              description="Leave empty for auto-detect"
               data={SOURCE_LANGUAGES}
               value={sourceLang}
               onChange={handleSourceChange}
               placeholder="Auto-detect"
               searchable
               clearable
-              w={180}
-              size="sm"
+              w={160}
+              size="xs"
               disabled={!hasApiKey}
+              aria-label="Source language"
             />
 
-            <Text c="dimmed" pb={8}>
+            <Text c="dimmed" size="sm">
               →
             </Text>
 
+            <Text size="xs" c="dimmed" fw={500}>
+              To
+            </Text>
             <Select
-              label="Target language"
-              description={inferredTarget ? `Detected: ${inferredTarget}` : 'Select target'}
               data={TARGET_LANGUAGES}
               value={targetLang}
               onChange={handleTargetChange}
               placeholder="Select target..."
               searchable
               required
-              w={180}
-              size="sm"
+              w={170}
+              size="xs"
               disabled={!hasApiKey}
+              aria-label="Target language"
             />
+
+            {inferredTarget && (
+              <Badge size="xs" variant="light" color="gray">
+                Detected: {inferredTarget}
+              </Badge>
+            )}
           </Group>
 
           <Group gap="sm">
@@ -504,6 +630,144 @@ export function TranslateToolbar({ onLanguageChange, deeplGlossaryId }: Translat
           </Group>
         </Group>
 
+        {/* Bulk selection + selected-row actions */}
+        {!isTranslating && (
+          <Group gap="xs" align="center" wrap="wrap">
+            <MotionDiv layout variants={popVariants} initial="hidden" animate="visible" exit="exit">
+              <Button
+                size="xs"
+                variant="subtle"
+                onClick={handleSelectAllFiltered}
+                disabled={filteredEntries.length === 0}
+              >
+                Select all filtered
+              </Button>
+            </MotionDiv>
+
+            <AnimatePresence mode="popLayout">
+              {selectedEntryIds.size > 0 && (
+                <MotionDiv
+                  key="clear-selection"
+                  layout
+                  variants={popVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                >
+                  <Button size="xs" variant="subtle" color="gray" onClick={clearSelectedEntries}>
+                    Clear
+                  </Button>
+                </MotionDiv>
+              )}
+            </AnimatePresence>
+
+            <AnimatePresence mode="popLayout">
+              {selectedAutoTranslateEntries.length > 0 && (
+                <MotionDiv
+                  key="auto-translate-selected"
+                  layout
+                  variants={popVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                >
+                  <Tooltip label="Auto translate selected rows that are empty or fuzzy">
+                    <Button
+                      size="xs"
+                      variant="light"
+                      color="blue"
+                      leftSection={<Zap size={14} />}
+                      disabled={!hasApiKey || !targetLang}
+                      onClick={handleSelectedAutoTranslate}
+                      aria-label="Auto translate selected"
+                    >
+                      Auto Translate ({selectedAutoTranslateEntries.length})
+                    </Button>
+                  </Tooltip>
+                </MotionDiv>
+              )}
+            </AnimatePresence>
+
+            <AnimatePresence mode="popLayout">
+              {selectedEntryIds.size > 0 && glossary && (
+                <MotionDiv
+                  key="glossary-check-selected"
+                  layout
+                  variants={popVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                >
+                  <Tooltip label="Re-run glossary analysis on selected rows">
+                    <Button
+                      size="xs"
+                      variant="light"
+                      color="violet"
+                      leftSection={<BookCheck size={14} />}
+                      onClick={handleGlossaryCheckSelected}
+                      aria-label="Glossary check selected"
+                    >
+                      Glossary Check
+                    </Button>
+                  </Tooltip>
+                </MotionDiv>
+              )}
+            </AnimatePresence>
+
+            <AnimatePresence mode="popLayout">
+              {selectedFuzzyCount > 0 && (
+                <MotionDiv
+                  key="approve-selected"
+                  layout
+                  variants={popVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                >
+                  <Tooltip label="Approve selected rows by clearing fuzzy flag">
+                    <Button
+                      size="xs"
+                      variant="light"
+                      color="green"
+                      leftSection={<CheckCheck size={14} />}
+                      onClick={handleApproveSelected}
+                      aria-label="Approve selected"
+                    >
+                      Approve ({selectedFuzzyCount})
+                    </Button>
+                  </Tooltip>
+                </MotionDiv>
+              )}
+            </AnimatePresence>
+
+            <AnimatePresence mode="popLayout">
+              {selectedNonFuzzyCount > 0 && (
+                <MotionDiv
+                  key="unapprove-selected"
+                  layout
+                  variants={popVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                >
+                  <Tooltip label="Unapprove selected rows by adding fuzzy flag">
+                    <Button
+                      size="xs"
+                      variant="light"
+                      color="yellow"
+                      leftSection={<RotateCcw size={14} />}
+                      onClick={handleUnapproveSelected}
+                      aria-label="Unapprove selected"
+                    >
+                      Unapprove ({selectedNonFuzzyCount})
+                    </Button>
+                  </Tooltip>
+                </MotionDiv>
+              )}
+            </AnimatePresence>
+          </Group>
+        )}
+
         {/* Skip manual edits option */}
         <AnimatePresence>
           {manualEditCount > 0 && !isTranslating && (
@@ -567,6 +831,17 @@ export function TranslateToolbar({ onLanguageChange, deeplGlossaryId }: Translat
                 onClose={() => setError(null)}
               >
                 {error}
+              </Alert>
+            </MotionDiv>
+          )}
+        </AnimatePresence>
+
+        {/* Bulk action feedback */}
+        <AnimatePresence>
+          {bulkActionMessage && !isTranslating && (
+            <MotionDiv variants={slideUpVariants} initial="hidden" animate="visible" exit="exit">
+              <Alert color="blue" withCloseButton onClose={() => setBulkActionMessage(null)}>
+                {bulkActionMessage}
               </Alert>
             </MotionDiv>
           )}
