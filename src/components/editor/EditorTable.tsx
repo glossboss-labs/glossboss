@@ -705,13 +705,16 @@ const EntryRow = memo(function EntryRow({
   const status = getTranslationStatus(entry.msgstr, entry.flags, entry.msgstrPlural);
   const isUntranslated = status === 'untranslated';
 
+  const rowRef = useRef<HTMLTableRowElement>(null);
   const handleClick = useCallback(() => {
     selectEntry(entry.id);
     onSelect?.(entry.msgid);
+    rowRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }, [entry.id, entry.msgid, selectEntry, onSelect]);
 
   return (
     <Table.Tr
+      ref={rowRef}
       onClick={handleClick}
       style={{
         cursor: 'pointer',
