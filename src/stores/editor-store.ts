@@ -30,10 +30,16 @@ export interface MachineTranslationMeta {
   timestamp: number;
 }
 
+/** Supported file formats */
+export type FileFormat = 'po' | 'i18next';
+
 /** Editor state */
 export interface EditorState {
   /** Currently loaded file info */
   filename: string | null;
+
+  /** Source file format (for export) */
+  sourceFormat: FileFormat;
 
   /** File header metadata */
   header: POHeader | null;
@@ -78,7 +84,7 @@ export interface EditorState {
 /** Editor actions */
 export interface EditorActions {
   /** Load a PO file into the editor */
-  loadFile: (file: POFile) => void;
+  loadFile: (file: POFile, format?: FileFormat) => void;
 
   /** Update a single entry's translation */
   updateEntry: (entryId: string, msgstr: string) => void;
@@ -152,6 +158,9 @@ export interface EditorActions {
   /** Check if an entry was manually edited */
   isManuallyEdited: (entryId: string) => boolean;
 
+  /** Merge entries from a POT update, replacing all entries */
+  mergeEntries: (mergedEntries: POEntry[]) => void;
+
   /** Get count of entries that would be overwritten by bulk translation */
   getOverwriteWarningCount: () => number;
 
@@ -171,6 +180,7 @@ export interface EditorActions {
 /** Initial state */
 const initialState: EditorState = {
   filename: null,
+  sourceFormat: 'po',
   header: null,
   entries: [],
   dirtyEntryIds: new Set(),
@@ -257,9 +267,10 @@ export const useEditorStore = create<EditorState & EditorActions>()(
     (set, get) => ({
       ...initialState,
 
-      loadFile: (file: POFile) => {
+      loadFile: (file: POFile, format: FileFormat = 'po') => {
         set({
           filename: file.filename,
+          sourceFormat: format,
           header: file.header,
           entries: file.entries,
           dirtyEntryIds: new Set(),
@@ -410,6 +421,19 @@ export const useEditorStore = create<EditorState & EditorActions>()(
 
       clearEditor: () => {
         set(initialState);
+      },
+
+      mergeEntries: (mergedEntries: POEntry[]) => {
+        set({
+          entries: mergedEntries,
+          dirtyEntryIds: new Set(),
+          machineTranslatedIds: new Set(),
+          manualEditIds: new Set(),
+          machineTranslationMeta: new Map(),
+          glossaryAnalysis: new Map(),
+          selectedEntryId: mergedEntries[0]?.id ?? null,
+          hasUnsavedChanges: true,
+        });
       },
 
       markAsMachineTranslated: (entryId: string, usedGlossary: boolean = false) => {
@@ -620,6 +644,7 @@ export const useEditorStore = create<EditorState & EditorActions>()(
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         filename: state.filename,
+        sourceFormat: state.sourceFormat,
         header: state.header,
         entries: state.entries,
         dirtyEntryIds: Array.from(state.dirtyEntryIds),
@@ -635,6 +660,11 @@ export const useEditorStore = create<EditorState & EditorActions>()(
       }),
       onRehydrateStorage: () => (state) => {
         if (!state) return;
+
+        // Default sourceFormat for older persisted state
+        if (!state.sourceFormat) {
+          state.sourceFormat = 'po';
+        }
 
         // Convert dirtyEntryIds array back to Set after rehydration
         if (Array.isArray(state.dirtyEntryIds)) {

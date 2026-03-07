@@ -25,6 +25,7 @@ import {
   ActionIcon,
   Transition,
   useMantineColorScheme,
+  Menu,
   useComputedColorScheme,
 } from '@mantine/core';
 import { motion, AnimatePresence } from 'motion/react';
@@ -40,6 +41,7 @@ import {
   Settings,
   Sun,
   Moon,
+  ChevronDown,
 } from 'lucide-react';
 import {
   EditorTable,
@@ -57,9 +59,12 @@ import {
   parsePOFileWithDiagnostics,
   serializePOFile,
   detectAndDecode,
+  mergePotIntoPo,
   type SupportedEncoding,
 } from '@/lib/po';
 import type { ParseIssue } from '@/lib/po';
+import { parseI18nextJSON, isI18nextContent, serializeToI18next } from '@/lib/i18next';
+import type { FileFormat } from '@/stores';
 import type { TargetLanguage, SourceLanguage } from '@/lib/deepl/types';
 import type { Glossary } from '@/lib/glossary/types';
 import { batchAnalyzeTranslations, syncGlossaryToDeepL } from '@/lib/glossary';
@@ -86,6 +91,15 @@ interface EncodingInfo {
 interface DownloadInfo {
   filename: string;
   size: string;
+}
+
+/** Merge result info for notification */
+interface MergeInfo {
+  potFilename: string;
+  kept: number;
+  added: number;
+  removed: number;
+  updatedMeta: number;
 }
 
 /** Pending draft info for recovery prompt */
@@ -128,6 +142,7 @@ export default function Index() {
   const [dragError, setDragError] = useState<string | null>(null);
   const [confirmClearOpen, setConfirmClearOpen] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState<DownloadInfo | null>(null);
+  const [mergeSuccess, setMergeSuccess] = useState<MergeInfo | null>(null);
   const [translateSourceLang, setTranslateSourceLang] = useState<SourceLanguage | undefined>(
     undefined,
   );
@@ -155,6 +170,7 @@ export default function Index() {
 
   const {
     filename,
+    sourceFormat,
     header,
     entries,
     dirtyEntryIds,
@@ -165,6 +181,7 @@ export default function Index() {
     markAsSaved,
     setGlossaryAnalysisBatch,
     clearGlossaryAnalysis,
+    mergeEntries,
   } = useEditorStore();
 
   /**
@@ -332,75 +349,97 @@ export default function Index() {
 
       // Validate file extension
       const ext = file.name.toLowerCase().split('.').pop();
-      if (ext !== 'po' && ext !== 'pot') {
+      if (ext !== 'po' && ext !== 'pot' && ext !== 'json') {
         setErrors([
           {
             severity: 'error',
             code: 'INVALID_SYNTAX',
-            message: `Invalid file type: .${ext}. Please upload a .po or .pot file.`,
+            message: `Invalid file type: .${ext}. Please upload a .po, .pot, or .json file.`,
           },
         ]);
         return;
       }
 
       try {
-        // Read file as ArrayBuffer for encoding detection
-        const buffer = await file.arrayBuffer();
+        if (ext === 'json') {
+          // Handle i18next JSON file
+          const text = await file.text();
 
-        // Detect encoding and decode content
-        const { encoding, confidence, method, content } = detectAndDecode(buffer);
+          if (!isI18nextContent(text)) {
+            setErrors([
+              {
+                severity: 'error',
+                code: 'INVALID_SYNTAX',
+                message: 'Invalid JSON file. Expected an i18next JSON resource object.',
+              },
+            ]);
+            return;
+          }
 
-        // Store encoding info for display
-        setEncodingInfo({ encoding, confidence, method });
+          const poFile = parseI18nextJSON(text, file.name);
+          loadFile(poFile, 'i18next');
 
-        // Log encoding detection result
-        console.log(`[Encoding] Detected: ${encoding} (${confidence} confidence, via ${method})`);
-
-        // Parse the decoded content
-        const result = parsePOFileWithDiagnostics(content, file.name);
-
-        // Add encoding warning if confidence is low
-        if (confidence === 'low' || confidence === 'medium') {
-          result.warnings.unshift({
-            severity: 'warning',
-            code: 'ENCODING_ERROR',
-            message: `Encoding detected as ${encoding.toUpperCase()} with ${confidence} confidence. If characters appear incorrect, the file may use a different encoding.`,
-          });
-        }
-
-        // Store warnings for display
-        if (result.warnings.length > 0) {
-          setWarnings(result.warnings);
-          setShowWarnings(true);
-        }
-
-        // Handle parse errors
-        if (!result.success || !result.file) {
-          setErrors(result.errors);
-          return;
-        }
-
-        // Check if there's an existing draft for this file
-        const existingDraft = loadDraft(file.name);
-        if (existingDraft && existingDraft.dirtyEntryIds.length > 0) {
-          // Show recovery prompt
-          setPendingDraft({ draft: existingDraft, filename: file.name });
-          // Still load the fresh file - user can choose to restore draft
-          loadFile(result.file);
+          console.log(`[i18next] Parsed ${poFile.entries.length} entries from ${file.name}`);
         } else {
-          // No draft or draft has no changes - load fresh
-          loadFile(result.file);
-        }
+          // Handle PO/POT file
+          // Read file as ArrayBuffer for encoding detection
+          const buffer = await file.arrayBuffer();
 
-        // Auto-detect plugin slug for source code links
-        const detectedSlug = detectPluginSlug(result.file.header, file.name);
-        if (detectedSlug) {
-          useSourceStore.getState().setAutoDetectedSlug(detectedSlug);
-          console.log('[Source] Auto-detected plugin slug:', detectedSlug);
-        }
+          // Detect encoding and decode content
+          const { encoding, confidence, method, content } = detectAndDecode(buffer);
 
-        // Log stats for debugging
-        console.log('[PO Parser] Stats:', result.stats);
+          // Store encoding info for display
+          setEncodingInfo({ encoding, confidence, method });
+
+          // Log encoding detection result
+          console.log(`[Encoding] Detected: ${encoding} (${confidence} confidence, via ${method})`);
+
+          // Parse the decoded content
+          const result = parsePOFileWithDiagnostics(content, file.name);
+
+          // Add encoding warning if confidence is low
+          if (confidence === 'low' || confidence === 'medium') {
+            result.warnings.unshift({
+              severity: 'warning',
+              code: 'ENCODING_ERROR',
+              message: `Encoding detected as ${encoding.toUpperCase()} with ${confidence} confidence. If characters appear incorrect, the file may use a different encoding.`,
+            });
+          }
+
+          // Store warnings for display
+          if (result.warnings.length > 0) {
+            setWarnings(result.warnings);
+            setShowWarnings(true);
+          }
+
+          // Handle parse errors
+          if (!result.success || !result.file) {
+            setErrors(result.errors);
+            return;
+          }
+
+          // Check if there's an existing draft for this file
+          const existingDraft = loadDraft(file.name);
+          if (existingDraft && existingDraft.dirtyEntryIds.length > 0) {
+            // Show recovery prompt
+            setPendingDraft({ draft: existingDraft, filename: file.name });
+            // Still load the fresh file - user can choose to restore draft
+            loadFile(result.file);
+          } else {
+            // No draft or draft has no changes - load fresh
+            loadFile(result.file);
+          }
+
+          // Auto-detect plugin slug for source code links
+          const detected = detectPluginSlug(result.file.header, file.name);
+          if (detected) {
+            useSourceStore.getState().setAutoDetectedSlug(detected.slug, detected.version);
+            console.log('[Source] Auto-detected plugin:', detected.slug, detected.version);
+          }
+
+          // Log stats for debugging
+          console.log('[PO Parser] Stats:', result.stats);
+        }
       } catch (err) {
         setErrors([
           {
@@ -513,8 +552,8 @@ export default function Index() {
       const file = files[0];
       const ext = file.name.toLowerCase().split('.').pop();
 
-      if (ext !== 'po' && ext !== 'pot') {
-        setDragError(`Invalid file type: .${ext}. Please drop a .po or .pot file.`);
+      if (ext !== 'po' && ext !== 'pot' && ext !== 'json') {
+        setDragError(`Invalid file type: .${ext}. Please drop a .po, .pot, or .json file.`);
         return;
       }
 
@@ -548,48 +587,101 @@ export default function Index() {
   /**
    * Handle file download
    */
+  const handleDownloadAs = useCallback(
+    (format: FileFormat) => {
+      if (!filename || entries.length === 0) return;
+
+      let content: string;
+      let downloadFilename: string;
+      let mimeType: string;
+
+      if (format === 'i18next') {
+        content = serializeToI18next(entries);
+        downloadFilename = filename.replace(/\.(po|pot|json)$/i, '.json');
+        if (!downloadFilename.endsWith('.json')) downloadFilename += '.json';
+        mimeType = 'application/json;charset=utf-8';
+      } else {
+        const poFile = {
+          filename,
+          header: header ?? {},
+          entries,
+          charset: 'UTF-8',
+        };
+        content = serializePOFile(poFile, { updateRevisionDate: true });
+        downloadFilename = filename.replace(/\.json$/i, '.po');
+        if (!downloadFilename.endsWith('.po') && !downloadFilename.endsWith('.pot')) {
+          downloadFilename += '.po';
+        }
+        mimeType = 'text/x-gettext-translation;charset=utf-8';
+      }
+
+      const blob = new Blob([content], { type: mimeType });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = downloadFilename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      setDownloadSuccess({
+        filename: downloadFilename,
+        size: formatFileSize(blob.size),
+      });
+      setTimeout(() => setDownloadSuccess(null), 4000);
+
+      deleteDraft(filename);
+      setIsFromDraft(false);
+      setLastAutoSave(null);
+      markAsSaved();
+    },
+    [filename, header, entries, markAsSaved],
+  );
+
   const handleDownload = useCallback(() => {
-    if (!filename || entries.length === 0) return;
+    handleDownloadAs(sourceFormat);
+  }, [handleDownloadAs, sourceFormat]);
 
-    const poFile = {
-      filename,
-      header: header ?? {},
-      entries,
-      charset: 'UTF-8',
-    };
+  /**
+   * Handle POT file upload for merging
+   */
+  const handlePotUpload = useCallback(
+    async (file: File | null) => {
+      if (!file || entries.length === 0) return;
 
-    // Serialize with updated revision date
-    const content = serializePOFile(poFile, {
-      updateRevisionDate: true,
-    });
+      try {
+        const buffer = await file.arrayBuffer();
+        const { content } = detectAndDecode(buffer);
+        const result = parsePOFileWithDiagnostics(content, file.name);
 
-    const blob = new Blob([content], { type: 'text/x-gettext-translation;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
+        if (!result.success || !result.file) {
+          setErrors(result.errors);
+          return;
+        }
 
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+        const mergeResult = mergePotIntoPo(entries, result.file.entries);
+        mergeEntries(mergeResult.entries);
 
-    // Show success notification
-    setDownloadSuccess({
-      filename,
-      size: formatFileSize(blob.size),
-    });
+        setMergeSuccess({
+          potFilename: file.name,
+          ...mergeResult.stats,
+        });
 
-    // Auto-hide after 4 seconds
-    setTimeout(() => setDownloadSuccess(null), 4000);
-
-    // Clear draft state - file has been downloaded
-    deleteDraft(filename);
-    setIsFromDraft(false);
-    setLastAutoSave(null);
-
-    markAsSaved();
-  }, [filename, header, entries, markAsSaved]);
+        setTimeout(() => setMergeSuccess(null), 8000);
+      } catch (err) {
+        setErrors([
+          {
+            severity: 'error',
+            code: 'INVALID_SYNTAX',
+            message: err instanceof Error ? err.message : 'Failed to parse POT file',
+          },
+        ]);
+      }
+    },
+    [entries, mergeEntries],
+  );
 
   /**
    * Clear all state
@@ -672,7 +764,7 @@ export default function Index() {
                 <Stack align="center" gap={4}>
                   <Title order={4}>Drop it like it's hot</Title>
                   <Text c="dimmed" size="sm" ta="center">
-                    Release to load your .po file
+                    Release to load your translation file
                   </Text>
                 </Stack>
               </Stack>
@@ -711,6 +803,39 @@ export default function Index() {
         )}
       </Transition>
 
+      {/* Merge success notification */}
+      <Transition
+        mounted={mergeSuccess !== null}
+        transition="slide-left"
+        duration={200}
+        timingFunction="ease"
+      >
+        {(styles) => (
+          <Notification
+            icon={<Check size={18} />}
+            color="blue"
+            title="Updated from POT"
+            onClose={() => setMergeSuccess(null)}
+            style={{
+              ...styles,
+              position: 'fixed',
+              bottom: 20,
+              right: 20,
+              zIndex: 1000,
+              minWidth: 320,
+            }}
+          >
+            <Text size="sm">
+              Updated from <strong>{mergeSuccess?.potFilename}</strong>: +{mergeSuccess?.added} new,
+              -{mergeSuccess?.removed} removed, {mergeSuccess?.kept} kept
+              {mergeSuccess?.updatedMeta
+                ? ` (${mergeSuccess.updatedMeta} with updated references)`
+                : ''}
+            </Text>
+          </Notification>
+        )}
+      </Transition>
+
       <Container size="xl" py="xl">
         <Stack gap="lg">
           {/* Header */}
@@ -738,7 +863,7 @@ export default function Index() {
                 <motion.div {...buttonStates}>
                   <FileButton
                     onChange={handleFileUpload}
-                    accept=".po,.pot"
+                    accept=".po,.pot,.json"
                     resetRef={fileInputRef as React.MutableRefObject<() => void>}
                   >
                     {(props) => (
@@ -758,42 +883,89 @@ export default function Index() {
                       exit="exit"
                     >
                       <Group gap="sm">
-                        <Tooltip
-                          label={
-                            hasUnsavedChanges
-                              ? 'You have unsaved changes'
-                              : 'Downloads as UTF-8 encoded file'
-                          }
-                        >
+                        <Group gap={0} style={{ position: 'relative', overflow: 'visible' }}>
+                          <Tooltip
+                            label={
+                              hasUnsavedChanges
+                                ? 'You have unsaved changes'
+                                : `Download as ${sourceFormat === 'i18next' ? 'JSON' : 'PO'}`
+                            }
+                          >
+                            <motion.div {...buttonStates}>
+                              <Button
+                                leftSection={<Download size={16} />}
+                                variant="light"
+                                onClick={handleDownload}
+                                style={{
+                                  borderTopRightRadius: 0,
+                                  borderBottomRightRadius: 0,
+                                  position: 'relative',
+                                  overflow: 'visible',
+                                }}
+                              >
+                                Download
+                                <AnimatePresence>
+                                  {hasUnsavedChanges && (
+                                    <MotionDiv
+                                      initial={{ scale: 0 }}
+                                      animate={{ scale: 1 }}
+                                      exit={{ scale: 0 }}
+                                      style={{
+                                        position: 'absolute',
+                                        top: -4,
+                                        right: -4,
+                                        width: 10,
+                                        height: 10,
+                                        borderRadius: '50%',
+                                        backgroundColor: 'var(--mantine-color-orange-5)',
+                                        border: '2px solid var(--mantine-color-body)',
+                                        zIndex: 1,
+                                      }}
+                                    />
+                                  )}
+                                </AnimatePresence>
+                              </Button>
+                            </motion.div>
+                          </Tooltip>
+                          <Menu position="bottom-end" withinPortal>
+                            <Menu.Target>
+                              <Button
+                                variant="light"
+                                px={8}
+                                style={{
+                                  borderTopLeftRadius: 0,
+                                  borderBottomLeftRadius: 0,
+                                  borderLeft: '1px solid var(--mantine-color-default-border)',
+                                }}
+                              >
+                                <ChevronDown size={14} />
+                              </Button>
+                            </Menu.Target>
+                            <Menu.Dropdown>
+                              <Menu.Label>Download as</Menu.Label>
+                              <Menu.Item onClick={() => handleDownloadAs('po')}>
+                                PO file (.po)
+                              </Menu.Item>
+                              <Menu.Item onClick={() => handleDownloadAs('i18next')}>
+                                i18next JSON (.json)
+                              </Menu.Item>
+                            </Menu.Dropdown>
+                          </Menu>
+                        </Group>
+
+                        <Tooltip label="Merge a POT template to update source strings">
                           <motion.div {...buttonStates}>
-                            <Button
-                              leftSection={<Download size={16} />}
-                              variant="light"
-                              onClick={handleDownload}
-                              style={{ position: 'relative', overflow: 'visible' }}
-                            >
-                              Download
-                              <AnimatePresence>
-                                {hasUnsavedChanges && (
-                                  <MotionDiv
-                                    initial={{ scale: 0 }}
-                                    animate={{ scale: 1 }}
-                                    exit={{ scale: 0 }}
-                                    style={{
-                                      position: 'absolute',
-                                      top: -4,
-                                      right: -4,
-                                      width: 10,
-                                      height: 10,
-                                      borderRadius: '50%',
-                                      backgroundColor: 'var(--mantine-color-orange-5)',
-                                      border: '2px solid var(--mantine-color-body)',
-                                      zIndex: 1,
-                                    }}
-                                  />
-                                )}
-                              </AnimatePresence>
-                            </Button>
+                            <FileButton onChange={handlePotUpload} accept=".pot">
+                              {(props) => (
+                                <Button
+                                  leftSection={<FileUp size={16} />}
+                                  variant="light"
+                                  {...props}
+                                >
+                                  Update from POT
+                                </Button>
+                              )}
+                            </FileButton>
                           </motion.div>
                         </Tooltip>
 
@@ -1038,9 +1210,9 @@ export default function Index() {
                   />
 
                   <Stack align="center" gap="xs">
-                    <Title order={3}>Upload a PO file to start</Title>
+                    <Title order={3}>Upload a translation file to start</Title>
                     <Text c="dimmed" ta="center" maw={400}>
-                      Drag and drop your .po or .pot file here, or click to browse. Your
+                      Drag and drop your translation file here, or click to browse. Your
                       translations will be saved locally in your browser.
                     </Text>
                   </Stack>
@@ -1050,6 +1222,9 @@ export default function Index() {
                     </Badge>
                     <Badge variant="filled" color="blue">
                       .pot
+                    </Badge>
+                    <Badge variant="filled" color="blue">
+                      .json
                     </Badge>
                   </Group>
                 </Stack>
