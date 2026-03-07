@@ -24,6 +24,16 @@ export type FilterType =
 /** Filter state: include (show only) or exclude (don't show) */
 export type FilterState = 'include' | 'exclude';
 
+/** Toggleable table columns */
+export type TableColumn = 'status' | 'source' | 'translation' | 'signals';
+const ALL_TABLE_COLUMNS: TableColumn[] = ['status', 'source', 'translation', 'signals'];
+
+/** Sort fields for table entries */
+export type SortField = 'default' | 'source' | 'translation' | 'status';
+
+/** Sort direction */
+export type SortDirection = 'asc' | 'desc';
+
 /** Machine translation metadata */
 export interface MachineTranslationMeta {
   usedGlossary: boolean;
@@ -73,6 +83,18 @@ export interface EditorState {
 
   /** Active filters with their state (include/exclude) */
   activeFilters: Map<FilterType, FilterState>;
+
+  /** Visible columns in desktop table */
+  visibleColumns: Set<TableColumn>;
+
+  /** Ordered columns in desktop table (left to right, excluding select checkbox column) */
+  columnOrder: TableColumn[];
+
+  /** Current sort field for filtered entries */
+  sortField: SortField;
+
+  /** Current sort direction for filtered entries */
+  sortDirection: SortDirection;
 
   /** @deprecated - kept for migration, use activeFilters instead */
   filterMode: 'all' | 'untranslated' | 'fuzzy' | 'translated';
@@ -136,6 +158,24 @@ export interface EditorActions {
 
   /** Clear all active filters */
   clearFilters: () => void;
+
+  /** Toggle visibility of a desktop table column */
+  toggleColumnVisibility: (column: TableColumn) => void;
+
+  /** Set visibility of a desktop table column */
+  setColumnVisibility: (column: TableColumn, visible: boolean) => void;
+
+  /** Move a desktop table column one position left or right */
+  moveColumn: (column: TableColumn, direction: 'left' | 'right') => void;
+
+  /** Move a desktop table column to a specific index */
+  moveColumnToIndex: (column: TableColumn, targetIndex: number) => void;
+
+  /** Set sorting options for filtered entries */
+  setSort: (field: SortField, direction: SortDirection) => void;
+
+  /** Reset sort to file/default order */
+  resetSort: () => void;
 
   /** @deprecated - use toggleFilter instead */
   setFilterMode: (mode: EditorState['filterMode']) => void;
@@ -213,6 +253,10 @@ const initialState: EditorState = {
   selectedEntryIds: new Set(),
   filterQuery: '',
   activeFilters: new Map(),
+  visibleColumns: new Set(ALL_TABLE_COLUMNS),
+  columnOrder: [...ALL_TABLE_COLUMNS],
+  sortField: 'default',
+  sortDirection: 'asc',
   filterMode: 'all',
   lastSavedAt: null,
   hasUnsavedChanges: false,
@@ -281,6 +325,33 @@ function entryMatchesSearch(entry: POEntry, query: string): boolean {
   );
 }
 
+function getSortText(entry: POEntry, field: SortField): string {
+  if (field === 'source') {
+    return entry.msgid.toLowerCase();
+  }
+
+  if (field === 'translation') {
+    if (entry.msgidPlural) {
+      return (entry.msgstrPlural ?? []).join('\n').toLowerCase();
+    }
+    return entry.msgstr.toLowerCase();
+  }
+
+  return '';
+}
+
+function getStatusRank(entry: POEntry): number {
+  if (entry.flags.includes('fuzzy')) return 1;
+
+  if (entry.msgidPlural) {
+    const plurals = entry.msgstrPlural ?? [];
+    const isComplete = plurals.length >= 2 && plurals.every((p) => p.trim() !== '');
+    return isComplete ? 2 : 0;
+  }
+
+  return entry.msgstr.trim() ? 2 : 0;
+}
+
 /**
  * Editor store with persistence
  */
@@ -290,7 +361,7 @@ export const useEditorStore = create<EditorState & EditorActions>()(
       ...initialState,
 
       loadFile: (file: POFile, format: FileFormat = 'po') => {
-        set({
+        set((state) => ({
           filename: file.filename,
           sourceFormat: format,
           header: file.header,
@@ -304,10 +375,14 @@ export const useEditorStore = create<EditorState & EditorActions>()(
           selectedEntryIds: new Set(),
           filterQuery: '',
           activeFilters: new Map(),
+          visibleColumns: new Set(state.visibleColumns),
+          columnOrder: [...state.columnOrder],
+          sortField: state.sortField,
+          sortDirection: state.sortDirection,
           filterMode: 'all',
           lastSavedAt: Date.now(),
           hasUnsavedChanges: false,
-        });
+        }));
       },
 
       updateEntry: (entryId: string, msgstr: string) => {
@@ -526,6 +601,80 @@ export const useEditorStore = create<EditorState & EditorActions>()(
         set({ activeFilters: new Map(), filterQuery: '' });
       },
 
+      toggleColumnVisibility: (column: TableColumn) => {
+        set((state) => {
+          const visibleColumns = new Set(state.visibleColumns);
+
+          if (visibleColumns.has(column)) {
+            if (visibleColumns.size === 1) {
+              return {};
+            }
+            visibleColumns.delete(column);
+          } else {
+            visibleColumns.add(column);
+          }
+
+          return { visibleColumns };
+        });
+      },
+
+      setColumnVisibility: (column: TableColumn, visible: boolean) => {
+        set((state) => {
+          const visibleColumns = new Set(state.visibleColumns);
+
+          if (visible) {
+            visibleColumns.add(column);
+          } else {
+            if (visibleColumns.size === 1) {
+              return {};
+            }
+            visibleColumns.delete(column);
+          }
+
+          return { visibleColumns };
+        });
+      },
+
+      moveColumn: (column: TableColumn, direction: 'left' | 'right') => {
+        set((state) => {
+          const index = state.columnOrder.indexOf(column);
+          if (index === -1) return {};
+
+          const targetIndex = direction === 'left' ? index - 1 : index + 1;
+          if (targetIndex < 0 || targetIndex >= state.columnOrder.length) {
+            return {};
+          }
+
+          const nextOrder = [...state.columnOrder];
+          const [moved] = nextOrder.splice(index, 1);
+          nextOrder.splice(targetIndex, 0, moved);
+
+          return { columnOrder: nextOrder };
+        });
+      },
+
+      moveColumnToIndex: (column: TableColumn, targetIndex: number) => {
+        set((state) => {
+          const index = state.columnOrder.indexOf(column);
+          if (index === -1) return {};
+          if (targetIndex < 0 || targetIndex >= state.columnOrder.length) return {};
+          if (targetIndex === index) return {};
+
+          const nextOrder = [...state.columnOrder];
+          const [moved] = nextOrder.splice(index, 1);
+          nextOrder.splice(targetIndex, 0, moved);
+          return { columnOrder: nextOrder };
+        });
+      },
+
+      setSort: (field: SortField, direction: SortDirection) => {
+        set({ sortField: field, sortDirection: direction });
+      },
+
+      resetSort: () => {
+        set({ sortField: 'default', sortDirection: 'asc' });
+      },
+
       setFilterMode: (mode: EditorState['filterMode']) => {
         // Legacy support - convert to new filter system
         const activeFilters = new Map<FilterType, FilterState>();
@@ -636,6 +785,8 @@ export const useEditorStore = create<EditorState & EditorActions>()(
           glossaryAnalysis,
           machineTranslatedIds,
           manualEditIds,
+          sortField,
+          sortDirection,
         } = get();
 
         let filtered = entries;
@@ -689,6 +840,27 @@ export const useEditorStore = create<EditorState & EditorActions>()(
         // Apply search filter (AND with status filters)
         if (filterQuery.trim()) {
           filtered = filtered.filter((entry) => entryMatchesSearch(entry, filterQuery));
+        }
+
+        if (sortField !== 'default') {
+          const directionMultiplier = sortDirection === 'asc' ? 1 : -1;
+
+          filtered = filtered
+            .map((entry, index) => ({ entry, index }))
+            .sort((a, b) => {
+              const compareResult =
+                sortField === 'status'
+                  ? getStatusRank(a.entry) - getStatusRank(b.entry)
+                  : getSortText(a.entry, sortField).localeCompare(getSortText(b.entry, sortField));
+
+              if (compareResult !== 0) {
+                return compareResult * directionMultiplier;
+              }
+
+              // Preserve current filtered/file order for equal sort keys.
+              return a.index - b.index;
+            })
+            .map(({ entry }) => entry);
         }
 
         return filtered;
@@ -776,6 +948,10 @@ export const useEditorStore = create<EditorState & EditorActions>()(
         dirtyEntryIds: Array.from(state.dirtyEntryIds),
         machineTranslatedIds: Array.from(state.machineTranslatedIds),
         manualEditIds: Array.from(state.manualEditIds),
+        visibleColumns: Array.from(state.visibleColumns),
+        columnOrder: state.columnOrder,
+        sortField: state.sortField,
+        sortDirection: state.sortDirection,
         // Serialize Map to array of [key, value] pairs
         machineTranslationMeta:
           state.machineTranslationMeta instanceof Map
@@ -843,6 +1019,32 @@ export const useEditorStore = create<EditorState & EditorActions>()(
 
         // Initialize activeFilters as empty Set
         state.activeFilters = new Map();
+
+        // Convert visibleColumns array back to Set after rehydration
+        if (Array.isArray(state.visibleColumns)) {
+          const allowed = new Set<TableColumn>(ALL_TABLE_COLUMNS);
+          const columns = (state.visibleColumns as unknown as string[]).filter((column) =>
+            allowed.has(column as TableColumn),
+          ) as TableColumn[];
+          state.visibleColumns = new Set(columns.length > 0 ? columns : ALL_TABLE_COLUMNS);
+        } else {
+          state.visibleColumns = new Set(ALL_TABLE_COLUMNS);
+        }
+
+        // Normalize columnOrder for older persisted state
+        if (Array.isArray(state.columnOrder)) {
+          const sanitized = (state.columnOrder as unknown as string[]).filter((column) =>
+            ALL_TABLE_COLUMNS.includes(column as TableColumn),
+          ) as TableColumn[];
+          const missing = ALL_TABLE_COLUMNS.filter((column) => !sanitized.includes(column));
+          state.columnOrder = [...sanitized, ...missing];
+        } else {
+          state.columnOrder = [...ALL_TABLE_COLUMNS];
+        }
+
+        // Default sort for older persisted state
+        state.sortField = state.sortField ?? 'default';
+        state.sortDirection = state.sortDirection ?? 'asc';
 
         // Initialize glossaryAnalysis as empty Map (not persisted, recalculated on demand)
         state.glossaryAnalysis = new Map();
