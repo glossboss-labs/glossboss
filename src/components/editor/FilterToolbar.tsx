@@ -28,6 +28,7 @@ import {
   Pencil,
   Bot,
   Edit3,
+  SlidersHorizontal,
 } from 'lucide-react';
 import { useEditorStore, type FilterType, type FilterState } from '@/stores/editor-store';
 import { getDeepLClient, hasUserApiKey } from '@/lib/deepl';
@@ -155,19 +156,22 @@ export function FilterToolbar() {
   };
 
   return (
-    <Paper
-      p="md"
-      withBorder
-      style={{
-        position: 'sticky',
-        top: 0,
-        zIndex: 100,
-        backgroundColor: 'var(--mantine-color-body)',
-      }}
-    >
+    <Paper p="md" withBorder>
       <Stack gap="sm">
+        <Group justify="space-between" align="center">
+          <Group gap="xs">
+            <SlidersHorizontal size={14} />
+            <Text size="sm" fw={600}>
+              Filter Strings
+            </Text>
+          </Group>
+          <Text size="xs" c="dimmed">
+            {filteredCount} visible of {stats.total}
+          </Text>
+        </Group>
+
         {/* Row 1: Search + Progress */}
-        <Group justify="space-between" align="center" wrap="nowrap">
+        <Group justify="space-between" align="center" wrap="wrap">
           <TextInput
             placeholder="Search source, translation, context..."
             leftSection={<Search size={16} />}
@@ -186,7 +190,7 @@ export function FilterToolbar() {
             }
             value={localQuery}
             onChange={(e) => setLocalQuery(e.currentTarget.value)}
-            style={{ flex: 1, maxWidth: 320 }}
+            style={{ flex: 1, minWidth: 260, maxWidth: 420 }}
           />
 
           {/* Progress indicator */}

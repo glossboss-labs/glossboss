@@ -17,6 +17,8 @@ const corsHeaders = {
 const RATE_LIMIT_WINDOW_MS = 5 * 60 * 1000;
 const RATE_LIMIT_PER_IP = 6;
 const RATE_LIMIT_GLOBAL = 150;
+const TURNSTILE_FETCH_TIMEOUT_MS = 8000;
+const GITHUB_FETCH_TIMEOUT_MS = 12000;
 
 const ipRequestLog = new Map<string, number[]>();
 const globalRequestLog: number[] = [];
@@ -119,6 +121,27 @@ function isObject(value: unknown): value is Record<string, unknown> {
 
 function isNonEmptyString(value: unknown): value is string {
   return typeof value === 'string' && value.trim().length > 0;
+}
+
+function isAbortError(error: unknown): boolean {
+  return (
+    (error instanceof DOMException && error.name === 'AbortError') ||
+    (error instanceof Error && error.name === 'AbortError')
+  );
+}
+
+async function fetchWithTimeout(
+  url: string,
+  timeoutMs: number,
+  init?: RequestInit,
+): Promise<Response> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...init, signal: controller.signal });
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }
 
 function parseFeedbackType(value: unknown): FeedbackType | null {
@@ -289,13 +312,25 @@ async function verifyTurnstile(token: string, ip: string): Promise<boolean> {
     body.set('remoteip', ip);
   }
 
-  const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: body.toString(),
-  });
+  let response: Response;
+  try {
+    response = await fetchWithTimeout(
+      'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+      TURNSTILE_FETCH_TIMEOUT_MS,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: body.toString(),
+      },
+    );
+  } catch (error) {
+    if (isAbortError(error)) {
+      return false;
+    }
+    throw error;
+  }
 
   if (!response.ok) {
     return false;
@@ -325,15 +360,12 @@ function hasLabelValidationError(payload: unknown): boolean {
   return false;
 }
 
-async function createGitHubIssue(
-  payload: FeedbackRequest,
-): Promise<{ issueNumber: number; issueUrl: string }> {
+async function createGitHubIssue(payload: FeedbackRequest): Promise<{ issueNumber: number }> {
   const token = Deno.env.get('GITHUB_TOKEN');
   if (!token) {
     throw new Error('GITHUB_TOKEN is not configured.');
   }
 
-  // Intentional default target for this project; env vars allow overrides.
   const owner = Deno.env.get('GITHUB_OWNER') || 'toineenzo';
   const repo = Deno.env.get('GITHUB_REPO') || 'glossboss';
 
@@ -352,24 +384,33 @@ async function createGitHubIssue(
     labels: getLabelsForType(payload.type),
   };
 
-  let response = await fetch(url, {
-    method: 'POST',
-    headers: requestHeaders,
-    body: JSON.stringify(requestBody),
-  });
+  const postIssue = async (
+    bodyData: Record<string, unknown>,
+  ): Promise<{ response: Response; result: unknown }> => {
+    let response: Response;
+    try {
+      response = await fetchWithTimeout(url, GITHUB_FETCH_TIMEOUT_MS, {
+        method: 'POST',
+        headers: requestHeaders,
+        body: JSON.stringify(bodyData),
+      });
+    } catch (error) {
+      if (isAbortError(error)) {
+        throw new Error('GitHub API request timed out. Please try again.', { cause: error });
+      }
+      throw error;
+    }
+    const result = await response.json().catch(() => ({}));
+    return { response, result };
+  };
 
-  let result = await response.json().catch(() => ({}));
+  let { response, result } = await postIssue(requestBody);
 
   if (!response.ok && response.status === 422 && hasLabelValidationError(result)) {
-    response = await fetch(url, {
-      method: 'POST',
-      headers: requestHeaders,
-      body: JSON.stringify({
-        title: requestBody.title,
-        body: requestBody.body,
-      }),
-    });
-    result = await response.json().catch(() => ({}));
+    ({ response, result } = await postIssue({
+      title: requestBody.title,
+      body: requestBody.body,
+    }));
   }
 
   if (!response.ok) {
@@ -380,17 +421,12 @@ async function createGitHubIssue(
     throw new Error(message);
   }
 
-  if (
-    !isObject(result) ||
-    typeof result.number !== 'number' ||
-    typeof result.html_url !== 'string'
-  ) {
+  if (!isObject(result) || typeof result.number !== 'number') {
     throw new Error('GitHub returned an unexpected issue response.');
   }
 
   return {
     issueNumber: result.number,
-    issueUrl: result.html_url,
   };
 }
 
@@ -454,7 +490,6 @@ Deno.serve(async (req: Request) => {
     return jsonResponse({
       ok: true,
       issueNumber: issue.issueNumber,
-      issueUrl: issue.issueUrl,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown feedback function error';

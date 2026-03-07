@@ -32,20 +32,44 @@ import {
   Pagination,
   Select,
   Checkbox,
+  Collapse,
+  UnstyledButton,
+  Divider,
+  Loader,
+  Anchor,
+  ActionIcon,
+  SegmentedControl,
+  useMantineTheme,
 } from '@mantine/core';
-import { useLocalStorage } from '@mantine/hooks';
-import { MessageSquare, FileCode, Pencil, Bot, Edit3 } from 'lucide-react';
+import { useLocalStorage, useMediaQuery } from '@mantine/hooks';
+import {
+  MessageSquare,
+  FileCode,
+  Pencil,
+  Bot,
+  Edit3,
+  ChevronDown,
+  ChevronUp,
+  ExternalLink,
+  X,
+} from 'lucide-react';
 import { useEditorStore, useSourceStore, getEffectiveSlug } from '@/stores';
 import type { POEntry } from '@/lib/po';
-import { parseReferences } from '@/lib/wp-source';
+import { parseReferences, buildTracUrl, type ParsedReference } from '@/lib/wp-source';
 import { getTranslationStatus, type TranslationStatus } from '@/types';
 import { TranslateButton } from './TranslateButton';
 import { GlossaryIndicator } from './GlossaryIndicator';
+import { SourceCodeViewer } from './SourceCodeViewer';
+import { SourceBrowser } from './SourceBrowser';
 import type { TargetLanguage, SourceLanguage } from '@/lib/deepl/types';
 import type { Glossary } from '@/lib/glossary/types';
 
 /** localStorage key for skip-translated navigation setting */
 export const NAV_SKIP_TRANSLATED_KEY = 'glossboss-nav-skip-translated';
+const INSPECTOR_WIDTH_KEY = 'glossboss-inspector-width';
+const INSPECTOR_DEFAULT_WIDTH = 500;
+const INSPECTOR_MIN_WIDTH = 380;
+const INSPECTOR_MAX_WIDTH = 780;
 
 /** Check if an entry needs translation (untranslated or fuzzy) */
 function entryNeedsTranslation(entry: POEntry): boolean {
@@ -67,8 +91,8 @@ const ROWS_PER_PAGE_OPTIONS = [
 ];
 
 /** Column definitions with default proportional widths */
-const COLUMN_KEYS = ['select', 'status', 'source', 'translation', 'context', 'meta'] as const;
-const DEFAULT_COLUMN_WIDTHS = [80, 130, 420, 420, 100, 120];
+const COLUMN_KEYS = ['select', 'status', 'source'] as const;
+const DEFAULT_COLUMN_WIDTHS = [72, 260, 668];
 const MIN_COLUMN_WIDTH = 60; // minimum proportion
 
 /**
@@ -412,6 +436,8 @@ function EditableField({
   return (
     <Box
       className="editable-text-wrapper"
+      data-field-id={fieldId}
+      data-entry-id={entryId}
       onClick={handleClick}
       style={{
         cursor: 'text',
@@ -476,9 +502,13 @@ function SourceCell({ entry }: { entry: POEntry }) {
 function TranslationCell({
   entry,
   onKeyDown,
+  translateButtonSize = 'sm',
+  translateButtonDisplay = 'icon',
 }: {
   entry: POEntry;
   onKeyDown?: (e: KeyboardEvent<HTMLTextAreaElement>, fieldId: string) => void;
+  translateButtonSize?: 'xs' | 'sm' | 'md';
+  translateButtonDisplay?: 'icon' | 'button';
 }) {
   const updateEntry = useEditorStore((state) => state.updateEntry);
   const updateEntryPlural = useEditorStore((state) => state.updateEntryPlural);
@@ -553,7 +583,7 @@ function TranslationCell({
       <Stack gap={8}>
         {displayForms.map((form, index) => (
           <Group key={index} gap="xs" align="flex-start" wrap="nowrap">
-            <Box style={{ flex: 1 }}>
+            <Box style={{ flex: 1, minWidth: 0 }}>
               <EditableField
                 value={form}
                 onChange={(value) => handlePluralChange(index, value)}
@@ -579,7 +609,8 @@ function TranslationCell({
                 onTranslated={(text, withGlossary) =>
                   handlePluralTranslated(index, text, withGlossary)
                 }
-                size="sm"
+                size={translateButtonSize}
+                display={translateButtonDisplay}
               />
             )}
           </Group>
@@ -611,7 +642,7 @@ function TranslationCell({
   return (
     <Stack gap={4}>
       <Group gap="xs" align="flex-start" wrap="nowrap">
-        <Box style={{ flex: 1 }}>
+        <Box style={{ flex: 1, minWidth: 0 }}>
           <EditableField
             value={entry.msgstr}
             onChange={handleSingularChange}
@@ -632,7 +663,8 @@ function TranslationCell({
                 : undefined
             }
             onTranslated={handleTranslated}
-            size="sm"
+            size={translateButtonSize}
+            display={translateButtonDisplay}
           />
         )}
       </Group>
@@ -659,25 +691,6 @@ function TranslationCell({
 }
 
 /**
- * Context display (read-only)
- */
-function ContextCell({ entry }: { entry: POEntry }) {
-  if (!entry.msgctxt) {
-    return (
-      <Text size="sm" c="dimmed">
-        —
-      </Text>
-    );
-  }
-
-  return (
-    <Text size="sm" style={{ whiteSpace: 'pre-wrap' }}>
-      {entry.msgctxt}
-    </Text>
-  );
-}
-
-/**
  * Status badges component
  */
 const StatusBadges = memo(function StatusBadges({
@@ -685,49 +698,81 @@ const StatusBadges = memo(function StatusBadges({
   isModified,
   isManualEdit,
   hasGlossaryTerms,
+  isMT,
 }: {
   entry: POEntry;
   isModified: boolean;
   isManualEdit: boolean;
   hasGlossaryTerms: boolean;
+  isMT?: boolean;
 }) {
   const status = getTranslationStatus(entry.msgstr, entry.flags, entry.msgstrPlural);
 
   return (
-    <Stack gap={4}>
-      <Badge color={STATUS_COLORS[status]} size="sm" variant="filled">
+    <Group
+      gap={4}
+      wrap="nowrap"
+      style={{
+        maxWidth: '100%',
+        whiteSpace: 'nowrap',
+        overflowX: 'auto',
+        overflowY: 'hidden',
+      }}
+    >
+      <Badge color={STATUS_COLORS[status]} size="sm" variant="filled" style={{ flexShrink: 0 }}>
         {STATUS_LABELS[status]}
       </Badge>
 
-      {/* Secondary indicators */}
-      {(isModified || isManualEdit || hasGlossaryTerms) && (
-        <Group gap={4} wrap="wrap">
-          {isModified && (
-            <Tooltip label="Modified this session">
-              <Badge size="xs" variant="light" color="orange" leftSection={<Edit3 size={10} />}>
-                Modified
-              </Badge>
-            </Tooltip>
-          )}
-
-          {isManualEdit && (
-            <Tooltip label="Manually edited - protected from bulk translation">
-              <Badge size="xs" variant="light" color="grape" leftSection={<Pencil size={10} />}>
-                Manual
-              </Badge>
-            </Tooltip>
-          )}
-
-          {hasGlossaryTerms && (
-            <Tooltip label="Contains glossary terms">
-              <Badge size="xs" variant="dot" color="violet">
-                Glossary
-              </Badge>
-            </Tooltip>
-          )}
-        </Group>
+      {isModified && (
+        <Tooltip label="Modified this session">
+          <Badge
+            size="xs"
+            variant="light"
+            color="orange"
+            leftSection={<Edit3 size={10} />}
+            style={{ flexShrink: 0 }}
+          >
+            Modified
+          </Badge>
+        </Tooltip>
       )}
-    </Stack>
+
+      {isManualEdit && (
+        <Tooltip label="Manually edited - protected from bulk translation">
+          <Badge
+            size="xs"
+            variant="light"
+            color="grape"
+            leftSection={<Pencil size={10} />}
+            style={{ flexShrink: 0 }}
+          >
+            Manual
+          </Badge>
+        </Tooltip>
+      )}
+
+      {hasGlossaryTerms && (
+        <Tooltip label="Contains glossary terms">
+          <Badge size="xs" variant="dot" color="violet" style={{ flexShrink: 0 }}>
+            Glossary
+          </Badge>
+        </Tooltip>
+      )}
+
+      {isMT && (
+        <Tooltip label="Machine translated">
+          <Badge
+            size="xs"
+            variant="light"
+            color="blue"
+            leftSection={<Bot size={10} />}
+            style={{ flexShrink: 0 }}
+          >
+            MT
+          </Badge>
+        </Tooltip>
+      )}
+    </Group>
   );
 });
 
@@ -735,7 +780,13 @@ const StatusBadges = memo(function StatusBadges({
  * Meta column with flags, references, and comments.
  * When a plugin slug is set, references become clickable links.
  */
-function MetaCell({ entry }: { entry: POEntry }) {
+function MetaCell({
+  entry,
+  onReferenceActivate,
+}: {
+  entry: POEntry;
+  onReferenceActivate?: (ref: ParsedReference) => void;
+}) {
   const hasReferences = entry.references.length > 0;
   const hasComments = entry.translatorComments.length > 0;
   const flags = entry.flags.filter((f) => f !== 'fuzzy');
@@ -770,6 +821,10 @@ function MetaCell({ entry }: { entry: POEntry }) {
             style={{ cursor: 'pointer' }}
             onClick={(e: React.MouseEvent) => {
               e.stopPropagation();
+              if (onReferenceActivate) {
+                onReferenceActivate(parsedRefs[0]);
+                return;
+              }
               setActiveReference(parsedRefs[0]);
             }}
           >
@@ -813,6 +868,268 @@ function MetaCell({ entry }: { entry: POEntry }) {
   );
 }
 
+function isSameReference(a: ParsedReference | null, b: ParsedReference): boolean {
+  return Boolean(a && a.path === b.path && a.line === b.line);
+}
+
+function pluralSummary(entry: POEntry): string {
+  if (!entry.msgidPlural) return 'Singular entry';
+  const forms = entry.msgstrPlural ?? [];
+  const completed = forms.filter((form) => form.trim()).length;
+  const total = Math.max(forms.length, 2);
+  return `Plural entry: ${completed}/${total} forms translated`;
+}
+
+function EntryDetailsPanel({
+  entry,
+  status,
+  isModified,
+  isMT,
+  isManualEdit,
+  hasGlossaryTerms,
+  onActivateReference,
+}: {
+  entry: POEntry;
+  status: TranslationStatus;
+  isModified: boolean;
+  isMT: boolean;
+  isManualEdit: boolean;
+  hasGlossaryTerms: boolean;
+  onActivateReference: (ref: ParsedReference) => void;
+}) {
+  const pluginSlug = useSourceStore((s) => getEffectiveSlug(s));
+  const basePath = useSourceStore((s) => s.resolvedBasePath) ?? 'trunk';
+  const activeReference = useSourceStore((s) => s.activeReference);
+  const sourceContent = useSourceStore((s) => s.sourceContent);
+  const sourceError = useSourceStore((s) => s.sourceError);
+  const isLoadingSource = useSourceStore((s) => s.isLoadingSource);
+
+  const parsedRefs = useMemo(() => parseReferences(entry.references), [entry.references]);
+  const entryActiveReference = useMemo(
+    () => parsedRefs.find((ref) => isSameReference(activeReference, ref)) ?? null,
+    [activeReference, parsedRefs],
+  );
+  const flags = entry.flags.filter((f) => f !== 'fuzzy');
+
+  return (
+    <Stack gap="sm" data-testid={`entry-details-${entry.id}`}>
+      <Group gap="xs" wrap="wrap">
+        <Badge color={STATUS_COLORS[status]} variant="light" size="sm">
+          {STATUS_LABELS[status]}
+        </Badge>
+        {isModified && (
+          <Badge color="orange" variant="light" size="sm">
+            Modified
+          </Badge>
+        )}
+        {isManualEdit && (
+          <Badge color="grape" variant="light" size="sm">
+            Manual edit
+          </Badge>
+        )}
+        {isMT && (
+          <Badge color="blue" variant="light" size="sm">
+            Machine translated
+          </Badge>
+        )}
+        {hasGlossaryTerms && (
+          <Badge color="violet" variant="light" size="sm">
+            Glossary match
+          </Badge>
+        )}
+        {entry.lineNumber && (
+          <Badge color="gray" variant="light" size="sm">
+            Line {entry.lineNumber}
+          </Badge>
+        )}
+      </Group>
+
+      <Group align="flex-start" grow>
+        <Stack gap={4}>
+          <Text size="xs" fw={600} c="dimmed">
+            Context
+          </Text>
+          <Text size="sm" style={{ whiteSpace: 'pre-wrap' }}>
+            {entry.msgctxt || 'No context'}
+          </Text>
+        </Stack>
+
+        <Stack gap={4}>
+          <Text size="xs" fw={600} c="dimmed">
+            Structure
+          </Text>
+          <Text size="sm">{pluralSummary(entry)}</Text>
+        </Stack>
+      </Group>
+
+      <Divider />
+
+      <Stack gap={6}>
+        <Text size="xs" fw={600} c="dimmed">
+          References
+        </Text>
+
+        {parsedRefs.length === 0 ? (
+          <Text size="sm" c="dimmed">
+            No source references
+          </Text>
+        ) : (
+          <Stack gap={4}>
+            {parsedRefs.map((ref) => {
+              const refLabel = `${ref.path}${ref.line ? `:${ref.line}` : ''}`;
+              const isActiveRef = isSameReference(activeReference, ref);
+              return (
+                <Group key={refLabel} gap="xs" justify="space-between" wrap="nowrap">
+                  <Anchor
+                    component="button"
+                    type="button"
+                    size="sm"
+                    c={isActiveRef ? 'blue' : 'dimmed'}
+                    style={{ textAlign: 'left' }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onActivateReference(ref);
+                    }}
+                  >
+                    <Group gap={4} wrap="nowrap">
+                      <FileCode size={12} />
+                      <Text size="sm" component="span">
+                        {refLabel}
+                      </Text>
+                    </Group>
+                  </Anchor>
+
+                  {pluginSlug && (
+                    <Tooltip label="Open in Trac">
+                      <ActionIcon
+                        component="a"
+                        href={buildTracUrl(pluginSlug, ref.path, ref.line ?? undefined, basePath)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        variant="subtle"
+                        size="sm"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <ExternalLink size={14} />
+                      </ActionIcon>
+                    </Tooltip>
+                  )}
+                </Group>
+              );
+            })}
+          </Stack>
+        )}
+      </Stack>
+
+      <Divider />
+
+      <Group align="flex-start" grow>
+        <Stack gap={6}>
+          <Text size="xs" fw={600} c="dimmed">
+            Translator comments
+          </Text>
+          {entry.translatorComments.length > 0 ? (
+            <Stack gap={3}>
+              {entry.translatorComments.map((comment, idx) => (
+                <Text key={`${entry.id}-translator-comment-${idx}`} size="sm">
+                  {comment}
+                </Text>
+              ))}
+            </Stack>
+          ) : (
+            <Text size="sm" c="dimmed">
+              None
+            </Text>
+          )}
+        </Stack>
+
+        <Stack gap={6}>
+          <Text size="xs" fw={600} c="dimmed">
+            Extracted comments
+          </Text>
+          {entry.extractedComments.length > 0 ? (
+            <Stack gap={3}>
+              {entry.extractedComments.map((comment, idx) => (
+                <Text key={`${entry.id}-extracted-comment-${idx}`} size="sm">
+                  {comment}
+                </Text>
+              ))}
+            </Stack>
+          ) : (
+            <Text size="sm" c="dimmed">
+              None
+            </Text>
+          )}
+        </Stack>
+      </Group>
+
+      {flags.length > 0 && (
+        <>
+          <Divider />
+          <Stack gap={6}>
+            <Text size="xs" fw={600} c="dimmed">
+              Flags
+            </Text>
+            <Group gap={6} wrap="wrap">
+              {flags.map((flag) => (
+                <Badge key={`${entry.id}-flag-${flag}`} size="xs" variant="light" color="gray">
+                  {flag}
+                </Badge>
+              ))}
+            </Group>
+          </Stack>
+        </>
+      )}
+
+      <Divider />
+
+      <Stack gap={6}>
+        <Text size="xs" fw={600} c="dimmed">
+          Source preview
+        </Text>
+
+        {!pluginSlug && (
+          <Text size="sm" c="dimmed">
+            Set a plugin slug in Settings to enable source preview.
+          </Text>
+        )}
+
+        {pluginSlug && parsedRefs.length > 0 && !entryActiveReference && (
+          <Text size="sm" c="dimmed">
+            Select a reference above to load source context.
+          </Text>
+        )}
+
+        {pluginSlug && entryActiveReference && isLoadingSource && (
+          <Group gap="xs">
+            <Loader size="sm" />
+            <Text size="sm" c="dimmed">
+              Loading source...
+            </Text>
+          </Group>
+        )}
+
+        {pluginSlug && entryActiveReference && sourceError && !isLoadingSource && (
+          <Text size="sm" c="red">
+            {sourceError}
+          </Text>
+        )}
+
+        {pluginSlug && entryActiveReference && sourceContent && !isLoadingSource && (
+          <Paper withBorder style={{ overflow: 'hidden' }}>
+            <SourceCodeViewer
+              content={sourceContent}
+              targetLine={entryActiveReference.line}
+              filePath={entryActiveReference.path}
+              maxHeight={280}
+            />
+          </Paper>
+        )}
+      </Stack>
+    </Stack>
+  );
+}
+
 /**
  * Single entry row component - memoized for performance
  */
@@ -820,24 +1137,17 @@ const EntryRow = memo(function EntryRow({
   entry,
   isChecked,
   onToggleSelection,
-  onKeyDown,
   onSelect,
 }: {
   entry: POEntry;
   isChecked: boolean;
   onToggleSelection: (checked: boolean) => void;
-  onKeyDown?: (e: KeyboardEvent<HTMLTextAreaElement>, fieldId: string) => void;
   onSelect?: (sourceText: string) => void;
 }) {
   /* Column widths are handled by table-layout: fixed + <col> widths from thead */
-  const {
-    selectedEntryId,
-    selectEntry,
-    dirtyEntryIds,
-    machineTranslatedIds,
-    manualEditIds,
-    getGlossaryAnalysis,
-  } = useEditorStore();
+  const { selectedEntryId, selectEntry, dirtyEntryIds, machineTranslatedIds, manualEditIds } =
+    useEditorStore();
+  const getGlossaryAnalysis = useEditorStore((state) => state.getGlossaryAnalysis);
 
   const isSelected = selectedEntryId === entry.id;
   const isModified = dirtyEntryIds.has(entry.id);
@@ -893,21 +1203,153 @@ const EntryRow = memo(function EntryRow({
           isModified={isModified}
           isManualEdit={isManualEdit}
           hasGlossaryTerms={hasGlossaryTerms}
+          isMT={isMT}
         />
       </Table.Td>
       <Table.Td style={{ verticalAlign: 'top', padding: '12px 8px', overflow: 'hidden' }}>
         <SourceCell entry={entry} />
       </Table.Td>
-      <Table.Td style={{ verticalAlign: 'top', padding: '12px 8px', overflow: 'hidden' }}>
-        <TranslationCell entry={entry} onKeyDown={onKeyDown} />
-      </Table.Td>
-      <Table.Td style={{ verticalAlign: 'top', padding: '12px 8px', overflow: 'hidden' }}>
-        <ContextCell entry={entry} />
-      </Table.Td>
-      <Table.Td style={{ verticalAlign: 'top', padding: '12px 8px', overflow: 'hidden' }}>
-        <MetaCell entry={entry} />
-      </Table.Td>
     </Table.Tr>
+  );
+});
+
+const MobileEntryCard = memo(function MobileEntryCard({
+  entry,
+  isChecked,
+  detailsExpanded,
+  onToggleDetails,
+  onToggleSelection,
+  onKeyDown,
+  onSelect,
+}: {
+  entry: POEntry;
+  isChecked: boolean;
+  detailsExpanded: boolean;
+  onToggleDetails: () => void;
+  onToggleSelection: (checked: boolean) => void;
+  onKeyDown?: (e: KeyboardEvent<HTMLTextAreaElement>, fieldId: string) => void;
+  onSelect?: (sourceText: string) => void;
+}) {
+  const {
+    selectedEntryId,
+    selectEntry,
+    dirtyEntryIds,
+    machineTranslatedIds,
+    manualEditIds,
+    getGlossaryAnalysis,
+  } = useEditorStore();
+  const setActiveReference = useSourceStore((state) => state.setActiveReference);
+
+  const isSelected = selectedEntryId === entry.id;
+  const isModified = dirtyEntryIds.has(entry.id);
+  const isMT = machineTranslatedIds.has(entry.id);
+  const isManualEdit = manualEditIds.has(entry.id) && !isMT;
+  const glossaryAnalysis = getGlossaryAnalysis(entry.id);
+  const hasGlossaryTerms = (glossaryAnalysis?.matchedCount ?? 0) > 0;
+  const status = getTranslationStatus(entry.msgstr, entry.flags, entry.msgstrPlural);
+  const isUntranslated = status === 'untranslated';
+
+  const handleSelect = useCallback(() => {
+    selectEntry(entry.id);
+    onSelect?.(entry.msgid);
+  }, [entry.id, entry.msgid, onSelect, selectEntry]);
+
+  const handleActivateReference = useCallback(
+    (ref: ParsedReference) => {
+      selectEntry(entry.id);
+      onSelect?.(entry.msgid);
+      setActiveReference(ref);
+    },
+    [entry.id, entry.msgid, onSelect, selectEntry, setActiveReference],
+  );
+
+  return (
+    <Paper
+      withBorder
+      p="sm"
+      data-entry-id={entry.id}
+      onClick={handleSelect}
+      style={{
+        cursor: 'pointer',
+        borderColor: isSelected ? 'var(--mantine-color-blue-4)' : undefined,
+        backgroundColor: isSelected
+          ? 'var(--mantine-color-blue-light)'
+          : isUntranslated
+            ? 'var(--mantine-color-red-light)'
+            : undefined,
+      }}
+    >
+      <Group justify="space-between" align="flex-start" wrap="nowrap">
+        <Group gap="xs" align="flex-start" wrap="nowrap">
+          <Checkbox
+            checked={isChecked}
+            onChange={(e) => onToggleSelection(e.currentTarget.checked)}
+            onClick={(e) => e.stopPropagation()}
+            aria-label={`Select entry ${entry.msgid}`}
+            mt={2}
+          />
+          <StatusBadges
+            entry={entry}
+            isModified={isModified}
+            isManualEdit={isManualEdit}
+            hasGlossaryTerms={hasGlossaryTerms}
+            isMT={isMT}
+          />
+        </Group>
+
+        <UnstyledButton
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleDetails();
+          }}
+          style={{ color: 'var(--mantine-color-dimmed)' }}
+          aria-label={`Toggle details for ${entry.msgid}`}
+        >
+          <Group gap={4} wrap="nowrap">
+            <Text size="xs" fw={500}>
+              Details
+            </Text>
+            {detailsExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+          </Group>
+        </UnstyledButton>
+      </Group>
+
+      <Stack gap={8} mt="sm">
+        <Box>
+          <Text size="xs" fw={600} c="dimmed" mb={4}>
+            Source
+          </Text>
+          <SourceCell entry={entry} />
+        </Box>
+
+        <Box>
+          <Text size="xs" fw={600} c="dimmed" mb={4}>
+            Translation
+          </Text>
+          <TranslationCell entry={entry} onKeyDown={onKeyDown} />
+        </Box>
+
+        <Box>
+          <Text size="xs" fw={600} c="dimmed" mb={4}>
+            Signals
+          </Text>
+          <MetaCell entry={entry} onReferenceActivate={handleActivateReference} />
+        </Box>
+      </Stack>
+
+      <Collapse in={detailsExpanded}>
+        <Divider my="sm" />
+        <EntryDetailsPanel
+          entry={entry}
+          status={status}
+          isModified={isModified}
+          isMT={isMT}
+          isManualEdit={isManualEdit}
+          hasGlossaryTerms={hasGlossaryTerms}
+          onActivateReference={handleActivateReference}
+        />
+      </Collapse>
+    </Paper>
   );
 });
 
@@ -931,13 +1373,22 @@ export function EditorTable({
   glossaryEnforcementEnabled = false,
   onEntrySelect,
 }: EditorTableProps) {
+  const theme = useMantineTheme();
+  const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
   const entries = useEditorStore((state) => state.entries);
   const filename = useEditorStore((state) => state.filename);
+  const selectedEntryId = useEditorStore((state) => state.selectedEntryId);
+  const dirtyEntryIds = useEditorStore((state) => state.dirtyEntryIds);
+  const machineTranslatedIds = useEditorStore((state) => state.machineTranslatedIds);
+  const manualEditIds = useEditorStore((state) => state.manualEditIds);
+  const getGlossaryAnalysis = useEditorStore((state) => state.getGlossaryAnalysis);
   const selectEntry = useEditorStore((state) => state.selectEntry);
   const selectedEntryIds = useEditorStore((state) => state.selectedEntryIds);
   const setEntrySelection = useEditorStore((state) => state.setEntrySelection);
   const setSelectedEntries = useEditorStore((state) => state.setSelectedEntries);
   const getFilteredEntries = useEditorStore((state) => state.getFilteredEntries);
+  const activeReference = useSourceStore((state) => state.activeReference);
+  const setActiveReference = useSourceStore((state) => state.setActiveReference);
   // Subscribe to activeFilters changes - serialize to detect any change
   const activeFiltersKey = useEditorStore((state) =>
     JSON.stringify(Array.from(state.activeFilters.entries())),
@@ -958,6 +1409,8 @@ export function EditorTable({
 
   // Pending entry to focus after page change
   const [pendingFocusEntryId, setPendingFocusEntryId] = useState<string | null>(null);
+  const [expandedMobileEntryIds, setExpandedMobileEntryIds] = useState<Set<string>>(new Set());
+  const [inspectorMode, setInspectorMode] = useState<'context' | 'browse'>('context');
 
   // Refs for stable handleKeyDown callback (avoids re-creating and re-rendering all rows)
   const navRef = useRef({
@@ -1020,6 +1473,10 @@ export function EditorTable({
     key: 'po-editor-rows-per-page',
     defaultValue: '50',
   });
+  const [inspectorWidth, setInspectorWidth] = useLocalStorage<number>({
+    key: INSPECTOR_WIDTH_KEY,
+    defaultValue: INSPECTOR_DEFAULT_WIDTH,
+  });
   const [currentPage, setCurrentPage] = useState(1);
 
   // Calculate pagination
@@ -1037,6 +1494,14 @@ export function EditorTable({
     const endIndex = startIndex + rowsPerPageNum;
     return filteredEntries.slice(startIndex, endIndex);
   }, [filteredEntries, currentPage, rowsPerPageNum]);
+
+  const selectedEntry = useMemo(() => {
+    if (selectedEntryId) {
+      const fromFiltered = filteredEntries.find((entry) => entry.id === selectedEntryId);
+      if (fromFiltered) return fromFiltered;
+    }
+    return filteredEntries[0] ?? null;
+  }, [filteredEntries, selectedEntryId]);
 
   const filteredEntryIds = useMemo(
     () => filteredEntries.map((entry) => entry.id),
@@ -1065,6 +1530,64 @@ export function EditorTable({
     },
     [selectedEntryIds, filteredEntryIds, filteredEntryIdSet, setSelectedEntries],
   );
+
+  const handleInspectorResizeStart = useCallback(
+    (e: ReactPointerEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const startX = e.clientX;
+      const startWidth = inspectorWidth;
+      const target = e.currentTarget;
+      target.setPointerCapture(e.pointerId);
+
+      const onPointerMove = (ev: globalThis.PointerEvent) => {
+        const delta = ev.clientX - startX;
+        const viewportMax = Math.max(INSPECTOR_MIN_WIDTH, window.innerWidth - 300);
+        const maxWidth = Math.min(INSPECTOR_MAX_WIDTH, viewportMax);
+        const nextWidth = Math.min(maxWidth, Math.max(INSPECTOR_MIN_WIDTH, startWidth - delta));
+        setInspectorWidth(nextWidth);
+      };
+
+      const onPointerUp = () => {
+        target.removeEventListener('pointermove', onPointerMove);
+        target.removeEventListener('pointerup', onPointerUp);
+      };
+
+      target.addEventListener('pointermove', onPointerMove);
+      target.addEventListener('pointerup', onPointerUp);
+    },
+    [inspectorWidth, setInspectorWidth],
+  );
+
+  const toggleMobileDetails = useCallback((entryId: string) => {
+    setExpandedMobileEntryIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(entryId)) {
+        next.delete(entryId);
+      } else {
+        next.add(entryId);
+      }
+      return next;
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!isMobile || !selectedEntryId) return;
+    setExpandedMobileEntryIds((prev) => {
+      if (prev.has(selectedEntryId)) {
+        return prev;
+      }
+      const next = new Set(prev);
+      next.add(selectedEntryId);
+      return next;
+    });
+  }, [isMobile, selectedEntryId]);
+
+  useEffect(() => {
+    if (!selectedEntryId && filteredEntries.length > 0) {
+      selectEntry(filteredEntries[0].id);
+    }
+  }, [filteredEntries, selectedEntryId, selectEntry]);
 
   // Keep navRef in sync with pagination state
   navRef.current.currentPage = currentPage;
@@ -1157,18 +1680,42 @@ export function EditorTable({
   useEffect(() => {
     if (!pendingFocusEntryId) return;
     const raf = requestAnimationFrame(() => {
-      const row = document.querySelector(`tr[data-entry-id="${pendingFocusEntryId}"]`);
-      if (row) {
-        const wrapper = row.querySelector('.editable-text-wrapper') as HTMLElement | null;
+      const fieldSelector = `[data-entry-id="${pendingFocusEntryId}"][data-field-id]`;
+      const field = document.querySelector(fieldSelector) as HTMLElement | null;
+
+      if (field) {
+        const wrapper = field.classList.contains('editable-text-wrapper')
+          ? field
+          : (field.closest('.editable-text-wrapper') as HTMLElement | null);
+
         if (wrapper) {
           wrapper.click();
+          wrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+          field.focus();
+          field.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
-        row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else {
+        const row = document.querySelector(`tr[data-entry-id="${pendingFocusEntryId}"]`);
+        if (row) {
+          row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
       }
       setPendingFocusEntryId(null);
     });
     return () => cancelAnimationFrame(raf);
   }, [pendingFocusEntryId, paginatedEntries]);
+
+  const handleInspectorReference = useCallback(
+    (ref: ParsedReference) => {
+      if (selectedEntry) {
+        selectEntry(selectedEntry.id);
+        onEntrySelect?.(selectedEntry.msgid);
+      }
+      setActiveReference(ref);
+    },
+    [onEntrySelect, selectEntry, selectedEntry, setActiveReference],
+  );
 
   if (!filename) {
     return null;
@@ -1177,6 +1724,26 @@ export function EditorTable({
   // Calculate display range for "Showing X-Y of Z"
   const startItem = filteredEntries.length === 0 ? 0 : (currentPage - 1) * rowsPerPageNum + 1;
   const endItem = Math.min(currentPage * rowsPerPageNum, filteredEntries.length);
+  const selectedStatus = selectedEntry
+    ? getTranslationStatus(selectedEntry.msgstr, selectedEntry.flags, selectedEntry.msgstrPlural)
+    : null;
+  const selectedIsModified = selectedEntry ? dirtyEntryIds.has(selectedEntry.id) : false;
+  const selectedIsMT = selectedEntry ? machineTranslatedIds.has(selectedEntry.id) : false;
+  const selectedIsManualEdit = selectedEntry
+    ? manualEditIds.has(selectedEntry.id) && !selectedIsMT
+    : false;
+  const selectedHasGlossaryTerms = selectedEntry
+    ? (getGlossaryAnalysis(selectedEntry.id)?.matchedCount ?? 0) > 0
+    : false;
+  const selectedInspectorLabel = (() => {
+    if (!selectedEntry) return 'No selection';
+
+    const linePart = selectedEntry.lineNumber ? `Line ${selectedEntry.lineNumber}` : '';
+    const sourcePreview =
+      selectedEntry.msgid.trim() || selectedEntry.msgctxt?.trim() || 'Selected string';
+
+    return linePart ? `${linePart} · ${sourcePreview}` : sourcePreview;
+  })();
 
   return (
     <TranslateSettingsContext.Provider value={translateSettings}>
@@ -1188,74 +1755,212 @@ export function EditorTable({
         </Group>
       )}
 
-      <ScrollArea h={600} type="auto">
-        <Table
-          ref={tableRef}
-          striped
-          highlightOnHover
-          verticalSpacing="md"
-          style={{ tableLayout: 'fixed' }}
-        >
-          <Table.Thead
+      {isMobile ? (
+        <Stack gap="sm" data-testid="mobile-entry-card-list">
+          {paginatedEntries.map((entry) => (
+            <MobileEntryCard
+              key={entry.id}
+              entry={entry}
+              isChecked={selectedEntryIds.has(entry.id)}
+              detailsExpanded={expandedMobileEntryIds.has(entry.id)}
+              onToggleDetails={() => toggleMobileDetails(entry.id)}
+              onToggleSelection={(checked) => setEntrySelection(entry.id, checked)}
+              onKeyDown={handleKeyDown}
+              onSelect={onEntrySelect}
+            />
+          ))}
+        </Stack>
+      ) : (
+        <Group align="flex-start" wrap="nowrap" gap="md">
+          <Box style={{ flex: 1, minWidth: 0 }}>
+            <ScrollArea h={600} type="auto">
+              <Table
+                ref={tableRef}
+                striped
+                highlightOnHover
+                verticalSpacing="md"
+                style={{ tableLayout: 'fixed' }}
+                data-testid="editor-table-desktop"
+              >
+                <Table.Thead
+                  style={{
+                    position: 'sticky',
+                    top: 0,
+                    zIndex: 10,
+                    background: 'var(--mantine-color-body)',
+                  }}
+                >
+                  <Table.Tr>
+                    {(
+                      [
+                        <Checkbox
+                          key="select-all-checkbox-input"
+                          checked={allFilteredSelected}
+                          indeterminate={someFilteredSelected}
+                          onChange={(e) => handleSelectAllFiltered(e.currentTarget.checked)}
+                          aria-label="Select all filtered entries"
+                          data-testid="select-all-checkbox"
+                        />,
+                        'Status',
+                        'Source string',
+                      ] as const
+                    ).map((label, i) => (
+                      <ResizableTh
+                        key={typeof label === 'string' ? label : 'select'}
+                        widthPercent={columnPercents[i]}
+                        isLast={i === COLUMN_KEYS.length - 1}
+                        onResize={(delta) => handleColumnResize(i, delta)}
+                        align={i === 0 ? 'center' : 'left'}
+                      >
+                        {typeof label === 'string' ? (
+                          label
+                        ) : (
+                          <Box
+                            style={{
+                              display: 'flex',
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                            }}
+                          >
+                            {label}
+                          </Box>
+                        )}
+                      </ResizableTh>
+                    ))}
+                  </Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
+                  {paginatedEntries.map((entry) => (
+                    <EntryRow
+                      key={entry.id}
+                      entry={entry}
+                      isChecked={selectedEntryIds.has(entry.id)}
+                      onToggleSelection={(checked) => setEntrySelection(entry.id, checked)}
+                      onSelect={onEntrySelect}
+                    />
+                  ))}
+                </Table.Tbody>
+              </Table>
+            </ScrollArea>
+          </Box>
+
+          <Box
+            role="separator"
+            aria-orientation="vertical"
+            aria-label="Resize inspector"
+            onPointerDown={handleInspectorResizeStart}
+            onDoubleClick={() => setInspectorWidth(INSPECTOR_DEFAULT_WIDTH)}
             style={{
+              width: 8,
+              alignSelf: 'stretch',
+              cursor: 'col-resize',
+              borderRadius: 6,
+              backgroundColor: 'var(--mantine-color-default-border)',
+              opacity: 0.35,
+              transition: 'opacity 120ms ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.opacity = '0.8';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.opacity = '0.35';
+            }}
+          />
+
+          <Paper
+            withBorder
+            p="sm"
+            w={inspectorWidth}
+            style={{
+              flexShrink: 0,
               position: 'sticky',
               top: 0,
-              zIndex: 10,
-              background: 'var(--mantine-color-body)',
+              height: 600,
+              maxHeight: 600,
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
             }}
           >
-            <Table.Tr>
-              {(
-                [
-                  <Checkbox
-                    key="select-all-checkbox-input"
-                    checked={allFilteredSelected}
-                    indeterminate={someFilteredSelected}
-                    onChange={(e) => handleSelectAllFiltered(e.currentTarget.checked)}
-                    aria-label="Select all filtered entries"
-                    data-testid="select-all-checkbox"
-                  />,
-                  'Status',
-                  'Source',
-                  'Translation',
-                  'Context',
-                  'Meta',
-                ] as const
-              ).map((label, i) => (
-                <ResizableTh
-                  key={typeof label === 'string' ? label : 'select'}
-                  widthPercent={columnPercents[i]}
-                  isLast={i === COLUMN_KEYS.length - 1}
-                  onResize={(delta) => handleColumnResize(i, delta)}
-                  align={i === 0 ? 'center' : 'left'}
-                >
-                  {typeof label === 'string' ? (
-                    label
-                  ) : (
-                    <Box
-                      style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-                    >
-                      {label}
-                    </Box>
-                  )}
-                </ResizableTh>
-              ))}
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
-            {paginatedEntries.map((entry) => (
-              <EntryRow
-                key={entry.id}
-                entry={entry}
-                isChecked={selectedEntryIds.has(entry.id)}
-                onToggleSelection={(checked) => setEntrySelection(entry.id, checked)}
-                onKeyDown={handleKeyDown}
-                onSelect={onEntrySelect}
-              />
-            ))}
-          </Table.Tbody>
-        </Table>
-      </ScrollArea>
+            <Stack gap="sm" pt={2} style={{ height: '100%', minHeight: 0 }}>
+              <Group justify="space-between" align="center">
+                <Text fw={600} size="sm">
+                  String Inspector
+                </Text>
+                <Tooltip label={selectedInspectorLabel} disabled={!selectedEntry} position="bottom">
+                  <Text size="xs" c="dimmed" maw="58%" ta="right" truncate="end">
+                    {selectedInspectorLabel}
+                  </Text>
+                </Tooltip>
+              </Group>
+
+              <Group justify="space-between" align="center">
+                <SegmentedControl
+                  size="xs"
+                  value={inspectorMode}
+                  onChange={(value) => setInspectorMode(value as 'context' | 'browse')}
+                  data={[
+                    { label: 'Context', value: 'context' },
+                    { label: 'Browse', value: 'browse' },
+                  ]}
+                />
+
+                {inspectorMode === 'context' && activeReference && (
+                  <Tooltip label="Clear active source reference">
+                    <ActionIcon variant="subtle" size="sm" onClick={() => setActiveReference(null)}>
+                      <X size={14} />
+                    </ActionIcon>
+                  </Tooltip>
+                )}
+              </Group>
+
+              <Divider />
+
+              <Box style={{ flex: 1, minHeight: 0 }}>
+                {inspectorMode === 'browse' ? (
+                  <Paper withBorder style={{ overflow: 'hidden', height: '100%' }}>
+                    <SourceBrowser listingMaxHeight={420} viewerMaxHeight={420} />
+                  </Paper>
+                ) : (
+                  <ScrollArea h="100%" type="auto" offsetScrollbars="y">
+                    {selectedEntry && selectedStatus ? (
+                      <Stack gap="sm">
+                        <Stack gap={6}>
+                          <Text size="xs" fw={600} c="dimmed">
+                            Translation
+                          </Text>
+                          <TranslationCell
+                            entry={selectedEntry}
+                            onKeyDown={handleKeyDown}
+                            translateButtonSize="md"
+                            translateButtonDisplay="icon"
+                          />
+                        </Stack>
+
+                        <Divider />
+
+                        <EntryDetailsPanel
+                          entry={selectedEntry}
+                          status={selectedStatus}
+                          isModified={selectedIsModified}
+                          isMT={selectedIsMT}
+                          isManualEdit={selectedIsManualEdit}
+                          hasGlossaryTerms={selectedHasGlossaryTerms}
+                          onActivateReference={handleInspectorReference}
+                        />
+                      </Stack>
+                    ) : (
+                      <Text size="sm" c="dimmed">
+                        Select a row to inspect context and metadata.
+                      </Text>
+                    )}
+                  </ScrollArea>
+                )}
+              </Box>
+            </Stack>
+          </Paper>
+        </Group>
+      )}
 
       {/* Pagination controls */}
       {filteredEntries.length > 0 && (

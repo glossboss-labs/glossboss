@@ -1,10 +1,12 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MantineProvider } from '@mantine/core';
 import type { ReactNode } from 'react';
 import type { POEntry, POFile } from '@/lib/po';
 import { useEditorStore } from '@/stores/editor-store';
+import { useSourceStore } from '@/stores/source-store';
+import * as deepl from '@/lib/deepl';
 import { EditorTable } from './EditorTable';
 import { TranslateToolbar } from './TranslateToolbar';
 import { shouldAutoTranslateEntry } from './translate-utils';
@@ -35,6 +37,25 @@ function renderWithMantine(ui: ReactNode) {
   return render(<MantineProvider>{ui}</MantineProvider>);
 }
 
+const originalMatchMedia = window.matchMedia;
+
+function setMatchMedia(matches: boolean) {
+  window.matchMedia = vi.fn().mockImplementation((query: string) => ({
+    matches,
+    media: query,
+    onchange: null,
+    addListener: () => {},
+    removeListener: () => {},
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    dispatchEvent: () => false,
+  })) as typeof window.matchMedia;
+}
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
+
 describe('bulk translate helpers', () => {
   it('marks empty and fuzzy entries as auto-translate candidates', () => {
     const emptySingular = makeEntry('1', { msgstr: '' });
@@ -53,6 +74,8 @@ describe('bulk selection UI', () => {
   beforeEach(() => {
     localStorage.clear();
     useEditorStore.getState().clearEditor();
+    useSourceStore.getState().clearSource();
+    setMatchMedia(false);
   });
 
   it('select-all checkbox selects all filtered rows across pages', async () => {
@@ -90,6 +113,8 @@ describe('bulk action toolbar', () => {
   beforeEach(() => {
     localStorage.clear();
     useEditorStore.getState().clearEditor();
+    useSourceStore.getState().clearSource();
+    setMatchMedia(false);
   });
 
   it('shows compact controls when nothing is selected', () => {
@@ -125,5 +150,136 @@ describe('bulk action toolbar', () => {
 
     expect(screen.getByRole('button', { name: /^unapprove selected$/i })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /^approve selected$/i })).not.toBeInTheDocument();
+  });
+
+  it('uses EN source language for bulk translation when glossary is enabled and source is auto', async () => {
+    const user = userEvent.setup();
+    const translateBatch = vi.fn().mockResolvedValue(['Standaard template']);
+
+    vi.spyOn(deepl, 'hasUserApiKey').mockReturnValue(true);
+    vi.spyOn(deepl, 'getDeepLClient').mockReturnValue({
+      translateBatch,
+    } as unknown as ReturnType<typeof deepl.getDeepLClient>);
+
+    useEditorStore.getState().loadFile({
+      ...makeFile([makeEntry('a', { msgid: 'Standard template', msgstr: '' })]),
+      header: { language: 'nl' },
+    });
+
+    renderWithMantine(<TranslateToolbar deeplGlossaryId="glossary-123" glossary={null} />);
+
+    await user.click(screen.getByRole('button', { name: /translate 1 untranslated/i }));
+
+    await waitFor(() => {
+      expect(translateBatch).toHaveBeenCalledWith(
+        ['Standard template'],
+        'NL',
+        'EN',
+        'glossary-123',
+      );
+    });
+  });
+
+  it('auto-translates and preserves all plural forms in one bulk batch', async () => {
+    const user = userEvent.setup();
+    const translateBatch = vi.fn().mockResolvedValue(['Een item', 'Meerdere items']);
+
+    vi.spyOn(deepl, 'hasUserApiKey').mockReturnValue(true);
+    vi.spyOn(deepl, 'getDeepLClient').mockReturnValue({
+      translateBatch,
+    } as unknown as ReturnType<typeof deepl.getDeepLClient>);
+
+    useEditorStore.getState().loadFile({
+      ...makeFile([
+        makeEntry('plural-a', {
+          msgid: 'Item',
+          msgidPlural: 'Items',
+          msgstrPlural: ['', ''],
+        }),
+      ]),
+      header: { language: 'nl' },
+    });
+
+    renderWithMantine(<TranslateToolbar glossary={null} />);
+
+    await user.click(screen.getByRole('button', { name: /translate 1 untranslated/i }));
+
+    await waitFor(() => {
+      const updated = useEditorStore.getState().entries.find((entry) => entry.id === 'plural-a');
+      expect(updated?.msgstrPlural).toEqual(['Een item', 'Meerdere items']);
+    });
+  });
+});
+
+describe('editor details and mobile layout', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    useEditorStore.getState().clearEditor();
+    useSourceStore.getState().clearSource();
+    setMatchMedia(false);
+  });
+
+  afterEach(() => {
+    window.matchMedia = originalMatchMedia;
+  });
+
+  it('shows details only for the selected row and switches when selecting another row', async () => {
+    const user = userEvent.setup();
+    const entries = [
+      makeEntry('a', {
+        msgid: 'Save changes',
+        msgstr: '',
+        msgctxt: 'admin',
+        references: ['includes/Admin/Page.php:42'],
+        translatorComments: ['Translator note A'],
+      }),
+      makeEntry('b', {
+        msgid: 'Delete user',
+        msgstr: '',
+        translatorComments: ['Translator note B'],
+      }),
+    ];
+
+    useEditorStore.getState().loadFile(makeFile(entries));
+    renderWithMantine(<EditorTable />);
+
+    expect(screen.getByTestId('entry-details-a')).toBeInTheDocument();
+    expect(screen.queryByTestId('entry-details-b')).not.toBeInTheDocument();
+
+    await user.click(screen.getByText('Delete user'));
+
+    expect(screen.queryByTestId('entry-details-a')).not.toBeInTheDocument();
+    expect(screen.getByTestId('entry-details-b')).toBeInTheDocument();
+  });
+
+  it('activates source reference from the inspector reference link', async () => {
+    const user = userEvent.setup();
+    useSourceStore.getState().setPluginSlug('demo-plugin');
+
+    const entries = [
+      makeEntry('a', {
+        msgid: 'Save changes',
+        references: ['includes/Admin/Page.php:42'],
+      }),
+    ];
+
+    useEditorStore.getState().loadFile(makeFile(entries));
+    renderWithMantine(<EditorTable />);
+
+    await user.click(screen.getByText('includes/Admin/Page.php:42'));
+
+    const activeReference = useSourceStore.getState().activeReference;
+    expect(activeReference?.path).toBe('includes/Admin/Page.php');
+    expect(activeReference?.line).toBe(42);
+  });
+
+  it('renders mobile card list instead of desktop table on small screens', () => {
+    setMatchMedia(true);
+    useEditorStore.getState().loadFile(makeFile([makeEntry('a'), makeEntry('b')]));
+
+    renderWithMantine(<EditorTable />);
+
+    expect(screen.getByTestId('mobile-entry-card-list')).toBeInTheDocument();
+    expect(screen.queryByTestId('editor-table-desktop')).not.toBeInTheDocument();
   });
 });

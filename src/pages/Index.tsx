@@ -44,13 +44,7 @@ import {
   Moon,
   ChevronDown,
 } from 'lucide-react';
-import {
-  EditorTable,
-  FilterToolbar,
-  HeaderEditor,
-  TranslateToolbar,
-  SourceContext,
-} from '@/components/editor';
+import { EditorTable, FilterToolbar, HeaderEditor, TranslateToolbar } from '@/components/editor';
 import { FeedbackModal } from '@/components/feedback';
 import { SettingsModal } from '@/components/SettingsModal';
 import { ConfirmModal } from '@/components/ui';
@@ -822,7 +816,7 @@ export default function Index() {
           <Notification
             icon={<Check size={18} />}
             color="blue"
-            title="Updated from POT"
+            title="Updated"
             onClose={() => setMergeSuccess(null)}
             style={{
               ...styles,
@@ -1027,7 +1021,11 @@ export default function Index() {
                           </Menu>
                         </Group>
 
-                        <Tooltip label="Merge a POT template to update source strings">
+                        <Tooltip
+                          multiline
+                          w={340}
+                          label="Update this file using a .pot template. Existing translations are kept when source strings still match, new strings are added, and obsolete strings are removed."
+                        >
                           <motion.div {...buttonStates}>
                             <FileButton onChange={handlePotUpload} accept=".pot">
                               {(props) => (
@@ -1036,23 +1034,12 @@ export default function Index() {
                                   variant="light"
                                   {...props}
                                 >
-                                  Update from POT
+                                  Update
                                 </Button>
                               )}
                             </FileButton>
                           </motion.div>
                         </Tooltip>
-
-                        <motion.div {...buttonStates}>
-                          <Button
-                            leftSection={<Trash2 size={16} />}
-                            variant="subtle"
-                            color="red"
-                            onClick={handleClearClick}
-                          >
-                            Clear
-                          </Button>
-                        </motion.div>
                       </Group>
                     </MotionDiv>
                   )}
@@ -1072,13 +1059,35 @@ export default function Index() {
 
                 <ThemeToggle />
 
-                <Tooltip label="Settings">
-                  <motion.div {...buttonStates}>
-                    <ActionIcon variant="default" size="lg" onClick={() => setSettingsOpen(true)}>
-                      <Settings size={18} />
-                    </ActionIcon>
-                  </motion.div>
-                </Tooltip>
+                <Menu position="bottom-end" withinPortal>
+                  <Menu.Target>
+                    <Tooltip label="Settings and actions">
+                      <motion.div {...buttonStates}>
+                        <ActionIcon variant="default" size="lg">
+                          <Settings size={18} />
+                        </ActionIcon>
+                      </motion.div>
+                    </Tooltip>
+                  </Menu.Target>
+                  <Menu.Dropdown>
+                    <Menu.Label>Settings</Menu.Label>
+                    <Menu.Item
+                      leftSection={<Settings size={14} />}
+                      onClick={() => setSettingsOpen(true)}
+                    >
+                      Open settings
+                    </Menu.Item>
+                    <Menu.Divider />
+                    <Menu.Label>Actions</Menu.Label>
+                    <Menu.Item
+                      color="red"
+                      leftSection={<Trash2 size={14} />}
+                      onClick={handleClearClick}
+                    >
+                      Clear editor
+                    </Menu.Item>
+                  </Menu.Dropdown>
+                </Menu>
               </Group>
             </Group>
           </MotionDiv>
@@ -1223,37 +1232,35 @@ export default function Index() {
             </Group>
           )}
 
-          {/* Header editor (replaces old file info section) */}
-          {filename && <HeaderEditor encodingInfo={encodingInfo} />}
-
-          {/* Glossary status indicator (quick view) */}
-          {filename && glossary && (
-            <Group gap="xs">
-              <Badge color="green" variant="light" size="sm" leftSection={<Check size={10} />}>
-                Glossary: {glossary.entries.length} terms ({glossary.targetLocale})
-              </Badge>
-              {deeplGlossaryId && (
-                <Badge color="blue" variant="light" size="sm">
-                  DeepL synced
-                </Badge>
-              )}
-            </Group>
-          )}
-
-          {/* Filter toolbar */}
-          {filename && <FilterToolbar />}
-
-          {/* Translate toolbar for DeepL integration */}
+          {/* Header and control workspace */}
           {filename && (
-            <TranslateToolbar
-              onLanguageChange={handleLanguageChange}
-              deeplGlossaryId={glossaryEnforcementEnabled ? deeplGlossaryId : null}
-              glossary={glossary}
-            />
-          )}
+            <Stack gap="sm">
+              <HeaderEditor encodingInfo={encodingInfo} />
 
-          {/* Source context panel */}
-          {filename && <SourceContext />}
+              {/* Glossary status indicator (quick view) */}
+              {glossary && (
+                <Group gap="xs">
+                  <Badge color="green" variant="light" size="sm" leftSection={<Check size={10} />}>
+                    Glossary: {glossary.entries.length} terms ({glossary.targetLocale})
+                  </Badge>
+                  {deeplGlossaryId && (
+                    <Badge color="blue" variant="light" size="sm">
+                      DeepL synced
+                    </Badge>
+                  )}
+                </Group>
+              )}
+
+              <Stack gap="sm">
+                <FilterToolbar />
+                <TranslateToolbar
+                  onLanguageChange={handleLanguageChange}
+                  deeplGlossaryId={glossaryEnforcementEnabled ? deeplGlossaryId : null}
+                  glossary={glossary}
+                />
+              </Stack>
+            </Stack>
+          )}
 
           {/* Editor table or empty state */}
           {filename ? (

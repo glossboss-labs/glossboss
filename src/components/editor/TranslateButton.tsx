@@ -11,6 +11,11 @@ import { useState, useCallback } from 'react';
 import { ActionIcon, Tooltip, Loader, Popover, Button, Text, Stack, Group } from '@mantine/core';
 import { Languages, AlertCircle, AlertTriangle } from 'lucide-react';
 import { getDeepLClient } from '@/lib/deepl';
+import {
+  formatDeepLError,
+  isGlossaryNotFoundError,
+  notifyGlossaryFallback,
+} from '@/lib/deepl/errors';
 import type { TargetLanguage, SourceLanguage } from '@/lib/deepl/types';
 
 interface TranslateButtonProps {
@@ -32,6 +37,8 @@ interface TranslateButtonProps {
   disabled?: boolean;
   /** Size of the button */
   size?: 'xs' | 'sm' | 'md';
+  /** Button style: compact icon or labeled button */
+  display?: 'icon' | 'button';
 }
 
 export function TranslateButton({
@@ -44,6 +51,7 @@ export function TranslateButton({
   onError,
   disabled = false,
   size = 'sm',
+  display = 'icon',
 }: TranslateButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -53,6 +61,7 @@ export function TranslateButton({
 
   const iconSize = size === 'xs' ? 12 : size === 'sm' ? 14 : 16;
   const hasExistingTranslation = currentTranslation.trim().length > 0;
+  const label = glossaryId ? 'Translate with Glossary' : 'Translate with DeepL';
 
   const doTranslate = useCallback(async () => {
     if (!text.trim() || isLoading || disabled) return;
@@ -67,10 +76,22 @@ export function TranslateButton({
       // Default to 'EN' since WordPress glossaries are English source
       const effectiveSourceLang = glossaryId ? sourceLang || 'EN' : sourceLang;
 
-      // Use DeepL's native glossary support if available
-      const result = await client.translateText(text, targetLang, effectiveSourceLang, glossaryId);
+      let usedGlossary = Boolean(glossaryId);
+      let result: string;
+      try {
+        // Use DeepL's native glossary support if available
+        result = await client.translateText(text, targetLang, effectiveSourceLang, glossaryId);
+      } catch (glossaryError) {
+        // If glossary is stale/deleted, retry once without glossary.
+        if (glossaryId && isGlossaryNotFoundError(glossaryError)) {
+          usedGlossary = false;
+          notifyGlossaryFallback('single');
+          result = await client.translateText(text, targetLang, sourceLang, undefined);
+        } else {
+          throw glossaryError;
+        }
+      }
 
-      const usedGlossary = Boolean(glossaryId);
       if (usedGlossary) {
         console.log('[DeepL] Translated with glossary:', glossaryId);
       }
@@ -85,7 +106,7 @@ export function TranslateButton({
         onTranslated(result, usedGlossary);
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Translation failed';
+      const errorMessage = formatDeepLError(err);
       setError(errorMessage);
       onError?.(errorMessage);
     } finally {
@@ -119,6 +140,14 @@ export function TranslateButton({
   }, []);
 
   if (isLoading) {
+    if (display === 'button') {
+      return (
+        <Button size={size} variant="light" disabled leftSection={<Loader size={iconSize} />}>
+          Translating...
+        </Button>
+      );
+    }
+
     return (
       <ActionIcon size={size} variant="subtle" disabled>
         <Loader size={iconSize} />
@@ -127,6 +156,22 @@ export function TranslateButton({
   }
 
   if (error) {
+    if (display === 'button') {
+      return (
+        <Tooltip label={`Error: ${error}. Click to retry.`} color="red" multiline w={220}>
+          <Button
+            size={size}
+            variant="light"
+            color="red"
+            leftSection={<AlertCircle size={iconSize} />}
+            onClick={doTranslate}
+          >
+            Retry translation
+          </Button>
+        </Tooltip>
+      );
+    }
+
     return (
       <Tooltip label={`Error: ${error}. Click to retry.`} color="red" multiline w={200}>
         <ActionIcon size={size} variant="subtle" color="red" onClick={doTranslate}>
@@ -144,15 +189,28 @@ export function TranslateButton({
           label={glossaryId ? 'Translate with DeepL + Glossary' : 'Translate with DeepL'}
           color="dark"
         >
-          <ActionIcon
-            size={size}
-            variant="light"
-            color={glossaryId ? 'teal' : 'blue'}
-            onClick={doTranslate}
-            disabled={disabled || !text.trim()}
-          >
-            <Languages size={iconSize} />
-          </ActionIcon>
+          {display === 'button' ? (
+            <Button
+              size={size}
+              variant="light"
+              color={glossaryId ? 'teal' : 'blue'}
+              leftSection={<Languages size={iconSize} />}
+              onClick={doTranslate}
+              disabled={disabled || !text.trim()}
+            >
+              {label}
+            </Button>
+          ) : (
+            <ActionIcon
+              size={size}
+              variant="light"
+              color={glossaryId ? 'teal' : 'blue'}
+              onClick={doTranslate}
+              disabled={disabled || !text.trim()}
+            >
+              <Languages size={iconSize} />
+            </ActionIcon>
+          )}
         </Tooltip>
       </Popover.Target>
 

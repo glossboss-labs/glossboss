@@ -151,9 +151,17 @@ export async function syncGlossaryToDeepL(
 
   // Skip cache check if forceResync is true
   if (!forceResync && existing && existing.entriesHash === entriesHash) {
-    console.log('[DeepL Sync] Glossary unchanged, using existing:', existing.glossaryId);
-    onProgress?.('Using cached glossary');
-    return existing.glossaryId;
+    // Validate cached glossary still exists in DeepL. If deleted remotely, recreate it.
+    try {
+      await client.getGlossary(existing.glossaryId);
+      console.log('[DeepL Sync] Glossary unchanged, using existing:', existing.glossaryId);
+      onProgress?.('Using cached glossary');
+      return existing.glossaryId;
+    } catch {
+      console.log('[DeepL Sync] Cached glossary missing in DeepL, recreating...');
+      delete mapping[locale];
+      saveMapping(mapping);
+    }
   }
 
   if (forceResync) {
