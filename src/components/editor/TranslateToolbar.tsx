@@ -148,10 +148,11 @@ export function TranslateToolbar({ onLanguageChange, deeplGlossaryId }: Translat
   const [isRetranslateMode, setIsRetranslateMode] = useState(false);
   const [skipManualEdits, setSkipManualEdits] = useState(true);
   const cancelRef = useRef(false);
-  
+  const batchCountRef = useRef(0);
+
   // Check if API key is configured
   const hasApiKey = hasUserApiKey();
-  
+
   // Sync inferred target language when header changes
   useEffect(() => {
     if (inferredTarget && !targetLang) {
@@ -222,6 +223,7 @@ export function TranslateToolbar({ onLanguageChange, deeplGlossaryId }: Translat
     setTranslateCount(0);
     setFailedCount(0);
     cancelRef.current = false;
+    batchCountRef.current = 0;
     
     const client = getDeepLClient();
     let completed = 0;
@@ -309,6 +311,12 @@ export function TranslateToolbar({ onLanguageChange, deeplGlossaryId }: Translat
         setProgress(Math.round(((completed + failed) / totalJobs) * 100));
         setTranslateCount(completed);
         setFailedCount(failed);
+
+        // Signal usage refresh every other batch
+        batchCountRef.current++;
+        if (batchCountRef.current % 2 === 0) {
+          window.dispatchEvent(new Event('deepl-usage-refresh'));
+        }
       }
       
       if (failed > 0) {
@@ -320,6 +328,8 @@ export function TranslateToolbar({ onLanguageChange, deeplGlossaryId }: Translat
       setIsTranslating(false);
       setIsRetranslateMode(false);
       cancelRef.current = false;
+      // Signal final usage refresh
+      window.dispatchEvent(new Event('deepl-usage-refresh'));
     }
   }, [targetLang, sourceLang, deeplGlossaryId, updateEntry, updateEntryPlural, markAsMachineTranslated, skipManualEdits, manualEditIds, machineTranslatedIds]);
   
@@ -510,11 +520,11 @@ export function TranslateToolbar({ onLanguageChange, deeplGlossaryId }: Translat
                 </Text>
                 <Text size="sm" fw={500}>{progress}%</Text>
               </Group>
-              <Progress 
-                value={progress} 
-                size="sm" 
-                animated 
-                color={failedCount > 0 ? 'orange' : 'blue'} 
+              <Progress
+                value={progress}
+                size="sm"
+                animated
+                color={failedCount > 0 ? 'orange' : 'blue'}
               />
             </MotionStack>
           )}
@@ -556,6 +566,7 @@ export function TranslateToolbar({ onLanguageChange, deeplGlossaryId }: Translat
             </MotionDiv>
           )}
         </AnimatePresence>
+
       </Stack>
     </Paper>
   );

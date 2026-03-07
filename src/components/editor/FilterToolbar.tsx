@@ -21,6 +21,8 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { Search, X, FileQuestion, CheckCircle, AlertTriangle, Pencil, Bot, Edit3 } from 'lucide-react';
 import { useEditorStore, type FilterType, type FilterState } from '@/stores/editor-store';
+import { getDeepLClient, hasUserApiKey } from '@/lib/deepl';
+import type { UsageStats } from '@/lib/deepl/types';
 import { popVariants, springTransition } from '@/lib/motion';
 
 const MotionDiv = motion.div;
@@ -84,7 +86,22 @@ export function FilterToolbar() {
   const stats = getStats();
   const filteredCount = getFilteredEntries().length;
   const hasActiveFilters = activeFilters.size > 0 || filterQuery.trim().length > 0;
-  
+
+  // DeepL usage stats
+  const [usage, setUsage] = useState<UsageStats | null>(null);
+  const apiKeyConfigured = hasUserApiKey();
+
+  useEffect(() => {
+    if (!apiKeyConfigured) return;
+    const fetchUsage = () => {
+      getDeepLClient().getUsage().then(setUsage).catch(() => {});
+    };
+    fetchUsage();
+    // Listen for refresh events from TranslateToolbar
+    window.addEventListener('deepl-usage-refresh', fetchUsage);
+    return () => window.removeEventListener('deepl-usage-refresh', fetchUsage);
+  }, [apiKeyConfigured]);
+
   // Debounced search
   const [localQuery, setLocalQuery] = useState(filterQuery);
   
@@ -181,9 +198,9 @@ export function FilterToolbar() {
                 animate={{ scaleX: 1 }}
                 style={{ originX: 0 }}
               >
-                <Progress 
-                  value={percentage} 
-                  size="sm" 
+                <Progress
+                  value={percentage}
+                  size="sm"
                   radius="xl"
                   color={percentage === 100 ? 'green' : percentage > 50 ? 'blue' : 'orange'}
                   animated={percentage < 100}
@@ -192,6 +209,13 @@ export function FilterToolbar() {
             </Box>
           </Group>
         </Group>
+
+        {/* DeepL token usage */}
+        {usage && (
+          <Text size="xs" c="dimmed" ta="right">
+            DeepL usage: {usage.characterCount.toLocaleString()} / {usage.characterLimit.toLocaleString()}
+          </Text>
+        )}
 
         {/* Row 2: Filter chips */}
         <Group gap="xs" justify="space-between" align="center" wrap="nowrap">
