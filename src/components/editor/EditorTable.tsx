@@ -5,7 +5,7 @@
  * Uses standard rendering (virtualization removed for stability).
  */
 
-import { useState, useCallback, useRef, type KeyboardEvent, createContext, useContext, useMemo, memo, useEffect, type CSSProperties } from 'react';
+import { useState, useCallback, useRef, type KeyboardEvent, createContext, useContext, useMemo, memo, useEffect, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react';
 import { Table, Badge, Text, Stack, Group, Box, Paper, Tooltip, Textarea, ScrollArea, Pagination, Select } from '@mantine/core';
 import { useLocalStorage } from '@mantine/hooks';
 import { MessageSquare, FileCode, Pencil, Bot, Edit3 } from 'lucide-react';
@@ -25,6 +25,85 @@ const ROWS_PER_PAGE_OPTIONS = [
   { value: '250', label: '250 rows' },
   { value: '500', label: '500 rows' },
 ];
+
+/** Column definitions with default proportional widths */
+const COLUMN_KEYS = ['status', 'source', 'translation', 'context', 'meta'] as const;
+const DEFAULT_COLUMN_WIDTHS = [130, 420, 420, 100, 120];
+const MIN_COLUMN_WIDTH = 60; // minimum proportion
+
+/**
+ * Resizable column header with drag handle
+ */
+function ResizableTh({
+  children,
+  widthPercent,
+  onResize,
+  isLast,
+}: {
+  children: React.ReactNode;
+  widthPercent: string;
+  onResize?: (deltaX: number) => void;
+  isLast: boolean;
+}) {
+  const handleRef = useRef<HTMLDivElement>(null);
+  const startXRef = useRef(0);
+
+  const onPointerDown = useCallback((e: ReactPointerEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    startXRef.current = e.clientX;
+    const target = e.currentTarget;
+    target.setPointerCapture(e.pointerId);
+
+    const onPointerMove = (ev: globalThis.PointerEvent) => {
+      const delta = ev.clientX - startXRef.current;
+      if (delta !== 0) {
+        onResize?.(delta);
+        startXRef.current = ev.clientX;
+      }
+    };
+
+    const onPointerUp = () => {
+      target.removeEventListener('pointermove', onPointerMove);
+      target.removeEventListener('pointerup', onPointerUp);
+    };
+
+    target.addEventListener('pointermove', onPointerMove);
+    target.addEventListener('pointerup', onPointerUp);
+  }, [onResize]);
+
+  return (
+    <Table.Th style={{ width: widthPercent, position: 'relative', userSelect: 'none' }}>
+      {children}
+      {!isLast && (
+        <div
+          ref={handleRef}
+          onPointerDown={onPointerDown}
+          style={{
+            position: 'absolute',
+            right: -3,
+            top: 0,
+            bottom: 0,
+            width: 6,
+            cursor: 'col-resize',
+            zIndex: 11,
+          }}
+          onDoubleClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onResize?.(Infinity); // sentinel for reset
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = 'var(--mantine-color-blue-light)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'transparent';
+          }}
+        />
+      )}
+    </Table.Th>
+  );
+}
 
 /** Translation settings context */
 interface TranslateSettings {
@@ -607,6 +686,7 @@ const EntryRow = memo(function EntryRow({
   onKeyDown?: (e: KeyboardEvent<HTMLTextAreaElement>, fieldId: string) => void;
   onSelect?: (sourceText: string) => void;
 }) {
+  /* Column widths are handled by table-layout: fixed + <col> widths from thead */
   const { 
     selectedEntryId, 
     selectEntry, 
@@ -643,24 +723,24 @@ const EntryRow = memo(function EntryRow({
         borderLeft: isModified ? '4px solid var(--mantine-color-orange-5)' : '4px solid transparent',
       }}
     >
-      <Table.Td style={{ width: 130, verticalAlign: 'top', padding: '12px 8px' }}>
-        <StatusBadges 
-          entry={entry} 
+      <Table.Td style={{ verticalAlign: 'top', padding: '12px 8px', overflow: 'hidden' }}>
+        <StatusBadges
+          entry={entry}
           isModified={isModified}
           isManualEdit={isManualEdit}
           hasGlossaryTerms={hasGlossaryTerms}
         />
       </Table.Td>
-      <Table.Td style={{ width: '35%', verticalAlign: 'top', padding: '12px 8px' }}>
+      <Table.Td style={{ verticalAlign: 'top', padding: '12px 8px', overflow: 'hidden' }}>
         <SourceCell entry={entry} />
       </Table.Td>
-      <Table.Td style={{ width: '35%', verticalAlign: 'top', padding: '12px 8px' }}>
+      <Table.Td style={{ verticalAlign: 'top', padding: '12px 8px', overflow: 'hidden' }}>
         <TranslationCell entry={entry} onKeyDown={onKeyDown} />
       </Table.Td>
-      <Table.Td style={{ width: 100, verticalAlign: 'top', padding: '12px 8px' }}>
+      <Table.Td style={{ verticalAlign: 'top', padding: '12px 8px', overflow: 'hidden' }}>
         <ContextCell entry={entry} />
       </Table.Td>
-      <Table.Td style={{ width: 120, verticalAlign: 'top', padding: '12px 8px' }}>
+      <Table.Td style={{ verticalAlign: 'top', padding: '12px 8px', overflow: 'hidden' }}>
         <MetaCell entry={entry} />
       </Table.Td>
     </Table.Tr>
@@ -701,6 +781,46 @@ export function EditorTable({
     return getFilteredEntries();
   }, [getFilteredEntries, activeFiltersKey, filterQuery, entries]);
   
+  // Column widths (proportional) with localStorage persistence
+  const [columnWidths, setColumnWidths] = useLocalStorage<number[]>({
+    key: 'po-editor-column-widths',
+    defaultValue: DEFAULT_COLUMN_WIDTHS,
+  });
+
+  // Ensure stored widths have the right length (in case columns were added/removed)
+  const safeWidths = columnWidths.length === COLUMN_KEYS.length ? columnWidths : DEFAULT_COLUMN_WIDTHS;
+  const totalWidth = safeWidths.reduce((a, b) => a + b, 0);
+  const columnPercents = safeWidths.map(w => `${(w / totalWidth * 100).toFixed(2)}%`);
+
+  const tableRef = useRef<HTMLTableElement>(null);
+
+  const handleColumnResize = useCallback((colIndex: number, deltaX: number) => {
+    // Double-click sentinel: reset all columns to defaults
+    if (!isFinite(deltaX)) {
+      setColumnWidths(DEFAULT_COLUMN_WIDTHS);
+      return;
+    }
+
+    setColumnWidths(prev => {
+      const widths = [...(prev.length === COLUMN_KEYS.length ? prev : DEFAULT_COLUMN_WIDTHS)];
+      const tableWidth = tableRef.current?.offsetWidth ?? 1000;
+      const total = widths.reduce((a, b) => a + b, 0);
+      // Convert pixel delta to proportion delta
+      const proportionDelta = (deltaX / tableWidth) * total;
+
+      const newLeft = widths[colIndex] + proportionDelta;
+      const newRight = widths[colIndex + 1] - proportionDelta;
+
+      if (newLeft < MIN_COLUMN_WIDTH || newRight < MIN_COLUMN_WIDTH) {
+        return prev;
+      }
+
+      widths[colIndex] = newLeft;
+      widths[colIndex + 1] = newRight;
+      return widths;
+    });
+  }, [setColumnWidths]);
+
   // Pagination state with localStorage persistence
   const [rowsPerPage, setRowsPerPage] = useLocalStorage<string>({
     key: 'po-editor-rows-per-page',
@@ -771,14 +891,19 @@ export function EditorTable({
   return (
     <TranslateSettingsContext.Provider value={translateSettings}>
       <ScrollArea h={600} type="auto">
-        <Table striped highlightOnHover verticalSpacing="md">
+        <Table ref={tableRef} striped highlightOnHover verticalSpacing="md" style={{ tableLayout: 'fixed' }}>
           <Table.Thead style={{ position: 'sticky', top: 0, zIndex: 10, background: 'var(--mantine-color-body)' }}>
             <Table.Tr>
-              <Table.Th style={{ width: 130 }}>Status</Table.Th>
-              <Table.Th style={{ width: '35%' }}>Source</Table.Th>
-              <Table.Th style={{ width: '35%' }}>Translation</Table.Th>
-              <Table.Th style={{ width: 100 }}>Context</Table.Th>
-              <Table.Th style={{ width: 120 }}>Meta</Table.Th>
+              {(['Status', 'Source', 'Translation', 'Context', 'Meta'] as const).map((label, i) => (
+                <ResizableTh
+                  key={label}
+                  widthPercent={columnPercents[i]}
+                  isLast={i === COLUMN_KEYS.length - 1}
+                  onResize={(delta) => handleColumnResize(i, delta)}
+                >
+                  {label}
+                </ResizableTh>
+              ))}
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
