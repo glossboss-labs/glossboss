@@ -280,6 +280,7 @@ function FileBrowser() {
     directoryTree,
     browsingPath,
     isLoadingDirectory,
+    directoryError,
     fetchDirectory,
     fetchSource,
     sourceContent,
@@ -390,6 +391,12 @@ function FileBrowser() {
             )}
           </Stack>
         </ScrollArea>
+      )}
+
+      {!isLoadingDirectory && !viewingFile && !directoryTree && (
+        <Text size="sm" c="dimmed" p="md" ta="center">
+          {directoryError ?? 'Directory listing is unavailable.'}
+        </Text>
       )}
 
       {/* File viewer */}
