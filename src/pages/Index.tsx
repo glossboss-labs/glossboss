@@ -23,13 +23,12 @@ import {
   rem,
   Notification,
   ActionIcon,
-  ThemeIcon,
   Transition,
   useMantineColorScheme,
   useComputedColorScheme } from
 '@mantine/core';
 import { motion, AnimatePresence } from 'motion/react';
-import { Upload, Download, Trash2, AlertTriangle, FileUp, Check, RotateCcw, X, Settings, FileText, Sparkles, Sun, Moon } from 'lucide-react';
+import { Upload, Download, Trash2, AlertTriangle, FileUp, Check, RotateCcw, X, Settings, FileText, Sun, Moon } from 'lucide-react';
 import { EditorTable, FilterToolbar, HeaderEditor, TranslateToolbar } from '@/components/editor';
 import { SettingsModal } from '@/components/SettingsModal';
 import { ConfirmModal } from '@/components/ui';
@@ -682,9 +681,7 @@ export default function Index() {
             <Group justify="space-between" align="flex-start">
               <div data-ev-id="ev_c00be328c4">
                 <Group gap="xs" align="center">
-                  <ThemeIcon size="lg" radius="md" variant="gradient" gradient={{ from: 'blue', to: 'cyan' }}>
-                    <Sparkles size={20} />
-                  </ThemeIcon>
+                  <img src={appIcon} alt="GlossBoss" style={{ width: 28, height: 28, borderRadius: 6 }} />
                   <Title order={1}>GlossBoss</Title>
                 </Group>
                 <Text c="dimmed" size="sm" mt={4}>
