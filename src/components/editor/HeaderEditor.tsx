@@ -473,7 +473,7 @@ export function HeaderEditor({ encodingInfo }: HeaderEditorProps) {
                     <Text size="xs" c="dimmed" mb={6}>{field.description}</Text>
                     <LanguageSelector
                       value={value}
-                      onChange={(val) => handleFieldChange(field.key, val)} />
+                      onChange={(val) => handleFieldChange(field.key as string, val)} />
 
                   </Box>);
 
@@ -492,7 +492,7 @@ export function HeaderEditor({ encodingInfo }: HeaderEditorProps) {
                     <Text size="xs" c="dimmed" mb={6}>{field.description}</Text>
                     <PluralFormsSelector
                       value={value}
-                      onChange={(val) => handleFieldChange(field.key, val)} />
+                      onChange={(val) => handleFieldChange(field.key as string, val)} />
 
                   </Box>);
 
@@ -510,7 +510,7 @@ export function HeaderEditor({ encodingInfo }: HeaderEditorProps) {
                   description={field.description}
                   placeholder={`Enter ${field.label.toLowerCase()}...`}
                   value={value}
-                  onChange={(e) => handleFieldChange(field.key, e.currentTarget.value)} />);
+                  onChange={(e) => handleFieldChange(field.key as string, e.currentTarget.value)} />);
 
 
             })}

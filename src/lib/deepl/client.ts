@@ -107,7 +107,7 @@ export function createDeepLClient(config: DeepLClientConfig = {}) {
    * Translate text using DeepL
    */
   async function translate(req: TranslateRequest): Promise<TranslateResponse> {
-    return request<TranslateResponse>('translate', req);
+    return request<TranslateResponse>('translate', { ...req });
   }
   
   /**
@@ -159,7 +159,7 @@ export function createDeepLClient(config: DeepLClientConfig = {}) {
    * Create a glossary in DeepL
    */
   async function createGlossary(req: CreateGlossaryRequest): Promise<DeepLGlossary> {
-    return request<DeepLGlossary>('createGlossary', req);
+    return request<DeepLGlossary>('createGlossary', { ...req });
   }
   
   /**
