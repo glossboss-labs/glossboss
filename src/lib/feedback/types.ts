@@ -34,6 +34,7 @@ export interface FeedbackIssueRequest {
 export interface FeedbackIssueSuccess {
   ok: true;
   issueNumber: number;
+  issueUrl: string;
 }
 
 export interface FeedbackIssueError {
