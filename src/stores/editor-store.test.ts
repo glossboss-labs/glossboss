@@ -107,4 +107,167 @@ describe('editor-store selection and approve actions', () => {
     useEditorStore.getState().clearEditor();
     expect(useEditorStore.getState().selectedEntryIds.size).toBe(0);
   });
+
+  it('toggles column visibility and keeps at least one column visible', () => {
+    const state = useEditorStore.getState();
+
+    expect(state.visibleColumns).toEqual(new Set(['status', 'source', 'translation', 'signals']));
+
+    state.toggleColumnVisibility('status');
+    state.toggleColumnVisibility('source');
+    state.toggleColumnVisibility('translation');
+
+    expect(useEditorStore.getState().visibleColumns).toEqual(new Set(['signals']));
+
+    // Last visible column cannot be hidden
+    state.toggleColumnVisibility('signals');
+    expect(useEditorStore.getState().visibleColumns).toEqual(new Set(['signals']));
+  });
+
+  it('reorders columns left and right', () => {
+    const state = useEditorStore.getState();
+    expect(state.columnOrder).toEqual(['status', 'source', 'translation', 'signals']);
+
+    state.moveColumn('signals', 'left');
+    expect(useEditorStore.getState().columnOrder).toEqual([
+      'status',
+      'source',
+      'signals',
+      'translation',
+    ]);
+
+    state.moveColumn('status', 'right');
+    expect(useEditorStore.getState().columnOrder).toEqual([
+      'source',
+      'status',
+      'signals',
+      'translation',
+    ]);
+
+    // No-op at edges
+    state.moveColumn('source', 'left');
+    expect(useEditorStore.getState().columnOrder).toEqual([
+      'source',
+      'status',
+      'signals',
+      'translation',
+    ]);
+
+    state.moveColumnToIndex('translation', 1);
+    expect(useEditorStore.getState().columnOrder).toEqual([
+      'source',
+      'translation',
+      'status',
+      'signals',
+    ]);
+  });
+
+  it('sorts filtered entries by source text and can reset to file order', () => {
+    const entries = [
+      makeEntry('1', { msgid: 'Bravo' }),
+      makeEntry('2', { msgid: 'Alpha' }),
+      makeEntry('3', { msgid: 'Charlie' }),
+    ];
+    useEditorStore.getState().loadFile(makeFile(entries));
+
+    useEditorStore.getState().setSort('source', 'asc');
+    expect(
+      useEditorStore
+        .getState()
+        .getFilteredEntries()
+        .map((entry) => entry.id),
+    ).toEqual(['2', '1', '3']);
+
+    useEditorStore.getState().setSort('source', 'desc');
+    expect(
+      useEditorStore
+        .getState()
+        .getFilteredEntries()
+        .map((entry) => entry.id),
+    ).toEqual(['3', '1', '2']);
+
+    useEditorStore.getState().resetSort();
+    expect(
+      useEditorStore
+        .getState()
+        .getFilteredEntries()
+        .map((entry) => entry.id),
+    ).toEqual(['1', '2', '3']);
+  });
+
+  it('sorts filtered entries by translation status', () => {
+    const entries = [
+      makeEntry('translated', { msgstr: 'Ready' }),
+      makeEntry('untranslated', { msgstr: '' }),
+      makeEntry('fuzzy', { msgstr: 'Needs review', flags: ['fuzzy'] }),
+    ];
+    useEditorStore.getState().loadFile(makeFile(entries));
+
+    useEditorStore.getState().setSort('status', 'asc');
+    expect(
+      useEditorStore
+        .getState()
+        .getFilteredEntries()
+        .map((entry) => entry.id),
+    ).toEqual(['untranslated', 'fuzzy', 'translated']);
+
+    useEditorStore.getState().setSort('status', 'desc');
+    expect(
+      useEditorStore
+        .getState()
+        .getFilteredEntries()
+        .map((entry) => entry.id),
+    ).toEqual(['translated', 'fuzzy', 'untranslated']);
+  });
+
+  it('keeps duplicate sort keys in original order', () => {
+    const entries = [
+      makeEntry('a', { msgid: 'Alpha', msgstr: '' }),
+      makeEntry('b', { msgid: 'Alpha', msgstr: '' }),
+      makeEntry('c', { msgid: 'Bravo', msgstr: 'Done' }),
+      makeEntry('d', { msgid: 'Bravo', msgstr: 'Done too' }),
+      makeEntry('e', { msgid: 'Charlie', msgstr: 'Needs review', flags: ['fuzzy'] }),
+    ];
+    useEditorStore.getState().loadFile(makeFile(entries));
+
+    useEditorStore.getState().setSort('source', 'asc');
+    expect(
+      useEditorStore
+        .getState()
+        .getFilteredEntries()
+        .map((entry) => entry.id),
+    ).toEqual(['a', 'b', 'c', 'd', 'e']);
+
+    useEditorStore.getState().setSort('source', 'desc');
+    expect(
+      useEditorStore
+        .getState()
+        .getFilteredEntries()
+        .map((entry) => entry.id),
+    ).toEqual(['e', 'c', 'd', 'a', 'b']);
+
+    useEditorStore.getState().setSort('status', 'asc');
+    expect(
+      useEditorStore
+        .getState()
+        .getFilteredEntries()
+        .map((entry) => entry.id),
+    ).toEqual(['a', 'b', 'e', 'c', 'd']);
+
+    useEditorStore.getState().setSort('status', 'desc');
+    expect(
+      useEditorStore
+        .getState()
+        .getFilteredEntries()
+        .map((entry) => entry.id),
+    ).toEqual(['c', 'd', 'e', 'a', 'b']);
+
+    useEditorStore.getState().resetSort();
+    expect(
+      useEditorStore
+        .getState()
+        .getFilteredEntries()
+        .map((entry) => entry.id),
+    ).toEqual(['a', 'b', 'c', 'd', 'e']);
+  });
 });

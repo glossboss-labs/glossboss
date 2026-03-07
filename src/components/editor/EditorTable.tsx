@@ -39,6 +39,7 @@ import {
   Anchor,
   ActionIcon,
   SegmentedControl,
+  Portal,
   useMantineTheme,
 } from '@mantine/core';
 import { useLocalStorage, useMediaQuery } from '@mantine/hooks';
@@ -62,7 +63,7 @@ import { GlossaryIndicator } from './GlossaryIndicator';
 import { SourceCodeViewer } from './SourceCodeViewer';
 import { SourceBrowser } from './SourceBrowser';
 import type { TargetLanguage, SourceLanguage } from '@/lib/deepl/types';
-import type { Glossary } from '@/lib/glossary/types';
+import type { Glossary, GlossaryAnalysisResult } from '@/lib/glossary/types';
 
 /** localStorage key for skip-translated navigation setting */
 export const NAV_SKIP_TRANSLATED_KEY = 'glossboss-nav-skip-translated';
@@ -91,9 +92,18 @@ const ROWS_PER_PAGE_OPTIONS = [
 ];
 
 /** Column definitions with default proportional widths */
-const COLUMN_KEYS = ['select', 'status', 'source'] as const;
-const DEFAULT_COLUMN_WIDTHS = [72, 260, 668];
+const COLUMN_KEYS = ['select', 'status', 'source', 'translation', 'signals'] as const;
+type TableColumnKey = (typeof COLUMN_KEYS)[number];
+type DataColumnKey = Exclude<TableColumnKey, 'select'>;
+const DATA_COLUMN_LABELS: Record<DataColumnKey, string> = {
+  status: 'Status',
+  source: 'Source string',
+  translation: 'Translated string',
+  signals: 'Signals',
+};
+const DEFAULT_COLUMN_WIDTHS = [72, 210, 320, 320, 220];
 const MIN_COLUMN_WIDTH = 60; // minimum proportion
+const HEADER_DRAG_ACTIVATION_DISTANCE = 4;
 
 /**
  * Resizable column header with drag handle
@@ -103,12 +113,20 @@ function ResizableTh({
   widthPercent,
   onResize,
   isLast,
+  onCellPointerDown,
+  dataColumnKey,
+  isDragging = false,
+  dropIndicatorPosition,
   align = 'left',
 }: {
   children: React.ReactNode;
   widthPercent: string;
   onResize?: (deltaX: number) => void;
   isLast: boolean;
+  onCellPointerDown?: (e: ReactPointerEvent<HTMLTableCellElement>) => void;
+  dataColumnKey?: DataColumnKey;
+  isDragging?: boolean;
+  dropIndicatorPosition?: 'before' | 'after';
   align?: 'left' | 'center';
 }) {
   const handleRef = useRef<HTMLDivElement>(null);
@@ -143,14 +161,40 @@ function ResizableTh({
 
   return (
     <Table.Th
+      onPointerDown={onCellPointerDown}
+      data-column-key={dataColumnKey}
       style={{
         width: widthPercent,
         position: 'relative',
         userSelect: 'none',
         textAlign: align,
+        cursor: dataColumnKey ? (isDragging ? 'grabbing' : 'grab') : undefined,
+        opacity: isDragging ? 0.55 : 1,
+        transform: isDragging ? 'scale(0.985)' : 'translateX(0)',
+        transition: 'transform 180ms cubic-bezier(0.22, 1, 0.36, 1), opacity 140ms ease',
       }}
     >
       {children}
+      {dropIndicatorPosition && (
+        <div
+          aria-hidden
+          style={{
+            position: 'absolute',
+            top: 2,
+            bottom: 2,
+            width: 2,
+            backgroundColor: 'var(--mantine-color-blue-6)',
+            left: dropIndicatorPosition === 'before' ? -1 : undefined,
+            right: dropIndicatorPosition === 'after' ? -1 : undefined,
+            zIndex: 12,
+            pointerEvents: 'none',
+            borderRadius: 999,
+            boxShadow:
+              '0 0 0 1px var(--mantine-color-blue-5), 0 0 16px color-mix(in srgb, var(--mantine-color-blue-4) 45%, transparent)',
+            transition: 'left 140ms ease, right 140ms ease',
+          }}
+        />
+      )}
       {!isLast && (
         <div
           ref={handleRef}
@@ -494,6 +538,86 @@ function SourceCell({ entry }: { entry: POEntry }) {
   }
 
   return <HighlightedText>{entry.msgid}</HighlightedText>;
+}
+
+/**
+ * Read-only translation preview for table rows
+ */
+function TranslationPreviewCell({ entry }: { entry: POEntry }) {
+  const hasPlural = Boolean(entry.msgidPlural);
+
+  const renderValue = (value: string) => {
+    if (!value.trim()) {
+      return (
+        <Text size="sm" c="dimmed">
+          —
+        </Text>
+      );
+    }
+
+    return <HighlightedText>{value}</HighlightedText>;
+  };
+
+  if (hasPlural) {
+    const plurals = entry.msgstrPlural ?? [];
+    const displayForms = plurals.length >= 2 ? plurals : ['', ''];
+
+    return (
+      <Stack gap={4}>
+        {displayForms.map((form, index) => (
+          <Box key={`${entry.id}-preview-plural-${index}`} style={{ flex: 1, minWidth: 0 }}>
+            {renderValue(form)}
+          </Box>
+        ))}
+      </Stack>
+    );
+  }
+
+  return (
+    <Stack gap={4}>
+      <Box style={{ flex: 1, minWidth: 0 }}>{renderValue(entry.msgstr)}</Box>
+    </Stack>
+  );
+}
+
+function SignalsOverviewCell({
+  isMT,
+  usedGlossary,
+  glossaryAnalysis,
+}: {
+  isMT: boolean;
+  usedGlossary: boolean;
+  glossaryAnalysis: GlossaryAnalysisResult | null;
+}) {
+  const hasGlossarySignals = (glossaryAnalysis?.terms.length ?? 0) > 0;
+
+  if (!isMT && !hasGlossarySignals) {
+    return (
+      <Text size="xs" c="dimmed">
+        —
+      </Text>
+    );
+  }
+
+  return (
+    <Stack gap={4}>
+      {isMT && (
+        <Tooltip
+          label={usedGlossary ? 'Machine translated with glossary' : 'Machine translated by DeepL'}
+        >
+          <Badge
+            size="xs"
+            variant="light"
+            color={usedGlossary ? 'teal' : 'blue'}
+            leftSection={<Bot size={10} />}
+          >
+            {usedGlossary ? 'MT + Glossary' : 'Machine translated'}
+          </Badge>
+        </Tooltip>
+      )}
+      <GlossaryIndicator analysis={hasGlossarySignals ? glossaryAnalysis : null} />
+    </Stack>
+  );
 }
 
 /**
@@ -1136,22 +1260,31 @@ function EntryDetailsPanel({
 const EntryRow = memo(function EntryRow({
   entry,
   isChecked,
+  visibleDataColumns,
   onToggleSelection,
   onSelect,
 }: {
   entry: POEntry;
   isChecked: boolean;
+  visibleDataColumns: DataColumnKey[];
   onToggleSelection: (checked: boolean) => void;
   onSelect?: (sourceText: string) => void;
 }) {
   /* Column widths are handled by table-layout: fixed + <col> widths from thead */
-  const { selectedEntryId, selectEntry, dirtyEntryIds, machineTranslatedIds, manualEditIds } =
-    useEditorStore();
+  const {
+    selectedEntryId,
+    selectEntry,
+    dirtyEntryIds,
+    machineTranslatedIds,
+    manualEditIds,
+    machineTranslationMeta,
+  } = useEditorStore();
   const getGlossaryAnalysis = useEditorStore((state) => state.getGlossaryAnalysis);
 
   const isSelected = selectedEntryId === entry.id;
   const isModified = dirtyEntryIds.has(entry.id);
   const isMT = machineTranslatedIds.has(entry.id);
+  const usedGlossary = machineTranslationMeta.get(entry.id)?.usedGlossary ?? false;
   const isManualEdit = manualEditIds.has(entry.id) && !isMT;
   const glossaryAnalysis = getGlossaryAnalysis(entry.id);
   const hasGlossaryTerms = (glossaryAnalysis?.matchedCount ?? 0) > 0;
@@ -1197,18 +1330,59 @@ const EntryRow = memo(function EntryRow({
           aria-label={`Select entry ${entry.msgid}`}
         />
       </Table.Td>
-      <Table.Td style={{ verticalAlign: 'top', padding: '12px 8px', overflow: 'hidden' }}>
-        <StatusBadges
-          entry={entry}
-          isModified={isModified}
-          isManualEdit={isManualEdit}
-          hasGlossaryTerms={hasGlossaryTerms}
-          isMT={isMT}
-        />
-      </Table.Td>
-      <Table.Td style={{ verticalAlign: 'top', padding: '12px 8px', overflow: 'hidden' }}>
-        <SourceCell entry={entry} />
-      </Table.Td>
+      {visibleDataColumns.map((columnKey) => {
+        if (columnKey === 'status') {
+          return (
+            <Table.Td
+              key={`${entry.id}-status`}
+              style={{ verticalAlign: 'top', padding: '12px 8px', overflow: 'hidden' }}
+            >
+              <StatusBadges
+                entry={entry}
+                isModified={isModified}
+                isManualEdit={isManualEdit}
+                hasGlossaryTerms={hasGlossaryTerms}
+                isMT={isMT}
+              />
+            </Table.Td>
+          );
+        }
+
+        if (columnKey === 'source') {
+          return (
+            <Table.Td
+              key={`${entry.id}-source`}
+              style={{ verticalAlign: 'top', padding: '12px 8px', overflow: 'hidden' }}
+            >
+              <SourceCell entry={entry} />
+            </Table.Td>
+          );
+        }
+
+        if (columnKey === 'translation') {
+          return (
+            <Table.Td
+              key={`${entry.id}-translation`}
+              style={{ verticalAlign: 'top', padding: '12px 8px', overflow: 'hidden' }}
+            >
+              <TranslationPreviewCell entry={entry} />
+            </Table.Td>
+          );
+        }
+
+        return (
+          <Table.Td
+            key={`${entry.id}-signals`}
+            style={{ verticalAlign: 'top', padding: '12px 8px', overflow: 'hidden' }}
+          >
+            <SignalsOverviewCell
+              isMT={isMT}
+              usedGlossary={usedGlossary}
+              glossaryAnalysis={glossaryAnalysis ?? null}
+            />
+          </Table.Td>
+        );
+      })}
     </Table.Tr>
   );
 });
@@ -1387,6 +1561,11 @@ export function EditorTable({
   const setEntrySelection = useEditorStore((state) => state.setEntrySelection);
   const setSelectedEntries = useEditorStore((state) => state.setSelectedEntries);
   const getFilteredEntries = useEditorStore((state) => state.getFilteredEntries);
+  const visibleColumns = useEditorStore((state) => state.visibleColumns);
+  const columnOrder = useEditorStore((state) => state.columnOrder);
+  const moveColumnToIndex = useEditorStore((state) => state.moveColumnToIndex);
+  const sortField = useEditorStore((state) => state.sortField);
+  const sortDirection = useEditorStore((state) => state.sortDirection);
   const activeReference = useSourceStore((state) => state.activeReference);
   const setActiveReference = useSourceStore((state) => state.setActiveReference);
   // Subscribe to activeFilters changes - serialize to detect any change
@@ -1399,7 +1578,7 @@ export function EditorTable({
   const filteredEntries = useMemo(() => {
     return getFilteredEntries();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [getFilteredEntries, activeFiltersKey, filterQuery, entries]);
+  }, [getFilteredEntries, activeFiltersKey, filterQuery, entries, sortField, sortDirection]);
 
   // Navigation: skip already-translated entries on Ctrl/Cmd+Enter
   const [skipTranslated] = useLocalStorage<boolean>({
@@ -1411,6 +1590,20 @@ export function EditorTable({
   const [pendingFocusEntryId, setPendingFocusEntryId] = useState<string | null>(null);
   const [expandedMobileEntryIds, setExpandedMobileEntryIds] = useState<Set<string>>(new Set());
   const [inspectorMode, setInspectorMode] = useState<'context' | 'browse'>('context');
+  const draggingHeaderColumnRef = useRef<DataColumnKey | null>(null);
+  const [draggingHeaderColumn, setDraggingHeaderColumn] = useState<DataColumnKey | null>(null);
+  const [dropIndicator, setDropIndicator] = useState<{
+    column: DataColumnKey;
+    position: 'before' | 'after';
+  } | null>(null);
+  const dragPreviewRef = useRef<HTMLDivElement | null>(null);
+  const dragPreviewPositionRef = useRef({ x: 0, y: 0 });
+  const [headerDragPreview, setHeaderDragPreview] = useState<{
+    column: DataColumnKey;
+    label: string;
+    width: number;
+    height: number;
+  } | null>(null);
 
   // Refs for stable handleKeyDown callback (avoids re-creating and re-rendering all rows)
   const navRef = useRef({
@@ -1433,13 +1626,41 @@ export function EditorTable({
   // Ensure stored widths have the right length (in case columns were added/removed)
   const safeWidths =
     columnWidths.length === COLUMN_KEYS.length ? columnWidths : DEFAULT_COLUMN_WIDTHS;
-  const totalWidth = safeWidths.reduce((a, b) => a + b, 0);
-  const columnPercents = safeWidths.map((w) => `${((w / totalWidth) * 100).toFixed(2)}%`);
-
+  const widthByKey = useMemo(
+    () =>
+      COLUMN_KEYS.reduce(
+        (acc, key, index) => {
+          acc[key] = safeWidths[index];
+          return acc;
+        },
+        {} as Record<TableColumnKey, number>,
+      ),
+    [safeWidths],
+  );
+  const visibleColumnKeys = useMemo(() => {
+    const dataColumns = columnOrder.filter((column) => visibleColumns.has(column));
+    return ['select', ...dataColumns] as TableColumnKey[];
+  }, [columnOrder, visibleColumns]);
+  const visibleDataColumns = useMemo(
+    () => visibleColumnKeys.filter((column): column is DataColumnKey => column !== 'select'),
+    [visibleColumnKeys],
+  );
+  const visibleTotalWidth = visibleColumnKeys.reduce((sum, key) => sum + widthByKey[key], 0);
+  const columnPercentByKey = useMemo(
+    () =>
+      visibleColumnKeys.reduce(
+        (acc, key) => {
+          acc[key] = `${((widthByKey[key] / visibleTotalWidth) * 100).toFixed(2)}%`;
+          return acc;
+        },
+        {} as Record<TableColumnKey, string>,
+      ),
+    [visibleColumnKeys, visibleTotalWidth, widthByKey],
+  );
   const tableRef = useRef<HTMLTableElement>(null);
 
   const handleColumnResize = useCallback(
-    (colIndex: number, deltaX: number) => {
+    (leftKey: TableColumnKey, rightKey: TableColumnKey, deltaX: number) => {
       // Double-click sentinel: reset all columns to defaults
       if (!isFinite(deltaX)) {
         setColumnWidths(DEFAULT_COLUMN_WIDTHS);
@@ -1449,24 +1670,158 @@ export function EditorTable({
       setColumnWidths((prev) => {
         const widths = [...(prev.length === COLUMN_KEYS.length ? prev : DEFAULT_COLUMN_WIDTHS)];
         const tableWidth = tableRef.current?.offsetWidth ?? 1000;
-        const total = widths.reduce((a, b) => a + b, 0);
+        const visibleTotal = visibleColumnKeys.reduce(
+          (sum, key) => sum + widths[COLUMN_KEYS.indexOf(key)],
+          0,
+        );
         // Convert pixel delta to proportion delta
-        const proportionDelta = (deltaX / tableWidth) * total;
+        const proportionDelta = (deltaX / tableWidth) * visibleTotal;
 
-        const newLeft = widths[colIndex] + proportionDelta;
-        const newRight = widths[colIndex + 1] - proportionDelta;
+        const leftIndex = COLUMN_KEYS.indexOf(leftKey);
+        const rightIndex = COLUMN_KEYS.indexOf(rightKey);
+        const newLeft = widths[leftIndex] + proportionDelta;
+        const newRight = widths[rightIndex] - proportionDelta;
 
         if (newLeft < MIN_COLUMN_WIDTH || newRight < MIN_COLUMN_WIDTH) {
           return prev;
         }
 
-        widths[colIndex] = newLeft;
-        widths[colIndex + 1] = newRight;
+        widths[leftIndex] = newLeft;
+        widths[rightIndex] = newRight;
         return widths;
       });
     },
-    [setColumnWidths],
+    [setColumnWidths, visibleColumnKeys],
   );
+
+  const getDropTargetAtPoint = useCallback(
+    (clientX: number, clientY: number, draggedColumn: DataColumnKey) => {
+      const hovered = document.elementFromPoint(clientX, clientY) as HTMLElement | null;
+      const header = hovered?.closest('th[data-column-key]') as HTMLElement | null;
+      if (!header) return null;
+
+      const targetColumn = header.dataset.columnKey as DataColumnKey | undefined;
+      if (!targetColumn || targetColumn === draggedColumn) return null;
+
+      const rect = header.getBoundingClientRect();
+      const position = clientX < rect.left + rect.width / 2 ? 'before' : 'after';
+      return { column: targetColumn, position } as const;
+    },
+    [],
+  );
+
+  const handleHeaderPointerDown = useCallback(
+    (columnKey: DataColumnKey, e: ReactPointerEvent<HTMLTableCellElement>) => {
+      if (e.button !== 0) return;
+
+      // Leave the right edge free for resize interactions.
+      const rect = e.currentTarget.getBoundingClientRect();
+      if (e.clientX > rect.right - 12) return;
+
+      e.preventDefault();
+      const startX = e.clientX;
+      const startY = e.clientY;
+      const offsetX = e.clientX - rect.left;
+      const offsetY = e.clientY - rect.top;
+      const body = document.body;
+      const previousUserSelect = body.style.userSelect;
+      const previousCursor = body.style.cursor;
+      let didActivateDrag = false;
+      let cleanedUp = false;
+
+      const onPointerMove = (ev: PointerEvent) => {
+        const distance = Math.hypot(ev.clientX - startX, ev.clientY - startY);
+        if (!didActivateDrag && distance < HEADER_DRAG_ACTIVATION_DISTANCE) {
+          return;
+        }
+
+        if (!didActivateDrag) {
+          didActivateDrag = true;
+          draggingHeaderColumnRef.current = columnKey;
+          setDraggingHeaderColumn(columnKey);
+          body.style.userSelect = 'none';
+          body.style.cursor = 'grabbing';
+          setHeaderDragPreview({
+            column: columnKey,
+            label: DATA_COLUMN_LABELS[columnKey],
+            width: rect.width,
+            height: rect.height,
+          });
+        }
+
+        const nextX = ev.clientX - offsetX;
+        const nextY = ev.clientY - offsetY;
+        dragPreviewPositionRef.current = { x: nextX, y: nextY };
+        if (dragPreviewRef.current) {
+          dragPreviewRef.current.style.transform = `translate3d(${nextX}px, ${nextY}px, 0)`;
+        }
+
+        const nextTarget = getDropTargetAtPoint(ev.clientX, ev.clientY, columnKey);
+        setDropIndicator((prev) => {
+          if (!nextTarget) {
+            return prev ? null : prev;
+          }
+          if (prev?.column === nextTarget.column && prev.position === nextTarget.position) {
+            return prev;
+          }
+          return nextTarget;
+        });
+      };
+
+      const cleanup = () => {
+        if (cleanedUp) return;
+        cleanedUp = true;
+        draggingHeaderColumnRef.current = null;
+        setDraggingHeaderColumn(null);
+        setDropIndicator(null);
+        setHeaderDragPreview(null);
+        body.style.userSelect = previousUserSelect;
+        body.style.cursor = previousCursor;
+        window.removeEventListener('pointermove', onPointerMove);
+        window.removeEventListener('pointerup', onPointerUp);
+        window.removeEventListener('pointercancel', onPointerCancel);
+      };
+
+      const onPointerUp = (ev: PointerEvent) => {
+        if (!didActivateDrag) {
+          cleanup();
+          return;
+        }
+
+        const draggedColumn = draggingHeaderColumnRef.current;
+        if (draggedColumn) {
+          const target = getDropTargetAtPoint(ev.clientX, ev.clientY, draggedColumn);
+          if (target) {
+            const fromIndex = columnOrder.indexOf(draggedColumn);
+            let toIndex = columnOrder.indexOf(target.column);
+
+            if (target.position === 'after') {
+              toIndex += 1;
+            }
+            if (fromIndex !== -1 && fromIndex < toIndex) {
+              toIndex -= 1;
+            }
+
+            moveColumnToIndex(draggedColumn, toIndex);
+          }
+        }
+
+        cleanup();
+      };
+      const onPointerCancel = () => cleanup();
+
+      window.addEventListener('pointermove', onPointerMove);
+      window.addEventListener('pointerup', onPointerUp, { once: true });
+      window.addEventListener('pointercancel', onPointerCancel, { once: true });
+    },
+    [columnOrder, getDropTargetAtPoint, moveColumnToIndex],
+  );
+
+  useEffect(() => {
+    if (!headerDragPreview || !dragPreviewRef.current) return;
+    const { x, y } = dragPreviewPositionRef.current;
+    dragPreviewRef.current.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+  }, [headerDragPreview]);
 
   // Pagination state with localStorage persistence
   const [rowsPerPage, setRowsPerPage] = useLocalStorage<string>({
@@ -1791,42 +2146,67 @@ export function EditorTable({
                   }}
                 >
                   <Table.Tr>
-                    {(
-                      [
-                        <Checkbox
-                          key="select-all-checkbox-input"
-                          checked={allFilteredSelected}
-                          indeterminate={someFilteredSelected}
-                          onChange={(e) => handleSelectAllFiltered(e.currentTarget.checked)}
-                          aria-label="Select all filtered entries"
-                          data-testid="select-all-checkbox"
-                        />,
-                        'Status',
-                        'Source string',
-                      ] as const
-                    ).map((label, i) => (
-                      <ResizableTh
-                        key={typeof label === 'string' ? label : 'select'}
-                        widthPercent={columnPercents[i]}
-                        isLast={i === COLUMN_KEYS.length - 1}
-                        onResize={(delta) => handleColumnResize(i, delta)}
-                        align={i === 0 ? 'center' : 'left'}
-                      >
-                        {typeof label === 'string' ? (
-                          label
+                    {visibleColumnKeys.map((columnKey, i) => {
+                      const nextColumn = visibleColumnKeys[i + 1];
+                      const isDataColumn = columnKey !== 'select';
+                      const indicatorPosition =
+                        isDataColumn && dropIndicator?.column === columnKey
+                          ? dropIndicator.position
+                          : undefined;
+                      const label =
+                        columnKey === 'select' ? (
+                          <Checkbox
+                            key="select-all-checkbox-input"
+                            checked={allFilteredSelected}
+                            indeterminate={someFilteredSelected}
+                            onChange={(e) => handleSelectAllFiltered(e.currentTarget.checked)}
+                            aria-label="Select all filtered entries"
+                            data-testid="select-all-checkbox"
+                          />
+                        ) : columnKey === 'status' ? (
+                          DATA_COLUMN_LABELS.status
+                        ) : columnKey === 'source' ? (
+                          DATA_COLUMN_LABELS.source
+                        ) : columnKey === 'translation' ? (
+                          DATA_COLUMN_LABELS.translation
                         ) : (
-                          <Box
-                            style={{
-                              display: 'flex',
-                              justifyContent: 'center',
-                              alignItems: 'center',
-                            }}
-                          >
-                            {label}
-                          </Box>
-                        )}
-                      </ResizableTh>
-                    ))}
+                          DATA_COLUMN_LABELS.signals
+                        );
+
+                      return (
+                        <ResizableTh
+                          key={columnKey}
+                          widthPercent={columnPercentByKey[columnKey]}
+                          isLast={!nextColumn}
+                          onResize={
+                            nextColumn
+                              ? (delta) => handleColumnResize(columnKey, nextColumn, delta)
+                              : undefined
+                          }
+                          align={columnKey === 'select' ? 'center' : 'left'}
+                          isDragging={draggingHeaderColumn === columnKey}
+                          dropIndicatorPosition={indicatorPosition}
+                          dataColumnKey={isDataColumn ? columnKey : undefined}
+                          onCellPointerDown={
+                            isDataColumn ? (e) => handleHeaderPointerDown(columnKey, e) : undefined
+                          }
+                        >
+                          {typeof label === 'string' ? (
+                            label
+                          ) : (
+                            <Box
+                              style={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                              }}
+                            >
+                              {label}
+                            </Box>
+                          )}
+                        </ResizableTh>
+                      );
+                    })}
                   </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
@@ -1835,6 +2215,7 @@ export function EditorTable({
                       key={entry.id}
                       entry={entry}
                       isChecked={selectedEntryIds.has(entry.id)}
+                      visibleDataColumns={visibleDataColumns}
                       onToggleSelection={(checked) => setEntrySelection(entry.id, checked)}
                       onSelect={onEntrySelect}
                     />
@@ -1843,6 +2224,38 @@ export function EditorTable({
               </Table>
             </ScrollArea>
           </Box>
+          {headerDragPreview && (
+            <Portal>
+              <div
+                ref={dragPreviewRef}
+                style={{
+                  position: 'fixed',
+                  left: 0,
+                  top: 0,
+                  width: headerDragPreview.width,
+                  height: headerDragPreview.height,
+                  pointerEvents: 'none',
+                  zIndex: 1200,
+                  borderRadius: 8,
+                  border: '1px solid var(--mantine-color-blue-4)',
+                  background:
+                    'color-mix(in srgb, var(--mantine-color-body) 84%, var(--mantine-color-blue-light) 16%)',
+                  boxShadow:
+                    '0 12px 30px color-mix(in srgb, black 22%, transparent), 0 2px 10px color-mix(in srgb, black 18%, transparent)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  paddingInline: 12,
+                  fontWeight: 600,
+                  color: 'var(--mantine-color-text)',
+                  backdropFilter: 'blur(2px)',
+                  willChange: 'transform',
+                  transition: 'transform 90ms cubic-bezier(0.22, 1, 0.36, 1)',
+                }}
+              >
+                {headerDragPreview.label}
+              </div>
+            </Portal>
+          )}
 
           <Box
             role="separator"

@@ -17,6 +17,10 @@ import {
   Box,
   Progress,
   Stack,
+  Menu,
+  Button,
+  Checkbox,
+  Select,
 } from '@mantine/core';
 import { motion, AnimatePresence } from 'motion/react';
 import {
@@ -29,8 +33,18 @@ import {
   Bot,
   Edit3,
   SlidersHorizontal,
+  Columns3,
+  ArrowUpDown,
+  GripVertical,
 } from 'lucide-react';
-import { useEditorStore, type FilterType, type FilterState } from '@/stores/editor-store';
+import {
+  useEditorStore,
+  type FilterType,
+  type FilterState,
+  type SortDirection,
+  type SortField,
+  type TableColumn,
+} from '@/stores/editor-store';
 import { getDeepLClient, hasUserApiKey } from '@/lib/deepl';
 import type { UsageStats } from '@/lib/deepl/types';
 import { popVariants, springTransition } from '@/lib/motion';
@@ -89,9 +103,16 @@ export function FilterToolbar() {
   const {
     filterQuery,
     activeFilters,
+    visibleColumns,
+    columnOrder,
+    sortField,
+    sortDirection,
     setFilterQuery,
     toggleFilter,
     clearFilters,
+    toggleColumnVisibility,
+    moveColumnToIndex,
+    setSort,
     getStats,
     getFilteredEntries,
   } = useEditorStore();
@@ -102,6 +123,8 @@ export function FilterToolbar() {
 
   // DeepL usage stats
   const [usage, setUsage] = useState<UsageStats | null>(null);
+  const [draggingColumn, setDraggingColumn] = useState<TableColumn | null>(null);
+  const [dropTargetColumn, setDropTargetColumn] = useState<TableColumn | null>(null);
   const apiKeyConfigured = hasUserApiKey();
 
   useEffect(() => {
@@ -134,6 +157,7 @@ export function FilterToolbar() {
   }, [filterQuery]);
 
   const percentage = stats.total > 0 ? Math.round((stats.translated / stats.total) * 100) : 0;
+  const visibleColumnCount = visibleColumns.size;
 
   const handleClearSearch = useCallback(() => {
     setLocalQuery('');
@@ -153,6 +177,31 @@ export function FilterToolbar() {
       default:
         return 0;
     }
+  };
+
+  const sortValue = `${sortField}:${sortDirection}`;
+  const sortOptions = [
+    { value: 'default:asc', label: 'File order' },
+    { value: 'source:asc', label: 'Source A-Z' },
+    { value: 'source:desc', label: 'Source Z-A' },
+    { value: 'translation:asc', label: 'Translation A-Z' },
+    { value: 'translation:desc', label: 'Translation Z-A' },
+    { value: 'status:asc', label: 'Status: untranslated first' },
+    { value: 'status:desc', label: 'Status: translated first' },
+  ];
+
+  const handleSortChange = (value: string | null) => {
+    if (!value) return;
+
+    const [field, direction] = value.split(':') as [SortField, SortDirection];
+    setSort(field, direction);
+  };
+
+  const columnLabels: Record<TableColumn, string> = {
+    status: 'Status',
+    source: 'Source string',
+    translation: 'Translated string',
+    signals: 'Signals',
   };
 
   return (
@@ -239,8 +288,8 @@ export function FilterToolbar() {
         )}
 
         {/* Row 2: Filter chips */}
-        <Group gap="xs" justify="space-between" align="center" wrap="nowrap">
-          <Group gap="xs" wrap="nowrap" style={{ overflow: 'auto' }}>
+        <Group gap="xs" justify="space-between" align="center" wrap="wrap">
+          <Group gap="xs" wrap="nowrap" style={{ overflow: 'auto', minWidth: 0, flex: 1 }}>
             <AnimatePresence mode="popLayout">
               {FILTERS.map((filter) => {
                 const filterState = activeFilters.get(filter.id) ?? null;
@@ -336,31 +385,139 @@ export function FilterToolbar() {
             </AnimatePresence>
           </Group>
 
-          {/* Clear filters link */}
-          <AnimatePresence>
-            {hasActiveFilters && (
-              <MotionDiv
-                initial={{ opacity: 0, x: 10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 10 }}
-              >
-                <Text
-                  size="sm"
-                  c="blue"
-                  style={{ cursor: 'pointer', flexShrink: 0, whiteSpace: 'nowrap' }}
-                  onClick={clearFilters}
+          <Group gap="xs" wrap="nowrap" style={{ flexShrink: 0 }}>
+            <Menu position="bottom-end" shadow="sm" withArrow>
+              <Menu.Target>
+                <Button
+                  size="xs"
+                  variant="default"
+                  leftSection={<Columns3 size={14} />}
+                  aria-label="Choose visible columns"
                 >
-                  Clear filters
-                  {hasActiveFilters && filteredCount !== stats.total && (
-                    <Text span c="dimmed" size="sm">
-                      {' '}
-                      ({filteredCount} shown)
-                    </Text>
-                  )}
-                </Text>
-              </MotionDiv>
-            )}
-          </AnimatePresence>
+                  Columns
+                </Button>
+              </Menu.Target>
+              <Menu.Dropdown>
+                {columnOrder.map((column) => {
+                  const isVisible = visibleColumns.has(column);
+                  const disableToggleOff = isVisible && visibleColumnCount === 1;
+                  const isDropTarget = dropTargetColumn === column && draggingColumn !== column;
+                  return (
+                    <Menu.Item
+                      key={column}
+                      closeMenuOnClick={false}
+                      onDragOver={(e) => {
+                        if (!draggingColumn || draggingColumn === column) return;
+                        e.preventDefault();
+                        if (dropTargetColumn !== column) {
+                          setDropTargetColumn(column);
+                        }
+                      }}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        if (!draggingColumn || draggingColumn === column) {
+                          setDraggingColumn(null);
+                          setDropTargetColumn(null);
+                          return;
+                        }
+
+                        const fromIndex = columnOrder.indexOf(draggingColumn);
+                        const targetIndex = columnOrder.indexOf(column);
+                        if (fromIndex === -1 || targetIndex === -1) {
+                          setDraggingColumn(null);
+                          setDropTargetColumn(null);
+                          return;
+                        }
+
+                        const adjustedIndex =
+                          fromIndex < targetIndex ? targetIndex - 1 : targetIndex;
+                        moveColumnToIndex(draggingColumn, adjustedIndex);
+                        setDraggingColumn(null);
+                        setDropTargetColumn(null);
+                      }}
+                      onDragLeave={() => {
+                        if (dropTargetColumn === column) {
+                          setDropTargetColumn(null);
+                        }
+                      }}
+                    >
+                      <Group justify="space-between" wrap="nowrap">
+                        <Checkbox
+                          checked={isVisible}
+                          label={columnLabels[column]}
+                          onChange={() => toggleColumnVisibility(column)}
+                          disabled={disableToggleOff}
+                        />
+
+                        <Group gap={2} wrap="nowrap">
+                          <ActionIcon
+                            size="sm"
+                            variant="subtle"
+                            color="gray"
+                            aria-label={`Drag ${columnLabels[column]}`}
+                            draggable
+                            onDragStart={(e) => {
+                              e.dataTransfer.effectAllowed = 'move';
+                              e.dataTransfer.setData('text/plain', column);
+                              setDraggingColumn(column);
+                            }}
+                            onDragEnd={() => {
+                              setDraggingColumn(null);
+                              setDropTargetColumn(null);
+                            }}
+                            style={{
+                              cursor: 'grab',
+                              backgroundColor: isDropTarget
+                                ? 'var(--mantine-color-blue-light)'
+                                : undefined,
+                            }}
+                          >
+                            <GripVertical size={12} />
+                          </ActionIcon>
+                        </Group>
+                      </Group>
+                    </Menu.Item>
+                  );
+                })}
+              </Menu.Dropdown>
+            </Menu>
+
+            <Select
+              size="xs"
+              value={sortValue}
+              onChange={handleSortChange}
+              data={sortOptions}
+              leftSection={<ArrowUpDown size={14} />}
+              w={220}
+              aria-label="Sort entries"
+            />
+
+            {/* Clear filters link */}
+            <AnimatePresence>
+              {hasActiveFilters && (
+                <MotionDiv
+                  initial={{ opacity: 0, x: 10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 10 }}
+                >
+                  <Text
+                    size="sm"
+                    c="blue"
+                    style={{ cursor: 'pointer', flexShrink: 0, whiteSpace: 'nowrap' }}
+                    onClick={clearFilters}
+                  >
+                    Clear filters
+                    {hasActiveFilters && filteredCount !== stats.total && (
+                      <Text span c="dimmed" size="sm">
+                        {' '}
+                        ({filteredCount} shown)
+                      </Text>
+                    )}
+                  </Text>
+                </MotionDiv>
+              )}
+            </AnimatePresence>
+          </Group>
         </Group>
       </Stack>
     </Paper>
