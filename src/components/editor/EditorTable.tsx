@@ -287,8 +287,6 @@ function EditableField({
           margin: '-6px -8px',
           padding: 2,
           borderRadius: 6,
-          backgroundColor: 'var(--mantine-color-blue-light)',
-          boxShadow: '0 0 0 2px var(--mantine-color-blue-filled)',
         }}
       >
         {isPlural && pluralIndex !== undefined && (
@@ -331,6 +329,8 @@ function EditableField({
                 caretColor: 'var(--mantine-color-text)',
                 backgroundColor: 'transparent',
                 border: 'none',
+                outline: 'none',
+                boxShadow: 'none',
                 position: 'relative',
                 zIndex: 1,
               }
