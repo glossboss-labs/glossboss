@@ -9,6 +9,7 @@
 
 import type { Glossary } from './types';
 import { parseGlossaryCSV, isValidGlossaryCSV } from './csv-parser';
+import { buildSupabaseFunctionHeaders } from '@/lib/supabase-function-headers';
 
 /** Cache key prefix for localStorage */
 const CACHE_KEY_PREFIX = 'glossboss-wp-glossary-';
@@ -85,14 +86,7 @@ export async function fetchWPGlossary(locale: string, forceRefresh = false): Pro
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
 
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-    };
-
-    if (anonKey) {
-      headers['Authorization'] = `Bearer ${anonKey}`;
-      headers['apikey'] = anonKey;
-    }
+    const headers = buildSupabaseFunctionHeaders(anonKey);
 
     const response = await fetch(functionUrl, {
       method: 'POST',

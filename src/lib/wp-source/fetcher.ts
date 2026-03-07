@@ -5,6 +5,7 @@
  * via edge function proxy. Includes in-memory caching.
  */
 import { normalizeSourcePath } from './references';
+import { buildSupabaseFunctionHeaders } from '@/lib/supabase-function-headers';
 
 /** Directory entry from SVN listing */
 export interface DirectoryEntry {
@@ -164,14 +165,7 @@ async function fetchFromEdge(body: Record<string, unknown>): Promise<Response> {
   const functionUrl = getEdgeFunctionUrl();
   const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-  };
-
-  if (anonKey) {
-    headers['Authorization'] = `Bearer ${anonKey}`;
-    headers['apikey'] = anonKey;
-  }
+  const headers = buildSupabaseFunctionHeaders(anonKey);
 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);

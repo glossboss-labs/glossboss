@@ -44,11 +44,13 @@ Add these GitHub repository secrets to enable deployment:
 
 ## Environment Variables
 
-```
+```dotenv
 VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_ANON_KEY=your-anon-key
+VITE_SUPABASE_ANON_KEY=your-anon-or-publishable-key
 VITE_TURNSTILE_SITE_KEY=your-cloudflare-turnstile-site-key
 ```
+
+`VITE_SUPABASE_ANON_KEY` supports both legacy JWT anon keys and newer `sb_publishable_*` keys.
 
 ## Edge Functions
 

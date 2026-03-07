@@ -23,7 +23,7 @@ function renderModal(props: Partial<ComponentProps<typeof FeedbackModal>> = {}) 
     onClose,
     ...render(
       <MantineProvider>
-        <FeedbackModal {...defaultProps} {...restProps} onClose={onClose} />
+        <FeedbackModal {...defaultProps} {...restProps} />
       </MantineProvider>,
     ),
   };

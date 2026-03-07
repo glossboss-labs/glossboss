@@ -1,4 +1,5 @@
 import type { FeedbackIssueRequest, FeedbackIssueResponse, FeedbackIssueSuccess } from './types';
+import { buildSupabaseFunctionHeaders } from '@/lib/supabase-function-headers';
 
 const REQUEST_TIMEOUT_MS = 20000;
 
@@ -28,15 +29,7 @@ export async function submitFeedbackIssue(
 ): Promise<FeedbackIssueSuccess> {
   const functionUrl = getFeedbackFunctionUrl();
   const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-  };
-
-  if (anonKey) {
-    headers.Authorization = `Bearer ${anonKey}`;
-    headers.apikey = anonKey;
-  }
+  const headers = buildSupabaseFunctionHeaders(anonKey);
 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
