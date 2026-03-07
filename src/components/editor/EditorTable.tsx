@@ -5,7 +5,7 @@
  * Uses standard rendering (virtualization removed for stability).
  */
 
-import { useState, useCallback, useRef, type KeyboardEvent, createContext, useContext, useMemo, memo, useEffect } from 'react';
+import { useState, useCallback, useRef, type KeyboardEvent, createContext, useContext, useMemo, memo, useEffect, type CSSProperties } from 'react';
 import { Table, Badge, Text, Stack, Group, Box, Paper, Tooltip, Textarea, ScrollArea, Pagination, Select } from '@mantine/core';
 import { useLocalStorage } from '@mantine/hooks';
 import { MessageSquare, FileCode, Pencil, Bot, Edit3 } from 'lucide-react';
@@ -192,6 +192,16 @@ function EditableField({
   }, [editValue, value, onChange, onKeyDown, fieldId]);
 
   if (isEditing) {
+    const sharedStyles: CSSProperties = {
+      fontFamily: 'inherit',
+      fontSize: 'var(--mantine-font-size-sm)',
+      lineHeight: 1.55,
+      whiteSpace: 'pre-wrap',
+      wordWrap: 'break-word',
+      padding: '7px 12px',
+      margin: 0,
+    };
+
     return (
       <Box
         style={{
@@ -207,28 +217,49 @@ function EditableField({
             [{pluralIndex}]
           </Text>
         )}
-        <Textarea
-          ref={textareaRef}
-          value={editValue}
-          onChange={(e) => setEditValue(e.currentTarget.value)}
-          onBlur={handleBlur}
-          onKeyDown={handleKeyDown}
-          placeholder={placeholder}
-          autosize
-          minRows={1}
-          maxRows={8}
-          size="sm"
-          styles={{
-            input: {
-              fontFamily: 'inherit',
-              fontSize: 'var(--mantine-font-size-sm)',
-              border: 'none',
+        <Box style={{ position: 'relative' }}>
+          {/* Highlighted backdrop */}
+          <Box
+            aria-hidden
+            style={{
+              ...sharedStyles,
+              position: 'absolute',
+              inset: 0,
+              pointerEvents: 'none',
+              overflow: 'hidden',
+              borderRadius: 'var(--mantine-radius-default)',
               backgroundColor: 'var(--mantine-color-body)',
-            }
-          }}
-          data-field-id={fieldId}
-          data-entry-id={entryId}
-        />
+            }}
+          >
+            <HighlightedText>{editValue || ' '}</HighlightedText>
+          </Box>
+          <Textarea
+            ref={textareaRef}
+            value={editValue}
+            onChange={(e) => setEditValue(e.currentTarget.value)}
+            onBlur={handleBlur}
+            onKeyDown={handleKeyDown}
+            placeholder={placeholder}
+            autosize
+            minRows={1}
+            maxRows={8}
+            size="sm"
+            styles={{
+              input: {
+                ...sharedStyles,
+                fontFamily: 'inherit',
+                color: 'transparent',
+                caretColor: 'var(--mantine-color-text)',
+                backgroundColor: 'transparent',
+                border: 'none',
+                position: 'relative',
+                zIndex: 1,
+              }
+            }}
+            data-field-id={fieldId}
+            data-entry-id={entryId}
+          />
+        </Box>
       </Box>
     );
   }
