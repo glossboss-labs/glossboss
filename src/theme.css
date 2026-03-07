@@ -1,0 +1,46 @@
+/**
+ * ⚠️ THEME CONFIGURATION — Tailwind v4
+ * Add custom theme values INSIDE the @theme { } block below.
+ * Do NOT nest @media, @layer, or other at-rules inside @theme.
+ * Do NOT create a tailwind.config.js — all theming is done here.
+ * Keep all { } braces balanced.
+ */
+@theme {
+	/* Colors */
+	--color-primary: var(--color-blue-500);
+	--color-primary-foreground: var(--color-white);
+
+	--color-secondary: var(--color-gray-500);
+	--color-secondary-foreground: var(--color-white);
+
+	--color-destructive: var(--color-red-500);
+	--color-destructive-foreground: var(--color-white);
+
+	--color-muted: var(--color-gray-100);
+	--color-muted-foreground: var(--color-gray-500);
+
+	--color-accent: var(--color-purple-500);
+	--color-accent-foreground: var(--color-white);
+
+	--color-border: var(--color-gray-200);
+	--color-input: var(--color-gray-200);
+	--color-ring: var(--color-blue-500);
+
+	/* Radius */
+	--radius-sm: 0.5rem;
+	--radius-md: 0.75rem;
+	--radius-lg: 1rem;
+	--radius-xl: 1.5rem;
+}
+
+/* Animations */
+@keyframes pulse {
+	0%, 100% {
+		opacity: 1;
+		transform: scale(1);
+	}
+	50% {
+		opacity: 0.6;
+		transform: scale(1.15);
+	}
+}
