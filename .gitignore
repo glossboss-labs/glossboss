@@ -4,3 +4,4 @@ dist
 *.local
 .DS_Store
 supabase/.temp/
+coverage/

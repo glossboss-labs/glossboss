@@ -1,6 +1,6 @@
 /**
  * Storage Module
- * 
+ *
  * Exports for localStorage persistence utilities.
  */
 

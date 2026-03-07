@@ -1,9 +1,9 @@
 /**
  * PO File Encoding Detection & Conversion
- * 
+ *
  * Handles detection and conversion of various character encodings
  * commonly found in PO files (ISO-8859-1, Windows-1252, UTF-8, etc.)
- * 
+ *
  * Uses the browser's TextDecoder API for conversion.
  */
 
@@ -12,25 +12,25 @@
 // ============================================================================
 
 /** Supported encodings that TextDecoder can handle */
-export type SupportedEncoding = 
+export type SupportedEncoding =
   | 'utf-8'
   | 'utf-16le'
   | 'utf-16be'
-  | 'iso-8859-1'    // Latin-1
-  | 'iso-8859-2'    // Latin-2 (Central European)
-  | 'iso-8859-15'   // Latin-9 (Western European with Euro)
-  | 'windows-1250'  // Central European
-  | 'windows-1251'  // Cyrillic
-  | 'windows-1252'  // Western European
-  | 'windows-1256'  // Arabic
-  | 'koi8-r'        // Russian
-  | 'koi8-u'        // Ukrainian
-  | 'gb18030'       // Chinese
-  | 'big5'          // Traditional Chinese
-  | 'euc-jp'        // Japanese
-  | 'iso-2022-jp'   // Japanese
-  | 'shift_jis'     // Japanese
-  | 'euc-kr';       // Korean
+  | 'iso-8859-1' // Latin-1
+  | 'iso-8859-2' // Latin-2 (Central European)
+  | 'iso-8859-15' // Latin-9 (Western European with Euro)
+  | 'windows-1250' // Central European
+  | 'windows-1251' // Cyrillic
+  | 'windows-1252' // Western European
+  | 'windows-1256' // Arabic
+  | 'koi8-r' // Russian
+  | 'koi8-u' // Ukrainian
+  | 'gb18030' // Chinese
+  | 'big5' // Traditional Chinese
+  | 'euc-jp' // Japanese
+  | 'iso-2022-jp' // Japanese
+  | 'shift_jis' // Japanese
+  | 'euc-kr'; // Korean
 
 /** Result of encoding detection */
 export interface EncodingDetectionResult {
@@ -47,62 +47,62 @@ export interface EncodingDetectionResult {
 /** Common encoding aliases mapped to standard names */
 const ENCODING_ALIASES: Record<string, SupportedEncoding> = {
   // UTF-8
-  'utf8': 'utf-8',
+  utf8: 'utf-8',
   'utf-8': 'utf-8',
-  
+
   // UTF-16
-  'utf16le': 'utf-16le',
+  utf16le: 'utf-16le',
   'utf-16le': 'utf-16le',
-  'utf16be': 'utf-16be',
+  utf16be: 'utf-16be',
   'utf-16be': 'utf-16be',
   'ucs-2': 'utf-16le',
-  
+
   // ISO-8859 family
   'iso-8859-1': 'iso-8859-1',
   'iso8859-1': 'iso-8859-1',
-  'iso88591': 'iso-8859-1',
-  'latin1': 'iso-8859-1',
+  iso88591: 'iso-8859-1',
+  latin1: 'iso-8859-1',
   'latin-1': 'iso-8859-1',
   'iso-8859-2': 'iso-8859-2',
-  'latin2': 'iso-8859-2',
+  latin2: 'iso-8859-2',
   'iso-8859-15': 'iso-8859-15',
-  'latin9': 'iso-8859-15',
-  
+  latin9: 'iso-8859-15',
+
   // Windows code pages
   'windows-1250': 'windows-1250',
-  'cp1250': 'windows-1250',
+  cp1250: 'windows-1250',
   'windows-1251': 'windows-1251',
-  'cp1251': 'windows-1251',
+  cp1251: 'windows-1251',
   'windows-1252': 'windows-1252',
-  'cp1252': 'windows-1252',
+  cp1252: 'windows-1252',
   'windows-1256': 'windows-1256',
-  'cp1256': 'windows-1256',
-  
+  cp1256: 'windows-1256',
+
   // Cyrillic
   'koi8-r': 'koi8-r',
-  'koi8r': 'koi8-r',
+  koi8r: 'koi8-r',
   'koi8-u': 'koi8-u',
-  'koi8u': 'koi8-u',
-  
+  koi8u: 'koi8-u',
+
   // Chinese
-  'gb18030': 'gb18030',
-  'gbk': 'gb18030',
-  'gb2312': 'gb18030',
-  'big5': 'big5',
+  gb18030: 'gb18030',
+  gbk: 'gb18030',
+  gb2312: 'gb18030',
+  big5: 'big5',
   'big5-hkscs': 'big5',
-  
+
   // Japanese
   'euc-jp': 'euc-jp',
-  'eucjp': 'euc-jp',
+  eucjp: 'euc-jp',
   'iso-2022-jp': 'iso-2022-jp',
-  'shift_jis': 'shift_jis',
-  'shiftjis': 'shift_jis',
-  'sjis': 'shift_jis',
-  
+  shift_jis: 'shift_jis',
+  shiftjis: 'shift_jis',
+  sjis: 'shift_jis',
+
   // Korean
   'euc-kr': 'euc-kr',
-  'euckr': 'euc-kr',
-  'korean': 'euc-kr',
+  euckr: 'euc-kr',
+  korean: 'euc-kr',
 };
 
 // ============================================================================
@@ -111,9 +111,9 @@ const ENCODING_ALIASES: Record<string, SupportedEncoding> = {
 
 /** Byte Order Mark signatures */
 const BOM_SIGNATURES: Array<{ bom: number[]; encoding: SupportedEncoding }> = [
-  { bom: [0xEF, 0xBB, 0xBF], encoding: 'utf-8' },
-  { bom: [0xFF, 0xFE], encoding: 'utf-16le' },
-  { bom: [0xFE, 0xFF], encoding: 'utf-16be' },
+  { bom: [0xef, 0xbb, 0xbf], encoding: 'utf-8' },
+  { bom: [0xff, 0xfe], encoding: 'utf-16le' },
+  { bom: [0xfe, 0xff], encoding: 'utf-16be' },
 ];
 
 /**
@@ -150,7 +150,7 @@ function detectFromHeader(bytes: Uint8Array): SupportedEncoding | null {
   // Content-Type header uses ASCII characters
   let asciiPreview = '';
   const previewLength = Math.min(bytes.length, 2000); // Check first 2KB
-  
+
   for (let i = 0; i < previewLength; i++) {
     const byte = bytes[i];
     // Only include printable ASCII and common whitespace
@@ -158,14 +158,14 @@ function detectFromHeader(bytes: Uint8Array): SupportedEncoding | null {
       asciiPreview += String.fromCharCode(byte);
     }
   }
-  
+
   // Look for charset in Content-Type
   const charsetMatch = asciiPreview.match(/[Cc]ontent-[Tt]ype:[^\n]*charset=([^\s\\"]+)/i);
   if (charsetMatch) {
     const charset = charsetMatch[1].toLowerCase().replace(/["']/g, '');
     return normalizeEncoding(charset);
   }
-  
+
   return null;
 }
 
@@ -189,15 +189,15 @@ function detectByHeuristics(bytes: Uint8Array): SupportedEncoding {
   if (isValidUtf8(bytes)) {
     return 'utf-8';
   }
-  
+
   // Check for high-byte patterns common in different encodings
   const highByteStats = analyzeHighBytes(bytes);
-  
+
   // If many bytes in 0x80-0x9F range, likely Windows-1252 (not ISO-8859-1)
   if (highByteStats.windows1252Likely > highByteStats.iso8859Likely) {
     return 'windows-1252';
   }
-  
+
   // Default to ISO-8859-1 for Western European
   return 'iso-8859-1';
 }
@@ -209,40 +209,44 @@ function isValidUtf8(bytes: Uint8Array): boolean {
   let i = 0;
   let nonAsciiCount = 0;
   let invalidCount = 0;
-  
+
   while (i < bytes.length) {
     const byte = bytes[i];
-    
+
     if (byte < 0x80) {
       // ASCII
       i++;
-    } else if (byte >= 0xC2 && byte <= 0xDF) {
+    } else if (byte >= 0xc2 && byte <= 0xdf) {
       // 2-byte sequence
       nonAsciiCount++;
-      if (i + 1 >= bytes.length || (bytes[i + 1] & 0xC0) !== 0x80) {
+      if (i + 1 >= bytes.length || (bytes[i + 1] & 0xc0) !== 0x80) {
         invalidCount++;
         i++;
       } else {
         i += 2;
       }
-    } else if (byte >= 0xE0 && byte <= 0xEF) {
+    } else if (byte >= 0xe0 && byte <= 0xef) {
       // 3-byte sequence
       nonAsciiCount++;
-      if (i + 2 >= bytes.length || 
-          (bytes[i + 1] & 0xC0) !== 0x80 || 
-          (bytes[i + 2] & 0xC0) !== 0x80) {
+      if (
+        i + 2 >= bytes.length ||
+        (bytes[i + 1] & 0xc0) !== 0x80 ||
+        (bytes[i + 2] & 0xc0) !== 0x80
+      ) {
         invalidCount++;
         i++;
       } else {
         i += 3;
       }
-    } else if (byte >= 0xF0 && byte <= 0xF4) {
+    } else if (byte >= 0xf0 && byte <= 0xf4) {
       // 4-byte sequence
       nonAsciiCount++;
-      if (i + 3 >= bytes.length || 
-          (bytes[i + 1] & 0xC0) !== 0x80 || 
-          (bytes[i + 2] & 0xC0) !== 0x80 ||
-          (bytes[i + 3] & 0xC0) !== 0x80) {
+      if (
+        i + 3 >= bytes.length ||
+        (bytes[i + 1] & 0xc0) !== 0x80 ||
+        (bytes[i + 2] & 0xc0) !== 0x80 ||
+        (bytes[i + 3] & 0xc0) !== 0x80
+      ) {
         invalidCount++;
         i++;
       } else {
@@ -256,13 +260,13 @@ function isValidUtf8(bytes: Uint8Array): boolean {
       i++;
     }
   }
-  
+
   // If we found non-ASCII and few/no invalid sequences, it's likely UTF-8
   // Allow some tolerance for potentially corrupted files
   if (nonAsciiCount > 0) {
     return invalidCount < nonAsciiCount * 0.1; // Less than 10% invalid
   }
-  
+
   // Pure ASCII is valid UTF-8
   return true;
 }
@@ -276,17 +280,17 @@ function analyzeHighBytes(bytes: Uint8Array): {
 } {
   let windows1252Count = 0;
   let iso8859Count = 0;
-  
+
   for (const byte of bytes) {
     // Bytes 0x80-0x9F are control characters in ISO-8859-1
     // but printable characters in Windows-1252
-    if (byte >= 0x80 && byte <= 0x9F) {
+    if (byte >= 0x80 && byte <= 0x9f) {
       windows1252Count++;
-    } else if (byte >= 0xA0 && byte <= 0xFF) {
+    } else if (byte >= 0xa0 && byte <= 0xff) {
       iso8859Count++;
     }
   }
-  
+
   return {
     windows1252Likely: windows1252Count,
     iso8859Likely: iso8859Count,
@@ -299,20 +303,17 @@ function analyzeHighBytes(bytes: Uint8Array): {
 
 /**
  * Detect encoding and decode file content
- * 
+ *
  * @param buffer - Raw file content as ArrayBuffer
  * @returns Detection result with decoded content
  */
 export function detectAndDecode(buffer: ArrayBuffer): EncodingDetectionResult {
   const bytes = new Uint8Array(buffer);
-  
+
   // 1. Try BOM detection first (most reliable)
   const bomResult = detectBOM(bytes);
   if (bomResult) {
-    const content = decodeWithEncoding(
-      bytes.slice(bomResult.bomLength), 
-      bomResult.encoding
-    );
+    const content = decodeWithEncoding(bytes.slice(bomResult.bomLength), bomResult.encoding);
     return {
       encoding: bomResult.encoding,
       confidence: 'certain',
@@ -320,7 +321,7 @@ export function detectAndDecode(buffer: ArrayBuffer): EncodingDetectionResult {
       content,
     };
   }
-  
+
   // 2. Try header-based detection
   const headerEncoding = detectFromHeader(bytes);
   if (headerEncoding) {
@@ -336,11 +337,11 @@ export function detectAndDecode(buffer: ArrayBuffer): EncodingDetectionResult {
       // Header might be wrong, fall through to heuristics
     }
   }
-  
+
   // 3. Use heuristics
   const heuristicEncoding = detectByHeuristics(bytes);
   const content = decodeWithEncoding(bytes, heuristicEncoding);
-  
+
   return {
     encoding: heuristicEncoding,
     confidence: heuristicEncoding === 'utf-8' ? 'high' : 'medium',
@@ -352,10 +353,7 @@ export function detectAndDecode(buffer: ArrayBuffer): EncodingDetectionResult {
 /**
  * Decode bytes with a specific encoding
  */
-export function decodeWithEncoding(
-  bytes: Uint8Array, 
-  encoding: SupportedEncoding
-): string {
+export function decodeWithEncoding(bytes: Uint8Array, encoding: SupportedEncoding): string {
   try {
     const decoder = new TextDecoder(encoding, { fatal: false });
     return decoder.decode(bytes);
@@ -390,18 +388,15 @@ export function getSupportedEncodings(): string[] {
  * Convert string from one encoding to another
  * (Useful for re-encoding when saving)
  */
-export function encodeToBytes(
-  content: string, 
-  encoding: SupportedEncoding = 'utf-8'
-): Uint8Array {
+export function encodeToBytes(content: string, encoding: SupportedEncoding = 'utf-8'): Uint8Array {
   // TextEncoder only supports UTF-8
   // For other encodings, we need to do manual conversion
-  
+
   if (encoding === 'utf-8') {
     const encoder = new TextEncoder();
     return encoder.encode(content);
   }
-  
+
   // For non-UTF-8, we'll encode as UTF-8 and let the user know
   // Full encoding support would require a library like iconv-lite
   console.warn(`Encoding to ${encoding} not fully supported, using UTF-8`);

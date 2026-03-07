@@ -1,6 +1,6 @@
 /**
  * Animated Confirmation Modal
- * 
+ *
  * Reusable confirmation dialog with Motion animations.
  * Used for destructive or risky actions.
  */
@@ -69,27 +69,21 @@ export function ConfirmModal({
               <Stack gap={4} style={{ flex: 1 }}>
                 <Text size="sm">{message}</Text>
                 {detail && (
-                  <Text size="xs" c="dimmed">{detail}</Text>
+                  <Text size="xs" c="dimmed">
+                    {detail}
+                  </Text>
                 )}
               </Stack>
             </Group>
-            
+
             <Group justify="flex-end" gap="sm">
               <motion.div {...buttonStates}>
-                <Button 
-                  variant="default" 
-                  onClick={onClose}
-                  disabled={loading}
-                >
+                <Button variant="default" onClick={onClose} disabled={loading}>
                   {cancelLabel}
                 </Button>
               </motion.div>
               <motion.div {...buttonStates}>
-                <Button 
-                  color={confirmColor} 
-                  onClick={onConfirm}
-                  loading={loading}
-                >
+                <Button color={confirmColor} onClick={onConfirm} loading={loading}>
                   {confirmLabel}
                 </Button>
               </motion.div>

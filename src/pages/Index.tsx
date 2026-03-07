@@ -1,6 +1,6 @@
 /**
  * GlossBoss - Main Page
- * 
+ *
  * The primary interface for loading and editing .po files.
  */
 
@@ -25,26 +25,52 @@ import {
   ActionIcon,
   Transition,
   useMantineColorScheme,
-  useComputedColorScheme } from
-'@mantine/core';
+  useComputedColorScheme,
+} from '@mantine/core';
 import { motion, AnimatePresence } from 'motion/react';
-import { Upload, Download, Trash2, AlertTriangle, FileUp, Check, RotateCcw, X, Settings, FileText, Sun, Moon } from 'lucide-react';
-import { EditorTable, FilterToolbar, HeaderEditor, TranslateToolbar } from '@/components/editor';
+import {
+  Upload,
+  Download,
+  Trash2,
+  AlertTriangle,
+  FileUp,
+  Check,
+  RotateCcw,
+  X,
+  Settings,
+  Sun,
+  Moon,
+} from 'lucide-react';
+import {
+  EditorTable,
+  FilterToolbar,
+  HeaderEditor,
+  TranslateToolbar,
+  SourceContext,
+} from '@/components/editor';
 import { SettingsModal } from '@/components/SettingsModal';
 import { ConfirmModal } from '@/components/ui';
-import { useEditorStore } from '@/stores';
+import { useEditorStore, useSourceStore } from '@/stores';
+import { detectPluginSlug } from '@/lib/wp-source';
 import { slideUpVariants, fadeScaleVariants, buttonStates, gentleSpring } from '@/lib/motion';
 import {
   parsePOFileWithDiagnostics,
   serializePOFile,
   detectAndDecode,
-  type SupportedEncoding } from
-'@/lib/po';
+  type SupportedEncoding,
+} from '@/lib/po';
 import type { ParseIssue } from '@/lib/po';
 import type { TargetLanguage, SourceLanguage } from '@/lib/deepl/types';
 import type { Glossary } from '@/lib/glossary/types';
 import { batchAnalyzeTranslations, syncGlossaryToDeepL } from '@/lib/glossary';
-import { saveDraft, loadDraft, hasDraft, deleteDraft, formatDraftAge, cleanupExpiredDrafts, type DraftData } from '@/lib/storage';
+import {
+  saveDraft,
+  loadDraft,
+  deleteDraft,
+  formatDraftAge,
+  cleanupExpiredDrafts,
+  type DraftData,
+} from '@/lib/storage';
 const appIcon = '/icon.svg';
 
 const MotionDiv = motion.div;
@@ -85,10 +111,7 @@ function ThemeToggle() {
   return (
     <Tooltip label={computedColorScheme === 'dark' ? 'Light mode' : 'Dark mode'}>
       <motion.div {...buttonStates}>
-        <ActionIcon
-          variant="default"
-          size="lg"
-          onClick={toggleColorScheme}>
+        <ActionIcon variant="default" size="lg" onClick={toggleColorScheme}>
           {computedColorScheme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
         </ActionIcon>
       </motion.div>
@@ -105,8 +128,12 @@ export default function Index() {
   const [dragError, setDragError] = useState<string | null>(null);
   const [confirmClearOpen, setConfirmClearOpen] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState<DownloadInfo | null>(null);
-  const [translateSourceLang, setTranslateSourceLang] = useState<SourceLanguage | undefined>(undefined);
-  const [translateTargetLang, setTranslateTargetLang] = useState<TargetLanguage | undefined>(undefined);
+  const [translateSourceLang, setTranslateSourceLang] = useState<SourceLanguage | undefined>(
+    undefined,
+  );
+  const [translateTargetLang, setTranslateTargetLang] = useState<TargetLanguage | undefined>(
+    undefined,
+  );
   const [glossary, setGlossary] = useState<Glossary | null>(null);
   const [deeplGlossaryId, setDeeplGlossaryId] = useState<string | null>(null);
   const [deeplTermCount, setDeeplTermCount] = useState<number>(0);
@@ -137,7 +164,7 @@ export default function Index() {
     clearEditor,
     markAsSaved,
     setGlossaryAnalysisBatch,
-    clearGlossaryAnalysis
+    clearGlossaryAnalysis,
   } = useEditorStore();
 
   /**
@@ -148,29 +175,32 @@ export default function Index() {
   /**
    * Handle glossary loaded - sync to DeepL and run analysis
    */
-  const handleGlossaryLoaded = useCallback(async (loadedGlossary: Glossary) => {
-    setGlossary(loadedGlossary);
-    setGlossarySyncStatus('Syncing to DeepL...');
+  const handleGlossaryLoaded = useCallback(
+    async (loadedGlossary: Glossary) => {
+      setGlossary(loadedGlossary);
+      setGlossarySyncStatus('Syncing to DeepL...');
 
-    // Run glossary analysis on all entries
-    if (entries.length > 0) {
-      const analyses = batchAnalyzeTranslations(entries, loadedGlossary);
-      setGlossaryAnalysisBatch(analyses);
-    }
+      // Run glossary analysis on all entries
+      if (entries.length > 0) {
+        const analyses = batchAnalyzeTranslations(entries, loadedGlossary);
+        setGlossaryAnalysisBatch(analyses);
+      }
 
-    // Sync to DeepL for native glossary support
-    try {
-      const glossaryId = await syncGlossaryToDeepL(loadedGlossary, setGlossarySyncStatus);
-      setDeeplGlossaryId(glossaryId);
-      setDeeplTermCount(loadedGlossary.entries.length);
-      console.log('[Glossary] DeepL glossary ID:', glossaryId);
-    } catch (error) {
-      console.error('[Glossary] Failed to sync to DeepL:', error);
-      setGlossarySyncStatus('Sync failed - using fallback');
-      setDeeplTermCount(0);
-      // Continue without DeepL glossary - translations will still work, just without glossary enforcement
-    }
-  }, [entries, setGlossaryAnalysisBatch]);
+      // Sync to DeepL for native glossary support
+      try {
+        const glossaryId = await syncGlossaryToDeepL(loadedGlossary, setGlossarySyncStatus);
+        setDeeplGlossaryId(glossaryId);
+        setDeeplTermCount(loadedGlossary.entries.length);
+        console.log('[Glossary] DeepL glossary ID:', glossaryId);
+      } catch (error) {
+        console.error('[Glossary] Failed to sync to DeepL:', error);
+        setGlossarySyncStatus('Sync failed - using fallback');
+        setDeeplTermCount(0);
+        // Continue without DeepL glossary - translations will still work, just without glossary enforcement
+      }
+    },
+    [entries, setGlossaryAnalysisBatch],
+  );
 
   /**
    * Handle glossary cleared
@@ -253,7 +283,7 @@ export default function Index() {
         header,
         entries,
         dirtyEntryIds: Array.from(dirtyEntryIds),
-        machineTranslatedIds: Array.from(machineTranslatedIds)
+        machineTranslatedIds: Array.from(machineTranslatedIds),
       });
 
       if (saved) {
@@ -279,94 +309,110 @@ export default function Index() {
   /**
    * Handle language change from translate toolbar
    */
-  const handleLanguageChange = useCallback((source: SourceLanguage | undefined, target: TargetLanguage) => {
-    setTranslateSourceLang(source);
-    setTranslateTargetLang(target);
-  }, []);
+  const handleLanguageChange = useCallback(
+    (source: SourceLanguage | undefined, target: TargetLanguage) => {
+      setTranslateSourceLang(source);
+      setTranslateTargetLang(target);
+    },
+    [],
+  );
 
   /**
    * Handle file upload with encoding detection
    */
-  const handleFileUpload = useCallback(async (file: File | null) => {
-    if (!file) return;
+  const handleFileUpload = useCallback(
+    async (file: File | null) => {
+      if (!file) return;
 
-    setErrors([]);
-    setWarnings([]);
-    setEncodingInfo(null);
-    setDragError(null);
-    setIsFromDraft(false);
+      setErrors([]);
+      setWarnings([]);
+      setEncodingInfo(null);
+      setDragError(null);
+      setIsFromDraft(false);
 
-    // Validate file extension
-    const ext = file.name.toLowerCase().split('.').pop();
-    if (ext !== 'po' && ext !== 'pot') {
-      setErrors([{
-        severity: 'error',
-        code: 'INVALID_SYNTAX',
-        message: `Invalid file type: .${ext}. Please upload a .po or .pot file.`
-      }]);
-      return;
-    }
-
-    try {
-      // Read file as ArrayBuffer for encoding detection
-      const buffer = await file.arrayBuffer();
-
-      // Detect encoding and decode content
-      const { encoding, confidence, method, content } = detectAndDecode(buffer);
-
-      // Store encoding info for display
-      setEncodingInfo({ encoding, confidence, method });
-
-      // Log encoding detection result
-      console.log(`[Encoding] Detected: ${encoding} (${confidence} confidence, via ${method})`);
-
-      // Parse the decoded content
-      const result = parsePOFileWithDiagnostics(content, file.name);
-
-      // Add encoding warning if confidence is low
-      if (confidence === 'low' || confidence === 'medium') {
-        result.warnings.unshift({
-          severity: 'warning',
-          code: 'ENCODING_ERROR',
-          message: `Encoding detected as ${encoding.toUpperCase()} with ${confidence} confidence. If characters appear incorrect, the file may use a different encoding.`
-        });
-      }
-
-      // Store warnings for display
-      if (result.warnings.length > 0) {
-        setWarnings(result.warnings);
-        setShowWarnings(true);
-      }
-
-      // Handle parse errors
-      if (!result.success || !result.file) {
-        setErrors(result.errors);
+      // Validate file extension
+      const ext = file.name.toLowerCase().split('.').pop();
+      if (ext !== 'po' && ext !== 'pot') {
+        setErrors([
+          {
+            severity: 'error',
+            code: 'INVALID_SYNTAX',
+            message: `Invalid file type: .${ext}. Please upload a .po or .pot file.`,
+          },
+        ]);
         return;
       }
 
-      // Check if there's an existing draft for this file
-      const existingDraft = loadDraft(file.name);
-      if (existingDraft && existingDraft.dirtyEntryIds.length > 0) {
-        // Show recovery prompt
-        setPendingDraft({ draft: existingDraft, filename: file.name });
-        // Still load the fresh file - user can choose to restore draft
-        loadFile(result.file);
-      } else {
-        // No draft or draft has no changes - load fresh
-        loadFile(result.file);
+      try {
+        // Read file as ArrayBuffer for encoding detection
+        const buffer = await file.arrayBuffer();
+
+        // Detect encoding and decode content
+        const { encoding, confidence, method, content } = detectAndDecode(buffer);
+
+        // Store encoding info for display
+        setEncodingInfo({ encoding, confidence, method });
+
+        // Log encoding detection result
+        console.log(`[Encoding] Detected: ${encoding} (${confidence} confidence, via ${method})`);
+
+        // Parse the decoded content
+        const result = parsePOFileWithDiagnostics(content, file.name);
+
+        // Add encoding warning if confidence is low
+        if (confidence === 'low' || confidence === 'medium') {
+          result.warnings.unshift({
+            severity: 'warning',
+            code: 'ENCODING_ERROR',
+            message: `Encoding detected as ${encoding.toUpperCase()} with ${confidence} confidence. If characters appear incorrect, the file may use a different encoding.`,
+          });
+        }
+
+        // Store warnings for display
+        if (result.warnings.length > 0) {
+          setWarnings(result.warnings);
+          setShowWarnings(true);
+        }
+
+        // Handle parse errors
+        if (!result.success || !result.file) {
+          setErrors(result.errors);
+          return;
+        }
+
+        // Check if there's an existing draft for this file
+        const existingDraft = loadDraft(file.name);
+        if (existingDraft && existingDraft.dirtyEntryIds.length > 0) {
+          // Show recovery prompt
+          setPendingDraft({ draft: existingDraft, filename: file.name });
+          // Still load the fresh file - user can choose to restore draft
+          loadFile(result.file);
+        } else {
+          // No draft or draft has no changes - load fresh
+          loadFile(result.file);
+        }
+
+        // Auto-detect plugin slug for source code links
+        const detectedSlug = detectPluginSlug(result.file.header, file.name);
+        if (detectedSlug) {
+          useSourceStore.getState().setAutoDetectedSlug(detectedSlug);
+          console.log('[Source] Auto-detected plugin slug:', detectedSlug);
+        }
+
+        // Log stats for debugging
+        console.log('[PO Parser] Stats:', result.stats);
+      } catch (err) {
+        setErrors([
+          {
+            severity: 'error',
+            code: 'INVALID_SYNTAX',
+            message: err instanceof Error ? err.message : 'Failed to parse file',
+          },
+        ]);
       }
-
-      // Log stats for debugging
-      console.log('[PO Parser] Stats:', result.stats);
-
-    } catch (err) {
-      setErrors([{
-        severity: 'error',
-        code: 'INVALID_SYNTAX',
-        message: err instanceof Error ? err.message : 'Failed to parse file'
-      }]);
-    }
-  }, [loadFile]);
+    },
+    [loadFile],
+  );
 
   /**
    * Restore from pending draft
@@ -381,7 +427,7 @@ export default function Index() {
       filename: draft.filename,
       header: draft.header ?? {},
       entries: draft.entries,
-      charset: 'UTF-8' as const
+      charset: 'UTF-8' as const,
     };
 
     loadFile(restoredFile);
@@ -445,34 +491,37 @@ export default function Index() {
   /**
    * Handle drop event
    */
-  const handleDrop = useCallback((e: DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleDrop = useCallback(
+    (e: DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
 
-    setIsDragging(false);
-    dragCounterRef.current = 0;
+      setIsDragging(false);
+      dragCounterRef.current = 0;
 
-    const files = e.dataTransfer?.files;
-    if (!files || files.length === 0) {
-      setDragError('No file was dropped');
-      return;
-    }
+      const files = e.dataTransfer?.files;
+      if (!files || files.length === 0) {
+        setDragError('No file was dropped');
+        return;
+      }
 
-    if (files.length > 1) {
-      setDragError('Please drop only one file at a time');
-      return;
-    }
+      if (files.length > 1) {
+        setDragError('Please drop only one file at a time');
+        return;
+      }
 
-    const file = files[0];
-    const ext = file.name.toLowerCase().split('.').pop();
+      const file = files[0];
+      const ext = file.name.toLowerCase().split('.').pop();
 
-    if (ext !== 'po' && ext !== 'pot') {
-      setDragError(`Invalid file type: .${ext}. Please drop a .po or .pot file.`);
-      return;
-    }
+      if (ext !== 'po' && ext !== 'pot') {
+        setDragError(`Invalid file type: .${ext}. Please drop a .po or .pot file.`);
+        return;
+      }
 
-    handleFileUpload(file);
-  }, [handleFileUpload]);
+      handleFileUpload(file);
+    },
+    [handleFileUpload],
+  );
 
   /**
    * Reset drag counter when dragging ends outside window
@@ -506,12 +555,12 @@ export default function Index() {
       filename,
       header: header ?? {},
       entries,
-      charset: 'UTF-8'
+      charset: 'UTF-8',
     };
 
     // Serialize with updated revision date
     const content = serializePOFile(poFile, {
-      updateRevisionDate: true
+      updateRevisionDate: true,
     });
 
     const blob = new Blob([content], { type: 'text/x-gettext-translation;charset=utf-8' });
@@ -528,7 +577,7 @@ export default function Index() {
     // Show success notification
     setDownloadSuccess({
       filename,
-      size: formatFileSize(blob.size)
+      size: formatFileSize(blob.size),
     });
 
     // Auto-hide after 4 seconds
@@ -552,6 +601,7 @@ export default function Index() {
     }
 
     clearEditor();
+    useSourceStore.getState().clearSource();
     setErrors([]);
     setWarnings([]);
     setEncodingInfo(null);
@@ -586,47 +636,37 @@ export default function Index() {
       onDragLeave={handleDragLeave}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
-      style={{ minHeight: '100vh', position: 'relative' }}>
-
+      style={{ minHeight: '100vh', position: 'relative' }}
+    >
       {/* Drag overlay */}
-      <Transition
-        mounted={isDragging}
-        transition="fade"
-        duration={150}
-        timingFunction="ease">
-
-        {(styles) =>
-        <Box
-          style={{
-            ...styles,
-            position: 'fixed',
-            inset: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.6)',
-            zIndex: 9999,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            pointerEvents: 'none'
-          }}>
-
-            <Paper
-            p="xl"
-            radius="md"
-            shadow="lg"
-            style={{ maxWidth: 340 }}>
-
+      <Transition mounted={isDragging} transition="fade" duration={150} timingFunction="ease">
+        {(styles) => (
+          <Box
+            style={{
+              ...styles,
+              position: 'fixed',
+              inset: 0,
+              backgroundColor: 'rgba(0, 0, 0, 0.6)',
+              zIndex: 9999,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              pointerEvents: 'none',
+            }}
+          >
+            <Paper p="xl" radius="md" shadow="lg" style={{ maxWidth: 340 }}>
               <Stack align="center" gap="md">
                 <Box
-                style={{
-                  width: 64,
-                  height: 64,
-                  borderRadius: 'var(--mantine-radius-md)',
-                  backgroundColor: 'var(--mantine-color-blue-light)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}>
-
+                  style={{
+                    width: 64,
+                    height: 64,
+                    borderRadius: 'var(--mantine-radius-md)',
+                    backgroundColor: 'var(--mantine-color-blue-light)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
                   <FileUp size={32} color="var(--mantine-color-blue-filled)" />
                 </Box>
                 <Stack align="center" gap={4}>
@@ -638,7 +678,7 @@ export default function Index() {
               </Stack>
             </Paper>
           </Box>
-        }
+        )}
       </Transition>
 
       {/* Download success notification */}
@@ -646,28 +686,29 @@ export default function Index() {
         mounted={downloadSuccess !== null}
         transition="slide-left"
         duration={200}
-        timingFunction="ease">
-
-        {(styles) =>
-        <Notification
-          icon={<Check size={18} />}
-          color="green"
-          title="File downloaded"
-          onClose={() => setDownloadSuccess(null)}
-          style={{
-            ...styles,
-            position: 'fixed',
-            bottom: 20,
-            right: 20,
-            zIndex: 1000,
-            minWidth: 280
-          }}>
-
+        timingFunction="ease"
+      >
+        {(styles) => (
+          <Notification
+            icon={<Check size={18} />}
+            color="green"
+            title="File downloaded"
+            onClose={() => setDownloadSuccess(null)}
+            style={{
+              ...styles,
+              position: 'fixed',
+              bottom: 20,
+              right: 20,
+              zIndex: 1000,
+              minWidth: 280,
+            }}
+          >
             <Text size="sm">
-              <strong data-ev-id="ev_e901455cf4">{downloadSuccess?.filename}</strong> ({downloadSuccess?.size})
+              <strong data-ev-id="ev_e901455cf4">{downloadSuccess?.filename}</strong> (
+              {downloadSuccess?.size})
             </Text>
           </Notification>
-        }
+        )}
       </Transition>
 
       <Container size="xl" py="xl">
@@ -676,100 +717,106 @@ export default function Index() {
           <MotionDiv
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={gentleSpring}>
-
+            transition={gentleSpring}
+          >
             <Group justify="space-between" align="flex-start">
               <div data-ev-id="ev_c00be328c4">
                 <Group gap="xs" align="center">
-                  <img src={appIcon} alt="GlossBoss" style={{ width: 28, height: 28, borderRadius: 6 }} />
+                  <img
+                    src={appIcon}
+                    alt="GlossBoss"
+                    style={{ width: 28, height: 28, borderRadius: 6 }}
+                  />
                   <Title order={1}>GlossBoss</Title>
                 </Group>
                 <Text c="dimmed" size="sm" mt={4}>
                   Edit gettext translation files with DeepL integration
                 </Text>
               </div>
-              
+
               <Group gap="sm">
                 <motion.div {...buttonStates}>
                   <FileButton
                     onChange={handleFileUpload}
                     accept=".po,.pot"
-                    resetRef={fileInputRef as any}>
-
-                    {(props) =>
-                    <Button leftSection={<Upload size={16} />} {...props} ref={fileInputRef}>
+                    resetRef={fileInputRef as React.MutableRefObject<() => void>}
+                  >
+                    {(props) => (
+                      <Button leftSection={<Upload size={16} />} {...props} ref={fileInputRef}>
                         Upload
                       </Button>
-                    }
+                    )}
                   </FileButton>
                 </motion.div>
-                
-                <AnimatePresence>
-                  {filename &&
-                  <MotionDiv
-                    variants={slideUpVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="exit">
 
+                <AnimatePresence>
+                  {filename && (
+                    <MotionDiv
+                      variants={slideUpVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                    >
                       <Group gap="sm">
-                        <Tooltip label={hasUnsavedChanges ? "You have unsaved changes" : "Downloads as UTF-8 encoded file"}>
+                        <Tooltip
+                          label={
+                            hasUnsavedChanges
+                              ? 'You have unsaved changes'
+                              : 'Downloads as UTF-8 encoded file'
+                          }
+                        >
                           <motion.div {...buttonStates}>
                             <Button
-                            leftSection={<Download size={16} />}
-                            variant="light"
-                            onClick={handleDownload}
-                            style={{ position: 'relative', overflow: 'visible' }}>
-
+                              leftSection={<Download size={16} />}
+                              variant="light"
+                              onClick={handleDownload}
+                              style={{ position: 'relative', overflow: 'visible' }}
+                            >
                               Download
                               <AnimatePresence>
-                                {hasUnsavedChanges &&
-                              <MotionDiv
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                exit={{ scale: 0 }}
-                                style={{
-                                  position: 'absolute',
-                                  top: -4,
-                                  right: -4,
-                                  width: 10,
-                                  height: 10,
-                                  borderRadius: '50%',
-                                  backgroundColor: 'var(--mantine-color-orange-5)',
-                                  border: '2px solid var(--mantine-color-body)',
-                                  zIndex: 1
-                                }} />
-
-                              }
+                                {hasUnsavedChanges && (
+                                  <MotionDiv
+                                    initial={{ scale: 0 }}
+                                    animate={{ scale: 1 }}
+                                    exit={{ scale: 0 }}
+                                    style={{
+                                      position: 'absolute',
+                                      top: -4,
+                                      right: -4,
+                                      width: 10,
+                                      height: 10,
+                                      borderRadius: '50%',
+                                      backgroundColor: 'var(--mantine-color-orange-5)',
+                                      border: '2px solid var(--mantine-color-body)',
+                                      zIndex: 1,
+                                    }}
+                                  />
+                                )}
                               </AnimatePresence>
                             </Button>
                           </motion.div>
                         </Tooltip>
-                        
+
                         <motion.div {...buttonStates}>
                           <Button
-                          leftSection={<Trash2 size={16} />}
-                          variant="subtle"
-                          color="red"
-                          onClick={handleClearClick}>
-
+                            leftSection={<Trash2 size={16} />}
+                            variant="subtle"
+                            color="red"
+                            onClick={handleClearClick}
+                          >
                             Clear
                           </Button>
                         </motion.div>
                       </Group>
                     </MotionDiv>
-                  }
+                  )}
                 </AnimatePresence>
-                
+
                 <ThemeToggle />
 
                 <Tooltip label="Settings">
                   <motion.div {...buttonStates}>
-                    <ActionIcon
-                      variant="default"
-                      size="lg"
-                      onClick={() => setSettingsOpen(true)}>
-
+                    <ActionIcon variant="default" size="lg" onClick={() => setSettingsOpen(true)}>
                       <Settings size={18} />
                     </ActionIcon>
                   </motion.div>
@@ -777,7 +824,7 @@ export default function Index() {
               </Group>
             </Group>
           </MotionDiv>
-          
+
           {/* Confirmation modal for clear */}
           <ConfirmModal
             opened={confirmClearOpen}
@@ -788,220 +835,227 @@ export default function Index() {
             detail="This will remove all your work on the current file."
             confirmLabel="Clear anyway"
             confirmColor="red"
-            variant="danger" />
+            variant="danger"
+          />
 
-          
           {/* Drag error display */}
           <AnimatePresence>
-            {dragError &&
-            <MotionDiv
-              variants={slideUpVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit">
-
+            {dragError && (
+              <MotionDiv variants={slideUpVariants} initial="hidden" animate="visible" exit="exit">
                 <Alert
-                color="red"
-                title="Upload failed"
-                onClose={() => setDragError(null)}
-                withCloseButton>
-                    {dragError}
-                  </Alert>
+                  color="red"
+                  title="Upload failed"
+                  onClose={() => setDragError(null)}
+                  withCloseButton
+                >
+                  {dragError}
+                </Alert>
               </MotionDiv>
-            }
+            )}
           </AnimatePresence>
-          
-          {/* Error display */}
-          {errors.length > 0 &&
-          <Alert
-            color="red"
-            title="Failed to parse file"
-            onClose={() => setErrors([])}
-            withCloseButton>
 
+          {/* Error display */}
+          {errors.length > 0 && (
+            <Alert
+              color="red"
+              title="Failed to parse file"
+              onClose={() => setErrors([])}
+              withCloseButton
+            >
               <List size="sm" spacing="xs">
-                {errors.map((error, idx) =>
-              <List.Item key={idx}>
+                {errors.map((error, idx) => (
+                  <List.Item key={idx}>
                     {error.line && <Code mr={8}>Line {error.line}</Code>}
                     {error.message}
                   </List.Item>
-              )}
+                ))}
               </List>
             </Alert>
-          }
-          
-          {/* Warnings display */}
-          {warnings.length > 0 && showWarnings &&
-          <Alert
-            color="yellow"
-            title={
-            <Group gap="xs">
-                  <AlertTriangle size={16} />
-                  <span data-ev-id="ev_76292818e0">{warnings.length} warning{warnings.length > 1 ? 's' : ''} during parsing</span>
-                </Group>
-            }
-            onClose={() => setShowWarnings(false)}
-            withCloseButton>
+          )}
 
+          {/* Warnings display */}
+          {warnings.length > 0 && showWarnings && (
+            <Alert
+              color="yellow"
+              title={
+                <Group gap="xs">
+                  <AlertTriangle size={16} />
+                  <span data-ev-id="ev_76292818e0">
+                    {warnings.length} warning{warnings.length > 1 ? 's' : ''} during parsing
+                  </span>
+                </Group>
+              }
+              onClose={() => setShowWarnings(false)}
+              withCloseButton
+            >
               <List size="sm" spacing="xs">
-                {warnings.slice(0, 5).map((warning, idx) =>
-              <List.Item key={idx}>
+                {warnings.slice(0, 5).map((warning, idx) => (
+                  <List.Item key={idx}>
                     {warning.line && <Code mr={8}>Line {warning.line}</Code>}
                     {warning.message}
                   </List.Item>
-              )}
-                {warnings.length > 5 &&
-              <List.Item>
+                ))}
+                {warnings.length > 5 && (
+                  <List.Item>
                     <Text size="sm" c="dimmed">
                       ...and {warnings.length - 5} more warnings
                     </Text>
                   </List.Item>
-              }
+                )}
               </List>
             </Alert>
-          }
-          
+          )}
+
           {/* Draft recovery banner */}
-          {pendingDraft &&
-          <Alert
-            color="blue"
-            title={
-            <Group gap="xs">
+          {pendingDraft && (
+            <Alert
+              color="blue"
+              title={
+                <Group gap="xs">
                   <RotateCcw size={16} />
                   <span data-ev-id="ev_be4d010bf8">Unsaved draft found</span>
                 </Group>
-            }
-            withCloseButton
-            onClose={handleDiscardDraft}>
-
+              }
+              withCloseButton
+              onClose={handleDiscardDraft}
+            >
               <Stack gap="sm">
                 <Text size="sm">
-                  You have unsaved changes from {formatDraftAge(pendingDraft.draft.savedAt)}. 
-                  Would you like to restore your previous work?
+                  You have unsaved changes from {formatDraftAge(pendingDraft.draft.savedAt)}. Would
+                  you like to restore your previous work?
                 </Text>
                 <Text size="xs" c="dimmed">
                   {pendingDraft.draft.dirtyEntryIds.length} modified entries will be restored.
                 </Text>
                 <Group gap="sm">
                   <Button
-                  size="xs"
-                  leftSection={<RotateCcw size={14} />}
-                  onClick={handleRestoreDraft}>
-
+                    size="xs"
+                    leftSection={<RotateCcw size={14} />}
+                    onClick={handleRestoreDraft}
+                  >
                     Restore draft
                   </Button>
                   <Button
-                  size="xs"
-                  variant="subtle"
-                  color="gray"
-                  leftSection={<X size={14} />}
-                  onClick={handleDiscardDraft}>
-
+                    size="xs"
+                    variant="subtle"
+                    color="gray"
+                    leftSection={<X size={14} />}
+                    onClick={handleDiscardDraft}
+                  >
                     Discard and use fresh file
                   </Button>
                 </Group>
               </Stack>
             </Alert>
-          }
-          
+          )}
+
           {/* Draft status indicator */}
-          {filename && (isFromDraft || lastAutoSave) &&
-          <Group gap="xs">
-              {isFromDraft &&
-            <Badge color="orange" variant="light" size="sm">
+          {filename && (isFromDraft || lastAutoSave) && (
+            <Group gap="xs">
+              {isFromDraft && (
+                <Badge color="orange" variant="light" size="sm">
                   Working from draft
                 </Badge>
-            }
-              {lastAutoSave &&
-            <Text size="xs" c="dimmed">
+              )}
+              {lastAutoSave && (
+                <Text size="xs" c="dimmed">
                   Auto-saved {formatDraftAge(lastAutoSave)}
                 </Text>
-            }
+              )}
             </Group>
-          }
-          
+          )}
+
           {/* Header editor (replaces old file info section) */}
           {filename && <HeaderEditor encodingInfo={encodingInfo} />}
-          
+
           {/* Glossary status indicator (quick view) */}
-          {filename && glossary &&
-          <Group gap="xs">
+          {filename && glossary && (
+            <Group gap="xs">
               <Badge color="green" variant="light" size="sm" leftSection={<Check size={10} />}>
                 Glossary: {glossary.entries.length} terms ({glossary.targetLocale})
               </Badge>
-              {deeplGlossaryId &&
-            <Badge color="blue" variant="light" size="sm">
+              {deeplGlossaryId && (
+                <Badge color="blue" variant="light" size="sm">
                   DeepL synced
                 </Badge>
-            }
+              )}
             </Group>
-          }
-          
+          )}
+
           {/* Filter toolbar */}
           {filename && <FilterToolbar />}
-          
+
           {/* Translate toolbar for DeepL integration */}
-          {filename && <TranslateToolbar onLanguageChange={handleLanguageChange} deeplGlossaryId={glossaryEnforcementEnabled ? deeplGlossaryId : null} />}
-          
-          {/* Editor table or empty state */}
-          {filename ?
-          <MotionDiv
-            variants={fadeScaleVariants}
-            initial="hidden"
-            animate="visible"
-            key="editor">
-
-              <EditorTable
-              targetLang={translateTargetLang}
-              sourceLang={translateSourceLang}
-              glossary={glossary}
+          {filename && (
+            <TranslateToolbar
+              onLanguageChange={handleLanguageChange}
               deeplGlossaryId={glossaryEnforcementEnabled ? deeplGlossaryId : null}
-              glossaryEnforcementEnabled={glossaryEnforcementEnabled}
-              onEntrySelect={handleEntrySelect} />
+            />
+          )}
 
-            </MotionDiv> :
+          {/* Source context panel */}
+          {filename && <SourceContext />}
 
-          <MotionDiv
-            variants={fadeScaleVariants}
-            initial="hidden"
-            animate="visible"
-            onClick={handleEmptyStateClick}
-            style={{ cursor: 'pointer' }}>
-
-          <Paper
-            p={rem(60)}
-            withBorder
-            style={{
-              borderStyle: 'dashed',
-              borderWidth: 2,
-              borderColor: 'var(--mantine-color-blue-4)',
-            }}>
-
-              <Stack align="center" gap="lg">
-                <img data-ev-id="ev_1ff14ea799"
-              src={appIcon}
-              alt="GlossBoss"
-              style={{
-                width: 80,
-                height: 80,
-                borderRadius: 16
-              }} />
-
-                <Stack align="center" gap="xs">
-                  <Title order={3}>Upload a PO file to start</Title>
-                  <Text c="dimmed" ta="center" maw={400}>
-                    Drag and drop your .po or .pot file here, or click to browse.
-                    Your translations will be saved locally in your browser.
-                  </Text>
-                </Stack>
-                <Group gap="xs">
-                  <Badge variant="filled" color="blue">.po</Badge>
-                  <Badge variant="filled" color="blue">.pot</Badge>
-                </Group>
-              </Stack>
-            </Paper>
+          {/* Editor table or empty state */}
+          {filename ? (
+            <MotionDiv variants={fadeScaleVariants} initial="hidden" animate="visible" key="editor">
+              <EditorTable
+                targetLang={translateTargetLang}
+                sourceLang={translateSourceLang}
+                glossary={glossary}
+                deeplGlossaryId={glossaryEnforcementEnabled ? deeplGlossaryId : null}
+                glossaryEnforcementEnabled={glossaryEnforcementEnabled}
+                onEntrySelect={handleEntrySelect}
+              />
             </MotionDiv>
-          }
+          ) : (
+            <MotionDiv
+              variants={fadeScaleVariants}
+              initial="hidden"
+              animate="visible"
+              onClick={handleEmptyStateClick}
+              style={{ cursor: 'pointer' }}
+            >
+              <Paper
+                p={rem(60)}
+                withBorder
+                style={{
+                  borderStyle: 'dashed',
+                  borderWidth: 2,
+                  borderColor: 'var(--mantine-color-blue-4)',
+                }}
+              >
+                <Stack align="center" gap="lg">
+                  <img
+                    data-ev-id="ev_1ff14ea799"
+                    src={appIcon}
+                    alt="GlossBoss"
+                    style={{
+                      width: 80,
+                      height: 80,
+                      borderRadius: 16,
+                    }}
+                  />
+
+                  <Stack align="center" gap="xs">
+                    <Title order={3}>Upload a PO file to start</Title>
+                    <Text c="dimmed" ta="center" maw={400}>
+                      Drag and drop your .po or .pot file here, or click to browse. Your
+                      translations will be saved locally in your browser.
+                    </Text>
+                  </Stack>
+                  <Group gap="xs">
+                    <Badge variant="filled" color="blue">
+                      .po
+                    </Badge>
+                    <Badge variant="filled" color="blue">
+                      .pot
+                    </Badge>
+                  </Group>
+                </Stack>
+              </Paper>
+            </MotionDiv>
+          )}
         </Stack>
       </Container>
 
@@ -1018,8 +1072,8 @@ export default function Index() {
         syncStatus={glossarySyncStatus}
         deeplGlossaryId={deeplGlossaryId}
         deeplTermCount={deeplTermCount}
-        selectedSourceText={selectedSourceText} />
-
-    </Box>);
-
+        selectedSourceText={selectedSourceText}
+      />
+    </Box>
+  );
 }

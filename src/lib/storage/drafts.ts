@@ -1,6 +1,6 @@
 /**
  * Per-File Draft Persistence
- * 
+ *
  * Handles auto-saving and recovery of translation drafts on a per-file basis.
  * Drafts are keyed by filename to prevent cross-file data leakage.
  */
@@ -20,22 +20,22 @@ const DRAFT_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
 export interface DraftData {
   /** Original filename this draft is for */
   filename: string;
-  
+
   /** File header metadata */
   header: POHeader | null;
-  
+
   /** All translation entries */
   entries: POEntry[];
-  
+
   /** IDs of entries that were modified from original */
   dirtyEntryIds: string[];
-  
+
   /** IDs of entries that were machine translated */
   machineTranslatedIds: string[];
-  
+
   /** When the draft was last saved */
   savedAt: number;
-  
+
   /** Draft version for future migrations */
   version: number;
 }
@@ -107,12 +107,10 @@ function saveDraftIndex(index: DraftIndex): void {
  */
 function updateDraftIndex(draft: DraftData | null, filename: string): void {
   const index = loadDraftIndex();
-  
+
   // Remove existing entry for this file
-  index.drafts = index.drafts.filter(d => 
-    d.filename.toLowerCase() !== filename.toLowerCase()
-  );
-  
+  index.drafts = index.drafts.filter((d) => d.filename.toLowerCase() !== filename.toLowerCase());
+
   // Add new entry if draft exists
   if (draft) {
     index.drafts.push({
@@ -122,7 +120,7 @@ function updateDraftIndex(draft: DraftData | null, filename: string): void {
       modifiedCount: draft.dirtyEntryIds.length,
     });
   }
-  
+
   saveDraftIndex(index);
 }
 
@@ -134,18 +132,18 @@ export function saveDraft(data: Omit<DraftData, 'savedAt' | 'version'>): boolean
     console.warn('[Drafts] localStorage not available');
     return false;
   }
-  
+
   if (!data.filename) {
     console.warn('[Drafts] Cannot save draft without filename');
     return false;
   }
-  
+
   const draft: DraftData = {
     ...data,
     savedAt: Date.now(),
     version: 1,
   };
-  
+
   try {
     const key = getDraftKey(data.filename);
     localStorage.setItem(key, JSON.stringify(draft));
@@ -165,24 +163,24 @@ export function loadDraft(filename: string): DraftData | null {
   if (!isStorageAvailable() || !filename) {
     return null;
   }
-  
+
   try {
     const key = getDraftKey(filename);
     const data = localStorage.getItem(key);
-    
+
     if (!data) {
       return null;
     }
-    
+
     const draft: DraftData = JSON.parse(data);
-    
+
     // Check if draft is too old
     if (Date.now() - draft.savedAt > DRAFT_MAX_AGE_MS) {
       console.log(`[Drafts] Draft for ${filename} is expired, removing`);
       deleteDraft(filename);
       return null;
     }
-    
+
     console.log(`[Drafts] Loaded draft for: ${filename}`);
     return draft;
   } catch (error) {
@@ -198,7 +196,7 @@ export function hasDraft(filename: string): boolean {
   if (!isStorageAvailable() || !filename) {
     return false;
   }
-  
+
   const key = getDraftKey(filename);
   return localStorage.getItem(key) !== null;
 }
@@ -210,7 +208,7 @@ export function deleteDraft(filename: string): boolean {
   if (!isStorageAvailable() || !filename) {
     return false;
   }
-  
+
   try {
     const key = getDraftKey(filename);
     localStorage.removeItem(key);
@@ -238,14 +236,14 @@ export function deleteAllDrafts(): void {
   if (!isStorageAvailable()) {
     return;
   }
-  
+
   const index = loadDraftIndex();
-  
+
   for (const draft of index.drafts) {
     const key = getDraftKey(draft.filename);
     localStorage.removeItem(key);
   }
-  
+
   localStorage.removeItem(DRAFT_INDEX_KEY);
   console.log('[Drafts] Deleted all drafts');
 }
@@ -257,12 +255,12 @@ export function cleanupExpiredDrafts(): number {
   if (!isStorageAvailable()) {
     return 0;
   }
-  
+
   const index = loadDraftIndex();
   const now = Date.now();
   let cleanedCount = 0;
-  
-  const validDrafts = index.drafts.filter(draft => {
+
+  const validDrafts = index.drafts.filter((draft) => {
     if (now - draft.savedAt > DRAFT_MAX_AGE_MS) {
       const key = getDraftKey(draft.filename);
       localStorage.removeItem(key);
@@ -271,12 +269,12 @@ export function cleanupExpiredDrafts(): number {
     }
     return true;
   });
-  
+
   if (cleanedCount > 0) {
     saveDraftIndex({ drafts: validDrafts });
     console.log(`[Drafts] Cleaned up ${cleanedCount} expired drafts`);
   }
-  
+
   return cleanedCount;
 }
 
@@ -288,7 +286,7 @@ export function formatDraftAge(savedAt: number): string {
   const minutes = Math.floor(diff / (1000 * 60));
   const hours = Math.floor(diff / (1000 * 60 * 60));
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-  
+
   if (minutes < 1) return 'just now';
   if (minutes < 60) return `${minutes} minute${minutes === 1 ? '' : 's'} ago`;
   if (hours < 24) return `${hours} hour${hours === 1 ? '' : 's'} ago`;

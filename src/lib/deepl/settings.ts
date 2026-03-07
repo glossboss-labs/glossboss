@@ -1,6 +1,6 @@
 /**
  * DeepL Settings Storage
- * 
+ *
  * Manages user's DeepL API key and preferences in localStorage.
  */
 
@@ -86,7 +86,5 @@ export function hasUserApiKey(): boolean {
  * Get the DeepL API base URL for the configured API type
  */
 export function getDeepLApiUrl(apiType: DeepLApiType = 'free'): string {
-  return apiType === 'pro' 
-    ? 'https://api.deepl.com/v2'
-    : 'https://api-free.deepl.com/v2';
+  return apiType === 'pro' ? 'https://api.deepl.com/v2' : 'https://api-free.deepl.com/v2';
 }

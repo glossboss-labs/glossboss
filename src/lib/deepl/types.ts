@@ -1,42 +1,96 @@
 /**
  * DeepL Integration Types
- * 
+ *
  * Types for DeepL API requests and responses.
  * The actual API calls go through an Edge Function to keep the API key secure.
  */
 
 /** Supported source languages */
-export type SourceLanguage = 
-  | 'BG' | 'CS' | 'DA' | 'DE' | 'EL' | 'EN' | 'ES' | 'ET' | 'FI' | 'FR'
-  | 'HU' | 'ID' | 'IT' | 'JA' | 'KO' | 'LT' | 'LV' | 'NB' | 'NL' | 'PL'
-  | 'PT' | 'RO' | 'RU' | 'SK' | 'SL' | 'SV' | 'TR' | 'UK' | 'ZH';
+export type SourceLanguage =
+  | 'BG'
+  | 'CS'
+  | 'DA'
+  | 'DE'
+  | 'EL'
+  | 'EN'
+  | 'ES'
+  | 'ET'
+  | 'FI'
+  | 'FR'
+  | 'HU'
+  | 'ID'
+  | 'IT'
+  | 'JA'
+  | 'KO'
+  | 'LT'
+  | 'LV'
+  | 'NB'
+  | 'NL'
+  | 'PL'
+  | 'PT'
+  | 'RO'
+  | 'RU'
+  | 'SK'
+  | 'SL'
+  | 'SV'
+  | 'TR'
+  | 'UK'
+  | 'ZH';
 
 /** Supported target languages */
-export type TargetLanguage = 
-  | 'BG' | 'CS' | 'DA' | 'DE' | 'EL' | 'EN-GB' | 'EN-US' | 'ES' | 'ET' | 'FI'
-  | 'FR' | 'HU' | 'ID' | 'IT' | 'JA' | 'KO' | 'LT' | 'LV' | 'NB' | 'NL'
-  | 'PL' | 'PT-BR' | 'PT-PT' | 'RO' | 'RU' | 'SK' | 'SL' | 'SV' | 'TR' | 'UK' | 'ZH';
+export type TargetLanguage =
+  | 'BG'
+  | 'CS'
+  | 'DA'
+  | 'DE'
+  | 'EL'
+  | 'EN-GB'
+  | 'EN-US'
+  | 'ES'
+  | 'ET'
+  | 'FI'
+  | 'FR'
+  | 'HU'
+  | 'ID'
+  | 'IT'
+  | 'JA'
+  | 'KO'
+  | 'LT'
+  | 'LV'
+  | 'NB'
+  | 'NL'
+  | 'PL'
+  | 'PT-BR'
+  | 'PT-PT'
+  | 'RO'
+  | 'RU'
+  | 'SK'
+  | 'SL'
+  | 'SV'
+  | 'TR'
+  | 'UK'
+  | 'ZH';
 
 /** Request to translate text */
 export interface TranslateRequest {
   /** Text to translate (can be array for batch) */
   text: string | string[];
-  
+
   /** Target language code */
   targetLang: TargetLanguage;
-  
+
   /** Source language code (optional, auto-detect if omitted) */
   sourceLang?: SourceLanguage;
-  
+
   /** Preserve formatting */
   preserveFormatting?: boolean;
-  
+
   /** Handle XML tags */
   tagHandling?: 'xml' | 'html';
-  
+
   /** Formality preference */
   formality?: 'default' | 'more' | 'less' | 'prefer_more' | 'prefer_less';
-  
+
   /** Glossary ID to apply */
   glossaryId?: string;
 }
@@ -45,7 +99,7 @@ export interface TranslateRequest {
 export interface Translation {
   /** Detected source language */
   detectedSourceLanguage: string;
-  
+
   /** Translated text */
   text: string;
 }
@@ -60,7 +114,7 @@ export interface TranslateResponse {
 export interface TranslateError {
   /** Error message */
   message: string;
-  
+
   /** Error code */
   code?: string;
 }
@@ -69,7 +123,7 @@ export interface TranslateError {
 export interface UsageStats {
   /** Characters used this billing period */
   characterCount: number;
-  
+
   /** Character limit for billing period */
   characterLimit: number;
 }
@@ -78,7 +132,7 @@ export interface UsageStats {
 export interface DeepLClientConfig {
   /** Edge function URL (defaults to relative path) */
   functionUrl?: string;
-  
+
   /** Request timeout in ms */
   timeout?: number;
 }

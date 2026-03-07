@@ -1,6 +1,6 @@
 /**
  * PO File Types
- * 
+ *
  * Represents the structure of GNU gettext .po files.
  * A PO file consists of a header and multiple translation entries.
  */
@@ -36,11 +36,11 @@ export interface POHeader {
 }
 
 /** Flags that can be attached to a PO entry */
-export type POEntryFlag = 
-  | 'fuzzy' 
-  | 'c-format' 
-  | 'no-c-format' 
-  | 'php-format' 
+export type POEntryFlag =
+  | 'fuzzy'
+  | 'c-format'
+  | 'no-c-format'
+  | 'php-format'
   | 'no-php-format'
   | 'python-format'
   | 'no-python-format'
@@ -51,43 +51,43 @@ export type POEntryFlag =
 export interface POEntry {
   /** Unique identifier for this entry (generated, not from file) */
   id: string;
-  
+
   /** Line number where this entry starts (1-based) */
   lineNumber?: number;
-  
+
   /** Translator comments (lines starting with "# ") */
   translatorComments: string[];
-  
+
   /** Extracted comments from source (lines starting with "#.") */
   extractedComments: string[];
-  
+
   /** Source file references (lines starting with "#:") */
   references: string[];
-  
+
   /** Flags like fuzzy, c-format (lines starting with "#,") */
   flags: POEntryFlag[];
-  
+
   /** Previous msgid for fuzzy entries (lines starting with "#|") */
   previousMsgid?: string;
-  
+
   /** Previous msgctxt for fuzzy entries */
   previousMsgctxt?: string;
-  
+
   /** Message context for disambiguation */
   msgctxt?: string;
-  
+
   /** Original string (source language) */
   msgid: string;
-  
+
   /** Plural form of original string */
   msgidPlural?: string;
-  
+
   /** Translated string (singular or only form) */
   msgstr: string;
-  
+
   /** Plural translations (msgstr[0], msgstr[1], etc.) */
   msgstrPlural?: string[];
-  
+
   /** Whether this entry has been modified in the editor */
   isDirty?: boolean;
 }
@@ -96,19 +96,19 @@ export interface POEntry {
 export interface POFile {
   /** Original filename */
   filename: string;
-  
+
   /** Parsed header metadata */
   header: POHeader;
-  
+
   /** Raw header string (for round-trip preservation) */
   rawHeader?: string;
-  
+
   /** All translation entries */
   entries: POEntry[];
-  
+
   /** Character encoding (usually UTF-8) */
   charset: string;
-  
+
   /** Number of plural forms (from Plural-Forms header) */
   nplurals?: number;
 }
@@ -117,10 +117,10 @@ export interface POFile {
 export interface ParseOptions {
   /** Generate IDs for entries (default: true) */
   generateIds?: boolean;
-  
+
   /** Continue parsing after errors (default: true) */
   continueOnError?: boolean;
-  
+
   /** Validate entries after parsing (default: true) */
   validate?: boolean;
 }
@@ -129,13 +129,13 @@ export interface ParseOptions {
 export interface SerializeOptions {
   /** Line ending to use (default: '\n') */
   lineEnding?: '\n' | '\r\n';
-  
+
   /** Wrap long lines at this width (default: 80, 0 = no wrap) */
   wrapWidth?: number;
-  
+
   /** Update PO-Revision-Date to current time (default: true) */
   updateRevisionDate?: boolean;
-  
+
   /** Update Last-Translator field (default: null = don't update) */
   lastTranslator?: string | null;
 }
@@ -147,13 +147,13 @@ export type ParseIssueSeverity = 'error' | 'warning';
 export interface ParseIssue {
   /** Severity level */
   severity: ParseIssueSeverity;
-  
+
   /** Human-readable message */
   message: string;
-  
+
   /** Line number where the issue occurred (1-based) */
   line?: number;
-  
+
   /** Error code for programmatic handling */
   code: ParseErrorCode;
 }
@@ -174,16 +174,16 @@ export type ParseErrorCode =
 export interface ParseResult {
   /** Whether parsing succeeded (may still have warnings) */
   success: boolean;
-  
+
   /** The parsed PO file (present if success or partial success) */
   file?: POFile;
-  
+
   /** Errors that prevented parsing */
   errors: ParseIssue[];
-  
+
   /** Warnings that didn't prevent parsing */
   warnings: ParseIssue[];
-  
+
   /** Statistics about the parse */
   stats: {
     /** Total entries parsed */
@@ -203,7 +203,7 @@ export interface ParseResult {
 export interface ValidationResult {
   /** Whether the file is valid */
   valid: boolean;
-  
+
   /** All issues found */
   issues: ParseIssue[];
 }

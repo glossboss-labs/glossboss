@@ -1,6 +1,6 @@
 /**
  * UI Components
- * 
+ *
  * Reusable animated UI components.
  */
 

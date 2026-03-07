@@ -1,6 +1,6 @@
 /**
  * Shared Application Types
- * 
+ *
  * Common types used across the application.
  */
 
@@ -24,17 +24,17 @@ export type TranslationStatus = 'translated' | 'untranslated' | 'fuzzy';
 export function getTranslationStatus(
   msgstr: string,
   flags: string[],
-  msgstrPlural?: string[]
+  msgstrPlural?: string[],
 ): TranslationStatus {
   // For plural entries, check if ALL plural forms are filled
   if (msgstrPlural && msgstrPlural.length > 0) {
-    const allPluralsFilled = msgstrPlural.every(form => form.trim() !== '');
+    const allPluralsFilled = msgstrPlural.every((form) => form.trim() !== '');
     if (!allPluralsFilled) return 'untranslated';
   } else {
     // Singular entry - check msgstr
     if (!msgstr.trim()) return 'untranslated';
   }
-  
+
   if (flags.includes('fuzzy')) return 'fuzzy';
   return 'translated';
 }
