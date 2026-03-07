@@ -102,14 +102,18 @@ export async function fetchWPGlossary(locale: string, forceRefresh = false): Pro
       return {
         glossary: null,
         fromCache: false,
-        error: errorData.error || `HTTP ${response.status}`,
+        error: errorData.message || errorData.error || `HTTP ${response.status}`,
       };
     }
 
     const data = await response.json();
 
-    if (data.error) {
-      return { glossary: null, fromCache: false, error: data.error };
+    if (data.ok === false || data.error) {
+      return {
+        glossary: null,
+        fromCache: false,
+        error: data.message || data.error || 'Glossary backend returned ok:false',
+      };
     }
 
     const csvText = data.csv;

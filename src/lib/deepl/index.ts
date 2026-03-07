@@ -12,6 +12,8 @@ export {
   clearDeepLSettings,
   hasUserApiKey,
   getDeepLApiUrl,
+  isPersistEnabled,
+  setPersistEnabled,
   type DeepLSettings,
   type DeepLApiType,
 } from './settings';

@@ -6,12 +6,11 @@
  * - Glossary management (load, view, configure)
  */
 
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import {
   Modal,
   Stack,
   Tabs,
-  TextInput,
   PasswordInput,
   Button,
   Group,
@@ -29,8 +28,6 @@ import {
   Tooltip,
   Anchor,
   Table,
-  ScrollArea,
-  Box,
   Kbd,
 } from '@mantine/core';
 import { useLocalStorage } from '@mantine/hooks';
@@ -42,7 +39,6 @@ import {
   RefreshCw,
   X,
   ExternalLink,
-  Search,
   Eye,
   Keyboard,
   GitBranch,
@@ -51,207 +47,20 @@ import {
   getDeepLSettings,
   saveDeepLSettings,
   clearDeepLSettings,
+  isPersistEnabled,
+  setPersistEnabled,
   type DeepLApiType,
   getDeepLClient,
 } from '@/lib/deepl';
 import { fetchWPGlossary, clearWPGlossaryCache, type FetchResult } from '@/lib/glossary/wp-fetcher';
-import { findGlossaryMatches } from '@/lib/glossary/matcher';
+import { GlossaryTermsPreview, GlossaryViewerModal } from '@/components/glossary/shared';
+import {
+  COMMON_GLOSSARY_LOCALES,
+  GLOSSARY_ENFORCEMENT_KEY,
+  GLOSSARY_SELECTED_LOCALE_KEY,
+} from '@/components/glossary/constants';
 import type { Glossary } from '@/lib/glossary/types';
 import { NAV_SKIP_TRANSLATED_KEY } from '@/components/editor/EditorTable';
-
-/** localStorage keys */
-const SELECTED_LOCALE_KEY = 'glossboss-selected-glossary-locale';
-const ENFORCEMENT_ENABLED_KEY = 'glossboss-glossary-enforcement';
-
-/** Common WordPress locales */
-const COMMON_LOCALES = [
-  { value: 'nl', label: 'Dutch (nl)' },
-  { value: 'de', label: 'German (de)' },
-  { value: 'fr', label: 'French (fr)' },
-  { value: 'es', label: 'Spanish (es)' },
-  { value: 'it', label: 'Italian (it)' },
-  { value: 'pt', label: 'Portuguese (pt)' },
-  { value: 'pl', label: 'Polish (pl)' },
-  { value: 'ru', label: 'Russian (ru)' },
-  { value: 'ja', label: 'Japanese (ja)' },
-  { value: 'zh-cn', label: 'Chinese Simplified (zh-cn)' },
-  { value: 'ko', label: 'Korean (ko)' },
-  { value: 'sv', label: 'Swedish (sv)' },
-  { value: 'da', label: 'Danish (da)' },
-  { value: 'fi', label: 'Finnish (fi)' },
-  { value: 'nb', label: 'Norwegian (nb)' },
-  { value: 'uk', label: 'Ukrainian (uk)' },
-  { value: 'cs', label: 'Czech (cs)' },
-  { value: 'el', label: 'Greek (el)' },
-  { value: 'hu', label: 'Hungarian (hu)' },
-  { value: 'ro', label: 'Romanian (ro)' },
-  { value: 'tr', label: 'Turkish (tr)' },
-  { value: 'he', label: 'Hebrew (he)' },
-  { value: 'ar', label: 'Arabic (ar)' },
-];
-
-/** Glossary viewer modal */
-function GlossaryViewerModal({
-  glossary,
-  opened,
-  onClose,
-}: {
-  glossary: Glossary;
-  opened: boolean;
-  onClose: () => void;
-}) {
-  const [search, setSearch] = useState('');
-
-  const filteredEntries = useMemo(() => {
-    if (!search.trim()) {
-      return glossary.entries;
-    }
-    const query = search.toLowerCase();
-    return glossary.entries.filter(
-      (entry) =>
-        entry.term.toLowerCase().includes(query) ||
-        entry.translation.toLowerCase().includes(query) ||
-        entry.partOfSpeech?.toLowerCase().includes(query) ||
-        entry.comment?.toLowerCase().includes(query),
-    );
-  }, [glossary.entries, search]);
-
-  return (
-    <Modal
-      opened={opened}
-      onClose={onClose}
-      title={
-        <Group gap="sm">
-          <BookOpen size={20} />
-          <Text fw={600}>WordPress Glossary</Text>
-          <Badge color="blue" variant="light">
-            {glossary.targetLocale.toUpperCase()}
-          </Badge>
-          <Badge color="gray" variant="light">
-            {glossary.entries.length} terms
-          </Badge>
-        </Group>
-      }
-      size="xl"
-      centered
-      styles={{ body: { padding: 0 } }}
-    >
-      <Stack gap={0}>
-        <Box p="sm" style={{ borderBottom: '1px solid var(--mantine-color-default-border)' }}>
-          <TextInput
-            placeholder="Search terms..."
-            leftSection={<Search size={16} />}
-            value={search}
-            onChange={(e) => setSearch(e.currentTarget.value)}
-            size="sm"
-          />
-
-          {search && (
-            <Text size="xs" c="dimmed" mt="xs">
-              Showing {filteredEntries.length} of {glossary.entries.length} terms
-            </Text>
-          )}
-        </Box>
-
-        <ScrollArea h={400}>
-          <Table striped highlightOnHover>
-            <Table.Thead
-              style={{ position: 'sticky', top: 0, background: 'var(--mantine-color-body)' }}
-            >
-              <Table.Tr>
-                <Table.Th style={{ width: '25%' }}>Term (EN)</Table.Th>
-                <Table.Th style={{ width: '25%' }}>Translation</Table.Th>
-                <Table.Th style={{ width: '15%' }}>Type</Table.Th>
-                <Table.Th style={{ width: '35%' }}>Notes</Table.Th>
-              </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>
-              {filteredEntries.map((entry, index) => (
-                <Table.Tr key={`${entry.term}-${index}`}>
-                  <Table.Td>
-                    <Text size="sm" fw={500}>
-                      {entry.term}
-                    </Text>
-                  </Table.Td>
-                  <Table.Td>
-                    <Text size="sm">
-                      {entry.translation || (
-                        <Text span c="dimmed">
-                          —
-                        </Text>
-                      )}
-                    </Text>
-                  </Table.Td>
-                  <Table.Td>
-                    {entry.partOfSpeech ? (
-                      <Badge size="xs" variant="light" color="gray">
-                        {entry.partOfSpeech}
-                      </Badge>
-                    ) : (
-                      <Text size="sm" c="dimmed">
-                        —
-                      </Text>
-                    )}
-                  </Table.Td>
-                  <Table.Td>
-                    <Text size="xs" c="dimmed" lineClamp={2}>
-                      {entry.comment || '—'}
-                    </Text>
-                  </Table.Td>
-                </Table.Tr>
-              ))}
-              {filteredEntries.length === 0 && (
-                <Table.Tr>
-                  <Table.Td colSpan={4}>
-                    <Text size="sm" c="dimmed" ta="center" py="md">
-                      No terms match your search
-                    </Text>
-                  </Table.Td>
-                </Table.Tr>
-              )}
-            </Table.Tbody>
-          </Table>
-        </ScrollArea>
-      </Stack>
-    </Modal>
-  );
-}
-
-/** Preview of glossary terms for selected row */
-function TermsPreview({ sourceText, glossary }: { sourceText: string; glossary: Glossary }) {
-  const matches = useMemo(() => {
-    if (!sourceText || !glossary) return [];
-    return findGlossaryMatches(sourceText, glossary);
-  }, [sourceText, glossary]);
-
-  if (matches.length === 0) {
-    return (
-      <Text size="xs" c="dimmed" fs="italic">
-        No glossary terms in selected text
-      </Text>
-    );
-  }
-
-  const displayMatches = matches.slice(0, 5);
-  const remaining = matches.length - 5;
-
-  return (
-    <Group gap={6} wrap="wrap">
-      {displayMatches.map((match, i) => (
-        <Tooltip key={i} label={`"${match.term}" → "${match.translation}"`} color="dark">
-          <Badge size="xs" variant="light" color="blue" style={{ cursor: 'help' }}>
-            {match.term} → {match.translation}
-          </Badge>
-        </Tooltip>
-      ))}
-      {remaining > 0 && (
-        <Text size="xs" c="dimmed">
-          +{remaining} more
-        </Text>
-      )}
-    </Group>
-  );
-}
 
 /** Keyboard shortcut definitions */
 const KEYBINDS: { keys: string[][]; action: string; description?: string }[] = [
@@ -423,6 +232,7 @@ export function SettingsModal({
   // DeepL API settings state
   const [apiKey, setApiKey] = useState('');
   const [apiType, setApiType] = useState<DeepLApiType>('free');
+  const [persistKey, setPersistKey] = useState(() => isPersistEnabled());
   const [isTesting, setIsTesting] = useState(false);
   const [testResult, setTestResult] = useState<{
     success: boolean;
@@ -434,7 +244,7 @@ export function SettingsModal({
   // Glossary state
   const [selectedLocale, setSelectedLocale] = useState<string>(() => {
     try {
-      const stored = localStorage.getItem(SELECTED_LOCALE_KEY);
+      const stored = localStorage.getItem(GLOSSARY_SELECTED_LOCALE_KEY);
       return stored || initialLocale || '';
     } catch {
       return initialLocale || '';
@@ -444,7 +254,7 @@ export function SettingsModal({
   const [glossaryError, setGlossaryError] = useState<string | null>(null);
   const [enforcementEnabled, setEnforcementEnabled] = useState<boolean>(() => {
     try {
-      const stored = localStorage.getItem(ENFORCEMENT_ENABLED_KEY);
+      const stored = localStorage.getItem(GLOSSARY_ENFORCEMENT_KEY);
       return stored !== 'false';
     } catch {
       return true;
@@ -460,6 +270,7 @@ export function SettingsModal({
       setApiKey(settings.apiKey);
       setApiType(settings.apiType);
       setIsSaved(Boolean(settings.apiKey));
+      setPersistKey(isPersistEnabled());
     }
   }, [opened]);
 
@@ -474,7 +285,7 @@ export function SettingsModal({
   useEffect(() => {
     try {
       if (selectedLocale) {
-        localStorage.setItem(SELECTED_LOCALE_KEY, selectedLocale);
+        localStorage.setItem(GLOSSARY_SELECTED_LOCALE_KEY, selectedLocale);
       }
     } catch {
       // Ignore storage errors
@@ -484,7 +295,7 @@ export function SettingsModal({
   // Persist enforcement setting
   useEffect(() => {
     try {
-      localStorage.setItem(ENFORCEMENT_ENABLED_KEY, String(enforcementEnabled));
+      localStorage.setItem(GLOSSARY_ENFORCEMENT_KEY, String(enforcementEnabled));
     } catch {
       // Ignore storage errors
     }
@@ -637,6 +448,26 @@ export function SettingsModal({
                 </Anchor>
               </Text>
 
+              <Alert color="yellow" icon={<AlertCircle size={16} />}>
+                <Text size="sm">
+                  Your API key is kept in this browser tab by default and will be cleared when you
+                  close the tab. Enable &quot;Remember API key&quot; below to persist it across
+                  sessions — only do this on a personal, trusted device.
+                </Text>
+              </Alert>
+
+              <Switch
+                label="Remember API key across sessions"
+                description="When enabled, your key is stored in localStorage and survives browser restarts. Disable on shared or untrusted devices."
+                checked={persistKey}
+                onChange={(e) => {
+                  const enabled = e.currentTarget.checked;
+                  setPersistKey(enabled);
+                  setPersistEnabled(enabled);
+                  setIsSaved(false);
+                }}
+              />
+
               <PasswordInput
                 label="API Key"
                 placeholder="Enter your DeepL API key"
@@ -691,7 +522,7 @@ export function SettingsModal({
                 </Button>
                 {apiKey && (
                   <Button variant="subtle" color="red" onClick={handleClearApiKey}>
-                    Clear
+                    Remove saved key
                   </Button>
                 )}
               </Group>
@@ -736,7 +567,7 @@ export function SettingsModal({
                 <Select
                   label="Language"
                   placeholder="Select locale"
-                  data={COMMON_LOCALES}
+                  data={COMMON_GLOSSARY_LOCALES}
                   value={selectedLocale}
                   onChange={(value) => setSelectedLocale(value || '')}
                   searchable
@@ -867,7 +698,10 @@ export function SettingsModal({
                           <Text size="xs" fw={500} mb={4}>
                             Terms in selected text:
                           </Text>
-                          <TermsPreview sourceText={selectedSourceText} glossary={glossary} />
+                          <GlossaryTermsPreview
+                            sourceText={selectedSourceText}
+                            glossary={glossary}
+                          />
                         </div>
                       </>
                     )}

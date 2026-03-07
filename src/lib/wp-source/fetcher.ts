@@ -4,8 +4,9 @@
  * Fetches source files and directory listings from plugins.svn.wordpress.org
  * via edge function proxy. Includes in-memory caching.
  */
-import { normalizeSourcePath } from './references';
+import { debugInfo, debugWarn } from '@/lib/debug';
 import { buildSupabaseFunctionHeaders } from '@/lib/supabase-function-headers';
+import { normalizeSourcePath } from '@/lib/wp-source/references';
 
 /** Directory entry from SVN listing */
 export interface DirectoryEntry {
@@ -59,8 +60,13 @@ async function readEdgeError(response: Response): Promise<string> {
   const attempts = Array.isArray(data?.details?.attemptedBasePaths)
     ? ` Tried: ${data.details.attemptedBasePaths.join(', ')}.`
     : '';
-  const hint = typeof data.hint === 'string' ? ` ${data.hint}` : '';
-  return (data.error || `HTTP ${response.status}`) + hint + attempts;
+  const message =
+    typeof data?.message === 'string'
+      ? data.message
+      : typeof data?.error === 'string'
+        ? data.error
+        : `HTTP ${response.status}`;
+  return `${message}${attempts}`;
 }
 
 async function fetchPluginVersions(slug: string): Promise<string[]> {
@@ -251,7 +257,7 @@ export async function fetchSourceFile(
 
     const legacyHit = await findLegacySourceInBatches(slug, requestPath, candidates, 10);
     if (legacyHit) {
-      console.info(
+      debugInfo(
         `[Source] Using legacy tag ${legacyHit.version} for missing reference ${slug}:${requestPath}`,
       );
       legacyVersionCache.set(legacyKey, legacyHit.version);
@@ -259,7 +265,7 @@ export async function fetchSourceFile(
       return legacyHit.result;
     }
 
-    console.warn(
+    debugWarn(
       `[Source] Could not resolve missing reference via legacy tags ${slug}:${requestPath} (from ${referenceVersion ?? 'auto'})`,
     );
     legacyVersionCache.set(legacyKey, null);

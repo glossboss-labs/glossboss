@@ -30,6 +30,21 @@ describe('Index feedback header action', () => {
     expect(await screen.findByText('Share Feedback')).toBeInTheDocument();
   });
 
+  it('renders footer links for source, license, and privacy', () => {
+    render(
+      <AppProviders>
+        <Index />
+      </AppProviders>,
+    );
+
+    expect(screen.getByRole('link', { name: 'Source' })).toHaveAttribute(
+      'href',
+      'https://github.com/toineenzo/glossboss',
+    );
+    expect(screen.getByRole('link', { name: 'License' })).toHaveAttribute('href', '/license/');
+    expect(screen.getByRole('link', { name: 'Privacy' })).toHaveAttribute('href', '/privacy/');
+  });
+
   it('shows the development branch chip by default and hides it when disabled in storage', () => {
     const { unmount } = render(
       <AppProviders>
