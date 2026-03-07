@@ -85,7 +85,9 @@ export function buildIssueBody(input: FeedbackIssueInput): string {
 
   sections.push('## Follow-Up');
   sections.push(formatLine('Allow Follow-Up', input.allowFollowUp ? 'Yes' : 'No'));
-  sections.push(formatLine('Contact Email', input.contactEmail?.trim() || 'Not provided'));
+  if (input.allowFollowUp && input.contactEmail?.trim()) {
+    sections.push(formatLine('Contact Email', input.contactEmail.trim()));
+  }
   sections.push('');
 
   sections.push('## Submission Context');

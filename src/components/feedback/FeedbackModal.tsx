@@ -65,8 +65,8 @@ export function FeedbackModal({
 
   const [turnstileStatus, setTurnstileStatus] = useState<TurnstileStatus>('loading');
   const [turnstileError, setTurnstileError] = useState<string | null>(null);
+  const [turnstileContainerEl, setTurnstileContainerEl] = useState<HTMLDivElement | null>(null);
 
-  const turnstileContainerRef = useRef<HTMLDivElement>(null);
   const turnstileControllerRef = useRef<TurnstileController | null>(null);
 
   const turnstileSiteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY;
@@ -94,8 +94,20 @@ export function FeedbackModal({
     setSubmitError(null);
   }, []);
 
+  const resetTurnstileState = useCallback(() => {
+    turnstileControllerRef.current?.cleanup();
+    turnstileControllerRef.current = null;
+    setTurnstileStatus('loading');
+    setTurnstileError(null);
+  }, []);
+
+  const handleTurnstileContainerRef = useCallback((node: HTMLDivElement | null) => {
+    setTurnstileContainerEl(node);
+  }, []);
+
   useEffect(() => {
     if (!opened) {
+      resetTurnstileState();
       return;
     }
 
@@ -117,7 +129,7 @@ export function FeedbackModal({
       return;
     }
 
-    if (!turnstileContainerRef.current) {
+    if (!turnstileContainerEl) {
       return;
     }
 
@@ -125,7 +137,7 @@ export function FeedbackModal({
     setTurnstileStatus('loading');
     setTurnstileError(null);
 
-    createTurnstileController(turnstileContainerRef.current, turnstileSiteKey)
+    createTurnstileController(turnstileContainerEl, turnstileSiteKey)
       .then((controller) => {
         if (cancelled) {
           controller.cleanup();
@@ -146,8 +158,16 @@ export function FeedbackModal({
       cancelled = true;
       turnstileControllerRef.current?.cleanup();
       turnstileControllerRef.current = null;
+      setTurnstileStatus('loading');
     };
-  }, [opened, resolveTurnstileToken, bypassTurnstile, turnstileSiteKey]);
+  }, [
+    opened,
+    resolveTurnstileToken,
+    bypassTurnstile,
+    turnstileSiteKey,
+    turnstileContainerEl,
+    resetTurnstileState,
+  ]);
 
   const resolveToken = useCallback(async (): Promise<string> => {
     if (resolveTurnstileToken) {
@@ -214,6 +234,7 @@ export function FeedbackModal({
 
       try {
         const turnstileToken = await resolveToken();
+        const pageUrl = `${window.location.origin}${window.location.pathname}`;
 
         const payload: FeedbackIssueRequest = {
           type,
@@ -234,7 +255,7 @@ export function FeedbackModal({
           allowFollowUp,
           context: {
             appVersion: __APP_VERSION__,
-            pageUrl: window.location.href,
+            pageUrl,
             filename: currentFilename || undefined,
             userAgent: navigator.userAgent,
             submittedAt: new Date().toISOString(),
@@ -400,7 +421,7 @@ export function FeedbackModal({
             aria-hidden="true"
           />
 
-          <div ref={turnstileContainerRef} style={{ display: 'none' }} aria-hidden="true" />
+          <div ref={handleTurnstileContainerRef} style={{ display: 'none' }} aria-hidden="true" />
 
           {turnstileStatus === 'loading' && !resolveTurnstileToken && (
             <Text size="xs" c="dimmed">

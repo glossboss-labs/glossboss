@@ -62,6 +62,7 @@ import type { ParseIssue } from '@/lib/po';
 import { parseI18nextJSON, isI18nextContent, serializeToI18next } from '@/lib/i18next';
 import type { FileFormat } from '@/stores';
 import type { TargetLanguage, SourceLanguage } from '@/lib/deepl/types';
+import type { FeedbackIssueSuccess } from '@/lib/feedback';
 import type { Glossary } from '@/lib/glossary/types';
 import { batchAnalyzeTranslations, syncGlossaryToDeepL } from '@/lib/glossary';
 import {
@@ -98,10 +99,7 @@ interface MergeInfo {
   updatedMeta: number;
 }
 
-/** Feedback submit success info */
-interface FeedbackInfo {
-  issueNumber: number;
-}
+type FeedbackInfo = Pick<FeedbackIssueSuccess, 'issueNumber' | 'issueUrl'>;
 
 /** Pending draft info for recovery prompt */
 interface PendingDraft {
@@ -863,6 +861,18 @@ export default function Index() {
             }}
           >
             <Text size="sm">Thanks. Issue #{feedbackSuccess?.issueNumber} was created.</Text>
+            {feedbackSuccess?.issueUrl && (
+              <Text
+                component="a"
+                href={feedbackSuccess.issueUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                size="sm"
+                mt={4}
+              >
+                Open issue
+              </Text>
+            )}
           </Notification>
         )}
       </Transition>
@@ -1339,7 +1349,7 @@ export default function Index() {
         onClose={() => setFeedbackOpen(false)}
         currentFilename={filename}
         onSubmitted={(result) => {
-          setFeedbackSuccess({ issueNumber: result.issueNumber });
+          setFeedbackSuccess({ issueNumber: result.issueNumber, issueUrl: result.issueUrl });
           setFeedbackError(null);
           window.setTimeout(() => setFeedbackSuccess(null), 5000);
         }}
