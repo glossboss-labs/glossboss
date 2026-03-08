@@ -376,7 +376,7 @@ function EditableField({
       const textarea = textareaRef.current;
       if (textarea) {
         textarea.focus();
-        const len = value.length;
+        const len = textarea.value.length;
         textarea.setSelectionRange(len, len);
       }
     }, 0);
