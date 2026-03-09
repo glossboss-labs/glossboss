@@ -73,7 +73,7 @@ jobs:
             set -e
 
             if [ "$DEPLOY_URL_STATUS" -gt 1 ]; then
-              echo "::error::Failed to inspect Cloudflare Pages deploy output."
+              echo "::error::Failed to parse Cloudflare Pages deploy output (grep exit status: $DEPLOY_URL_STATUS)."
               exit 1
             fi
 
