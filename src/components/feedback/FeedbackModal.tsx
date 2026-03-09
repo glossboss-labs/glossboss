@@ -21,6 +21,7 @@ import {
   type FeedbackType,
   type TurnstileController,
 } from '@/lib/feedback';
+import { useTranslation } from '@/lib/app-language';
 
 interface FeedbackModalProps {
   opened: boolean;
@@ -45,6 +46,7 @@ export function FeedbackModal({
   submitFeedbackRequest = submitFeedbackIssue,
   resolveTurnstileToken,
 }: FeedbackModalProps) {
+  const { t } = useTranslation();
   const [type, setType] = useState<FeedbackType>('bug');
   const [title, setTitle] = useState('');
 
@@ -127,7 +129,7 @@ export function FeedbackModal({
 
     if (!turnstileSiteKey) {
       setTurnstileStatus('error');
-      setTurnstileError('Feedback verification is not configured.');
+      setTurnstileError(t('Feedback verification is not configured.'));
       return;
     }
 
@@ -152,7 +154,7 @@ export function FeedbackModal({
         if (cancelled) return;
         setTurnstileStatus('error');
         setTurnstileError(
-          error instanceof Error ? error.message : 'Failed to initialize verification.',
+          error instanceof Error ? error.message : t('Failed to initialize verification.'),
         );
       });
 
@@ -169,6 +171,7 @@ export function FeedbackModal({
     turnstileSiteKey,
     turnstileContainerEl,
     resetTurnstileState,
+    t,
   ]);
 
   const resolveToken = useCallback(async (): Promise<string> => {
@@ -182,30 +185,30 @@ export function FeedbackModal({
 
     const controller = turnstileControllerRef.current;
     if (!controller) {
-      throw new Error('Verification is still loading. Please try again in a moment.');
+      throw new Error(t('Verification is still loading. Please try again in a moment.'));
     }
 
     return controller.executeChallenge();
-  }, [resolveTurnstileToken, bypassTurnstile]);
+  }, [resolveTurnstileToken, bypassTurnstile, t]);
 
   const validate = useCallback((): string | null => {
     if (!title.trim()) {
-      return 'Please add a short title.';
+      return t('Please add a short title.');
     }
 
     if (contactEmail.trim() && !EMAIL_REGEX.test(contactEmail.trim())) {
-      return 'Please provide a valid email address or leave it empty.';
+      return t('Please provide a valid email address or leave it empty.');
     }
 
     if (type === 'bug') {
       if (!whatHappened.trim() || !stepsToReproduce.trim() || !expectedBehavior.trim()) {
-        return 'Please complete all required bug fields.';
+        return t('Please complete all required bug fields.');
       }
       return null;
     }
 
     if (!problem.trim() || !proposedSolution.trim() || !useCase.trim()) {
-      return 'Please complete all required feature fields.';
+      return t('Please complete all required feature fields.');
     }
 
     return null;
@@ -215,6 +218,7 @@ export function FeedbackModal({
     problem,
     proposedSolution,
     stepsToReproduce,
+    t,
     title,
     type,
     useCase,
@@ -272,7 +276,9 @@ export function FeedbackModal({
         onClose();
       } catch (error) {
         const message =
-          error instanceof Error ? error.message : 'Feedback could not be submitted at this time.';
+          error instanceof Error
+            ? error.message
+            : t('Feedback could not be submitted at this time.');
         setSubmitError(message);
         onSubmitError?.(message);
       } finally {
@@ -299,6 +305,7 @@ export function FeedbackModal({
       validate,
       website,
       whatHappened,
+      t,
     ],
   );
 
@@ -309,7 +316,7 @@ export function FeedbackModal({
       title={
         <Group gap="sm">
           <MessageSquare size={18} />
-          <Text fw={600}>Share Feedback</Text>
+          <Text fw={600}>{t('Share Feedback')}</Text>
         </Group>
       }
       centered
@@ -320,40 +327,40 @@ export function FeedbackModal({
           <Tabs value={type} onChange={(value) => setType((value as FeedbackType) || 'bug')}>
             <Tabs.List>
               <Tabs.Tab value="bug" leftSection={<Bug size={14} />}>
-                Bug
+                {t('Bug')}
               </Tabs.Tab>
               <Tabs.Tab value="feature" leftSection={<Lightbulb size={14} />}>
-                Feature
+                {t('Feature')}
               </Tabs.Tab>
             </Tabs.List>
 
             <Tabs.Panel value="bug" pt="md">
               <Stack gap="sm">
                 <TextInput
-                  label="Title"
-                  placeholder="Short summary of the issue"
+                  label={t('Title')}
+                  placeholder={t('Short summary of the issue')}
                   value={title}
                   onChange={(event) => setTitle(event.currentTarget.value)}
                 />
                 <Textarea
-                  label="What happened"
-                  placeholder="Describe what you saw"
+                  label={t('What happened')}
+                  placeholder={t('Describe what you saw')}
                   value={whatHappened}
                   onChange={(event) => setWhatHappened(event.currentTarget.value)}
                   autosize
                   minRows={3}
                 />
                 <Textarea
-                  label="Steps to reproduce"
-                  placeholder="List steps someone else can follow"
+                  label={t('Steps to reproduce')}
+                  placeholder={t('List steps someone else can follow')}
                   value={stepsToReproduce}
                   onChange={(event) => setStepsToReproduce(event.currentTarget.value)}
                   autosize
                   minRows={3}
                 />
                 <Textarea
-                  label="Expected behavior"
-                  placeholder="What should have happened"
+                  label={t('Expected behavior')}
+                  placeholder={t('What should have happened')}
                   value={expectedBehavior}
                   onChange={(event) => setExpectedBehavior(event.currentTarget.value)}
                   autosize
@@ -365,30 +372,30 @@ export function FeedbackModal({
             <Tabs.Panel value="feature" pt="md">
               <Stack gap="sm">
                 <TextInput
-                  label="Title"
-                  placeholder="Short summary of the request"
+                  label={t('Title')}
+                  placeholder={t('Short summary of the request')}
                   value={title}
                   onChange={(event) => setTitle(event.currentTarget.value)}
                 />
                 <Textarea
-                  label="Problem / opportunity"
-                  placeholder="What is hard today?"
+                  label={t('Problem / opportunity')}
+                  placeholder={t('What is hard today?')}
                   value={problem}
                   onChange={(event) => setProblem(event.currentTarget.value)}
                   autosize
                   minRows={3}
                 />
                 <Textarea
-                  label="Proposed solution"
-                  placeholder="What would help?"
+                  label={t('Proposed solution')}
+                  placeholder={t('What would help?')}
                   value={proposedSolution}
                   onChange={(event) => setProposedSolution(event.currentTarget.value)}
                   autosize
                   minRows={3}
                 />
                 <Textarea
-                  label="Use case"
-                  placeholder="When would you use this?"
+                  label={t('Use case')}
+                  placeholder={t('When would you use this?')}
                   value={useCase}
                   onChange={(event) => setUseCase(event.currentTarget.value)}
                   autosize
@@ -398,34 +405,35 @@ export function FeedbackModal({
             </Tabs.Panel>
           </Tabs>
 
-          <Divider label="Contact (optional)" labelPosition="left" />
+          <Divider label={t('Contact (optional)')} labelPosition="left" />
 
           <Alert color="gray" icon={<AlertCircle size={16} />}>
             <Text size="sm">
-              Submissions may create a GitHub issue and can include your optional contact email for
-              follow-up. See{' '}
+              {t(
+                'Submissions may create a GitHub issue and can include your optional contact email for follow-up. See',
+              )}{' '}
               <Text component="a" href="/privacy/" inherit td="underline">
-                Privacy
+                {t('Privacy')}
               </Text>{' '}
-              for details.
+              {t('for details.')}
             </Text>
           </Alert>
 
           <TextInput
-            label="Email"
+            label={t('Email')}
             placeholder="name@example.com"
             value={contactEmail}
             onChange={(event) => setContactEmail(event.currentTarget.value)}
           />
 
           <Switch
-            label="Allow follow-up questions about this feedback"
+            label={t('Allow follow-up questions about this feedback')}
             checked={allowFollowUp}
             onChange={(event) => setAllowFollowUp(event.currentTarget.checked)}
           />
 
           <TextInput
-            label="Website"
+            label={t('Website')}
             value={website}
             onChange={(event) => setWebsite(event.currentTarget.value)}
             tabIndex={-1}
@@ -442,15 +450,15 @@ export function FeedbackModal({
 
           {turnstileStatus === 'loading' && !resolveTurnstileToken && (
             <Text size="xs" c="dimmed">
-              Preparing spam protection...
+              {t('Preparing spam protection...')}
             </Text>
           )}
 
           {bypassTurnstile && (
             <Text size="xs" c="yellow">
               {hasTurnstileSiteKey
-                ? 'Turnstile bypass enabled for local development.'
-                : 'Turnstile site key not set. Using local development bypass.'}
+                ? t('Turnstile bypass enabled for local development.')
+                : t('Turnstile site key not set. Using local development bypass.')}
             </Text>
           )}
 
@@ -468,10 +476,10 @@ export function FeedbackModal({
 
           <Group justify="flex-end">
             <Button variant="default" onClick={onClose} disabled={submitting}>
-              Cancel
+              {t('Cancel')}
             </Button>
             <Button type="submit" loading={submitting} disabled={!turnstileReady}>
-              Send feedback
+              {t('Send feedback')}
             </Button>
           </Group>
         </Stack>
