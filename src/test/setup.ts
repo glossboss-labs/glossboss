@@ -3,8 +3,8 @@ import { beforeEach } from 'vitest';
 
 function createStorageMock(): Storage {
   const data = Object.create(null) as Record<string, string>;
-  const storage = {} as Storage & Record<string, string>;
-  const storageApiKeys = new Set(['clear', 'getItem', 'key', 'length', 'removeItem', 'setItem']);
+  const storage = {} as Storage;
+  const storageApiKeys = new Set<string>();
 
   function syncEnumerableKey(key: string): void {
     if (storageApiKeys.has(key)) {
@@ -21,7 +21,7 @@ function createStorageMock(): Storage {
       return;
     }
 
-    delete storage[key];
+    Reflect.deleteProperty(storage, key);
   }
 
   Object.defineProperties(storage, {
@@ -62,6 +62,10 @@ function createStorageMock(): Storage {
       },
     },
   });
+
+  for (const key of Object.getOwnPropertyNames(storage)) {
+    storageApiKeys.add(key);
+  }
 
   return storage;
 }
