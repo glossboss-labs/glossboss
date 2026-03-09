@@ -357,6 +357,7 @@ export function SettingsModal({
     clearDeepLSettings();
     setApiKey('');
     setApiType('free');
+    setFormality('prefer_less');
     setIsSaved(false);
     setTestResult(null);
   }, []);
