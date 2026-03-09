@@ -1,6 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
+  DEFAULT_APP_LANGUAGE,
   APP_LANGUAGE_STORAGE_KEY,
+  APP_LANGUAGE_OPTIONS,
   clearAppLanguage,
   detectPreferredAppLanguage,
   getAppLanguage,
@@ -12,6 +14,16 @@ import {
 describe('app language settings', () => {
   beforeEach(() => {
     localStorage.clear();
+  });
+
+  it('discovers app languages from the locale files', () => {
+    expect(DEFAULT_APP_LANGUAGE).toBe('en');
+    expect(APP_LANGUAGE_OPTIONS).toEqual(
+      expect.arrayContaining([
+        { value: 'en', label: 'English' },
+        { value: 'nl', label: 'Nederlands' },
+      ]),
+    );
   });
 
   it('normalizes supported locale variants', () => {

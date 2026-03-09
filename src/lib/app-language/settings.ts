@@ -1,15 +1,27 @@
+import { DISCOVERED_APP_LANGUAGES } from './discovery';
+
 export const APP_LANGUAGE_STORAGE_KEY = 'glossboss-app-language';
 
-export const APP_LANGUAGE_OPTIONS = [
-  { value: 'en', label: 'English' },
-  { value: 'nl', label: 'Nederlands' },
-] as const;
+export const APP_LANGUAGE_OPTIONS = DISCOVERED_APP_LANGUAGES.map(({ value, label }) => ({
+  value,
+  label,
+}));
 
 export type AppLanguage = (typeof APP_LANGUAGE_OPTIONS)[number]['value'];
 
 const SUPPORTED_APP_LANGUAGES = new Set<AppLanguage>(
   APP_LANGUAGE_OPTIONS.map((option) => option.value),
 );
+
+const englishAppLanguage = APP_LANGUAGE_OPTIONS.find((option) => option.value === 'en')?.value;
+
+if (!englishAppLanguage) {
+  throw new Error(
+    '[App Language] English app locale app.en.po is required as the fallback language.',
+  );
+}
+
+export const DEFAULT_APP_LANGUAGE: AppLanguage = englishAppLanguage;
 
 export function normalizeAppLanguage(value?: string | null): AppLanguage | null {
   if (!value) return null;
@@ -21,7 +33,7 @@ export function normalizeAppLanguage(value?: string | null): AppLanguage | null 
 }
 
 export function detectPreferredAppLanguage(preferred?: string | null): AppLanguage {
-  return normalizeAppLanguage(preferred) ?? 'en';
+  return normalizeAppLanguage(preferred) ?? DEFAULT_APP_LANGUAGE;
 }
 
 export function getAppLanguage(): AppLanguage {
@@ -36,7 +48,7 @@ export function getAppLanguage(): AppLanguage {
     return detectPreferredAppLanguage(navigator.language);
   }
 
-  return 'en';
+  return DEFAULT_APP_LANGUAGE;
 }
 
 export function saveAppLanguage(language: AppLanguage): void {

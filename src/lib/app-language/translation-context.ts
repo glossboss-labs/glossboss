@@ -1,6 +1,6 @@
 import { createContext } from 'react';
 import { translateAppMessage } from './catalog';
-import type { AppLanguage } from './settings';
+import { DEFAULT_APP_LANGUAGE, type AppLanguage } from './settings';
 
 type TranslationValues = Record<string, string | number>;
 
@@ -11,7 +11,7 @@ export interface TranslationContextValue {
 }
 
 export const TranslationContext = createContext<TranslationContextValue>({
-  language: 'en',
+  language: DEFAULT_APP_LANGUAGE,
   setLanguage: () => undefined,
-  t: (msgid, values) => translateAppMessage('en', msgid, { values }),
+  t: (msgid, values) => translateAppMessage(DEFAULT_APP_LANGUAGE, msgid, { values }),
 });

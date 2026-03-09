@@ -1,6 +1,7 @@
 export {
   APP_LANGUAGE_OPTIONS,
   APP_LANGUAGE_STORAGE_KEY,
+  DEFAULT_APP_LANGUAGE,
   clearAppLanguage,
   detectPreferredAppLanguage,
   getAppLanguage,

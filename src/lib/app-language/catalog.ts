@@ -1,8 +1,6 @@
-import { parsePOFile } from '@/lib/po';
-import type { POEntry } from '@/lib/po';
-import enRaw from './locales/app.en.po?raw';
-import nlRaw from './locales/app.nl.po?raw';
-import type { AppLanguage } from './settings';
+import type { POEntry, POFile } from '@/lib/po';
+import { DISCOVERED_APP_LANGUAGES } from './discovery';
+import { DEFAULT_APP_LANGUAGE, type AppLanguage } from './settings';
 
 type TranslationValue = string | number;
 
@@ -21,10 +19,8 @@ function getEntryKey(entry: POEntry): string {
   return getCatalogKey(entry.msgid, entry.msgctxt);
 }
 
-function createCatalog(rawContent: string, filename: string): TranslationCatalog {
+function createCatalog(file: POFile, filename: string): TranslationCatalog {
   try {
-    const file = parsePOFile(rawContent, filename);
-
     return file.entries.reduce<TranslationCatalog>((catalog, entry) => {
       const translated = entry.msgstr.trim() || entry.msgid;
       catalog[getEntryKey(entry)] = translated;
@@ -36,10 +32,15 @@ function createCatalog(rawContent: string, filename: string): TranslationCatalog
   }
 }
 
-const catalogs: Record<AppLanguage, TranslationCatalog> = {
-  en: createCatalog(enRaw, 'app.en.po'),
-  nl: createCatalog(nlRaw, 'app.nl.po'),
-};
+const catalogs = DISCOVERED_APP_LANGUAGES.reduce<Record<AppLanguage, TranslationCatalog>>(
+  (allCatalogs, language) => {
+    allCatalogs[language.value] = createCatalog(language.file, language.filename);
+    return allCatalogs;
+  },
+  {},
+);
+
+const fallbackLanguage = DEFAULT_APP_LANGUAGE;
 
 function interpolate(message: string, values?: Record<string, TranslationValue>): string {
   if (!values) return message;
@@ -54,7 +55,7 @@ export function translateAppMessage(
   msgid: string,
   options?: TranslationOptions,
 ): string {
-  const catalog = catalogs[language] ?? catalogs.en;
-  const message = catalog[getCatalogKey(msgid, options?.context)] ?? msgid;
+  const catalog = catalogs[language] ?? catalogs[fallbackLanguage];
+  const message = catalog?.[getCatalogKey(msgid, options?.context)] ?? msgid;
   return interpolate(message, options?.values);
 }
