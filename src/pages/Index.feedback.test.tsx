@@ -38,7 +38,7 @@ msgid "Donate"
 msgstr "Spenden"
 `.trim();
 
-function setNavigatorLocale(language: string, languages = [language]) {
+function mockNavigatorLanguages(language: string, languages = [language]) {
   Object.defineProperty(window.navigator, 'language', {
     configurable: true,
     value: language,
@@ -54,7 +54,7 @@ describe('Index feedback and empty state actions', () => {
     localStorage.clear();
     useEditorStore.getState().clearEditor();
     useSourceStore.getState().clearSource();
-    setNavigatorLocale('en-US');
+    mockNavigatorLanguages('en-US');
     globalThis.fetch = originalFetch;
   });
 
@@ -94,7 +94,7 @@ describe('Index feedback and empty state actions', () => {
       }),
     );
     globalThis.fetch = fetchMock;
-    setNavigatorLocale('de-DE');
+    mockNavigatorLanguages('de-DE');
 
     render(
       <AppProviders>

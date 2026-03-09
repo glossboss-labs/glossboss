@@ -111,6 +111,7 @@ msgid "Donate"
 msgstr "Doneren"
 `.trim();
 const EXAMPLE_FETCH_TIMEOUT_MS = 8000;
+const EXAMPLE_PO_CACHE = new Map<string, string>();
 const EXAMPLE_TARGET_LANGUAGE_CANDIDATES = [
   'BG',
   'CS',
@@ -155,7 +156,7 @@ function getDeviceExampleTargetLanguage(): TargetLanguage | null {
   );
 
   for (const locale of locales) {
-    const normalizedLocale = locale.trim().replace('_', '-').toUpperCase();
+    const normalizedLocale = locale.trim().replaceAll('_', '-').toUpperCase();
 
     if (!normalizedLocale) {
       continue;
@@ -233,9 +234,19 @@ function buildExamplePoWordPressUrls(targetLanguage: TargetLanguage | null): str
   );
 }
 
+function isValidHelloDollyPo(text: string): boolean {
+  return text.includes('msgid ""') && text.includes('"Project-Id-Version: Hello Dolly');
+}
+
 async function fetchExamplePoFromWordPress(
   targetLanguage: TargetLanguage | null,
 ): Promise<string | null> {
+  const cacheKey = targetLanguage ?? 'nl';
+  const cachedExample = EXAMPLE_PO_CACHE.get(cacheKey);
+  if (cachedExample) {
+    return cachedExample;
+  }
+
   for (const url of buildExamplePoWordPressUrls(targetLanguage)) {
     const controller = new AbortController();
     const timeoutId = window.setTimeout(() => controller.abort(), EXAMPLE_FETCH_TIMEOUT_MS);
@@ -251,7 +262,8 @@ async function fetchExamplePoFromWordPress(
 
       const text = await response.text();
 
-      if (text.includes('msgid ""') && text.includes('"Project-Id-Version: Hello Dolly')) {
+      if (isValidHelloDollyPo(text)) {
+        EXAMPLE_PO_CACHE.set(cacheKey, text);
         return text;
       }
     } catch {
@@ -1096,6 +1108,7 @@ export default function Index() {
     setPendingDraft(null);
     setIsFromDraft(false);
     setLastAutoSave(null);
+    // Reset inferred translation languages so the next file can derive them from its own headers.
     setTranslateSourceLang(undefined);
     setTranslateTargetLang(undefined);
   }, [clearEditor, filename]);
