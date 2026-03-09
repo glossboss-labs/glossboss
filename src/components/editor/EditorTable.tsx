@@ -167,6 +167,7 @@ function ResizableTh({
       data-column-key={dataColumnKey}
       style={{
         width: widthPercent,
+        padding: '12px 8px',
         position: 'relative',
         userSelect: 'none',
         textAlign: align,
