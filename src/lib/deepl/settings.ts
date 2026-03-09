@@ -15,12 +15,17 @@ const PERSIST_KEY = 'glossboss-deepl-persist';
 /** API types */
 export type DeepLApiType = 'free' | 'pro';
 
+/** Formality preference for DeepL translations */
+export type DeepLFormality = 'prefer_less' | 'prefer_more';
+
 /** Settings structure */
 export interface DeepLSettings {
   /** User's DeepL API key */
   apiKey: string;
   /** API type (free or pro) */
   apiType: DeepLApiType;
+  /** Formality preference */
+  formality: DeepLFormality;
   /** When the settings were last updated */
   updatedAt: number;
 }
@@ -29,6 +34,7 @@ export interface DeepLSettings {
 const DEFAULT_SETTINGS: DeepLSettings = {
   apiKey: '',
   apiType: 'free',
+  formality: 'prefer_less',
   updatedAt: 0,
 };
 

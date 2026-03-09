@@ -20,6 +20,7 @@ describe('DeepL settings', () => {
       const settings = getDeepLSettings();
       expect(settings.apiKey).toBe('');
       expect(settings.apiType).toBe('free');
+      expect(settings.formality).toBe('prefer_less');
     });
 
     it('reads from sessionStorage by default (persist disabled)', () => {
@@ -41,6 +42,24 @@ describe('DeepL settings', () => {
       expect(settings.apiKey).toBe('local-key');
       expect(settings.apiType).toBe('pro');
     });
+
+    it('uses default formality when stored settings lack formality', () => {
+      sessionStorage.setItem(
+        'glossboss-deepl-settings',
+        JSON.stringify({ apiKey: 'k', apiType: 'free', updatedAt: 1 }),
+      );
+      const settings = getDeepLSettings();
+      expect(settings.formality).toBe('prefer_less');
+    });
+
+    it('reads stored formality preference', () => {
+      sessionStorage.setItem(
+        'glossboss-deepl-settings',
+        JSON.stringify({ apiKey: 'k', apiType: 'free', formality: 'prefer_more', updatedAt: 1 }),
+      );
+      const settings = getDeepLSettings();
+      expect(settings.formality).toBe('prefer_more');
+    });
   });
 
   describe('saveDeepLSettings', () => {
@@ -54,6 +73,12 @@ describe('DeepL settings', () => {
       setPersistEnabled(true);
       saveDeepLSettings({ apiKey: 'test-key', apiType: 'pro' });
       expect(localStorage.getItem('glossboss-deepl-settings')).not.toBeNull();
+    });
+
+    it('persists formality preference', () => {
+      saveDeepLSettings({ formality: 'prefer_more' });
+      const settings = getDeepLSettings();
+      expect(settings.formality).toBe('prefer_more');
     });
   });
 
