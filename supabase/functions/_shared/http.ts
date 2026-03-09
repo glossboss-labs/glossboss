@@ -21,11 +21,11 @@ export function getAllowedOrigins(): string[] {
 }
 
 function isWildcardOriginPattern(pattern: string): boolean {
-  return /^https?:\/\/\*\.[^/]+$/i.test(pattern);
+  return /^https?:\/\/\*\.[^/:]+$/i.test(pattern);
 }
 
 function wildcardPatternMatchesOrigin(origin: string, pattern: string): boolean {
-  const patternMatch = pattern.match(/^(https?):\/\/\*\.([^/]+)$/i);
+  const patternMatch = pattern.match(/^(https?):\/\/\*\.([^/:]+)$/i);
   if (!patternMatch) return false;
 
   try {

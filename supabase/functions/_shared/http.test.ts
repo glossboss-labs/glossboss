@@ -63,6 +63,12 @@ describe('shared HTTP helpers', () => {
     expect(isAllowedOrigin('https://example.com')).toBe(false);
   });
 
+  it('rejects wildcard patterns with ports', () => {
+    installDenoEnv('https://*.glossboss.pages.dev:3000');
+
+    expect(isAllowedOrigin('https://preview.glossboss.pages.dev:3000')).toBe(false);
+  });
+
   it('requires JSON content for non-OPTIONS requests', () => {
     const request = new Request('https://functions.test/feedback', {
       method: 'POST',
