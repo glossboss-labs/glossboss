@@ -177,4 +177,10 @@ describe('FeedbackModal', () => {
     ).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /send feedback/i })).toBeEnabled();
   });
+
+  it('renders the Turnstile mount with the spacing-fix class', () => {
+    renderModal();
+
+    expect(screen.getByTestId('feedback-turnstile-mount')).toHaveClass('feedback-turnstile-mount');
+  });
 });
