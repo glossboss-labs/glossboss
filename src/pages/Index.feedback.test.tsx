@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router';
 import { AppProviders } from '@/providers';
 import { clearExamplePoCacheForTests } from '@/lib/example-po';
 import Index from '@/pages/Index';
@@ -75,9 +76,11 @@ describe('Index feedback and empty state actions', () => {
     const user = userEvent.setup();
 
     render(
-      <AppProviders>
-        <Index />
-      </AppProviders>,
+      <MemoryRouter>
+        <AppProviders>
+          <Index />
+        </AppProviders>
+      </MemoryRouter>,
     );
 
     const feedbackButton = screen.getByRole('button', { name: /feedback/i });
@@ -100,9 +103,11 @@ describe('Index feedback and empty state actions', () => {
     mockNavigatorLanguages('de-DE');
 
     render(
-      <AppProviders>
-        <Index />
-      </AppProviders>,
+      <MemoryRouter>
+        <AppProviders>
+          <Index />
+        </AppProviders>
+      </MemoryRouter>,
     );
 
     expect(screen.getByRole('button', { name: /load example po/i })).toBeInTheDocument();
@@ -134,9 +139,11 @@ describe('Index feedback and empty state actions', () => {
     globalThis.fetch = vi.fn().mockRejectedValue(new Error('network down'));
 
     render(
-      <AppProviders>
-        <Index />
-      </AppProviders>,
+      <MemoryRouter>
+        <AppProviders>
+          <Index />
+        </AppProviders>
+      </MemoryRouter>,
     );
 
     await user.click(screen.getByRole('button', { name: /load example po/i }));
@@ -152,9 +159,11 @@ describe('Index feedback and empty state actions', () => {
 
   it('renders footer links for source, license, translate, and privacy', () => {
     render(
-      <AppProviders>
-        <Index />
-      </AppProviders>,
+      <MemoryRouter>
+        <AppProviders>
+          <Index />
+        </AppProviders>
+      </MemoryRouter>,
     );
 
     expect(screen.getByRole('link', { name: 'Source' })).toHaveAttribute(
@@ -168,9 +177,11 @@ describe('Index feedback and empty state actions', () => {
 
   it('shows the development branch chip by default and hides it when disabled in storage', () => {
     const { unmount } = render(
-      <AppProviders>
-        <Index />
-      </AppProviders>,
+      <MemoryRouter>
+        <AppProviders>
+          <Index />
+        </AppProviders>
+      </MemoryRouter>,
     );
 
     expect(screen.getByText('test-branch')).toBeInTheDocument();
@@ -180,9 +191,11 @@ describe('Index feedback and empty state actions', () => {
     localStorage.setItem('glossboss-dev-branch-chip-enabled', 'false');
 
     render(
-      <AppProviders>
-        <Index />
-      </AppProviders>,
+      <MemoryRouter>
+        <AppProviders>
+          <Index />
+        </AppProviders>
+      </MemoryRouter>,
     );
 
     expect(screen.queryByText('test-branch')).not.toBeInTheDocument();
@@ -190,9 +203,11 @@ describe('Index feedback and empty state actions', () => {
 
   it('hides the development branch chip when the cursor gets close and restores it on leave', async () => {
     render(
-      <AppProviders>
-        <Index />
-      </AppProviders>,
+      <MemoryRouter>
+        <AppProviders>
+          <Index />
+        </AppProviders>
+      </MemoryRouter>,
     );
 
     const branchLabel = screen.getByText('test-branch');

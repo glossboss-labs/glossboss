@@ -32,6 +32,7 @@ import {
   RotateCcw,
   WandSparkles,
 } from 'lucide-react';
+import { msgid } from '@/lib/app-language';
 import { useEditorStore } from '@/stores';
 import { getDeepLClient, hasUserApiKey } from '@/lib/deepl';
 import {
@@ -572,7 +573,7 @@ export function TranslateToolbar({
               ? `⚠️ ${manualEditCount} manually edited entries will be overwritten!`
               : 'Consider downloading a backup first.'
         }
-        confirmLabel="Retranslate All"
+        confirmLabel={msgid('Retranslate All')}
         confirmColor="orange"
         variant={manualEditCount > 0 && !skipManualEdits ? 'danger' : 'warning'}
       />

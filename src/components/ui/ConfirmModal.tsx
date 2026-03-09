@@ -9,7 +9,7 @@ import { Modal, Stack, Text, Group, Button, ThemeIcon } from '@mantine/core';
 import { motion, AnimatePresence } from 'motion/react';
 import { AlertTriangle, Info } from 'lucide-react';
 import { slideUpVariants, buttonStates } from '@/lib/motion';
-import { useTranslation } from '@/lib/app-language';
+import { msgid, useTranslation } from '@/lib/app-language';
 
 const MotionStack = motion.create(Stack);
 
@@ -34,8 +34,8 @@ export function ConfirmModal({
   title,
   message,
   detail,
-  confirmLabel = 'Confirm',
-  cancelLabel = 'Cancel',
+  confirmLabel = msgid('Confirm'),
+  cancelLabel = msgid('Cancel'),
   confirmColor = 'red',
   variant = 'warning',
   loading = false,
