@@ -1,4 +1,5 @@
 import type { FeedbackIssueRequest, FeedbackIssueResponse, FeedbackIssueSuccess } from './types';
+import { getSupabaseAnonKey, getSupabaseFunctionBaseUrl } from '@/lib/cloud-backend';
 import { buildSupabaseFunctionHeaders } from '@/lib/supabase-function-headers';
 
 const REQUEST_TIMEOUT_MS = 20000;
@@ -14,21 +15,21 @@ export class FeedbackSubmissionError extends Error {
 }
 
 function getFeedbackFunctionUrl(): string {
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-  if (!supabaseUrl) {
+  try {
+    return `${getSupabaseFunctionBaseUrl('Feedback')}/feedback-issue`;
+  } catch {
     throw new FeedbackSubmissionError(
-      'Cloud backend is not configured. Add VITE_SUPABASE_URL to enable feedback.',
+      'Feedback is unavailable in this deployment.',
       'MISSING_SUPABASE_URL',
     );
   }
-  return `${supabaseUrl}/functions/v1/feedback-issue`;
 }
 
 export async function submitFeedbackIssue(
   payload: FeedbackIssueRequest,
 ): Promise<FeedbackIssueSuccess> {
   const functionUrl = getFeedbackFunctionUrl();
-  const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+  const anonKey = getSupabaseAnonKey();
   const headers = buildSupabaseFunctionHeaders(anonKey);
 
   const controller = new AbortController();
