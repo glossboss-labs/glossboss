@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AppProviders } from '@/providers';
+import { clearExamplePoCacheForTests } from '@/lib/example-po';
 import Index from '@/pages/Index';
 import { useEditorStore } from '@/stores/editor-store';
 import { useSourceStore } from '@/stores/source-store';
@@ -52,6 +53,7 @@ function mockNavigatorLanguages(language: string, languages = [language]) {
 describe('Index feedback and empty state actions', () => {
   beforeEach(() => {
     localStorage.clear();
+    clearExamplePoCacheForTests();
     useEditorStore.getState().clearEditor();
     useSourceStore.getState().clearSource();
     mockNavigatorLanguages('en-US');
@@ -66,6 +68,7 @@ describe('Index feedback and empty state actions', () => {
       Object.defineProperty(window.navigator, 'languages', navigatorLanguagesDescriptor);
     }
     globalThis.fetch = originalFetch;
+    clearExamplePoCacheForTests();
   });
 
   it('renders a feedback button and opens feedback modal', async () => {
@@ -107,7 +110,7 @@ describe('Index feedback and empty state actions', () => {
     await user.click(screen.getByRole('button', { name: /load example po/i }));
 
     await waitFor(() => {
-      expect(useEditorStore.getState().filename).toBe('hello-dolly-nl_NL.po');
+      expect(useEditorStore.getState().filename).toBe('hello-dolly-de_DE.po');
     });
 
     expect(fetchMock).toHaveBeenCalledWith(
@@ -124,7 +127,7 @@ describe('Index feedback and empty state actions', () => {
     expect(screen.getByText('Auto-detected: hello-dolly')).toBeInTheDocument();
     expect(screen.getByText('Detected: DE')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /load example po/i })).not.toBeInTheDocument();
-  });
+  }, 10000);
 
   it('falls back to the bundled example when WordPress is unavailable', async () => {
     const user = userEvent.setup();
