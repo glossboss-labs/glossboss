@@ -62,8 +62,12 @@ jobs:
 
             count=$(echo "$untranslated" | grep -c '^\- \[' || true)
 
-            # Find existing issue
+            # Find existing issue (check current title, then fall back to old format without [Translations] prefix)
+            old_title="i18n: Untranslated strings in ${name} (${lang})"
             existing=$(gh issue list --label i18n --state open --search "in:title $title" --json number,title --jq ".[] | select(.title == \"$title\") | .number" | head -1)
+            if [ -z "$existing" ]; then
+              existing=$(gh issue list --label i18n --state open --search "in:title $old_title" --json number,title --jq ".[] | select(.title == \"$old_title\") | .number" | head -1)
+            fi
 
             if [ "$count" -gt 0 ]; then
               # Build a raw GitHub URL for the PO file so GlossBoss can load it directly
@@ -95,7 +99,7 @@ jobs:
               fi
 
               if [ -n "$existing" ]; then
-                gh issue edit "$existing" --body "$body" $assignee_flags
+                gh issue edit "$existing" --title "$title" --body "$body" $assignee_flags
                 echo "Updated issue #${existing} for ${lang}"
               else
                 gh issue create --title "$title" --label i18n --body "$body" $assignee_flags
