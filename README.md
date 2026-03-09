@@ -3,6 +3,7 @@
 GlossBoss is a browser-based translation editor for gettext `.po` / `.pot` files and i18next JSON resources. It combines local draft recovery, DeepL-powered machine translation, and WordPress glossary/source tooling in a single React app.
 
 The project is open source under `AGPL-3.0-only`.
+It is maintained by Toine Rademacher and Bjorn Lammers.
 
 ## Features
 
@@ -165,6 +166,7 @@ public/
 
 ## Open source
 
+- Maintainers: Toine Rademacher and Bjorn Lammers
 - License: `LICENSE`
 - Contributing guide: `CONTRIBUTING.md`
 - Security policy: `SECURITY.md`
