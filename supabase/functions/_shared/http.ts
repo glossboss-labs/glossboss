@@ -20,12 +20,37 @@ export function getAllowedOrigins(): string[] {
     .filter(Boolean);
 }
 
+function isWildcardOriginPattern(pattern: string): boolean {
+  return /^https?:\/\/\*\.[^/]+$/i.test(pattern);
+}
+
+function wildcardPatternMatchesOrigin(origin: string, pattern: string): boolean {
+  const patternMatch = pattern.match(/^(https?):\/\/\*\.([^/]+)$/i);
+  if (!patternMatch) return false;
+
+  try {
+    const url = new URL(origin);
+    const protocol = url.protocol.slice(0, -1).toLowerCase();
+    const hostname = url.hostname.toLowerCase();
+    const expectedProtocol = patternMatch[1].toLowerCase();
+    const baseHostname = patternMatch[2].toLowerCase();
+
+    return protocol === expectedProtocol && hostname.endsWith(`.${baseHostname}`);
+  } catch {
+    return false;
+  }
+}
+
 export function isAllowedOrigin(
   origin: string | null,
   allowedOrigins = getAllowedOrigins(),
 ): boolean {
   if (!origin) return false;
-  return allowedOrigins.includes(origin);
+  return allowedOrigins.some((allowedOrigin) =>
+    isWildcardOriginPattern(allowedOrigin)
+      ? wildcardPatternMatchesOrigin(origin, allowedOrigin)
+      : allowedOrigin === origin,
+  );
 }
 
 export function validateRequestOrigin(req: Request): OriginValidationResult {
@@ -44,8 +69,7 @@ export function validateRequestOrigin(req: Request): OriginValidationResult {
 }
 
 export function buildCorsHeaders(origin: string | null): HeadersInit {
-  const allowedOrigins = getAllowedOrigins();
-  const allowOrigin = origin && allowedOrigins.includes(origin) ? origin : 'null';
+  const allowOrigin = isAllowedOrigin(origin) ? origin : 'null';
 
   return {
     'Access-Control-Allow-Origin': allowOrigin,

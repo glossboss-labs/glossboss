@@ -9,9 +9,10 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "cf:deploy:check-env": "test -n \"$VITE_SUPABASE_URL\" && test -n \"$VITE_SUPABASE_ANON_KEY\" && test -n \"$VITE_TURNSTILE_SITE_KEY\"",
     "cf:project:create": "bunx wrangler pages project create glossboss --production-branch main",
-    "cf:deploy": "bun run build && bunx wrangler pages deploy dist --project-name glossboss --branch main --commit-dirty=true",
-    "cf:deploy:preview": "bun run build && bunx wrangler pages deploy dist --project-name glossboss --branch preview --commit-dirty=true",
+    "cf:deploy": "bun run cf:deploy:check-env && bun run build && bunx wrangler pages deploy dist --project-name glossboss --branch main --commit-dirty=true",
+    "cf:deploy:preview": "bun run cf:deploy:check-env && bun run build && bunx wrangler pages deploy dist --project-name glossboss --branch preview --commit-dirty=true",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

@@ -9,6 +9,7 @@
 
 import type { Glossary } from './types';
 import { parseGlossaryCSV, isValidGlossaryCSV } from './csv-parser';
+import { getSupabaseAnonKey, getSupabaseFunctionBaseUrl } from '@/lib/cloud-backend';
 import { buildSupabaseFunctionHeaders } from '@/lib/supabase-function-headers';
 
 /** Cache key prefix for localStorage */
@@ -49,11 +50,7 @@ export function buildGlossaryURL(locale: string): string {
  * Get the edge function URL
  */
 function getEdgeFunctionUrl(): string {
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-  if (!supabaseUrl) {
-    throw new Error('Cloud Backend not configured');
-  }
-  return `${supabaseUrl}/functions/v1/wp-glossary`;
+  return `${getSupabaseFunctionBaseUrl('WordPress glossary loading')}/wp-glossary`;
 }
 
 /**
@@ -81,7 +78,7 @@ export async function fetchWPGlossary(locale: string, forceRefresh = false): Pro
   // Fetch via edge function
   try {
     const functionUrl = getEdgeFunctionUrl();
-    const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+    const anonKey = getSupabaseAnonKey();
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
