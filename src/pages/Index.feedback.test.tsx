@@ -150,7 +150,7 @@ describe('Index feedback and empty state actions', () => {
     expect(screen.getByText('Detected: NL')).toBeInTheDocument();
   });
 
-  it('renders footer links for source, license, and privacy', () => {
+  it('renders footer links for source, license, translate, and privacy', () => {
     render(
       <AppProviders>
         <Index />
@@ -162,6 +162,7 @@ describe('Index feedback and empty state actions', () => {
       'https://github.com/lammersbjorn/glossboss',
     );
     expect(screen.getByRole('link', { name: 'License' })).toHaveAttribute('href', '/license/');
+    expect(screen.getByRole('link', { name: 'Translate' })).toHaveAttribute('href', '/translate/');
     expect(screen.getByRole('link', { name: 'Privacy' })).toHaveAttribute('href', '/privacy/');
   });
 

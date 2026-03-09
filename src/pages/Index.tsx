@@ -82,6 +82,7 @@ import {
   type DraftData,
 } from '@/lib/storage';
 import { CONTAINER_WIDTH_KEY, type ContainerWidth } from '@/lib/container-width';
+import { useTranslation } from '@/lib/app-language';
 const appIcon = '/icon.svg';
 
 const MotionDiv = motion.div;
@@ -118,6 +119,7 @@ interface PendingDraft {
 }
 
 function ThemeToggle() {
+  const { t } = useTranslation();
   const { setColorScheme } = useMantineColorScheme();
   const computedColorScheme = useComputedColorScheme('light');
 
@@ -132,7 +134,7 @@ function ThemeToggle() {
   };
 
   return (
-    <Tooltip label={computedColorScheme === 'dark' ? 'Light mode' : 'Dark mode'}>
+    <Tooltip label={computedColorScheme === 'dark' ? t('Light mode') : t('Dark mode')}>
       <motion.div {...buttonStates}>
         <ActionIcon variant="default" size="lg" onClick={toggleColorScheme}>
           {computedColorScheme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
@@ -298,6 +300,7 @@ function DevBranchChip({ branch }: { branch: string }) {
 }
 
 export default function Index() {
+  const { t } = useTranslation();
   const isDevelopment = import.meta.env.DEV;
   const [errors, setErrors] = useState<ParseIssue[]>([]);
   const [warnings, setWarnings] = useState<ParseIssue[]>([]);
@@ -982,9 +985,9 @@ export default function Index() {
                   <FileUp size={32} color="var(--mantine-color-blue-filled)" />
                 </Box>
                 <Stack align="center" gap={4}>
-                  <Title order={4}>Drop it like it's hot</Title>
+                  <Title order={4}>{t("Drop it like it's hot")}</Title>
                   <Text c="dimmed" size="sm" ta="center">
-                    Release to load your translation file
+                    {t('Release to load your translation file')}
                   </Text>
                 </Stack>
               </Stack>
@@ -1004,7 +1007,7 @@ export default function Index() {
           <Notification
             icon={<Check size={18} />}
             color="green"
-            title="File downloaded"
+            title={t('File downloaded')}
             onClose={() => setDownloadSuccess(null)}
             style={{
               ...styles,
@@ -1034,7 +1037,7 @@ export default function Index() {
           <Notification
             icon={<Check size={18} />}
             color="blue"
-            title="Updated"
+            title={t('Updated')}
             onClose={() => setMergeSuccess(null)}
             style={{
               ...styles,
@@ -1067,7 +1070,7 @@ export default function Index() {
           <Notification
             icon={<Check size={18} />}
             color="teal"
-            title="Feedback submitted"
+            title={t('Feedback submitted')}
             onClose={() => setFeedbackSuccess(null)}
             style={{
               ...styles,
@@ -1078,7 +1081,11 @@ export default function Index() {
               minWidth: 300,
             }}
           >
-            <Text size="sm">Thanks. Issue #{feedbackSuccess?.issueNumber} was created.</Text>
+            <Text size="sm">
+              {t('Thanks. Issue #{issueNumber} was created.', {
+                issueNumber: feedbackSuccess?.issueNumber ?? '',
+              })}
+            </Text>
             {feedbackSuccess?.issueUrl && (
               <Text
                 component="a"
@@ -1088,7 +1095,7 @@ export default function Index() {
                 size="sm"
                 mt={4}
               >
-                Open issue
+                {t('Open issue')}
               </Text>
             )}
           </Notification>
@@ -1106,7 +1113,7 @@ export default function Index() {
           <Notification
             icon={<AlertTriangle size={18} />}
             color="red"
-            title="Feedback failed"
+            title={t('Feedback failed')}
             onClose={() => setFeedbackError(null)}
             style={{
               ...styles,
@@ -1145,7 +1152,7 @@ export default function Index() {
                   <Title order={1}>GlossBoss</Title>
                 </Group>
                 <Text c="dimmed" size="sm" mt={4}>
-                  Edit gettext translation files with DeepL integration
+                  {t('Edit gettext translation files with DeepL integration')}
                 </Text>
               </div>
 
@@ -1158,7 +1165,7 @@ export default function Index() {
                   >
                     {(props) => (
                       <Button leftSection={<Upload size={16} />} {...props} ref={fileInputRef}>
-                        Upload
+                        {t('Upload')}
                       </Button>
                     )}
                   </FileButton>
@@ -1177,8 +1184,10 @@ export default function Index() {
                           <Tooltip
                             label={
                               hasUnsavedChanges
-                                ? 'You have unsaved changes'
-                                : `Download as ${sourceFormat === 'i18next' ? 'JSON' : 'PO'}`
+                                ? t('You have unsaved changes')
+                                : t('Download as {format}', {
+                                    format: sourceFormat === 'i18next' ? 'JSON' : 'PO',
+                                  })
                             }
                           >
                             <motion.div {...buttonStates}>
@@ -1193,7 +1202,7 @@ export default function Index() {
                                   overflow: 'visible',
                                 }}
                               >
-                                Download
+                                {t('Download')}
                                 <AnimatePresence>
                                   {hasUnsavedChanges && (
                                     <MotionDiv
@@ -1232,12 +1241,12 @@ export default function Index() {
                               </Button>
                             </Menu.Target>
                             <Menu.Dropdown>
-                              <Menu.Label>Download as</Menu.Label>
+                              <Menu.Label>{t('Download as')}</Menu.Label>
                               <Menu.Item onClick={() => handleDownloadAs('po')}>
-                                PO file (.po)
+                                {t('PO file (.po)')}
                               </Menu.Item>
                               <Menu.Item onClick={() => handleDownloadAs('i18next')}>
-                                i18next JSON (.json)
+                                {t('i18next JSON (.json)')}
                               </Menu.Item>
                             </Menu.Dropdown>
                           </Menu>
@@ -1246,7 +1255,9 @@ export default function Index() {
                         <Tooltip
                           multiline
                           w={340}
-                          label="Update this file using a .pot template. Existing translations are kept when source strings still match, new strings are added, and obsolete strings are removed."
+                          label={t(
+                            'Update this file using a .pot template. Existing translations are kept when source strings still match, new strings are added, and obsolete strings are removed.',
+                          )}
                         >
                           <motion.div {...buttonStates}>
                             <FileButton onChange={handlePotUpload} accept=".pot">
@@ -1256,7 +1267,7 @@ export default function Index() {
                                   variant="light"
                                   {...props}
                                 >
-                                  Update
+                                  {t('Update')}
                                 </Button>
                               )}
                             </FileButton>
@@ -1267,14 +1278,14 @@ export default function Index() {
                   )}
                 </AnimatePresence>
 
-                <Tooltip label="Share feedback">
+                <Tooltip label={t('Share feedback')}>
                   <motion.div {...buttonStates}>
                     <Button
                       variant="default"
                       leftSection={<MessageSquare size={16} />}
                       onClick={() => setFeedbackOpen(true)}
                     >
-                      Feedback
+                      {t('Feedback')}
                     </Button>
                   </motion.div>
                 </Tooltip>
@@ -1283,7 +1294,7 @@ export default function Index() {
 
                 <Menu position="bottom-end" withinPortal>
                   <Menu.Target>
-                    <Tooltip label="Settings and actions">
+                    <Tooltip label={t('Settings and actions')}>
                       <motion.div {...buttonStates}>
                         <ActionIcon variant="default" size="lg">
                           <Settings size={18} />
@@ -1292,21 +1303,21 @@ export default function Index() {
                     </Tooltip>
                   </Menu.Target>
                   <Menu.Dropdown>
-                    <Menu.Label>Settings</Menu.Label>
+                    <Menu.Label>{t('Settings')}</Menu.Label>
                     <Menu.Item
                       leftSection={<Settings size={14} />}
                       onClick={() => setSettingsOpen(true)}
                     >
-                      Open settings
+                      {t('Open settings')}
                     </Menu.Item>
                     <Menu.Divider />
-                    <Menu.Label>Actions</Menu.Label>
+                    <Menu.Label>{t('Actions')}</Menu.Label>
                     <Menu.Item
                       color="red"
                       leftSection={<Trash2 size={14} />}
                       onClick={handleClearClick}
                     >
-                      Clear editor
+                      {t('Clear editor')}
                     </Menu.Item>
                   </Menu.Dropdown>
                 </Menu>
@@ -1319,9 +1330,9 @@ export default function Index() {
             opened={confirmClearOpen}
             onClose={() => setConfirmClearOpen(false)}
             onConfirm={handleClear}
-            title="Clear editor?"
-            message="You have unsaved changes. Are you sure you want to clear the editor?"
-            detail="This will remove all your work on the current file."
+            title={t('Clear editor?')}
+            message={t('You have unsaved changes. Are you sure you want to clear the editor?')}
+            detail={t('This will remove all your work on the current file.')}
             confirmLabel="Clear anyway"
             confirmColor="red"
             variant="danger"
@@ -1333,7 +1344,7 @@ export default function Index() {
               <MotionDiv variants={slideUpVariants} initial="hidden" animate="visible" exit="exit">
                 <Alert
                   color="red"
-                  title="Upload failed"
+                  title={t('Upload failed')}
                   onClose={() => setDragError(null)}
                   withCloseButton
                 >
@@ -1347,14 +1358,14 @@ export default function Index() {
           {errors.length > 0 && (
             <Alert
               color="red"
-              title="Failed to parse file"
+              title={t('Failed to parse file')}
               onClose={() => setErrors([])}
               withCloseButton
             >
               <List size="sm" spacing="xs">
                 {errors.map((error, idx) => (
                   <List.Item key={idx}>
-                    {error.line && <Code mr={8}>Line {error.line}</Code>}
+                    {error.line && <Code mr={8}>{t('Line {line}', { line: error.line })}</Code>}
                     {error.message}
                   </List.Item>
                 ))}
@@ -1402,7 +1413,7 @@ export default function Index() {
               title={
                 <Group gap="xs">
                   <RotateCcw size={16} />
-                  <span data-ev-id="ev_be4d010bf8">Unsaved draft found</span>
+                  <span data-ev-id="ev_be4d010bf8">{t('Unsaved draft found')}</span>
                 </Group>
               }
               withCloseButton
@@ -1410,11 +1421,17 @@ export default function Index() {
             >
               <Stack gap="sm">
                 <Text size="sm">
-                  You have unsaved changes from {formatDraftAge(pendingDraft.draft.savedAt)}. Would
-                  you like to restore your previous work?
+                  {t(
+                    'You have unsaved changes from {age}. Would you like to restore your previous work?',
+                    {
+                      age: formatDraftAge(pendingDraft.draft.savedAt),
+                    },
+                  )}
                 </Text>
                 <Text size="xs" c="dimmed">
-                  {pendingDraft.draft.dirtyEntryIds.length} modified entries will be restored.
+                  {t('{count} modified entries will be restored.', {
+                    count: pendingDraft.draft.dirtyEntryIds.length,
+                  })}
                 </Text>
                 <Group gap="sm">
                   <Button
@@ -1422,7 +1439,7 @@ export default function Index() {
                     leftSection={<RotateCcw size={14} />}
                     onClick={handleRestoreDraft}
                   >
-                    Restore draft
+                    {t('Restore draft')}
                   </Button>
                   <Button
                     size="xs"
@@ -1431,7 +1448,7 @@ export default function Index() {
                     leftSection={<X size={14} />}
                     onClick={handleDiscardDraft}
                   >
-                    Discard and use fresh file
+                    {t('Discard and use fresh file')}
                   </Button>
                 </Group>
               </Stack>
@@ -1443,12 +1460,12 @@ export default function Index() {
             <Group gap="xs">
               {isFromDraft && (
                 <Badge color="orange" variant="light" size="sm">
-                  Working from draft
+                  {t('Working from draft')}
                 </Badge>
               )}
               {lastAutoSave && (
                 <Text size="xs" c="dimmed">
-                  Auto-saved {formatDraftAge(lastAutoSave)}
+                  {t('Auto-saved {age}', { age: formatDraftAge(lastAutoSave) })}
                 </Text>
               )}
             </Group>
@@ -1463,11 +1480,14 @@ export default function Index() {
               {glossary && (
                 <Group gap="xs">
                   <Badge color="green" variant="light" size="sm" leftSection={<Check size={10} />}>
-                    Glossary: {glossary.entries.length} terms ({glossary.targetLocale})
+                    {t('Glossary: {count} terms ({locale})', {
+                      count: glossary.entries.length,
+                      locale: glossary.targetLocale,
+                    })}
                   </Badge>
                   {deeplGlossaryId && (
                     <Badge color="blue" variant="light" size="sm">
-                      DeepL synced
+                      {t('DeepL synced')}
                     </Badge>
                   )}
                 </Group>
@@ -1526,10 +1546,11 @@ export default function Index() {
                   />
 
                   <Stack align="center" gap="xs">
-                    <Title order={3}>Upload a translation file to start</Title>
+                    <Title order={3}>{t('Upload a translation file to start')}</Title>
                     <Text c="dimmed" ta="center" maw={400}>
-                      Drag and drop your translation file here, or click to browse. Your
-                      translations will be saved locally in your browser.
+                      {t(
+                        'Drag and drop your translation file here, or click to browse. Your translations will be saved locally in your browser.',
+                      )}
                     </Text>
                   </Stack>
                   <Group gap="xs">
@@ -1543,7 +1564,7 @@ export default function Index() {
                       .json
                     </Badge>
                   </Group>
-                  <Tooltip label="Load a small example WordPress plugin PO file (Hello Dolly)">
+                  <Tooltip label={t('Load a small example WordPress plugin PO file (Hello Dolly)')}>
                     <motion.div {...buttonStates}>
                       <Button
                         variant="default"
@@ -1554,7 +1575,7 @@ export default function Index() {
                           void handleLoadExamplePo();
                         }}
                       >
-                        Load example PO
+                        {t('Load example PO')}
                       </Button>
                     </motion.div>
                   </Tooltip>
@@ -1582,7 +1603,7 @@ export default function Index() {
               size="xs"
               c="dimmed"
             >
-              Source
+              {t('Source')}
             </Text>
             <Text
               component="a"
@@ -1592,7 +1613,17 @@ export default function Index() {
               size="xs"
               c="dimmed"
             >
-              License
+              {t('License')}
+            </Text>
+            <Text
+              component="a"
+              href="/translate/"
+              target="_blank"
+              rel="noopener noreferrer"
+              size="xs"
+              c="dimmed"
+            >
+              {t('Translate')}
             </Text>
             <Text
               component="a"
@@ -1602,7 +1633,7 @@ export default function Index() {
               size="xs"
               c="dimmed"
             >
-              Privacy
+              {t('Privacy')}
             </Text>
           </Group>
         </Group>

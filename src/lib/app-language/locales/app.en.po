@@ -1,0 +1,521 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: GlossBoss UI\n"
+"Language: en\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "Action"
+msgstr "Action"
+
+msgid "Actions"
+msgstr "Actions"
+
+msgid "Adjust the appearance of the editor to suit your screen and preferences."
+msgstr "Adjust the appearance of the editor to suit your screen and preferences."
+
+msgid "Allow follow-up questions about this feedback"
+msgstr "Allow follow-up questions about this feedback"
+
+msgid "API key is valid!"
+msgstr "API key is valid!"
+
+msgid "API Key"
+msgstr "API Key"
+
+msgid "API Type"
+msgstr "API Type"
+
+msgid "Auto-saved {age}"
+msgstr "Auto-saved {age}"
+
+msgid "Bug"
+msgstr "Bug"
+
+msgid "Branch status chip"
+msgstr "Branch status chip"
+
+msgid "Cancel"
+msgstr "Cancel"
+
+msgid "Cancel edit"
+msgstr "Cancel edit"
+
+msgid "characters"
+msgstr "characters"
+
+msgid "Choose which language GlossBoss uses for its interface."
+msgstr "Choose which language GlossBoss uses for its interface."
+
+msgid "Clear"
+msgstr "Clear"
+
+msgid "Clear anyway"
+msgstr "Clear anyway"
+
+msgid "Clear editor"
+msgstr "Clear editor"
+
+msgid "Clear editor?"
+msgstr "Clear editor?"
+
+msgid "Contact (optional)"
+msgstr "Contact (optional)"
+
+msgid "Confirm"
+msgstr "Confirm"
+
+msgid "Container width"
+msgstr "Container width"
+
+msgid "Controls the maximum width of the main content area. Use a wider setting on large monitors, or full width to use all available space."
+msgstr "Controls the maximum width of the main content area. Use a wider setting on large monitors, or full width to use all available space."
+
+msgid "Controls the tone of DeepL translations. Not all languages support formality."
+msgstr "Controls the tone of DeepL translations. Not all languages support formality."
+
+msgid "Read the translation guide"
+msgstr "Read the translation guide"
+
+msgid "Dark mode"
+msgstr "Dark mode"
+
+msgid "DeepL API"
+msgstr "DeepL API"
+
+msgid "DeepL API is kept in this browser tab by default and will be cleared when you close the tab. Enable \"Remember API key\" below to persist it across sessions — only do this on a personal, trusted device."
+msgstr "DeepL API is kept in this browser tab by default and will be cleared when you close the tab. Enable \"Remember API key\" below to persist it across sessions — only do this on a personal, trusted device."
+
+msgid "DeepL ready"
+msgstr "DeepL ready"
+
+msgid "DeepL ready ({count} terms)"
+msgstr "DeepL ready ({count} terms)"
+
+msgid "DeepL synced"
+msgstr "DeepL synced"
+
+msgid "DeepL will enforce glossary terms in machine translations"
+msgstr "DeepL will enforce glossary terms in machine translations"
+
+msgid "Description"
+msgstr "Description"
+
+msgid "Describe what you saw"
+msgstr "Describe what you saw"
+
+msgid "Development"
+msgstr "Development"
+
+msgid "Development Mode Only"
+msgstr "Development Mode Only"
+
+msgid "Discard and use fresh file"
+msgstr "Discard and use fresh file"
+
+msgid "Discard changes and exit the current field"
+msgstr "Discard changes and exit the current field"
+
+msgid "Display"
+msgstr "Display"
+
+msgid "Download"
+msgstr "Download"
+
+msgid "Download as"
+msgstr "Download as"
+
+msgid "Download as {format}"
+msgstr "Download as {format}"
+
+msgid "Drag and drop your translation file here, or click to browse. Your translations will be saved locally in your browser."
+msgstr "Drag and drop your translation file here, or click to browse. Your translations will be saved locally in your browser."
+
+msgid "Drop it like it's hot"
+msgstr "Drop it like it's hot"
+
+msgid "Edit gettext translation files with DeepL integration"
+msgstr "Edit gettext translation files with DeepL integration"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "Enter your DeepL API key"
+msgstr "Enter your DeepL API key"
+
+msgid "Enter your DeepL API key to enable machine translation. Get a free key at"
+msgstr "Enter your DeepL API key to enable machine translation. Get a free key at"
+
+msgid "Expected behavior"
+msgstr "Expected behavior"
+
+msgid "Failed to connect"
+msgstr "Failed to connect"
+
+msgid "Failed to initialize verification."
+msgstr "Failed to initialize verification."
+
+msgid "Failed to load glossary"
+msgstr "Failed to load glossary"
+
+msgid "Failed to parse file"
+msgstr "Failed to parse file"
+
+msgid "Failed to read the file."
+msgstr "Failed to read the file."
+
+msgid "Feature"
+msgstr "Feature"
+
+msgid "Feedback"
+msgstr "Feedback"
+
+msgid "Feedback could not be submitted at this time."
+msgstr "Feedback could not be submitted at this time."
+
+msgid "Feedback failed"
+msgstr "Feedback failed"
+
+msgid "Feedback submitted"
+msgstr "Feedback submitted"
+
+msgid "Feedback verification is not configured."
+msgstr "Feedback verification is not configured."
+
+msgid "File does not appear to be a valid WordPress glossary CSV."
+msgstr "File does not appear to be a valid WordPress glossary CSV."
+
+msgid "File downloaded"
+msgstr "File downloaded"
+
+msgid "for details."
+msgstr "for details."
+
+msgid "Formal"
+msgstr "Formal"
+
+msgid "Formality"
+msgstr "Formality"
+
+msgid "Free API"
+msgstr "Free API"
+
+msgid "Free: 500,000 chars/month • Pro: Pay per use"
+msgstr "Free: 500,000 chars/month • Pro: Pay per use"
+
+msgid "Glossary"
+msgstr "Glossary"
+
+msgid "Glossary: {count} terms ({locale})"
+msgstr "Glossary: {count} terms ({locale})"
+
+msgid "i18next JSON (.json)"
+msgstr "i18next JSON (.json)"
+
+msgid "Informal"
+msgstr "Informal"
+
+msgid "Insert a line break in the translation"
+msgstr "Insert a line break in the translation"
+
+msgid "Interface language"
+msgstr "Interface language"
+
+msgid "Keyboard shortcuts available when editing translations."
+msgstr "Keyboard shortcuts available when editing translations."
+
+msgid "Keyboard Shortcuts"
+msgstr "Keyboard Shortcuts"
+
+msgid "Key saved"
+msgstr "Key saved"
+
+msgid "Language"
+msgstr "Language"
+
+msgid "License"
+msgstr "License"
+
+msgid "Light mode"
+msgstr "Light mode"
+
+msgid "Line {line}"
+msgstr "Line {line}"
+
+msgid "List steps someone else can follow"
+msgstr "List steps someone else can follow"
+
+msgid "Load a small example WordPress plugin PO file (Hello Dolly)"
+msgstr "Load a small example WordPress plugin PO file (Hello Dolly)"
+
+msgid "Load example PO"
+msgstr "Load example PO"
+
+msgid "Load Glossary"
+msgstr "Load Glossary"
+
+msgid "Load the official WordPress translation glossary to ensure consistent terminology."
+msgstr "Load the official WordPress translation glossary to ensure consistent terminology."
+
+msgid "Navigation Settings"
+msgstr "Navigation Settings"
+
+msgid "New line"
+msgstr "New line"
+
+msgid "Next entry"
+msgstr "Next entry"
+
+msgid "Next field"
+msgstr "Next field"
+
+msgid "No glossary entries found in the uploaded file."
+msgstr "No glossary entries found in the uploaded file."
+
+msgid "Only visible while running the app in development mode"
+msgstr "Only visible while running the app in development mode"
+
+msgid "Open issue"
+msgstr "Open issue"
+
+msgid "Open settings"
+msgstr "Open settings"
+
+msgid "or upload manually"
+msgstr "or upload manually"
+
+msgid "PO file (.po)"
+msgstr "PO file (.po)"
+
+msgid "Please add a short title."
+msgstr "Please add a short title."
+
+msgid "Please complete all required bug fields."
+msgstr "Please complete all required bug fields."
+
+msgid "Please complete all required feature fields."
+msgstr "Please complete all required feature fields."
+
+msgid "Please enter an API key"
+msgstr "Please enter an API key"
+
+msgid "Please provide a valid email address or leave it empty."
+msgstr "Please provide a valid email address or leave it empty."
+
+msgid "Preparing spam protection..."
+msgstr "Preparing spam protection..."
+
+msgid "Previous field"
+msgstr "Previous field"
+
+msgid "Privacy"
+msgstr "Privacy"
+
+msgid "Translate"
+msgstr "Translate"
+
+msgid "Want to help translate GlossBoss?"
+msgstr "Want to help translate GlossBoss?"
+
+msgid "Problem / opportunity"
+msgstr "Problem / opportunity"
+
+msgid "Pro API"
+msgstr "Pro API"
+
+msgid "Proposed solution"
+msgstr "Proposed solution"
+
+msgid "Refresh from WordPress.org"
+msgstr "Refresh from WordPress.org"
+
+msgid "Release to load your translation file"
+msgstr "Release to load your translation file"
+
+msgid "Remember API key across sessions"
+msgstr "Remember API key across sessions"
+
+msgid "Remove saved key"
+msgstr "Remove saved key"
+
+msgid "Resync"
+msgstr "Resync"
+
+msgid "Restore draft"
+msgstr "Restore draft"
+
+msgid "Retry"
+msgstr "Retry"
+
+msgid "Save"
+msgstr "Save"
+
+msgid "Save and jump to the next translation entry (skips translated by default)"
+msgstr "Save and jump to the next translation entry (skips translated by default)"
+
+msgid "Save current field and move to the next translation field"
+msgstr "Save current field and move to the next translation field"
+
+msgid "Save current field and move to the previous translation field"
+msgstr "Save current field and move to the previous translation field"
+
+msgid "Select locale"
+msgstr "Select locale"
+
+msgid "Send feedback"
+msgstr "Send feedback"
+
+msgid "Settings"
+msgstr "Settings"
+
+msgid "Settings and actions"
+msgstr "Settings and actions"
+
+msgid "Settings saved!"
+msgstr "Settings saved!"
+
+msgid "Share feedback"
+msgstr "Share feedback"
+
+msgid "Share Feedback"
+msgstr "Share Feedback"
+
+msgid "Short summary of the issue"
+msgstr "Short summary of the issue"
+
+msgid "Short summary of the request"
+msgstr "Short summary of the request"
+
+msgid "Shortcut"
+msgstr "Shortcut"
+
+msgid "Show branch chip"
+msgstr "Show branch chip"
+
+msgid "Show the current git branch in a small floating chip at the bottom right of the site."
+msgstr "Show the current git branch in a small floating chip at the bottom right of the site."
+
+msgid "Skip translated entries"
+msgstr "Skip translated entries"
+
+msgid "Source"
+msgstr "Source"
+
+msgid "Steps to reproduce"
+msgstr "Steps to reproduce"
+
+msgid "Submissions may create a GitHub issue and can include your optional contact email for follow-up. See"
+msgstr "Submissions may create a GitHub issue and can include your optional contact email for follow-up. See"
+
+msgid "Sync failed"
+msgstr "Sync failed"
+
+msgid "Syncing to DeepL..."
+msgstr "Syncing to DeepL..."
+
+msgid "terms"
+msgstr "terms"
+
+msgid "Terms in selected text:"
+msgstr "Terms in selected text:"
+
+msgid "Test Connection"
+msgstr "Test Connection"
+
+msgid "Thanks. Issue #{issueNumber} was created."
+msgstr "Thanks. Issue #{issueNumber} was created."
+
+msgid "These tools only appear while running the app locally in development and are not shown in production."
+msgstr "These tools only appear while running the app locally in development and are not shown in production."
+
+msgid "This will remove all your work on the current file."
+msgstr "This will remove all your work on the current file."
+
+msgid "Title"
+msgstr "Title"
+
+msgid "Turnstile bypass enabled for local development."
+msgstr "Turnstile bypass enabled for local development."
+
+msgid "Turnstile site key not set. Using local development bypass."
+msgstr "Turnstile site key not set. Using local development bypass."
+
+msgid "Unknown error"
+msgstr "Unknown error"
+
+msgid "Unsaved draft found"
+msgstr "Unsaved draft found"
+
+msgid "Update"
+msgstr "Update"
+
+msgid "Updated"
+msgstr "Updated"
+
+msgid "Update this file using a .pot template. Existing translations are kept when source strings still match, new strings are added, and obsolete strings are removed."
+msgstr "Update this file using a .pot template. Existing translations are kept when source strings still match, new strings are added, and obsolete strings are removed."
+
+msgid "Upload"
+msgstr "Upload"
+
+msgid "Upload a translation file to start"
+msgstr "Upload a translation file to start"
+
+msgid "Upload a WordPress glossary CSV for the selected language"
+msgstr "Upload a WordPress glossary CSV for the selected language"
+
+msgid "Upload CSV"
+msgstr "Upload CSV"
+
+msgid "Upload failed"
+msgstr "Upload failed"
+
+msgid "Use case"
+msgstr "Use case"
+
+msgid "Use glossary for translations"
+msgstr "Use glossary for translations"
+
+msgid "Verification is still loading. Please try again in a moment."
+msgstr "Verification is still loading. Please try again in a moment."
+
+msgid "View All"
+msgstr "View All"
+
+msgid "Website"
+msgstr "Website"
+
+msgid "What happened"
+msgstr "What happened"
+
+msgid "What is hard today?"
+msgstr "What is hard today?"
+
+msgid "What should have happened"
+msgstr "What should have happened"
+
+msgid "What would help?"
+msgstr "What would help?"
+
+msgid "When enabled, your key is stored in localStorage and survives browser restarts. Disable on shared or untrusted devices."
+msgstr "When enabled, your key is stored in localStorage and survives browser restarts. Disable on shared or untrusted devices."
+
+msgid "When using ⌘/Ctrl+Enter, skip entries that are already translated and jump to the next untranslated or fuzzy entry"
+msgstr "When using ⌘/Ctrl+Enter, skip entries that are already translated and jump to the next untranslated or fuzzy entry"
+
+msgid "When would you use this?"
+msgstr "When would you use this?"
+
+msgid "Working from draft"
+msgstr "Working from draft"
+
+msgid "You have unsaved changes"
+msgstr "You have unsaved changes"
+
+msgid "You have unsaved changes from {age}. Would you like to restore your previous work?"
+msgstr "You have unsaved changes from {age}. Would you like to restore your previous work?"
+
+msgid "You have unsaved changes. Are you sure you want to clear the editor?"
+msgstr "You have unsaved changes. Are you sure you want to clear the editor?"
+
+msgid "{count} modified entries will be restored."
+msgstr "{count} modified entries will be restored."
