@@ -21,3 +21,11 @@
     opacity: 0;
   }
 }
+
+.feedback-turnstile-mount {
+  display: block;
+}
+
+.feedback-turnstile-mount:empty {
+  display: contents;
+}
