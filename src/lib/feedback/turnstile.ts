@@ -150,7 +150,6 @@ export async function createTurnstileController(
         }, CHALLENGE_TIMEOUT_MS);
 
         pending = { resolve, reject, timeoutId };
-        window.turnstile?.reset(widgetId);
         window.turnstile?.execute(widgetId);
       });
     },
