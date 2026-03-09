@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "sync:uncodixfy": "bun scripts/sync-uncodixfy.ts",
     "cf:project:create": "bunx wrangler pages project create glossboss --production-branch main",
     "cf:deploy": "bun run build && bunx wrangler pages deploy dist --project-name glossboss --branch main --commit-dirty=true",
     "cf:deploy:preview": "bun run build && bunx wrangler pages deploy dist --project-name glossboss --branch preview --commit-dirty=true",
