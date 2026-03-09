@@ -16,4 +16,5 @@ export {
   setPersistEnabled,
   type DeepLSettings,
   type DeepLApiType,
+  type DeepLFormality,
 } from './settings';

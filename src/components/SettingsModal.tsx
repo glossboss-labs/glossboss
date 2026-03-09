@@ -7,7 +7,7 @@
  * - Display preferences (container width)
  */
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import {
   Modal,
   Stack,
@@ -30,6 +30,7 @@ import {
   Anchor,
   Table,
   Kbd,
+  FileButton,
 } from '@mantine/core';
 import { useLocalStorage } from '@mantine/hooks';
 import {
@@ -44,6 +45,7 @@ import {
   Keyboard,
   GitBranch,
   Monitor,
+  Upload,
 } from 'lucide-react';
 import {
   getDeepLSettings,
@@ -52,9 +54,11 @@ import {
   isPersistEnabled,
   setPersistEnabled,
   type DeepLApiType,
+  type DeepLFormality,
   getDeepLClient,
 } from '@/lib/deepl';
 import { fetchWPGlossary, clearWPGlossaryCache, type FetchResult } from '@/lib/glossary/wp-fetcher';
+import { parseGlossaryCSV, isValidGlossaryCSV } from '@/lib/glossary/csv-parser';
 import { GlossaryTermsPreview, GlossaryViewerModal } from '@/components/glossary/shared';
 import {
   COMMON_GLOSSARY_LOCALES,
@@ -239,6 +243,7 @@ export function SettingsModal({
   // DeepL API settings state
   const [apiKey, setApiKey] = useState('');
   const [apiType, setApiType] = useState<DeepLApiType>('free');
+  const [formality, setFormality] = useState<DeepLFormality>('prefer_less');
   const [persistKey, setPersistKey] = useState(() => isPersistEnabled());
   const [isTesting, setIsTesting] = useState(false);
   const [testResult, setTestResult] = useState<{
@@ -276,6 +281,7 @@ export function SettingsModal({
       const settings = getDeepLSettings();
       setApiKey(settings.apiKey);
       setApiType(settings.apiType);
+      setFormality(settings.formality);
       setIsSaved(Boolean(settings.apiKey));
       setPersistKey(isPersistEnabled());
     }
@@ -319,7 +325,7 @@ export function SettingsModal({
     setTestResult(null);
 
     try {
-      saveDeepLSettings({ apiKey, apiType });
+      saveDeepLSettings({ apiKey, apiType, formality });
       const client = getDeepLClient();
       const usage = await client.getUsage();
 
@@ -339,18 +345,19 @@ export function SettingsModal({
     } finally {
       setIsTesting(false);
     }
-  }, [apiKey, apiType]);
+  }, [apiKey, apiType, formality]);
 
   const handleSaveApiKey = useCallback(() => {
-    saveDeepLSettings({ apiKey, apiType });
+    saveDeepLSettings({ apiKey, apiType, formality });
     setIsSaved(true);
     setTestResult({ success: true, message: 'Settings saved!' });
-  }, [apiKey, apiType]);
+  }, [apiKey, apiType, formality]);
 
   const handleClearApiKey = useCallback(() => {
     clearDeepLSettings();
     setApiKey('');
     setApiType('free');
+    setFormality('prefer_less');
     setIsSaved(false);
     setTestResult(null);
   }, []);
@@ -386,6 +393,51 @@ export function SettingsModal({
     setHasAttemptedAutoLoad(false); // Allow auto-load to try again after manual clear
     onGlossaryCleared?.();
   }, [selectedLocale, onGlossaryCleared]);
+
+  const csvUploadResetRef = useRef<() => void>(null);
+  const handleCsvUpload = useCallback(
+    (file: File | null) => {
+      if (!file || !selectedLocale) return;
+      setGlossaryError(null);
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        const text = reader.result as string;
+
+        if (!isValidGlossaryCSV(text)) {
+          setGlossaryError('File does not appear to be a valid WordPress glossary CSV.');
+          csvUploadResetRef.current?.();
+          return;
+        }
+
+        const parseResult = parseGlossaryCSV(text);
+        if (parseResult.entries.length === 0) {
+          setGlossaryError(
+            parseResult.errors[0] || 'No glossary entries found in the uploaded file.',
+          );
+          csvUploadResetRef.current?.();
+          return;
+        }
+
+        const uploaded: Glossary = {
+          sourceLocale: parseResult.sourceLocale || 'en',
+          targetLocale: selectedLocale,
+          project: 'wordpress',
+          entries: parseResult.entries,
+          fetchedAt: new Date().toISOString(),
+        };
+
+        onGlossaryLoaded?.(uploaded);
+        csvUploadResetRef.current?.();
+      };
+      reader.onerror = () => {
+        setGlossaryError('Failed to read the file.');
+        csvUploadResetRef.current?.();
+      };
+      reader.readAsText(file);
+    },
+    [selectedLocale, onGlossaryLoaded],
+  );
 
   // Reset auto-load flag when locale changes
   useEffect(() => {
@@ -518,6 +570,28 @@ export function SettingsModal({
                 </Text>
               </div>
 
+              <div>
+                <Text size="sm" fw={500} mb={4}>
+                  Formality
+                </Text>
+                <SegmentedControl
+                  value={formality}
+                  onChange={(value) => {
+                    setFormality(value as DeepLFormality);
+                    saveDeepLSettings({ formality: value as DeepLFormality });
+                  }}
+                  data={[
+                    { label: 'Informal', value: 'prefer_less' },
+                    { label: 'Formal', value: 'prefer_more' },
+                  ]}
+                  fullWidth
+                />
+
+                <Text size="xs" c="dimmed" mt={4}>
+                  Controls the tone of DeepL translations. Not all languages support formality.
+                </Text>
+              </div>
+
               <Group>
                 <Button
                   variant="light"
@@ -616,6 +690,30 @@ export function SettingsModal({
                   {glossaryError}
                 </Alert>
               )}
+
+              <Divider label="or upload manually" labelPosition="center" />
+
+              <Group align="center" gap="sm">
+                <FileButton
+                  resetRef={csvUploadResetRef}
+                  onChange={handleCsvUpload}
+                  accept=".csv,text/csv"
+                >
+                  {(props) => (
+                    <Button
+                      variant="light"
+                      leftSection={<Upload size={14} />}
+                      disabled={!selectedLocale}
+                      {...props}
+                    >
+                      Upload CSV
+                    </Button>
+                  )}
+                </FileButton>
+                <Text size="xs" c="dimmed">
+                  Upload a WordPress glossary CSV for the selected language
+                </Text>
+              </Group>
 
               {glossary && (
                 <Paper p="md" withBorder>
