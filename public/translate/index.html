@@ -71,6 +71,11 @@
           <li><code>src/lib/app-language/locales/app.en.po</code></li>
           <li><code>src/lib/app-language/locales/app.nl.po</code></li>
         </ul>
+        <p>
+          <code>app.en.po</code> is the source catalog and required fallback language for the app.
+          Other UI languages should keep the same <code>msgid</code> keys, even if some
+          <code>msgstr</code> values are still untranslated.
+        </p>
 
         <h2>Update an existing language</h2>
         <ol>
@@ -82,12 +87,22 @@
           </li>
         </ol>
 
+        <h2>Add a new UI string</h2>
+        <ol>
+          <li>Add the string in code with <code>t('Your new string')</code>.</li>
+          <li>Add the same <code>msgid</code> to <code>app.en.po</code>.</li>
+          <li>
+            Add that <code>msgid</code> to the other <code>app.*.po</code> files so CI can verify
+            the catalogs stay in sync.
+          </li>
+        </ol>
+
         <h2>Add a new language</h2>
         <ol>
           <li>Create a new file such as <code>src/lib/app-language/locales/app.de.po</code>.</li>
-          <li>Register that language in <code>src/lib/app-language/settings.ts</code>.</li>
-          <li>Import the new catalog in <code>src/lib/app-language/catalog.ts</code>.</li>
-          <li>Verify the new language through the interface language selector in Settings.</li>
+          <li>Set the PO header <code>Language: de</code> or use the matching filename.</li>
+          <li>Copy the same <code>msgid</code> keys from <code>app.en.po</code>.</li>
+          <li>The app discovers the new locale automatically in Settings → Display.</li>
         </ol>
 
         <h2>Repository docs</h2>
