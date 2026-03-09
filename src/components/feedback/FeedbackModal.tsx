@@ -434,7 +434,7 @@ export function FeedbackModal({
             aria-hidden="true"
           />
 
-          <div ref={handleTurnstileContainerRef} style={{ display: 'none' }} aria-hidden="true" />
+          <div ref={handleTurnstileContainerRef} />
 
           {turnstileStatus === 'loading' && !resolveTurnstileToken && (
             <Text size="xs" c="dimmed">

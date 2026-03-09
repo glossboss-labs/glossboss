@@ -8,7 +8,7 @@ describe('createTurnstileController', () => {
     document.head.innerHTML = '';
   });
 
-  it('renders the invisible widget in execute mode', async () => {
+  it('renders the widget in execute mode with a supported size', async () => {
     const render = vi.fn(() => 'widget-id');
 
     window.turnstile = {
@@ -25,7 +25,8 @@ describe('createTurnstileController', () => {
       container,
       expect.objectContaining({
         sitekey: 'site-key',
-        size: 'invisible',
+        size: 'normal',
+        appearance: 'execute',
         execution: 'execute',
       }),
     );
