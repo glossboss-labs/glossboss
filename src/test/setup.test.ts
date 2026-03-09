@@ -1,21 +1,22 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-describe('test storage mocks', () => {
+describe('storage test setup', () => {
   beforeEach(() => {
     localStorage.clear();
   });
 
-  it('enumerates stored keys without exposing Storage API methods', () => {
-    localStorage.setItem('glossboss-cache-nl', 'cached glossary');
+  it('enumerates stored keys via Object.keys and Storage.key()', () => {
+    localStorage.setItem('glossboss-wp-glossary-nl', 'cached');
 
-    expect(Object.keys(localStorage)).toEqual(['glossboss-cache-nl']);
-    expect(localStorage.key(0)).toBe('glossboss-cache-nl');
+    expect(Object.keys(localStorage)).toEqual(['glossboss-wp-glossary-nl']);
+    expect(localStorage.key(0)).toBe('glossboss-wp-glossary-nl');
   });
 
-  it('keeps reserved storage keys addressable without overwriting the API', () => {
-    localStorage.setItem('getItem', 'reserved key');
+  it('stores keys that collide with Storage API names without replacing methods', () => {
+    localStorage.setItem('getItem', 'value');
 
+    expect(localStorage.getItem('getItem')).toBe('value');
     expect(typeof localStorage.getItem).toBe('function');
-    expect(localStorage.getItem('getItem')).toBe('reserved key');
+    expect(Object.keys(localStorage)).toContain('getItem');
   });
 });

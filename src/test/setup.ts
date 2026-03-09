@@ -2,72 +2,106 @@ import '@testing-library/jest-dom/vitest';
 import { beforeEach } from 'vitest';
 
 function createStorageMock(): Storage {
-  const data = Object.create(null) as Record<string, string>;
+  const data = new Map<string, string>();
   const storage = {} as Storage;
-  const storageApiKeys = new Set<string>();
-
-  function syncEnumerableKey(key: string): void {
-    if (storageApiKeys.has(key)) {
-      return;
-    }
-
-    if (Object.prototype.hasOwnProperty.call(data, key)) {
-      Object.defineProperty(storage, key, {
-        value: data[key],
-        configurable: true,
-        enumerable: true,
-        writable: true,
-      });
-      return;
-    }
-
-    Reflect.deleteProperty(storage, key);
-  }
 
   Object.defineProperties(storage, {
     length: {
+      configurable: true,
+      enumerable: false,
       get(): number {
-        return Object.keys(data).length;
+        return data.size;
       },
     },
     clear: {
+      configurable: true,
+      enumerable: false,
+      writable: true,
       value(): void {
-        for (const key of Object.keys(data)) {
-          delete data[key];
-          syncEnumerableKey(key);
-        }
+        data.clear();
       },
     },
     getItem: {
+      configurable: true,
+      enumerable: false,
+      writable: true,
       value(key: string): string | null {
-        return Object.prototype.hasOwnProperty.call(data, key) ? data[key] : null;
+        return data.get(String(key)) ?? null;
       },
     },
     key: {
+      configurable: true,
+      enumerable: false,
+      writable: true,
       value(index: number): string | null {
-        const keys = Object.keys(data);
-        return keys[index] ?? null;
+        return Array.from(data.keys())[index] ?? null;
       },
     },
     removeItem: {
+      configurable: true,
+      enumerable: false,
+      writable: true,
       value(key: string): void {
-        delete data[key];
-        syncEnumerableKey(key);
+        data.delete(String(key));
       },
     },
     setItem: {
+      configurable: true,
+      enumerable: false,
+      writable: true,
       value(key: string, value: string): void {
-        data[key] = String(value);
-        syncEnumerableKey(key);
+        data.set(String(key), String(value));
       },
     },
   });
 
-  for (const key of Object.getOwnPropertyNames(storage)) {
-    storageApiKeys.add(key);
-  }
+  return new Proxy(storage, {
+    deleteProperty(target, property): boolean {
+      if (typeof property === 'string') {
+        data.delete(property);
+        return true;
+      }
 
-  return storage;
+      return Reflect.deleteProperty(target, property);
+    },
+    get(target, property, receiver) {
+      if (typeof property === 'string' && !Reflect.has(target, property)) {
+        return data.get(property);
+      }
+
+      return Reflect.get(target, property, receiver);
+    },
+    getOwnPropertyDescriptor(target, property) {
+      if (typeof property === 'string' && data.has(property)) {
+        return {
+          configurable: true,
+          enumerable: true,
+          writable: true,
+          value: data.get(property),
+        };
+      }
+
+      return Reflect.getOwnPropertyDescriptor(target, property);
+    },
+    has(target, property): boolean {
+      if (typeof property === 'string' && data.has(property)) {
+        return true;
+      }
+
+      return Reflect.has(target, property);
+    },
+    ownKeys(): string[] {
+      return Array.from(data.keys());
+    },
+    set(target, property, value, receiver): boolean {
+      if (typeof property === 'string' && !Reflect.has(target, property)) {
+        data.set(property, String(value));
+        return true;
+      }
+
+      return Reflect.set(target, property, value, receiver);
+    },
+  });
 }
 
 function installStorageMock(key: 'localStorage' | 'sessionStorage', storage: Storage): void {
