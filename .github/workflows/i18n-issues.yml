@@ -26,14 +26,18 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          LANG_NAMES='{"nl":"Dutch"}'
+          # Map language codes to display names and GitHub assignees.
+          # "assignees" is a comma-separated list of GitHub usernames.
+          # Add entries here or use: bun run i18n:add-lang <code> --assignee <user>
+          LANG_CONFIG='{"nl":{"name":"Dutch","assignees":""}}'
 
           for po in src/lib/app-language/locales/app.*.po; do
             lang=$(echo "$po" | sed 's/.*app\.\(.*\)\.po/\1/')
             if [ "$lang" = "en" ]; then continue; fi
 
-            name=$(echo "$LANG_NAMES" | jq -r --arg l "$lang" '.[$l] // $l')
-            title="i18n: Untranslated strings in ${name} (${lang})"
+            name=$(echo "$LANG_CONFIG" | jq -r --arg l "$lang" '.[$l].name // $l')
+            assignees=$(echo "$LANG_CONFIG" | jq -r --arg l "$lang" '.[$l].assignees // ""')
+            title="[Translations] i18n: Untranslated strings in ${name} (${lang})"
 
             # Collect untranslated msgids (msgstr "" that follow a non-empty msgid)
             untranslated=$(awk '
@@ -67,6 +71,8 @@ jobs:
               edit_url="https://glossboss.pages.dev/?url=$(python3 -c "import urllib.parse; print(urllib.parse.quote('${raw_url}', safe=''))")"
 
               body=$(cat <<EOF
+          @coderabbitai ignore
+
           ## Untranslated strings in \`app.${lang}.po\`
 
           **${count}** string(s) need translation:
@@ -80,11 +86,19 @@ jobs:
           EOF
               )
 
+              # Build assignee flags
+              assignee_flags=""
+              if [ -n "$assignees" ]; then
+                for user in $(echo "$assignees" | tr ',' ' '); do
+                  assignee_flags="$assignee_flags --assignee $user"
+                done
+              fi
+
               if [ -n "$existing" ]; then
-                gh issue edit "$existing" --body "$body"
+                gh issue edit "$existing" --body "$body" $assignee_flags
                 echo "Updated issue #${existing} for ${lang}"
               else
-                gh issue create --title "$title" --label i18n --body "$body"
+                gh issue create --title "$title" --label i18n --body "$body" $assignee_flags
                 echo "Created issue for ${lang}"
               fi
             else
