@@ -65,10 +65,9 @@ bun run preview
 
 The frontend is built with Vite and deployed to Cloudflare Pages.
 
-GitHub Actions in `.github/workflows/cloudflare-pages.yml` deploy:
-
-- `main` pushes to production
-- pull requests into `main` to preview branches
+GitHub Actions in `.github/workflows/cloudflare-pages.yml` deploy `main` pushes to
+production. Pull-request previews are served automatically by Cloudflare Pages' native
+Git integration — no GitHub Actions secrets are exposed to PR builds.
 
 Required GitHub repository secrets for the frontend build:
 
