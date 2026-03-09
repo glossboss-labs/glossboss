@@ -121,6 +121,7 @@ function ResizableTh({
   isDragging = false,
   dropIndicatorPosition,
   align = 'left',
+  padding = '12px 8px',
 }: {
   children: React.ReactNode;
   widthPercent: string;
@@ -131,6 +132,7 @@ function ResizableTh({
   isDragging?: boolean;
   dropIndicatorPosition?: 'before' | 'after';
   align?: 'left' | 'center';
+  padding?: CSSProperties['padding'];
 }) {
   const handleRef = useRef<HTMLDivElement>(null);
   const startXRef = useRef(0);
@@ -168,7 +170,7 @@ function ResizableTh({
       data-column-key={dataColumnKey}
       style={{
         width: widthPercent,
-        padding: '12px 8px',
+        padding,
         position: 'relative',
         userSelect: 'none',
         textAlign: align,
@@ -2119,6 +2121,7 @@ export function EditorTable({
                               : undefined
                           }
                           align={columnKey === 'select' ? 'center' : 'left'}
+                          padding={columnKey === 'select' ? '8px 8px' : undefined}
                           dataColumnKey={isDataColumn ? columnKey : undefined}
                           onCellPointerDown={
                             isDataColumn ? handleHeaderPointerDown(columnKey) : undefined
