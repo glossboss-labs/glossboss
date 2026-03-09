@@ -33,7 +33,7 @@ jobs:
             if [ "$lang" = "en" ]; then continue; fi
 
             name=$(echo "$LANG_NAMES" | jq -r --arg l "$lang" '.[$l] // $l')
-            title="i18n: Untranslated strings in ${name} (${lang})"
+            title="[Translations] i18n: Untranslated strings in ${name} (${lang})"
 
             # Collect untranslated msgids (msgstr "" that follow a non-empty msgid)
             untranslated=$(awk '
@@ -67,6 +67,8 @@ jobs:
               edit_url="https://glossboss.pages.dev/?url=$(python3 -c "import urllib.parse; print(urllib.parse.quote('${raw_url}', safe=''))")"
 
               body=$(cat <<EOF
+          @coderabbitai ignore
+
           ## Untranslated strings in \`app.${lang}.po\`
 
           **${count}** string(s) need translation:
