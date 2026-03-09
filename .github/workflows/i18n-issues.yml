@@ -48,12 +48,18 @@ jobs:
             existing=$(gh issue list --label i18n --state open --search "in:title $title" --json number,title --jq ".[] | select(.title == \"$title\") | .number" | head -1)
 
             if [ "$count" -gt 0 ]; then
+              # Build a raw GitHub URL for the PO file so GlossBoss can load it directly
+              raw_url="https://raw.githubusercontent.com/${{ github.repository }}/main/${po}"
+              edit_url="https://glossboss.pages.dev/?url=$(python3 -c "import urllib.parse; print(urllib.parse.quote('${raw_url}', safe=''))")"
+
               body=$(cat <<EOF
           ## Untranslated strings in \`app.${lang}.po\`
 
           **${count}** string(s) need translation:
 
           ${untranslated}
+
+          **[Open in GlossBoss](${edit_url})** to edit this file directly.
 
           ---
           _Auto-managed by CI. Updated on $(date -u +%Y-%m-%d)._

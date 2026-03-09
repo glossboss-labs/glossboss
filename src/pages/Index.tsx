@@ -4,7 +4,14 @@
  * The primary interface for loading and editing .po files.
  */
 
-import { useState, useCallback, useRef, useEffect, type DragEvent } from 'react';
+import {
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+  type DragEvent,
+  type KeyboardEvent,
+} from 'react';
 import {
   Container,
   Title,
@@ -26,6 +33,7 @@ import {
   Transition,
   useMantineColorScheme,
   Menu,
+  TextInput,
   useComputedColorScheme,
 } from '@mantine/core';
 import { useLocalStorage } from '@mantine/hooks';
@@ -45,6 +53,7 @@ import {
   Moon,
   ChevronDown,
   GitBranch,
+  Link,
 } from 'lucide-react';
 import { EditorTable, FilterToolbar, HeaderEditor, TranslateToolbar } from '@/components/editor';
 import { FeedbackModal } from '@/components/feedback';
@@ -82,6 +91,7 @@ import {
   type DraftData,
 } from '@/lib/storage';
 import { CONTAINER_WIDTH_KEY, type ContainerWidth } from '@/lib/container-width';
+import { useSearchParams } from 'react-router';
 import { msgid, useTranslation } from '@/lib/app-language';
 const appIcon = '/icon.svg';
 
@@ -315,6 +325,9 @@ export default function Index() {
   const [feedbackSuccess, setFeedbackSuccess] = useState<FeedbackInfo | null>(null);
   const [feedbackError, setFeedbackError] = useState<string | null>(null);
   const [isLoadingExample, setIsLoadingExample] = useState(false);
+  const [isLoadingUrl, setIsLoadingUrl] = useState(false);
+  const [urlInput, setUrlInput] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
   const [translateSourceLang, setTranslateSourceLang] = useState<SourceLanguage | undefined>(
     undefined,
   );
@@ -672,6 +685,107 @@ export default function Index() {
       setIsLoadingExample(false);
     }
   }, [loadFile]);
+
+  const handleLoadFromUrl = useCallback(
+    async (url: string) => {
+      if (!url.startsWith('https://')) {
+        setErrors([
+          {
+            severity: 'error',
+            code: 'INVALID_SYNTAX',
+            message: t('The URL must start with https://'),
+          },
+        ]);
+        return;
+      }
+
+      setIsLoadingUrl(true);
+      setErrors([]);
+      setWarnings([]);
+      setShowWarnings(false);
+      setEncodingInfo(null);
+      setDragError(null);
+      setPendingDraft(null);
+      setIsFromDraft(false);
+
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 10_000);
+
+        const response = await fetch(url, { signal: controller.signal });
+        clearTimeout(timeout);
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const text = await response.text();
+
+        // Derive filename from URL path
+        let name = 'remote.po';
+        try {
+          const last = new URL(url).pathname.split('/').filter(Boolean).pop();
+          if (last && /\.(po|pot|json)$/i.test(last)) name = last;
+        } catch {
+          /* keep default */
+        }
+
+        // Try i18next JSON if content looks like JSON
+        if (isI18nextContent(text)) {
+          const i18nResult = parseI18nextJSON(text, name);
+          loadFile(i18nResult.file);
+        } else {
+          const result = parsePOFileWithDiagnostics(text, name);
+
+          if (!result.success || !result.file) {
+            setErrors(result.errors);
+            return;
+          }
+
+          if (result.warnings.length > 0) {
+            setWarnings(result.warnings);
+            setShowWarnings(true);
+          }
+
+          loadFile(result.file);
+
+          const detected = detectPluginSlug(result.file.header, name);
+          if (detected) {
+            useSourceStore.getState().setAutoDetectedSlug(detected.slug, detected.version);
+            debugLog('[URL] Auto-detected plugin:', detected.slug, detected.version);
+          }
+        }
+
+        setUrlInput('');
+      } catch (err) {
+        const message =
+          err instanceof DOMException && err.name === 'AbortError'
+            ? t('Request timed out. Try downloading the file and uploading it directly.')
+            : err instanceof TypeError
+              ? t(
+                  'Could not fetch the file. The server may not allow cross-origin requests. Try downloading the file and uploading it directly.',
+                )
+              : err instanceof Error
+                ? err.message
+                : t('Unknown error');
+
+        setErrors([{ severity: 'error', code: 'INVALID_SYNTAX', message }]);
+      } finally {
+        setIsLoadingUrl(false);
+      }
+    },
+    [loadFile, t],
+  );
+
+  // Auto-load from ?url= query parameter on mount
+  useEffect(() => {
+    const urlParam = searchParams.get('url');
+    if (urlParam && !filename) {
+      setSearchParams({}, { replace: true });
+      void handleLoadFromUrl(urlParam);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   /**
    * Restore from pending draft
@@ -1564,6 +1678,38 @@ export default function Index() {
                       .json
                     </Badge>
                   </Group>
+                  <Group
+                    gap="xs"
+                    w="100%"
+                    maw={500}
+                    onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                  >
+                    <TextInput
+                      placeholder={t('Paste a .po file URL')}
+                      value={urlInput}
+                      onChange={(e) => setUrlInput(e.currentTarget.value)}
+                      onKeyDown={(e: KeyboardEvent) => {
+                        if (e.key === 'Enter' && urlInput.trim()) {
+                          void handleLoadFromUrl(urlInput.trim());
+                        }
+                      }}
+                      style={{ flex: 1 }}
+                      leftSection={<Link size={16} />}
+                      disabled={isLoadingUrl}
+                    />
+                    <Button
+                      onClick={() => void handleLoadFromUrl(urlInput.trim())}
+                      loading={isLoadingUrl}
+                      disabled={!urlInput.trim()}
+                    >
+                      {t('Load')}
+                    </Button>
+                  </Group>
+
+                  <Text size="sm" c="dimmed">
+                    {t('or')}
+                  </Text>
+
                   <Tooltip label={t('Load a small example WordPress plugin PO file (Hello Dolly)')}>
                     <motion.div {...buttonStates}>
                       <Button
