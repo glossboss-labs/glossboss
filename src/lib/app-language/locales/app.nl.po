@@ -284,7 +284,7 @@ msgid "Please complete all required bug fields."
 msgstr "Vul alle verplichte bugvelden in."
 
 msgid "Please complete all required feature fields."
-msgstr "Vul alle verplichte functlevelden in."
+msgstr "Vul alle verplichte functievelden in."
 
 msgid "Please enter an API key"
 msgstr "Voer een API-sleutel in"
