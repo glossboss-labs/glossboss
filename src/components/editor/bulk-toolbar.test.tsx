@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MantineProvider } from '@mantine/core';
 import type { ReactNode } from 'react';
@@ -250,6 +250,39 @@ describe('editor details and mobile layout', () => {
 
     expect(screen.queryByTestId('entry-details-a')).not.toBeInTheDocument();
     expect(screen.getByTestId('entry-details-b')).toBeInTheDocument();
+  });
+
+  it('wraps status badges instead of adding an inline status scroller', () => {
+    useEditorStore.getState().loadFile(makeFile([makeEntry('a', { msgstr: 'Done' })]));
+
+    act(() => {
+      const store = useEditorStore.getState();
+      store.updateEntry('a', 'Updated translation');
+      store.markAsMachineTranslated('a');
+      store.clearMachineTranslated('a');
+      store.setGlossaryAnalysis('a', {
+        entryId: 'a',
+        terms: [],
+        matchedCount: 1,
+        needsReviewCount: 0,
+        analyzedAt: new Date().toISOString(),
+      });
+    });
+
+    renderWithMantine(<EditorTable />);
+
+    const statusBadges = screen.getByTestId('status-badges-a');
+
+    expect(within(statusBadges).getByText('Translated')).toBeInTheDocument();
+    expect(within(statusBadges).getByText('Modified')).toBeInTheDocument();
+    expect(within(statusBadges).getByText('Manual')).toBeInTheDocument();
+    expect(within(statusBadges).getByText('Glossary')).toBeInTheDocument();
+
+    expect(statusBadges).toHaveStyle({
+      flexWrap: 'wrap',
+      overflowX: 'visible',
+      overflowY: 'visible',
+    });
   });
 
   it('activates source reference from the inspector reference link', async () => {

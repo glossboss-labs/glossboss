@@ -803,13 +803,15 @@ const StatusBadges = memo(function StatusBadges({
 
   return (
     <Group
+      data-testid={`status-badges-${entry.id}`}
       gap={4}
-      wrap="nowrap"
+      wrap="wrap"
       style={{
         maxWidth: '100%',
-        whiteSpace: 'nowrap',
-        overflowX: 'auto',
-        overflowY: 'hidden',
+        alignItems: 'flex-start',
+        flexWrap: 'wrap',
+        overflowX: 'visible',
+        overflowY: 'visible',
       }}
     >
       <Badge color={STATUS_COLORS[status]} size="sm" variant="filled" style={{ flexShrink: 0 }}>
