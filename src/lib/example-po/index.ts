@@ -212,7 +212,7 @@ export async function fetchExamplePoFromWordPress(
 
   for (const url of buildExamplePoWordPressUrls(targetLanguage)) {
     const controller = new AbortController();
-    const timeoutId = globalThis.setTimeout(() => controller.abort(), EXAMPLE_FETCH_TIMEOUT_MS);
+    const timeoutId = window.setTimeout(() => controller.abort(), EXAMPLE_FETCH_TIMEOUT_MS);
 
     try {
       const response = await fetchImpl(url, {
@@ -236,7 +236,7 @@ export async function fetchExamplePoFromWordPress(
     } catch {
       // Fall through to the next candidate URL and eventually use the bundled example.
     } finally {
-      globalThis.clearTimeout(timeoutId);
+      window.clearTimeout(timeoutId);
     }
   }
 
