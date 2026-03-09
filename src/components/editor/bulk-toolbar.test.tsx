@@ -278,11 +278,11 @@ describe('editor details and mobile layout', () => {
     expect(within(statusBadges).getByText('Manual')).toBeInTheDocument();
     expect(within(statusBadges).getByText('Glossary')).toBeInTheDocument();
 
-    expect(statusBadges).toHaveStyle({
-      flexWrap: 'wrap',
-      overflowX: 'visible',
-      overflowY: 'visible',
-    });
+    const statusBadgesStyle = getComputedStyle(statusBadges);
+
+    expect(statusBadges.style.getPropertyValue('--group-wrap')).toBe('wrap');
+    expect(statusBadgesStyle.overflowX).toBe('visible');
+    expect(statusBadgesStyle.overflowY).toBe('visible');
   });
 
   it('activates source reference from the inspector reference link', async () => {

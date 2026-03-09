@@ -808,8 +808,6 @@ const StatusBadges = memo(function StatusBadges({
       wrap="wrap"
       style={{
         maxWidth: '100%',
-        alignItems: 'flex-start',
-        flexWrap: 'wrap',
         overflowX: 'visible',
         overflowY: 'visible',
       }}
