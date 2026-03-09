@@ -1356,7 +1356,7 @@ export default function Index() {
             title={t('Clear editor?')}
             message={t('You have unsaved changes. Are you sure you want to clear the editor?')}
             detail={t('This will remove all your work on the current file.')}
-            confirmLabel={t('Clear anyway')}
+            confirmLabel="Clear anyway"
             confirmColor="red"
             variant="danger"
           />
