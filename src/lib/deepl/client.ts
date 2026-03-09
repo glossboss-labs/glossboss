@@ -15,19 +15,14 @@ import type {
   DeepLGlossary,
 } from './types';
 import { getDeepLSettings } from './settings';
+import { getSupabaseAnonKey, getSupabaseFunctionBaseUrl } from '@/lib/cloud-backend';
 import { buildSupabaseFunctionHeaders } from '@/lib/supabase-function-headers';
 
 /**
  * Get the Supabase function URL for DeepL translation
  */
 function getDefaultFunctionUrl(): string {
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-  if (!supabaseUrl) {
-    throw new Error(
-      'Cloud Backend not configured. Please enable Cloud Backend to use translation features.',
-    );
-  }
-  return `${supabaseUrl}/functions/v1/deepl-translate`;
+  return `${getSupabaseFunctionBaseUrl('Translation')}/deepl-translate`;
 }
 
 /** Default configuration */
@@ -51,7 +46,7 @@ const DEFAULT_CONFIG: Omit<Required<DeepLClientConfig>, 'functionUrl'> & { funct
 export function createDeepLClient(config: DeepLClientConfig = {}) {
   const timeout = config.timeout ?? DEFAULT_CONFIG.timeout;
   const functionUrl = config.functionUrl ?? getDefaultFunctionUrl();
-  const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+  const anonKey = getSupabaseAnonKey();
 
   /**
    * Make a request to the Edge Function

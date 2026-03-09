@@ -1,5 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { jsonResponse, optionsResponse, requireJsonRequest, validateRequestOrigin } from './http';
+import {
+  isAllowedOrigin,
+  jsonResponse,
+  optionsResponse,
+  requireJsonRequest,
+  validateRequestOrigin,
+} from './http';
 
 function installDenoEnv(origins: string) {
   vi.stubGlobal('Deno', {
@@ -46,6 +52,21 @@ describe('shared HTTP helpers', () => {
       allowed: false,
       origin: 'https://example.com',
     });
+  });
+
+  it('supports wildcard Pages subdomains', () => {
+    installDenoEnv('https://glossboss.test,https://*.glossboss.pages.dev');
+
+    expect(isAllowedOrigin('https://glossboss.pages.dev')).toBe(false);
+    expect(isAllowedOrigin('https://main.glossboss.pages.dev')).toBe(true);
+    expect(isAllowedOrigin('https://feature-branch.glossboss.pages.dev')).toBe(true);
+    expect(isAllowedOrigin('https://example.com')).toBe(false);
+  });
+
+  it('rejects wildcard patterns with ports', () => {
+    installDenoEnv('https://*.glossboss.pages.dev:3000');
+
+    expect(isAllowedOrigin('https://preview.glossboss.pages.dev:3000')).toBe(false);
   });
 
   it('requires JSON content for non-OPTIONS requests', () => {
