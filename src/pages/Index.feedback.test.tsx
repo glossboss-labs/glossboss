@@ -30,6 +30,27 @@ describe('Index feedback header action', () => {
     expect(await screen.findByText('Share Feedback')).toBeInTheDocument();
   });
 
+  it('loads the example PO and auto-detects the hello-dolly plugin slug', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <AppProviders>
+        <Index />
+      </AppProviders>,
+    );
+
+    await user.click(screen.getByRole('button', { name: /load example po/i }));
+
+    await waitFor(() => {
+      expect(useEditorStore.getState().filename).toBe('hello-dolly-nl_NL.po');
+    });
+
+    expect(useEditorStore.getState().entries).toHaveLength(3);
+    expect(useSourceStore.getState().autoDetectedSlug).toBe('hello-dolly');
+    expect(useSourceStore.getState().pluginVersion).toBe('1.7.2');
+    expect(screen.getByText('Auto-detected: hello-dolly')).toBeInTheDocument();
+  });
+
   it('renders footer links for source, license, and privacy', () => {
     render(
       <AppProviders>
