@@ -50,6 +50,7 @@ jobs:
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          # PR previews prefer the preview widget key, while production deploys prefer the production widget key.
           VITE_TURNSTILE_SITE_KEY: ${{ github.event_name == 'pull_request' && (secrets.VITE_TURNSTILE_SITE_KEY_PREVIEW || secrets.VITE_TURNSTILE_SITE_KEY) || (secrets.VITE_TURNSTILE_SITE_KEY_PRODUCTION || secrets.VITE_TURNSTILE_SITE_KEY) }}
         run: bun run build
 
