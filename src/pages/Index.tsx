@@ -1108,7 +1108,7 @@ export default function Index() {
     setPendingDraft(null);
     setIsFromDraft(false);
     setLastAutoSave(null);
-    // Reset inferred translation languages so the next file can derive them from its own headers.
+    // Avoid carrying the example-derived language selection into the next file after a reset.
     setTranslateSourceLang(undefined);
     setTranslateTargetLang(undefined);
   }, [clearEditor, filename]);
