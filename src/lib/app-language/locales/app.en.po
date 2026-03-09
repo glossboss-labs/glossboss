@@ -73,6 +73,9 @@ msgstr "Controls the maximum width of the main content area. Use a wider setting
 msgid "Controls the tone of DeepL translations. Not all languages support formality."
 msgstr "Controls the tone of DeepL translations. Not all languages support formality."
 
+msgid "Read the translation guide"
+msgstr "Read the translation guide"
+
 msgid "Dark mode"
 msgstr "Dark mode"
 
@@ -306,6 +309,12 @@ msgstr "Previous field"
 
 msgid "Privacy"
 msgstr "Privacy"
+
+msgid "Translate"
+msgstr "Translate"
+
+msgid "Want to help translate GlossBoss?"
+msgstr "Want to help translate GlossBoss?"
 
 msgid "Problem / opportunity"
 msgstr "Problem / opportunity"

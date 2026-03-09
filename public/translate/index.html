@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Translate GlossBoss</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #edf2ff;
+        --panel: #fbfcff;
+        --text: #162033;
+        --muted: #566277;
+        --border: #ced7ea;
+        --accent: #2d5bd1;
+      }
+
+      body {
+        margin: 0;
+        font-family: 'IBM Plex Sans', 'Segoe UI', sans-serif;
+        background: radial-gradient(circle at top, #f8faff 0%, var(--bg) 62%);
+        color: var(--text);
+      }
+
+      main {
+        max-width: 820px;
+        margin: 0 auto;
+        padding: 48px 20px 64px;
+      }
+
+      article {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 28px;
+        box-shadow: 0 20px 50px rgba(22, 32, 51, 0.08);
+      }
+
+      h1,
+      h2 {
+        margin-top: 0;
+      }
+
+      p,
+      li {
+        line-height: 1.65;
+        color: var(--muted);
+      }
+
+      a {
+        color: var(--accent);
+      }
+
+      code {
+        font-family: 'IBM Plex Mono', monospace;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <article>
+        <h1>Translate GlossBoss</h1>
+        <p>
+          GlossBoss supports app UI translations with gettext <code>.po</code> files. If you want to
+          help translate the interface or add another language, this page summarizes the workflow
+          and links back to the repository docs.
+        </p>
+
+        <h2>Where app translations live</h2>
+        <ul>
+          <li><code>src/lib/app-language/locales/app.en.po</code></li>
+          <li><code>src/lib/app-language/locales/app.nl.po</code></li>
+        </ul>
+
+        <h2>Update an existing language</h2>
+        <ol>
+          <li>Edit the relevant <code>app.&lt;language&gt;.po</code> file.</li>
+          <li>Keep placeholders like <code>{count}</code> and <code>{format}</code> unchanged.</li>
+          <li>Run the local validation commands before opening a pull request.</li>
+          <li>
+            In the app, open Settings → Display and switch the interface language to review it.
+          </li>
+        </ol>
+
+        <h2>Add a new language</h2>
+        <ol>
+          <li>Create a new file such as <code>src/lib/app-language/locales/app.de.po</code>.</li>
+          <li>Register that language in <code>src/lib/app-language/settings.ts</code>.</li>
+          <li>Import the new catalog in <code>src/lib/app-language/catalog.ts</code>.</li>
+          <li>Verify the new language through the interface language selector in Settings.</li>
+        </ol>
+
+        <h2>Repository docs</h2>
+        <p>
+          For the contributor checklist and pull request expectations, read the repository guides:
+        </p>
+        <ul>
+          <li>
+            <a href="https://github.com/lammersbjorn/glossboss/blob/main/README.md">README.md</a>
+          </li>
+          <li>
+            <a href="https://github.com/lammersbjorn/glossboss/blob/main/CONTRIBUTING.md"
+              >CONTRIBUTING.md</a
+            >
+          </li>
+        </ul>
+      </article>
+    </main>
+  </body>
+</html>

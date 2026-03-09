@@ -61,4 +61,17 @@ describe('SettingsModal', () => {
       expect(screen.getByRole('heading', { name: 'Instellingen' })).toBeInTheDocument();
     });
   });
+
+  it('links to the translation guide from display settings', async () => {
+    const user = userEvent.setup();
+
+    renderModal();
+
+    await user.click(screen.getByRole('tab', { name: /display/i }));
+
+    expect(screen.getByRole('link', { name: /read the translation guide/i })).toHaveAttribute(
+      'href',
+      '/translate/',
+    );
+  });
 });

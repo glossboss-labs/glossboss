@@ -59,6 +59,18 @@ bun run build
 bun run preview
 ```
 
+## Translating GlossBoss
+
+GlossBoss already ships with an app UI translation system backed by gettext `.po` catalogs in
+`src/lib/app-language/locales/`.
+
+- Edit an existing catalog such as `app.en.po` or `app.nl.po` to improve current translations.
+- Add a new `app.<language>.po` catalog when introducing another UI language.
+- Register new languages in `src/lib/app-language/settings.ts` and `src/lib/app-language/catalog.ts`.
+
+For the full contributor workflow, see `CONTRIBUTING.md`. The deployed app also includes a
+translation guide at `/translate/`.
+
 ## Deployment model
 
 ### Frontend

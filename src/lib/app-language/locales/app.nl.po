@@ -73,6 +73,9 @@ msgstr "Bepaalt de maximale breedte van het hoofdgedeelte. Gebruik een bredere i
 msgid "Controls the tone of DeepL translations. Not all languages support formality."
 msgstr "Bepaalt de toon van DeepL-vertalingen. Niet alle talen ondersteunen formaliteit."
 
+msgid "Read the translation guide"
+msgstr "Lees de vertaalgids"
+
 msgid "Dark mode"
 msgstr "Donkere modus"
 
@@ -306,6 +309,12 @@ msgstr "Vorig veld"
 
 msgid "Privacy"
 msgstr "Privacy"
+
+msgid "Translate"
+msgstr "Vertalen"
+
+msgid "Want to help translate GlossBoss?"
+msgstr "Wil je GlossBoss helpen vertalen?"
 
 msgid "Problem / opportunity"
 msgstr "Probleem / kans"

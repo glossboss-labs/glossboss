@@ -1617,6 +1617,16 @@ export default function Index() {
             </Text>
             <Text
               component="a"
+              href="/translate/"
+              target="_blank"
+              rel="noopener noreferrer"
+              size="xs"
+              c="dimmed"
+            >
+              {t('Translate')}
+            </Text>
+            <Text
+              component="a"
               href="/privacy/"
               target="_blank"
               rel="noopener noreferrer"

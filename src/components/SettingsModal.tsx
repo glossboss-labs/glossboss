@@ -871,6 +871,13 @@ export function SettingsModal({
                     leftSection={<Languages size={14} />}
                     allowDeselect={false}
                   />
+
+                  <Text size="xs" c="dimmed">
+                    {t('Want to help translate GlossBoss?')}{' '}
+                    <Anchor href="/translate/" target="_blank" rel="noopener noreferrer">
+                      {t('Read the translation guide')}
+                    </Anchor>
+                  </Text>
                 </Stack>
               </Paper>
 
