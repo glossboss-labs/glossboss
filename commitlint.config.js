@@ -1,8 +1,10 @@
+const historicalCommitlintIgnores = ['Initial plan', 'Update src/test/setup.ts'];
+
 export default {
   extends: ['@commitlint/config-conventional'],
   ignores: [
     (message) =>
-      message.startsWith('Initial plan') || message.startsWith('Update src/test/setup.ts'),
+      historicalCommitlintIgnores.some((ignoredHeader) => message.startsWith(ignoredHeader)),
   ],
   rules: {
     'type-enum': [
