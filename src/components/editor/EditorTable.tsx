@@ -1294,15 +1294,22 @@ const EntryRow = memo(function EntryRow({
           verticalAlign: 'middle',
           padding: '8px 8px',
           overflow: 'hidden',
-          textAlign: 'center',
         }}
       >
-        <Checkbox
-          checked={isChecked}
-          onChange={(e) => onToggleSelection(e.currentTarget.checked)}
-          onClick={(e) => e.stopPropagation()}
-          aria-label={`Select entry ${entry.msgid}`}
-        />
+        <Box
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <Checkbox
+            checked={isChecked}
+            onChange={(e) => onToggleSelection(e.currentTarget.checked)}
+            onClick={(e) => e.stopPropagation()}
+            aria-label={`Select entry ${entry.msgid}`}
+          />
+        </Box>
       </Table.Td>
       {visibleDataColumns.map((columnKey) => {
         if (columnKey === 'status') {
