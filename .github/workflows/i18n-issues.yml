@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'src/lib/app-language/locales/app.*.po'
+  workflow_dispatch:
 
 jobs:
   manage-translation-issues:
