@@ -157,6 +157,9 @@ msgstr "Woordenlijst laden mislukt"
 msgid "Failed to parse file"
 msgstr "Bestand kon niet worden verwerkt"
 
+msgid "Failed to read the file."
+msgstr "Het bestand kon niet worden gelezen."
+
 msgid "Feature"
 msgstr "Functie"
 

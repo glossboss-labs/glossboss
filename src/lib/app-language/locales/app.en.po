@@ -157,6 +157,9 @@ msgstr "Failed to load glossary"
 msgid "Failed to parse file"
 msgstr "Failed to parse file"
 
+msgid "Failed to read the file."
+msgstr "Failed to read the file."
+
 msgid "Feature"
 msgstr "Feature"
 
