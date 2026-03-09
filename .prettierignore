@@ -1,3 +1,4 @@
 dist
 node_modules
 bun.lock
+.codex/skills/uncodixfy/*.md

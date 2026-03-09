@@ -11,3 +11,9 @@ Only keep non-obvious, repo-specific failure modes here. If an agent can infer s
   - edge functions: `.github/workflows/supabase-functions.yml`
 - Frontend production builds require `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, and `VITE_TURNSTILE_SITE_KEY`.
 - Keep the routing contract intact: one `<BrowserRouter>` in `src/main.tsx`, route definitions in `src/App.tsx`, no `useRoutes()`, no `React.lazy()`, no dynamic route imports.
+
+## Frontend Design Policy
+
+- For any frontend design or UI generation work done by Codex or GPT-family models, load and follow the repo-local Uncodixfy skill at `.codex/skills/uncodixfy/SKILL.md`.
+- Treat `.codex/skills/uncodixfy/Uncodixfy.md` as the source of truth for frontend aesthetics when generating HTML, CSS, React, Mantine, or other UI code.
+- This rule applies only to Codex and GPT-family models. Do not extend it to Claude or other non-OpenAI models unless the user explicitly asks.
