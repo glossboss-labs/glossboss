@@ -5,6 +5,7 @@
  * via edge function proxy. Includes in-memory caching.
  */
 import { debugInfo, debugWarn } from '@/lib/debug';
+import { getSupabaseAnonKey, getSupabaseFunctionBaseUrl } from '@/lib/cloud-backend';
 import { buildSupabaseFunctionHeaders } from '@/lib/supabase-function-headers';
 import { normalizeSourcePath } from '@/lib/wp-source/references';
 
@@ -157,11 +158,7 @@ async function tryFetchSource(
  * Get the edge function URL for wp-source
  */
 function getEdgeFunctionUrl(): string {
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-  if (!supabaseUrl) {
-    throw new Error('Cloud Backend not configured');
-  }
-  return `${supabaseUrl}/functions/v1/wp-source`;
+  return `${getSupabaseFunctionBaseUrl('WordPress source browsing')}/wp-source`;
 }
 
 /**
@@ -169,7 +166,7 @@ function getEdgeFunctionUrl(): string {
  */
 async function fetchFromEdge(body: Record<string, unknown>): Promise<Response> {
   const functionUrl = getEdgeFunctionUrl();
-  const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+  const anonKey = getSupabaseAnonKey();
 
   const headers = buildSupabaseFunctionHeaders(anonKey);
 

@@ -1,5 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { jsonResponse, requireJsonRequest, validateRequestOrigin } from './http';
+import {
+  isAllowedOrigin,
+  jsonResponse,
+  optionsResponse,
+  requireJsonRequest,
+  validateRequestOrigin,
+} from './http';
 
 function installDenoEnv(origins: string) {
   vi.stubGlobal('Deno', {
@@ -48,6 +54,21 @@ describe('shared HTTP helpers', () => {
     });
   });
 
+  it('supports wildcard Pages subdomains', () => {
+    installDenoEnv('https://glossboss.test,https://*.glossboss.pages.dev');
+
+    expect(isAllowedOrigin('https://glossboss.pages.dev')).toBe(false);
+    expect(isAllowedOrigin('https://main.glossboss.pages.dev')).toBe(true);
+    expect(isAllowedOrigin('https://feature-branch.glossboss.pages.dev')).toBe(true);
+    expect(isAllowedOrigin('https://example.com')).toBe(false);
+  });
+
+  it('rejects wildcard patterns with ports', () => {
+    installDenoEnv('https://*.glossboss.pages.dev:3000');
+
+    expect(isAllowedOrigin('https://preview.glossboss.pages.dev:3000')).toBe(false);
+  });
+
   it('requires JSON content for non-OPTIONS requests', () => {
     const request = new Request('https://functions.test/feedback', {
       method: 'POST',
@@ -59,6 +80,18 @@ describe('shared HTTP helpers', () => {
 
     const response = requireJsonRequest(request);
     expect(response?.status).toBe(415);
+  });
+
+  it('optionsResponse returns 204 with CORS headers and max-age', () => {
+    const request = new Request('https://functions.test/feedback', {
+      method: 'OPTIONS',
+      headers: { origin: 'https://glossboss.test' },
+    });
+
+    const response = optionsResponse(request);
+    expect(response.status).toBe(204);
+    expect(response.headers.get('access-control-allow-origin')).toBe('https://glossboss.test');
+    expect(response.headers.get('access-control-max-age')).toBe('86400');
   });
 
   describe('jsonResponse header merging', () => {
