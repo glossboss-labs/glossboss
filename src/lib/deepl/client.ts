@@ -99,7 +99,16 @@ export function createDeepLClient(config: DeepLClientConfig = {}) {
    * Translate text using DeepL
    */
   async function translate(req: TranslateRequest): Promise<TranslateResponse> {
-    return request<TranslateResponse>('translate', { ...req });
+    // Apply formality from settings if not explicitly set in request
+    const settings = getDeepLSettings();
+    const requestWithFormality: TranslateRequest = {
+      ...req,
+    };
+
+    if (requestWithFormality.formality == null) {
+      requestWithFormality.formality = settings.formality;
+    }
+    return request<TranslateResponse>('translate', { ...requestWithFormality });
   }
 
   /**
