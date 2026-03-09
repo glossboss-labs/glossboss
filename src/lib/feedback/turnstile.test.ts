@@ -130,4 +130,34 @@ describe('createTurnstileController', () => {
       `Feedback verification is not authorized for this hostname (${window.location.hostname}). Update the Turnstile widget hostname allowlist or use the correct site key.`,
     );
   });
+
+  it('resets the widget when Turnstile reports an expired challenge', async () => {
+    let config:
+      | {
+          callback: (token: string) => void;
+          'error-callback': (errorCode?: string | number) => boolean;
+          'expired-callback': () => void;
+        }
+      | undefined;
+
+    const reset = vi.fn();
+
+    window.turnstile = {
+      render: vi.fn((_container, options) => {
+        config = options;
+        return 'widget-id';
+      }),
+      execute: vi.fn(),
+      reset,
+      remove: vi.fn(),
+    };
+
+    const controller = await createTurnstileController(document.createElement('div'), 'site-key');
+    const tokenPromise = controller.executeChallenge();
+
+    config?.['expired-callback']();
+
+    await expect(tokenPromise).rejects.toThrow('Verification expired. Please submit again.');
+    expect(reset).toHaveBeenCalledWith('widget-id');
+  });
 });
