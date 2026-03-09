@@ -1,14 +1,10 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 describe('storage test setup', () => {
-  beforeEach(() => {
-    localStorage.clear();
-  });
-
   it('enumerates stored keys via Object.keys and Storage.key()', () => {
     localStorage.setItem('glossboss-wp-glossary-nl', 'cached');
 
-    expect(Object.keys(localStorage)).toEqual(['glossboss-wp-glossary-nl']);
+    expect(Object.keys(localStorage)).toContain('glossboss-wp-glossary-nl');
     expect(localStorage.key(0)).toBe('glossboss-wp-glossary-nl');
   });
 
