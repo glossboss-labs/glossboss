@@ -88,10 +88,16 @@ bun run build
 
 ### Adding a new app language
 
-1. Add a new catalog file such as `src/lib/app-language/locales/app.de.po`.
-2. Set the PO header `Language: de` (or use the matching `app.de.po` filename).
-3. Run `bun run i18n:extract` to populate the new file with all current `msgid` entries.
-4. Verify the new language through the Settings → Display language selector.
+```bash
+bun run i18n:add-lang de
+```
+
+This creates `app.de.po`, populates it from the POT template, updates the i18n-issues workflow, and
+prints a local edit link. Then:
+
+1. Translate the empty `msgstr` values in the new file.
+2. Verify the new language through Settings → Display → Language.
+3. Commit the new file alongside your changes.
 
 The live site also exposes a public translation guide at `/translate/` so contributors can find the
 same workflow from inside the app.

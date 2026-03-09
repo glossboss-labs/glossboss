@@ -24,6 +24,7 @@
     "test:coverage": "vitest run --coverage",
     "preview": "vite preview",
     "i18n:extract": "bun scripts/extract-i18n.ts",
+    "i18n:add-lang": "bun scripts/add-language.ts",
     "prepare": "husky"
   },
   "lint-staged": {
