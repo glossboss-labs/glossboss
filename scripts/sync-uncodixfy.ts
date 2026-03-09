@@ -8,6 +8,7 @@ const UPSTREAM_URL = 'https://github.com/cyxzdev/Uncodixfy';
 const UPSTREAM_REF = 'main';
 const DEST_DIR = resolve('.codex/skills/uncodixfy');
 const FILES_TO_SYNC = ['README.md', 'SKILL.md', 'Uncodixfy.md'] as const;
+const DIRS_TO_SYNC = ['images'] as const;
 
 function run(command: string[], cwd?: string): string {
   const proc = Bun.spawnSync(command, {
@@ -40,6 +41,13 @@ function main() {
       cpSync(join(tmpRoot, file), join(DEST_DIR, file), { force: true });
     }
 
+    for (const dir of DIRS_TO_SYNC) {
+      const src = join(tmpRoot, dir);
+      if (existsSync(src)) {
+        cpSync(src, join(DEST_DIR, dir), { force: true, recursive: true });
+      }
+    }
+
     const upstreamNote = [
       `Upstream: ${UPSTREAM_URL}`,
       `Ref: ${UPSTREAM_REF}`,
@@ -53,6 +61,12 @@ function main() {
     if (existsSync(installedSkillDir)) {
       for (const file of FILES_TO_SYNC) {
         cpSync(join(DEST_DIR, file), join(installedSkillDir, file), { force: true });
+      }
+      for (const dir of DIRS_TO_SYNC) {
+        const src = join(DEST_DIR, dir);
+        if (existsSync(src)) {
+          cpSync(src, join(installedSkillDir, dir), { force: true, recursive: true });
+        }
       }
     }
 
