@@ -5,6 +5,7 @@ Only keep non-obvious, repo-specific failure modes here. If an agent can infer s
 `AGENTS.md` is the source of truth. Keep `AGENT.md`, `CLAUDE.md`, `CODEX.md`, `CURSOR.md`, `GEMINI.md`, and `.github/copilot-instructions.md` symlinked to it.
 
 - Use Bun only: `bun` / `bunx`, never npm lockfiles or `npx`.
+- AGENTS.md is guidance for coding agents. CI does not read this file directly: on `pull_request`, `.github/workflows/ci.yml` runs `bunx commitlint --from ... --to ...` and fails if any commit message in the PR is not a Conventional Commit. The current workflow does **not** validate the PR title. When reporting progress or committing manually, always use Conventional Commit headers such as `docs: clarify AGENTS commitlint expectations`.
 - For any non-trivial change, do not stop until you have run the CI script surface from `.github/workflows/ci.yml`: `bun run lint`, `bun run format:check`, `bun run typecheck`, `bun run build`, `bun run test:coverage`. If any step is skipped or fails, say which one and why.
 - If you touch deploy paths, re-check the workflows before claiming things are safe:
   - frontend deploy: `.github/workflows/cloudflare-pages.yml`
