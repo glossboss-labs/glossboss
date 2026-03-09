@@ -26,14 +26,18 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          LANG_NAMES='{"nl":"Dutch"}'
+          # Map language codes to display names and GitHub assignees.
+          # "assignees" is a comma-separated list of GitHub usernames.
+          # Add entries here or use: bun run i18n:add-lang <code> --assignee <user>
+          LANG_CONFIG='{"en":{"name":"English","assignees":"lammersbjorn,toineenzo"},"nl":{"name":"Dutch","assignees":"lammersbjorn,toineenzo"}}'
 
           for po in src/lib/app-language/locales/app.*.po; do
             lang=$(echo "$po" | sed 's/.*app\.\(.*\)\.po/\1/')
             if [ "$lang" = "en" ]; then continue; fi
 
-            name=$(echo "$LANG_NAMES" | jq -r --arg l "$lang" '.[$l] // $l')
-            title="i18n: Untranslated strings in ${name} (${lang})"
+            name=$(echo "$LANG_CONFIG" | jq -r --arg l "$lang" '.[$l].name // $l')
+            assignees=$(echo "$LANG_CONFIG" | jq -r --arg l "$lang" '.[$l].assignees // ""')
+            title="[Translations] i18n: Untranslated strings in ${name} (${lang})"
 
             # Collect untranslated msgids (msgstr "" that follow a non-empty msgid)
             untranslated=$(awk '
@@ -58,8 +62,12 @@ jobs:
 
             count=$(echo "$untranslated" | grep -c '^\- \[' || true)
 
-            # Find existing issue
+            # Find existing issue (check current title, then fall back to old format without [Translations] prefix)
+            old_title="i18n: Untranslated strings in ${name} (${lang})"
             existing=$(gh issue list --label i18n --state open --search "in:title $title" --json number,title --jq ".[] | select(.title == \"$title\") | .number" | head -1)
+            if [ -z "$existing" ]; then
+              existing=$(gh issue list --label i18n --state open --search "in:title $old_title" --json number,title --jq ".[] | select(.title == \"$old_title\") | .number" | head -1)
+            fi
 
             if [ "$count" -gt 0 ]; then
               # Build a raw GitHub URL for the PO file so GlossBoss can load it directly
@@ -67,6 +75,8 @@ jobs:
               edit_url="https://glossboss.pages.dev/?url=$(python3 -c "import urllib.parse; print(urllib.parse.quote('${raw_url}', safe=''))")"
 
               body=$(cat <<EOF
+          @coderabbitai ignore
+
           ## Untranslated strings in \`app.${lang}.po\`
 
           **${count}** string(s) need translation:
@@ -80,11 +90,19 @@ jobs:
           EOF
               )
 
+              # Build assignee flags
+              assignee_flags=""
+              if [ -n "$assignees" ]; then
+                for user in $(echo "$assignees" | tr ',' ' '); do
+                  assignee_flags="$assignee_flags --assignee $user"
+                done
+              fi
+
               if [ -n "$existing" ]; then
-                gh issue edit "$existing" --body "$body"
+                gh issue edit "$existing" --title "$title" --body "$body" $assignee_flags
                 echo "Updated issue #${existing} for ${lang}"
               else
-                gh issue create --title "$title" --label i18n --body "$body"
+                gh issue create --title "$title" --label i18n --body "$body" $assignee_flags
                 echo "Created issue for ${lang}"
               fi
             else

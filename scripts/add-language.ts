@@ -2,11 +2,12 @@
  * Add a new UI language to GlossBoss.
  *
  * Creates the PO catalog, populates it via i18n:extract, updates the
- * i18n-issues workflow language map, and prints an edit link.
+ * i18n-issues workflow config, and prints an edit link.
  *
- * Usage: bun scripts/add-language.ts <lang>
+ * Usage: bun scripts/add-language.ts <lang> [--assignee <user>...]
  *        bun scripts/add-language.ts de
- *        bun scripts/add-language.ts fr
+ *        bun scripts/add-language.ts fr --assignee octocat
+ *        bun scripts/add-language.ts ja --assignee user1 --assignee user2
  */
 
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
@@ -34,43 +35,68 @@ function getLanguageName(code: string): string | null {
   }
 }
 
-function updateIssuesWorkflow(lang: string, name: string) {
+interface LangEntry {
+  name: string;
+  assignees: string;
+}
+
+function updateIssuesWorkflow(lang: string, name: string, assignees: string[]) {
   if (!existsSync(issuesWorkflow)) return;
 
   const content = readFileSync(issuesWorkflow, 'utf-8');
-  const match = content.match(/LANG_NAMES='(\{[^']*\})'/);
+  const match = content.match(/LANG_CONFIG='(\{[^']*\})'/);
   if (!match) return;
 
   try {
-    const map: Record<string, string> = JSON.parse(match[1]);
-    if (map[lang]) return; // already present
-    map[lang] = name;
+    const config: Record<string, LangEntry> = JSON.parse(match[1]);
 
-    const sorted = Object.keys(map).sort();
-    const obj: Record<string, string> = {};
-    for (const k of sorted) obj[k] = map[k];
+    if (config[lang]) {
+      // Language exists — merge new assignees
+      const existing = config[lang].assignees
+        ? config[lang].assignees.split(',').map((s) => s.trim())
+        : [];
+      const merged = [...new Set([...existing, ...assignees])].filter(Boolean);
+      config[lang].assignees = merged.join(',');
+    } else {
+      config[lang] = { name, assignees: assignees.join(',') };
+    }
+
+    const sorted = Object.keys(config).sort();
+    const obj: Record<string, LangEntry> = {};
+    for (const k of sorted) obj[k] = config[k];
 
     const updated = content.replace(
-      /LANG_NAMES='(\{[^']*\})'/,
-      `LANG_NAMES='${JSON.stringify(obj)}'`,
+      /LANG_CONFIG='(\{[^']*\})'/,
+      `LANG_CONFIG='${JSON.stringify(obj)}'`,
     );
     writeFileSync(issuesWorkflow, updated, 'utf-8');
-    console.log(`  Updated i18n-issues.yml language map`);
+    console.log(`  Updated i18n-issues.yml language config`);
   } catch {
-    // Non-critical — don't block the rest
-    console.warn(`  Warning: could not update i18n-issues.yml language map`);
+    console.warn(`  Warning: could not update i18n-issues.yml language config`);
   }
 }
 
 // ---------------------------------------------------------------------------
-// Main
+// Parse arguments
 // ---------------------------------------------------------------------------
 
-const lang = process.argv[2]?.toLowerCase().replace(/_/g, '-').split('-')[0];
+const args = process.argv.slice(2);
+let langArg: string | undefined;
+const assignees: string[] = [];
+
+for (let i = 0; i < args.length; i++) {
+  if (args[i] === '--assignee' && i + 1 < args.length) {
+    assignees.push(args[++i]);
+  } else if (!langArg && !args[i].startsWith('-')) {
+    langArg = args[i];
+  }
+}
+
+const lang = langArg?.toLowerCase().replace(/_/g, '-').split('-')[0];
 
 if (!lang) {
   die(
-    'Usage: bun scripts/add-language.ts <lang>\n         Example: bun scripts/add-language.ts de',
+    'Usage: bun scripts/add-language.ts <lang> [--assignee <user>...]\n         Example: bun scripts/add-language.ts de --assignee octocat',
   );
 }
 
@@ -87,7 +113,15 @@ const poFilename = `app.${lang}.po`;
 const poPath = resolve(localesDir, poFilename);
 
 if (existsSync(poPath)) {
-  die(`${poFilename} already exists — nothing to do`);
+  // File already exists — still allow updating assignees
+  if (assignees.length > 0) {
+    updateIssuesWorkflow(lang, name, assignees);
+    console.log(`\n  ${poFilename} already exists — updated assignees: ${assignees.join(', ')}\n`);
+    process.exit(0);
+  }
+  die(
+    `${poFilename} already exists — nothing to do\n         To add assignees: bun run i18n:add-lang ${lang} --assignee <user>`,
+  );
 }
 
 // Build the new PO file from the POT template (so the parser sees entries)
@@ -122,14 +156,17 @@ console.log(
 console.log(`  Running i18n:extract to sync...\n`);
 execSync('bun run i18n:extract', { cwd: rootDir, stdio: 'inherit' });
 
-// Update the i18n-issues workflow language map
-updateIssuesWorkflow(lang, name);
+// Update the i18n-issues workflow config
+updateIssuesWorkflow(lang, name, assignees);
 
-// Print summary and edit links
+// Print summary
 const relPath = `src/lib/app-language/locales/${poFilename}`;
 console.log(`\n  Language: ${name} (${lang})`);
 console.log(`  File:     ${relPath}`);
 console.log(`  Edit:     ${poPath}`);
+if (assignees.length > 0) {
+  console.log(`  Assignees: ${assignees.join(', ')}`);
+}
 console.log(``);
 console.log(`  Next steps:`);
 console.log(`    1. Translate the empty msgstr values in ${poFilename}`);
