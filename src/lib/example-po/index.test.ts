@@ -84,6 +84,7 @@ msgstr ""
   it('derives the localized example filename from PO language headers', () => {
     expect(buildExamplePoFilename('de_DE')).toBe('hello-dolly-de_DE.po');
     expect(buildExamplePoFilename('en-GB')).toBe('hello-dolly-en_GB.po');
+    // Malformed locale headers should fall back instead of being silently rewritten.
     expect(buildExamplePoFilename('de DE')).toBe('hello-dolly-nl_NL.po');
     expect(buildExamplePoFilename(undefined, 'PT-BR')).toBe('hello-dolly-pt_BR.po');
     expect(getBundledExamplePo().filename).toBe('hello-dolly-nl_NL.po');

@@ -33,6 +33,7 @@ msgstr "Doneren"
 const EXAMPLE_FETCH_TIMEOUT_MS = 8000;
 const EXAMPLE_PO_CACHE = new Map<string, ExamplePoAsset>();
 const DEFAULT_EXAMPLE_NAVIGATOR = typeof navigator !== 'undefined' ? navigator : undefined;
+const EXAMPLE_TIMEOUT_HOST = typeof window !== 'undefined' ? window : globalThis;
 const EXAMPLE_TARGET_LANGUAGE_CANDIDATES = [
   'BG',
   'CS',
@@ -212,7 +213,10 @@ export async function fetchExamplePoFromWordPress(
 
   for (const url of buildExamplePoWordPressUrls(targetLanguage)) {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), EXAMPLE_FETCH_TIMEOUT_MS);
+    const timeoutId = EXAMPLE_TIMEOUT_HOST.setTimeout(
+      () => controller.abort(),
+      EXAMPLE_FETCH_TIMEOUT_MS,
+    );
 
     try {
       const response = await fetchImpl(url, {
@@ -236,7 +240,7 @@ export async function fetchExamplePoFromWordPress(
     } catch {
       // Fall through to the next candidate URL and eventually use the bundled example.
     } finally {
-      clearTimeout(timeoutId);
+      EXAMPLE_TIMEOUT_HOST.clearTimeout(timeoutId);
     }
   }
 
@@ -254,6 +258,7 @@ function normalizePoLanguage(languageHeader?: string | null): string | null {
   }
 
   const normalized = languageHeader.trim().replaceAll('-', '_');
+  // Accept plain PO locales like `ja` plus region variants such as `de_DE`, `pt_BR`, or `zh_CN`.
   return /^[a-z]{2,3}(?:_[A-Z]{2,4})?$/.test(normalized) ? normalized : null;
 }
 
