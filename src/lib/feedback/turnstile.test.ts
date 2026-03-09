@@ -14,6 +14,7 @@ describe('createTurnstileController', () => {
     window.turnstile = {
       render,
       execute: vi.fn(),
+      reset: vi.fn(),
       remove: vi.fn(),
     };
 
@@ -42,6 +43,7 @@ describe('createTurnstileController', () => {
       | undefined;
 
     const execute = vi.fn();
+    const reset = vi.fn();
     const remove = vi.fn();
 
     window.turnstile = {
@@ -50,13 +52,16 @@ describe('createTurnstileController', () => {
         return 'widget-id';
       }),
       execute,
+      reset,
       remove,
     };
 
     const controller = await createTurnstileController(document.createElement('div'), 'site-key');
     const tokenPromise = controller.executeChallenge();
 
+    expect(reset).toHaveBeenCalledWith('widget-id');
     expect(execute).toHaveBeenCalledWith('widget-id');
+    expect(reset.mock.invocationCallOrder[0]).toBeLessThan(execute.mock.invocationCallOrder[0]);
 
     config?.callback('turnstile-token');
 
@@ -64,5 +69,35 @@ describe('createTurnstileController', () => {
 
     controller.cleanup();
     expect(remove).toHaveBeenCalledWith('widget-id');
+  });
+
+  it('resets the widget when Turnstile reports an execution error', async () => {
+    let config:
+      | {
+          callback: (token: string) => void;
+          'error-callback': () => void;
+          'expired-callback': () => void;
+        }
+      | undefined;
+
+    const reset = vi.fn();
+
+    window.turnstile = {
+      render: vi.fn((_container, options) => {
+        config = options;
+        return 'widget-id';
+      }),
+      execute: vi.fn(),
+      reset,
+      remove: vi.fn(),
+    };
+
+    const controller = await createTurnstileController(document.createElement('div'), 'site-key');
+    const tokenPromise = controller.executeChallenge();
+
+    config?.['error-callback']();
+
+    await expect(tokenPromise).rejects.toThrow('Verification failed. Please try again.');
+    expect(reset).toHaveBeenCalledWith('widget-id');
   });
 });

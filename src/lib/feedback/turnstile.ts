@@ -11,6 +11,7 @@ type TurnstileWidgetConfig = {
 type TurnstileApi = {
   render: (element: HTMLElement, options: TurnstileWidgetConfig) => string;
   execute: (widgetId: string) => void;
+  reset: (widgetId: string) => void;
   remove: (widgetId: string) => void;
 };
 
@@ -102,9 +103,11 @@ export async function createTurnstileController(
       pending = undefined;
     },
     'error-callback': () => {
+      window.turnstile?.reset(widgetId);
       rejectPending('Verification failed. Please try again.');
     },
     'expired-callback': () => {
+      window.turnstile?.reset(widgetId);
       rejectPending('Verification expired. Please submit again.');
     },
   });
@@ -125,6 +128,7 @@ export async function createTurnstileController(
         }, CHALLENGE_TIMEOUT_MS);
 
         pending = { resolve, reject, timeoutId };
+        window.turnstile?.reset(widgetId);
         window.turnstile?.execute(widgetId);
       });
     },
