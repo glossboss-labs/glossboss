@@ -67,7 +67,15 @@ jobs:
 
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             DEPLOY_OUTPUT="$(bunx wrangler pages deploy dist --project-name glossboss --branch "$DEPLOY_BRANCH" 2>&1 | tee /dev/stderr)"
-            DEPLOY_URL="$(printf '%s\n' "$DEPLOY_OUTPUT" | grep -Eo 'https://[^[:space:]]+\.pages\.dev' | tail -n1 || true)"
+            set +e
+            DEPLOY_URL="$(printf '%s\n' "$DEPLOY_OUTPUT" | grep -Eo 'https://[^[:space:]]+\.pages\.dev' | tail -n1)"
+            DEPLOY_URL_STATUS=$?
+            set -e
+
+            if [ "$DEPLOY_URL_STATUS" -gt 1 ]; then
+              echo "::error::Failed to inspect Cloudflare Pages deploy output."
+              exit 1
+            fi
 
             if ! [[ "$DEPLOY_URL" =~ ^https://[A-Za-z0-9.-]+\.pages\.dev$ ]]; then
               echo "::error::Failed to detect a valid Cloudflare Pages URL from wrangler output."
