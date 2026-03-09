@@ -51,6 +51,7 @@ export function buildCorsHeaders(origin: string | null): HeadersInit {
     'Access-Control-Allow-Origin': allowOrigin,
     'Access-Control-Allow-Headers': DEFAULT_ALLOWED_HEADERS,
     'Access-Control-Allow-Methods': DEFAULT_ALLOWED_METHODS,
+    'Access-Control-Max-Age': '86400',
     Vary: 'Origin',
   };
 }
@@ -87,6 +88,7 @@ export function jsonResponse(
 
 export function optionsResponse(req: Request): Response {
   return new Response(null, {
+    status: 204,
     headers: buildCorsHeaders(req.headers.get('origin')),
   });
 }

@@ -337,7 +337,7 @@ async function createGitHubIssue(
     throw new Error('GITHUB_TOKEN is not configured.');
   }
 
-  const owner = Deno.env.get('GITHUB_OWNER') || 'toineenzo';
+  const owner = Deno.env.get('GITHUB_OWNER') || 'lammersbjorn';
   const repo = Deno.env.get('GITHUB_REPO') || 'glossboss';
   const url = `https://api.github.com/repos/${owner}/${repo}/issues`;
 
