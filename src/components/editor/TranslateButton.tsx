@@ -10,7 +10,7 @@
 import { useState, useCallback } from 'react';
 import { ActionIcon, Tooltip, Loader, Popover, Button, Text, Stack, Group } from '@mantine/core';
 import { Languages, AlertCircle, AlertTriangle } from 'lucide-react';
-import { getDeepLClient } from '@/lib/deepl';
+import { getDeepLClient, hasUserApiKey } from '@/lib/deepl';
 import {
   formatDeepLError,
   isGlossaryNotFoundError,
@@ -58,13 +58,15 @@ export function TranslateButton({
   const [showConfirm, setShowConfirm] = useState(false);
   const [pendingTranslation, setPendingTranslation] = useState<string | null>(null);
   const [pendingUsedGlossary, setPendingUsedGlossary] = useState(false);
+  const apiKeyConfigured = hasUserApiKey();
+  const isDisabled = disabled || !text.trim() || !apiKeyConfigured;
 
   const iconSize = size === 'xs' ? 12 : size === 'sm' ? 14 : 16;
   const hasExistingTranslation = currentTranslation.trim().length > 0;
   const label = glossaryId ? 'Translate with Glossary' : 'Translate with DeepL';
 
   const doTranslate = useCallback(async () => {
-    if (!text.trim() || isLoading || disabled) return;
+    if (!text.trim() || isLoading || isDisabled) return;
 
     setIsLoading(true);
     setError(null);
@@ -120,7 +122,7 @@ export function TranslateButton({
     onTranslated,
     onError,
     isLoading,
-    disabled,
+    isDisabled,
     hasExistingTranslation,
   ]);
 
@@ -165,6 +167,7 @@ export function TranslateButton({
             color="red"
             leftSection={<AlertCircle size={iconSize} />}
             onClick={doTranslate}
+            disabled={isDisabled}
           >
             Retry translation
           </Button>
@@ -174,7 +177,13 @@ export function TranslateButton({
 
     return (
       <Tooltip label={`Error: ${error}. Click to retry.`} color="red" multiline w={200}>
-        <ActionIcon size={size} variant="subtle" color="red" onClick={doTranslate}>
+        <ActionIcon
+          size={size}
+          variant="subtle"
+          color="red"
+          onClick={doTranslate}
+          disabled={isDisabled}
+        >
           <AlertCircle size={iconSize} />
         </ActionIcon>
       </Tooltip>
@@ -196,7 +205,7 @@ export function TranslateButton({
               color={glossaryId ? 'teal' : 'blue'}
               leftSection={<Languages size={iconSize} />}
               onClick={doTranslate}
-              disabled={disabled || !text.trim()}
+              disabled={isDisabled}
             >
               {label}
             </Button>
@@ -206,7 +215,7 @@ export function TranslateButton({
               variant="light"
               color={glossaryId ? 'teal' : 'blue'}
               onClick={doTranslate}
-              disabled={disabled || !text.trim()}
+              disabled={isDisabled}
             >
               <Languages size={iconSize} />
             </ActionIcon>
