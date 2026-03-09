@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "cf:deploy:check-env": "test -n \"$VITE_SUPABASE_URL\" && test -n \"$VITE_SUPABASE_ANON_KEY\" && test -n \"$VITE_TURNSTILE_SITE_KEY\"",
+    "cf:deploy:check-env": "bun -e \"const required=['VITE_SUPABASE_URL','VITE_SUPABASE_ANON_KEY','VITE_TURNSTILE_SITE_KEY']; const env=typeof Bun!=='undefined'?Bun.env:process.env; const missing=required.filter((name)=>!(env[name]||'').trim()); if(missing.length){console.error('Missing required env vars for Cloudflare deploy: '+missing.join(', ')); process.exit(1);} \"",
     "cf:project:create": "bunx wrangler pages project create glossboss --production-branch main",
     "cf:deploy": "bun run cf:deploy:check-env && bun run build && bunx wrangler pages deploy dist --project-name glossboss --branch main --commit-dirty=true",
     "cf:deploy:preview": "bun run cf:deploy:check-env && bun run build && bunx wrangler pages deploy dist --project-name glossboss --branch preview --commit-dirty=true",
