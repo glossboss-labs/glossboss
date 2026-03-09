@@ -23,6 +23,7 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "preview": "vite preview",
+    "i18n:extract": "bun scripts/extract-i18n.ts",
     "prepare": "husky"
   },
   "lint-staged": {

@@ -69,42 +69,42 @@ import {
 import type { Glossary } from '@/lib/glossary/types';
 import { NAV_SKIP_TRANSLATED_KEY } from '@/components/editor/EditorTable';
 import { CONTAINER_WIDTH_OPTIONS, type ContainerWidth } from '@/lib/container-width';
-import { APP_LANGUAGE_OPTIONS, useTranslation, type AppLanguage } from '@/lib/app-language';
+import { APP_LANGUAGE_OPTIONS, msgid, useTranslation, type AppLanguage } from '@/lib/app-language';
 
 /** Keyboard shortcut definitions */
 const KEYBINDS: { keys: string[][]; action: string; description?: string }[] = [
   {
     keys: [['Tab']],
-    action: 'Next field',
-    description: 'Save current field and move to the next translation field',
+    action: msgid('Next field'),
+    description: msgid('Save current field and move to the next translation field'),
   },
   {
     keys: [['Shift', 'Tab']],
-    action: 'Previous field',
-    description: 'Save current field and move to the previous translation field',
+    action: msgid('Previous field'),
+    description: msgid('Save current field and move to the previous translation field'),
   },
   {
     keys: [['Enter']],
-    action: 'Next field',
-    description: 'Save current field and move to the next translation field',
+    action: msgid('Next field'),
+    description: msgid('Save current field and move to the next translation field'),
   },
   {
     keys: [['Shift', 'Enter']],
-    action: 'New line',
-    description: 'Insert a line break in the translation',
+    action: msgid('New line'),
+    description: msgid('Insert a line break in the translation'),
   },
   {
     keys: [
       ['⌘', 'Enter'],
       ['Ctrl', 'Enter'],
     ],
-    action: 'Next entry',
-    description: 'Save and jump to the next translation entry (skips translated by default)',
+    action: msgid('Next entry'),
+    description: msgid('Save and jump to the next translation entry (skips translated by default)'),
   },
   {
     keys: [['Escape']],
-    action: 'Cancel edit',
-    description: 'Discard changes and exit the current field',
+    action: msgid('Cancel edit'),
+    description: msgid('Discard changes and exit the current field'),
   },
 ];
 

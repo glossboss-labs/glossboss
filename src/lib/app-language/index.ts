@@ -9,6 +9,6 @@ export {
   saveAppLanguage,
   type AppLanguage,
 } from './settings';
-export { translateAppMessage } from './catalog';
+export { msgid, translateAppMessage } from './catalog';
 export { TranslationProvider } from './context';
 export { useTranslation } from './use-translation';
