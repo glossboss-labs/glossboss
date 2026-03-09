@@ -26,7 +26,7 @@ describe('TranslateButton', () => {
 
     renderWithMantine('icon');
 
-    const button = screen.getByRole('button');
+    const button = screen.getByRole('button', { name: /translate with deepl/i });
     expect(button).toBeDisabled();
 
     await user.click(button);
@@ -41,7 +41,7 @@ describe('TranslateButton', () => {
 
     renderWithMantine('icon');
 
-    const button = screen.getByRole('button');
+    const button = screen.getByRole('button', { name: /translate with deepl/i });
     await user.hover(button.parentElement as HTMLElement);
 
     expect(

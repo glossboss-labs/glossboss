@@ -156,7 +156,7 @@ export function TranslateButton({
     }
 
     return (
-      <ActionIcon size={size} variant="subtle" disabled>
+      <ActionIcon size={size} variant="subtle" disabled aria-label="Translating">
         <Loader size={iconSize} />
       </ActionIcon>
     );
@@ -188,6 +188,7 @@ export function TranslateButton({
           color="red"
           onClick={doTranslate}
           disabled={isDisabled}
+          aria-label="Retry translation"
         >
           <AlertCircle size={iconSize} />
         </ActionIcon>
@@ -219,6 +220,7 @@ export function TranslateButton({
                 color={glossaryId ? 'teal' : 'blue'}
                 onClick={doTranslate}
                 disabled={isDisabled}
+                aria-label={label}
               >
                 <Languages size={iconSize} />
               </ActionIcon>
