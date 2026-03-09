@@ -10,7 +10,7 @@
 import { useState, useCallback } from 'react';
 import { ActionIcon, Tooltip, Loader, Popover, Button, Text, Stack, Group } from '@mantine/core';
 import { Languages, AlertCircle, AlertTriangle } from 'lucide-react';
-import { getDeepLClient } from '@/lib/deepl';
+import { getDeepLClient, hasUserApiKey } from '@/lib/deepl';
 import {
   formatDeepLError,
   isGlossaryNotFoundError,
@@ -58,13 +58,20 @@ export function TranslateButton({
   const [showConfirm, setShowConfirm] = useState(false);
   const [pendingTranslation, setPendingTranslation] = useState<string | null>(null);
   const [pendingUsedGlossary, setPendingUsedGlossary] = useState(false);
+  const apiKeyConfigured = hasUserApiKey();
+  const isDisabled = disabled || !text.trim() || !apiKeyConfigured;
 
   const iconSize = size === 'xs' ? 12 : size === 'sm' ? 14 : 16;
   const hasExistingTranslation = currentTranslation.trim().length > 0;
   const label = glossaryId ? 'Translate with Glossary' : 'Translate with DeepL';
+  const tooltipLabel = !apiKeyConfigured
+    ? 'Add your DeepL API key in Settings to enable translation'
+    : glossaryId
+      ? 'Translate with DeepL + Glossary'
+      : 'Translate with DeepL';
 
   const doTranslate = useCallback(async () => {
-    if (!text.trim() || isLoading || disabled) return;
+    if (!text.trim() || isLoading || isDisabled) return;
 
     setIsLoading(true);
     setError(null);
@@ -120,7 +127,7 @@ export function TranslateButton({
     onTranslated,
     onError,
     isLoading,
-    disabled,
+    isDisabled,
     hasExistingTranslation,
   ]);
 
@@ -149,7 +156,7 @@ export function TranslateButton({
     }
 
     return (
-      <ActionIcon size={size} variant="subtle" disabled>
+      <ActionIcon size={size} variant="subtle" disabled aria-label="Translating">
         <Loader size={iconSize} />
       </ActionIcon>
     );
@@ -165,6 +172,7 @@ export function TranslateButton({
             color="red"
             leftSection={<AlertCircle size={iconSize} />}
             onClick={doTranslate}
+            disabled={isDisabled}
           >
             Retry translation
           </Button>
@@ -174,7 +182,14 @@ export function TranslateButton({
 
     return (
       <Tooltip label={`Error: ${error}. Click to retry.`} color="red" multiline w={200}>
-        <ActionIcon size={size} variant="subtle" color="red" onClick={doTranslate}>
+        <ActionIcon
+          size={size}
+          variant="subtle"
+          color="red"
+          onClick={doTranslate}
+          disabled={isDisabled}
+          aria-label="Retry translation"
+        >
           <AlertCircle size={iconSize} />
         </ActionIcon>
       </Tooltip>
@@ -185,32 +200,32 @@ export function TranslateButton({
   return (
     <Popover opened={showConfirm} onClose={handleCancel} position="top" withArrow shadow="md">
       <Popover.Target>
-        <Tooltip
-          label={glossaryId ? 'Translate with DeepL + Glossary' : 'Translate with DeepL'}
-          color="dark"
-        >
-          {display === 'button' ? (
-            <Button
-              size={size}
-              variant="light"
-              color={glossaryId ? 'teal' : 'blue'}
-              leftSection={<Languages size={iconSize} />}
-              onClick={doTranslate}
-              disabled={disabled || !text.trim()}
-            >
-              {label}
-            </Button>
-          ) : (
-            <ActionIcon
-              size={size}
-              variant="light"
-              color={glossaryId ? 'teal' : 'blue'}
-              onClick={doTranslate}
-              disabled={disabled || !text.trim()}
-            >
-              <Languages size={iconSize} />
-            </ActionIcon>
-          )}
+        <Tooltip label={tooltipLabel} color="dark">
+          <span style={{ display: 'inline-flex' }}>
+            {display === 'button' ? (
+              <Button
+                size={size}
+                variant="light"
+                color={glossaryId ? 'teal' : 'blue'}
+                leftSection={<Languages size={iconSize} />}
+                onClick={doTranslate}
+                disabled={isDisabled}
+              >
+                {label}
+              </Button>
+            ) : (
+              <ActionIcon
+                size={size}
+                variant="light"
+                color={glossaryId ? 'teal' : 'blue'}
+                onClick={doTranslate}
+                disabled={isDisabled}
+                aria-label={label}
+              >
+                <Languages size={iconSize} />
+              </ActionIcon>
+            )}
+          </span>
         </Tooltip>
       </Popover.Target>
 
