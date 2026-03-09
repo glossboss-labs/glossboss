@@ -77,6 +77,18 @@ bun run build
 4. In local dev, open Settings → Display and switch the interface language to verify the updated
    strings in the UI.
 
+### Renaming an English source string
+
+To change the wording of an existing English string, edit `msgstr` in `app.en.po` (leave `msgid` as
+the old text) and run:
+
+```bash
+bun run i18n:sync-en
+```
+
+This renames the string in all `t()`/`msgid()` source calls, updates `msgid` in every PO file, and
+re-runs the extractor. CI fails if pending renames are not applied.
+
 ### Adding a new UI string
 
 1. Use `t('Your new string')` in React components (inside hooks) or `msgid('Your new string')` for
