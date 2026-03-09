@@ -88,7 +88,7 @@ jobs:
               `🚀 Preview deployment is ready: [${process.env.PREVIEW_URL}](${process.env.PREVIEW_URL})`,
             ].join('\n')
 
-            const { data: comments } = await github.rest.issues.listComments({
+            const comments = await github.paginate(github.rest.issues.listComments, {
               ...context.repo,
               issue_number: context.issue.number,
               per_page: 100,
