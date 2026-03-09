@@ -1,0 +1,521 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: GlossBoss UI\n"
+"Language: nl\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "Action"
+msgstr "Actie"
+
+msgid "Actions"
+msgstr "Acties"
+
+msgid "Adjust the appearance of the editor to suit your screen and preferences."
+msgstr "Pas het uiterlijk van de editor aan op je scherm en voorkeuren."
+
+msgid "Allow follow-up questions about this feedback"
+msgstr "Vervolgvragen over deze feedback toestaan"
+
+msgid "API key is valid!"
+msgstr "De API-sleutel is geldig!"
+
+msgid "API Key"
+msgstr "API-sleutel"
+
+msgid "API Type"
+msgstr "API-type"
+
+msgid "Auto-saved {age}"
+msgstr "Automatisch opgeslagen {age}"
+
+msgid "Bug"
+msgstr "Bug"
+
+msgid "Branch status chip"
+msgstr "Branch-statuschip"
+
+msgid "Cancel"
+msgstr "Annuleren"
+
+msgid "Cancel edit"
+msgstr "Bewerken annuleren"
+
+msgid "characters"
+msgstr "tekens"
+
+msgid "Choose which language GlossBoss uses for its interface."
+msgstr "Kies welke taal GlossBoss voor de interface gebruikt."
+
+msgid "Clear"
+msgstr "Wissen"
+
+msgid "Clear anyway"
+msgstr "Toch wissen"
+
+msgid "Clear editor"
+msgstr "Editor wissen"
+
+msgid "Clear editor?"
+msgstr "Editor wissen?"
+
+msgid "Contact (optional)"
+msgstr "Contact (optioneel)"
+
+msgid "Confirm"
+msgstr "Bevestigen"
+
+msgid "Container width"
+msgstr "Containerbreedte"
+
+msgid "Controls the maximum width of the main content area. Use a wider setting on large monitors, or full width to use all available space."
+msgstr "Bepaalt de maximale breedte van het hoofdgedeelte. Gebruik een bredere instelling op grote schermen, of volledige breedte om alle ruimte te benutten."
+
+msgid "Controls the tone of DeepL translations. Not all languages support formality."
+msgstr "Bepaalt de toon van DeepL-vertalingen. Niet alle talen ondersteunen formaliteit."
+
+msgid "Read the translation guide"
+msgstr "Lees de vertaalgids"
+
+msgid "Dark mode"
+msgstr "Donkere modus"
+
+msgid "DeepL API"
+msgstr "DeepL API"
+
+msgid "DeepL API is kept in this browser tab by default and will be cleared when you close the tab. Enable \"Remember API key\" below to persist it across sessions — only do this on a personal, trusted device."
+msgstr "De DeepL API-sleutel blijft standaard alleen in dit browsertabblad en wordt gewist wanneer je het tabblad sluit. Zet hieronder \"API-sleutel onthouden\" aan om de sleutel tussen sessies te bewaren — doe dit alleen op een persoonlijk, vertrouwd apparaat."
+
+msgid "DeepL ready"
+msgstr "DeepL klaar"
+
+msgid "DeepL ready ({count} terms)"
+msgstr "DeepL klaar ({count} termen)"
+
+msgid "DeepL synced"
+msgstr "DeepL gesynchroniseerd"
+
+msgid "DeepL will enforce glossary terms in machine translations"
+msgstr "DeepL dwingt woordenlijsttermen af in automatische vertalingen"
+
+msgid "Description"
+msgstr "Beschrijving"
+
+msgid "Describe what you saw"
+msgstr "Beschrijf wat je zag"
+
+msgid "Development"
+msgstr "Ontwikkeling"
+
+msgid "Development Mode Only"
+msgstr "Alleen in ontwikkelmodus"
+
+msgid "Discard and use fresh file"
+msgstr "Verwerpen en een nieuw bestand gebruiken"
+
+msgid "Discard changes and exit the current field"
+msgstr "Wijzigingen verwerpen en het huidige veld verlaten"
+
+msgid "Display"
+msgstr "Weergave"
+
+msgid "Download"
+msgstr "Downloaden"
+
+msgid "Download as"
+msgstr "Downloaden als"
+
+msgid "Download as {format}"
+msgstr "Downloaden als {format}"
+
+msgid "Drag and drop your translation file here, or click to browse. Your translations will be saved locally in your browser."
+msgstr "Sleep je vertaalbestand hierheen of klik om te bladeren. Je vertalingen worden lokaal in je browser opgeslagen."
+
+msgid "Drop it like it's hot"
+msgstr "Laat maar vallen"
+
+msgid "Edit gettext translation files with DeepL integration"
+msgstr "Bewerk gettext-vertaalbestanden met DeepL-integratie"
+
+msgid "Email"
+msgstr "E-mail"
+
+msgid "Enter your DeepL API key"
+msgstr "Voer je DeepL API-sleutel in"
+
+msgid "Enter your DeepL API key to enable machine translation. Get a free key at"
+msgstr "Voer je DeepL API-sleutel in om automatische vertaling te gebruiken. Vraag een gratis sleutel aan via"
+
+msgid "Expected behavior"
+msgstr "Verwacht gedrag"
+
+msgid "Failed to connect"
+msgstr "Verbinding mislukt"
+
+msgid "Failed to initialize verification."
+msgstr "Initialiseren van verificatie mislukt."
+
+msgid "Failed to load glossary"
+msgstr "Woordenlijst laden mislukt"
+
+msgid "Failed to parse file"
+msgstr "Bestand kon niet worden verwerkt"
+
+msgid "Failed to read the file."
+msgstr "Het bestand kon niet worden gelezen."
+
+msgid "Feature"
+msgstr "Functie"
+
+msgid "Feedback"
+msgstr "Feedback"
+
+msgid "Feedback could not be submitted at this time."
+msgstr "Feedback kan op dit moment niet worden verzonden."
+
+msgid "Feedback failed"
+msgstr "Feedback mislukt"
+
+msgid "Feedback submitted"
+msgstr "Feedback verzonden"
+
+msgid "Feedback verification is not configured."
+msgstr "Feedbackverificatie is niet geconfigureerd."
+
+msgid "File does not appear to be a valid WordPress glossary CSV."
+msgstr "Het bestand lijkt geen geldige WordPress-woordenlijst-CSV te zijn."
+
+msgid "File downloaded"
+msgstr "Bestand gedownload"
+
+msgid "for details."
+msgstr "voor details."
+
+msgid "Formal"
+msgstr "Formeel"
+
+msgid "Formality"
+msgstr "Formaliteit"
+
+msgid "Free API"
+msgstr "Gratis API"
+
+msgid "Free: 500,000 chars/month • Pro: Pay per use"
+msgstr "Gratis: 500.000 tekens/maand • Pro: betalen naar gebruik"
+
+msgid "Glossary"
+msgstr "Woordenlijst"
+
+msgid "Glossary: {count} terms ({locale})"
+msgstr "Woordenlijst: {count} termen ({locale})"
+
+msgid "i18next JSON (.json)"
+msgstr "i18next JSON (.json)"
+
+msgid "Informal"
+msgstr "Informeel"
+
+msgid "Insert a line break in the translation"
+msgstr "Voeg een nieuwe regel in de vertaling in"
+
+msgid "Interface language"
+msgstr "Interfacetaal"
+
+msgid "Keyboard shortcuts available when editing translations."
+msgstr "Sneltoetsen die beschikbaar zijn tijdens het bewerken van vertalingen."
+
+msgid "Keyboard Shortcuts"
+msgstr "Sneltoetsen"
+
+msgid "Key saved"
+msgstr "Sleutel opgeslagen"
+
+msgid "Language"
+msgstr "Taal"
+
+msgid "License"
+msgstr "Licentie"
+
+msgid "Light mode"
+msgstr "Lichte modus"
+
+msgid "Line {line}"
+msgstr "Regel {line}"
+
+msgid "List steps someone else can follow"
+msgstr "Som stappen op die iemand anders kan volgen"
+
+msgid "Load a small example WordPress plugin PO file (Hello Dolly)"
+msgstr "Laad een klein voorbeeld-PO-bestand van een WordPress-plugin (Hello Dolly)"
+
+msgid "Load example PO"
+msgstr "Voorbeeld-PO laden"
+
+msgid "Load Glossary"
+msgstr "Woordenlijst laden"
+
+msgid "Load the official WordPress translation glossary to ensure consistent terminology."
+msgstr "Laad de officiële WordPress-vertaalwoordenlijst voor consistente terminologie."
+
+msgid "Navigation Settings"
+msgstr "Navigatie-instellingen"
+
+msgid "New line"
+msgstr "Nieuwe regel"
+
+msgid "Next entry"
+msgstr "Volgend item"
+
+msgid "Next field"
+msgstr "Volgend veld"
+
+msgid "No glossary entries found in the uploaded file."
+msgstr "Geen woordenlijstingangen gevonden in het geüploade bestand."
+
+msgid "Only visible while running the app in development mode"
+msgstr "Alleen zichtbaar wanneer de app in ontwikkelmodus draait"
+
+msgid "Open issue"
+msgstr "Issue openen"
+
+msgid "Open settings"
+msgstr "Instellingen openen"
+
+msgid "or upload manually"
+msgstr "of handmatig uploaden"
+
+msgid "PO file (.po)"
+msgstr "PO-bestand (.po)"
+
+msgid "Please add a short title."
+msgstr "Voeg een korte titel toe."
+
+msgid "Please complete all required bug fields."
+msgstr "Vul alle verplichte bugvelden in."
+
+msgid "Please complete all required feature fields."
+msgstr "Vul alle verplichte functievelden in."
+
+msgid "Please enter an API key"
+msgstr "Voer een API-sleutel in"
+
+msgid "Please provide a valid email address or leave it empty."
+msgstr "Geef een geldig e-mailadres op of laat het leeg."
+
+msgid "Preparing spam protection..."
+msgstr "Spambeveiliging voorbereiden..."
+
+msgid "Previous field"
+msgstr "Vorig veld"
+
+msgid "Privacy"
+msgstr "Privacy"
+
+msgid "Translate"
+msgstr "Vertalen"
+
+msgid "Want to help translate GlossBoss?"
+msgstr "Wil je GlossBoss helpen vertalen?"
+
+msgid "Problem / opportunity"
+msgstr "Probleem / kans"
+
+msgid "Pro API"
+msgstr "Pro API"
+
+msgid "Proposed solution"
+msgstr "Voorgestelde oplossing"
+
+msgid "Refresh from WordPress.org"
+msgstr "Verversen vanaf WordPress.org"
+
+msgid "Release to load your translation file"
+msgstr "Laat los om je vertaalbestand te laden"
+
+msgid "Remember API key across sessions"
+msgstr "API-sleutel onthouden tussen sessies"
+
+msgid "Remove saved key"
+msgstr "Opgeslagen sleutel verwijderen"
+
+msgid "Resync"
+msgstr "Opnieuw synchroniseren"
+
+msgid "Restore draft"
+msgstr "Concept herstellen"
+
+msgid "Retry"
+msgstr "Opnieuw proberen"
+
+msgid "Save"
+msgstr "Opslaan"
+
+msgid "Save and jump to the next translation entry (skips translated by default)"
+msgstr "Sla op en spring naar het volgende vertaalitem (vertaalde items worden standaard overgeslagen)"
+
+msgid "Save current field and move to the next translation field"
+msgstr "Sla het huidige veld op en ga naar het volgende vertaalveld"
+
+msgid "Save current field and move to the previous translation field"
+msgstr "Sla het huidige veld op en ga naar het vorige vertaalveld"
+
+msgid "Select locale"
+msgstr "Selecteer locale"
+
+msgid "Send feedback"
+msgstr "Feedback versturen"
+
+msgid "Settings"
+msgstr "Instellingen"
+
+msgid "Settings and actions"
+msgstr "Instellingen en acties"
+
+msgid "Settings saved!"
+msgstr "Instellingen opgeslagen!"
+
+msgid "Share feedback"
+msgstr "Feedback delen"
+
+msgid "Share Feedback"
+msgstr "Feedback delen"
+
+msgid "Short summary of the issue"
+msgstr "Korte samenvatting van het probleem"
+
+msgid "Short summary of the request"
+msgstr "Korte samenvatting van het verzoek"
+
+msgid "Shortcut"
+msgstr "Sneltoets"
+
+msgid "Show branch chip"
+msgstr "Branch-chip tonen"
+
+msgid "Show the current git branch in a small floating chip at the bottom right of the site."
+msgstr "Toon de huidige git-branch in een kleine zwevende chip rechtsonder op de site."
+
+msgid "Skip translated entries"
+msgstr "Vertaalde items overslaan"
+
+msgid "Source"
+msgstr "Bron"
+
+msgid "Steps to reproduce"
+msgstr "Stappen om te reproduceren"
+
+msgid "Submissions may create a GitHub issue and can include your optional contact email for follow-up. See"
+msgstr "Inzendingen kunnen een GitHub-issue aanmaken en je optionele e-mailadres bevatten voor vervolgvragen. Zie"
+
+msgid "Sync failed"
+msgstr "Synchronisatie mislukt"
+
+msgid "Syncing to DeepL..."
+msgstr "Synchroniseren met DeepL..."
+
+msgid "terms"
+msgstr "termen"
+
+msgid "Terms in selected text:"
+msgstr "Termen in geselecteerde tekst:"
+
+msgid "Test Connection"
+msgstr "Verbinding testen"
+
+msgid "Thanks. Issue #{issueNumber} was created."
+msgstr "Bedankt. Issue #{issueNumber} is aangemaakt."
+
+msgid "These tools only appear while running the app locally in development and are not shown in production."
+msgstr "Deze hulpmiddelen verschijnen alleen wanneer de app lokaal in ontwikkelmodus draait en worden niet in productie getoond."
+
+msgid "This will remove all your work on the current file."
+msgstr "Dit verwijdert al je werk aan het huidige bestand."
+
+msgid "Title"
+msgstr "Titel"
+
+msgid "Turnstile bypass enabled for local development."
+msgstr "Turnstile-bypass is ingeschakeld voor lokale ontwikkeling."
+
+msgid "Turnstile site key not set. Using local development bypass."
+msgstr "Turnstile-sitekey is niet ingesteld. Lokale ontwikkel-bypass wordt gebruikt."
+
+msgid "Unknown error"
+msgstr "Onbekende fout"
+
+msgid "Unsaved draft found"
+msgstr "Niet-opgeslagen concept gevonden"
+
+msgid "Update"
+msgstr "Bijwerken"
+
+msgid "Updated"
+msgstr "Bijgewerkt"
+
+msgid "Update this file using a .pot template. Existing translations are kept when source strings still match, new strings are added, and obsolete strings are removed."
+msgstr "Werk dit bestand bij met een .pot-sjabloon. Bestaande vertalingen blijven behouden zolang bronteksten nog overeenkomen, nieuwe teksten worden toegevoegd en verouderde teksten verwijderd."
+
+msgid "Upload"
+msgstr "Uploaden"
+
+msgid "Upload a translation file to start"
+msgstr "Upload een vertaalbestand om te beginnen"
+
+msgid "Upload a WordPress glossary CSV for the selected language"
+msgstr "Upload een WordPress-woordenlijst-CSV voor de geselecteerde taal"
+
+msgid "Upload CSV"
+msgstr "CSV uploaden"
+
+msgid "Upload failed"
+msgstr "Upload mislukt"
+
+msgid "Use case"
+msgstr "Gebruikssituatie"
+
+msgid "Use glossary for translations"
+msgstr "Woordenlijst gebruiken voor vertalingen"
+
+msgid "Verification is still loading. Please try again in a moment."
+msgstr "Verificatie wordt nog geladen. Probeer het zo meteen opnieuw."
+
+msgid "View All"
+msgstr "Alles bekijken"
+
+msgid "Website"
+msgstr "Website"
+
+msgid "What happened"
+msgstr "Wat gebeurde er"
+
+msgid "What is hard today?"
+msgstr "Wat is er vandaag lastig?"
+
+msgid "What should have happened"
+msgstr "Wat had er moeten gebeuren"
+
+msgid "What would help?"
+msgstr "Wat zou helpen?"
+
+msgid "When enabled, your key is stored in localStorage and survives browser restarts. Disable on shared or untrusted devices."
+msgstr "Wanneer ingeschakeld, wordt je sleutel in localStorage opgeslagen en blijft die bewaard na het herstarten van de browser. Schakel dit uit op gedeelde of onbeheerde apparaten."
+
+msgid "When using ⌘/Ctrl+Enter, skip entries that are already translated and jump to the next untranslated or fuzzy entry"
+msgstr "Sla met ⌘/Ctrl+Enter items over die al vertaald zijn en spring naar het volgende onvertaalde of fuzzy item"
+
+msgid "When would you use this?"
+msgstr "Wanneer zou je dit gebruiken?"
+
+msgid "Working from draft"
+msgstr "Werkt vanuit concept"
+
+msgid "You have unsaved changes"
+msgstr "Je hebt niet-opgeslagen wijzigingen"
+
+msgid "You have unsaved changes from {age}. Would you like to restore your previous work?"
+msgstr "Je hebt niet-opgeslagen wijzigingen van {age}. Wil je je vorige werk herstellen?"
+
+msgid "You have unsaved changes. Are you sure you want to clear the editor?"
+msgstr "Je hebt niet-opgeslagen wijzigingen. Weet je zeker dat je de editor wilt wissen?"
+
+msgid "{count} modified entries will be restored."
+msgstr "{count} gewijzigde items worden hersteld."
