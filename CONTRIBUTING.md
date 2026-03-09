@@ -79,24 +79,25 @@ bun run build
 
 ### Adding a new UI string
 
-1. Add the string in code with `t('Your new string')`.
-2. Add the same `msgid` to `src/lib/app-language/locales/app.en.po`.
-3. Add the same `msgid` to the other `app.*.po` files. The `msgstr` can stay empty until the
-   translation is ready; GlossBoss will fall back to the English `msgid`.
-4. Run the test suite or at least the app-language tests. CI now checks that every discovered app
-   catalog has the same keys as `app.en.po`.
+1. Use `t('Your new string')` in React components (inside hooks) or `msgid('Your new string')` for
+   strings defined at module scope (data arrays, default parameters) that are later passed to `t()`.
+2. Run `bun run i18n:extract` — this generates `app.pot` and merges into all `app.*.po` files
+   automatically. English entries get `msgstr = msgid`; other languages get empty `msgstr`.
+3. Commit the updated PO/POT files alongside your code changes.
+4. CI will fail if you forget to run the extractor.
 
 ### Adding a new app language
 
-1. Add a new catalog file such as `src/lib/app-language/locales/app.de.po`.
-2. Set the PO header `Language: de` (or use the matching `app.de.po` filename).
-3. Add the same `msgid` entries that exist in `app.en.po`.
-4. Verify the new language through the Settings → Display language selector.
+```bash
+bun run i18n:add-lang de
+```
 
-This PO-first workflow is a reasonable fit for GlossBoss today because the app already parses PO
-files elsewhere and the UI catalog count is still small. If the interface grows a lot, the next
-step would be extracting a `.pot` template automatically, but we do not need that extra complexity
-yet.
+This creates `app.de.po`, populates it from the POT template, updates the i18n-issues workflow, and
+prints a local edit link. Then:
+
+1. Translate the empty `msgstr` values in the new file.
+2. Verify the new language through Settings → Display → Language.
+3. Commit the new file alongside your changes.
 
 The live site also exposes a public translation guide at `/translate/` so contributors can find the
 same workflow from inside the app.

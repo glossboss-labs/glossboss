@@ -50,6 +50,15 @@ function interpolate(message: string, values?: Record<string, TranslationValue>)
   );
 }
 
+/**
+ * Identity function that marks a string for i18n extraction.
+ * Use this for strings defined at module scope (outside React components)
+ * that will later be passed to `t()` at render time.
+ */
+export function msgid(s: string): string {
+  return s;
+}
+
 export function translateAppMessage(
   language: AppLanguage,
   msgid: string,

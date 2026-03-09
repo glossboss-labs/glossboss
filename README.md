@@ -57,19 +57,22 @@ bun run test
 bun run test:coverage
 bun run build
 bun run preview
+bun run i18n:extract
+bun run i18n:add-lang <code>
 ```
 
 ## Translating GlossBoss
 
-GlossBoss already ships with an app UI translation system backed by gettext `.po` catalogs in
+GlossBoss ships with an app UI translation system backed by gettext `.po` catalogs in
 `src/lib/app-language/locales/`.
 
 - `app.en.po` is the source catalog and required fallback language for the app UI.
 - Edit an existing catalog such as `app.en.po` or `app.nl.po` to improve current translations.
 - Add a new `app.<language>.po` catalog when introducing another UI language; it is discovered
   automatically.
-- When you add a new `t('...')` UI string in code, add the same `msgid` to `app.en.po` and the
-  other `app.*.po` catalogs so CI can keep them in sync.
+- When you add a new `t('...')` UI string in code, run `bun run i18n:extract` to update the
+  `app.pot` template and merge into all `app.*.po` catalogs automatically. CI fails if PO/POT
+  files are out of date.
 
 For the full contributor workflow, see `CONTRIBUTING.md`. The deployed app also includes a
 translation guide at `/translate/`.
