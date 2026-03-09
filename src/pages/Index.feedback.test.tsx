@@ -39,7 +39,7 @@ describe('Index feedback header action', () => {
 
     expect(screen.getByRole('link', { name: 'Source' })).toHaveAttribute(
       'href',
-      'https://github.com/toineenzo/glossboss',
+      'https://github.com/lammersbjorn/glossboss',
     );
     expect(screen.getByRole('link', { name: 'License' })).toHaveAttribute('href', '/license/');
     expect(screen.getByRole('link', { name: 'Privacy' })).toHaveAttribute('href', '/privacy/');
