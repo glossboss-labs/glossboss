@@ -93,19 +93,6 @@ Required GitHub repository secrets for the frontend build:
 - `VITE_SUPABASE_ANON_KEY`
 - `VITE_TURNSTILE_SITE_KEY`
 
-Optional Turnstile secrets for separate production and preview widgets:
-
-- `VITE_TURNSTILE_SITE_KEY_PRODUCTION`
-- `VITE_TURNSTILE_SITE_KEY_PREVIEW`
-
-`cloudflare-pages.yml` now prefers `VITE_TURNSTILE_SITE_KEY_PRODUCTION` on `main` deploys and
-`VITE_TURNSTILE_SITE_KEY_PREVIEW` on pull request preview deploys, falling back to
-`VITE_TURNSTILE_SITE_KEY` when the environment-specific secret is not set.
-
-If production runs on `glossboss.pages.dev` and previews run on `*.glossboss.pages.dev`, use
-separate Turnstile widgets or make sure the widget allowlist explicitly includes the bare
-production hostname as well as any preview wildcard entries.
-
 ### Backend
 
 Supabase Edge Functions proxy external services and keep server-managed secrets out of the browser.

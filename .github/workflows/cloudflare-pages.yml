@@ -39,10 +39,10 @@ jobs:
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-          VITE_TURNSTILE_SITE_KEY: ${{ secrets.VITE_TURNSTILE_SITE_KEY_PRODUCTION || secrets.VITE_TURNSTILE_SITE_KEY }}
+          VITE_TURNSTILE_SITE_KEY: ${{ secrets.VITE_TURNSTILE_SITE_KEY }}
         run: |
           if [ -z "$VITE_SUPABASE_URL" ] || [ -z "$VITE_SUPABASE_ANON_KEY" ] || [ -z "$VITE_TURNSTILE_SITE_KEY" ]; then
-            echo "::error::Missing VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY, and/or a production Turnstile site key secret (VITE_TURNSTILE_SITE_KEY_PRODUCTION or VITE_TURNSTILE_SITE_KEY)."
+            echo "::error::Missing VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY, and/or VITE_TURNSTILE_SITE_KEY repository secrets."
             exit 1
           fi
 
@@ -50,8 +50,7 @@ jobs:
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-          # PR previews prefer the preview widget key, while production deploys prefer the production widget key.
-          VITE_TURNSTILE_SITE_KEY: ${{ github.event_name == 'pull_request' && (secrets.VITE_TURNSTILE_SITE_KEY_PREVIEW || secrets.VITE_TURNSTILE_SITE_KEY) || (secrets.VITE_TURNSTILE_SITE_KEY_PRODUCTION || secrets.VITE_TURNSTILE_SITE_KEY) }}
+          VITE_TURNSTILE_SITE_KEY: ${{ secrets.VITE_TURNSTILE_SITE_KEY }}
         run: bun run build
 
       - name: Deploy to Cloudflare Pages
