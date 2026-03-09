@@ -47,6 +47,7 @@ describe('app language settings', () => {
 
   it('reads Dutch translations from the PO catalog and interpolates values', () => {
     expect(translateAppMessage('nl', 'Settings')).toBe('Instellingen');
+    expect(translateAppMessage('nl', 'Confirm')).toBe('Bevestigen');
     expect(translateAppMessage('nl', 'Line {line}', { values: { line: 4 } })).toBe('Regel 4');
   });
 });

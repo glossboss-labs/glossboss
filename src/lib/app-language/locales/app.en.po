@@ -61,6 +61,9 @@ msgstr "Clear editor?"
 msgid "Contact (optional)"
 msgstr "Contact (optional)"
 
+msgid "Confirm"
+msgstr "Confirm"
+
 msgid "Container width"
 msgstr "Container width"
 
