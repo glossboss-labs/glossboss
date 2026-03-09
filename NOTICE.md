@@ -1,5 +1,5 @@
 GlossBoss
-Copyright (C) 2026 Toine Enzo and contributors
+Copyright (C) 2026 Toine Rademacher, Bjorn Lammers, and contributors
 
 This project is licensed under the GNU Affero General Public License v3.0 only.
 See the LICENSE file for the full license text.

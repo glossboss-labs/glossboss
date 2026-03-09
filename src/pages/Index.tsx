@@ -1514,7 +1514,7 @@ export default function Index() {
           <Group gap="md">
             <Text
               component="a"
-              href="https://github.com/toineenzo/glossboss"
+              href="https://github.com/lammersbjorn/glossboss"
               target="_blank"
               rel="noopener noreferrer"
               size="xs"
