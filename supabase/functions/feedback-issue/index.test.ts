@@ -125,4 +125,56 @@ describe('feedback issue handler', () => {
       code: 'INVALID_PAYLOAD',
     });
   });
+
+  it('verifies Turnstile tokens without forwarding remoteip', async () => {
+    installDenoEnv({
+      ALLOWED_ORIGINS: 'https://glossboss.test',
+      TURNSTILE_SECRET: ' secret-value ',
+      GITHUB_TOKEN: 'github-token',
+    });
+
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ success: true }), {
+          status: 200,
+          headers: { 'content-type': 'application/json' },
+        }),
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({ number: 42, html_url: 'https://github.com/example/issues/42' }),
+          {
+            status: 201,
+            headers: { 'content-type': 'application/json' },
+          },
+        ),
+      );
+
+    vi.stubGlobal('fetch', fetchMock);
+
+    const request = new Request('https://functions.test/feedback-issue', {
+      method: 'POST',
+      headers: {
+        origin: 'https://glossboss.test',
+        'content-type': 'application/json',
+        'x-forwarded-for': '203.0.113.10',
+      },
+      body: JSON.stringify(buildPayload()),
+    });
+
+    const response = await handleFeedbackIssueRequest(request);
+    expect(response.status).toBe(200);
+
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+    );
+
+    const turnstileInit = fetchMock.mock.calls[0]?.[1] as RequestInit;
+    const params = new URLSearchParams(String(turnstileInit.body));
+    expect(params.get('secret')).toBe('secret-value');
+    expect(params.get('response')).toBe('token');
+    expect(params.has('remoteip')).toBe(false);
+  });
 });

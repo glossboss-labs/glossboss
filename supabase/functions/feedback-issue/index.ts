@@ -284,8 +284,8 @@ export function parseRequestBody(
   };
 }
 
-async function verifyTurnstile(token: string, ip: string): Promise<boolean> {
-  const secret = Deno.env.get('TURNSTILE_SECRET');
+async function verifyTurnstile(token: string): Promise<boolean> {
+  const secret = Deno.env.get('TURNSTILE_SECRET')?.trim();
   if (!secret) {
     throw new Error('TURNSTILE_SECRET is not configured.');
   }
@@ -293,9 +293,6 @@ async function verifyTurnstile(token: string, ip: string): Promise<boolean> {
   const body = new URLSearchParams();
   body.set('secret', secret);
   body.set('response', token);
-  if (ip && ip !== 'unknown') {
-    body.set('remoteip', ip);
-  }
 
   try {
     const response = await fetchWithTimeout(
@@ -473,7 +470,7 @@ export async function handleFeedbackIssueRequest(req: Request): Promise<Response
     const bypassEnabled = Deno.env.get('ALLOW_TURNSTILE_BYPASS') === 'true';
     const isBypassToken = parsed.data.turnstileToken === 'dev-bypass';
     if (!(bypassEnabled && isBypassToken)) {
-      const verified = await verifyTurnstile(parsed.data.turnstileToken, ip);
+      const verified = await verifyTurnstile(parsed.data.turnstileToken);
       if (!verified) {
         return jsonResponse(
           req,
