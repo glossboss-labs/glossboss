@@ -1703,15 +1703,15 @@ export function EditorTable({
       }
       setHeaderDropTarget(null);
     },
-    [draggingHeaderColumn],
+    [draggingHeaderColumn, headerDragGhost],
   );
 
-  const handleHeaderPointerUp = useCallback(
-    (e: React.PointerEvent<HTMLTableSectionElement>) => {
-      if (headerDragPointerId.current !== e.pointerId) return;
+  const finishHeaderDrag = useCallback(
+    (pointerId: number, shouldCommit: boolean) => {
+      if (headerDragPointerId.current !== pointerId) return;
       headerDragPointerId.current = null;
 
-      if (draggingHeaderColumn && headerDropTarget) {
+      if (shouldCommit && draggingHeaderColumn && headerDropTarget) {
         const targetIdx = columnOrder.indexOf(headerDropTarget.column);
         if (targetIdx !== -1) {
           const fromIdx = columnOrder.indexOf(draggingHeaderColumn);
@@ -2067,7 +2067,9 @@ export function EditorTable({
                 <Table.Thead
                   ref={theadRef}
                   onPointerMove={handleHeaderPointerMove}
-                  onPointerUp={handleHeaderPointerUp}
+                  onPointerUp={(e) => finishHeaderDrag(e.pointerId, true)}
+                  onPointerCancel={(e) => finishHeaderDrag(e.pointerId, false)}
+                  onLostPointerCapture={(e) => finishHeaderDrag(e.pointerId, false)}
                   style={{
                     position: 'sticky',
                     top: 0,

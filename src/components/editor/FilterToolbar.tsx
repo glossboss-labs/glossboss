@@ -133,6 +133,29 @@ export function FilterToolbar() {
   const dragPointerId = useRef<number | null>(null);
   const dragGhost = useDragGhost();
 
+  const finishColumnDrag = useCallback(
+    (pointerId: number, column: TableColumn, shouldCommit: boolean) => {
+      if (dragPointerId.current !== pointerId) return;
+      dragPointerId.current = null;
+
+      if (shouldCommit && dropTargetColumn && dropTargetColumn !== column) {
+        const fromIndex = columnOrder.indexOf(column);
+        const rawTargetIndex = columnOrder.indexOf(dropTargetColumn);
+
+        if (fromIndex !== -1 && rawTargetIndex !== -1) {
+          const adjustedTargetIndex =
+            rawTargetIndex > fromIndex ? rawTargetIndex - 1 : rawTargetIndex;
+          moveColumnToIndex(column, adjustedTargetIndex);
+        }
+      }
+
+      setDraggingColumn(null);
+      setDropTargetColumn(null);
+      dragGhost.hide();
+    },
+    [columnOrder, dragGhost, dropTargetColumn, moveColumnToIndex],
+  );
+
   useEffect(() => {
     if (!apiKeyConfigured) return;
     const fetchUsage = () => {
@@ -460,7 +483,12 @@ export function FilterToolbar() {
                                 const rect = item.getBoundingClientRect();
                                 if (e.clientY >= rect.top && e.clientY <= rect.bottom) {
                                   const col = item.getAttribute('data-column') as TableColumn;
-                                  if (col && col !== column) {
+                                  if (col === column) {
+                                    setDropTargetColumn(null);
+                                    return;
+                                  }
+
+                                  if (col) {
                                     setDropTargetColumn(col);
                                   }
                                   return;
@@ -469,19 +497,12 @@ export function FilterToolbar() {
                               setDropTargetColumn(null);
                             }}
                             onPointerUp={(e) => {
-                              if (dragPointerId.current !== e.pointerId) return;
-                              dragPointerId.current = null;
-
-                              if (dropTargetColumn && dropTargetColumn !== column) {
-                                const targetIndex = columnOrder.indexOf(dropTargetColumn);
-                                if (targetIndex !== -1) {
-                                  moveColumnToIndex(column, targetIndex);
-                                }
-                              }
-                              setDraggingColumn(null);
-                              setDropTargetColumn(null);
-                              dragGhost.hide();
+                              finishColumnDrag(e.pointerId, column, true);
                             }}
+                            onPointerCancel={(e) => finishColumnDrag(e.pointerId, column, false)}
+                            onLostPointerCapture={(e) =>
+                              finishColumnDrag(e.pointerId, column, false)
+                            }
                             style={{
                               cursor: draggingColumn === column ? 'grabbing' : 'grab',
                               touchAction: 'none',

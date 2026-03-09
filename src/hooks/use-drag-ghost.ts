@@ -40,8 +40,13 @@ export function useDragGhost() {
        * @param label - Optional text override (defaults to sourceEl.textContent)
        */
       show(sourceEl: HTMLElement, pointerX: number, pointerY: number, label?: string) {
+        isActive.current = false;
+        cancelAnimationFrame(rafId.current);
+        rafId.current = 0;
+
         if (ghostRef.current) {
           ghostRef.current.remove();
+          ghostRef.current = null;
         }
 
         const rect = sourceEl.getBoundingClientRect();
