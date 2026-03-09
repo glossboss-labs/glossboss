@@ -66,6 +66,7 @@ import { SourceCodeViewer } from './SourceCodeViewer';
 import { SourceBrowser } from './SourceBrowser';
 import type { TargetLanguage, SourceLanguage } from '@/lib/deepl/types';
 import type { Glossary, GlossaryAnalysisResult } from '@/lib/glossary/types';
+import { useDragGhost } from '@/hooks/use-drag-ghost';
 
 /** localStorage key for skip-translated navigation setting */
 export const NAV_SKIP_TRANSLATED_KEY = 'glossboss-nav-skip-translated';
@@ -171,9 +172,9 @@ function ResizableTh({
         position: 'relative',
         userSelect: 'none',
         textAlign: align,
-        opacity: isDragging ? 0.55 : 1,
-        transform: isDragging ? 'scale(0.985)' : 'translateX(0)',
-        transition: 'transform 180ms cubic-bezier(0.22, 1, 0.36, 1), opacity 140ms ease',
+        opacity: isDragging ? 0.3 : 1,
+        background: isDragging ? 'var(--mantine-color-gray-light)' : undefined,
+        transition: 'opacity 140ms ease, background 140ms ease',
       }}
     >
       {children}
@@ -803,13 +804,13 @@ const StatusBadges = memo(function StatusBadges({
 
   return (
     <Group
+      data-testid={`status-badges-${entry.id}`}
       gap={4}
-      wrap="nowrap"
+      wrap="wrap"
       style={{
         maxWidth: '100%',
-        whiteSpace: 'nowrap',
-        overflowX: 'auto',
-        overflowY: 'hidden',
+        overflowX: 'visible',
+        overflowY: 'visible',
       }}
     >
       <Badge color={STATUS_COLORS[status]} size="sm" variant="filled" style={{ flexShrink: 0 }}>
@@ -1535,6 +1536,7 @@ export function EditorTable({
   const getFilteredEntries = useEditorStore((state) => state.getFilteredEntries);
   const visibleColumns = useEditorStore((state) => state.visibleColumns);
   const columnOrder = useEditorStore((state) => state.columnOrder);
+  const moveColumnToIndex = useEditorStore((state) => state.moveColumnToIndex);
   const sortField = useEditorStore((state) => state.sortField);
   const sortDirection = useEditorStore((state) => state.sortDirection);
   const activeReference = useSourceStore((state) => state.activeReference);
@@ -1649,6 +1651,87 @@ export function EditorTable({
       });
     },
     [setColumnWidths, visibleColumnKeys],
+  );
+
+  // Column header drag-and-drop state
+  const [draggingHeaderColumn, setDraggingHeaderColumn] = useState<DataColumnKey | null>(null);
+  const [headerDropTarget, setHeaderDropTarget] = useState<{
+    column: DataColumnKey;
+    position: 'before' | 'after';
+  } | null>(null);
+  const headerDragPointerId = useRef<number | null>(null);
+  const theadRef = useRef<HTMLTableSectionElement>(null);
+  const headerDragGhost = useDragGhost();
+
+  const handleHeaderPointerDown = useCallback(
+    (columnKey: DataColumnKey) => (e: ReactPointerEvent<HTMLTableCellElement>) => {
+      if (e.button !== 0) return;
+      const rect = e.currentTarget.getBoundingClientRect();
+      if (e.clientX > rect.right - 8) return;
+
+      headerDragPointerId.current = e.pointerId;
+      e.currentTarget.setPointerCapture(e.pointerId);
+      setDraggingHeaderColumn(columnKey);
+      setHeaderDropTarget(null);
+      headerDragGhost.show(e.currentTarget, e.clientX, e.clientY, DATA_COLUMN_LABELS[columnKey]);
+    },
+    [headerDragGhost],
+  );
+
+  const handleHeaderPointerMove = useCallback(
+    (e: React.PointerEvent<HTMLTableSectionElement>) => {
+      if (headerDragPointerId.current !== e.pointerId || !draggingHeaderColumn) return;
+      headerDragGhost.move(e.clientX, e.clientY);
+      if (!theadRef.current) return;
+
+      const cells = theadRef.current.querySelectorAll<HTMLTableCellElement>('[data-column-key]');
+      for (const cell of cells) {
+        const col = cell.getAttribute('data-column-key') as DataColumnKey;
+        if (!col) continue;
+        const rect = cell.getBoundingClientRect();
+        if (e.clientX >= rect.left && e.clientX <= rect.right) {
+          if (col === draggingHeaderColumn) {
+            setHeaderDropTarget(null);
+          } else {
+            const midX = rect.left + rect.width / 2;
+            setHeaderDropTarget({
+              column: col,
+              position: e.clientX < midX ? 'before' : 'after',
+            });
+          }
+          return;
+        }
+      }
+      setHeaderDropTarget(null);
+    },
+    [draggingHeaderColumn, headerDragGhost],
+  );
+
+  const finishHeaderDrag = useCallback(
+    (pointerId: number, shouldCommit: boolean) => {
+      if (headerDragPointerId.current !== pointerId) return;
+      headerDragPointerId.current = null;
+
+      if (shouldCommit && draggingHeaderColumn && headerDropTarget) {
+        const targetIdx = columnOrder.indexOf(headerDropTarget.column);
+        if (targetIdx !== -1) {
+          const fromIdx = columnOrder.indexOf(draggingHeaderColumn);
+          const finalIdx =
+            headerDropTarget.position === 'after'
+              ? fromIdx < targetIdx
+                ? targetIdx
+                : targetIdx + 1
+              : fromIdx > targetIdx
+                ? targetIdx
+                : targetIdx - 1;
+          moveColumnToIndex(draggingHeaderColumn, finalIdx);
+        }
+      }
+      setDraggingHeaderColumn(null);
+      setHeaderDropTarget(null);
+      headerDragGhost.hide();
+    },
+    [draggingHeaderColumn, headerDropTarget, columnOrder, moveColumnToIndex, headerDragGhost],
   );
 
   // Pagination state with localStorage persistence
@@ -1983,11 +2066,17 @@ export function EditorTable({
                 data-testid="editor-table-desktop"
               >
                 <Table.Thead
+                  ref={theadRef}
+                  onPointerMove={handleHeaderPointerMove}
+                  onPointerUp={(e) => finishHeaderDrag(e.pointerId, true)}
+                  onPointerCancel={(e) => finishHeaderDrag(e.pointerId, false)}
+                  onLostPointerCapture={(e) => finishHeaderDrag(e.pointerId, false)}
                   style={{
                     position: 'sticky',
                     top: 0,
                     zIndex: 10,
                     background: 'var(--mantine-color-body)',
+                    touchAction: 'none',
                   }}
                 >
                   <Table.Tr>
@@ -2014,6 +2103,11 @@ export function EditorTable({
                           DATA_COLUMN_LABELS.signals
                         );
 
+                      const dropIndicator =
+                        isDataColumn && headerDropTarget?.column === columnKey
+                          ? headerDropTarget.position
+                          : undefined;
+
                       return (
                         <ResizableTh
                           key={columnKey}
@@ -2026,6 +2120,11 @@ export function EditorTable({
                           }
                           align={columnKey === 'select' ? 'center' : 'left'}
                           dataColumnKey={isDataColumn ? columnKey : undefined}
+                          onCellPointerDown={
+                            isDataColumn ? handleHeaderPointerDown(columnKey) : undefined
+                          }
+                          isDragging={draggingHeaderColumn === columnKey}
+                          dropIndicatorPosition={dropIndicator}
                         >
                           {typeof label === 'string' ? (
                             label

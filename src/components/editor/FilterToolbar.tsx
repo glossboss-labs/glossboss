@@ -5,7 +5,7 @@
  * Filter chips cycle through: neutral -> show only -> don't show -> neutral
  */
 
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState, useEffect, useRef } from 'react';
 import {
   TextInput,
   Group,
@@ -48,6 +48,7 @@ import {
 import { getDeepLClient, hasUserApiKey } from '@/lib/deepl';
 import type { UsageStats } from '@/lib/deepl/types';
 import { popVariants, springTransition } from '@/lib/motion';
+import { useDragGhost } from '@/hooks/use-drag-ghost';
 
 const MotionDiv = motion.div;
 
@@ -123,9 +124,37 @@ export function FilterToolbar() {
 
   // DeepL usage stats
   const [usage, setUsage] = useState<UsageStats | null>(null);
+  const apiKeyConfigured = hasUserApiKey();
+
+  // Pointer-based column reordering state for menu items
   const [draggingColumn, setDraggingColumn] = useState<TableColumn | null>(null);
   const [dropTargetColumn, setDropTargetColumn] = useState<TableColumn | null>(null);
-  const apiKeyConfigured = hasUserApiKey();
+  const menuDropdownRef = useRef<HTMLDivElement>(null);
+  const dragPointerId = useRef<number | null>(null);
+  const dragGhost = useDragGhost();
+
+  const finishColumnDrag = useCallback(
+    (pointerId: number, column: TableColumn, shouldCommit: boolean) => {
+      if (dragPointerId.current !== pointerId) return;
+      dragPointerId.current = null;
+
+      if (shouldCommit && dropTargetColumn && dropTargetColumn !== column) {
+        const fromIndex = columnOrder.indexOf(column);
+        const rawTargetIndex = columnOrder.indexOf(dropTargetColumn);
+
+        if (fromIndex !== -1 && rawTargetIndex !== -1) {
+          const adjustedTargetIndex =
+            rawTargetIndex > fromIndex ? rawTargetIndex - 1 : rawTargetIndex;
+          moveColumnToIndex(column, adjustedTargetIndex);
+        }
+      }
+
+      setDraggingColumn(null);
+      setDropTargetColumn(null);
+      dragGhost.hide();
+    },
+    [columnOrder, dragGhost, dropTargetColumn, moveColumnToIndex],
+  );
 
   useEffect(() => {
     if (!apiKeyConfigured) return;
@@ -397,7 +426,7 @@ export function FilterToolbar() {
                   Columns
                 </Button>
               </Menu.Target>
-              <Menu.Dropdown>
+              <Menu.Dropdown ref={menuDropdownRef}>
                 {columnOrder.map((column) => {
                   const isVisible = visibleColumns.has(column);
                   const disableToggleOff = isVisible && visibleColumnCount === 1;
@@ -406,39 +435,15 @@ export function FilterToolbar() {
                     <Menu.Item
                       key={column}
                       closeMenuOnClick={false}
-                      onDragOver={(e) => {
-                        if (!draggingColumn || draggingColumn === column) return;
-                        e.preventDefault();
-                        if (dropTargetColumn !== column) {
-                          setDropTargetColumn(column);
-                        }
-                      }}
-                      onDrop={(e) => {
-                        e.preventDefault();
-                        if (!draggingColumn || draggingColumn === column) {
-                          setDraggingColumn(null);
-                          setDropTargetColumn(null);
-                          return;
-                        }
-
-                        const fromIndex = columnOrder.indexOf(draggingColumn);
-                        const targetIndex = columnOrder.indexOf(column);
-                        if (fromIndex === -1 || targetIndex === -1) {
-                          setDraggingColumn(null);
-                          setDropTargetColumn(null);
-                          return;
-                        }
-
-                        const adjustedIndex =
-                          fromIndex < targetIndex ? targetIndex - 1 : targetIndex;
-                        moveColumnToIndex(draggingColumn, adjustedIndex);
-                        setDraggingColumn(null);
-                        setDropTargetColumn(null);
-                      }}
-                      onDragLeave={() => {
-                        if (dropTargetColumn === column) {
-                          setDropTargetColumn(null);
-                        }
+                      data-column={column}
+                      style={{
+                        backgroundColor: isDropTarget
+                          ? 'var(--mantine-color-blue-light)'
+                          : draggingColumn === column
+                            ? 'var(--mantine-color-gray-light)'
+                            : undefined,
+                        opacity: draggingColumn === column ? 0.3 : 1,
+                        transition: 'background-color 100ms ease, opacity 100ms ease',
                       }}
                     >
                       <Group justify="space-between" wrap="nowrap">
@@ -455,21 +460,52 @@ export function FilterToolbar() {
                             variant="subtle"
                             color="gray"
                             aria-label={`Drag ${columnLabels[column]}`}
-                            draggable
-                            onDragStart={(e) => {
-                              e.dataTransfer.effectAllowed = 'move';
-                              e.dataTransfer.setData('text/plain', column);
+                            onPointerDown={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              dragPointerId.current = e.pointerId;
+                              e.currentTarget.setPointerCapture(e.pointerId);
                               setDraggingColumn(column);
+                              setDropTargetColumn(null);
+                              const menuItem = e.currentTarget.closest(
+                                '[data-column]',
+                              ) as HTMLElement;
+                              if (menuItem) dragGhost.show(menuItem, e.clientX, e.clientY);
                             }}
-                            onDragEnd={() => {
-                              setDraggingColumn(null);
+                            onPointerMove={(e) => {
+                              if (dragPointerId.current !== e.pointerId) return;
+                              dragGhost.move(e.clientX, e.clientY);
+                              if (!menuDropdownRef.current) return;
+
+                              const items =
+                                menuDropdownRef.current.querySelectorAll('[data-column]');
+                              for (const item of items) {
+                                const rect = item.getBoundingClientRect();
+                                if (e.clientY >= rect.top && e.clientY <= rect.bottom) {
+                                  const col = item.getAttribute('data-column') as TableColumn;
+                                  if (col === column) {
+                                    setDropTargetColumn(null);
+                                    return;
+                                  }
+
+                                  if (col) {
+                                    setDropTargetColumn(col);
+                                  }
+                                  return;
+                                }
+                              }
                               setDropTargetColumn(null);
                             }}
+                            onPointerUp={(e) => {
+                              finishColumnDrag(e.pointerId, column, true);
+                            }}
+                            onPointerCancel={(e) => finishColumnDrag(e.pointerId, column, false)}
+                            onLostPointerCapture={(e) =>
+                              finishColumnDrag(e.pointerId, column, false)
+                            }
                             style={{
-                              cursor: 'grab',
-                              backgroundColor: isDropTarget
-                                ? 'var(--mantine-color-blue-light)'
-                                : undefined,
+                              cursor: draggingColumn === column ? 'grabbing' : 'grab',
+                              touchAction: 'none',
                             }}
                           >
                             <GripVertical size={12} />

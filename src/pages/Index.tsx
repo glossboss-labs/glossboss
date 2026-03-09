@@ -69,6 +69,11 @@ import type { Glossary } from '@/lib/glossary/types';
 import { batchAnalyzeTranslations, syncGlossaryToDeepL } from '@/lib/glossary';
 import { debugError, debugLog } from '@/lib/debug';
 import {
+  fetchExamplePoFromWordPress,
+  getBundledExamplePo,
+  getDeviceExampleTargetLanguage,
+} from '@/lib/example-po';
+import {
   saveDraft,
   loadDraft,
   deleteDraft,
@@ -306,6 +311,7 @@ export default function Index() {
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [feedbackSuccess, setFeedbackSuccess] = useState<FeedbackInfo | null>(null);
   const [feedbackError, setFeedbackError] = useState<string | null>(null);
+  const [isLoadingExample, setIsLoadingExample] = useState(false);
   const [translateSourceLang, setTranslateSourceLang] = useState<SourceLanguage | undefined>(
     undefined,
   );
@@ -626,6 +632,44 @@ export default function Index() {
     [loadFile],
   );
 
+  const handleLoadExamplePo = useCallback(async () => {
+    setIsLoadingExample(true);
+    setErrors([]);
+    setWarnings([]);
+    setShowWarnings(false);
+    setEncodingInfo(null);
+    setDragError(null);
+    setPendingDraft(null);
+    setIsFromDraft(false);
+
+    try {
+      const preferredTargetLanguage = getDeviceExampleTargetLanguage();
+      const examplePo =
+        (await fetchExamplePoFromWordPress(preferredTargetLanguage)) ?? getBundledExamplePo();
+      const result = parsePOFileWithDiagnostics(examplePo.content, examplePo.filename);
+
+      if (!result.success || !result.file) {
+        setErrors(result.errors);
+        return;
+      }
+
+      if (result.warnings.length > 0) {
+        setWarnings(result.warnings);
+        setShowWarnings(true);
+      }
+
+      loadFile(result.file);
+
+      const detected = detectPluginSlug(result.file.header, result.file.filename);
+      if (detected) {
+        useSourceStore.getState().setAutoDetectedSlug(detected.slug, detected.version);
+        debugLog('[Source] Auto-detected plugin from example:', detected.slug, detected.version);
+      }
+    } finally {
+      setIsLoadingExample(false);
+    }
+  }, [loadFile]);
+
   /**
    * Restore from pending draft
    */
@@ -875,6 +919,9 @@ export default function Index() {
     setPendingDraft(null);
     setIsFromDraft(false);
     setLastAutoSave(null);
+    // Avoid carrying the example-derived language selection into the next file after a reset.
+    setTranslateSourceLang(undefined);
+    setTranslateTargetLang(undefined);
   }, [clearEditor, filename]);
 
   /**
@@ -1496,6 +1543,21 @@ export default function Index() {
                       .json
                     </Badge>
                   </Group>
+                  <Tooltip label="Load a small example WordPress plugin PO file (Hello Dolly)">
+                    <motion.div {...buttonStates}>
+                      <Button
+                        variant="default"
+                        leftSection={<FileUp size={16} />}
+                        loading={isLoadingExample}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          void handleLoadExamplePo();
+                        }}
+                      >
+                        Load example PO
+                      </Button>
+                    </motion.div>
+                  </Tooltip>
                 </Stack>
               </Paper>
             </MotionDiv>

@@ -13,6 +13,10 @@ concurrency:
   group: cloudflare-pages-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -50,6 +54,7 @@ jobs:
         run: bun run build
 
       - name: Deploy to Cloudflare Pages
+        id: deploy
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -60,4 +65,68 @@ jobs:
             DEPLOY_BRANCH="${{ github.ref_name }}"
           fi
 
-          bunx wrangler pages deploy dist --project-name glossboss --branch "$DEPLOY_BRANCH"
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            DEPLOY_OUTPUT="$(bunx wrangler pages deploy dist --project-name glossboss --branch "$DEPLOY_BRANCH" 2>&1 | tee /dev/stderr)"
+            set +e
+            DEPLOY_URL="$(printf '%s\n' "$DEPLOY_OUTPUT" | grep -Eo 'https://[^[:space:]]+\.pages\.dev' | tail -n1)"
+            DEPLOY_URL_STATUS=$?
+            set -e
+
+            if [ "$DEPLOY_URL_STATUS" -gt 1 ]; then
+              echo "::error::Failed to parse Cloudflare Pages deploy output (grep exit status: $DEPLOY_URL_STATUS)."
+              exit 1
+            fi
+
+            if ! [[ "$DEPLOY_URL" =~ ^https://[A-Za-z0-9.-]+\.pages\.dev$ ]]; then
+              echo "::error::Failed to detect a valid Cloudflare Pages URL from wrangler output."
+              exit 1
+            fi
+
+            echo "preview_url=$DEPLOY_URL" >> "$GITHUB_OUTPUT"
+          else
+            bunx wrangler pages deploy dist --project-name glossboss --branch "$DEPLOY_BRANCH"
+          fi
+
+      - name: Comment PR with preview link
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && steps.deploy.outputs.preview_url != ''
+        uses: actions/github-script@v8
+        env:
+          PREVIEW_URL: ${{ steps.deploy.outputs.preview_url }}
+        with:
+          script: |
+            const marker = '<!-- cloudflare-pages-preview-link -->'
+            const body = [
+              marker,
+              `🚀 Preview deployment is ready: [${process.env.PREVIEW_URL}](${process.env.PREVIEW_URL})`,
+            ].join('\n')
+
+            let existingComment
+
+            for await (const { data: comments } of github.paginate.iterator(github.rest.issues.listComments, {
+              ...context.repo,
+              issue_number: context.issue.number,
+              per_page: 100,
+            })) {
+              existingComment = comments.find((comment) => {
+                return comment.user?.login === 'github-actions[bot]' && comment.body?.includes(marker)
+              })
+
+              if (existingComment) {
+                break
+              }
+            }
+
+            if (existingComment) {
+              await github.rest.issues.updateComment({
+                ...context.repo,
+                comment_id: existingComment.id,
+                body,
+              })
+              return
+            }
+
+            await github.rest.issues.createComment({
+              ...context.repo,
+              issue_number: context.issue.number,
+              body,
+            })
