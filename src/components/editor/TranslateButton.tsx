@@ -64,6 +64,11 @@ export function TranslateButton({
   const iconSize = size === 'xs' ? 12 : size === 'sm' ? 14 : 16;
   const hasExistingTranslation = currentTranslation.trim().length > 0;
   const label = glossaryId ? 'Translate with Glossary' : 'Translate with DeepL';
+  const tooltipLabel = !apiKeyConfigured
+    ? 'Add your DeepL API key in Settings to enable translation'
+    : glossaryId
+      ? 'Translate with DeepL + Glossary'
+      : 'Translate with DeepL';
 
   const doTranslate = useCallback(async () => {
     if (!text.trim() || isLoading || isDisabled) return;
@@ -194,32 +199,31 @@ export function TranslateButton({
   return (
     <Popover opened={showConfirm} onClose={handleCancel} position="top" withArrow shadow="md">
       <Popover.Target>
-        <Tooltip
-          label={glossaryId ? 'Translate with DeepL + Glossary' : 'Translate with DeepL'}
-          color="dark"
-        >
-          {display === 'button' ? (
-            <Button
-              size={size}
-              variant="light"
-              color={glossaryId ? 'teal' : 'blue'}
-              leftSection={<Languages size={iconSize} />}
-              onClick={doTranslate}
-              disabled={isDisabled}
-            >
-              {label}
-            </Button>
-          ) : (
-            <ActionIcon
-              size={size}
-              variant="light"
-              color={glossaryId ? 'teal' : 'blue'}
-              onClick={doTranslate}
-              disabled={isDisabled}
-            >
-              <Languages size={iconSize} />
-            </ActionIcon>
-          )}
+        <Tooltip label={tooltipLabel} color="dark">
+          <span style={{ display: 'inline-flex' }}>
+            {display === 'button' ? (
+              <Button
+                size={size}
+                variant="light"
+                color={glossaryId ? 'teal' : 'blue'}
+                leftSection={<Languages size={iconSize} />}
+                onClick={doTranslate}
+                disabled={isDisabled}
+              >
+                {label}
+              </Button>
+            ) : (
+              <ActionIcon
+                size={size}
+                variant="light"
+                color={glossaryId ? 'teal' : 'blue'}
+                onClick={doTranslate}
+                disabled={isDisabled}
+              >
+                <Languages size={iconSize} />
+              </ActionIcon>
+            )}
+          </span>
         </Tooltip>
       </Popover.Target>
 
