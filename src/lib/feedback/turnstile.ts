@@ -1,6 +1,7 @@
 type TurnstileWidgetConfig = {
   sitekey: string;
   size: 'invisible';
+  execution: 'execute';
   callback: (token: string) => void;
   'error-callback': () => void;
   'expired-callback': () => void;
@@ -91,6 +92,7 @@ export async function createTurnstileController(
   const widgetId = window.turnstile.render(container, {
     sitekey: siteKey,
     size: 'invisible',
+    execution: 'execute',
     callback: (token: string) => {
       if (!pending) return;
       window.clearTimeout(pending.timeoutId);
