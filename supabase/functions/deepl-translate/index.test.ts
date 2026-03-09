@@ -340,7 +340,7 @@ describe('handleDeepLTranslateRequest', () => {
       headers: { origin: 'https://glossboss.test' },
     });
     const res = await handleDeepLTranslateRequest(req);
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(204);
     expect(res.headers.get('access-control-allow-origin')).toBe('https://glossboss.test');
   });
 
