@@ -21,7 +21,7 @@ msgstr "De API-sleutel is geldig!"
 msgid "Action"
 msgstr "Actie"
 
-#: src/pages/Index.tsx:1429
+#: src/pages/Index.tsx:1445
 msgid "Actions"
 msgstr "Acties"
 
@@ -33,7 +33,7 @@ msgstr "Pas het uiterlijk van de editor aan op je scherm en voorkeuren."
 msgid "Allow follow-up questions about this feedback"
 msgstr "Vervolgvragen over deze feedback toestaan"
 
-#: src/pages/Index.tsx:1583
+#: src/pages/Index.tsx:1614
 msgid "Auto-saved {age}"
 msgstr "Automatisch opgeslagen {age}"
 
@@ -62,15 +62,15 @@ msgstr "Kies welke taal GlossBoss voor de interface gebruikt."
 msgid "Clear"
 msgstr "Wissen"
 
-#: src/pages/Index.tsx:1451
+#: src/pages/Index.tsx:1467
 msgid "Clear anyway"
 msgstr "Toch wissen"
 
-#: src/pages/Index.tsx:1435
+#: src/pages/Index.tsx:1451
 msgid "Clear editor"
 msgstr "Editor wissen"
 
-#: src/pages/Index.tsx:1448
+#: src/pages/Index.tsx:1464
 msgid "Clear editor?"
 msgstr "Editor wissen?"
 
@@ -102,7 +102,7 @@ msgstr ""
 "Bepaalt de toon van DeepL-vertalingen. Niet alle talen ondersteunen formalit"
 "eit."
 
-#: src/pages/Index.tsx:765
+#: src/pages/Index.tsx:756
 msgid ""
 "Could not fetch the file. The server may not allow cross-origin requests. Tr"
 "y downloading the file and uploading it directly."
@@ -135,7 +135,7 @@ msgstr "DeepL klaar"
 msgid "DeepL ready ({count} terms)"
 msgstr "DeepL klaar ({count} termen)"
 
-#: src/pages/Index.tsx:1605
+#: src/pages/Index.tsx:1636
 msgid "DeepL synced"
 msgstr "DeepL gesynchroniseerd"
 
@@ -159,7 +159,7 @@ msgstr "Ontwikkeling"
 msgid "Development Mode Only"
 msgstr "Alleen in ontwikkelmodus"
 
-#: src/pages/Index.tsx:1566
+#: src/pages/Index.tsx:1597
 msgid "Discard and use fresh file"
 msgstr "Verwerpen en een nieuw bestand gebruiken"
 
@@ -171,19 +171,19 @@ msgstr "Wijzigingen verwerpen en het huidige veld verlaten"
 msgid "Display"
 msgstr "Weergave"
 
-#: src/pages/Index.tsx:1320
+#: src/pages/Index.tsx:1336
 msgid "Download"
 msgstr "Downloaden"
 
-#: src/pages/Index.tsx:1359
+#: src/pages/Index.tsx:1375
 msgid "Download as"
 msgstr "Downloaden als"
 
-#: src/pages/Index.tsx:1303
+#: src/pages/Index.tsx:1319
 msgid "Download as {format}"
 msgstr "Downloaden als {format}"
 
-#: src/pages/Index.tsx:1666
+#: src/pages/Index.tsx:1697
 msgid ""
 "Drag and drop your translation file here, or click to browse. Your translati"
 "ons will be saved locally in your browser."
@@ -191,11 +191,11 @@ msgstr ""
 "Sleep je vertaalbestand hierheen of klik om te bladeren. Je vertalingen word"
 "en lokaal in je browser opgeslagen."
 
-#: src/pages/Index.tsx:1103
+#: src/pages/Index.tsx:1119
 msgid "Drop it like it's hot"
 msgstr "Laat maar vallen"
 
-#: src/pages/Index.tsx:1270
+#: src/pages/Index.tsx:1286
 msgid "Edit gettext translation files with DeepL integration"
 msgstr "Bewerk gettext-vertaalbestanden met DeepL-integratie"
 
@@ -229,7 +229,7 @@ msgstr "Initialiseren van verificatie mislukt."
 msgid "Failed to load glossary"
 msgstr "Woordenlijst laden mislukt"
 
-#: src/pages/Index.tsx:1476
+#: src/pages/Index.tsx:1507
 msgid "Failed to parse file"
 msgstr "Bestand kon niet worden verwerkt"
 
@@ -241,7 +241,7 @@ msgstr "Het bestand kon niet worden gelezen."
 msgid "Feature"
 msgstr "Functie"
 
-#: src/pages/Index.tsx:1403
+#: src/pages/Index.tsx:1419
 msgid "Feedback"
 msgstr "Feedback"
 
@@ -249,11 +249,11 @@ msgstr "Feedback"
 msgid "Feedback could not be submitted at this time."
 msgstr "Feedback kan op dit moment niet worden verzonden."
 
-#: src/pages/Index.tsx:1231
+#: src/pages/Index.tsx:1247
 msgid "Feedback failed"
 msgstr "Feedback mislukt"
 
-#: src/pages/Index.tsx:1188
+#: src/pages/Index.tsx:1204
 msgid "Feedback submitted"
 msgstr "Feedback verzonden"
 
@@ -265,7 +265,7 @@ msgstr "Feedbackverificatie is niet geconfigureerd."
 msgid "File does not appear to be a valid WordPress glossary CSV."
 msgstr "Het bestand lijkt geen geldige WordPress-woordenlijst-CSV te zijn."
 
-#: src/pages/Index.tsx:1125
+#: src/pages/Index.tsx:1141
 msgid "File downloaded"
 msgstr "Bestand gedownload"
 
@@ -289,7 +289,7 @@ msgstr "Gratis: 500.000 tekens/maand • Pro: betalen naar gebruik"
 msgid "Glossary"
 msgstr "Woordenlijst"
 
-#: src/pages/Index.tsx:1598
+#: src/pages/Index.tsx:1629
 msgid "Glossary: {count} terms ({locale})"
 msgstr "Woordenlijst: {count} termen ({locale})"
 
@@ -322,7 +322,7 @@ msgstr "Sneltoetsen die beschikbaar zijn tijdens het bewerken van vertalingen."
 msgid "Language"
 msgstr "Taal"
 
-#: src/pages/Index.tsx:1764
+#: src/pages/Index.tsx:1795
 msgid "License"
 msgstr "Licentie"
 
@@ -330,7 +330,7 @@ msgstr "Licentie"
 msgid "Light mode"
 msgstr "Lichte modus"
 
-#: src/pages/Index.tsx:1483
+#: src/pages/Index.tsx:1514
 msgid "Line {line}"
 msgstr "Regel {line}"
 
@@ -338,7 +338,7 @@ msgstr "Regel {line}"
 msgid "List steps someone else can follow"
 msgstr "Som stappen op die iemand anders kan volgen"
 
-#: src/pages/Index.tsx:1707
+#: src/pages/Index.tsx:1738
 msgid "Load"
 msgstr ""
 
@@ -346,11 +346,11 @@ msgstr ""
 msgid "Load Glossary"
 msgstr "Woordenlijst laden"
 
-#: src/pages/Index.tsx:1715
+#: src/pages/Index.tsx:1746
 msgid "Load a small example WordPress plugin PO file (Hello Dolly)"
 msgstr "Laad een klein voorbeeld-PO-bestand van een WordPress-plugin (Hello Dolly)"
 
-#: src/pages/Index.tsx:1726
+#: src/pages/Index.tsx:1757
 msgid "Load example PO"
 msgstr "Voorbeeld-PO laden"
 
@@ -361,6 +361,12 @@ msgid ""
 msgstr ""
 "Laad de officiële WordPress-vertaalwoordenlijst voor consistente terminologi"
 "e."
+
+#: src/pages/Index.tsx:1480
+msgid ""
+"Loading a new file from URL will replace the currently loaded file. Any unsa"
+"ved changes will be lost."
+msgstr ""
 
 #: src/components/SettingsModal.tsx:186
 msgid "Navigation Settings"
@@ -387,23 +393,23 @@ msgstr "Geen woordenlijstingangen gevonden in het geüploade bestand."
 msgid "Only visible while running the app in development mode"
 msgstr "Alleen zichtbaar wanneer de app in ontwikkelmodus draait"
 
-#: src/pages/Index.tsx:1213
+#: src/pages/Index.tsx:1229
 msgid "Open issue"
 msgstr "Issue openen"
 
-#: src/pages/Index.tsx:1426
+#: src/pages/Index.tsx:1442
 msgid "Open settings"
 msgstr "Instellingen openen"
 
-#: src/pages/Index.tsx:1361
+#: src/pages/Index.tsx:1377
 msgid "PO file (.po)"
 msgstr "PO-bestand (.po)"
 
-#: src/pages/Index.tsx:1690
+#: src/pages/Index.tsx:1721
 msgid "PO file URL"
 msgstr ""
 
-#: src/pages/Index.tsx:1689
+#: src/pages/Index.tsx:1720
 msgid "Paste a .po file URL"
 msgstr ""
 
@@ -436,7 +442,7 @@ msgid "Previous field"
 msgstr "Vorig veld"
 
 #: src/components/feedback/FeedbackModal.tsx:416
-#: src/pages/Index.tsx:1784
+#: src/pages/Index.tsx:1815
 msgid "Privacy"
 msgstr "Privacy"
 
@@ -460,7 +466,7 @@ msgstr "Lees de vertaalgids"
 msgid "Refresh from WordPress.org"
 msgstr "Verversen vanaf WordPress.org"
 
-#: src/pages/Index.tsx:1105
+#: src/pages/Index.tsx:1121
 msgid "Release to load your translation file"
 msgstr "Laat los om je vertaalbestand te laden"
 
@@ -472,11 +478,19 @@ msgstr "API-sleutel onthouden tussen sessies"
 msgid "Remove saved key"
 msgstr "Opgeslagen sleutel verwijderen"
 
-#: src/pages/Index.tsx:763
+#: src/pages/Index.tsx:1483
+msgid "Replace"
+msgstr ""
+
+#: src/pages/Index.tsx:1479
+msgid "Replace current file?"
+msgstr ""
+
+#: src/pages/Index.tsx:754
 msgid "Request timed out. Try downloading the file and uploading it directly."
 msgstr ""
 
-#: src/pages/Index.tsx:1557
+#: src/pages/Index.tsx:1588
 msgid "Restore draft"
 msgstr "Concept herstellen"
 
@@ -520,11 +534,11 @@ msgid "Send feedback"
 msgstr "Feedback versturen"
 
 #: src/components/SettingsModal.tsx:464
-#: src/pages/Index.tsx:1421
+#: src/pages/Index.tsx:1437
 msgid "Settings"
 msgstr "Instellingen"
 
-#: src/pages/Index.tsx:1412
+#: src/pages/Index.tsx:1428
 msgid "Settings and actions"
 msgstr "Instellingen en acties"
 
@@ -536,7 +550,7 @@ msgstr "Instellingen opgeslagen!"
 msgid "Share Feedback"
 msgstr "Feedback delen"
 
-#: src/pages/Index.tsx:1396
+#: src/pages/Index.tsx:1412
 msgid "Share feedback"
 msgstr "Feedback delen"
 
@@ -568,7 +582,7 @@ msgstr ""
 msgid "Skip translated entries"
 msgstr "Vertaalde items overslaan"
 
-#: src/pages/Index.tsx:1754
+#: src/pages/Index.tsx:1785
 msgid "Source"
 msgstr "Bron"
 
@@ -600,11 +614,11 @@ msgstr "Termen in geselecteerde tekst:"
 msgid "Test Connection"
 msgstr "Verbinding testen"
 
-#: src/pages/Index.tsx:1200
+#: src/pages/Index.tsx:1216
 msgid "Thanks. Issue #{issueNumber} was created."
 msgstr "Bedankt. Issue #{issueNumber} is aangemaakt."
 
-#: src/pages/Index.tsx:696
+#: src/pages/Index.tsx:779
 msgid "The URL must start with https://"
 msgstr ""
 
@@ -616,7 +630,7 @@ msgstr ""
 "Deze hulpmiddelen verschijnen alleen wanneer de app lokaal in ontwikkelmodus"
 " draait en worden niet in productie getoond."
 
-#: src/pages/Index.tsx:1450
+#: src/pages/Index.tsx:1466
 msgid "This will remove all your work on the current file."
 msgstr "Dit verwijdert al je werk aan het huidige bestand."
 
@@ -625,7 +639,7 @@ msgstr "Dit verwijdert al je werk aan het huidige bestand."
 msgid "Title"
 msgstr "Titel"
 
-#: src/pages/Index.tsx:1774
+#: src/pages/Index.tsx:1805
 msgid "Translate"
 msgstr "Vertalen"
 
@@ -638,19 +652,19 @@ msgid "Turnstile site key not set. Using local development bypass."
 msgstr "Turnstile-sitekey is niet ingesteld. Lokale ontwikkel-bypass wordt gebruikt."
 
 #: src/components/SettingsModal.tsx:387
-#: src/pages/Index.tsx:770
+#: src/pages/Index.tsx:761
 msgid "Unknown error"
 msgstr "Onbekende fout"
 
-#: src/pages/Index.tsx:1531
+#: src/pages/Index.tsx:1562
 msgid "Unsaved draft found"
 msgstr "Niet-opgeslagen concept gevonden"
 
-#: src/pages/Index.tsx:1385
+#: src/pages/Index.tsx:1401
 msgid "Update"
 msgstr "Bijwerken"
 
-#: src/pages/Index.tsx:1373
+#: src/pages/Index.tsx:1389
 msgid ""
 "Update this file using a .pot template. Existing translations are kept when "
 "source strings still match, new strings are added, and obsolete strings are "
@@ -660,11 +674,11 @@ msgstr ""
 "houden zolang bronteksten nog overeenkomen, nieuwe teksten worden toegevoegd"
 " en verouderde teksten verwijderd."
 
-#: src/pages/Index.tsx:1155
+#: src/pages/Index.tsx:1171
 msgid "Updated"
 msgstr "Bijgewerkt"
 
-#: src/pages/Index.tsx:1283
+#: src/pages/Index.tsx:1299
 msgid "Upload"
 msgstr "Uploaden"
 
@@ -676,11 +690,11 @@ msgstr "CSV uploaden"
 msgid "Upload a WordPress glossary CSV for the selected language"
 msgstr "Upload een WordPress-woordenlijst-CSV voor de geselecteerde taal"
 
-#: src/pages/Index.tsx:1664
+#: src/pages/Index.tsx:1695
 msgid "Upload a translation file to start"
 msgstr "Upload een vertaalbestand om te beginnen"
 
-#: src/pages/Index.tsx:1462
+#: src/pages/Index.tsx:1493
 msgid "Upload failed"
 msgstr "Upload mislukt"
 
@@ -745,15 +759,15 @@ msgstr ""
 msgid "When would you use this?"
 msgstr "Wanneer zou je dit gebruiken?"
 
-#: src/pages/Index.tsx:1578
+#: src/pages/Index.tsx:1609
 msgid "Working from draft"
 msgstr "Werkt vanuit concept"
 
-#: src/pages/Index.tsx:1302
+#: src/pages/Index.tsx:1318
 msgid "You have unsaved changes"
 msgstr "Je hebt niet-opgeslagen wijzigingen"
 
-#: src/pages/Index.tsx:1539
+#: src/pages/Index.tsx:1570
 msgid ""
 "You have unsaved changes from {age}. Would you like to restore your previous"
 " work?"
@@ -761,7 +775,7 @@ msgstr ""
 "Je hebt niet-opgeslagen wijzigingen van {age}. Wil je je vorige werk herstel"
 "len?"
 
-#: src/pages/Index.tsx:1449
+#: src/pages/Index.tsx:1465
 msgid "You have unsaved changes. Are you sure you want to clear the editor?"
 msgstr ""
 "Je hebt niet-opgeslagen wijzigingen. Weet je zeker dat je de editor wilt wis"
@@ -775,11 +789,11 @@ msgstr "tekens"
 msgid "for details."
 msgstr "voor details."
 
-#: src/pages/Index.tsx:1364
+#: src/pages/Index.tsx:1380
 msgid "i18next JSON (.json)"
 msgstr "i18next JSON (.json)"
 
-#: src/pages/Index.tsx:1712
+#: src/pages/Index.tsx:1743
 msgid "or"
 msgstr ""
 
@@ -791,6 +805,6 @@ msgstr "of handmatig uploaden"
 msgid "terms"
 msgstr "termen"
 
-#: src/pages/Index.tsx:1547
+#: src/pages/Index.tsx:1578
 msgid "{count} modified entries will be restored."
 msgstr "{count} gewijzigde items worden hersteld."
