@@ -81,6 +81,7 @@ const appIcon = '/icon.svg';
 
 const MotionDiv = motion.div;
 const DEV_BRANCH_CHIP_STORAGE_KEY = 'glossboss-dev-branch-chip-enabled';
+const EXAMPLE_PO_PLUGIN_SLUG = 'hello-dolly';
 const EXAMPLE_PO_FILENAME = 'hello-dolly-nl_NL.po';
 const EXAMPLE_PO_CONTENT = `
 msgid ""
@@ -109,6 +110,159 @@ msgstr "Dit is niet zomaar een plugin; het symboliseert de hoop en het enthousia
 msgid "Donate"
 msgstr "Doneren"
 `.trim();
+const EXAMPLE_FETCH_TIMEOUT_MS = 8000;
+const EXAMPLE_TARGET_LANGUAGE_CANDIDATES = [
+  'BG',
+  'CS',
+  'DA',
+  'DE',
+  'EL',
+  'EN-GB',
+  'EN-US',
+  'ES',
+  'ET',
+  'FI',
+  'FR',
+  'HU',
+  'ID',
+  'IT',
+  'JA',
+  'KO',
+  'LT',
+  'LV',
+  'NB',
+  'NL',
+  'PL',
+  'PT-BR',
+  'PT-PT',
+  'RO',
+  'RU',
+  'SK',
+  'SL',
+  'SV',
+  'TR',
+  'UK',
+  'ZH',
+] as const satisfies readonly TargetLanguage[];
+
+function getDeviceExampleTargetLanguage(): TargetLanguage | null {
+  if (typeof navigator === 'undefined') {
+    return null;
+  }
+
+  const locales = [...(navigator.languages ?? []), navigator.language].filter(
+    (locale): locale is string => Boolean(locale),
+  );
+
+  for (const locale of locales) {
+    const normalizedLocale = locale.trim().replace('_', '-').toUpperCase();
+
+    if (!normalizedLocale) {
+      continue;
+    }
+
+    if (normalizedLocale === 'EN-GB') {
+      return 'EN-GB';
+    }
+
+    if (normalizedLocale === 'EN' || normalizedLocale.startsWith('EN-')) {
+      return 'EN-US';
+    }
+
+    if (normalizedLocale === 'PT-BR') {
+      return 'PT-BR';
+    }
+
+    if (normalizedLocale === 'PT' || normalizedLocale === 'PT-PT') {
+      return 'PT-PT';
+    }
+
+    const directMatch = EXAMPLE_TARGET_LANGUAGE_CANDIDATES.find(
+      (value) => value === normalizedLocale,
+    );
+    if (directMatch) {
+      return directMatch;
+    }
+
+    const baseLocale = normalizedLocale.split('-')[0];
+    const baseMatch = EXAMPLE_TARGET_LANGUAGE_CANDIDATES.find((value) => value === baseLocale);
+    if (baseMatch) {
+      return baseMatch;
+    }
+  }
+
+  return null;
+}
+
+function buildExamplePoWordPressUrls(targetLanguage: TargetLanguage | null): string[] {
+  const localeCandidates = targetLanguage
+    ? (() => {
+        const locales = new Set<string>();
+
+        switch (targetLanguage) {
+          case 'EN-GB':
+            locales.add('en-gb');
+            locales.add('en');
+            break;
+          case 'EN-US':
+            locales.add('en-us');
+            locales.add('en');
+            break;
+          case 'PT-BR':
+            locales.add('pt-br');
+            locales.add('pt');
+            break;
+          case 'PT-PT':
+            locales.add('pt');
+            break;
+          default:
+            locales.add(targetLanguage.toLowerCase());
+            locales.add(targetLanguage.split('-')[0].toLowerCase());
+            break;
+        }
+
+        return [...locales];
+      })()
+    : ['nl'];
+
+  return localeCandidates.flatMap((locale) =>
+    ['stable', 'dev'].map(
+      (branch) =>
+        `https://translate.wordpress.org/projects/wp-plugins/${EXAMPLE_PO_PLUGIN_SLUG}/${branch}/${locale}/default/export-translations/?format=po`,
+    ),
+  );
+}
+
+async function fetchExamplePoFromWordPress(
+  targetLanguage: TargetLanguage | null,
+): Promise<string | null> {
+  for (const url of buildExamplePoWordPressUrls(targetLanguage)) {
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => controller.abort(), EXAMPLE_FETCH_TIMEOUT_MS);
+
+    try {
+      const response = await fetch(url, {
+        signal: controller.signal,
+      });
+
+      if (!response.ok) {
+        continue;
+      }
+
+      const text = await response.text();
+
+      if (text.includes('msgid ""') && text.includes('"Project-Id-Version: Hello Dolly')) {
+        return text;
+      }
+    } catch {
+      // Fall through to the next candidate URL and eventually use the bundled example.
+    } finally {
+      window.clearTimeout(timeoutId);
+    }
+  }
+
+  return null;
+}
 
 /** Encoding info for display */
 interface EncodingInfo {
@@ -334,6 +488,7 @@ export default function Index() {
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [feedbackSuccess, setFeedbackSuccess] = useState<FeedbackInfo | null>(null);
   const [feedbackError, setFeedbackError] = useState<string | null>(null);
+  const [isLoadingExample, setIsLoadingExample] = useState(false);
   const [translateSourceLang, setTranslateSourceLang] = useState<SourceLanguage | undefined>(
     undefined,
   );
@@ -654,7 +809,8 @@ export default function Index() {
     [loadFile],
   );
 
-  const handleLoadExamplePo = useCallback(() => {
+  const handleLoadExamplePo = useCallback(async () => {
+    setIsLoadingExample(true);
     setErrors([]);
     setWarnings([]);
     setShowWarnings(false);
@@ -663,24 +819,31 @@ export default function Index() {
     setPendingDraft(null);
     setIsFromDraft(false);
 
-    const result = parsePOFileWithDiagnostics(EXAMPLE_PO_CONTENT, EXAMPLE_PO_FILENAME);
+    try {
+      const preferredTargetLanguage = getDeviceExampleTargetLanguage();
+      const exampleContent =
+        (await fetchExamplePoFromWordPress(preferredTargetLanguage)) ?? EXAMPLE_PO_CONTENT;
+      const result = parsePOFileWithDiagnostics(exampleContent, EXAMPLE_PO_FILENAME);
 
-    if (!result.success || !result.file) {
-      setErrors(result.errors);
-      return;
-    }
+      if (!result.success || !result.file) {
+        setErrors(result.errors);
+        return;
+      }
 
-    if (result.warnings.length > 0) {
-      setWarnings(result.warnings);
-      setShowWarnings(true);
-    }
+      if (result.warnings.length > 0) {
+        setWarnings(result.warnings);
+        setShowWarnings(true);
+      }
 
-    loadFile(result.file);
+      loadFile(result.file);
 
-    const detected = detectPluginSlug(result.file.header, EXAMPLE_PO_FILENAME);
-    if (detected) {
-      useSourceStore.getState().setAutoDetectedSlug(detected.slug, detected.version);
-      debugLog('[Source] Auto-detected plugin from example:', detected.slug, detected.version);
+      const detected = detectPluginSlug(result.file.header, EXAMPLE_PO_FILENAME);
+      if (detected) {
+        useSourceStore.getState().setAutoDetectedSlug(detected.slug, detected.version);
+        debugLog('[Source] Auto-detected plugin from example:', detected.slug, detected.version);
+      }
+    } finally {
+      setIsLoadingExample(false);
     }
   }, [loadFile]);
 
@@ -933,6 +1096,8 @@ export default function Index() {
     setPendingDraft(null);
     setIsFromDraft(false);
     setLastAutoSave(null);
+    setTranslateSourceLang(undefined);
+    setTranslateTargetLang(undefined);
   }, [clearEditor, filename]);
 
   /**
@@ -1174,18 +1339,6 @@ export default function Index() {
                     )}
                   </FileButton>
                 </motion.div>
-
-                <Tooltip label="Load a small example WordPress plugin PO file (Hello Dolly)">
-                  <motion.div {...buttonStates}>
-                    <Button
-                      variant="default"
-                      leftSection={<FileUp size={16} />}
-                      onClick={handleLoadExamplePo}
-                    >
-                      Load example PO
-                    </Button>
-                  </motion.div>
-                </Tooltip>
 
                 <AnimatePresence>
                   {filename && (
@@ -1566,6 +1719,21 @@ export default function Index() {
                       .json
                     </Badge>
                   </Group>
+                  <Tooltip label="Load a small example WordPress plugin PO file (Hello Dolly)">
+                    <motion.div {...buttonStates}>
+                      <Button
+                        variant="default"
+                        leftSection={<FileUp size={16} />}
+                        loading={isLoadingExample}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          void handleLoadExamplePo();
+                        }}
+                      >
+                        Load example PO
+                      </Button>
+                    </motion.div>
+                  </Tooltip>
                 </Stack>
               </Paper>
             </MotionDiv>
