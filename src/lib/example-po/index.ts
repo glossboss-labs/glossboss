@@ -212,7 +212,7 @@ export async function fetchExamplePoFromWordPress(
 
   for (const url of buildExamplePoWordPressUrls(targetLanguage)) {
     const controller = new AbortController();
-    const timeoutId = window.setTimeout(() => controller.abort(), EXAMPLE_FETCH_TIMEOUT_MS);
+    const timeoutId = setTimeout(() => controller.abort(), EXAMPLE_FETCH_TIMEOUT_MS);
 
     try {
       const response = await fetchImpl(url, {
@@ -236,7 +236,7 @@ export async function fetchExamplePoFromWordPress(
     } catch {
       // Fall through to the next candidate URL and eventually use the bundled example.
     } finally {
-      window.clearTimeout(timeoutId);
+      clearTimeout(timeoutId);
     }
   }
 
@@ -253,11 +253,8 @@ function normalizePoLanguage(languageHeader?: string | null): string | null {
     return null;
   }
 
-  const normalized = languageHeader
-    .trim()
-    .replaceAll('-', '_')
-    .replace(/[^A-Za-z0-9_]/g, '');
-  return normalized || null;
+  const normalized = languageHeader.trim().replaceAll('-', '_');
+  return /^[a-z]{2,3}(?:_[A-Z]{2,4})?$/.test(normalized) ? normalized : null;
 }
 
 function mapTargetLanguageToPoLanguage(targetLanguage?: TargetLanguage | null): string | null {
