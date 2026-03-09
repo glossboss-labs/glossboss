@@ -102,22 +102,27 @@ function renameInSourceFiles(renames: Rename[]): number {
       const newDouble = escapeForDoubleQuote(newStr);
 
       // Single-quoted: t('old') or msgid('old')
-      const singlePattern = new RegExp(`(?<=(?:^|\\W)(?:t|msgid)\\(\\s*)('${oldSingle}')`, 'g');
-      const singleResult = content.replace(singlePattern, `'${newSingle}'`);
-      if (singleResult !== content) {
-        const count = (content.match(singlePattern) || []).length;
-        totalReplacements += count;
-        content = singleResult;
+      // Use capturing group instead of lookbehind (variable-length lookbehinds aren't portable)
+      const singlePattern = new RegExp(`((?:^|\\W)(?:t|msgid)\\(\\s*)'${oldSingle}'`, 'gm');
+      const singleMatches = content.match(singlePattern);
+      if (singleMatches && singleMatches.length > 0) {
+        totalReplacements += singleMatches.length;
+        content = content.replace(
+          singlePattern,
+          (_match: string, prefix: string) => `${prefix}'${newSingle}'`,
+        );
         changed = true;
       }
 
       // Double-quoted: t("old") or msgid("old")
-      const doublePattern = new RegExp(`(?<=(?:^|\\W)(?:t|msgid)\\(\\s*)("${oldDouble}")`, 'g');
-      const doubleResult = content.replace(doublePattern, `"${newDouble}"`);
-      if (doubleResult !== content) {
-        const count = (content.match(doublePattern) || []).length;
-        totalReplacements += count;
-        content = doubleResult;
+      const doublePattern = new RegExp(`((?:^|\\W)(?:t|msgid)\\(\\s*)"${oldDouble}"`, 'gm');
+      const doubleMatches = content.match(doublePattern);
+      if (doubleMatches && doubleMatches.length > 0) {
+        totalReplacements += doubleMatches.length;
+        content = content.replace(
+          doublePattern,
+          (_match: string, prefix: string) => `${prefix}"${newDouble}"`,
+        );
         changed = true;
       }
     }
