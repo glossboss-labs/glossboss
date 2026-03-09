@@ -3,8 +3,9 @@ type TurnstileWidgetConfig = {
   size: 'compact' | 'flexible' | 'normal';
   appearance: 'execute';
   execution: 'execute';
+  retry: 'auto' | 'never';
   callback: (token: string) => void;
-  'error-callback': () => void;
+  'error-callback': (errorCode?: string | number) => boolean;
   'expired-callback': () => void;
 };
 
@@ -31,6 +32,25 @@ const SCRIPT_ID = 'cf-turnstile-script';
 const TURNSTILE_SCRIPT_URL =
   'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
 const CHALLENGE_TIMEOUT_MS = 20000;
+
+function describeTurnstileError(errorCode?: string | number): string {
+  const normalizedCode = String(errorCode ?? '').trim();
+
+  if (normalizedCode.startsWith('110200')) {
+    return `Feedback verification is not authorized for this hostname (${window.location.hostname}). Update the Turnstile widget hostname allowlist or use the correct site key.`;
+  }
+
+  if (
+    normalizedCode.startsWith('110100') ||
+    normalizedCode.startsWith('110110') ||
+    normalizedCode.startsWith('400020') ||
+    normalizedCode.startsWith('400070')
+  ) {
+    return 'Feedback verification is misconfigured. Check the configured Turnstile site key.';
+  }
+
+  return 'Verification failed. Please try again.';
+}
 
 function loadTurnstileScript(): Promise<void> {
   if (window.turnstile) {
@@ -96,15 +116,17 @@ export async function createTurnstileController(
     size: 'normal',
     appearance: 'execute',
     execution: 'execute',
+    retry: 'never',
     callback: (token: string) => {
       if (!pending) return;
       window.clearTimeout(pending.timeoutId);
       pending.resolve(token);
       pending = undefined;
     },
-    'error-callback': () => {
+    'error-callback': (errorCode?: string | number) => {
       window.turnstile?.reset(widgetId);
-      rejectPending('Verification failed. Please try again.');
+      rejectPending(describeTurnstileError(errorCode));
+      return true;
     },
     'expired-callback': () => {
       window.turnstile?.reset(widgetId);

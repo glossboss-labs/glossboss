@@ -29,6 +29,7 @@ describe('createTurnstileController', () => {
         size: 'normal',
         appearance: 'execute',
         execution: 'execute',
+        retry: 'never',
       }),
     );
   });
@@ -99,5 +100,34 @@ describe('createTurnstileController', () => {
 
     await expect(tokenPromise).rejects.toThrow('Verification failed. Please try again.');
     expect(reset).toHaveBeenCalledWith('widget-id');
+  });
+
+  it('surfaces the unauthorized hostname error for code 110200', async () => {
+    let config:
+      | {
+          callback: (token: string) => void;
+          'error-callback': (errorCode?: string | number) => boolean;
+          'expired-callback': () => void;
+        }
+      | undefined;
+
+    window.turnstile = {
+      render: vi.fn((_container, options) => {
+        config = options;
+        return 'widget-id';
+      }),
+      execute: vi.fn(),
+      reset: vi.fn(),
+      remove: vi.fn(),
+    };
+
+    const controller = await createTurnstileController(document.createElement('div'), 'site-key');
+    const tokenPromise = controller.executeChallenge();
+
+    expect(config?.['error-callback']('110200')).toBe(true);
+
+    await expect(tokenPromise).rejects.toThrow(
+      `Feedback verification is not authorized for this hostname (${window.location.hostname}). Update the Turnstile widget hostname allowlist or use the correct site key.`,
+    );
   });
 });
