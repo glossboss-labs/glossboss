@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { MantineProvider, createTheme } from '@mantine/core';
+import { TranslationProvider } from '@/lib/app-language';
 
 // Import Mantine styles
 import '@mantine/core/styles.css';
@@ -55,7 +56,7 @@ const theme = createTheme({
 export function AppProviders({ children }: { children: ReactNode }) {
   return (
     <MantineProvider theme={theme} defaultColorScheme="auto">
-      {children}
+      <TranslationProvider>{children}</TranslationProvider>
     </MantineProvider>
   );
 }
