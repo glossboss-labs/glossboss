@@ -59,6 +59,7 @@ bun run build
 bun run preview
 bun run i18n:extract
 bun run i18n:add-lang <code>
+bun run i18n:sync-en
 ```
 
 ## Translating GlossBoss
