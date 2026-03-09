@@ -86,6 +86,8 @@ msgstr ""
     expect(buildExamplePoFilename('en-GB')).toBe('hello-dolly-en_GB.po');
     // Malformed locale headers should fall back instead of being silently rewritten.
     expect(buildExamplePoFilename('de DE')).toBe('hello-dolly-nl_NL.po');
+    expect(buildExamplePoFilename('@@')).toBe('hello-dolly-nl_NL.po');
+    expect(buildExamplePoFilename('zh_HANS')).toBe('hello-dolly-nl_NL.po');
     expect(buildExamplePoFilename(undefined, 'PT-BR')).toBe('hello-dolly-pt_BR.po');
     expect(getBundledExamplePo().filename).toBe('hello-dolly-nl_NL.po');
   });

@@ -258,8 +258,8 @@ function normalizePoLanguage(languageHeader?: string | null): string | null {
   }
 
   const normalized = languageHeader.trim().replaceAll('-', '_');
-  // Accept plain PO locales like `ja` plus region variants such as `de_DE`, `pt_BR`, or `zh_CN`.
-  return /^[a-z]{2,3}(?:_[A-Z]{2,4})?$/.test(normalized) ? normalized : null;
+  // Accept plain PO locales like `ja` plus language-country variants such as `de_DE`, `pt_BR`, or `zh_CN`.
+  return /^[a-z]{2,3}(?:_[A-Z]{2})?$/.test(normalized) ? normalized : null;
 }
 
 function mapTargetLanguageToPoLanguage(targetLanguage?: TargetLanguage | null): string | null {
