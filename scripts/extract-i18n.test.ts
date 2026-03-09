@@ -20,7 +20,7 @@ describe('extractMessagesFromSource', () => {
     expect(messages.get("escaped 'quote'")).toEqual(['test.tsx:1']);
   });
 
-  it('extracts msgid and ignores values argument', () => {
+  it('extracts first argument and ignores additional arguments', () => {
     const source = `t('msg', { values: { x: 1 } })`;
     const { messages } = extractMessagesFromSource(source, 'test.tsx');
     expect(messages.get('msg')).toEqual(['test.tsx:1']);
@@ -96,5 +96,55 @@ t('hello');
     const source = `<Text>{t('Click here')}</Text>`;
     const { messages } = extractMessagesFromSource(source, 'test.tsx');
     expect(messages.get('Click here')).toEqual(['test.tsx:1']);
+  });
+
+  it('decodes \\r escape sequences', () => {
+    const source = `t('line\\r\\n')`;
+    const { messages } = extractMessagesFromSource(source, 'test.tsx');
+    expect(messages.get('line\r\n')).toEqual(['test.tsx:1']);
+  });
+
+  it('decodes \\uXXXX escape sequences', () => {
+    const source = `t('ellipsis\\u2026')`;
+    const { messages } = extractMessagesFromSource(source, 'test.tsx');
+    expect(messages.get('ellipsis\u2026')).toEqual(['test.tsx:1']);
+  });
+
+  it('decodes \\u{XXXX} escape sequences', () => {
+    const source = `t('rocket\\u{1F680}')`;
+    const { messages } = extractMessagesFromSource(source, 'test.tsx');
+    expect(messages.get('rocket\u{1F680}')).toEqual(['test.tsx:1']);
+  });
+
+  it('decodes \\xNN escape sequences', () => {
+    const source = `t('nbsp\\xA0here')`;
+    const { messages } = extractMessagesFromSource(source, 'test.tsx');
+    expect(messages.get('nbsp\xA0here')).toEqual(['test.tsx:1']);
+  });
+
+  it('handles escaped line continuations', () => {
+    const source = `t('line\\\ncontinued')`;
+    const { messages } = extractMessagesFromSource(source, 'test.tsx');
+    expect(messages.get('linecontinued')).toEqual(['test.tsx:1']);
+  });
+
+  it('extracts msgid() calls', () => {
+    const source = `const label = msgid('Confirm');`;
+    const { messages } = extractMessagesFromSource(source, 'test.tsx');
+    expect(messages.get('Confirm')).toEqual(['test.tsx:1']);
+  });
+
+  it('includes callee name in dynamic call warnings', () => {
+    const source = `msgid(variable)`;
+    const { warnings } = extractMessagesFromSource(source, 'test.tsx');
+    expect(warnings).toHaveLength(1);
+    expect(warnings[0].message).toMatch(/Dynamic msgid\(\)/);
+  });
+
+  it('includes callee name in template literal warnings', () => {
+    const source = 'msgid(`template`)';
+    const { warnings } = extractMessagesFromSource(source, 'test.tsx');
+    expect(warnings).toHaveLength(1);
+    expect(warnings[0].message).toMatch(/Template literal in msgid\(\)/);
   });
 });

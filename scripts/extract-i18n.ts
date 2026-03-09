@@ -7,7 +7,7 @@
  */
 
 import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
-import { resolve, relative } from 'node:path';
+import { resolve, relative, sep, basename } from 'node:path';
 import { parsePOFile } from '../src/lib/po/parser';
 import { serializePOFile } from '../src/lib/po/serializer';
 import { mergePotIntoPo } from '../src/lib/po/merge';
@@ -69,7 +69,53 @@ function parseQuotedString(source: string, pos: number): { value: string; end: n
       else if (c === '\\') str += '\\';
       else if (c === 'n') str += '\n';
       else if (c === 't') str += '\t';
-      else str += '\\' + c;
+      else if (c === 'r') str += '\r';
+      else if (c === '0') str += '\0';
+      else if (c === 'u') {
+        if (i + 1 < source.length && source[i + 1] === '{') {
+          // \u{XXXX} form
+          const closeBrace = source.indexOf('}', i + 2);
+          if (closeBrace !== -1) {
+            const hex = source.slice(i + 2, closeBrace);
+            const cp = parseInt(hex, 16);
+            str += isNaN(cp) ? '\\u{' + hex + '}' : String.fromCodePoint(cp);
+            i = closeBrace;
+          } else {
+            str += '\\u';
+          }
+        } else if (i + 4 < source.length) {
+          // \uXXXX form
+          const hex = source.slice(i + 1, i + 5);
+          const cp = parseInt(hex, 16);
+          if (/^[0-9a-fA-F]{4}$/.test(hex)) {
+            str += String.fromCharCode(cp);
+            i += 4;
+          } else {
+            str += '\\u';
+          }
+        } else {
+          str += '\\u';
+        }
+      } else if (c === 'x') {
+        if (i + 2 < source.length) {
+          const hex = source.slice(i + 1, i + 3);
+          if (/^[0-9a-fA-F]{2}$/.test(hex)) {
+            str += String.fromCharCode(parseInt(hex, 16));
+            i += 2;
+          } else {
+            str += '\\x';
+          }
+        } else {
+          str += '\\x';
+        }
+      } else if (c === '\n') {
+        // Escaped line continuation — skip
+      } else if (c === '\r') {
+        // Escaped line continuation — skip \r and optional \n
+        if (i + 1 < source.length && source[i + 1] === '\n') i++;
+      } else {
+        str += '\\' + c;
+      }
       escaped = false;
     } else if (c === '\\') {
       escaped = true;
@@ -119,12 +165,15 @@ export function extractMessagesFromSource(
 
     const ch = source[argStart];
 
+    // Extract the callee name for diagnostics
+    const callee = match[0].slice(0, -1); // strip trailing '('
+
     // Template literal — warn and skip
     if (ch === '`') {
       warnings.push({
         file: filename,
         line: callLine,
-        message: 'Template literal in t() — cannot extract statically',
+        message: `Template literal in ${callee}() — cannot extract statically`,
       });
       continue;
     }
@@ -135,7 +184,7 @@ export function extractMessagesFromSource(
         warnings.push({
           file: filename,
           line: callLine,
-          message: 'Dynamic t() call — cannot extract statically',
+          message: `Dynamic ${callee}() call — cannot extract statically`,
         });
       }
       continue;
@@ -229,7 +278,7 @@ interface LangMergeStats {
 
 function mergeIntoPo(poPath: string, potEntries: POEntry[], lang: string): LangMergeStats {
   const raw = readFileSync(poPath, 'utf-8');
-  const filename = poPath.split('/').pop()!;
+  const filename = basename(poPath);
   const poFile = parsePOFile(raw, filename);
 
   const result = mergePotIntoPo(poFile.entries, potEntries);
@@ -281,7 +330,7 @@ function main() {
   const allWarnings: ExtractionWarning[] = [];
 
   for (const filePath of files) {
-    const relPath = relative(rootDir, filePath);
+    const relPath = relative(rootDir, filePath).split(sep).join('/');
     const source = readFileSync(filePath, 'utf-8');
     const { messages, warnings } = extractMessagesFromSource(source, relPath);
 

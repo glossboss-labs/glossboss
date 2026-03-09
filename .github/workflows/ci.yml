@@ -102,7 +102,29 @@ jobs:
           for po in src/lib/app-language/locales/app.*.po; do
             lang=$(echo "$po" | sed 's/.*app\.\(.*\)\.po/\1/')
             if [ "$lang" = "en" ]; then continue; fi
-            count=$(grep -c '^msgstr ""$' "$po" || true)
+            count=$(awk '
+              /^msgid "/ {
+                msgid = $0
+                sub(/^msgid "/, "", msgid)
+                sub(/"$/, "", msgid)
+                # Start accumulating for wrapped msgid
+                if (msgid == "") { in_msgid = 1; msgid = ""; next }
+                in_msgid = 0
+                next
+              }
+              in_msgid && /^"/ {
+                line = $0
+                sub(/^"/, "", line)
+                sub(/"$/, "", line)
+                msgid = msgid line
+                next
+              }
+              in_msgid { in_msgid = 0 }
+              /^msgstr ""$/ && msgid != "" { count++ }
+              /^msgstr ".+"/ { msgid = "" }
+              /^msgstr ""$/ { msgid = "" }
+              END { print count + 0 }
+            ' "$po")
             if [ "$count" -gt 0 ]; then
               echo "::warning::$po has $count untranslated string(s)"
             fi

@@ -37,7 +37,21 @@ jobs:
 
             # Collect untranslated msgids (msgstr "" that follow a non-empty msgid)
             untranslated=$(awk '
-              /^msgid "."/ { msgid = $0; sub(/^msgid "/, "", msgid); sub(/"$/, "", msgid); next }
+              /^msgid "/ {
+                msgid = $0
+                sub(/^msgid "/, "", msgid)
+                sub(/"$/, "", msgid)
+                in_msgid = 1
+                next
+              }
+              in_msgid && /^"/ {
+                line = $0
+                sub(/^"/, "", line)
+                sub(/"$/, "", line)
+                msgid = msgid line
+                next
+              }
+              in_msgid { in_msgid = 0 }
               /^msgstr ""$/ && msgid != "" { print "- [ ] `" msgid "`"; msgid = "" }
               /^msgstr ".+"/ { msgid = "" }
             ' "$po")
