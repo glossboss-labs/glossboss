@@ -69,6 +69,11 @@ import type { Glossary } from '@/lib/glossary/types';
 import { batchAnalyzeTranslations, syncGlossaryToDeepL } from '@/lib/glossary';
 import { debugError, debugLog } from '@/lib/debug';
 import {
+  fetchExamplePoFromWordPress,
+  getBundledExamplePo,
+  getDeviceExampleTargetLanguage,
+} from '@/lib/example-po';
+import {
   saveDraft,
   loadDraft,
   deleteDraft,
@@ -81,34 +86,6 @@ const appIcon = '/icon.svg';
 
 const MotionDiv = motion.div;
 const DEV_BRANCH_CHIP_STORAGE_KEY = 'glossboss-dev-branch-chip-enabled';
-const EXAMPLE_PO_FILENAME = 'hello-dolly-nl_NL.po';
-const EXAMPLE_PO_CONTENT = `
-msgid ""
-msgstr ""
-"Project-Id-Version: Hello Dolly 1.7.2\\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/hello-dolly/\\n"
-"POT-Creation-Date: 2025-01-01 00:00+0000\\n"
-"PO-Revision-Date: 2025-01-01 00:00+0000\\n"
-"Last-Translator: GlossBoss Example\\n"
-"Language-Team: Dutch\\n"
-"Language: nl_NL\\n"
-"MIME-Version: 1.0\\n"
-"Content-Type: text/plain; charset=UTF-8\\n"
-"Content-Transfer-Encoding: 8bit\\n"
-"X-Domain: hello-dolly\\n"
-
-#: hello.php:18
-msgid "Hello Dolly"
-msgstr "Hello Dolly"
-
-#: hello.php:47
-msgid "This is not just a plugin, it symbolizes the hope and enthusiasm of an entire generation summed up in two words sung most famously by Louis Armstrong."
-msgstr "Dit is niet zomaar een plugin; het symboliseert de hoop en het enthousiasme van een hele generatie, samengevat in twee woorden die vooral bekend werden door Louis Armstrong."
-
-#: hello.php:84
-msgid "Donate"
-msgstr "Doneren"
-`.trim();
 
 /** Encoding info for display */
 interface EncodingInfo {
@@ -334,6 +311,7 @@ export default function Index() {
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [feedbackSuccess, setFeedbackSuccess] = useState<FeedbackInfo | null>(null);
   const [feedbackError, setFeedbackError] = useState<string | null>(null);
+  const [isLoadingExample, setIsLoadingExample] = useState(false);
   const [translateSourceLang, setTranslateSourceLang] = useState<SourceLanguage | undefined>(
     undefined,
   );
@@ -654,7 +632,8 @@ export default function Index() {
     [loadFile],
   );
 
-  const handleLoadExamplePo = useCallback(() => {
+  const handleLoadExamplePo = useCallback(async () => {
+    setIsLoadingExample(true);
     setErrors([]);
     setWarnings([]);
     setShowWarnings(false);
@@ -663,24 +642,31 @@ export default function Index() {
     setPendingDraft(null);
     setIsFromDraft(false);
 
-    const result = parsePOFileWithDiagnostics(EXAMPLE_PO_CONTENT, EXAMPLE_PO_FILENAME);
+    try {
+      const preferredTargetLanguage = getDeviceExampleTargetLanguage();
+      const examplePo =
+        (await fetchExamplePoFromWordPress(preferredTargetLanguage)) ?? getBundledExamplePo();
+      const result = parsePOFileWithDiagnostics(examplePo.content, examplePo.filename);
 
-    if (!result.success || !result.file) {
-      setErrors(result.errors);
-      return;
-    }
+      if (!result.success || !result.file) {
+        setErrors(result.errors);
+        return;
+      }
 
-    if (result.warnings.length > 0) {
-      setWarnings(result.warnings);
-      setShowWarnings(true);
-    }
+      if (result.warnings.length > 0) {
+        setWarnings(result.warnings);
+        setShowWarnings(true);
+      }
 
-    loadFile(result.file);
+      loadFile(result.file);
 
-    const detected = detectPluginSlug(result.file.header, EXAMPLE_PO_FILENAME);
-    if (detected) {
-      useSourceStore.getState().setAutoDetectedSlug(detected.slug, detected.version);
-      debugLog('[Source] Auto-detected plugin from example:', detected.slug, detected.version);
+      const detected = detectPluginSlug(result.file.header, result.file.filename);
+      if (detected) {
+        useSourceStore.getState().setAutoDetectedSlug(detected.slug, detected.version);
+        debugLog('[Source] Auto-detected plugin from example:', detected.slug, detected.version);
+      }
+    } finally {
+      setIsLoadingExample(false);
     }
   }, [loadFile]);
 
@@ -933,6 +919,9 @@ export default function Index() {
     setPendingDraft(null);
     setIsFromDraft(false);
     setLastAutoSave(null);
+    // Avoid carrying the example-derived language selection into the next file after a reset.
+    setTranslateSourceLang(undefined);
+    setTranslateTargetLang(undefined);
   }, [clearEditor, filename]);
 
   /**
@@ -1174,18 +1163,6 @@ export default function Index() {
                     )}
                   </FileButton>
                 </motion.div>
-
-                <Tooltip label="Load a small example WordPress plugin PO file (Hello Dolly)">
-                  <motion.div {...buttonStates}>
-                    <Button
-                      variant="default"
-                      leftSection={<FileUp size={16} />}
-                      onClick={handleLoadExamplePo}
-                    >
-                      Load example PO
-                    </Button>
-                  </motion.div>
-                </Tooltip>
 
                 <AnimatePresence>
                   {filename && (
@@ -1566,6 +1543,21 @@ export default function Index() {
                       .json
                     </Badge>
                   </Group>
+                  <Tooltip label="Load a small example WordPress plugin PO file (Hello Dolly)">
+                    <motion.div {...buttonStates}>
+                      <Button
+                        variant="default"
+                        leftSection={<FileUp size={16} />}
+                        loading={isLoadingExample}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          void handleLoadExamplePo();
+                        }}
+                      >
+                        Load example PO
+                      </Button>
+                    </motion.div>
+                  </Tooltip>
                 </Stack>
               </Paper>
             </MotionDiv>
