@@ -2,45 +2,33 @@ import '@testing-library/jest-dom/vitest';
 import { beforeEach } from 'vitest';
 
 function createStorageMock(): Storage {
-  const storage = Object.create(null) as Record<string, string>;
+  const data = Object.create(null) as Record<string, string>;
 
-  Object.defineProperties(storage, {
-    length: {
-      get: () => Object.keys(storage).length,
-      enumerable: false,
+  const storage = {
+    get length(): number {
+      return Object.keys(data).length;
     },
-    clear: {
-      value: () => {
-        for (const key of Object.keys(storage)) {
-          delete storage[key];
-        }
-      },
-      enumerable: false,
+    clear(): void {
+      for (const key of Object.keys(data)) {
+        delete data[key];
+      }
     },
-    getItem: {
-      value: (key: string) =>
-        Object.prototype.hasOwnProperty.call(storage, key) ? storage[key] : null,
-      enumerable: false,
+    getItem(key: string): string | null {
+      return Object.prototype.hasOwnProperty.call(data, key) ? data[key] : null;
     },
-    key: {
-      value: (index: number) => Object.keys(storage)[index] ?? null,
-      enumerable: false,
+    key(index: number): string | null {
+      const keys = Object.keys(data);
+      return keys[index] ?? null;
     },
-    removeItem: {
-      value: (key: string) => {
-        delete storage[key];
-      },
-      enumerable: false,
+    removeItem(key: string): void {
+      delete data[key];
     },
-    setItem: {
-      value: (key: string, value: string) => {
-        storage[key] = String(value);
-      },
-      enumerable: false,
+    setItem(key: string, value: string): void {
+      data[key] = String(value);
     },
-  });
+  } as Storage;
 
-  return storage as Storage;
+  return storage;
 }
 
 function installStorageMock(key: 'localStorage' | 'sessionStorage', storage: Storage): void {
