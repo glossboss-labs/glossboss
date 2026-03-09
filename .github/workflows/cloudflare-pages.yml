@@ -4,19 +4,24 @@ on:
   push:
     branches:
       - main
+  workflow_run:
+    workflows: ["Cloudflare Preview Build"]
+    types:
+      - completed
   workflow_dispatch:
-
-concurrency:
-  group: cloudflare-pages-${{ github.ref }}
-  cancel-in-progress: true
 
 permissions:
   contents: read
 
 jobs:
   deploy:
+    name: Deploy to Production
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    concurrency:
+      group: cloudflare-pages-production
+      cancel-in-progress: true
 
     steps:
       - name: Checkout
@@ -53,3 +58,91 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: bunx wrangler pages deploy dist --project-name glossboss --branch "${{ github.ref_name }}"
+
+  preview-deploy:
+    name: Deploy PR Preview
+    if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: write
+    concurrency:
+      group: cloudflare-pages-preview-${{ github.event.workflow_run.head_sha }}
+      cancel-in-progress: true
+
+    steps:
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Download preview artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: cloudflare-preview-dist
+          path: dist/
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+
+      - name: Read PR metadata
+        id: pr
+        run: |
+          echo "number=$(cat dist/.pr_number)" >> "$GITHUB_OUTPUT"
+          echo "branch=$(cat dist/.pr_branch)" >> "$GITHUB_OUTPUT"
+          rm dist/.pr_number dist/.pr_branch
+
+      - name: Deploy to Cloudflare Pages
+        id: deploy
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          PR_BRANCH: ${{ steps.pr.outputs.branch }}
+        run: |
+          WRANGLER_JSON=$(bunx wrangler pages deploy dist --project-name glossboss --branch "$PR_BRANCH" --json)
+          if [ $? -ne 0 ]; then
+            echo "::error::Wrangler deployment failed"
+            exit 1
+          fi
+          PREVIEW_URL=$(echo "$WRANGLER_JSON" | jq -r '.url // empty')
+          echo "url=$PREVIEW_URL" >> "$GITHUB_OUTPUT"
+
+      - name: Post preview URL comment
+        uses: actions/github-script@v7
+        env:
+          PR_NUMBER: ${{ steps.pr.outputs.number }}
+          PREVIEW_URL: ${{ steps.deploy.outputs.url }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const prNumber = parseInt(process.env.PR_NUMBER);
+            const previewUrl = process.env.PREVIEW_URL;
+            const marker = '<!-- cloudflare-pages-preview-link -->';
+            const urlLine = previewUrl
+              ? `[${previewUrl}](${previewUrl})`
+              : '_Preview URL not available._';
+            const body = `${marker}\n🌐 **Cloudflare Pages Preview**\n\n${urlLine}`;
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+            });
+
+            const existing = comments.find(c => c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body,
+              });
+            }

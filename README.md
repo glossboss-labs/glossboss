@@ -65,9 +65,17 @@ bun run preview
 
 The frontend is built with Vite and deployed to Cloudflare Pages.
 
-GitHub Actions in `.github/workflows/cloudflare-pages.yml` deploy `main` pushes to
-production. Pull-request previews are served automatically by Cloudflare Pages' native
-Git integration — no GitHub Actions secrets are exposed to PR builds.
+GitHub Actions handles all deployments in two workflows:
+
+- **Production** (`.github/workflows/cloudflare-pages.yml`): deploys `main` pushes to
+  production using `CLOUDFLARE_API_TOKEN`.
+- **PR previews** (two-stage, secret-safe):
+  1. `.github/workflows/cloudflare-preview-build.yml` runs on `pull_request`, builds
+     the app with the public `VITE_*` env vars, and uploads the built artifact. The
+     Cloudflare deploy token is never available to PR code.
+  2. `.github/workflows/cloudflare-pages.yml` picks up the artifact via `workflow_run`
+     (runs in the trusted base-branch context), deploys it as a Cloudflare Pages preview
+     branch, and posts the preview URL as a comment on the PR.
 
 Required GitHub repository secrets for the frontend build:
 
