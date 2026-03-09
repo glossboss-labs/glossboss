@@ -89,13 +89,13 @@ msgstr ""
   });
 
   it('caches successful WordPress example fetches until cleared', async () => {
-    const fetchMock = vi.fn().mockImplementation(
-      async () =>
-        new Response(WORDPRESS_EXAMPLE_PO, {
-          status: 200,
-          headers: { 'Content-Type': 'text/plain; charset=utf-8' },
-        }),
-    );
+    const fetchMock = vi.fn().mockImplementation(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 10));
+      return new Response(WORDPRESS_EXAMPLE_PO, {
+        status: 200,
+        headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+      });
+    });
 
     const first = await fetchExamplePoFromWordPress('DE', fetchMock);
     const second = await fetchExamplePoFromWordPress('DE', fetchMock);

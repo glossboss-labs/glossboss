@@ -32,6 +32,7 @@ msgstr "Doneren"
 
 const EXAMPLE_FETCH_TIMEOUT_MS = 8000;
 const EXAMPLE_PO_CACHE = new Map<string, ExamplePoAsset>();
+const DEFAULT_EXAMPLE_NAVIGATOR = typeof navigator !== 'undefined' ? navigator : undefined;
 const EXAMPLE_TARGET_LANGUAGE_CANDIDATES = [
   'BG',
   'CS',
@@ -65,6 +66,14 @@ const EXAMPLE_TARGET_LANGUAGE_CANDIDATES = [
   'UK',
   'ZH',
 ] as const satisfies readonly TargetLanguage[];
+const TARGET_LANGUAGE_TO_PO_LANGUAGE: Partial<Record<TargetLanguage, string>> = {
+  DE: 'de_DE',
+  'EN-GB': 'en_GB',
+  'EN-US': 'en_US',
+  NL: 'nl_NL',
+  'PT-BR': 'pt_BR',
+  'PT-PT': 'pt_PT',
+};
 
 export interface ExamplePoAsset {
   content: string;
@@ -86,10 +95,7 @@ export function getBundledExamplePo(): ExamplePoAsset {
 }
 
 export function getDeviceExampleTargetLanguage(
-  navigatorLike: Pick<Navigator, 'language' | 'languages'> | undefined = typeof navigator !==
-  'undefined'
-    ? navigator
-    : undefined,
+  navigatorLike: Pick<Navigator, 'language' | 'languages'> | undefined = DEFAULT_EXAMPLE_NAVIGATOR,
 ): TargetLanguage | null {
   if (!navigatorLike) {
     return null;
@@ -259,18 +265,5 @@ function mapTargetLanguageToPoLanguage(targetLanguage?: TargetLanguage | null): 
     return null;
   }
 
-  switch (targetLanguage) {
-    case 'EN-GB':
-      return 'en_GB';
-    case 'EN-US':
-      return 'en_US';
-    case 'PT-BR':
-      return 'pt_BR';
-    case 'PT-PT':
-      return 'pt_PT';
-    default: {
-      const [baseLanguage] = targetLanguage.split('-');
-      return `${baseLanguage.toLowerCase()}_${baseLanguage.toUpperCase()}`;
-    }
-  }
+  return TARGET_LANGUAGE_TO_PO_LANGUAGE[targetLanguage] ?? null;
 }
