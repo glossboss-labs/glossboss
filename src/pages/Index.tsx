@@ -708,12 +708,12 @@ export default function Index() {
       setPendingDraft(null);
       setIsFromDraft(false);
 
+      let timeout: ReturnType<typeof setTimeout> | undefined;
       try {
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 10_000);
+        timeout = setTimeout(() => controller.abort(), 10_000);
 
         const response = await fetch(url, { signal: controller.signal });
-        clearTimeout(timeout);
 
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -771,6 +771,7 @@ export default function Index() {
 
         setErrors([{ severity: 'error', code: 'INVALID_SYNTAX', message }]);
       } finally {
+        clearTimeout(timeout);
         setIsLoadingUrl(false);
       }
     },
@@ -1686,10 +1687,11 @@ export default function Index() {
                   >
                     <TextInput
                       placeholder={t('Paste a .po file URL')}
+                      aria-label={t('PO file URL')}
                       value={urlInput}
                       onChange={(e) => setUrlInput(e.currentTarget.value)}
                       onKeyDown={(e: KeyboardEvent) => {
-                        if (e.key === 'Enter' && urlInput.trim()) {
+                        if (e.key === 'Enter' && urlInput.trim() && !isLoadingUrl) {
                           void handleLoadFromUrl(urlInput.trim());
                         }
                       }}
@@ -1700,7 +1702,7 @@ export default function Index() {
                     <Button
                       onClick={() => void handleLoadFromUrl(urlInput.trim())}
                       loading={isLoadingUrl}
-                      disabled={!urlInput.trim()}
+                      disabled={!urlInput.trim() || isLoadingUrl}
                     >
                       {t('Load')}
                     </Button>

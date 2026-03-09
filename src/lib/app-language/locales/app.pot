@@ -21,7 +21,7 @@ msgstr ""
 msgid "Action"
 msgstr ""
 
-#: src/pages/Index.tsx:1428
+#: src/pages/Index.tsx:1429
 msgid "Actions"
 msgstr ""
 
@@ -33,7 +33,7 @@ msgstr ""
 msgid "Allow follow-up questions about this feedback"
 msgstr ""
 
-#: src/pages/Index.tsx:1582
+#: src/pages/Index.tsx:1583
 msgid "Auto-saved {age}"
 msgstr ""
 
@@ -62,15 +62,15 @@ msgstr ""
 msgid "Clear"
 msgstr ""
 
-#: src/pages/Index.tsx:1450
+#: src/pages/Index.tsx:1451
 msgid "Clear anyway"
 msgstr ""
 
-#: src/pages/Index.tsx:1434
+#: src/pages/Index.tsx:1435
 msgid "Clear editor"
 msgstr ""
 
-#: src/pages/Index.tsx:1447
+#: src/pages/Index.tsx:1448
 msgid "Clear editor?"
 msgstr ""
 
@@ -127,7 +127,7 @@ msgstr ""
 msgid "DeepL ready ({count} terms)"
 msgstr ""
 
-#: src/pages/Index.tsx:1604
+#: src/pages/Index.tsx:1605
 msgid "DeepL synced"
 msgstr ""
 
@@ -151,7 +151,7 @@ msgstr ""
 msgid "Development Mode Only"
 msgstr ""
 
-#: src/pages/Index.tsx:1565
+#: src/pages/Index.tsx:1566
 msgid "Discard and use fresh file"
 msgstr ""
 
@@ -163,29 +163,29 @@ msgstr ""
 msgid "Display"
 msgstr ""
 
-#: src/pages/Index.tsx:1319
+#: src/pages/Index.tsx:1320
 msgid "Download"
 msgstr ""
 
-#: src/pages/Index.tsx:1358
+#: src/pages/Index.tsx:1359
 msgid "Download as"
 msgstr ""
 
-#: src/pages/Index.tsx:1302
+#: src/pages/Index.tsx:1303
 msgid "Download as {format}"
 msgstr ""
 
-#: src/pages/Index.tsx:1665
+#: src/pages/Index.tsx:1666
 msgid ""
 "Drag and drop your translation file here, or click to browse. Your translati"
 "ons will be saved locally in your browser."
 msgstr ""
 
-#: src/pages/Index.tsx:1102
+#: src/pages/Index.tsx:1103
 msgid "Drop it like it's hot"
 msgstr ""
 
-#: src/pages/Index.tsx:1269
+#: src/pages/Index.tsx:1270
 msgid "Edit gettext translation files with DeepL integration"
 msgstr ""
 
@@ -217,7 +217,7 @@ msgstr ""
 msgid "Failed to load glossary"
 msgstr ""
 
-#: src/pages/Index.tsx:1475
+#: src/pages/Index.tsx:1476
 msgid "Failed to parse file"
 msgstr ""
 
@@ -229,7 +229,7 @@ msgstr ""
 msgid "Feature"
 msgstr ""
 
-#: src/pages/Index.tsx:1402
+#: src/pages/Index.tsx:1403
 msgid "Feedback"
 msgstr ""
 
@@ -237,11 +237,11 @@ msgstr ""
 msgid "Feedback could not be submitted at this time."
 msgstr ""
 
-#: src/pages/Index.tsx:1230
+#: src/pages/Index.tsx:1231
 msgid "Feedback failed"
 msgstr ""
 
-#: src/pages/Index.tsx:1187
+#: src/pages/Index.tsx:1188
 msgid "Feedback submitted"
 msgstr ""
 
@@ -253,7 +253,7 @@ msgstr ""
 msgid "File does not appear to be a valid WordPress glossary CSV."
 msgstr ""
 
-#: src/pages/Index.tsx:1124
+#: src/pages/Index.tsx:1125
 msgid "File downloaded"
 msgstr ""
 
@@ -277,7 +277,7 @@ msgstr ""
 msgid "Glossary"
 msgstr ""
 
-#: src/pages/Index.tsx:1597
+#: src/pages/Index.tsx:1598
 msgid "Glossary: {count} terms ({locale})"
 msgstr ""
 
@@ -310,7 +310,7 @@ msgstr ""
 msgid "Language"
 msgstr ""
 
-#: src/pages/Index.tsx:1762
+#: src/pages/Index.tsx:1764
 msgid "License"
 msgstr ""
 
@@ -318,7 +318,7 @@ msgstr ""
 msgid "Light mode"
 msgstr ""
 
-#: src/pages/Index.tsx:1482
+#: src/pages/Index.tsx:1483
 msgid "Line {line}"
 msgstr ""
 
@@ -326,7 +326,7 @@ msgstr ""
 msgid "List steps someone else can follow"
 msgstr ""
 
-#: src/pages/Index.tsx:1705
+#: src/pages/Index.tsx:1707
 msgid "Load"
 msgstr ""
 
@@ -334,11 +334,11 @@ msgstr ""
 msgid "Load Glossary"
 msgstr ""
 
-#: src/pages/Index.tsx:1713
+#: src/pages/Index.tsx:1715
 msgid "Load a small example WordPress plugin PO file (Hello Dolly)"
 msgstr ""
 
-#: src/pages/Index.tsx:1724
+#: src/pages/Index.tsx:1726
 msgid "Load example PO"
 msgstr ""
 
@@ -373,19 +373,23 @@ msgstr ""
 msgid "Only visible while running the app in development mode"
 msgstr ""
 
-#: src/pages/Index.tsx:1212
+#: src/pages/Index.tsx:1213
 msgid "Open issue"
 msgstr ""
 
-#: src/pages/Index.tsx:1425
+#: src/pages/Index.tsx:1426
 msgid "Open settings"
 msgstr ""
 
-#: src/pages/Index.tsx:1360
+#: src/pages/Index.tsx:1361
 msgid "PO file (.po)"
 msgstr ""
 
-#: src/pages/Index.tsx:1688
+#: src/pages/Index.tsx:1690
+msgid "PO file URL"
+msgstr ""
+
+#: src/pages/Index.tsx:1689
 msgid "Paste a .po file URL"
 msgstr ""
 
@@ -418,7 +422,7 @@ msgid "Previous field"
 msgstr ""
 
 #: src/components/feedback/FeedbackModal.tsx:416
-#: src/pages/Index.tsx:1782
+#: src/pages/Index.tsx:1784
 msgid "Privacy"
 msgstr ""
 
@@ -442,7 +446,7 @@ msgstr ""
 msgid "Refresh from WordPress.org"
 msgstr ""
 
-#: src/pages/Index.tsx:1104
+#: src/pages/Index.tsx:1105
 msgid "Release to load your translation file"
 msgstr ""
 
@@ -458,7 +462,7 @@ msgstr ""
 msgid "Request timed out. Try downloading the file and uploading it directly."
 msgstr ""
 
-#: src/pages/Index.tsx:1556
+#: src/pages/Index.tsx:1557
 msgid "Restore draft"
 msgstr ""
 
@@ -500,11 +504,11 @@ msgid "Send feedback"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:464
-#: src/pages/Index.tsx:1420
+#: src/pages/Index.tsx:1421
 msgid "Settings"
 msgstr ""
 
-#: src/pages/Index.tsx:1411
+#: src/pages/Index.tsx:1412
 msgid "Settings and actions"
 msgstr ""
 
@@ -516,7 +520,7 @@ msgstr ""
 msgid "Share Feedback"
 msgstr ""
 
-#: src/pages/Index.tsx:1395
+#: src/pages/Index.tsx:1396
 msgid "Share feedback"
 msgstr ""
 
@@ -546,7 +550,7 @@ msgstr ""
 msgid "Skip translated entries"
 msgstr ""
 
-#: src/pages/Index.tsx:1752
+#: src/pages/Index.tsx:1754
 msgid "Source"
 msgstr ""
 
@@ -576,7 +580,7 @@ msgstr ""
 msgid "Test Connection"
 msgstr ""
 
-#: src/pages/Index.tsx:1199
+#: src/pages/Index.tsx:1200
 msgid "Thanks. Issue #{issueNumber} was created."
 msgstr ""
 
@@ -590,7 +594,7 @@ msgid ""
 " not shown in production."
 msgstr ""
 
-#: src/pages/Index.tsx:1449
+#: src/pages/Index.tsx:1450
 msgid "This will remove all your work on the current file."
 msgstr ""
 
@@ -599,7 +603,7 @@ msgstr ""
 msgid "Title"
 msgstr ""
 
-#: src/pages/Index.tsx:1772
+#: src/pages/Index.tsx:1774
 msgid "Translate"
 msgstr ""
 
@@ -616,26 +620,26 @@ msgstr ""
 msgid "Unknown error"
 msgstr ""
 
-#: src/pages/Index.tsx:1530
+#: src/pages/Index.tsx:1531
 msgid "Unsaved draft found"
 msgstr ""
 
-#: src/pages/Index.tsx:1384
+#: src/pages/Index.tsx:1385
 msgid "Update"
 msgstr ""
 
-#: src/pages/Index.tsx:1372
+#: src/pages/Index.tsx:1373
 msgid ""
 "Update this file using a .pot template. Existing translations are kept when "
 "source strings still match, new strings are added, and obsolete strings are "
 "removed."
 msgstr ""
 
-#: src/pages/Index.tsx:1154
+#: src/pages/Index.tsx:1155
 msgid "Updated"
 msgstr ""
 
-#: src/pages/Index.tsx:1282
+#: src/pages/Index.tsx:1283
 msgid "Upload"
 msgstr ""
 
@@ -647,11 +651,11 @@ msgstr ""
 msgid "Upload a WordPress glossary CSV for the selected language"
 msgstr ""
 
-#: src/pages/Index.tsx:1663
+#: src/pages/Index.tsx:1664
 msgid "Upload a translation file to start"
 msgstr ""
 
-#: src/pages/Index.tsx:1461
+#: src/pages/Index.tsx:1462
 msgid "Upload failed"
 msgstr ""
 
@@ -711,21 +715,21 @@ msgstr ""
 msgid "When would you use this?"
 msgstr ""
 
-#: src/pages/Index.tsx:1577
+#: src/pages/Index.tsx:1578
 msgid "Working from draft"
 msgstr ""
 
-#: src/pages/Index.tsx:1301
+#: src/pages/Index.tsx:1302
 msgid "You have unsaved changes"
 msgstr ""
 
-#: src/pages/Index.tsx:1538
+#: src/pages/Index.tsx:1539
 msgid ""
 "You have unsaved changes from {age}. Would you like to restore your previous"
 " work?"
 msgstr ""
 
-#: src/pages/Index.tsx:1448
+#: src/pages/Index.tsx:1449
 msgid "You have unsaved changes. Are you sure you want to clear the editor?"
 msgstr ""
 
@@ -737,11 +741,11 @@ msgstr ""
 msgid "for details."
 msgstr ""
 
-#: src/pages/Index.tsx:1363
+#: src/pages/Index.tsx:1364
 msgid "i18next JSON (.json)"
 msgstr ""
 
-#: src/pages/Index.tsx:1710
+#: src/pages/Index.tsx:1712
 msgid "or"
 msgstr ""
 
@@ -753,6 +757,6 @@ msgstr ""
 msgid "terms"
 msgstr ""
 
-#: src/pages/Index.tsx:1546
+#: src/pages/Index.tsx:1547
 msgid "{count} modified entries will be restored."
 msgstr ""

@@ -17,11 +17,6 @@ import type { POEntry, POFile } from '../src/lib/po/types';
 // Types
 // ---------------------------------------------------------------------------
 
-export interface ExtractedMessage {
-  msgid: string;
-  references: string[];
-}
-
 export interface ExtractionWarning {
   file: string;
   line: number;
