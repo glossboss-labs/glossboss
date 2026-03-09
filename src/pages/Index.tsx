@@ -327,6 +327,7 @@ export default function Index() {
   const [isLoadingExample, setIsLoadingExample] = useState(false);
   const [isLoadingUrl, setIsLoadingUrl] = useState(false);
   const [urlInput, setUrlInput] = useState('');
+  const [pendingUrl, setPendingUrl] = useState<string | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const [translateSourceLang, setTranslateSourceLang] = useState<SourceLanguage | undefined>(
     undefined,
@@ -686,19 +687,8 @@ export default function Index() {
     }
   }, [loadFile]);
 
-  const handleLoadFromUrl = useCallback(
+  const executeUrlLoad = useCallback(
     async (url: string) => {
-      if (!url.startsWith('https://')) {
-        setErrors([
-          {
-            severity: 'error',
-            code: 'INVALID_SYNTAX',
-            message: t('The URL must start with https://'),
-          },
-        ]);
-        return;
-      }
-
       setIsLoadingUrl(true);
       setErrors([]);
       setWarnings([]);
@@ -707,6 +697,7 @@ export default function Index() {
       setDragError(null);
       setPendingDraft(null);
       setIsFromDraft(false);
+      setPendingUrl(null);
 
       let timeout: ReturnType<typeof setTimeout> | undefined;
       try {
@@ -778,11 +769,36 @@ export default function Index() {
     [loadFile, t],
   );
 
+  const handleLoadFromUrl = useCallback(
+    (url: string) => {
+      if (!url.startsWith('https://')) {
+        setErrors([
+          {
+            severity: 'error',
+            code: 'INVALID_SYNTAX',
+            message: t('The URL must start with https://'),
+          },
+        ]);
+        return;
+      }
+
+      // If a file is already loaded, ask for confirmation first
+      if (filename) {
+        setPendingUrl(url);
+        return;
+      }
+
+      void executeUrlLoad(url);
+    },
+    [filename, executeUrlLoad, t],
+  );
+
   // Auto-load from ?url= query parameter on mount
   useEffect(() => {
     const urlParam = searchParams.get('url');
-    if (urlParam && !filename) {
+    if (urlParam) {
       setSearchParams({}, { replace: true });
+      // If no file loaded yet, load directly; otherwise handleLoadFromUrl will prompt
       void handleLoadFromUrl(urlParam);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1451,6 +1467,21 @@ export default function Index() {
             confirmLabel={msgid('Clear anyway')}
             confirmColor="red"
             variant="danger"
+          />
+
+          {/* Confirmation modal for URL overwrite */}
+          <ConfirmModal
+            opened={pendingUrl !== null}
+            onClose={() => setPendingUrl(null)}
+            onConfirm={() => {
+              if (pendingUrl) void executeUrlLoad(pendingUrl);
+            }}
+            title={t('Replace current file?')}
+            message={t(
+              'Loading a new file from URL will replace the currently loaded file. Any unsaved changes will be lost.',
+            )}
+            confirmLabel={msgid('Replace')}
+            variant="warning"
           />
 
           {/* Drag error display */}
