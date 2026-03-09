@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { jsonResponse, requireJsonRequest, validateRequestOrigin } from './http';
+import { jsonResponse, optionsResponse, requireJsonRequest, validateRequestOrigin } from './http';
 
 function installDenoEnv(origins: string) {
   vi.stubGlobal('Deno', {
@@ -59,6 +59,18 @@ describe('shared HTTP helpers', () => {
 
     const response = requireJsonRequest(request);
     expect(response?.status).toBe(415);
+  });
+
+  it('optionsResponse returns 204 with CORS headers and max-age', () => {
+    const request = new Request('https://functions.test/feedback', {
+      method: 'OPTIONS',
+      headers: { origin: 'https://glossboss.test' },
+    });
+
+    const response = optionsResponse(request);
+    expect(response.status).toBe(204);
+    expect(response.headers.get('access-control-allow-origin')).toBe('https://glossboss.test');
+    expect(response.headers.get('access-control-max-age')).toBe('86400');
   });
 
   describe('jsonResponse header merging', () => {
