@@ -996,7 +996,7 @@ export default function Index() {
                   <FileUp size={32} color="var(--mantine-color-blue-filled)" />
                 </Box>
                 <Stack align="center" gap={4}>
-                  <Title order={4}>{t("Drop it like it's hot")}</Title>
+                  <Title order={4}>{t('Drop it like it\'s hot')}</Title>
                   <Text c="dimmed" size="sm" ta="center">
                     {t('Release to load your translation file')}
                   </Text>
