@@ -3,30 +3,65 @@ import { beforeEach } from 'vitest';
 
 function createStorageMock(): Storage {
   const data = Object.create(null) as Record<string, string>;
+  const storage = {} as Storage & Record<string, string>;
+  const storageApiKeys = new Set(['clear', 'getItem', 'key', 'length', 'removeItem', 'setItem']);
 
-  const storage = {
-    get length(): number {
-      return Object.keys(data).length;
+  function syncEnumerableKey(key: string): void {
+    if (storageApiKeys.has(key)) {
+      return;
+    }
+
+    if (Object.prototype.hasOwnProperty.call(data, key)) {
+      Object.defineProperty(storage, key, {
+        value: data[key],
+        configurable: true,
+        enumerable: true,
+        writable: true,
+      });
+      return;
+    }
+
+    delete storage[key];
+  }
+
+  Object.defineProperties(storage, {
+    length: {
+      get(): number {
+        return Object.keys(data).length;
+      },
     },
-    clear(): void {
-      for (const key of Object.keys(data)) {
+    clear: {
+      value(): void {
+        for (const key of Object.keys(data)) {
+          delete data[key];
+          syncEnumerableKey(key);
+        }
+      },
+    },
+    getItem: {
+      value(key: string): string | null {
+        return Object.prototype.hasOwnProperty.call(data, key) ? data[key] : null;
+      },
+    },
+    key: {
+      value(index: number): string | null {
+        const keys = Object.keys(data);
+        return keys[index] ?? null;
+      },
+    },
+    removeItem: {
+      value(key: string): void {
         delete data[key];
-      }
+        syncEnumerableKey(key);
+      },
     },
-    getItem(key: string): string | null {
-      return Object.prototype.hasOwnProperty.call(data, key) ? data[key] : null;
+    setItem: {
+      value(key: string, value: string): void {
+        data[key] = String(value);
+        syncEnumerableKey(key);
+      },
     },
-    key(index: number): string | null {
-      const keys = Object.keys(data);
-      return keys[index] ?? null;
-    },
-    removeItem(key: string): void {
-      delete data[key];
-    },
-    setItem(key: string, value: string): void {
-      data[key] = String(value);
-    },
-  } as Storage;
+  });
 
   return storage;
 }
