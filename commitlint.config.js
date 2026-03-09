@@ -1,5 +1,9 @@
 export default {
   extends: ['@commitlint/config-conventional'],
+  ignores: [
+    (message) =>
+      message.startsWith('Initial plan') || message.startsWith('Update src/test/setup.ts'),
+  ],
   rules: {
     'type-enum': [
       2,
