@@ -108,7 +108,7 @@ const DATA_COLUMN_LABELS: Record<DataColumnKey, string> = {
   translation: 'Translated string',
   signals: 'Signals',
 };
-const DEFAULT_COLUMN_WIDTHS = [72, 210, 70, 320, 320, 220];
+const DEFAULT_COLUMN_WIDTHS = [72, 210, 48, 320, 320, 220];
 const MIN_COLUMN_WIDTH = 60; // minimum proportion
 
 /**
@@ -2170,8 +2170,8 @@ export function EditorTable({
                               ? (delta) => handleColumnResize(columnKey, nextColumn, delta)
                               : undefined
                           }
-                          align={columnKey === 'select' ? 'center' : 'left'}
-                          padding={columnKey === 'select' ? '8px 8px' : undefined}
+                          align={columnKey === 'select' || columnKey === 'approve' ? 'center' : 'left'}
+                          padding={columnKey === 'select' || columnKey === 'approve' ? '8px 4px' : undefined}
                           dataColumnKey={isDataColumn ? columnKey : undefined}
                           onCellPointerDown={
                             isDataColumn ? handleHeaderPointerDown(columnKey) : undefined
