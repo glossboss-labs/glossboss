@@ -10,8 +10,7 @@ import {
 
 describe('tts settings', () => {
   beforeEach(() => {
-    localStorage.clear();
-    sessionStorage.clear();
+    clearTtsSettings();
   });
 
   it('stores settings in session storage by default', () => {

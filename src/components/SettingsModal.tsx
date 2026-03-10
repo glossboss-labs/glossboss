@@ -489,7 +489,9 @@ export function SettingsModal({
         setSourceElevenLabsVoiceId((current) => current ?? voices[0].voiceId);
         setTranslationElevenLabsVoiceId((current) => current ?? voices[0].voiceId);
       }
-      await primeElevenLabsVoices();
+      primeElevenLabsVoices(voices);
+    } catch (error) {
+      console.warn('[TTS] Failed to load ElevenLabs voices:', error);
     } finally {
       setTtsVoicesLoading(false);
     }
@@ -1218,23 +1220,27 @@ export function SettingsModal({
                             <Text size="sm">{ttsResult.message}</Text>
                             {ttsUsage && (
                               <>
-                                <Progress
-                                  value={(ttsUsage.used / ttsUsage.limit) * 100}
-                                  size="sm"
-                                  color={ttsUsage.used / ttsUsage.limit > 0.9 ? 'red' : 'blue'}
-                                />
+                                {ttsUsage.limit > 0 && (
+                                  <Progress
+                                    value={(ttsUsage.used / ttsUsage.limit) * 100}
+                                    size="sm"
+                                    color={ttsUsage.used / ttsUsage.limit > 0.9 ? 'red' : 'blue'}
+                                  />
+                                )}
                                 <Text size="xs" c="dimmed">
                                   {ttsUsage.used.toLocaleString()} /{' '}
                                   {ttsUsage.limit.toLocaleString()} {t('characters')}
                                   {ttsUsage.tier ? ` • ${ttsUsage.tier}` : ''}
                                 </Text>
-                                {ttsUsage.used / ttsUsage.limit > 0.9 && !ttsUsageExceeded && (
-                                  <Text size="xs" c="red">
-                                    {t(
-                                      'Usage is above 90%. ElevenLabs playback will stop once the provider quota is exhausted.',
-                                    )}
-                                  </Text>
-                                )}
+                                {ttsUsage.limit > 0 &&
+                                  ttsUsage.used / ttsUsage.limit > 0.9 &&
+                                  !ttsUsageExceeded && (
+                                    <Text size="xs" c="red">
+                                      {t(
+                                        'Usage is above 90%. ElevenLabs playback will stop once the provider quota is exhausted.',
+                                      )}
+                                    </Text>
+                                  )}
                                 {ttsUsageExceeded && (
                                   <Text size="xs" c="red">
                                     {t(

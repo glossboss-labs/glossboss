@@ -24,9 +24,12 @@ let snapshot: PlaybackSnapshot = {
 };
 let activeAudio: HTMLAudioElement | null = null;
 let activeAudioUrl: string | null = null;
+let activeUtterance: SpeechSynthesisUtterance | null = null;
 
 function emit(): void {
-  listeners.forEach((listener) => listener());
+  for (const listener of listeners) {
+    listener();
+  }
 }
 
 function setSnapshot(next: PlaybackSnapshot): void {
@@ -34,8 +37,8 @@ function setSnapshot(next: PlaybackSnapshot): void {
   emit();
 }
 
-function buildPlaybackId(kind: TtsPlaybackKind, entryId: string, text: string): string {
-  return `${kind}:${entryId}:${text}`;
+export function buildPlaybackId(kind: TtsPlaybackKind, entryId: string): string {
+  return `${kind}:${entryId}`;
 }
 
 function cleanupAudio(): void {
@@ -61,6 +64,7 @@ export function getPlaybackSnapshot(): PlaybackSnapshot {
 
 export function stopPlayback(): void {
   cleanupAudio();
+  activeUtterance = null;
 
   if (isBrowserTtsSupported()) {
     window.speechSynthesis.cancel();
@@ -125,10 +129,12 @@ async function playWithElevenLabs(request: TtsSpeakRequest, playbackId: string):
   activeAudioUrl = audioUrl;
 
   audio.onended = () => {
+    if (activeAudio !== audio) return;
     cleanupAudio();
     setSnapshot({ activeId: null, status: 'idle', error: null });
   };
   audio.onerror = () => {
+    if (activeAudio !== audio) return;
     cleanupAudio();
     setSnapshot({
       activeId: null,
@@ -169,9 +175,13 @@ function playWithBrowser(request: TtsSpeakRequest, playbackId: string): void {
   }
 
   utterance.onend = () => {
+    if (activeUtterance !== utterance) return;
+    activeUtterance = null;
     setSnapshot({ activeId: null, status: 'idle', error: null });
   };
   utterance.onerror = () => {
+    if (activeUtterance !== utterance) return;
+    activeUtterance = null;
     setSnapshot({
       activeId: null,
       status: 'idle',
@@ -179,6 +189,7 @@ function playWithBrowser(request: TtsSpeakRequest, playbackId: string): void {
     });
   };
 
+  activeUtterance = utterance;
   window.speechSynthesis.cancel();
   window.speechSynthesis.speak(utterance);
   setSnapshot({
@@ -189,7 +200,7 @@ function playWithBrowser(request: TtsSpeakRequest, playbackId: string): void {
 }
 
 export async function togglePlayback(request: TtsSpeakRequest): Promise<void> {
-  const playbackId = buildPlaybackId(request.kind, request.entryId, request.text);
+  const playbackId = buildPlaybackId(request.kind, request.entryId);
 
   if (snapshot.activeId === playbackId && snapshot.status === 'playing') {
     stopPlayback();
@@ -219,11 +230,13 @@ export async function togglePlayback(request: TtsSpeakRequest): Promise<void> {
   }
 }
 
-export async function primeElevenLabsVoices(): Promise<void> {
+export function primeElevenLabsVoices(
+  prefetchedVoices?: { voiceId: string; name: string }[],
+): void {
   const settings = getTtsSettings();
   if (!settings.apiKey.trim()) return;
 
-  const voices = await getElevenLabsClient().listVoices();
+  const voices = prefetchedVoices ?? [];
   if (voices.length === 0) return;
 
   if (!settings.sourceElevenLabsVoiceId || !settings.translationElevenLabsVoiceId) {

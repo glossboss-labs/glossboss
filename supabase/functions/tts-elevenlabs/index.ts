@@ -359,6 +359,13 @@ export async function handleTtsElevenLabsRequest(req: Request): Promise<Response
       headers,
     });
   } catch (error) {
+    if (error instanceof SyntaxError) {
+      return jsonResponse(
+        req,
+        { ok: false, code: 'INVALID_PAYLOAD', message: 'Request body must be valid JSON.' },
+        { status: 400 },
+      );
+    }
     const message = isAbortError(error)
       ? 'ElevenLabs request timed out.'
       : 'ElevenLabs proxy request failed.';

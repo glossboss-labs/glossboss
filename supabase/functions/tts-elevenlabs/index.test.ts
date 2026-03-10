@@ -48,7 +48,7 @@ describe('tts-elevenlabs handler', () => {
   it('rejects disallowed origins', async () => {
     const response = await handleTtsElevenLabsRequest(
       makeRequest(
-        { action: 'usage', apiKey: 'test_api_key_1234567890' },
+        { action: 'usage', apiKey: 'not-a-real-elevenlabs-key' },
         { origin: 'https://example.com' },
       ),
     );
@@ -83,7 +83,7 @@ describe('tts-elevenlabs handler', () => {
     );
 
     const response = await handleTtsElevenLabsRequest(
-      makeRequest({ action: 'usage', apiKey: 'test_api_key_1234567890' }),
+      makeRequest({ action: 'usage', apiKey: 'not-a-real-elevenlabs-key' }),
     );
 
     expect(response.status).toBe(200);
@@ -100,41 +100,42 @@ describe('tts-elevenlabs handler', () => {
     const emptyResponse = await handleTtsElevenLabsRequest(
       makeRequest({
         action: 'speak',
-        apiKey: 'test_api_key_1234567890',
+        apiKey: 'not-a-real-elevenlabs-key',
         voiceId: 'voice_1234',
         text: '',
       }),
     );
     expect(emptyResponse.status).toBe(400);
 
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockResolvedValue(new Response(new Uint8Array([1, 2, 3]), { status: 200 })),
-    );
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(new Response(new Uint8Array([1, 2, 3]), { status: 200 }));
+    vi.stubGlobal('fetch', fetchMock);
 
     const response = await handleTtsElevenLabsRequest(
       makeRequest({
         action: 'speak',
-        apiKey: 'test_api_key_1234567890',
+        apiKey: 'not-a-real-elevenlabs-key',
         voiceId: 'voice_1234',
         text: 'a'.repeat(800),
       }),
     );
 
     expect(response.status).toBe(200);
-    expect(fetch).toHaveBeenCalledWith(
+    expect(fetchMock).toHaveBeenCalledWith(
       expect.stringContaining('/v1/text-to-speech/voice_1234'),
-      expect.objectContaining({
-        body: expect.stringContaining('"text":"' + 'a'.repeat(500)),
-      }),
+      expect.any(Object),
     );
+    const [, init] = fetchMock.mock.calls[0]!;
+    const payload = JSON.parse(String(init?.body));
+    expect(payload.text).toBe('a'.repeat(500));
   });
 
   it('does not leak api keys in upstream errors', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn().mockResolvedValue(
-        new Response('bad key test_api_key_1234567890', {
+        new Response('bad key not-a-real-elevenlabs-key', {
           status: 401,
           headers: { 'Content-Type': 'text/plain' },
         }),
@@ -142,11 +143,11 @@ describe('tts-elevenlabs handler', () => {
     );
 
     const response = await handleTtsElevenLabsRequest(
-      makeRequest({ action: 'usage', apiKey: 'test_api_key_1234567890' }),
+      makeRequest({ action: 'usage', apiKey: 'not-a-real-elevenlabs-key' }),
     );
 
     expect(response.status).toBe(401);
     const body = await response.json();
-    expect(body.message).not.toContain('test_api_key_1234567890');
+    expect(body.message).not.toContain('not-a-real-elevenlabs-key');
   });
 });

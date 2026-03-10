@@ -36,6 +36,9 @@ export function selectVoiceForLanguage(
   if (exact) return exact;
 
   const baseLang = normalizedLang.split('-')[0];
+  const base = voices.find((voice) => voice.lang.toLowerCase() === baseLang);
+  if (base) return base;
+
   const partial = voices.find((voice) => voice.lang.toLowerCase().startsWith(`${baseLang}-`));
   if (partial) return partial;
 

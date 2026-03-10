@@ -131,7 +131,7 @@ describe('SettingsModal', () => {
     await user.click(screen.getByRole('radio', { name: /elevenlabs/i }));
     await user.type(
       screen.getByPlaceholderText(/enter your elevenlabs api key/i),
-      'test_api_key_1234567890',
+      'not-a-real-elevenlabs-key',
     );
     await user.click(screen.getByRole('button', { name: /test connection/i }));
 

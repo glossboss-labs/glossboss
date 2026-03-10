@@ -13,7 +13,7 @@ describe('SpeakButton', () => {
   it('disables ElevenLabs playback when quota is exhausted', () => {
     saveTtsSettings({
       provider: 'elevenlabs',
-      apiKey: 'test_api_key_1234567890',
+      apiKey: 'not-a-real-elevenlabs-key',
       elevenLabsUsage: {
         characterCount: 1000,
         characterLimit: 1000,
@@ -26,6 +26,6 @@ describe('SpeakButton', () => {
       </MantineProvider>,
     );
 
-    expect(screen.getByRole('button', { name: /play translation/i })).toBeDisabled();
+    expect(screen.getByRole('button', { name: /play/i })).toBeDisabled();
   });
 });

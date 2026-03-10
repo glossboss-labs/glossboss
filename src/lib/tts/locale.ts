@@ -7,12 +7,13 @@ export function toSpeakLanguageTag(value: string | null | undefined): string | n
   const parts = trimmed.replace(/_/g, '-').split('-').filter(Boolean);
   if (parts.length === 0) return null;
 
-  const [base, region, ...rest] = parts;
-  const normalized = [
-    base.toLowerCase(),
-    region ? region.toUpperCase() : undefined,
-    ...rest,
-  ].filter(Boolean);
+  const [base, second, ...rest] = parts;
+  const normalizedSecond = !second
+    ? undefined
+    : second.length === 4
+      ? `${second[0].toUpperCase()}${second.slice(1).toLowerCase()}`
+      : second.toUpperCase();
+  const normalized = [base.toLowerCase(), normalizedSecond, ...rest].filter(Boolean);
 
   return normalized.join('-');
 }
