@@ -9,7 +9,7 @@ msgstr ""
 msgid "+{{count}} more"
 msgstr ""
 
-#: src/pages/Index.tsx:1624
+#: src/pages/Index.tsx:1626
 msgid "...and {{count}} more warnings"
 msgstr ""
 
@@ -150,7 +150,7 @@ msgstr ""
 msgid "Auto-detected: {{slug}}"
 msgstr ""
 
-#: src/pages/Index.tsx:1691
+#: src/pages/Index.tsx:1693
 msgid "Auto-saved {age}"
 msgstr ""
 
@@ -275,7 +275,7 @@ msgstr ""
 msgid "Clear active source reference"
 msgstr ""
 
-#: src/pages/Index.tsx:1542
+#: src/pages/Index.tsx:1544
 msgid "Clear anyway"
 msgstr ""
 
@@ -283,7 +283,7 @@ msgstr ""
 msgid "Clear editor"
 msgstr ""
 
-#: src/pages/Index.tsx:1539
+#: src/pages/Index.tsx:1541
 msgid "Clear editor?"
 msgstr ""
 
@@ -410,7 +410,7 @@ msgstr ""
 msgid "DeepL ready ({{count}} terms)"
 msgstr ""
 
-#: src/pages/Index.tsx:1726
+#: src/pages/Index.tsx:1728
 msgid "DeepL synced"
 msgstr ""
 
@@ -458,7 +458,7 @@ msgstr ""
 msgid "Directory listing is unavailable."
 msgstr ""
 
-#: src/pages/Index.tsx:1674
+#: src/pages/Index.tsx:1676
 msgid "Discard and use new file"
 msgstr ""
 
@@ -490,7 +490,7 @@ msgstr ""
 msgid "Download format options"
 msgstr ""
 
-#: src/pages/Index.tsx:1782
+#: src/pages/Index.tsx:1784
 msgid ""
 "Drag and drop your translation file here, or click to browse. Your translati"
 "ons will be saved locally in your browser."
@@ -526,7 +526,7 @@ msgstr ""
 msgid "Edit gettext translation files with DeepL integration"
 msgstr ""
 
-#: src/pages/Index.tsx:1686
+#: src/pages/Index.tsx:1688
 msgid "Editing draft"
 msgstr ""
 
@@ -676,7 +676,7 @@ msgid "Failed to parse POT file"
 msgstr ""
 
 #: src/pages/Index.tsx:664
-#: src/pages/Index.tsx:1582
+#: src/pages/Index.tsx:1584
 msgid "Failed to parse file"
 msgstr ""
 
@@ -823,7 +823,7 @@ msgstr ""
 msgid "German (Switzerland)"
 msgstr ""
 
-#: src/pages/Index.tsx:1490
+#: src/pages/Index.tsx:1491
 msgid "GlossBoss v{version}"
 msgstr ""
 
@@ -869,7 +869,7 @@ msgid ""
 "sync in Settings is recommended."
 msgstr ""
 
-#: src/pages/Index.tsx:1719
+#: src/pages/Index.tsx:1721
 msgid "Glossary: {count} terms ({locale})"
 msgstr ""
 
@@ -1062,7 +1062,7 @@ msgstr ""
 msgid "Latvian"
 msgstr ""
 
-#: src/pages/Index.tsx:1507
+#: src/pages/Index.tsx:1509
 msgid "License"
 msgstr ""
 
@@ -1070,7 +1070,7 @@ msgstr ""
 msgid "Light mode"
 msgstr ""
 
-#: src/pages/Index.tsx:1589
+#: src/pages/Index.tsx:1591
 msgid "Line {line}"
 msgstr ""
 
@@ -1079,7 +1079,7 @@ msgstr ""
 msgid "Line {{lineNumber}}"
 msgstr ""
 
-#: src/pages/Index.tsx:1616
+#: src/pages/Index.tsx:1618
 msgid "Line {{line}}"
 msgstr ""
 
@@ -1094,7 +1094,7 @@ msgid "Lithuanian"
 msgstr ""
 
 #: src/components/editor/GlossaryPanel.tsx:355
-#: src/pages/Index.tsx:1823
+#: src/pages/Index.tsx:1825
 msgid "Load"
 msgstr ""
 
@@ -1102,11 +1102,11 @@ msgstr ""
 msgid "Load Glossary"
 msgstr ""
 
-#: src/pages/Index.tsx:1831
+#: src/pages/Index.tsx:1833
 msgid "Load a small example WordPress plugin PO file (Hello Dolly)"
 msgstr ""
 
-#: src/pages/Index.tsx:1842
+#: src/pages/Index.tsx:1844
 msgid "Load example PO"
 msgstr ""
 
@@ -1121,7 +1121,7 @@ msgstr ""
 msgid "Load voices by testing your key"
 msgstr ""
 
-#: src/pages/Index.tsx:1555
+#: src/pages/Index.tsx:1557
 msgid ""
 "Loading a new file from URL will replace the currently loaded file. Any unsa"
 "ved changes will be lost."
@@ -1370,7 +1370,7 @@ msgstr ""
 msgid "PO file (.po)"
 msgstr ""
 
-#: src/pages/Index.tsx:1806
+#: src/pages/Index.tsx:1808
 msgid "PO file URL"
 msgstr ""
 
@@ -1378,7 +1378,7 @@ msgstr ""
 msgid "POT Created"
 msgstr ""
 
-#: src/pages/Index.tsx:1805
+#: src/pages/Index.tsx:1807
 msgid "Paste a .po file URL"
 msgstr ""
 
@@ -1490,7 +1490,7 @@ msgid "Previous field"
 msgstr ""
 
 #: src/components/feedback/FeedbackModal.tsx:416
-#: src/pages/Index.tsx:1525
+#: src/pages/Index.tsx:1527
 msgid "Privacy"
 msgstr ""
 
@@ -1559,11 +1559,11 @@ msgid "Remove saved key"
 msgstr ""
 
 #: src/components/editor/TranslateButton.tsx:260
-#: src/pages/Index.tsx:1558
+#: src/pages/Index.tsx:1560
 msgid "Replace"
 msgstr ""
 
-#: src/pages/Index.tsx:1554
+#: src/pages/Index.tsx:1556
 msgid "Replace current file?"
 msgstr ""
 
@@ -1583,7 +1583,7 @@ msgstr ""
 msgid "Resize inspector"
 msgstr ""
 
-#: src/pages/Index.tsx:1665
+#: src/pages/Index.tsx:1667
 msgid "Restore draft"
 msgstr ""
 
@@ -1854,7 +1854,7 @@ msgid "Sort entries"
 msgstr ""
 
 #: src/components/editor/EditorTable.tsx:1608
-#: src/pages/Index.tsx:1498
+#: src/pages/Index.tsx:1500
 msgid "Source"
 msgstr ""
 
@@ -2046,7 +2046,7 @@ msgid ""
 "tions."
 msgstr ""
 
-#: src/pages/Index.tsx:1541
+#: src/pages/Index.tsx:1543
 msgid "This will remove all your work on the current file."
 msgstr ""
 
@@ -2063,7 +2063,7 @@ msgstr ""
 msgid "To"
 msgstr ""
 
-#: src/pages/Index.tsx:1516
+#: src/pages/Index.tsx:1518
 msgid "Translate"
 msgstr ""
 
@@ -2216,7 +2216,7 @@ msgstr ""
 msgid "Unsaved changes"
 msgstr ""
 
-#: src/pages/Index.tsx:1639
+#: src/pages/Index.tsx:1641
 msgid "Unsaved draft found"
 msgstr ""
 
@@ -2258,11 +2258,11 @@ msgstr ""
 msgid "Upload a WordPress glossary CSV for the selected language"
 msgstr ""
 
-#: src/pages/Index.tsx:1780
+#: src/pages/Index.tsx:1782
 msgid "Upload a translation file to start"
 msgstr ""
 
-#: src/pages/Index.tsx:1568
+#: src/pages/Index.tsx:1570
 msgid "Upload failed"
 msgstr ""
 
@@ -2393,13 +2393,13 @@ msgstr ""
 msgid "You have unsaved changes"
 msgstr ""
 
-#: src/pages/Index.tsx:1647
+#: src/pages/Index.tsx:1649
 msgid ""
 "You have unsaved changes from {age}. Would you like to restore your previous"
 " work?"
 msgstr ""
 
-#: src/pages/Index.tsx:1540
+#: src/pages/Index.tsx:1542
 msgid "You have unsaved changes. Are you sure you want to clear the editor?"
 msgstr ""
 
@@ -2435,7 +2435,7 @@ msgstr ""
 msgid "name@example.com"
 msgstr ""
 
-#: src/pages/Index.tsx:1828
+#: src/pages/Index.tsx:1830
 msgid "or"
 msgstr ""
 
@@ -2463,7 +2463,7 @@ msgstr ""
 msgid "terms"
 msgstr ""
 
-#: src/pages/Index.tsx:1655
+#: src/pages/Index.tsx:1657
 msgid "{count} modified entries will be restored."
 msgstr ""
 
@@ -2546,7 +2546,7 @@ msgstr ""
 msgid "{{count}} untranslated"
 msgstr ""
 
-#: src/pages/Index.tsx:1605
+#: src/pages/Index.tsx:1607
 msgid "{{count}} warning(s) during parsing"
 msgstr ""
 
