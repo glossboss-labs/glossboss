@@ -44,7 +44,7 @@ msgid "Backup"
 msgstr "Backup"
 
 #: src/components/SettingsModal.tsx:1711
-msgid "Branch status badge"
+msgid "Branch status chip"
 msgstr "Branch status badge"
 
 #: src/components/SettingsModal.tsx:1117
