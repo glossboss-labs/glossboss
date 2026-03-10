@@ -18,7 +18,7 @@ msgstr "API type"
 #: src/components/SettingsModal.tsx:454
 #: src/components/SettingsModal.tsx:528
 msgid "API key is valid!"
-msgstr "De API sleutel is oké!"
+msgstr "De API sleutel is geldig!"
 
 #: src/components/SettingsModal.tsx:187
 msgid "Action"
