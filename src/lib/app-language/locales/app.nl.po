@@ -46,7 +46,7 @@ msgstr "Back-up"
 
 #: src/components/SettingsModal.tsx:1711
 msgid "Branch status badge"
-msgstr "Branch-statuschip"
+msgstr "Branch-statusbadge"
 
 #: src/components/SettingsModal.tsx:1117
 msgid "Browser"
@@ -235,7 +235,7 @@ msgstr "Bewerk gettext-vertaalbestanden met DeepL-integratie"
 
 #: src/pages/Index.tsx:1609
 msgid "Editing draft"
-msgstr "Werken vanuit concept"
+msgstr "Concept bewerken"
 
 #: src/components/ui/SpeakButton.tsx:44
 msgid "ElevenLabs quota reached."
@@ -765,15 +765,15 @@ msgstr "Sneltoets"
 
 #: src/components/SettingsModal.tsx:1726
 msgid "Show branch badge"
-msgstr "Branch-statuschip tonen"
+msgstr "Branch-badge tonen"
 
 #: src/components/SettingsModal.tsx:1714
 msgid ""
 "Show the current git branch in a small floating badge at the bottom right of"
 " the site."
 msgstr ""
-"Toon de huidige git-branch in een kleine zwevende chip rechtsonder op de sit"
-"e."
+"Toon de huidige git-branch in een kleine zwevende badge rechtsonder op de si"
+"te."
 
 #: src/components/SettingsModal.tsx:220
 msgid "Skip translated entries"
