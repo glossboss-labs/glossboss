@@ -1107,7 +1107,7 @@ export default function Index() {
               ...styles,
               position: 'fixed',
               inset: 0,
-              backgroundColor: 'rgba(0, 0, 0, 0.75)',
+              backgroundColor: 'color-mix(in srgb, var(--gb-surface-0) 75%, transparent)',
               backdropFilter: 'blur(4px)',
               zIndex: 9999,
               display: 'flex',

@@ -66,7 +66,7 @@ body {
  * Selection
  * ---------------------------------------------------------------- */
 ::selection {
-  background: rgba(59, 130, 246, 0.3);
+  background: var(--gb-glow-focus);
   color: inherit;
 }
 
@@ -83,7 +83,7 @@ body {
  * Tabs active state (dark)
  * ---------------------------------------------------------------- */
 [data-mantine-color-scheme='dark'] .mantine-Tabs-tab[data-active] {
-  background-color: rgba(59, 130, 246, 0.1);
+  background-color: var(--gb-highlight-row);
 }
 
 /* ----------------------------------------------------------------
@@ -91,5 +91,5 @@ body {
  * ---------------------------------------------------------------- */
 [data-mantine-color-scheme='dark'] .mantine-SegmentedControl-indicator {
   background-color: var(--gb-surface-3);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--gb-shadow-tooltip);
 }
