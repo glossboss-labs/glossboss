@@ -320,7 +320,10 @@ export function SettingsModal({
       setFormality(settings.formality);
       setIsSaved(Boolean(settings.apiKey));
       setPersistKey(isPersistEnabled());
+      return;
     }
+
+    setCredentialPrompt(null);
   }, [opened]);
 
   // Update locale when initialLocale changes
@@ -460,6 +463,8 @@ export function SettingsModal({
   const applyImportedSettings = useCallback(
     (file: AppSettingsFile, includeApiKey: boolean) => {
       const applied = applyAppSettingsFile(file, { includeApiKey });
+      const nextGlossaryLocale = applied.preferences.glossaryLocale;
+      const shouldClearGlossary = glossary && glossary.targetLocale !== nextGlossaryLocale;
 
       setApiKey(applied.deepl.apiKey);
       setApiType(applied.deepl.apiType);
@@ -467,7 +472,13 @@ export function SettingsModal({
       setPersistKey(applied.deepl.persistKey);
       setIsSaved(Boolean(applied.deepl.apiKey.trim()));
       setTestResult(null);
-      setSelectedLocale(applied.preferences.glossaryLocale);
+      setSelectedLocale(nextGlossaryLocale);
+
+      if (shouldClearGlossary) {
+        onGlossaryCleared?.();
+        setHasAttemptedAutoLoad(false);
+      }
+
       setEnforcementEnabled(applied.preferences.glossaryEnforcementEnabled);
       setSkipTranslated(applied.preferences.navSkipTranslated);
       onContainerWidthChange?.(applied.preferences.containerWidth);
@@ -484,7 +495,15 @@ export function SettingsModal({
             : t('Settings imported without changing your current DeepL API key.'),
       });
     },
-    [isDevelopment, onBranchChipEnabledChange, onContainerWidthChange, setSkipTranslated, t],
+    [
+      glossary,
+      isDevelopment,
+      onBranchChipEnabledChange,
+      onContainerWidthChange,
+      onGlossaryCleared,
+      setSkipTranslated,
+      t,
+    ],
   );
 
   const handleExportClick = useCallback(() => {

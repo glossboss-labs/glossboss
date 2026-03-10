@@ -91,6 +91,28 @@ describe('app settings', () => {
     ).toThrow(/Unsupported settings file version/);
   });
 
+  it('rejects files with the wrong schema', () => {
+    expect(() =>
+      parseAppSettingsFile(
+        JSON.stringify({
+          schema: 'not-glossboss-settings',
+          version: 1,
+          exportedAt: new Date().toISOString(),
+          deepl: {
+            apiType: 'free',
+            formality: 'prefer_less',
+          },
+          preferences: {
+            glossaryLocale: '',
+            glossaryEnforcementEnabled: true,
+            navSkipTranslated: true,
+            containerWidth: 'xl',
+          },
+        }),
+      ),
+    ).toThrow('This file is not a GlossBoss settings export.');
+  });
+
   it('imports credentials when allowed', () => {
     const file = createAppSettingsFile(baseSnapshot, { includeApiKey: true });
 
