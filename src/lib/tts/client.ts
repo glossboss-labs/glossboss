@@ -55,33 +55,6 @@ export function createElevenLabsClient(config: ElevenLabsClientConfig = {}) {
     }
   }
 
-  async function requestBlob(action: string, params: Record<string, unknown> = {}): Promise<Blob> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-    try {
-      const settings = getTtsSettings();
-      const response = await fetch(functionUrl, {
-        method: 'POST',
-        headers: buildSupabaseFunctionHeaders(anonKey),
-        body: JSON.stringify({
-          action,
-          apiKey: settings.apiKey,
-          ...params,
-        }),
-        signal: controller.signal,
-      });
-
-      if (!response.ok) {
-        throw await parseError(response);
-      }
-
-      return await response.blob();
-    } finally {
-      clearTimeout(timeoutId);
-    }
-  }
-
   async function getUsage(): Promise<TtsUsageStats> {
     return await request<TtsUsageStats>('usage');
   }
@@ -103,7 +76,45 @@ export function createElevenLabsClient(config: ElevenLabsClientConfig = {}) {
     modelId?: string;
     languageCode?: string | null;
   }): Promise<Blob> {
-    return await requestBlob('speak', params);
+    // Call ElevenLabs directly from the browser instead of proxying through the
+    // edge function. Free-tier keys are blocked when requests arrive from
+    // shared cloud infrastructure (Supabase Edge Functions) because ElevenLabs
+    // treats them as proxy/VPN traffic.
+    const settings = getTtsSettings();
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    try {
+      const body: Record<string, unknown> = {
+        text: params.text.slice(0, 500),
+        model_id: params.modelId ?? 'eleven_multilingual_v2',
+      };
+      if (params.languageCode) {
+        body.language_code = params.languageCode;
+      }
+
+      const response = await fetch(
+        `https://api.elevenlabs.io/v1/text-to-speech/${encodeURIComponent(params.voiceId)}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'xi-api-key': settings.apiKey,
+            Accept: 'audio/mpeg',
+          },
+          body: JSON.stringify(body),
+          signal: controller.signal,
+        },
+      );
+
+      if (!response.ok) {
+        throw await parseError(response);
+      }
+
+      return await response.blob();
+    } finally {
+      clearTimeout(timeoutId);
+    }
   }
 
   return {
