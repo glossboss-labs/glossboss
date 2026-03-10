@@ -1315,6 +1315,7 @@ const MobileEntryCard = memo(function MobileEntryCard({
     dirtyEntryIds,
     machineTranslatedIds,
     manualEditIds,
+    machineTranslationMeta,
     getGlossaryAnalysis,
   } = useEditorStore();
   const setActiveReference = useSourceStore((state) => state.setActiveReference);
@@ -1322,6 +1323,7 @@ const MobileEntryCard = memo(function MobileEntryCard({
   const isSelected = selectedEntryId === entry.id;
   const isModified = dirtyEntryIds.has(entry.id);
   const isMT = machineTranslatedIds.has(entry.id);
+  const usedGlossary = machineTranslationMeta.get(entry.id)?.usedGlossary ?? false;
   const isManualEdit = manualEditIds.has(entry.id) && !isMT;
   const glossaryAnalysis = getGlossaryAnalysis(entry.id);
   const hasGlossaryTerms = (glossaryAnalysis?.matchedCount ?? 0) > 0;
@@ -1405,6 +1407,17 @@ const MobileEntryCard = memo(function MobileEntryCard({
         <Box>
           <Text size="xs" fw={600} c="dimmed" mb={4}>
             Signals
+          </Text>
+          <SignalsOverviewCell
+            isMT={isMT}
+            usedGlossary={usedGlossary}
+            glossaryAnalysis={glossaryAnalysis ?? null}
+          />
+        </Box>
+
+        <Box>
+          <Text size="xs" fw={600} c="dimmed" mb={4}>
+            Meta
           </Text>
           <MetaCell entry={entry} onReferenceActivate={handleActivateReference} />
         </Box>
