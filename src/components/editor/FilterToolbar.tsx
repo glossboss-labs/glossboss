@@ -228,6 +228,7 @@ export function FilterToolbar() {
 
   const columnLabels: Record<TableColumn, string> = {
     status: 'Status',
+    approve: 'Approve',
     source: 'Source string',
     translation: 'Translated string',
     signals: 'Signals',
