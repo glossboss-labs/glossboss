@@ -272,6 +272,14 @@ export function FilterToolbar() {
                   c="blue"
                   style={{ cursor: 'pointer', flexShrink: 0, whiteSpace: 'nowrap' }}
                   onClick={clearFilters}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e: React.KeyboardEvent) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      clearFilters();
+                    }
+                  }}
                 >
                   {t('Clear filters')}
                   {filteredCount !== stats.total && (
@@ -409,7 +417,7 @@ export function FilterToolbar() {
                           }
                         }}
                       >
-                        {stats.machineTranslated} MT
+                        {t('{{count}} MT', { count: stats.machineTranslated })}
                       </Badge>
                     </Tooltip>
                   );
@@ -443,7 +451,7 @@ export function FilterToolbar() {
                           }
                         }}
                       >
-                        {stats.manualEdits} Manual
+                        {t('{{count}} Manual', { count: stats.manualEdits })}
                       </Badge>
                     </Tooltip>
                   );

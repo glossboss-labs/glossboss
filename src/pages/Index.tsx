@@ -1389,6 +1389,7 @@ export default function Index() {
                                 <Button
                                   variant="light"
                                   px={8}
+                                  aria-label={t('Download format options')}
                                   style={{
                                     borderTopLeftRadius: 0,
                                     borderBottomLeftRadius: 0,
