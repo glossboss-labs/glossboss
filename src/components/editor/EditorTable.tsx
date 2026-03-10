@@ -103,7 +103,7 @@ type TableColumnKey = (typeof COLUMN_KEYS)[number];
 type DataColumnKey = Exclude<TableColumnKey, 'select'>;
 const DATA_COLUMN_LABELS: Record<DataColumnKey, string> = {
   status: 'Status',
-  approve: '',
+  approve: 'Approve',
   source: 'Source string',
   translation: 'Translated string',
   signals: 'Signals',
