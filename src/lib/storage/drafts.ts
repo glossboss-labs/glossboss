@@ -280,16 +280,28 @@ export function cleanupExpiredDrafts(): number {
 }
 
 /**
- * Format a relative time string for draft age
+ * Format a relative time string for draft age.
+ * Pass a `t` function from `useTranslation()` to get localised output.
  */
-export function formatDraftAge(savedAt: number): string {
+export function formatDraftAge(
+  savedAt: number,
+  t: (key: string, opts?: Record<string, unknown>) => string = (k) => k,
+): string {
   const diff = Date.now() - savedAt;
   const minutes = Math.floor(diff / (1000 * 60));
   const hours = Math.floor(diff / (1000 * 60 * 60));
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-  if (minutes < 1) return 'just now';
-  if (minutes < 60) return `${minutes} minute${minutes === 1 ? '' : 's'} ago`;
-  if (hours < 24) return `${hours} hour${hours === 1 ? '' : 's'} ago`;
-  return `${days} day${days === 1 ? '' : 's'} ago`;
+  if (minutes < 1) return t('just now');
+  if (minutes < 60)
+    return minutes === 1
+      ? t('{{count}} minute ago', { count: minutes })
+      : t('{{count}} minutes ago', { count: minutes });
+  if (hours < 24)
+    return hours === 1
+      ? t('{{count}} hour ago', { count: hours })
+      : t('{{count}} hours ago', { count: hours });
+  return days === 1
+    ? t('{{count}} day ago', { count: days })
+    : t('{{count}} days ago', { count: days });
 }

@@ -638,7 +638,7 @@ export function TranslateToolbar({
               {t('From')}
             </Text>
             <Select
-              data={SOURCE_LANGUAGES}
+              data={SOURCE_LANGUAGES.map((opt) => ({ ...opt, label: t(opt.label) }))}
               value={sourceLang}
               onChange={handleSourceChange}
               placeholder={t('Auto-detect')}
@@ -658,7 +658,7 @@ export function TranslateToolbar({
               {t('To')}
             </Text>
             <Select
-              data={TARGET_LANGUAGES}
+              data={TARGET_LANGUAGES.map((opt) => ({ ...opt, label: t(opt.label) }))}
               value={targetLang}
               onChange={handleTargetChange}
               placeholder={t('Select target...')}

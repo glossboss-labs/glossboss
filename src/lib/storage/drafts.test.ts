@@ -173,32 +173,36 @@ describe('drafts', () => {
   });
 
   describe('formatDraftAge', () => {
+    // Create a mock t() that interpolates {{count}} like the real i18n runtime
+    const t = (key: string, opts?: Record<string, unknown>) =>
+      opts ? key.replace(/\{\{(\w+)\}\}/g, (_, k) => String(opts[k] ?? '')) : key;
+
     it('returns "just now" for very recent timestamps', () => {
-      expect(formatDraftAge(Date.now())).toBe('just now');
+      expect(formatDraftAge(Date.now(), t)).toBe('just now');
     });
 
     it('returns minutes ago', () => {
-      expect(formatDraftAge(Date.now() - 5 * 60 * 1000)).toBe('5 minutes ago');
+      expect(formatDraftAge(Date.now() - 5 * 60 * 1000, t)).toBe('5 minutes ago');
     });
 
     it('returns singular minute', () => {
-      expect(formatDraftAge(Date.now() - 1 * 60 * 1000)).toBe('1 minute ago');
+      expect(formatDraftAge(Date.now() - 1 * 60 * 1000, t)).toBe('1 minute ago');
     });
 
     it('returns hours ago', () => {
-      expect(formatDraftAge(Date.now() - 3 * 60 * 60 * 1000)).toBe('3 hours ago');
+      expect(formatDraftAge(Date.now() - 3 * 60 * 60 * 1000, t)).toBe('3 hours ago');
     });
 
     it('returns singular hour', () => {
-      expect(formatDraftAge(Date.now() - 1 * 60 * 60 * 1000)).toBe('1 hour ago');
+      expect(formatDraftAge(Date.now() - 1 * 60 * 60 * 1000, t)).toBe('1 hour ago');
     });
 
     it('returns days ago', () => {
-      expect(formatDraftAge(Date.now() - 2 * 24 * 60 * 60 * 1000)).toBe('2 days ago');
+      expect(formatDraftAge(Date.now() - 2 * 24 * 60 * 60 * 1000, t)).toBe('2 days ago');
     });
 
     it('returns singular day', () => {
-      expect(formatDraftAge(Date.now() - 1 * 24 * 60 * 60 * 1000)).toBe('1 day ago');
+      expect(formatDraftAge(Date.now() - 1 * 24 * 60 * 60 * 1000, t)).toBe('1 day ago');
     });
   });
 });

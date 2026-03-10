@@ -2422,6 +2422,10 @@ msgstr ""
 msgid "i18next JSON (.json)"
 msgstr ""
 
+#: src/lib/storage/drafts.ts:295
+msgid "just now"
+msgstr ""
+
 #: src/components/feedback/FeedbackModal.tsx:424
 msgid "name@example.com"
 msgstr ""
@@ -2470,6 +2474,14 @@ msgstr ""
 msgid "{{count}} comment(s)"
 msgstr ""
 
+#: src/lib/storage/drafts.ts:305
+msgid "{{count}} day ago"
+msgstr ""
+
+#: src/lib/storage/drafts.ts:306
+msgid "{{count}} days ago"
+msgstr ""
+
 #: src/components/editor/HeaderEditor.tsx:596
 msgid "{{count}} entries"
 msgstr ""
@@ -2478,12 +2490,28 @@ msgstr ""
 msgid "{{count}} failed"
 msgstr ""
 
+#: src/lib/storage/drafts.ts:302
+msgid "{{count}} hour ago"
+msgstr ""
+
+#: src/lib/storage/drafts.ts:303
+msgid "{{count}} hours ago"
+msgstr ""
+
 #: src/components/editor/TranslateToolbar.tsx:713
 msgid "{{count}} manual edits will be {{action}}"
 msgstr ""
 
 #: src/components/editor/TranslateToolbar.tsx:585
 msgid "{{count}} manually edited entries will be skipped."
+msgstr ""
+
+#: src/lib/storage/drafts.ts:298
+msgid "{{count}} minute ago"
+msgstr ""
+
+#: src/lib/storage/drafts.ts:299
+msgid "{{count}} minutes ago"
 msgstr ""
 
 #: src/components/editor/EditorTable.tsx:1046

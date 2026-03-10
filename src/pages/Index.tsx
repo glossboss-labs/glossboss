@@ -1647,7 +1647,7 @@ export default function Index() {
                   {t(
                     'You have unsaved changes from {age}. Would you like to restore your previous work?',
                     {
-                      age: formatDraftAge(pendingDraft.draft.savedAt),
+                      age: formatDraftAge(pendingDraft.draft.savedAt, t),
                     },
                   )}
                 </Text>
@@ -1688,7 +1688,7 @@ export default function Index() {
               )}
               {lastAutoSave && (
                 <Text size="xs" c="dimmed">
-                  {t('Auto-saved {age}', { age: formatDraftAge(lastAutoSave) })}
+                  {t('Auto-saved {age}', { age: formatDraftAge(lastAutoSave, t) })}
                 </Text>
               )}
             </Group>

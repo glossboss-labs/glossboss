@@ -2506,6 +2506,10 @@ msgstr "voor details."
 msgid "i18next JSON (.json)"
 msgstr "i18next JSON (.json)"
 
+#: src/lib/storage/drafts.ts:295
+msgid "just now"
+msgstr "zojuist"
+
 #: src/components/feedback/FeedbackModal.tsx:424
 msgid "name@example.com"
 msgstr "naam@voorbeeld.nl"
@@ -2554,6 +2558,14 @@ msgstr "{{count}} handmatig"
 msgid "{{count}} comment(s)"
 msgstr "{{count}} opmerking(en)"
 
+#: src/lib/storage/drafts.ts:305
+msgid "{{count}} day ago"
+msgstr "{{count}} dag geleden"
+
+#: src/lib/storage/drafts.ts:306
+msgid "{{count}} days ago"
+msgstr "{{count}} dagen geleden"
+
 #: src/components/editor/HeaderEditor.tsx:596
 msgid "{{count}} entries"
 msgstr "{{count}} items"
@@ -2562,6 +2574,14 @@ msgstr "{{count}} items"
 msgid "{{count}} failed"
 msgstr "{{count}} mislukt"
 
+#: src/lib/storage/drafts.ts:302
+msgid "{{count}} hour ago"
+msgstr "{{count}} uur geleden"
+
+#: src/lib/storage/drafts.ts:303
+msgid "{{count}} hours ago"
+msgstr "{{count}} uur geleden"
+
 #: src/components/editor/TranslateToolbar.tsx:713
 msgid "{{count}} manual edits will be {{action}}"
 msgstr "{{count}} handmatige bewerkingen worden {{action}}"
@@ -2569,6 +2589,14 @@ msgstr "{{count}} handmatige bewerkingen worden {{action}}"
 #: src/components/editor/TranslateToolbar.tsx:585
 msgid "{{count}} manually edited entries will be skipped."
 msgstr "{{count}} handmatig bewerkte items worden overgeslagen."
+
+#: src/lib/storage/drafts.ts:298
+msgid "{{count}} minute ago"
+msgstr "{{count}} minuut geleden"
+
+#: src/lib/storage/drafts.ts:299
+msgid "{{count}} minutes ago"
+msgstr "{{count}} minuten geleden"
 
 #: src/components/editor/EditorTable.tsx:1046
 #: src/components/editor/EditorTable.tsx:1057
