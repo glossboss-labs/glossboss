@@ -610,18 +610,12 @@ function TranslationCell({
   const updateEntryPlural = useEditorStore((state) => state.updateEntryPlural);
   const markAsMachineTranslated = useEditorStore((state) => state.markAsMachineTranslated);
   const clearMachineTranslated = useEditorStore((state) => state.clearMachineTranslated);
-  const getGlossaryAnalysis = useEditorStore((state) => state.getGlossaryAnalysis);
-
   // Use individual selectors for reactive state
   const isMT = useEditorStore((state) => state.machineTranslatedIds.has(entry.id));
-  const usedGlossary = useEditorStore(
-    (state) => state.machineTranslationMeta.get(entry.id)?.usedGlossary ?? false,
-  );
 
   const translateSettings = useContext(TranslateSettingsContext);
   const hasPlural = Boolean(entry.msgidPlural);
   const pluralForms = useMemo(() => entry.msgstrPlural ?? [], [entry.msgstrPlural]);
-  const glossaryAnalysis = getGlossaryAnalysis(entry.id);
 
   const handleSingularChange = useCallback(
     (value: string) => {
@@ -711,26 +705,6 @@ function TranslationCell({
             )}
           </Group>
         ))}
-
-        {/* MT badge under translation */}
-        {isMT && (
-          <Tooltip
-            label={
-              usedGlossary ? 'Machine translated with glossary' : 'Machine translated by DeepL'
-            }
-          >
-            <Badge
-              size="xs"
-              variant="light"
-              color={usedGlossary ? 'teal' : 'blue'}
-              leftSection={<Bot size={10} />}
-            >
-              {usedGlossary ? 'MT + Glossary' : 'Machine translated'}
-            </Badge>
-          </Tooltip>
-        )}
-
-        <GlossaryIndicator analysis={glossaryAnalysis ?? null} />
       </Stack>
     );
   }
@@ -764,24 +738,6 @@ function TranslationCell({
           />
         )}
       </Group>
-
-      {/* MT badge under translation */}
-      {isMT && (
-        <Tooltip
-          label={usedGlossary ? 'Machine translated with glossary' : 'Machine translated by DeepL'}
-        >
-          <Badge
-            size="xs"
-            variant="light"
-            color={usedGlossary ? 'teal' : 'blue'}
-            leftSection={<Bot size={10} />}
-          >
-            {usedGlossary ? 'MT + Glossary' : 'Machine translated'}
-          </Badge>
-        </Tooltip>
-      )}
-
-      <GlossaryIndicator analysis={glossaryAnalysis ?? null} />
     </Stack>
   );
 }
@@ -793,14 +749,10 @@ const StatusBadges = memo(function StatusBadges({
   entry,
   isModified,
   isManualEdit,
-  hasGlossaryTerms,
-  isMT,
 }: {
   entry: POEntry;
   isModified: boolean;
   isManualEdit: boolean;
-  hasGlossaryTerms: boolean;
-  isMT?: boolean;
 }) {
   const status = getTranslationStatus(entry.msgstr, entry.flags, entry.msgstrPlural);
 
@@ -843,28 +795,6 @@ const StatusBadges = memo(function StatusBadges({
             style={{ flexShrink: 0 }}
           >
             Manual
-          </Badge>
-        </Tooltip>
-      )}
-
-      {hasGlossaryTerms && (
-        <Tooltip label="Contains glossary terms">
-          <Badge size="xs" variant="dot" color="violet" style={{ flexShrink: 0 }}>
-            Glossary
-          </Badge>
-        </Tooltip>
-      )}
-
-      {isMT && (
-        <Tooltip label="Machine translated">
-          <Badge
-            size="xs"
-            variant="light"
-            color="blue"
-            leftSection={<Bot size={10} />}
-            style={{ flexShrink: 0 }}
-          >
-            MT
           </Badge>
         </Tooltip>
       )}
@@ -1261,7 +1191,6 @@ const EntryRow = memo(function EntryRow({
   const usedGlossary = machineTranslationMeta.get(entry.id)?.usedGlossary ?? false;
   const isManualEdit = manualEditIds.has(entry.id) && !isMT;
   const glossaryAnalysis = getGlossaryAnalysis(entry.id);
-  const hasGlossaryTerms = (glossaryAnalysis?.matchedCount ?? 0) > 0;
   const status = getTranslationStatus(entry.msgstr, entry.flags, entry.msgstrPlural);
   const isUntranslated = status === 'untranslated';
 
@@ -1318,13 +1247,7 @@ const EntryRow = memo(function EntryRow({
               key={`${entry.id}-status`}
               style={{ verticalAlign: 'top', padding: '12px 8px', overflow: 'hidden' }}
             >
-              <StatusBadges
-                entry={entry}
-                isModified={isModified}
-                isManualEdit={isManualEdit}
-                hasGlossaryTerms={hasGlossaryTerms}
-                isMT={isMT}
-              />
+              <StatusBadges entry={entry} isModified={isModified} isManualEdit={isManualEdit} />
             </Table.Td>
           );
         }
@@ -1444,13 +1367,7 @@ const MobileEntryCard = memo(function MobileEntryCard({
             aria-label={`Select entry ${entry.msgid}`}
             mt={2}
           />
-          <StatusBadges
-            entry={entry}
-            isModified={isModified}
-            isManualEdit={isManualEdit}
-            hasGlossaryTerms={hasGlossaryTerms}
-            isMT={isMT}
-          />
+          <StatusBadges entry={entry} isModified={isModified} isManualEdit={isManualEdit} />
         </Group>
 
         <UnstyledButton

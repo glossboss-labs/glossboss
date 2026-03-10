@@ -276,7 +276,6 @@ describe('editor details and mobile layout', () => {
     expect(within(statusBadges).getByText('Translated')).toBeInTheDocument();
     expect(within(statusBadges).getByText('Modified')).toBeInTheDocument();
     expect(within(statusBadges).getByText('Manual')).toBeInTheDocument();
-    expect(within(statusBadges).getByText('Glossary')).toBeInTheDocument();
 
     const statusBadgesStyle = getComputedStyle(statusBadges);
 
