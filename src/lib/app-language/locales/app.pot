@@ -7,16 +7,16 @@ msgstr ""
 
 #: src/components/SettingsModal.tsx:983
 #: src/components/SettingsModal.tsx:1232
-msgid "API Key"
-msgstr ""
-
-#: src/components/SettingsModal.tsx:1002
-msgid "API Type"
+msgid "API key"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:454
 #: src/components/SettingsModal.tsx:528
 msgid "API key is valid!"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:1002
+msgid "API type"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:187
@@ -44,7 +44,7 @@ msgid "Backup"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:1711
-msgid "Branch status chip"
+msgid "Branch status badge"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:1117
@@ -179,7 +179,7 @@ msgid "Development Mode Only"
 msgstr ""
 
 #: src/pages/Index.tsx:1597
-msgid "Discard and use fresh file"
+msgid "Discard and use new file"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:136
@@ -214,6 +214,10 @@ msgstr ""
 
 #: src/pages/Index.tsx:1286
 msgid "Edit gettext translation files with DeepL integration"
+msgstr ""
+
+#: src/pages/Index.tsx:1609
+msgid "Editing draft"
 msgstr ""
 
 #: src/components/ui/SpeakButton.tsx:44
@@ -955,10 +959,6 @@ msgstr ""
 
 #: src/components/feedback/FeedbackModal.tsx:398
 msgid "When would you use this?"
-msgstr ""
-
-#: src/pages/Index.tsx:1609
-msgid "Working from draft"
 msgstr ""
 
 #: src/pages/Index.tsx:1318

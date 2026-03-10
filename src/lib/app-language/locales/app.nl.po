@@ -7,17 +7,17 @@ msgstr ""
 
 #: src/components/SettingsModal.tsx:983
 #: src/components/SettingsModal.tsx:1232
-msgid "API Key"
+msgid "API key"
 msgstr "API-sleutel"
-
-#: src/components/SettingsModal.tsx:1002
-msgid "API Type"
-msgstr "API-type"
 
 #: src/components/SettingsModal.tsx:454
 #: src/components/SettingsModal.tsx:528
 msgid "API key is valid!"
 msgstr "De API-sleutel is geldig!"
+
+#: src/components/SettingsModal.tsx:1002
+msgid "API type"
+msgstr "API-type"
 
 #: src/components/SettingsModal.tsx:187
 msgid "Action"
@@ -44,7 +44,7 @@ msgid "Backup"
 msgstr "Back-up"
 
 #: src/components/SettingsModal.tsx:1711
-msgid "Branch status chip"
+msgid "Branch status badge"
 msgstr "Branch-statuschip"
 
 #: src/components/SettingsModal.tsx:1117
@@ -193,7 +193,7 @@ msgid "Development Mode Only"
 msgstr "Alleen in ontwikkelmodus"
 
 #: src/pages/Index.tsx:1597
-msgid "Discard and use fresh file"
+msgid "Discard and use new file"
 msgstr "Verwerpen en een nieuw bestand gebruiken"
 
 #: src/components/SettingsModal.tsx:136
@@ -231,6 +231,10 @@ msgstr "Laat maar vallen"
 #: src/pages/Index.tsx:1286
 msgid "Edit gettext translation files with DeepL integration"
 msgstr "Bewerk gettext-vertaalbestanden met DeepL-integratie"
+
+#: src/pages/Index.tsx:1609
+msgid "Editing draft"
+msgstr "Werkt vanuit concept"
 
 #: src/components/ui/SpeakButton.tsx:44
 msgid "ElevenLabs quota reached."
@@ -1011,10 +1015,6 @@ msgstr ""
 #: src/components/feedback/FeedbackModal.tsx:398
 msgid "When would you use this?"
 msgstr "Wanneer zou je dit gebruiken?"
-
-#: src/pages/Index.tsx:1609
-msgid "Working from draft"
-msgstr "Werkt vanuit concept"
 
 #: src/pages/Index.tsx:1318
 msgid "You have unsaved changes"
