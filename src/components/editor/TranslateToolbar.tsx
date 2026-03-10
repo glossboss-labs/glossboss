@@ -649,7 +649,7 @@ export function TranslateToolbar({
               aria-label={t('Source language')}
             />
 
-            <Text c="dimmed" size="sm">
+            <Text c="dimmed" size="sm" aria-hidden="true">
               →
             </Text>
 
@@ -693,7 +693,7 @@ export function TranslateToolbar({
                       variant="light"
                       color="red"
                     >
-                      Cancel
+                      {t('Cancel')}
                     </Button>
                   </motion.div>
                 </MotionDiv>
@@ -906,7 +906,7 @@ export function TranslateToolbar({
                   onChange={(e) => setSkipManualEdits(e.currentTarget.checked)}
                   label={
                     <Group gap={4}>
-                      <ShieldAlert size={14} />
+                      <ShieldAlert size={14} aria-hidden="true" />
                       <Text size="xs">
                         {t('Protect {{count}} manual edits from bulk translation', {
                           count: manualEditCount,
@@ -944,6 +944,7 @@ export function TranslateToolbar({
                 size="sm"
                 animated
                 color={failedCount > 0 ? 'orange' : 'blue'}
+                aria-label={t('Translation progress')}
               />
             </MotionStack>
           )}

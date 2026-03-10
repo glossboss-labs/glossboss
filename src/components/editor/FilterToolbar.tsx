@@ -367,6 +367,14 @@ export function FilterToolbar() {
                       leftSection={<Icon size={14} />}
                       style={badgeStyle.style}
                       onClick={() => toggleFilter(filter.id)}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e: React.KeyboardEvent) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          toggleFilter(filter.id);
+                        }
+                      }}
                     >
                       {count} {t(filter.label)}
                     </Badge>
@@ -392,6 +400,14 @@ export function FilterToolbar() {
                         leftSection={<Bot size={14} />}
                         style={badgeStyle.style}
                         onClick={() => toggleFilter('machine-translated')}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e: React.KeyboardEvent) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            toggleFilter('machine-translated');
+                          }
+                        }}
                       >
                         {stats.machineTranslated} MT
                       </Badge>
@@ -418,6 +434,14 @@ export function FilterToolbar() {
                         leftSection={<Edit3 size={14} />}
                         style={badgeStyle.style}
                         onClick={() => toggleFilter('manual-edit')}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e: React.KeyboardEvent) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            toggleFilter('manual-edit');
+                          }
+                        }}
                       >
                         {stats.manualEdits} Manual
                       </Badge>

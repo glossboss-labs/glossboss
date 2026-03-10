@@ -68,6 +68,7 @@ export function GlossaryViewerModal({
           value={search}
           onChange={(event) => setSearch(event.currentTarget.value)}
           size="sm"
+          aria-label={t('Search terms...')}
         />
         {search && (
           <Text size="xs" c="dimmed" mt="xs">

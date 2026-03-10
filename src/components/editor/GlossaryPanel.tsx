@@ -281,7 +281,7 @@ export function GlossaryPanel({
         <Stack gap="xs">
           {/* Header row */}
           <Group justify="space-between">
-            <UnstyledButton onClick={() => setIsExpanded(!isExpanded)}>
+            <UnstyledButton onClick={() => setIsExpanded(!isExpanded)} aria-expanded={isExpanded}>
               <Group gap="xs">
                 {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                 <BookOpen size={16} />
@@ -322,6 +322,7 @@ export function GlossaryPanel({
                     <ActionIcon
                       size="sm"
                       variant="subtle"
+                      aria-label={t('Refresh from WordPress.org')}
                       onClick={(e) => {
                         e.stopPropagation();
                         handleLoad(true);

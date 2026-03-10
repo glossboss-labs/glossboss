@@ -144,14 +144,14 @@ function KeyCombo({ keys }: { keys: string[][] }) {
       {keys.map((combo, ci) => (
         <Group key={ci} gap={4} wrap="nowrap">
           {ci > 0 && (
-            <Text size="xs" c="dimmed">
+            <Text size="xs" c="dimmed" aria-hidden="true">
               /
             </Text>
           )}
           {combo.map((key, ki) => (
             <span key={ki} style={{ display: 'inline-flex', alignItems: 'center', gap: 2 }}>
               {ki > 0 && (
-                <Text size="xs" c="dimmed">
+                <Text size="xs" c="dimmed" aria-hidden="true">
                   +
                 </Text>
               )}

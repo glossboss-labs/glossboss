@@ -547,7 +547,11 @@ export function HeaderEditor({ encodingInfo }: HeaderEditorProps) {
   return (
     <Paper p="md" withBorder radius="md">
       {/* Summary row - always visible */}
-      <UnstyledButton onClick={() => setIsExpanded(!isExpanded)} style={{ width: '100%' }}>
+      <UnstyledButton
+        onClick={() => setIsExpanded(!isExpanded)}
+        style={{ width: '100%' }}
+        aria-expanded={isExpanded}
+      >
         <Group justify="space-between" align="center">
           <Group gap="sm">
             <Text fw={500}>{filename}</Text>
@@ -677,7 +681,10 @@ export function HeaderEditor({ encodingInfo }: HeaderEditorProps) {
           </SimpleGrid>
 
           {/* Toggle for secondary fields */}
-          <UnstyledButton onClick={() => setShowAllFields(!showAllFields)}>
+          <UnstyledButton
+            onClick={() => setShowAllFields(!showAllFields)}
+            aria-expanded={showAllFields}
+          >
             <Group gap="xs">
               <Info size={14} />
               <Text size="sm" c="dimmed">

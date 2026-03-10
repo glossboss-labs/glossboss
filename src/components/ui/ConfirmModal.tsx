@@ -65,7 +65,7 @@ export function ConfirmModal({
             exit="exit"
           >
             <Group gap="sm" align="flex-start">
-              <ThemeIcon color={iconColor} variant="light" size="lg" radius="xl">
+              <ThemeIcon color={iconColor} variant="light" size="lg" radius="xl" aria-hidden="true">
                 <Icon size={18} />
               </ThemeIcon>
               <Stack gap={4} style={{ flex: 1 }}>

@@ -183,6 +183,7 @@ export function SourceCodeViewer({
               rel="noopener noreferrer"
               variant="subtle"
               size="sm"
+              aria-label={t('Open in Trac')}
             >
               <ExternalLink size={14} />
             </ActionIcon>
@@ -249,6 +250,7 @@ export function SourceCodeViewer({
           onClick={() => setExpanded(!expanded)}
           p="xs"
           style={{ borderTop: '1px solid var(--mantine-color-default-border)' }}
+          aria-expanded={expanded}
         >
           <Text size="xs" c="blue" ta="center">
             {expanded

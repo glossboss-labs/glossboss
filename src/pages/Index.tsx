@@ -1339,6 +1339,9 @@ export default function Index() {
                                   leftSection={<Download size={16} />}
                                   variant="light"
                                   onClick={handleDownload}
+                                  aria-label={
+                                    hasUnsavedChanges ? t('Download (unsaved changes)') : undefined
+                                  }
                                   style={{
                                     borderTopRightRadius: 0,
                                     borderBottomRightRadius: 0,
