@@ -114,12 +114,16 @@ async function playWithElevenLabs(request: TtsSpeakRequest, playbackId: string):
     throw new Error('Select an ElevenLabs voice in Settings.');
   }
 
+  setSnapshot({ activeId: playbackId, status: 'playing', error: null });
+
   const blob = await getElevenLabsClient().speak({
     voiceId,
     text: request.text,
     modelId: 'eleven_multilingual_v2',
     languageCode: request.lang,
   });
+
+  if (snapshot.activeId !== playbackId) return;
 
   cleanupAudio();
 
@@ -144,11 +148,6 @@ async function playWithElevenLabs(request: TtsSpeakRequest, playbackId: string):
   };
 
   await audio.play();
-  setSnapshot({
-    activeId: playbackId,
-    status: 'playing',
-    error: null,
-  });
   void refreshUsageInBackground();
 }
 
@@ -217,7 +216,7 @@ export async function togglePlayback(request: TtsSpeakRequest): Promise<void> {
   }
 
   try {
-    if (settings.provider === 'elevenlabs' && settings.apiKey.trim()) {
+    if (settings.provider === 'elevenlabs') {
       await playWithElevenLabs(request, playbackId);
       return;
     }

@@ -101,6 +101,10 @@ msgstr "Editor wissen"
 msgid "Clear editor?"
 msgstr "Editor wissen?"
 
+#: src/components/ui/SpeakButton.tsx:41
+msgid "Configure your ElevenLabs API key in Settings."
+msgstr "Stel je ElevenLabs API-sleutel in via Instellingen."
+
 #: src/components/ui/ConfirmModal.tsx:37
 msgid "Confirm"
 msgstr "Bevestigen"
@@ -134,6 +138,8 @@ msgid ""
 "Could not fetch the file. The server may not allow cross-origin requests. Tr"
 "y downloading the file and uploading it directly."
 msgstr ""
+"Het bestand kon niet worden opgehaald. De server staat mogelijk geen cross-o"
+"riginverzoeken toe. Probeer het bestand te downloaden en direct te uploaden."
 
 #: src/pages/Index.tsx:147
 msgid "Dark mode"
@@ -226,7 +232,7 @@ msgstr "Laat maar vallen"
 msgid "Edit gettext translation files with DeepL integration"
 msgstr "Bewerk gettext-vertaalbestanden met DeepL-integratie"
 
-#: src/components/ui/SpeakButton.tsx:41
+#: src/components/ui/SpeakButton.tsx:44
 msgid "ElevenLabs quota reached."
 msgstr "ElevenLabs-quotum bereikt."
 
@@ -444,7 +450,7 @@ msgstr "Som stappen op die iemand anders kan volgen"
 
 #: src/pages/Index.tsx:1738
 msgid "Load"
-msgstr ""
+msgstr "Laden"
 
 #: src/components/SettingsModal.tsx:1404
 msgid "Load Glossary"
@@ -476,6 +482,8 @@ msgid ""
 "Loading a new file from URL will replace the currently loaded file. Any unsa"
 "ved changes will be lost."
 msgstr ""
+"Het laden van een nieuw bestand via URL vervangt het huidig geladen bestand."
+" Niet-opgeslagen wijzigingen gaan verloren."
 
 #: src/components/SettingsModal.tsx:216
 msgid "Navigation Settings"
@@ -528,17 +536,14 @@ msgstr "PO-bestand (.po)"
 
 #: src/pages/Index.tsx:1721
 msgid "PO file URL"
-msgstr ""
+msgstr "PO-bestands-URL"
 
 #: src/pages/Index.tsx:1720
 msgid "Paste a .po file URL"
-msgstr ""
+msgstr "Plak een .po-bestands-URL"
 
-#: src/components/ui/SpeakButton.tsx:79
-msgid "Play"
-msgstr "Afspelen"
-
-#: src/components/ui/SpeakButton.tsx:58
+#: src/components/ui/SpeakButton.tsx:61
+#: src/components/ui/SpeakButton.tsx:86
 msgid "Play source"
 msgstr "Bron afspelen"
 
@@ -552,7 +557,8 @@ msgstr ""
 " en lokaal. ElevenLabs gebruikt je eigen API-sleutel via een beveiligde prox"
 "y."
 
-#: src/components/ui/SpeakButton.tsx:59
+#: src/components/ui/SpeakButton.tsx:62
+#: src/components/ui/SpeakButton.tsx:87
 msgid "Play translation"
 msgstr "Vertaling afspelen"
 
@@ -641,15 +647,17 @@ msgstr "Opgeslagen sleutel verwijderen"
 
 #: src/pages/Index.tsx:1483
 msgid "Replace"
-msgstr ""
+msgstr "Vervangen"
 
 #: src/pages/Index.tsx:1479
 msgid "Replace current file?"
-msgstr ""
+msgstr "Huidig bestand vervangen?"
 
 #: src/pages/Index.tsx:754
 msgid "Request timed out. Try downloading the file and uploading it directly."
 msgstr ""
+"Verzoek is verlopen. Probeer het bestand te downloaden en direct te uploaden"
+"."
 
 #: src/pages/Index.tsx:1588
 msgid "Restore draft"
@@ -661,7 +669,7 @@ msgstr "Opnieuw synchroniseren"
 
 #: src/components/editor/TranslateToolbar.tsx:576
 msgid "Retranslate All"
-msgstr ""
+msgstr "Alles opnieuw vertalen"
 
 #: src/components/SettingsModal.tsx:1516
 msgid "Retry"
@@ -779,7 +787,7 @@ msgstr "Bronstem"
 msgid "Speech"
 msgstr "Spraak"
 
-#: src/components/ui/SpeakButton.tsx:44
+#: src/components/ui/SpeakButton.tsx:47
 msgid "Speech synthesis is not available in this browser."
 msgstr "Spraaksynthese is niet beschikbaar in deze browser."
 
@@ -787,8 +795,8 @@ msgstr "Spraaksynthese is niet beschikbaar in deze browser."
 msgid "Steps to reproduce"
 msgstr "Stappen om te reproduceren"
 
-#: src/components/ui/SpeakButton.tsx:56
-#: src/components/ui/SpeakButton.tsx:79
+#: src/components/ui/SpeakButton.tsx:59
+#: src/components/ui/SpeakButton.tsx:84
 msgid "Stop playback"
 msgstr "Afspelen stoppen"
 
@@ -826,7 +834,7 @@ msgstr "Bedankt. Issue #{issueNumber} is aangemaakt."
 
 #: src/pages/Index.tsx:779
 msgid "The URL must start with https://"
-msgstr ""
+msgstr "De URL moet beginnen met https://"
 
 #: src/components/SettingsModal.tsx:1700
 msgid ""
@@ -1032,6 +1040,9 @@ msgid ""
 "leared when you close the tab. Enable \"Remember API key\" below to persist "
 "it across sessions."
 msgstr ""
+"Je ElevenLabs API-sleutel wordt standaard alleen in dit browsertabblad bewaa"
+"rd en wordt gewist wanneer je het tabblad sluit. Zet hieronder \"API-sleutel"
+" onthouden\" aan om de sleutel tussen sessies te bewaren."
 
 #: src/components/SettingsModal.tsx:1084
 #: src/components/SettingsModal.tsx:1289
@@ -1048,7 +1059,7 @@ msgstr "i18next JSON (.json)"
 
 #: src/pages/Index.tsx:1743
 msgid "or"
-msgstr ""
+msgstr "of"
 
 #: src/components/SettingsModal.tsx:1431
 msgid "or upload manually"

@@ -37,6 +37,9 @@ export function SpeakButton({ text, lang, kind, entryId }: SpeakButtonProps) {
     if (!text.trim()) {
       return kind === 'translation' ? t('Nothing to play yet.') : t('No text to play.');
     }
+    if (settings.provider === 'elevenlabs' && !settings.apiKey.trim()) {
+      return t('Configure your ElevenLabs API key in Settings.');
+    }
     if (settings.provider === 'elevenlabs' && usageExceeded) {
       return t('ElevenLabs quota reached.');
     }
@@ -76,7 +79,13 @@ export function SpeakButton({ text, lang, kind, entryId }: SpeakButtonProps) {
         variant="default"
         size="sm"
         color={hasError ? 'red' : undefined}
-        aria-label={isPlaying ? t('Stop playback') : t('Play')}
+        aria-label={
+          isPlaying
+            ? t('Stop playback')
+            : kind === 'source'
+              ? t('Play source')
+              : t('Play translation')
+        }
         onClick={() => {
           if (disabledReason) return;
           void togglePlayback({ text, lang, kind, entryId });

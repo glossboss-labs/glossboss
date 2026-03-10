@@ -101,6 +101,10 @@ msgstr "Clear editor"
 msgid "Clear editor?"
 msgstr "Clear editor?"
 
+#: src/components/ui/SpeakButton.tsx:41
+msgid "Configure your ElevenLabs API key in Settings."
+msgstr "Configure your ElevenLabs API key in Settings."
+
 #: src/components/ui/ConfirmModal.tsx:37
 msgid "Confirm"
 msgstr "Confirm"
@@ -227,7 +231,7 @@ msgstr "Drop it like it's hot"
 msgid "Edit gettext translation files with DeepL integration"
 msgstr "Edit gettext translation files with DeepL integration"
 
-#: src/components/ui/SpeakButton.tsx:41
+#: src/components/ui/SpeakButton.tsx:44
 msgid "ElevenLabs quota reached."
 msgstr "ElevenLabs quota reached."
 
@@ -534,11 +538,8 @@ msgstr "PO file URL"
 msgid "Paste a .po file URL"
 msgstr "Paste a .po file URL"
 
-#: src/components/ui/SpeakButton.tsx:79
-msgid "Play"
-msgstr "Play"
-
-#: src/components/ui/SpeakButton.tsx:58
+#: src/components/ui/SpeakButton.tsx:61
+#: src/components/ui/SpeakButton.tsx:86
 msgid "Play source"
 msgstr "Play source"
 
@@ -552,7 +553,8 @@ msgstr ""
 "s free and local. ElevenLabs uses your own API key through a protected proxy"
 "."
 
-#: src/components/ui/SpeakButton.tsx:59
+#: src/components/ui/SpeakButton.tsx:62
+#: src/components/ui/SpeakButton.tsx:87
 msgid "Play translation"
 msgstr "Play translation"
 
@@ -777,7 +779,7 @@ msgstr "Source voice"
 msgid "Speech"
 msgstr "Speech"
 
-#: src/components/ui/SpeakButton.tsx:44
+#: src/components/ui/SpeakButton.tsx:47
 msgid "Speech synthesis is not available in this browser."
 msgstr "Speech synthesis is not available in this browser."
 
@@ -785,8 +787,8 @@ msgstr "Speech synthesis is not available in this browser."
 msgid "Steps to reproduce"
 msgstr "Steps to reproduce"
 
-#: src/components/ui/SpeakButton.tsx:56
-#: src/components/ui/SpeakButton.tsx:79
+#: src/components/ui/SpeakButton.tsx:59
+#: src/components/ui/SpeakButton.tsx:84
 msgid "Stop playback"
 msgstr "Stop playback"
 
