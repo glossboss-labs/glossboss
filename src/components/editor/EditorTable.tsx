@@ -67,6 +67,8 @@ import { SourceBrowser } from './SourceBrowser';
 import type { TargetLanguage, SourceLanguage } from '@/lib/deepl/types';
 import type { Glossary, GlossaryAnalysisResult } from '@/lib/glossary/types';
 import { useDragGhost } from '@/hooks/use-drag-ghost';
+import { toSpeakLanguageTag } from '@/lib/tts';
+import { SpeakButton } from '@/components/ui';
 
 /** localStorage key for skip-translated navigation setting */
 export const NAV_SKIP_TRANSLATED_KEY = 'glossboss-nav-skip-translated';
@@ -528,28 +530,58 @@ function EditableField({
  * Source text display with plural support (read-only)
  */
 function SourceCell({ entry }: { entry: POEntry }) {
+  const translateSettings = useContext(TranslateSettingsContext);
+  const sourceLang = toSpeakLanguageTag(translateSettings.sourceLang);
   const hasPlural = Boolean(entry.msgidPlural);
 
   if (hasPlural) {
     return (
       <Stack gap={4}>
-        <Group gap={4}>
+        <Group gap={4} wrap="nowrap" align="flex-start">
           <Badge size="xs" variant="light" color="gray">
             singular
           </Badge>
-          <HighlightedText>{entry.msgid}</HighlightedText>
+          <Box style={{ flex: 1, minWidth: 0 }}>
+            <HighlightedText>{entry.msgid}</HighlightedText>
+          </Box>
+          <SpeakButton
+            kind="source"
+            entryId={`${entry.id}-source-0`}
+            text={entry.msgid}
+            lang={sourceLang}
+          />
         </Group>
-        <Group gap={4}>
+        <Group gap={4} wrap="nowrap" align="flex-start">
           <Badge size="xs" variant="light" color="gray">
             plural
           </Badge>
-          <HighlightedText>{entry.msgidPlural!}</HighlightedText>
+          <Box style={{ flex: 1, minWidth: 0 }}>
+            <HighlightedText>{entry.msgidPlural!}</HighlightedText>
+          </Box>
+          <SpeakButton
+            kind="source"
+            entryId={`${entry.id}-source-1`}
+            text={entry.msgidPlural!}
+            lang={sourceLang}
+          />
         </Group>
       </Stack>
     );
   }
 
-  return <HighlightedText>{entry.msgid}</HighlightedText>;
+  return (
+    <Group gap="xs" wrap="nowrap" align="flex-start">
+      <Box style={{ flex: 1, minWidth: 0 }}>
+        <HighlightedText>{entry.msgid}</HighlightedText>
+      </Box>
+      <SpeakButton
+        kind="source"
+        entryId={`${entry.id}-source`}
+        text={entry.msgid}
+        lang={sourceLang}
+      />
+    </Group>
+  );
 }
 
 function SignalsOverviewCell({
@@ -622,6 +654,7 @@ function TranslationCell({
   const hasPlural = Boolean(entry.msgidPlural);
   const pluralForms = useMemo(() => entry.msgstrPlural ?? [], [entry.msgstrPlural]);
   const glossaryAnalysis = getGlossaryAnalysis(entry.id);
+  const translationLang = toSpeakLanguageTag(translateSettings.targetLang);
 
   const handleSingularChange = useCallback(
     (value: string) => {
@@ -709,6 +742,12 @@ function TranslationCell({
                 display={translateButtonDisplay}
               />
             )}
+            <SpeakButton
+              kind="translation"
+              entryId={`${entry.id}-translation-${index}`}
+              text={form}
+              lang={translationLang}
+            />
           </Group>
         ))}
 
@@ -763,6 +802,12 @@ function TranslationCell({
             display={translateButtonDisplay}
           />
         )}
+        <SpeakButton
+          kind="translation"
+          entryId={`${entry.id}-translation`}
+          text={entry.msgstr}
+          lang={translationLang}
+        />
       </Group>
 
       {/* MT badge under translation */}
