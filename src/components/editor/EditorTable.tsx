@@ -666,13 +666,19 @@ function TranslationCell({
   const updateEntryPlural = useEditorStore((state) => state.updateEntryPlural);
   const markAsMachineTranslated = useEditorStore((state) => state.markAsMachineTranslated);
   const clearMachineTranslated = useEditorStore((state) => state.clearMachineTranslated);
+  const getGlossaryAnalysis = useEditorStore((state) => state.getGlossaryAnalysis);
 
   // Use individual selectors for reactive state
   const isMT = useEditorStore((state) => state.machineTranslatedIds.has(entry.id));
+  const usedGlossary = useEditorStore(
+    (state) => state.machineTranslationMeta.get(entry.id)?.usedGlossary ?? false,
+  );
+  const signalsColumnHidden = useEditorStore((state) => !state.visibleColumns.has('signals'));
 
   const translateSettings = useContext(TranslateSettingsContext);
   const hasPlural = Boolean(entry.msgidPlural);
   const pluralForms = useMemo(() => entry.msgstrPlural ?? [], [entry.msgstrPlural]);
+  const glossaryAnalysis = signalsColumnHidden ? getGlossaryAnalysis(entry.id) : null;
   const translationLang = toSpeakLanguageTag(translateSettings.targetLang);
 
   const handleSingularChange = useCallback(
@@ -773,6 +779,30 @@ function TranslationCell({
             )}
           </Group>
         ))}
+
+        {signalsColumnHidden && (
+          <>
+            {isMT && (
+              <Tooltip
+                label={
+                  usedGlossary
+                    ? t('Machine translated with glossary')
+                    : t('Machine translated by DeepL')
+                }
+              >
+                <Badge
+                  size="xs"
+                  variant="light"
+                  color={usedGlossary ? 'teal' : 'blue'}
+                  leftSection={<Bot size={10} />}
+                >
+                  {usedGlossary ? t('MT + Glossary') : t('Machine translated')}
+                </Badge>
+              </Tooltip>
+            )}
+            <GlossaryIndicator analysis={glossaryAnalysis} />
+          </>
+        )}
       </Stack>
     );
   }
@@ -816,6 +846,30 @@ function TranslationCell({
           />
         )}
       </Group>
+
+      {signalsColumnHidden && (
+        <>
+          {isMT && (
+            <Tooltip
+              label={
+                usedGlossary
+                  ? t('Machine translated with glossary')
+                  : t('Machine translated by DeepL')
+              }
+            >
+              <Badge
+                size="xs"
+                variant="light"
+                color={usedGlossary ? 'teal' : 'blue'}
+                leftSection={<Bot size={10} />}
+              >
+                {usedGlossary ? t('MT + Glossary') : t('Machine translated')}
+              </Badge>
+            </Tooltip>
+          )}
+          <GlossaryIndicator analysis={glossaryAnalysis} />
+        </>
+      )}
     </Stack>
   );
 }
