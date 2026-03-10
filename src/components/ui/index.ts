@@ -5,3 +5,4 @@
  */
 
 export { ConfirmModal, type ConfirmModalProps } from './ConfirmModal';
+export { SpeakButton, type SpeakButtonProps } from './SpeakButton';

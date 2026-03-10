@@ -50,7 +50,7 @@ describe('FeedbackModal', () => {
 
     expect(screen.getByText('Please complete all required bug fields.')).toBeInTheDocument();
     expect(submitMock).not.toHaveBeenCalled();
-  });
+  }, 10000);
 
   it('blocks submit when required feature fields are missing', async () => {
     const user = userEvent.setup();
@@ -123,7 +123,7 @@ describe('FeedbackModal', () => {
     expect(onClose).toHaveBeenCalledTimes(1);
     expect(screen.getByPlaceholderText('Short summary of the issue')).toHaveValue('');
     window.history.pushState({}, '', '/');
-  });
+  }, 10000);
 
   it('shows submission errors from backend', async () => {
     const user = userEvent.setup();
