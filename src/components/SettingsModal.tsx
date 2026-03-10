@@ -280,6 +280,7 @@ export function SettingsModal({
   });
   const [viewerOpened, setViewerOpened] = useState(false);
   const [hasAttemptedAutoLoad, setHasAttemptedAutoLoad] = useState(false);
+  const loadTokenRef = useRef(0);
 
   // Load saved settings on open
   useEffect(() => {
@@ -372,11 +373,13 @@ export function SettingsModal({
     async (forceRefresh = false) => {
       if (!selectedLocale) return;
 
+      const token = ++loadTokenRef.current;
       setIsLoadingGlossary(true);
       setGlossaryError(null);
 
       try {
         const result: FetchResult = await fetchWPGlossary(selectedLocale, forceRefresh);
+        if (loadTokenRef.current !== token) return;
         if (result.glossary) {
           onGlossaryLoaded?.(result.glossary);
           if (result.error) setGlossaryError(result.error);
@@ -384,19 +387,24 @@ export function SettingsModal({
           setGlossaryError(result.error || t('Failed to load glossary'));
         }
       } catch (err) {
+        if (loadTokenRef.current !== token) return;
         setGlossaryError(err instanceof Error ? err.message : t('Unknown error'));
       } finally {
-        setIsLoadingGlossary(false);
+        if (loadTokenRef.current === token) {
+          setIsLoadingGlossary(false);
+        }
       }
     },
     [selectedLocale, onGlossaryLoaded, t],
   );
 
   const handleClearGlossary = useCallback(() => {
+    ++loadTokenRef.current; // invalidate any in-flight load
     if (selectedLocale) {
       clearWPGlossaryCache(selectedLocale);
     }
-    setHasAttemptedAutoLoad(false); // Allow auto-load to try again after manual clear
+    setIsLoadingGlossary(false);
+    setHasAttemptedAutoLoad(true); // Prevent auto-load from re-fetching after clear
     onGlossaryCleared?.();
   }, [selectedLocale, onGlossaryCleared]);
 
