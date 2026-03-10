@@ -45,6 +45,7 @@ import {
   Keyboard,
   GitBranch,
   Monitor,
+  Languages,
   Upload,
   Download,
 } from 'lucide-react';
@@ -78,41 +79,42 @@ import {
   settingsFileHasCredentials,
   type AppSettingsFile,
 } from '@/lib/app-settings';
+import { APP_LANGUAGE_OPTIONS, msgid, useTranslation, type AppLanguage } from '@/lib/app-language';
 
 /** Keyboard shortcut definitions */
 const KEYBINDS: { keys: string[][]; action: string; description?: string }[] = [
   {
     keys: [['Tab']],
-    action: 'Next field',
-    description: 'Save current field and move to the next translation field',
+    action: msgid('Next field'),
+    description: msgid('Save current field and move to the next translation field'),
   },
   {
     keys: [['Shift', 'Tab']],
-    action: 'Previous field',
-    description: 'Save current field and move to the previous translation field',
+    action: msgid('Previous field'),
+    description: msgid('Save current field and move to the previous translation field'),
   },
   {
     keys: [['Enter']],
-    action: 'Next field',
-    description: 'Save current field and move to the next translation field',
+    action: msgid('Next field'),
+    description: msgid('Save current field and move to the next translation field'),
   },
   {
     keys: [['Shift', 'Enter']],
-    action: 'New line',
-    description: 'Insert a line break in the translation',
+    action: msgid('New line'),
+    description: msgid('Insert a line break in the translation'),
   },
   {
     keys: [
       ['⌘', 'Enter'],
       ['Ctrl', 'Enter'],
     ],
-    action: 'Next entry',
-    description: 'Save and jump to the next translation entry (skips translated by default)',
+    action: msgid('Next entry'),
+    description: msgid('Save and jump to the next translation entry (skips translated by default)'),
   },
   {
     keys: [['Escape']],
-    action: 'Cancel edit',
-    description: 'Discard changes and exit the current field',
+    action: msgid('Cancel edit'),
+    description: msgid('Discard changes and exit the current field'),
   },
 ];
 
@@ -151,19 +153,20 @@ function KeyboardShortcutsPanel({
   skipTranslated: boolean;
   onSkipTranslatedChange: (value: boolean) => void;
 }) {
+  const { t } = useTranslation();
   return (
     <Stack gap="md">
       <Text size="sm" c="dimmed">
-        Keyboard shortcuts available when editing translations.
+        {t('Keyboard shortcuts available when editing translations.')}
       </Text>
 
       <Paper withBorder>
         <Table>
           <Table.Thead>
             <Table.Tr>
-              <Table.Th style={{ width: '35%' }}>Shortcut</Table.Th>
-              <Table.Th style={{ width: '20%' }}>Action</Table.Th>
-              <Table.Th>Description</Table.Th>
+              <Table.Th style={{ width: '35%' }}>{t('Shortcut')}</Table.Th>
+              <Table.Th style={{ width: '20%' }}>{t('Action')}</Table.Th>
+              <Table.Th>{t('Description')}</Table.Th>
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
@@ -174,12 +177,12 @@ function KeyboardShortcutsPanel({
                 </Table.Td>
                 <Table.Td>
                   <Text size="sm" fw={500}>
-                    {bind.action}
+                    {t(bind.action)}
                   </Text>
                 </Table.Td>
                 <Table.Td>
                   <Text size="sm" c="dimmed">
-                    {bind.description}
+                    {bind.description ? t(bind.description) : null}
                   </Text>
                 </Table.Td>
               </Table.Tr>
@@ -191,12 +194,14 @@ function KeyboardShortcutsPanel({
       <Divider />
 
       <Text size="sm" fw={500}>
-        Navigation Settings
+        {t('Navigation Settings')}
       </Text>
 
       <Switch
-        label="Skip translated entries"
-        description="When using ⌘/Ctrl+Enter, skip entries that are already translated and jump to the next untranslated or fuzzy entry"
+        label={t('Skip translated entries')}
+        description={t(
+          'When using ⌘/Ctrl+Enter, skip entries that are already translated and jump to the next untranslated or fuzzy entry',
+        )}
         checked={skipTranslated}
         onChange={(e) => onSkipTranslatedChange(e.currentTarget.checked)}
         styles={{
@@ -249,6 +254,7 @@ export function SettingsModal({
   containerWidth = 'xl',
   onContainerWidthChange,
 }: SettingsModalProps) {
+  const { language, setLanguage, t } = useTranslation();
   const isDevelopment = import.meta.env.DEV;
 
   // DeepL API settings state
@@ -349,7 +355,7 @@ export function SettingsModal({
 
   const handleTestKey = useCallback(async () => {
     if (!apiKey.trim()) {
-      setTestResult({ success: false, message: 'Please enter an API key' });
+      setTestResult({ success: false, message: t('Please enter an API key') });
       return;
     }
 
@@ -363,27 +369,27 @@ export function SettingsModal({
 
       setTestResult({
         success: true,
-        message: 'API key is valid!',
+        message: t('API key is valid!'),
         usage: { used: usage.characterCount, limit: usage.characterLimit },
       });
       setIsSaved(true);
     } catch (error) {
       setTestResult({
         success: false,
-        message: error instanceof Error ? error.message : 'Failed to connect',
+        message: error instanceof Error ? error.message : t('Failed to connect'),
       });
       clearDeepLSettings();
       setIsSaved(false);
     } finally {
       setIsTesting(false);
     }
-  }, [apiKey, apiType, formality]);
+  }, [apiKey, apiType, formality, t]);
 
   const handleSaveApiKey = useCallback(() => {
     saveDeepLSettings({ apiKey, apiType, formality });
     setIsSaved(true);
-    setTestResult({ success: true, message: 'Settings saved!' });
-  }, [apiKey, apiType, formality]);
+    setTestResult({ success: true, message: t('Settings saved!') });
+  }, [apiKey, apiType, formality, t]);
 
   const handleClearApiKey = useCallback(() => {
     clearDeepLSettings();
@@ -432,8 +438,8 @@ export function SettingsModal({
       setTransferResult({
         success: true,
         message: includeApiKey
-          ? 'Settings exported with your DeepL API key.'
-          : 'Settings exported without your DeepL API key.',
+          ? t('Settings exported with your DeepL API key.')
+          : t('Settings exported without your DeepL API key.'),
       });
     },
     [
@@ -447,6 +453,7 @@ export function SettingsModal({
       persistKey,
       selectedLocale,
       skipTranslated,
+      t,
     ],
   );
 
@@ -473,11 +480,11 @@ export function SettingsModal({
         success: true,
         message:
           includeApiKey && settingsFileHasCredentials(file)
-            ? 'Settings imported, including your DeepL API key.'
-            : 'Settings imported without changing your current DeepL API key.',
+            ? t('Settings imported, including your DeepL API key.')
+            : t('Settings imported without changing your current DeepL API key.'),
       });
     },
-    [isDevelopment, onBranchChipEnabledChange, onContainerWidthChange, setSkipTranslated],
+    [isDevelopment, onBranchChipEnabledChange, onContainerWidthChange, setSkipTranslated, t],
   );
 
   const handleExportClick = useCallback(() => {
@@ -513,7 +520,7 @@ export function SettingsModal({
             message:
               error instanceof Error
                 ? error.message
-                : 'Unable to import the selected settings file.',
+                : t('Unable to import the selected settings file.'),
           });
         } finally {
           settingsImportResetRef.current?.();
@@ -523,14 +530,14 @@ export function SettingsModal({
       reader.onerror = () => {
         setTransferResult({
           success: false,
-          message: 'Unable to read the selected settings file.',
+          message: t('Unable to read the selected settings file.'),
         });
         settingsImportResetRef.current?.();
       };
 
       reader.readAsText(file);
     },
-    [applyImportedSettings],
+    [applyImportedSettings, t],
   );
 
   const handleLoadGlossary = useCallback(
@@ -546,15 +553,15 @@ export function SettingsModal({
           onGlossaryLoaded?.(result.glossary);
           if (result.error) setGlossaryError(result.error);
         } else {
-          setGlossaryError(result.error || 'Failed to load glossary');
+          setGlossaryError(result.error || t('Failed to load glossary'));
         }
       } catch (err) {
-        setGlossaryError(err instanceof Error ? err.message : 'Unknown error');
+        setGlossaryError(err instanceof Error ? err.message : t('Unknown error'));
       } finally {
         setIsLoadingGlossary(false);
       }
     },
-    [selectedLocale, onGlossaryLoaded],
+    [selectedLocale, onGlossaryLoaded, t],
   );
 
   const handleClearGlossary = useCallback(() => {
@@ -576,7 +583,7 @@ export function SettingsModal({
         const text = reader.result as string;
 
         if (!isValidGlossaryCSV(text)) {
-          setGlossaryError('File does not appear to be a valid WordPress glossary CSV.');
+          setGlossaryError(t('File does not appear to be a valid WordPress glossary CSV.'));
           csvUploadResetRef.current?.();
           return;
         }
@@ -584,7 +591,7 @@ export function SettingsModal({
         const parseResult = parseGlossaryCSV(text);
         if (parseResult.entries.length === 0) {
           setGlossaryError(
-            parseResult.errors[0] || 'No glossary entries found in the uploaded file.',
+            parseResult.errors[0] || t('No glossary entries found in the uploaded file.'),
           );
           csvUploadResetRef.current?.();
           return;
@@ -602,12 +609,12 @@ export function SettingsModal({
         csvUploadResetRef.current?.();
       };
       reader.onerror = () => {
-        setGlossaryError('Failed to read the file.');
+        setGlossaryError(t('Failed to read the file.'));
         csvUploadResetRef.current?.();
       };
       reader.readAsText(file);
     },
-    [selectedLocale, onGlossaryLoaded],
+    [selectedLocale, onGlossaryLoaded, t],
   );
 
   // Reset auto-load flag when locale changes
@@ -626,14 +633,14 @@ export function SettingsModal({
 
   return (
     <>
-      <Modal opened={opened} onClose={onClose} title="Settings" size="lg" centered>
+      <Modal opened={opened} onClose={onClose} title={t('Settings')} size="lg" centered>
         <Tabs defaultValue="api">
           <Tabs.List mb="md">
             <Tabs.Tab value="api" leftSection={<Key size={14} />}>
-              DeepL API
+              {t('DeepL API')}
             </Tabs.Tab>
             <Tabs.Tab value="glossary" leftSection={<BookOpen size={14} />}>
-              Glossary
+              {t('Glossary')}
               {glossary && (
                 <Badge size="xs" color="green" ml={6}>
                   {glossary.entries.length}
@@ -641,13 +648,13 @@ export function SettingsModal({
               )}
             </Tabs.Tab>
             <Tabs.Tab value="keybinds" leftSection={<Keyboard size={14} />}>
-              Keyboard Shortcuts
+              {t('Keyboard Shortcuts')}
             </Tabs.Tab>
             <Tabs.Tab value="display" leftSection={<Monitor size={14} />}>
-              Display
+              {t('Display')}
             </Tabs.Tab>
             <Tabs.Tab value="transfer" leftSection={<Download size={14} />}>
-              Backup
+              {t('Backup')}
             </Tabs.Tab>
             {isDevelopment && (
               <Tabs.Tab
@@ -658,7 +665,7 @@ export function SettingsModal({
                   borderRadius: 'var(--mantine-radius-md)',
                 }}
               >
-                Development
+                {t('Development')}
               </Tabs.Tab>
             )}
           </Tabs.List>
@@ -667,7 +674,7 @@ export function SettingsModal({
           <Tabs.Panel value="api">
             <Stack gap="md">
               <Text size="sm" c="dimmed">
-                Enter your DeepL API key to enable machine translation. Get a free key at{' '}
+                {t('Enter your DeepL API key to enable machine translation. Get a free key at')}{' '}
                 <Anchor
                   href="https://www.deepl.com/pro-api"
                   target="_blank"
@@ -686,15 +693,17 @@ export function SettingsModal({
 
               <Alert color="yellow" icon={<AlertCircle size={16} />}>
                 <Text size="sm">
-                  Your API key is kept in this browser tab by default and will be cleared when you
-                  close the tab. Enable &quot;Remember API key&quot; below to persist it across
-                  sessions — only do this on a personal, trusted device.
+                  {t(
+                    'DeepL API is kept in this browser tab by default and will be cleared when you close the tab. Enable "Remember API key" below to persist it across sessions — only do this on a personal, trusted device.',
+                  )}
                 </Text>
               </Alert>
 
               <Switch
-                label="Remember API key across sessions"
-                description="When enabled, your key is stored in localStorage and survives browser restarts. Disable on shared or untrusted devices."
+                label={t('Remember API key across sessions')}
+                description={t(
+                  'When enabled, your key is stored in localStorage and survives browser restarts. Disable on shared or untrusted devices.',
+                )}
                 checked={persistKey}
                 onChange={(e) => {
                   const enabled = e.currentTarget.checked;
@@ -705,8 +714,8 @@ export function SettingsModal({
               />
 
               <PasswordInput
-                label="API Key"
-                placeholder="Enter your DeepL API key"
+                label={t('API Key')}
+                placeholder={t('Enter your DeepL API key')}
                 value={apiKey}
                 onChange={(e) => {
                   setApiKey(e.currentTarget.value);
@@ -715,7 +724,7 @@ export function SettingsModal({
                 }}
                 rightSection={
                   isSaved && apiKey ? (
-                    <Tooltip label="Key saved">
+                    <Tooltip label={t('Key saved')}>
                       <Check size={16} color="var(--mantine-color-green-6)" />
                     </Tooltip>
                   ) : null
@@ -724,7 +733,7 @@ export function SettingsModal({
 
               <div data-ev-id="ev_a06444cf83">
                 <Text size="sm" fw={500} mb={4}>
-                  API Type
+                  {t('API Type')}
                 </Text>
                 <SegmentedControl
                   value={apiType}
@@ -733,20 +742,20 @@ export function SettingsModal({
                     setIsSaved(false);
                   }}
                   data={[
-                    { label: 'Free API', value: 'free' },
-                    { label: 'Pro API', value: 'pro' },
+                    { label: t('Free API'), value: 'free' },
+                    { label: t('Pro API'), value: 'pro' },
                   ]}
                   fullWidth
                 />
 
                 <Text size="xs" c="dimmed" mt={4}>
-                  Free: 500,000 chars/month • Pro: Pay per use
+                  {t('Free: 500,000 chars/month • Pro: Pay per use')}
                 </Text>
               </div>
 
               <div>
                 <Text size="sm" fw={500} mb={4}>
-                  Formality
+                  {t('Formality')}
                 </Text>
                 <SegmentedControl
                   value={formality}
@@ -755,14 +764,16 @@ export function SettingsModal({
                     saveDeepLSettings({ formality: value as DeepLFormality });
                   }}
                   data={[
-                    { label: 'Informal', value: 'prefer_less' },
-                    { label: 'Formal', value: 'prefer_more' },
+                    { label: t('Informal'), value: 'prefer_less' },
+                    { label: t('Formal'), value: 'prefer_more' },
                   ]}
                   fullWidth
                 />
 
                 <Text size="xs" c="dimmed" mt={4}>
-                  Controls the tone of DeepL translations. Not all languages support formality.
+                  {t(
+                    'Controls the tone of DeepL translations. Not all languages support formality.',
+                  )}
                 </Text>
               </div>
 
@@ -773,14 +784,14 @@ export function SettingsModal({
                   loading={isTesting}
                   disabled={!apiKey.trim()}
                 >
-                  Test Connection
+                  {t('Test Connection')}
                 </Button>
                 <Button onClick={handleSaveApiKey} disabled={!apiKey.trim() || isSaved}>
-                  Save
+                  {t('Save')}
                 </Button>
                 {apiKey && (
                   <Button variant="subtle" color="red" onClick={handleClearApiKey}>
-                    Remove saved key
+                    {t('Remove saved key')}
                   </Button>
                 )}
               </Group>
@@ -804,7 +815,7 @@ export function SettingsModal({
 
                         <Text size="xs" c="dimmed">
                           {testResult.usage.used.toLocaleString()} /{' '}
-                          {testResult.usage.limit.toLocaleString()} characters
+                          {testResult.usage.limit.toLocaleString()} {t('characters')}
                         </Text>
                       </>
                     )}
@@ -818,13 +829,15 @@ export function SettingsModal({
           <Tabs.Panel value="glossary">
             <Stack gap="md">
               <Text size="sm" c="dimmed">
-                Load the official WordPress translation glossary to ensure consistent terminology.
+                {t(
+                  'Load the official WordPress translation glossary to ensure consistent terminology.',
+                )}
               </Text>
 
               <Group align="flex-end" gap="sm">
                 <Select
-                  label="Language"
-                  placeholder="Select locale"
+                  label={t('Language')}
+                  placeholder={t('Select locale')}
                   data={COMMON_GLOSSARY_LOCALES}
                   value={selectedLocale}
                   onChange={(value) => setSelectedLocale(value || '')}
@@ -838,11 +851,11 @@ export function SettingsModal({
                     loading={isLoadingGlossary}
                     disabled={!selectedLocale}
                   >
-                    Load Glossary
+                    {t('Load Glossary')}
                   </Button>
                 ) : (
                   <Group gap="xs">
-                    <Tooltip label="Refresh from WordPress.org">
+                    <Tooltip label={t('Refresh from WordPress.org')}>
                       <ActionIcon
                         variant="light"
                         size="lg"
@@ -853,7 +866,7 @@ export function SettingsModal({
                       </ActionIcon>
                     </Tooltip>
                     <Button variant="subtle" color="gray" onClick={handleClearGlossary}>
-                      Clear
+                      {t('Clear')}
                     </Button>
                   </Group>
                 )}
@@ -865,7 +878,7 @@ export function SettingsModal({
                 </Alert>
               )}
 
-              <Divider label="or upload manually" labelPosition="center" />
+              <Divider label={t('or upload manually')} labelPosition="center" />
 
               <Group align="center" gap="sm">
                 <FileButton
@@ -880,12 +893,12 @@ export function SettingsModal({
                       disabled={!selectedLocale}
                       {...props}
                     >
-                      Upload CSV
+                      {t('Upload CSV')}
                     </Button>
                   )}
                 </FileButton>
                 <Text size="xs" c="dimmed">
-                  Upload a WordPress glossary CSV for the selected language
+                  {t('Upload a WordPress glossary CSV for the selected language')}
                 </Text>
               </Group>
 
@@ -896,7 +909,7 @@ export function SettingsModal({
                     <Group justify="space-between">
                       <Group gap="xs">
                         <Badge color="green" variant="light">
-                          {glossary.entries.length} terms
+                          {glossary.entries.length} {t('terms')}
                         </Badge>
                         <Text size="sm" c="dimmed">
                           ({glossary.targetLocale})
@@ -909,7 +922,7 @@ export function SettingsModal({
                         leftSection={<Eye size={14} />}
                         onClick={() => setViewerOpened(true)}
                       >
-                        View All
+                        {t('View All')}
                       </Button>
                     </Group>
 
@@ -919,14 +932,16 @@ export function SettingsModal({
                         <>
                           <Loader size={12} />
                           <Text size="xs" c="dimmed">
-                            Syncing to DeepL...
+                            {t('Syncing to DeepL...')}
                           </Text>
                         </>
                       ) : deeplGlossaryId ? (
                         <>
                           <Check size={12} color="var(--mantine-color-green-6)" />
                           <Text size="xs" c="green">
-                            DeepL ready{deeplTermCount ? ` (${deeplTermCount} terms)` : ''}
+                            {deeplTermCount
+                              ? t('DeepL ready ({count} terms)', { count: deeplTermCount })
+                              : t('DeepL ready')}
                           </Text>
                           <Button
                             size="compact-xs"
@@ -934,21 +949,21 @@ export function SettingsModal({
                             color="gray"
                             onClick={() => onForceResync?.(glossary)}
                           >
-                            Resync
+                            {t('Resync')}
                           </Button>
                         </>
                       ) : syncStatus?.includes('failed') ? (
                         <>
                           <X size={12} color="var(--mantine-color-red-6)" />
                           <Text size="xs" c="red">
-                            Sync failed
+                            {t('Sync failed')}
                           </Text>
                           <Button
                             size="compact-xs"
                             variant="subtle"
                             onClick={() => onGlossaryLoaded?.(glossary)}
                           >
-                            Retry
+                            {t('Retry')}
                           </Button>
                         </>
                       ) : null}
@@ -958,8 +973,8 @@ export function SettingsModal({
 
                     {/* Enforcement toggle */}
                     <Switch
-                      label="Use glossary for translations"
-                      description="DeepL will enforce glossary terms in machine translations"
+                      label={t('Use glossary for translations')}
+                      description={t('DeepL will enforce glossary terms in machine translations')}
                       checked={enforcementEnabled}
                       onChange={(e) => setEnforcementEnabled(e.currentTarget.checked)}
                       styles={{
@@ -978,7 +993,7 @@ export function SettingsModal({
                         <Divider />
                         <div data-ev-id="ev_898c72be1c">
                           <Text size="xs" fw={500} mb={4}>
-                            Terms in selected text:
+                            {t('Terms in selected text:')}
                           </Text>
                           <GlossaryTermsPreview
                             sourceText={selectedSourceText}
@@ -1005,18 +1020,55 @@ export function SettingsModal({
           <Tabs.Panel value="display">
             <Stack gap="md">
               <Text size="sm" c="dimmed">
-                Adjust the appearance of the editor to suit your screen and preferences.
+                {t('Adjust the appearance of the editor to suit your screen and preferences.')}
               </Text>
 
               <Paper p="md" withBorder>
                 <Stack gap="sm">
                   <div>
                     <Text size="sm" fw={500}>
-                      Container width
+                      {t('Interface language')}
                     </Text>
                     <Text size="xs" c="dimmed">
-                      Controls the maximum width of the main content area. Use a wider setting on
-                      large monitors, or full width to use all available space.
+                      {t('Choose which language GlossBoss uses for its interface.')}
+                    </Text>
+                  </div>
+
+                  <Select
+                    aria-label={t('Interface language')}
+                    value={language}
+                    onChange={(value) => {
+                      if (value) {
+                        setLanguage(value as AppLanguage);
+                      }
+                    }}
+                    data={APP_LANGUAGE_OPTIONS.map((option) => ({
+                      value: option.value,
+                      label: option.label,
+                    }))}
+                    leftSection={<Languages size={14} />}
+                    allowDeselect={false}
+                  />
+
+                  <Text size="xs" c="dimmed">
+                    {t('Want to help translate GlossBoss?')}{' '}
+                    <Anchor href="/translate/" target="_blank" rel="noopener noreferrer">
+                      {t('Read the translation guide')}
+                    </Anchor>
+                  </Text>
+                </Stack>
+              </Paper>
+
+              <Paper p="md" withBorder>
+                <Stack gap="sm">
+                  <div>
+                    <Text size="sm" fw={500}>
+                      {t('Container width')}
+                    </Text>
+                    <Text size="xs" c="dimmed">
+                      {t(
+                        'Controls the maximum width of the main content area. Use a wider setting on large monitors, or full width to use all available space.',
+                      )}
                     </Text>
                   </div>
 
@@ -1038,26 +1090,27 @@ export function SettingsModal({
           <Tabs.Panel value="transfer">
             <Stack gap="md">
               <Text size="sm" c="dimmed">
-                Export your saved preferences to a JSON backup file, or restore them into this
-                browser. Glossary cache, drafts, and project files are not included.
+                {t(
+                  'Export your saved preferences to a JSON backup file, or restore them into this browser. Glossary cache, drafts, and project files are not included.',
+                )}
               </Text>
 
               <Paper p="md" withBorder>
                 <Stack gap="sm">
                   <div>
                     <Text size="sm" fw={500}>
-                      Settings file
+                      {t('Settings file')}
                     </Text>
                     <Text size="xs" c="dimmed">
-                      Exports DeepL preferences, glossary options, navigation behavior, display
-                      width, and development-only toggles. If a DeepL API key is present, you can
-                      choose whether to include it.
+                      {t(
+                        'Exports DeepL preferences, glossary options, navigation behavior, display width, and development-only toggles. If a DeepL API key is present, you can choose whether to include it.',
+                      )}
                     </Text>
                   </div>
 
                   <Group>
                     <Button leftSection={<Download size={14} />} onClick={handleExportClick}>
-                      Export settings
+                      {t('Export settings')}
                     </Button>
 
                     <FileButton
@@ -1067,7 +1120,7 @@ export function SettingsModal({
                     >
                       {(props) => (
                         <Button variant="light" leftSection={<Upload size={14} />} {...props}>
-                          Import settings
+                          {t('Import settings')}
                         </Button>
                       )}
                     </FileButton>
@@ -1091,11 +1144,12 @@ export function SettingsModal({
               <Stack gap="md">
                 <Alert color="orange" variant="light" icon={<GitBranch size={16} />}>
                   <Text size="sm" fw={600}>
-                    Development Mode Only
+                    {t('Development Mode Only')}
                   </Text>
                   <Text size="sm">
-                    These tools only appear while running the app locally in development and are not
-                    shown in production.
+                    {t(
+                      'These tools only appear while running the app locally in development and are not shown in production.',
+                    )}
                   </Text>
                 </Alert>
 
@@ -1104,11 +1158,12 @@ export function SettingsModal({
                     <Group justify="space-between" align="flex-start">
                       <div>
                         <Text size="sm" fw={500}>
-                          Branch status chip
+                          {t('Branch status chip')}
                         </Text>
                         <Text size="xs" c="dimmed">
-                          Show the current git branch in a small floating chip at the bottom right
-                          of the site.
+                          {t(
+                            'Show the current git branch in a small floating chip at the bottom right of the site.',
+                          )}
                         </Text>
                       </div>
 
@@ -1118,8 +1173,8 @@ export function SettingsModal({
                     </Group>
 
                     <Switch
-                      label="Show branch chip"
-                      description="Only visible while running the app in development mode"
+                      label={t('Show branch chip')}
+                      description={t('Only visible while running the app in development mode')}
                       checked={branchChipEnabled}
                       onChange={(e) => onBranchChipEnabledChange?.(e.currentTarget.checked)}
                       styles={{
@@ -1151,7 +1206,7 @@ export function SettingsModal({
       <Modal
         opened={credentialPrompt !== null}
         onClose={() => setCredentialPrompt(null)}
-        title={credentialPrompt?.mode === 'import' ? 'Import API key?' : 'Include API key?'}
+        title={credentialPrompt?.mode === 'import' ? t('Import API key?') : t('Include API key?')}
         centered
         size="sm"
       >
@@ -1159,24 +1214,28 @@ export function SettingsModal({
           <Alert color="yellow" icon={<AlertCircle size={16} />}>
             <Text size="sm">
               {credentialPrompt?.mode === 'import'
-                ? 'This settings file contains your DeepL API key in plain text.'
-                : 'Including your DeepL API key will store it in plain text inside the exported JSON file.'}
+                ? t('This settings file contains your DeepL API key in plain text.')
+                : t(
+                    'Including your DeepL API key will store it in plain text inside the exported JSON file.',
+                  )}
             </Text>
           </Alert>
 
           <Text size="sm">
             {credentialPrompt?.mode === 'import'
-              ? 'Choose whether to import the key or keep the current key saved in this browser.'
-              : 'Choose whether to export the key or keep the settings file free of credentials.'}
+              ? t('Choose whether to import the key or keep the current key saved in this browser.')
+              : t(
+                  'Choose whether to export the key or keep the settings file free of credentials.',
+                )}
           </Text>
 
           <Text size="xs" c="dimmed">
-            Only include credentials on personal, trusted devices.
+            {t('Only include credentials on personal, trusted devices.')}
           </Text>
 
           <Group justify="flex-end">
             <Button variant="default" onClick={() => setCredentialPrompt(null)}>
-              Cancel
+              {t('Cancel')}
             </Button>
             <Button
               variant="default"
@@ -1192,7 +1251,9 @@ export function SettingsModal({
                 downloadSettingsFile(false);
               }}
             >
-              {credentialPrompt?.mode === 'import' ? 'Keep current key' : 'Export without key'}
+              {credentialPrompt?.mode === 'import'
+                ? t('Keep current key')
+                : t('Export without key')}
             </Button>
             <Button
               onClick={() => {
@@ -1207,7 +1268,7 @@ export function SettingsModal({
                 downloadSettingsFile(true);
               }}
             >
-              {credentialPrompt?.mode === 'import' ? 'Import key' : 'Include key'}
+              {credentialPrompt?.mode === 'import' ? t('Import key') : t('Include key')}
             </Button>
           </Group>
         </Stack>

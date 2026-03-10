@@ -55,6 +55,8 @@ import {
   X,
   PanelRightOpen,
   PanelRightClose,
+  Check,
+  AlertTriangle,
 } from 'lucide-react';
 import { useEditorStore, useSourceStore, getEffectiveSlug } from '@/stores';
 import type { POEntry } from '@/lib/po';
@@ -96,16 +98,17 @@ const ROWS_PER_PAGE_OPTIONS = [
 ];
 
 /** Column definitions with default proportional widths */
-const COLUMN_KEYS = ['select', 'status', 'source', 'translation', 'signals'] as const;
+const COLUMN_KEYS = ['select', 'status', 'approve', 'source', 'translation', 'signals'] as const;
 type TableColumnKey = (typeof COLUMN_KEYS)[number];
 type DataColumnKey = Exclude<TableColumnKey, 'select'>;
 const DATA_COLUMN_LABELS: Record<DataColumnKey, string> = {
   status: 'Status',
+  approve: 'Approve',
   source: 'Source string',
   translation: 'Translated string',
   signals: 'Signals',
 };
-const DEFAULT_COLUMN_WIDTHS = [72, 210, 320, 320, 220];
+const DEFAULT_COLUMN_WIDTHS = [72, 210, 48, 320, 320, 220];
 const MIN_COLUMN_WIDTH = 60; // minimum proportion
 
 /**
@@ -873,6 +876,39 @@ const StatusBadges = memo(function StatusBadges({
 });
 
 /**
+ * Approve/unapprove toggle for fuzzy entries
+ */
+const ApproveCell = memo(function ApproveCell({ entry }: { entry: POEntry }) {
+  const toggleFuzzy = useEditorStore((state) => state.toggleFuzzy);
+  const status = getTranslationStatus(entry.msgstr, entry.flags, entry.msgstrPlural);
+  const isFuzzy = status === 'fuzzy';
+  const isUntranslated = status === 'untranslated';
+
+  return (
+    <Box style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <Tooltip
+        label={isFuzzy ? 'Approve: clear fuzzy flag' : 'Unapprove: mark as fuzzy'}
+        disabled={isUntranslated}
+      >
+        <ActionIcon
+          variant={isFuzzy ? 'light' : 'subtle'}
+          color={isFuzzy ? 'yellow' : 'green'}
+          size="sm"
+          disabled={isUntranslated}
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleFuzzy(entry.id);
+          }}
+          aria-label={isFuzzy ? 'Approve translation' : 'Mark as fuzzy'}
+        >
+          {isFuzzy ? <AlertTriangle size={14} /> : <Check size={14} />}
+        </ActionIcon>
+      </Tooltip>
+    </Box>
+  );
+});
+
+/**
  * Meta column with flags, references, and comments.
  * When a plugin slug is set, references become clickable links.
  */
@@ -1038,6 +1074,7 @@ function EntryDetailsPanel({
             Line {entry.lineNumber}
           </Badge>
         )}
+        <ApproveCell entry={entry} />
       </Group>
 
       <Group align="flex-start" grow>
@@ -1329,6 +1366,17 @@ const EntryRow = memo(function EntryRow({
           );
         }
 
+        if (columnKey === 'approve') {
+          return (
+            <Table.Td
+              key={`${entry.id}-approve`}
+              style={{ verticalAlign: 'middle', padding: '8px 4px', overflow: 'hidden' }}
+            >
+              <ApproveCell entry={entry} />
+            </Table.Td>
+          );
+        }
+
         if (columnKey === 'source') {
           return (
             <Table.Td
@@ -1451,6 +1499,7 @@ const MobileEntryCard = memo(function MobileEntryCard({
             hasGlossaryTerms={hasGlossaryTerms}
             isMT={isMT}
           />
+          <ApproveCell entry={entry} />
         </Group>
 
         <UnstyledButton
@@ -2102,14 +2151,8 @@ export function EditorTable({
                             aria-label="Select all filtered entries"
                             data-testid="select-all-checkbox"
                           />
-                        ) : columnKey === 'status' ? (
-                          DATA_COLUMN_LABELS.status
-                        ) : columnKey === 'source' ? (
-                          DATA_COLUMN_LABELS.source
-                        ) : columnKey === 'translation' ? (
-                          DATA_COLUMN_LABELS.translation
                         ) : (
-                          DATA_COLUMN_LABELS.signals
+                          DATA_COLUMN_LABELS[columnKey]
                         );
 
                       const dropIndicator =
@@ -2127,8 +2170,14 @@ export function EditorTable({
                               ? (delta) => handleColumnResize(columnKey, nextColumn, delta)
                               : undefined
                           }
-                          align={columnKey === 'select' ? 'center' : 'left'}
-                          padding={columnKey === 'select' ? '8px 8px' : undefined}
+                          align={
+                            columnKey === 'select' || columnKey === 'approve' ? 'center' : 'left'
+                          }
+                          padding={
+                            columnKey === 'select' || columnKey === 'approve'
+                              ? '8px 4px'
+                              : undefined
+                          }
                           dataColumnKey={isDataColumn ? columnKey : undefined}
                           onCellPointerDown={
                             isDataColumn ? handleHeaderPointerDown(columnKey) : undefined

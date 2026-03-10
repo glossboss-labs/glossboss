@@ -131,7 +131,7 @@ function serializeHeader(header: POHeader, options: SerializeOptions): string {
   for (const [key, headerKey] of fieldOrder) {
     const value = headerCopy[key];
     if (value) {
-      lines.push(`${headerKey}: ${value}\\n`);
+      lines.push(`${headerKey}: ${value}\n`);
       usedKeys.add(key);
     }
   }
@@ -142,7 +142,7 @@ function serializeHeader(header: POHeader, options: SerializeOptions): string {
       // Convert camelCase to Header-Case for custom fields
       const headerKey = key.replace(/([A-Z])/g, '-$1').replace(/^-/, '');
       const formattedKey = headerKey.charAt(0).toUpperCase() + headerKey.slice(1);
-      lines.push(`${formattedKey}: ${value}\\n`);
+      lines.push(`${formattedKey}: ${value}\n`);
     }
   }
 

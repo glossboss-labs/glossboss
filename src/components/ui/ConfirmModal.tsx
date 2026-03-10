@@ -9,6 +9,7 @@ import { Modal, Stack, Text, Group, Button, ThemeIcon } from '@mantine/core';
 import { motion, AnimatePresence } from 'motion/react';
 import { AlertTriangle, Info } from 'lucide-react';
 import { slideUpVariants, buttonStates } from '@/lib/motion';
+import { msgid, useTranslation } from '@/lib/app-language';
 
 const MotionStack = motion.create(Stack);
 
@@ -33,12 +34,13 @@ export function ConfirmModal({
   title,
   message,
   detail,
-  confirmLabel = 'Confirm',
-  cancelLabel = 'Cancel',
+  confirmLabel = msgid('Confirm'),
+  cancelLabel = msgid('Cancel'),
   confirmColor = 'red',
   variant = 'warning',
   loading = false,
 }: ConfirmModalProps) {
+  const { t } = useTranslation();
   const iconColor = variant === 'danger' ? 'red' : variant === 'warning' ? 'orange' : 'blue';
   const Icon = variant === 'info' ? Info : AlertTriangle;
 
@@ -79,12 +81,12 @@ export function ConfirmModal({
             <Group justify="flex-end" gap="sm">
               <motion.div {...buttonStates}>
                 <Button variant="default" onClick={onClose} disabled={loading}>
-                  {cancelLabel}
+                  {t(cancelLabel)}
                 </Button>
               </motion.div>
               <motion.div {...buttonStates}>
                 <Button color={confirmColor} onClick={onConfirm} loading={loading}>
-                  {confirmLabel}
+                  {t(confirmLabel)}
                 </Button>
               </motion.div>
             </Group>

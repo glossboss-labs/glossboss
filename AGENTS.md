@@ -13,6 +13,13 @@ Only keep non-obvious, repo-specific failure modes here. If an agent can infer s
 - Frontend production builds require `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, and `VITE_TURNSTILE_SITE_KEY`.
 - Keep the routing contract intact: one `<BrowserRouter>` in `src/main.tsx`, route definitions in `src/App.tsx`, no `useRoutes()`, no `React.lazy()`, no dynamic route imports.
 
+## i18n (App Interface Translations)
+
+- Translatable strings use `t('...')` from `useTranslation()`. For strings defined at module scope (data arrays, default params) that are later passed to `t()`, wrap them with `msgid('...')` from `@/lib/app-language` — it's an identity function that marks strings for extraction.
+- After adding or changing `t()` / `msgid()` calls, run `bun run i18n:extract` to regenerate `app.pot` and merge into all `app.*.po` files. CI fails if PO/POT files are out of date.
+- PO files live in `src/lib/app-language/locales/`. The `app.pot` template is committed and generated — do not hand-edit it.
+- English PO (`app.en.po`) auto-fills `msgstr = msgid` for new entries. Other languages get empty `msgstr` that must be translated.
+
 ## Frontend Design Policy
 
 - For any frontend design or UI generation work done by Codex or GPT-family models, load and follow the repo-local Uncodixfy skill at `.codex/skills/uncodixfy/SKILL.md`.
