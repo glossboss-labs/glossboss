@@ -1004,7 +1004,7 @@ msgid "When would you use this?"
 msgstr "When would you use this?"
 
 #: src/pages/Index.tsx:1609
-msgid "Editing draft"
+msgid "Working from draft"
 msgstr "Editing draft"
 
 #: src/pages/Index.tsx:1318
