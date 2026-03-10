@@ -1300,17 +1300,6 @@ const EntryRow = memo(function EntryRow({
           );
         }
 
-        if (columnKey === 'approve') {
-          return (
-            <Table.Td
-              key={`${entry.id}-approve`}
-              style={{ verticalAlign: 'middle', padding: '8px 4px', overflow: 'hidden' }}
-            >
-              <ApproveCell entry={entry} />
-            </Table.Td>
-          );
-        }
-
         if (columnKey === 'source') {
           return (
             <Table.Td
