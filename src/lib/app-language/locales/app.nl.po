@@ -195,7 +195,7 @@ msgstr "Alleen ontwikkelingsmodus"
 
 #: src/pages/Index.tsx:1597
 msgid "Discard and use new file"
-msgstr "Verwerpen en een nieuw bestand gebruiken"
+msgstr "Weggooien en nieuw bestand gebruiken"
 
 #: src/components/SettingsModal.tsx:136
 msgid "Discard changes and exit the current field"
@@ -235,7 +235,7 @@ msgstr "Bewerk gettext-vertaalbestanden met DeepL-integratie"
 
 #: src/pages/Index.tsx:1609
 msgid "Editing draft"
-msgstr "Werkt vanuit concept"
+msgstr "Werken vanuit concept"
 
 #: src/components/ui/SpeakButton.tsx:44
 msgid "ElevenLabs quota reached."
@@ -765,7 +765,7 @@ msgstr "Sneltoets"
 
 #: src/components/SettingsModal.tsx:1726
 msgid "Show branch badge"
-msgstr "Branch-chip tonen"
+msgstr "Branch-statuschip tonen"
 
 #: src/components/SettingsModal.tsx:1714
 msgid ""
