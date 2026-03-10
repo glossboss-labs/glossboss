@@ -1487,7 +1487,9 @@ export default function Index() {
                         {t('Clear editor')}
                       </Menu.Item>
                       <Menu.Divider />
-                      <Menu.Label>GlossBoss v{__APP_VERSION__}</Menu.Label>
+                      <Menu.Label>
+                        {t('GlossBoss v{version}', { version: __APP_VERSION__ })}
+                      </Menu.Label>
                       <Menu.Item
                         component="a"
                         href="https://github.com/lammersbjorn/glossboss"

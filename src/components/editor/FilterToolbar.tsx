@@ -20,6 +20,7 @@ import {
   Button,
   Checkbox,
   Select,
+  UnstyledButton,
 } from '@mantine/core';
 import { motion, AnimatePresence } from 'motion/react';
 import {
@@ -243,6 +244,7 @@ export function FilterToolbar() {
       <Group justify="space-between" align="center" wrap="wrap">
         <Group gap="sm" wrap="nowrap" style={{ flex: 1, minWidth: 260 }}>
           <TextInput
+            aria-label={t('Search source, translation, context...')}
             placeholder={t('Search source, translation, context...')}
             leftSection={<Search size={16} />}
             rightSection={
@@ -267,28 +269,20 @@ export function FilterToolbar() {
           <AnimatePresence>
             {hasActiveFilters && (
               <MotionDiv variants={contentVariants} initial="hidden" animate="visible" exit="exit">
-                <Text
-                  size="sm"
-                  c="blue"
-                  style={{ cursor: 'pointer', flexShrink: 0, whiteSpace: 'nowrap' }}
+                <UnstyledButton
                   onClick={clearFilters}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e: React.KeyboardEvent) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      clearFilters();
-                    }
-                  }}
+                  style={{ flexShrink: 0, whiteSpace: 'nowrap' }}
                 >
-                  {t('Clear filters')}
-                  {filteredCount !== stats.total && (
-                    <Text span c="dimmed" size="sm">
-                      {' '}
-                      ({t('{{count}} shown', { count: filteredCount })})
-                    </Text>
-                  )}
-                </Text>
+                  <Text size="sm" c="blue">
+                    {t('Clear filters')}
+                    {filteredCount !== stats.total && (
+                      <Text span c="dimmed" size="sm">
+                        {' '}
+                        ({t('{{count}} shown', { count: filteredCount })})
+                      </Text>
+                    )}
+                  </Text>
+                </UnstyledButton>
               </MotionDiv>
             )}
           </AnimatePresence>

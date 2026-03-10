@@ -75,7 +75,6 @@ body {
  * ---------------------------------------------------------------- */
 .mantine-Input-input:focus:not(.inline-editor-input),
 .mantine-Textarea-input:focus:not(.inline-editor-input) {
-  border-color: var(--mantine-color-blue-6) !important;
   box-shadow: 0 0 0 2px var(--gb-glow-focus) !important;
 }
 

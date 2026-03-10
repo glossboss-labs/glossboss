@@ -665,6 +665,8 @@ export function SettingsModal({
             navSkipTranslated: skipTranslated,
             containerWidth,
             branchChipEnabled: isDevelopment ? branchChipEnabled : undefined,
+            speechEnabled,
+            translateEnabled,
           },
         },
         { includeApiKey },
@@ -701,6 +703,8 @@ export function SettingsModal({
       persistKey,
       selectedLocale,
       skipTranslated,
+      speechEnabled,
+      translateEnabled,
       t,
     ],
   );
@@ -732,6 +736,13 @@ export function SettingsModal({
         onBranchChipEnabledChange?.(applied.preferences.branchChipEnabled);
       }
 
+      if (typeof applied.preferences.speechEnabled === 'boolean') {
+        onSpeechEnabledChange?.(applied.preferences.speechEnabled);
+      }
+      if (typeof applied.preferences.translateEnabled === 'boolean') {
+        onTranslateEnabledChange?.(applied.preferences.translateEnabled);
+      }
+
       setTransferResult({
         success: true,
         message:
@@ -746,6 +757,8 @@ export function SettingsModal({
       onBranchChipEnabledChange,
       onContainerWidthChange,
       onGlossaryCleared,
+      onSpeechEnabledChange,
+      onTranslateEnabledChange,
       setSkipTranslated,
       t,
     ],
