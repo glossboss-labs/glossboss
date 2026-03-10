@@ -620,6 +620,19 @@ export function SettingsModal({
     [ttsRate, t],
   );
 
+  const previewElevenLabsVoice = useCallback(
+    (voiceId: string | null) => {
+      if (!voiceId) return;
+      const voice = elevenLabsVoices.find((v) => v.voiceId === voiceId);
+      if (!voice?.previewUrl) return;
+      stopPlayback();
+      const audio = new Audio(voice.previewUrl);
+      audio.playbackRate = Number(ttsRate);
+      void audio.play();
+    },
+    [elevenLabsVoices, ttsRate],
+  );
+
   useEffect(() => {
     if (!opened || !ttsApiKey.trim() || ttsProvider !== 'elevenlabs') return;
     void loadElevenLabsVoices();
@@ -1298,37 +1311,63 @@ export function SettingsModal({
                         </Alert>
                       )}
 
-                      <Select
-                        label={t('Source voice')}
-                        placeholder={t('Load voices by testing your key')}
-                        data={elevenLabsVoices.map((voice) => ({
-                          value: voice.voiceId,
-                          label: voice.name,
-                        }))}
-                        value={sourceElevenLabsVoiceId}
-                        onChange={(value) => {
-                          setSourceElevenLabsVoiceId(value);
-                          setTtsSaved(false);
-                        }}
-                        disabled={elevenLabsVoices.length === 0 || ttsVoicesLoading}
-                        searchable
-                      />
+                      <Group align="end" gap="xs">
+                        <Select
+                          label={t('Source voice')}
+                          placeholder={t('Load voices by testing your key')}
+                          data={elevenLabsVoices.map((voice) => ({
+                            value: voice.voiceId,
+                            label: voice.name,
+                          }))}
+                          value={sourceElevenLabsVoiceId}
+                          onChange={(value) => {
+                            setSourceElevenLabsVoiceId(value);
+                            setTtsSaved(false);
+                          }}
+                          disabled={elevenLabsVoices.length === 0 || ttsVoicesLoading}
+                          searchable
+                          style={{ flex: 1 }}
+                        />
+                        <Tooltip label={t('Preview voice')}>
+                          <ActionIcon
+                            variant="default"
+                            size="lg"
+                            disabled={!sourceElevenLabsVoiceId}
+                            onClick={() => previewElevenLabsVoice(sourceElevenLabsVoiceId)}
+                          >
+                            <Play size={16} />
+                          </ActionIcon>
+                        </Tooltip>
+                      </Group>
 
-                      <Select
-                        label={t('Translation voice')}
-                        placeholder={t('Load voices by testing your key')}
-                        data={elevenLabsVoices.map((voice) => ({
-                          value: voice.voiceId,
-                          label: voice.name,
-                        }))}
-                        value={translationElevenLabsVoiceId}
-                        onChange={(value) => {
-                          setTranslationElevenLabsVoiceId(value);
-                          setTtsSaved(false);
-                        }}
-                        disabled={elevenLabsVoices.length === 0 || ttsVoicesLoading}
-                        searchable
-                      />
+                      <Group align="end" gap="xs">
+                        <Select
+                          label={t('Translation voice')}
+                          placeholder={t('Load voices by testing your key')}
+                          data={elevenLabsVoices.map((voice) => ({
+                            value: voice.voiceId,
+                            label: voice.name,
+                          }))}
+                          value={translationElevenLabsVoiceId}
+                          onChange={(value) => {
+                            setTranslationElevenLabsVoiceId(value);
+                            setTtsSaved(false);
+                          }}
+                          disabled={elevenLabsVoices.length === 0 || ttsVoicesLoading}
+                          searchable
+                          style={{ flex: 1 }}
+                        />
+                        <Tooltip label={t('Preview voice')}>
+                          <ActionIcon
+                            variant="default"
+                            size="lg"
+                            disabled={!translationElevenLabsVoiceId}
+                            onClick={() => previewElevenLabsVoice(translationElevenLabsVoiceId)}
+                          >
+                            <Play size={16} />
+                          </ActionIcon>
+                        </Tooltip>
+                      </Group>
                     </>
                   )}
                 </Stack>
