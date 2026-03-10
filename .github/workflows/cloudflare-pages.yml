@@ -77,7 +77,12 @@ jobs:
               exit 1
             fi
 
-            if ! [[ "$DEPLOY_URL" =~ ^https://[A-Za-z0-9.-]+\.pages\.dev$ ]]; then
+            if [ -z "$DEPLOY_URL" ]; then
+              echo "::error::Failed to detect a Cloudflare Pages URL from wrangler output."
+              exit 1
+            fi
+
+            if ! [[ "$DEPLOY_URL" =~ ^https://[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?(\.[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?)*\.pages\.dev$ ]]; then
               echo "::error::Failed to detect a valid Cloudflare Pages URL from wrangler output."
               exit 1
             fi

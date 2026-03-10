@@ -1,0 +1,776 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: GlossBoss UI\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+""
+
+#: src/components/SettingsModal.tsx:550
+msgid "API Key"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:569
+msgid "API Type"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:341
+msgid "API key is valid!"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:157
+msgid "Action"
+msgstr ""
+
+#: src/pages/Index.tsx:1445
+msgid "Actions"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:853
+msgid "Adjust the appearance of the editor to suit your screen and preferences."
+msgstr ""
+
+#: src/components/feedback/FeedbackModal.tsx:430
+msgid "Allow follow-up questions about this feedback"
+msgstr ""
+
+#: src/pages/Index.tsx:1614
+msgid "Auto-saved {age}"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:939
+msgid "Branch status chip"
+msgstr ""
+
+#: src/components/feedback/FeedbackModal.tsx:330
+msgid "Bug"
+msgstr ""
+
+#: src/components/feedback/FeedbackModal.tsx:479
+#: src/components/ui/ConfirmModal.tsx:38
+msgid "Cancel"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:106
+msgid "Cancel edit"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:863
+msgid "Choose which language GlossBoss uses for its interface."
+msgstr ""
+
+#: src/components/SettingsModal.tsx:702
+msgid "Clear"
+msgstr ""
+
+#: src/pages/Index.tsx:1467
+msgid "Clear anyway"
+msgstr ""
+
+#: src/pages/Index.tsx:1451
+msgid "Clear editor"
+msgstr ""
+
+#: src/pages/Index.tsx:1464
+msgid "Clear editor?"
+msgstr ""
+
+#: src/components/ui/ConfirmModal.tsx:37
+msgid "Confirm"
+msgstr ""
+
+#: src/components/feedback/FeedbackModal.tsx:408
+msgid "Contact (optional)"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:896
+msgid "Container width"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:899
+msgid ""
+"Controls the maximum width of the main content area. Use a wider setting on "
+"large monitors, or full width to use all available space."
+msgstr ""
+
+#: src/components/SettingsModal.tsx:607
+msgid ""
+"Controls the tone of DeepL translations. Not all languages support formality"
+"."
+msgstr ""
+
+#: src/pages/Index.tsx:756
+msgid ""
+"Could not fetch the file. The server may not allow cross-origin requests. Tr"
+"y downloading the file and uploading it directly."
+msgstr ""
+
+#: src/pages/Index.tsx:147
+msgid "Dark mode"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:476
+msgid "DeepL API"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:529
+msgid ""
+"DeepL API is kept in this browser tab by default and will be cleared when yo"
+"u close the tab. Enable \"Remember API key\" below to persist it across sess"
+"ions — only do this on a personal, trusted device."
+msgstr ""
+
+#: src/components/SettingsModal.tsx:777
+msgid "DeepL ready"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:776
+msgid "DeepL ready ({count} terms)"
+msgstr ""
+
+#: src/pages/Index.tsx:1636
+msgid "DeepL synced"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:810
+msgid "DeepL will enforce glossary terms in machine translations"
+msgstr ""
+
+#: src/components/feedback/FeedbackModal.tsx:347
+msgid "Describe what you saw"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:158
+msgid "Description"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:501
+msgid "Development"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:925
+msgid "Development Mode Only"
+msgstr ""
+
+#: src/pages/Index.tsx:1597
+msgid "Discard and use fresh file"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:107
+msgid "Discard changes and exit the current field"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:490
+msgid "Display"
+msgstr ""
+
+#: src/pages/Index.tsx:1336
+msgid "Download"
+msgstr ""
+
+#: src/pages/Index.tsx:1375
+msgid "Download as"
+msgstr ""
+
+#: src/pages/Index.tsx:1319
+msgid "Download as {format}"
+msgstr ""
+
+#: src/pages/Index.tsx:1697
+msgid ""
+"Drag and drop your translation file here, or click to browse. Your translati"
+"ons will be saved locally in your browser."
+msgstr ""
+
+#: src/pages/Index.tsx:1119
+msgid "Drop it like it's hot"
+msgstr ""
+
+#: src/pages/Index.tsx:1286
+msgid "Edit gettext translation files with DeepL integration"
+msgstr ""
+
+#: src/components/feedback/FeedbackModal.tsx:423
+msgid "Email"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:551
+msgid "Enter your DeepL API key"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:510
+msgid "Enter your DeepL API key to enable machine translation. Get a free key at"
+msgstr ""
+
+#: src/components/feedback/FeedbackModal.tsx:362
+msgid "Expected behavior"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:348
+msgid "Failed to connect"
+msgstr ""
+
+#: src/components/feedback/FeedbackModal.tsx:157
+msgid "Failed to initialize verification."
+msgstr ""
+
+#: src/components/SettingsModal.tsx:387
+msgid "Failed to load glossary"
+msgstr ""
+
+#: src/pages/Index.tsx:1507
+msgid "Failed to parse file"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:448
+msgid "Failed to read the file."
+msgstr ""
+
+#: src/components/feedback/FeedbackModal.tsx:333
+msgid "Feature"
+msgstr ""
+
+#: src/pages/Index.tsx:1419
+msgid "Feedback"
+msgstr ""
+
+#: src/components/feedback/FeedbackModal.tsx:281
+msgid "Feedback could not be submitted at this time."
+msgstr ""
+
+#: src/pages/Index.tsx:1247
+msgid "Feedback failed"
+msgstr ""
+
+#: src/pages/Index.tsx:1204
+msgid "Feedback submitted"
+msgstr ""
+
+#: src/components/feedback/FeedbackModal.tsx:132
+msgid "Feedback verification is not configured."
+msgstr ""
+
+#: src/components/SettingsModal.tsx:422
+msgid "File does not appear to be a valid WordPress glossary CSV."
+msgstr ""
+
+#: src/pages/Index.tsx:1141
+msgid "File downloaded"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:601
+msgid "Formal"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:591
+msgid "Formality"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:578
+msgid "Free API"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:585
+msgid "Free: 500,000 chars/month • Pro: Pay per use"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:479
+msgid "Glossary"
+msgstr ""
+
+#: src/pages/Index.tsx:1629
+msgid "Glossary: {count} terms ({locale})"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:600
+msgid "Informal"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:94
+msgid "Insert a line break in the translation"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:860
+#: src/components/SettingsModal.tsx:868
+msgid "Interface language"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:560
+msgid "Key saved"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:487
+msgid "Keyboard Shortcuts"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:149
+msgid "Keyboard shortcuts available when editing translations."
+msgstr ""
+
+#: src/components/SettingsModal.tsx:672
+msgid "Language"
+msgstr ""
+
+#: src/pages/Index.tsx:1795
+msgid "License"
+msgstr ""
+
+#: src/pages/Index.tsx:147
+msgid "Light mode"
+msgstr ""
+
+#: src/pages/Index.tsx:1514
+msgid "Line {line}"
+msgstr ""
+
+#: src/components/feedback/FeedbackModal.tsx:355
+msgid "List steps someone else can follow"
+msgstr ""
+
+#: src/pages/Index.tsx:1738
+msgid "Load"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:687
+msgid "Load Glossary"
+msgstr ""
+
+#: src/pages/Index.tsx:1746
+msgid "Load a small example WordPress plugin PO file (Hello Dolly)"
+msgstr ""
+
+#: src/pages/Index.tsx:1757
+msgid "Load example PO"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:665
+msgid ""
+"Load the official WordPress translation glossary to ensure consistent termin"
+"ology."
+msgstr ""
+
+#: src/pages/Index.tsx:1480
+msgid ""
+"Loading a new file from URL will replace the currently loaded file. Any unsa"
+"ved changes will be lost."
+msgstr ""
+
+#: src/components/SettingsModal.tsx:186
+msgid "Navigation Settings"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:93
+msgid "New line"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:101
+msgid "Next entry"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:78
+#: src/components/SettingsModal.tsx:88
+msgid "Next field"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:430
+msgid "No glossary entries found in the uploaded file."
+msgstr ""
+
+#: src/components/SettingsModal.tsx:955
+msgid "Only visible while running the app in development mode"
+msgstr ""
+
+#: src/pages/Index.tsx:1229
+msgid "Open issue"
+msgstr ""
+
+#: src/pages/Index.tsx:1442
+msgid "Open settings"
+msgstr ""
+
+#: src/pages/Index.tsx:1377
+msgid "PO file (.po)"
+msgstr ""
+
+#: src/pages/Index.tsx:1721
+msgid "PO file URL"
+msgstr ""
+
+#: src/pages/Index.tsx:1720
+msgid "Paste a .po file URL"
+msgstr ""
+
+#: src/components/feedback/FeedbackModal.tsx:196
+msgid "Please add a short title."
+msgstr ""
+
+#: src/components/feedback/FeedbackModal.tsx:205
+msgid "Please complete all required bug fields."
+msgstr ""
+
+#: src/components/feedback/FeedbackModal.tsx:211
+msgid "Please complete all required feature fields."
+msgstr ""
+
+#: src/components/SettingsModal.tsx:327
+msgid "Please enter an API key"
+msgstr ""
+
+#: src/components/feedback/FeedbackModal.tsx:200
+msgid "Please provide a valid email address or leave it empty."
+msgstr ""
+
+#: src/components/feedback/FeedbackModal.tsx:453
+msgid "Preparing spam protection..."
+msgstr ""
+
+#: src/components/SettingsModal.tsx:83
+msgid "Previous field"
+msgstr ""
+
+#: src/components/feedback/FeedbackModal.tsx:416
+#: src/pages/Index.tsx:1815
+msgid "Privacy"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:579
+msgid "Pro API"
+msgstr ""
+
+#: src/components/feedback/FeedbackModal.tsx:381
+msgid "Problem / opportunity"
+msgstr ""
+
+#: src/components/feedback/FeedbackModal.tsx:389
+msgid "Proposed solution"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:886
+msgid "Read the translation guide"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:691
+msgid "Refresh from WordPress.org"
+msgstr ""
+
+#: src/pages/Index.tsx:1121
+msgid "Release to load your translation file"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:536
+msgid "Remember API key across sessions"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:627
+msgid "Remove saved key"
+msgstr ""
+
+#: src/pages/Index.tsx:1483
+msgid "Replace"
+msgstr ""
+
+#: src/pages/Index.tsx:1479
+msgid "Replace current file?"
+msgstr ""
+
+#: src/pages/Index.tsx:754
+msgid "Request timed out. Try downloading the file and uploading it directly."
+msgstr ""
+
+#: src/pages/Index.tsx:1588
+msgid "Restore draft"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:785
+msgid "Resync"
+msgstr ""
+
+#: src/components/editor/TranslateToolbar.tsx:576
+msgid "Retranslate All"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:799
+msgid "Retry"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:623
+msgid "Save"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:102
+msgid "Save and jump to the next translation entry (skips translated by default)"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:79
+#: src/components/SettingsModal.tsx:89
+msgid "Save current field and move to the next translation field"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:84
+msgid "Save current field and move to the previous translation field"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:673
+msgid "Select locale"
+msgstr ""
+
+#: src/components/feedback/FeedbackModal.tsx:482
+msgid "Send feedback"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:472
+#: src/pages/Index.tsx:1437
+msgid "Settings"
+msgstr ""
+
+#: src/pages/Index.tsx:1428
+msgid "Settings and actions"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:360
+msgid "Settings saved!"
+msgstr ""
+
+#: src/components/feedback/FeedbackModal.tsx:319
+msgid "Share Feedback"
+msgstr ""
+
+#: src/pages/Index.tsx:1412
+msgid "Share feedback"
+msgstr ""
+
+#: src/components/feedback/FeedbackModal.tsx:341
+msgid "Short summary of the issue"
+msgstr ""
+
+#: src/components/feedback/FeedbackModal.tsx:376
+msgid "Short summary of the request"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:156
+msgid "Shortcut"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:954
+msgid "Show branch chip"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:942
+msgid ""
+"Show the current git branch in a small floating chip at the bottom right of "
+"the site."
+msgstr ""
+
+#: src/components/SettingsModal.tsx:190
+msgid "Skip translated entries"
+msgstr ""
+
+#: src/pages/Index.tsx:1785
+msgid "Source"
+msgstr ""
+
+#: src/components/feedback/FeedbackModal.tsx:354
+msgid "Steps to reproduce"
+msgstr ""
+
+#: src/components/feedback/FeedbackModal.tsx:412
+msgid ""
+"Submissions may create a GitHub issue and can include your optional contact "
+"email for follow-up. See"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:792
+msgid "Sync failed"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:768
+msgid "Syncing to DeepL..."
+msgstr ""
+
+#: src/components/SettingsModal.tsx:829
+msgid "Terms in selected text:"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:620
+msgid "Test Connection"
+msgstr ""
+
+#: src/pages/Index.tsx:1216
+msgid "Thanks. Issue #{issueNumber} was created."
+msgstr ""
+
+#: src/pages/Index.tsx:779
+msgid "The URL must start with https://"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:928
+msgid ""
+"These tools only appear while running the app locally in development and are"
+" not shown in production."
+msgstr ""
+
+#: src/pages/Index.tsx:1466
+msgid "This will remove all your work on the current file."
+msgstr ""
+
+#: src/components/feedback/FeedbackModal.tsx:340
+#: src/components/feedback/FeedbackModal.tsx:375
+msgid "Title"
+msgstr ""
+
+#: src/pages/Index.tsx:1805
+msgid "Translate"
+msgstr ""
+
+#: src/components/feedback/FeedbackModal.tsx:460
+msgid "Turnstile bypass enabled for local development."
+msgstr ""
+
+#: src/components/feedback/FeedbackModal.tsx:461
+msgid "Turnstile site key not set. Using local development bypass."
+msgstr ""
+
+#: src/components/SettingsModal.tsx:391
+#: src/pages/Index.tsx:761
+msgid "Unknown error"
+msgstr ""
+
+#: src/pages/Index.tsx:1562
+msgid "Unsaved draft found"
+msgstr ""
+
+#: src/pages/Index.tsx:1401
+msgid "Update"
+msgstr ""
+
+#: src/pages/Index.tsx:1389
+msgid ""
+"Update this file using a .pot template. Existing translations are kept when "
+"source strings still match, new strings are added, and obsolete strings are "
+"removed."
+msgstr ""
+
+#: src/pages/Index.tsx:1171
+msgid "Updated"
+msgstr ""
+
+#: src/pages/Index.tsx:1299
+msgid "Upload"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:729
+msgid "Upload CSV"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:734
+msgid "Upload a WordPress glossary CSV for the selected language"
+msgstr ""
+
+#: src/pages/Index.tsx:1695
+msgid "Upload a translation file to start"
+msgstr ""
+
+#: src/pages/Index.tsx:1493
+msgid "Upload failed"
+msgstr ""
+
+#: src/components/feedback/FeedbackModal.tsx:397
+msgid "Use case"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:809
+msgid "Use glossary for translations"
+msgstr ""
+
+#: src/components/feedback/FeedbackModal.tsx:188
+msgid "Verification is still loading. Please try again in a moment."
+msgstr ""
+
+#: src/components/SettingsModal.tsx:758
+msgid "View All"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:884
+msgid "Want to help translate GlossBoss?"
+msgstr ""
+
+#: src/components/feedback/FeedbackModal.tsx:436
+msgid "Website"
+msgstr ""
+
+#: src/components/feedback/FeedbackModal.tsx:346
+msgid "What happened"
+msgstr ""
+
+#: src/components/feedback/FeedbackModal.tsx:382
+msgid "What is hard today?"
+msgstr ""
+
+#: src/components/feedback/FeedbackModal.tsx:363
+msgid "What should have happened"
+msgstr ""
+
+#: src/components/feedback/FeedbackModal.tsx:390
+msgid "What would help?"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:537
+msgid ""
+"When enabled, your key is stored in localStorage and survives browser restar"
+"ts. Disable on shared or untrusted devices."
+msgstr ""
+
+#: src/components/SettingsModal.tsx:191
+msgid ""
+"When using ⌘/Ctrl+Enter, skip entries that are already translated and jump t"
+"o the next untranslated or fuzzy entry"
+msgstr ""
+
+#: src/components/feedback/FeedbackModal.tsx:398
+msgid "When would you use this?"
+msgstr ""
+
+#: src/pages/Index.tsx:1609
+msgid "Working from draft"
+msgstr ""
+
+#: src/pages/Index.tsx:1318
+msgid "You have unsaved changes"
+msgstr ""
+
+#: src/pages/Index.tsx:1570
+msgid ""
+"You have unsaved changes from {age}. Would you like to restore your previous"
+" work?"
+msgstr ""
+
+#: src/pages/Index.tsx:1465
+msgid "You have unsaved changes. Are you sure you want to clear the editor?"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:651
+msgid "characters"
+msgstr ""
+
+#: src/components/feedback/FeedbackModal.tsx:418
+msgid "for details."
+msgstr ""
+
+#: src/pages/Index.tsx:1380
+msgid "i18next JSON (.json)"
+msgstr ""
+
+#: src/pages/Index.tsx:1743
+msgid "or"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:714
+msgid "or upload manually"
+msgstr ""
+
+#: src/components/SettingsModal.tsx:745
+msgid "terms"
+msgstr ""
+
+#: src/pages/Index.tsx:1578
+msgid "{count} modified entries will be restored."
+msgstr ""

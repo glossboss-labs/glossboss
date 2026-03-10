@@ -25,8 +25,8 @@ export type FilterType =
 export type FilterState = 'include' | 'exclude';
 
 /** Toggleable table columns */
-export type TableColumn = 'status' | 'source' | 'translation' | 'signals';
-const ALL_TABLE_COLUMNS: TableColumn[] = ['status', 'source', 'translation', 'signals'];
+export type TableColumn = 'status' | 'approve' | 'source' | 'translation' | 'signals';
+const ALL_TABLE_COLUMNS: TableColumn[] = ['status', 'approve', 'source', 'translation', 'signals'];
 
 /** Sort fields for table entries */
 export type SortField = 'default' | 'source' | 'translation' | 'status';
