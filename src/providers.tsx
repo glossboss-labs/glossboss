@@ -38,6 +38,10 @@ const resolver: CSSVariablesResolver = () => ({
     '--gb-highlight-row': 'rgba(59, 130, 246, 0.06)',
     '--gb-highlight-danger': 'rgba(239, 68, 68, 0.04)',
     '--gb-table-stripe': 'rgba(0, 0, 0, 0.015)',
+    '--gb-shadow-modal': '0 16px 40px -8px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04)',
+    '--gb-shadow-menu': '0 4px 16px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04)',
+    '--gb-shadow-tooltip': '0 2px 8px rgba(0,0,0,0.1)',
+    '--gb-shadow-notification': '0 4px 16px rgba(0,0,0,0.08)',
     '--mantine-color-body': '#fafbfc',
     '--mantine-color-default-border': '#e5e7eb',
   },
@@ -57,6 +61,10 @@ const resolver: CSSVariablesResolver = () => ({
     '--gb-highlight-row': 'rgba(59, 130, 246, 0.08)',
     '--gb-highlight-danger': 'rgba(239, 68, 68, 0.06)',
     '--gb-table-stripe': 'rgba(255, 255, 255, 0.02)',
+    '--gb-shadow-modal': '0 25px 50px -12px rgba(0,0,0,0.6)',
+    '--gb-shadow-menu': '0 8px 30px rgba(0,0,0,0.4)',
+    '--gb-shadow-tooltip': '0 4px 12px rgba(0,0,0,0.3)',
+    '--gb-shadow-notification': '0 8px 30px rgba(0,0,0,0.4)',
     '--mantine-color-body': '#050505',
     '--mantine-color-default-border': '#1c1c1c',
   },
@@ -129,7 +137,7 @@ const theme = createTheme({
       styles: {
         content: {
           backgroundColor: 'var(--gb-surface-1)',
-          boxShadow: '0 25px 50px -12px rgba(0,0,0,0.6)',
+          boxShadow: 'var(--gb-shadow-modal)',
         },
         header: { backgroundColor: 'var(--gb-surface-1)' },
         overlay: { backdropFilter: 'blur(4px)' },
@@ -140,20 +148,20 @@ const theme = createTheme({
         dropdown: {
           backgroundColor: 'var(--gb-surface-2)',
           borderColor: 'var(--gb-border-subtle)',
-          boxShadow: '0 8px 30px rgba(0,0,0,0.4)',
+          boxShadow: 'var(--gb-shadow-menu)',
         },
       },
     }),
     Tooltip: {
       styles: {
-        tooltip: { boxShadow: '0 4px 12px rgba(0,0,0,0.3)' },
+        tooltip: { boxShadow: 'var(--gb-shadow-tooltip)' },
       },
     },
     Notification: {
       styles: {
         root: {
           backgroundColor: 'var(--gb-surface-2)',
-          boxShadow: '0 8px 30px rgba(0,0,0,0.4)',
+          boxShadow: 'var(--gb-shadow-notification)',
         },
       },
     },

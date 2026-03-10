@@ -11,6 +11,7 @@ import { useState, useCallback } from 'react';
 import { ActionIcon, Tooltip, Loader, Popover, Button, Text, Stack, Group } from '@mantine/core';
 import { Languages, AlertCircle, AlertTriangle } from 'lucide-react';
 import { getDeepLClient, hasUserApiKey } from '@/lib/deepl';
+import { useTranslation } from '@/lib/app-language';
 import {
   formatDeepLError,
   isGlossaryNotFoundError,
@@ -53,6 +54,7 @@ export function TranslateButton({
   size = 'sm',
   display = 'icon',
 }: TranslateButtonProps) {
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -63,12 +65,12 @@ export function TranslateButton({
 
   const iconSize = size === 'xs' ? 12 : size === 'sm' ? 14 : 16;
   const hasExistingTranslation = currentTranslation.trim().length > 0;
-  const label = glossaryId ? 'Translate with Glossary' : 'Translate with DeepL';
+  const label = glossaryId ? t('Translate with Glossary') : t('Translate with DeepL');
   const tooltipLabel = !apiKeyConfigured
-    ? 'Add your DeepL API key in Settings to enable translation'
+    ? t('Add your DeepL API key in Settings to enable translation')
     : glossaryId
-      ? 'Translate with DeepL + Glossary'
-      : 'Translate with DeepL';
+      ? t('Translate with DeepL + Glossary')
+      : t('Translate with DeepL');
 
   const doTranslate = useCallback(async () => {
     if (!text.trim() || isLoading || isDisabled) return;
@@ -150,13 +152,13 @@ export function TranslateButton({
     if (display === 'button') {
       return (
         <Button size={size} variant="light" disabled leftSection={<Loader size={iconSize} />}>
-          Translating...
+          {t('Translating...')}
         </Button>
       );
     }
 
     return (
-      <ActionIcon size={size} variant="subtle" disabled aria-label="Translating">
+      <ActionIcon size={size} variant="subtle" disabled aria-label={t('Translating')}>
         <Loader size={iconSize} />
       </ActionIcon>
     );
@@ -165,7 +167,12 @@ export function TranslateButton({
   if (error) {
     if (display === 'button') {
       return (
-        <Tooltip label={`Error: ${error}. Click to retry.`} color="red" multiline w={220}>
+        <Tooltip
+          label={t('Error: {{error}}. Click to retry.', { error })}
+          color="red"
+          multiline
+          w={220}
+        >
           <Button
             size={size}
             variant="light"
@@ -174,21 +181,26 @@ export function TranslateButton({
             onClick={doTranslate}
             disabled={isDisabled}
           >
-            Retry translation
+            {t('Retry translation')}
           </Button>
         </Tooltip>
       );
     }
 
     return (
-      <Tooltip label={`Error: ${error}. Click to retry.`} color="red" multiline w={200}>
+      <Tooltip
+        label={t('Error: {{error}}. Click to retry.', { error })}
+        color="red"
+        multiline
+        w={200}
+      >
         <ActionIcon
           size={size}
           variant="subtle"
           color="red"
           onClick={doTranslate}
           disabled={isDisabled}
-          aria-label="Retry translation"
+          aria-label={t('Retry translation')}
         >
           <AlertCircle size={iconSize} />
         </ActionIcon>
@@ -234,18 +246,18 @@ export function TranslateButton({
           <Group gap="xs">
             <AlertTriangle size={16} color="var(--mantine-color-orange-6)" />
             <Text size="sm" fw={500}>
-              Replace existing translation?
+              {t('Replace existing translation?')}
             </Text>
           </Group>
           <Text size="xs" c="dimmed">
-            This will overwrite your current translation with the DeepL result.
+            {t('This will overwrite your current translation with the DeepL result.')}
           </Text>
           <Group gap="xs" justify="flex-end">
             <Button size="xs" variant="subtle" onClick={handleCancel}>
-              Keep original
+              {t('Keep original')}
             </Button>
             <Button size="xs" color="blue" onClick={handleConfirm}>
-              Replace
+              {t('Replace')}
             </Button>
           </Group>
         </Stack>

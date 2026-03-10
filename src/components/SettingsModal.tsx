@@ -253,6 +253,10 @@ interface SettingsModalProps {
   onBranchChipEnabledChange?: (enabled: boolean) => void;
   containerWidth?: ContainerWidth;
   onContainerWidthChange?: (width: ContainerWidth) => void;
+  speechEnabled?: boolean;
+  onSpeechEnabledChange?: (enabled: boolean) => void;
+  translateEnabled?: boolean;
+  onTranslateEnabledChange?: (enabled: boolean) => void;
 }
 
 export function SettingsModal({
@@ -272,6 +276,10 @@ export function SettingsModal({
   onBranchChipEnabledChange,
   containerWidth = 'xl',
   onContainerWidthChange,
+  speechEnabled = true,
+  onSpeechEnabledChange,
+  translateEnabled = true,
+  onTranslateEnabledChange,
 }: SettingsModalProps) {
   const { language, setLanguage, t } = useTranslation();
   const isDevelopment = import.meta.env.DEV;
@@ -932,6 +940,15 @@ export function SettingsModal({
           {/* DeepL API Tab */}
           <Tabs.Panel value="api">
             <Stack gap="md">
+              <Switch
+                label={t('Enable DeepL translation')}
+                description={t(
+                  'When disabled, all translate buttons and the bulk translation toolbar are hidden.',
+                )}
+                checked={translateEnabled}
+                onChange={(e) => onTranslateEnabledChange?.(e.currentTarget.checked)}
+              />
+
               <Text size="sm" c="dimmed">
                 {t('Enter your DeepL API key to enable machine translation. Get a free key at')}{' '}
                 <Anchor
@@ -1087,6 +1104,13 @@ export function SettingsModal({
           {/* Speech Tab */}
           <Tabs.Panel value="speech">
             <Stack gap="md">
+              <Switch
+                label={t('Enable speech playback')}
+                description={t('When disabled, all speak buttons are hidden from the editor.')}
+                checked={speechEnabled}
+                onChange={(e) => onSpeechEnabledChange?.(e.currentTarget.checked)}
+              />
+
               <Text size="sm" c="dimmed">
                 {t(
                   'Play strings with either browser voices or ElevenLabs. Browser playback stays free and local. ElevenLabs uses your own API key through a protected proxy.',

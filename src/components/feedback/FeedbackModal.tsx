@@ -421,7 +421,7 @@ export function FeedbackModal({
 
           <TextInput
             label={t('Email')}
-            placeholder="name@example.com"
+            placeholder={t('name@example.com')}
             value={contactEmail}
             onChange={(event) => setContactEmail(event.currentTarget.value)}
           />

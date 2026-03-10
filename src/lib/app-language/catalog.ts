@@ -45,9 +45,14 @@ const fallbackLanguage = DEFAULT_APP_LANGUAGE;
 function interpolate(message: string, values?: Record<string, TranslationValue>): string {
   if (!values) return message;
 
-  return message.replace(/\{(\w+)\}/g, (_, key: string) =>
-    Object.prototype.hasOwnProperty.call(values, key) ? String(values[key]) : `{${key}}`,
-  );
+  // Support both {{key}} (preferred) and {key} (legacy) interpolation
+  return message
+    .replace(/\{\{(\w+)\}\}/g, (match, key: string) =>
+      Object.prototype.hasOwnProperty.call(values, key) ? String(values[key]) : match,
+    )
+    .replace(/\{(\w+)\}/g, (match, key: string) =>
+      Object.prototype.hasOwnProperty.call(values, key) ? String(values[key]) : match,
+    );
 }
 
 /**

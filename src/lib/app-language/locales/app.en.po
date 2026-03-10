@@ -5,17 +5,41 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 ""
 
-#: src/components/SettingsModal.tsx:983
-#: src/components/SettingsModal.tsx:1232
+#: src/components/glossary/shared.tsx:186
+msgid "+{{count}} more"
+msgstr "+{{count}} more"
+
+#: src/components/editor/EditorTable.tsx:98
+msgid "100 rows"
+msgstr "100 rows"
+
+#: src/components/editor/EditorTable.tsx:96
+msgid "25 rows"
+msgstr "25 rows"
+
+#: src/components/editor/EditorTable.tsx:99
+msgid "250 rows"
+msgstr "250 rows"
+
+#: src/components/editor/EditorTable.tsx:97
+msgid "50 rows"
+msgstr "50 rows"
+
+#: src/components/editor/EditorTable.tsx:100
+msgid "500 rows"
+msgstr "500 rows"
+
+#: src/components/SettingsModal.tsx:993
+#: src/components/SettingsModal.tsx:1249
 msgid "API Key"
 msgstr "API Key"
 
-#: src/components/SettingsModal.tsx:1002
+#: src/components/SettingsModal.tsx:1012
 msgid "API Type"
 msgstr "API Type"
 
-#: src/components/SettingsModal.tsx:454
-#: src/components/SettingsModal.tsx:528
+#: src/components/SettingsModal.tsx:462
+#: src/components/SettingsModal.tsx:536
 msgid "API key is valid!"
 msgstr "API key is valid!"
 
@@ -23,31 +47,142 @@ msgstr "API key is valid!"
 msgid "Action"
 msgstr "Action"
 
-#: src/pages/Index.tsx:1445
+#: src/pages/Index.tsx:1466
 msgid "Actions"
 msgstr "Actions"
 
-#: src/components/SettingsModal.tsx:1573
+#: src/components/editor/TranslateButton.tsx:70
+msgid "Add your DeepL API key in Settings to enable translation"
+msgstr "Add your DeepL API key in Settings to enable translation"
+
+#: src/components/editor/TranslateToolbar.tsx:627
+msgid "Add your DeepL API key in Settings to enable translations."
+msgstr "Add your DeepL API key in Settings to enable translations."
+
+#: src/components/SettingsModal.tsx:1590
 msgid "Adjust the appearance of the editor to suit your screen and preferences."
 msgstr "Adjust the appearance of the editor to suit your screen and preferences."
+
+#: src/components/editor/HeaderEditor.tsx:47
+msgid "Afrikaans"
+msgstr "Afrikaans"
+
+#: src/components/editor/HeaderEditor.tsx:48
+msgid "Albanian"
+msgstr "Albanian"
 
 #: src/components/feedback/FeedbackModal.tsx:430
 msgid "Allow follow-up questions about this feedback"
 msgstr "Allow follow-up questions about this feedback"
 
-#: src/pages/Index.tsx:1614
+#: src/components/editor/GlossaryPanel.tsx:397
+msgid "Apply glossary terms during translation"
+msgstr "Apply glossary terms during translation"
+
+#: src/components/editor/EditorTable.tsx:109
+#: src/components/editor/FilterToolbar.tsx:234
+msgid "Approve"
+msgstr "Approve"
+
+#: src/components/editor/TranslateToolbar.tsx:863
+msgid "Approve ({{count}})"
+msgstr "Approve ({{count}})"
+
+#: src/components/editor/TranslateToolbar.tsx:861
+msgid "Approve selected"
+msgstr "Approve selected"
+
+#: src/components/editor/TranslateToolbar.tsx:854
+msgid "Approve selected rows by clearing fuzzy flag"
+msgstr "Approve selected rows by clearing fuzzy flag"
+
+#: src/components/editor/EditorTable.tsx:981
+msgid "Approve translation"
+msgstr "Approve translation"
+
+#: src/components/editor/EditorTable.tsx:969
+msgid "Approve: clear fuzzy flag"
+msgstr "Approve: clear fuzzy flag"
+
+#: src/components/editor/TranslateToolbar.tsx:549
+msgid "Approved {{count}} row(s): fuzzy flag cleared."
+msgstr "Approved {{count}} row(s): fuzzy flag cleared."
+
+#: src/components/editor/HeaderEditor.tsx:49
+#: src/components/editor/HeaderEditor.tsx:203
+msgid "Arabic"
+msgstr "Arabic"
+
+#: src/components/editor/HeaderEditor.tsx:51
+msgid "Arabic (Egypt)"
+msgstr "Arabic (Egypt)"
+
+#: src/components/editor/HeaderEditor.tsx:50
+msgid "Arabic (Saudi Arabia)"
+msgstr "Arabic (Saudi Arabia)"
+
+#: src/components/editor/HeaderEditor.tsx:52
+msgid "Armenian"
+msgstr "Armenian"
+
+#: src/components/editor/TranslateToolbar.tsx:809
+msgid "Auto Translate ({{count}})"
+msgstr "Auto Translate ({{count}})"
+
+#: src/components/editor/TranslateToolbar.tsx:807
+msgid "Auto translate selected"
+msgstr "Auto translate selected"
+
+#: src/components/editor/TranslateToolbar.tsx:799
+msgid "Auto translate selected rows that are empty or fuzzy"
+msgstr "Auto translate selected rows that are empty or fuzzy"
+
+#: src/components/editor/TranslateToolbar.tsx:57
+#: src/components/editor/TranslateToolbar.tsx:643
+msgid "Auto-detect"
+msgstr "Auto-detect"
+
+#: src/components/editor/HeaderEditor.tsx:510
+msgid "Auto-detected: {{slug}}"
+msgstr "Auto-detected: {{slug}}"
+
+#: src/pages/Index.tsx:1674
 msgid "Auto-saved {age}"
 msgstr "Auto-saved {age}"
 
-#: src/components/SettingsModal.tsx:923
+#: src/components/editor/HeaderEditor.tsx:53
+msgid "Azerbaijani"
+msgstr "Azerbaijani"
+
+#: src/components/SettingsModal.tsx:931
 msgid "Backup"
 msgstr "Backup"
 
-#: src/components/SettingsModal.tsx:1711
+#: src/components/editor/HeaderEditor.tsx:54
+msgid "Basque"
+msgstr "Basque"
+
+#: src/components/editor/HeaderEditor.tsx:55
+msgid "Belarusian"
+msgstr "Belarusian"
+
+#: src/components/editor/HeaderEditor.tsx:56
+msgid "Bengali"
+msgstr "Bengali"
+
+#: src/components/editor/HeaderEditor.tsx:57
+msgid "Bosnian"
+msgstr "Bosnian"
+
+#: src/components/SettingsModal.tsx:1728
 msgid "Branch status chip"
 msgstr "Branch status chip"
 
-#: src/components/SettingsModal.tsx:1117
+#: src/components/editor/EditorTable.tsx:2396
+msgid "Browse"
+msgstr "Browse"
+
+#: src/components/SettingsModal.tsx:1134
 msgid "Browser"
 msgstr "Browser"
 
@@ -55,17 +190,57 @@ msgstr "Browser"
 msgid "Bug"
 msgstr "Bug"
 
-#: src/components/SettingsModal.tsx:1788
+#: src/components/editor/HeaderEditor.tsx:58
+#: src/components/editor/TranslateToolbar.tsx:58
+#: src/components/editor/TranslateToolbar.tsx:90
+msgid "Bulgarian"
+msgstr "Bulgarian"
+
+#: src/components/SettingsModal.tsx:1805
 #: src/components/feedback/FeedbackModal.tsx:479
 #: src/components/ui/ConfirmModal.tsx:38
 msgid "Cancel"
 msgstr "Cancel"
 
+#: src/components/editor/HeaderEditor.tsx:430
+msgid "Cancel custom input"
+msgstr "Cancel custom input"
+
 #: src/components/SettingsModal.tsx:135
 msgid "Cancel edit"
 msgstr "Cancel edit"
 
-#: src/components/SettingsModal.tsx:1777
+#: src/components/editor/HeaderEditor.tsx:59
+msgid "Catalan"
+msgstr "Catalan"
+
+#: src/components/editor/HeaderEditor.tsx:60
+#: src/components/editor/TranslateToolbar.tsx:86
+#: src/components/editor/TranslateToolbar.tsx:120
+msgid "Chinese"
+msgstr "Chinese"
+
+#: src/components/editor/HeaderEditor.tsx:63
+msgid "Chinese (Hong Kong)"
+msgstr "Chinese (Hong Kong)"
+
+#: src/components/editor/HeaderEditor.tsx:61
+msgid "Chinese (Simplified)"
+msgstr "Chinese (Simplified)"
+
+#: src/components/editor/HeaderEditor.tsx:62
+msgid "Chinese (Traditional)"
+msgstr "Chinese (Traditional)"
+
+#: src/components/editor/HeaderEditor.tsx:151
+msgid "Chinese, Japanese, Korean, Vietnamese, Thai, Indonesian"
+msgstr "Chinese, Japanese, Korean, Vietnamese, Thai, Indonesian"
+
+#: src/components/editor/FilterToolbar.tsx:439
+msgid "Choose visible columns"
+msgstr "Choose visible columns"
+
+#: src/components/SettingsModal.tsx:1794
 msgid ""
 "Choose whether to export the key or keep the settings file free of credentia"
 "ls."
@@ -73,7 +248,7 @@ msgstr ""
 "Choose whether to export the key or keep the settings file free of credentia"
 "ls."
 
-#: src/components/SettingsModal.tsx:1776
+#: src/components/SettingsModal.tsx:1793
 msgid ""
 "Choose whether to import the key or keep the current key saved in this brows"
 "er."
@@ -81,25 +256,51 @@ msgstr ""
 "Choose whether to import the key or keep the current key saved in this brows"
 "er."
 
-#: src/components/SettingsModal.tsx:1583
+#: src/components/SettingsModal.tsx:1600
 msgid "Choose which language GlossBoss uses for its interface."
 msgstr "Choose which language GlossBoss uses for its interface."
 
-#: src/components/SettingsModal.tsx:1419
+#: src/components/SettingsModal.tsx:1436
+#: src/components/editor/GlossaryPanel.tsx:342
+#: src/components/editor/TranslateToolbar.tsx:783
 msgid "Clear"
 msgstr "Clear"
 
-#: src/pages/Index.tsx:1467
+#: src/components/editor/EditorTable.tsx:2401
+msgid "Clear active source reference"
+msgstr "Clear active source reference"
+
+#: src/pages/Index.tsx:1527
 msgid "Clear anyway"
 msgstr "Clear anyway"
 
-#: src/pages/Index.tsx:1451
+#: src/pages/Index.tsx:1472
 msgid "Clear editor"
 msgstr "Clear editor"
 
-#: src/pages/Index.tsx:1464
+#: src/pages/Index.tsx:1524
 msgid "Clear editor?"
 msgstr "Clear editor?"
+
+#: src/components/editor/FilterToolbar.tsx:276
+msgid "Clear filters"
+msgstr "Clear filters"
+
+#: src/components/editor/FilterToolbar.tsx:255
+msgid "Clear search"
+msgstr "Clear search"
+
+#: src/components/editor/EditorTable.tsx:367
+msgid "Click to add translation"
+msgstr "Click to add translation"
+
+#: src/components/editor/FilterToolbar.tsx:81
+msgid "Click to show only {{label}}"
+msgstr "Click to show only {{label}}"
+
+#: src/components/editor/FilterToolbar.tsx:441
+msgid "Columns"
+msgstr "Columns"
 
 #: src/components/ui/SpeakButton.tsx:41
 msgid "Configure your ElevenLabs API key in Settings."
@@ -109,15 +310,32 @@ msgstr "Configure your ElevenLabs API key in Settings."
 msgid "Confirm"
 msgstr "Confirm"
 
+#: src/components/editor/TranslateToolbar.tsx:589
+msgid "Consider downloading a backup first."
+msgstr "Consider downloading a backup first."
+
 #: src/components/feedback/FeedbackModal.tsx:408
 msgid "Contact (optional)"
 msgstr "Contact (optional)"
 
-#: src/components/SettingsModal.tsx:1616
+#: src/components/SettingsModal.tsx:1633
 msgid "Container width"
 msgstr "Container width"
 
-#: src/components/SettingsModal.tsx:1619
+#: src/components/editor/EditorTable.tsx:932
+msgid "Contains glossary terms"
+msgstr "Contains glossary terms"
+
+#: src/components/editor/HeaderEditor.tsx:255
+msgid "Content Type"
+msgstr "Content Type"
+
+#: src/components/editor/EditorTable.tsx:1166
+#: src/components/editor/EditorTable.tsx:2395
+msgid "Context"
+msgstr "Context"
+
+#: src/components/SettingsModal.tsx:1636
 msgid ""
 "Controls the maximum width of the main content area. Use a wider setting on "
 "large monitors, or full width to use all available space."
@@ -125,7 +343,7 @@ msgstr ""
 "Controls the maximum width of the main content area. Use a wider setting on "
 "large monitors, or full width to use all available space."
 
-#: src/components/SettingsModal.tsx:1040
+#: src/components/SettingsModal.tsx:1050
 msgid ""
 "Controls the tone of DeepL translations. Not all languages support formality"
 "."
@@ -133,7 +351,7 @@ msgstr ""
 "Controls the tone of DeepL translations. Not all languages support formality"
 "."
 
-#: src/pages/Index.tsx:756
+#: src/pages/Index.tsx:771
 msgid ""
 "Could not fetch the file. The server may not allow cross-origin requests. Tr"
 "y downloading the file and uploading it directly."
@@ -141,15 +359,39 @@ msgstr ""
 "Could not fetch the file. The server may not allow cross-origin requests. Tr"
 "y downloading the file and uploading it directly."
 
-#: src/pages/Index.tsx:147
+#: src/components/editor/HeaderEditor.tsx:64
+msgid "Croatian"
+msgstr "Croatian"
+
+#: src/components/editor/HeaderEditor.tsx:436
+msgid "Custom expression (select a preset above to replace)"
+msgstr "Custom expression (select a preset above to replace)"
+
+#: src/components/editor/HeaderEditor.tsx:405
+msgid "Custom value set — select to change"
+msgstr "Custom value set — select to change"
+
+#: src/components/editor/HeaderEditor.tsx:65
+#: src/components/editor/TranslateToolbar.tsx:59
+#: src/components/editor/TranslateToolbar.tsx:91
+msgid "Czech"
+msgstr "Czech"
+
+#: src/components/editor/HeaderEditor.tsx:66
+#: src/components/editor/TranslateToolbar.tsx:60
+#: src/components/editor/TranslateToolbar.tsx:92
+msgid "Danish"
+msgstr "Danish"
+
+#: src/pages/Index.tsx:152
 msgid "Dark mode"
 msgstr "Dark mode"
 
-#: src/components/SettingsModal.tsx:903
+#: src/components/SettingsModal.tsx:911
 msgid "DeepL API"
 msgstr "DeepL API"
 
-#: src/components/SettingsModal.tsx:962
+#: src/components/SettingsModal.tsx:972
 msgid ""
 "DeepL API is kept in this browser tab by default and will be cleared when yo"
 "u close the tab. Enable \"Remember API key\" below to persist it across sess"
@@ -159,21 +401,34 @@ msgstr ""
 "u close the tab. Enable \"Remember API key\" below to persist it across sess"
 "ions — only do this on a personal, trusted device."
 
-#: src/components/SettingsModal.tsx:1494
+#: src/components/SettingsModal.tsx:1511
+#: src/components/editor/GlossaryPanel.tsx:247
 msgid "DeepL ready"
 msgstr "DeepL ready"
 
-#: src/components/SettingsModal.tsx:1493
+#: src/components/SettingsModal.tsx:1510
 msgid "DeepL ready ({count} terms)"
 msgstr "DeepL ready ({count} terms)"
 
-#: src/pages/Index.tsx:1636
+#: src/components/editor/GlossaryPanel.tsx:246
+msgid "DeepL ready ({{count}} terms)"
+msgstr "DeepL ready ({{count}} terms)"
+
+#: src/pages/Index.tsx:1709
 msgid "DeepL synced"
 msgstr "DeepL synced"
 
-#: src/components/SettingsModal.tsx:1527
+#: src/components/editor/FilterToolbar.tsx:329
+msgid "DeepL usage:"
+msgstr "DeepL usage:"
+
+#: src/components/SettingsModal.tsx:1544
 msgid "DeepL will enforce glossary terms in machine translations"
 msgstr "DeepL will enforce glossary terms in machine translations"
+
+#: src/components/editor/GlossaryPanel.tsx:400
+msgid "DeepL will use glossary for consistent terminology"
+msgstr "DeepL will use glossary for consistent terminology"
 
 #: src/components/feedback/FeedbackModal.tsx:347
 msgid "Describe what you saw"
@@ -183,15 +438,23 @@ msgstr "Describe what you saw"
 msgid "Description"
 msgstr "Description"
 
-#: src/components/SettingsModal.tsx:934
+#: src/components/editor/HeaderEditor.tsx:561
+msgid "Detected via {{method}} with {{confidence}} confidence"
+msgstr "Detected via {{method}} with {{confidence}} confidence"
+
+#: src/components/editor/TranslateToolbar.tsx:674
+msgid "Detected: {{target}}"
+msgstr "Detected: {{target}}"
+
+#: src/components/SettingsModal.tsx:935
 msgid "Development"
 msgstr "Development"
 
-#: src/components/SettingsModal.tsx:1697
+#: src/components/SettingsModal.tsx:1714
 msgid "Development Mode Only"
 msgstr "Development Mode Only"
 
-#: src/pages/Index.tsx:1597
+#: src/pages/Index.tsx:1657
 msgid "Discard and use fresh file"
 msgstr "Discard and use fresh file"
 
@@ -199,23 +462,23 @@ msgstr "Discard and use fresh file"
 msgid "Discard changes and exit the current field"
 msgstr "Discard changes and exit the current field"
 
-#: src/components/SettingsModal.tsx:920
+#: src/components/SettingsModal.tsx:928
 msgid "Display"
 msgstr "Display"
 
-#: src/pages/Index.tsx:1336
+#: src/pages/Index.tsx:1349
 msgid "Download"
 msgstr "Download"
 
-#: src/pages/Index.tsx:1375
+#: src/pages/Index.tsx:1388
 msgid "Download as"
 msgstr "Download as"
 
-#: src/pages/Index.tsx:1319
+#: src/pages/Index.tsx:1332
 msgid "Download as {format}"
 msgstr "Download as {format}"
 
-#: src/pages/Index.tsx:1697
+#: src/pages/Index.tsx:1765
 msgid ""
 "Drag and drop your translation file here, or click to browse. Your translati"
 "ons will be saved locally in your browser."
@@ -223,11 +486,33 @@ msgstr ""
 "Drag and drop your translation file here, or click to browse. Your translati"
 "ons will be saved locally in your browser."
 
-#: src/pages/Index.tsx:1119
+#: src/components/editor/FilterToolbar.tsx:477
+msgid "Drag {{columnLabel}}"
+msgstr "Drag {{columnLabel}}"
+
+#: src/pages/Index.tsx:1135
 msgid "Drop it like it's hot"
 msgstr "Drop it like it's hot"
 
-#: src/pages/Index.tsx:1286
+#: src/components/editor/HeaderEditor.tsx:67
+#: src/components/editor/TranslateToolbar.tsx:76
+#: src/components/editor/TranslateToolbar.tsx:109
+msgid "Dutch"
+msgstr "Dutch"
+
+#: src/components/editor/HeaderEditor.tsx:69
+msgid "Dutch (Belgium)"
+msgstr "Dutch (Belgium)"
+
+#: src/components/editor/HeaderEditor.tsx:68
+msgid "Dutch (Netherlands)"
+msgstr "Dutch (Netherlands)"
+
+#: src/components/editor/HeaderEditor.tsx:600
+msgid "Edit Header"
+msgstr "Edit Header"
+
+#: src/pages/Index.tsx:1298
 msgid "Edit gettext translation files with DeepL integration"
 msgstr "Edit gettext translation files with DeepL integration"
 
@@ -235,7 +520,7 @@ msgstr "Edit gettext translation files with DeepL integration"
 msgid "ElevenLabs quota reached."
 msgstr "ElevenLabs quota reached."
 
-#: src/components/SettingsModal.tsx:1303
+#: src/components/SettingsModal.tsx:1320
 msgid ""
 "ElevenLabs quota reached. Switch back to Browser playback or wait for the ne"
 "xt provider reset."
@@ -247,31 +532,89 @@ msgstr ""
 msgid "Email"
 msgstr "Email"
 
-#: src/components/SettingsModal.tsx:984
+#: src/components/SettingsModal.tsx:944
+msgid "Enable DeepL translation"
+msgstr "Enable DeepL translation"
+
+#: src/components/SettingsModal.tsx:1108
+msgid "Enable speech playback"
+msgstr "Enable speech playback"
+
+#: src/components/editor/HeaderEditor.tsx:256
+msgid "Encoding"
+msgstr "Encoding"
+
+#: src/components/editor/HeaderEditor.tsx:70
+#: src/components/editor/TranslateToolbar.tsx:63
+msgid "English"
+msgstr "English"
+
+#: src/components/editor/HeaderEditor.tsx:73
+msgid "English (Australia)"
+msgstr "English (Australia)"
+
+#: src/components/editor/HeaderEditor.tsx:74
+msgid "English (Canada)"
+msgstr "English (Canada)"
+
+#: src/components/editor/HeaderEditor.tsx:72
+#: src/components/editor/TranslateToolbar.tsx:95
+msgid "English (UK)"
+msgstr "English (UK)"
+
+#: src/components/editor/HeaderEditor.tsx:71
+#: src/components/editor/TranslateToolbar.tsx:96
+msgid "English (US)"
+msgstr "English (US)"
+
+#: src/components/editor/HeaderEditor.tsx:160
+msgid "English, Dutch, German, Swedish, Danish, Norwegian, etc."
+msgstr "English, Dutch, German, Swedish, Danish, Norwegian, etc."
+
+#: src/components/editor/HeaderEditor.tsx:443
+msgid "Enter custom expression"
+msgstr "Enter custom expression"
+
+#: src/components/SettingsModal.tsx:994
 msgid "Enter your DeepL API key"
 msgstr "Enter your DeepL API key"
 
-#: src/components/SettingsModal.tsx:943
+#: src/components/SettingsModal.tsx:953
 msgid "Enter your DeepL API key to enable machine translation. Get a free key at"
 msgstr "Enter your DeepL API key to enable machine translation. Get a free key at"
 
-#: src/components/SettingsModal.tsx:1233
+#: src/components/SettingsModal.tsx:1250
 msgid "Enter your ElevenLabs API key"
 msgstr "Enter your ElevenLabs API key"
+
+#: src/components/editor/HeaderEditor.tsx:670
+msgid "Enter {{field}}..."
+msgstr "Enter {{field}}..."
+
+#: src/components/editor/TranslateButton.tsx:171
+#: src/components/editor/TranslateButton.tsx:192
+msgid "Error: {{error}}. Click to retry."
+msgstr "Error: {{error}}. Click to retry."
+
+#: src/components/editor/HeaderEditor.tsx:75
+#: src/components/editor/TranslateToolbar.tsx:65
+#: src/components/editor/TranslateToolbar.tsx:98
+msgid "Estonian"
+msgstr "Estonian"
 
 #: src/components/feedback/FeedbackModal.tsx:362
 msgid "Expected behavior"
 msgstr "Expected behavior"
 
-#: src/components/SettingsModal.tsx:1663
+#: src/components/SettingsModal.tsx:1680
 msgid "Export settings"
 msgstr "Export settings"
 
-#: src/components/SettingsModal.tsx:1806
+#: src/components/SettingsModal.tsx:1823
 msgid "Export without key"
 msgstr "Export without key"
 
-#: src/components/SettingsModal.tsx:1643
+#: src/components/SettingsModal.tsx:1660
 msgid ""
 "Export your saved preferences to a JSON backup file, or restore them into th"
 "is browser. Glossary cache, drafts, and project files are not included."
@@ -279,7 +622,7 @@ msgstr ""
 "Export your saved preferences to a JSON backup file, or restore them into th"
 "is browser. Glossary cache, drafts, and project files are not included."
 
-#: src/components/SettingsModal.tsx:1655
+#: src/components/SettingsModal.tsx:1672
 msgid ""
 "Exports DeepL preferences, glossary options, navigation behavior, display wi"
 "dth, and development-only toggles. If a DeepL API key is present, you can ch"
@@ -289,8 +632,8 @@ msgstr ""
 "dth, and development-only toggles. If a DeepL API key is present, you can ch"
 "oose whether to include it."
 
-#: src/components/SettingsModal.tsx:461
-#: src/components/SettingsModal.tsx:540
+#: src/components/SettingsModal.tsx:469
+#: src/components/SettingsModal.tsx:548
 msgid "Failed to connect"
 msgstr "Failed to connect"
 
@@ -298,15 +641,16 @@ msgstr "Failed to connect"
 msgid "Failed to initialize verification."
 msgstr "Failed to initialize verification."
 
-#: src/components/SettingsModal.tsx:814
+#: src/components/SettingsModal.tsx:822
+#: src/components/editor/GlossaryPanel.tsx:190
 msgid "Failed to load glossary"
 msgstr "Failed to load glossary"
 
-#: src/pages/Index.tsx:1507
+#: src/pages/Index.tsx:1567
 msgid "Failed to parse file"
 msgstr "Failed to parse file"
 
-#: src/components/SettingsModal.tsx:875
+#: src/components/SettingsModal.tsx:883
 msgid "Failed to read the file."
 msgstr "Failed to read the file."
 
@@ -314,7 +658,7 @@ msgstr "Failed to read the file."
 msgid "Feature"
 msgstr "Feature"
 
-#: src/pages/Index.tsx:1419
+#: src/pages/Index.tsx:1436
 msgid "Feedback"
 msgstr "Feedback"
 
@@ -322,11 +666,11 @@ msgstr "Feedback"
 msgid "Feedback could not be submitted at this time."
 msgstr "Feedback could not be submitted at this time."
 
-#: src/pages/Index.tsx:1247
+#: src/pages/Index.tsx:1263
 msgid "Feedback failed"
 msgstr "Feedback failed"
 
-#: src/pages/Index.tsx:1204
+#: src/pages/Index.tsx:1220
 msgid "Feedback submitted"
 msgstr "Feedback submitted"
 
@@ -334,59 +678,232 @@ msgstr "Feedback submitted"
 msgid "Feedback verification is not configured."
 msgstr "Feedback verification is not configured."
 
-#: src/components/SettingsModal.tsx:849
+#: src/components/SettingsModal.tsx:857
 msgid "File does not appear to be a valid WordPress glossary CSV."
 msgstr "File does not appear to be a valid WordPress glossary CSV."
 
-#: src/pages/Index.tsx:1141
+#: src/pages/Index.tsx:1157
 msgid "File downloaded"
 msgstr "File downloaded"
 
-#: src/components/SettingsModal.tsx:1034
+#: src/components/editor/FilterToolbar.tsx:216
+msgid "File order"
+msgstr "File order"
+
+#: src/components/editor/HeaderEditor.tsx:76
+#: src/components/editor/TranslateToolbar.tsx:66
+#: src/components/editor/TranslateToolbar.tsx:99
+msgid "Finnish"
+msgstr "Finnish"
+
+#: src/components/editor/GlossaryPanel.tsx:249
+msgid "Force recreate glossary on DeepL"
+msgstr "Force recreate glossary on DeepL"
+
+#: src/components/SettingsModal.tsx:1044
 msgid "Formal"
 msgstr "Formal"
 
-#: src/components/SettingsModal.tsx:1024
+#: src/components/SettingsModal.tsx:1034
 msgid "Formality"
 msgstr "Formality"
 
-#: src/components/SettingsModal.tsx:1011
+#: src/components/editor/HeaderEditor.tsx:189
+msgid "Four forms"
+msgstr "Four forms"
+
+#: src/components/SettingsModal.tsx:1021
 msgid "Free API"
 msgstr "Free API"
 
-#: src/components/SettingsModal.tsx:1018
+#: src/components/SettingsModal.tsx:1028
 msgid "Free: 500,000 chars/month • Pro: Pay per use"
 msgstr "Free: 500,000 chars/month • Pro: Pay per use"
 
-#: src/components/SettingsModal.tsx:909
+#: src/components/editor/HeaderEditor.tsx:77
+#: src/components/editor/TranslateToolbar.tsx:67
+#: src/components/editor/TranslateToolbar.tsx:100
+msgid "French"
+msgstr "French"
+
+#: src/components/editor/HeaderEditor.tsx:80
+msgid "French (Belgium)"
+msgstr "French (Belgium)"
+
+#: src/components/editor/HeaderEditor.tsx:79
+msgid "French (Canada)"
+msgstr "French (Canada)"
+
+#: src/components/editor/HeaderEditor.tsx:78
+msgid "French (France)"
+msgstr "French (France)"
+
+#: src/components/editor/HeaderEditor.tsx:81
+msgid "French (Switzerland)"
+msgstr "French (Switzerland)"
+
+#: src/components/editor/HeaderEditor.tsx:162
+msgid "French, Portuguese (Brazil)"
+msgstr "French, Portuguese (Brazil)"
+
+#: src/components/editor/TranslateToolbar.tsx:637
+msgid "From"
+msgstr "From"
+
+#: src/components/editor/EditorTable.tsx:348
+#: src/components/editor/FilterToolbar.tsx:65
+msgid "Fuzzy"
+msgstr "Fuzzy"
+
+#: src/components/editor/HeaderEditor.tsx:82
+msgid "Galician"
+msgstr "Galician"
+
+#: src/components/editor/HeaderEditor.tsx:258
+msgid "Generator"
+msgstr "Generator"
+
+#: src/components/editor/HeaderEditor.tsx:83
+msgid "Georgian"
+msgstr "Georgian"
+
+#: src/components/editor/HeaderEditor.tsx:84
+#: src/components/editor/TranslateToolbar.tsx:61
+#: src/components/editor/TranslateToolbar.tsx:93
+msgid "German"
+msgstr "German"
+
+#: src/components/editor/HeaderEditor.tsx:86
+msgid "German (Austria)"
+msgstr "German (Austria)"
+
+#: src/components/editor/HeaderEditor.tsx:85
+msgid "German (Germany)"
+msgstr "German (Germany)"
+
+#: src/components/editor/HeaderEditor.tsx:87
+msgid "German (Switzerland)"
+msgstr "German (Switzerland)"
+
+#: src/components/SettingsModal.tsx:917
+#: src/components/editor/EditorTable.tsx:934
+#: src/components/editor/GlossaryPanel.tsx:289
 msgid "Glossary"
 msgstr "Glossary"
 
-#: src/pages/Index.tsx:1629
+#: src/components/editor/TranslateToolbar.tsx:837
+msgid "Glossary Check"
+msgstr "Glossary Check"
+
+#: src/components/editor/TranslateToolbar.tsx:534
+msgid "Glossary check complete: all selected rows match glossary terms."
+msgstr "Glossary check complete: all selected rows match glossary terms."
+
+#: src/components/editor/TranslateToolbar.tsx:529
+msgid "Glossary check complete: no glossary terms found in selected rows."
+msgstr "Glossary check complete: no glossary terms found in selected rows."
+
+#: src/components/editor/TranslateToolbar.tsx:539
+msgid "Glossary check complete: {{count}} selected row(s) need review."
+msgstr "Glossary check complete: {{count}} selected row(s) need review."
+
+#: src/components/editor/TranslateToolbar.tsx:835
+msgid "Glossary check selected"
+msgstr "Glossary check selected"
+
+#: src/components/editor/EditorTable.tsx:1152
+msgid "Glossary match"
+msgstr "Glossary match"
+
+#: src/components/editor/TranslateToolbar.tsx:219
+msgid ""
+"Glossary not found in DeepL. Continued bulk translation without glossary. Re"
+"-sync in Settings is recommended."
+msgstr ""
+"Glossary not found in DeepL. Continued bulk translation without glossary. Re"
+"-sync in Settings is recommended."
+
+#: src/components/editor/TranslateToolbar.tsx:222
+msgid ""
+"Glossary not found in DeepL. This translation was done without glossary. Re-"
+"sync in Settings is recommended."
+msgstr ""
+"Glossary not found in DeepL. This translation was done without glossary. Re-"
+"sync in Settings is recommended."
+
+#: src/pages/Index.tsx:1702
 msgid "Glossary: {count} terms ({locale})"
 msgstr "Glossary: {count} terms ({locale})"
 
-#: src/components/SettingsModal.tsx:1759
+#: src/components/editor/HeaderEditor.tsx:88
+#: src/components/editor/TranslateToolbar.tsx:62
+#: src/components/editor/TranslateToolbar.tsx:94
+msgid "Greek"
+msgstr "Greek"
+
+#: src/components/editor/HeaderEditor.tsx:89
+msgid "Gujarati"
+msgstr "Gujarati"
+
+#: src/components/editor/HeaderEditor.tsx:90
+msgid "Hebrew"
+msgstr "Hebrew"
+
+#: src/components/editor/HeaderEditor.tsx:600
+msgid "Hide Header"
+msgstr "Hide Header"
+
+#: src/components/editor/EditorTable.tsx:2211
+msgid "Hide info"
+msgstr "Hide info"
+
+#: src/components/editor/HeaderEditor.tsx:684
+msgid "Hide technical fields"
+msgstr "Hide technical fields"
+
+#: src/components/editor/FilterToolbar.tsx:79
+msgid "Hiding {{label}} • Click to clear filter"
+msgstr "Hiding {{label}} • Click to clear filter"
+
+#: src/components/editor/HeaderEditor.tsx:91
+msgid "Hindi"
+msgstr "Hindi"
+
+#: src/components/editor/HeaderEditor.tsx:226
+msgid "How plurals work in this language"
+msgstr "How plurals work in this language"
+
+#: src/components/editor/HeaderEditor.tsx:92
+#: src/components/editor/TranslateToolbar.tsx:68
+#: src/components/editor/TranslateToolbar.tsx:101
+msgid "Hungarian"
+msgstr "Hungarian"
+
+#: src/components/editor/HeaderEditor.tsx:93
+msgid "Icelandic"
+msgstr "Icelandic"
+
+#: src/components/SettingsModal.tsx:1776
 msgid "Import API key?"
 msgstr "Import API key?"
 
-#: src/components/SettingsModal.tsx:1821
+#: src/components/SettingsModal.tsx:1838
 msgid "Import key"
 msgstr "Import key"
 
-#: src/components/SettingsModal.tsx:1673
+#: src/components/SettingsModal.tsx:1690
 msgid "Import settings"
 msgstr "Import settings"
 
-#: src/components/SettingsModal.tsx:1759
+#: src/components/SettingsModal.tsx:1776
 msgid "Include API key?"
 msgstr "Include API key?"
 
-#: src/components/SettingsModal.tsx:1821
+#: src/components/SettingsModal.tsx:1838
 msgid "Include key"
 msgstr "Include key"
 
-#: src/components/SettingsModal.tsx:1768
+#: src/components/SettingsModal.tsx:1785
 msgid ""
 "Including your DeepL API key will store it in plain text inside the exported"
 " JSON file."
@@ -394,7 +911,13 @@ msgstr ""
 "Including your DeepL API key will store it in plain text inside the exported"
 " JSON file."
 
-#: src/components/SettingsModal.tsx:1033
+#: src/components/editor/HeaderEditor.tsx:94
+#: src/components/editor/TranslateToolbar.tsx:69
+#: src/components/editor/TranslateToolbar.tsx:102
+msgid "Indonesian"
+msgstr "Indonesian"
+
+#: src/components/SettingsModal.tsx:1043
 msgid "Informal"
 msgstr "Informal"
 
@@ -402,21 +925,57 @@ msgstr "Informal"
 msgid "Insert a line break in the translation"
 msgstr "Insert a line break in the translation"
 
-#: src/components/SettingsModal.tsx:1580
-#: src/components/SettingsModal.tsx:1588
+#: src/components/SettingsModal.tsx:1597
+#: src/components/SettingsModal.tsx:1605
 msgid "Interface language"
 msgstr "Interface language"
 
-#: src/components/SettingsModal.tsx:1805
+#: src/components/editor/HeaderEditor.tsx:95
+msgid "Irish"
+msgstr "Irish"
+
+#: src/components/editor/HeaderEditor.tsx:96
+#: src/components/editor/TranslateToolbar.tsx:70
+#: src/components/editor/TranslateToolbar.tsx:103
+msgid "Italian"
+msgstr "Italian"
+
+#: src/components/editor/HeaderEditor.tsx:97
+msgid "Italian (Italy)"
+msgstr "Italian (Italy)"
+
+#: src/components/editor/HeaderEditor.tsx:98
+msgid "Italian (Switzerland)"
+msgstr "Italian (Switzerland)"
+
+#: src/components/editor/HeaderEditor.tsx:99
+#: src/components/editor/TranslateToolbar.tsx:71
+#: src/components/editor/TranslateToolbar.tsx:104
+msgid "Japanese"
+msgstr "Japanese"
+
+#: src/components/editor/HeaderEditor.tsx:100
+msgid "Kannada"
+msgstr "Kannada"
+
+#: src/components/editor/HeaderEditor.tsx:101
+msgid "Kazakh"
+msgstr "Kazakh"
+
+#: src/components/SettingsModal.tsx:1822
 msgid "Keep current key"
 msgstr "Keep current key"
 
-#: src/components/SettingsModal.tsx:993
-#: src/components/SettingsModal.tsx:1242
+#: src/components/editor/TranslateButton.tsx:257
+msgid "Keep original"
+msgstr "Keep original"
+
+#: src/components/SettingsModal.tsx:1003
+#: src/components/SettingsModal.tsx:1259
 msgid "Key saved"
 msgstr "Key saved"
 
-#: src/components/SettingsModal.tsx:917
+#: src/components/SettingsModal.tsx:925
 msgid "Keyboard Shortcuts"
 msgstr "Keyboard Shortcuts"
 
@@ -424,43 +983,82 @@ msgstr "Keyboard Shortcuts"
 msgid "Keyboard shortcuts available when editing translations."
 msgstr "Keyboard shortcuts available when editing translations."
 
-#: src/components/SettingsModal.tsx:1389
+#: src/components/editor/HeaderEditor.tsx:102
+#: src/components/editor/TranslateToolbar.tsx:72
+#: src/components/editor/TranslateToolbar.tsx:105
+msgid "Korean"
+msgstr "Korean"
+
+#: src/components/SettingsModal.tsx:1406
+#: src/components/editor/GlossaryPanel.tsx:366
+#: src/components/editor/HeaderEditor.tsx:218
 msgid "Language"
 msgstr "Language"
 
-#: src/pages/Index.tsx:1795
+#: src/components/editor/HeaderEditor.tsx:242
+msgid "Language Team"
+msgstr "Language Team"
+
+#: src/components/editor/HeaderEditor.tsx:236
+msgid "Last Translator"
+msgstr "Last Translator"
+
+#: src/components/editor/HeaderEditor.tsx:253
+msgid "Last Updated"
+msgstr "Last Updated"
+
+#: src/components/editor/HeaderEditor.tsx:103
+#: src/components/editor/HeaderEditor.tsx:179
+#: src/components/editor/TranslateToolbar.tsx:74
+#: src/components/editor/TranslateToolbar.tsx:107
+msgid "Latvian"
+msgstr "Latvian"
+
+#: src/pages/Index.tsx:1492
 msgid "License"
 msgstr "License"
 
-#: src/pages/Index.tsx:147
+#: src/pages/Index.tsx:152
 msgid "Light mode"
 msgstr "Light mode"
 
-#: src/pages/Index.tsx:1514
+#: src/pages/Index.tsx:1574
 msgid "Line {line}"
 msgstr "Line {line}"
+
+#: src/components/editor/EditorTable.tsx:1157
+#: src/components/editor/EditorTable.tsx:2166
+msgid "Line {{lineNumber}}"
+msgstr "Line {{lineNumber}}"
 
 #: src/components/feedback/FeedbackModal.tsx:355
 msgid "List steps someone else can follow"
 msgstr "List steps someone else can follow"
 
-#: src/pages/Index.tsx:1738
+#: src/components/editor/HeaderEditor.tsx:104
+#: src/components/editor/TranslateToolbar.tsx:73
+#: src/components/editor/TranslateToolbar.tsx:106
+msgid "Lithuanian"
+msgstr "Lithuanian"
+
+#: src/components/editor/GlossaryPanel.tsx:354
+#: src/pages/Index.tsx:1806
 msgid "Load"
 msgstr "Load"
 
-#: src/components/SettingsModal.tsx:1404
+#: src/components/SettingsModal.tsx:1421
 msgid "Load Glossary"
 msgstr "Load Glossary"
 
-#: src/pages/Index.tsx:1746
+#: src/pages/Index.tsx:1814
 msgid "Load a small example WordPress plugin PO file (Hello Dolly)"
 msgstr "Load a small example WordPress plugin PO file (Hello Dolly)"
 
-#: src/pages/Index.tsx:1757
+#: src/pages/Index.tsx:1825
 msgid "Load example PO"
 msgstr "Load example PO"
 
-#: src/components/SettingsModal.tsx:1382
+#: src/components/SettingsModal.tsx:1399
 msgid ""
 "Load the official WordPress translation glossary to ensure consistent termin"
 "ology."
@@ -468,22 +1066,123 @@ msgstr ""
 "Load the official WordPress translation glossary to ensure consistent termin"
 "ology."
 
-#: src/components/SettingsModal.tsx:1317
-#: src/components/SettingsModal.tsx:1346
+#: src/components/SettingsModal.tsx:1334
+#: src/components/SettingsModal.tsx:1363
 msgid "Load voices by testing your key"
 msgstr "Load voices by testing your key"
 
-#: src/pages/Index.tsx:1480
+#: src/pages/Index.tsx:1540
 msgid ""
 "Loading a new file from URL will replace the currently loaded file. Any unsa"
 "ved changes will be lost."
 msgstr ""
 "Loading a new file from URL will replace the currently loaded file. Any unsa"
 "ved changes will be lost."
+
+#: src/components/editor/HeaderEditor.tsx:257
+msgid "MIME Version"
+msgstr "MIME Version"
+
+#: src/components/editor/EditorTable.tsx:640
+#: src/components/editor/EditorTable.tsx:796
+#: src/components/editor/EditorTable.tsx:859
+msgid "MT + Glossary"
+msgstr "MT + Glossary"
+
+#: src/components/editor/HeaderEditor.tsx:105
+msgid "Macedonian"
+msgstr "Macedonian"
+
+#: src/components/editor/TranslateToolbar.tsx:611
+msgid "Machine Translation"
+msgstr "Machine Translation"
+
+#: src/components/editor/EditorTable.tsx:640
+#: src/components/editor/EditorTable.tsx:796
+#: src/components/editor/EditorTable.tsx:859
+#: src/components/editor/EditorTable.tsx:940
+#: src/components/editor/EditorTable.tsx:1147
+#: src/components/editor/FilterToolbar.tsx:387
+msgid "Machine translated"
+msgstr "Machine translated"
+
+#: src/components/editor/EditorTable.tsx:631
+#: src/components/editor/EditorTable.tsx:787
+#: src/components/editor/EditorTable.tsx:850
+msgid "Machine translated by DeepL"
+msgstr "Machine translated by DeepL"
+
+#: src/components/editor/EditorTable.tsx:631
+#: src/components/editor/EditorTable.tsx:786
+#: src/components/editor/EditorTable.tsx:850
+msgid "Machine translated with glossary"
+msgstr "Machine translated with glossary"
+
+#: src/components/editor/HeaderEditor.tsx:106
+msgid "Malay"
+msgstr "Malay"
+
+#: src/components/editor/HeaderEditor.tsx:107
+msgid "Malayalam"
+msgstr "Malayalam"
+
+#: src/components/editor/HeaderEditor.tsx:108
+msgid "Maltese"
+msgstr "Maltese"
+
+#: src/components/editor/EditorTable.tsx:926
+msgid "Manual"
+msgstr "Manual"
+
+#: src/components/editor/EditorTable.tsx:1142
+msgid "Manual edit"
+msgstr "Manual edit"
+
+#: src/components/editor/FilterToolbar.tsx:413
+msgid "Manual edits"
+msgstr "Manual edits"
+
+#: src/components/editor/EditorTable.tsx:918
+msgid "Manually edited - protected from bulk translation"
+msgstr "Manually edited - protected from bulk translation"
+
+#: src/components/editor/HeaderEditor.tsx:109
+msgid "Marathi"
+msgstr "Marathi"
+
+#: src/components/editor/EditorTable.tsx:981
+msgid "Mark as fuzzy"
+msgstr "Mark as fuzzy"
+
+#: src/components/editor/EditorTable.tsx:912
+#: src/components/editor/EditorTable.tsx:1137
+#: src/components/editor/FilterToolbar.tsx:66
+msgid "Modified"
+msgstr "Modified"
+
+#: src/components/editor/EditorTable.tsx:904
+msgid "Modified this session"
+msgstr "Modified this session"
+
+#: src/components/editor/HeaderEditor.tsx:110
+msgid "Mongolian"
+msgstr "Mongolian"
+
+#: src/components/editor/EditorTable.tsx:2211
+msgid "More info"
+msgstr "More info"
+
+#: src/components/editor/HeaderEditor.tsx:238
+msgid "Name and email of last translator"
+msgstr "Name and email of last translator"
 
 #: src/components/SettingsModal.tsx:216
 msgid "Navigation Settings"
 msgstr "Navigation Settings"
+
+#: src/components/editor/HeaderEditor.tsx:111
+msgid "Nepali"
+msgstr "Nepali"
 
 #: src/components/SettingsModal.tsx:122
 msgid "New line"
@@ -498,52 +1197,131 @@ msgstr "Next entry"
 msgid "Next field"
 msgstr "Next field"
 
-#: src/components/SettingsModal.tsx:857
+#: src/components/editor/HeaderEditor.tsx:731
+msgid "No additional metadata fields"
+msgstr "No additional metadata fields"
+
+#: src/components/editor/EditorTable.tsx:1169
+msgid "No context"
+msgstr "No context"
+
+#: src/components/editor/EditorTable.tsx:2501
+msgid "No entries match the current filters."
+msgstr "No entries match the current filters."
+
+#: src/components/SettingsModal.tsx:865
 msgid "No glossary entries found in the uploaded file."
 msgstr "No glossary entries found in the uploaded file."
+
+#: src/components/glossary/shared.tsx:161
+msgid "No glossary terms in selected text"
+msgstr "No glossary terms in selected text"
+
+#: src/components/editor/HeaderEditor.tsx:410
+msgid "No matching plural form"
+msgstr "No matching plural form"
+
+#: src/components/editor/TranslateToolbar.tsx:550
+msgid "No selected fuzzy rows to approve."
+msgstr "No selected fuzzy rows to approve."
+
+#: src/components/editor/TranslateToolbar.tsx:559
+msgid "No selected rows available to unapprove."
+msgstr "No selected rows available to unapprove."
+
+#: src/components/editor/EditorTable.tsx:2163
+msgid "No selection"
+msgstr "No selection"
+
+#: src/components/editor/EditorTable.tsx:1190
+msgid "No source references"
+msgstr "No source references"
+
+#: src/components/glossary/shared.tsx:133
+msgid "No terms match your search"
+msgstr "No terms match your search"
 
 #: src/components/ui/SpeakButton.tsx:38
 msgid "No text to play."
 msgstr "No text to play."
 
+#: src/components/editor/HeaderEditor.tsx:114
+#: src/components/editor/TranslateToolbar.tsx:75
+#: src/components/editor/TranslateToolbar.tsx:108
+msgid "Norwegian"
+msgstr "Norwegian"
+
+#: src/components/editor/HeaderEditor.tsx:112
+msgid "Norwegian Bokmål"
+msgstr "Norwegian Bokmål"
+
+#: src/components/editor/HeaderEditor.tsx:113
+msgid "Norwegian Nynorsk"
+msgstr "Norwegian Nynorsk"
+
+#: src/components/editor/GlossaryPanel.tsx:310
+msgid "Not loaded"
+msgstr "Not loaded"
+
+#: src/components/glossary/shared.tsx:91
+msgid "Notes"
+msgstr "Notes"
+
 #: src/components/ui/SpeakButton.tsx:38
 msgid "Nothing to play yet."
 msgstr "Nothing to play yet."
 
-#: src/components/SettingsModal.tsx:1783
+#: src/components/editor/HeaderEditor.tsx:147
+msgid "One form (no plurals)"
+msgstr "One form (no plurals)"
+
+#: src/components/SettingsModal.tsx:1800
 msgid "Only include credentials on personal, trusted devices."
 msgstr "Only include credentials on personal, trusted devices."
 
-#: src/components/SettingsModal.tsx:1727
+#: src/components/SettingsModal.tsx:1744
 msgid "Only visible while running the app in development mode"
 msgstr "Only visible while running the app in development mode"
 
-#: src/pages/Index.tsx:1229
+#: src/components/editor/EditorTable.tsx:1219
+#: src/components/editor/SourceCodeViewer.tsx:178
+msgid "Open in Trac"
+msgstr "Open in Trac"
+
+#: src/pages/Index.tsx:1245
 msgid "Open issue"
 msgstr "Open issue"
 
-#: src/pages/Index.tsx:1442
+#: src/pages/Index.tsx:1463
 msgid "Open settings"
 msgstr "Open settings"
 
-#: src/pages/Index.tsx:1377
+#: src/pages/Index.tsx:1390
 msgid "PO file (.po)"
 msgstr "PO file (.po)"
 
-#: src/pages/Index.tsx:1721
+#: src/pages/Index.tsx:1789
 msgid "PO file URL"
 msgstr "PO file URL"
 
-#: src/pages/Index.tsx:1720
+#: src/components/editor/HeaderEditor.tsx:252
+msgid "POT Created"
+msgstr "POT Created"
+
+#: src/pages/Index.tsx:1788
 msgid "Paste a .po file URL"
 msgstr "Paste a .po file URL"
+
+#: src/components/editor/HeaderEditor.tsx:115
+msgid "Persian"
+msgstr "Persian"
 
 #: src/components/ui/SpeakButton.tsx:61
 #: src/components/ui/SpeakButton.tsx:86
 msgid "Play source"
 msgstr "Play source"
 
-#: src/components/SettingsModal.tsx:1098
+#: src/components/SettingsModal.tsx:1115
 msgid ""
 "Play strings with either browser voices or ElevenLabs. Browser playback stay"
 "s free and local. ElevenLabs uses your own API key through a protected proxy"
@@ -558,7 +1336,7 @@ msgstr ""
 msgid "Play translation"
 msgstr "Play translation"
 
-#: src/components/SettingsModal.tsx:1126
+#: src/components/SettingsModal.tsx:1143
 msgid "Playback rate"
 msgstr "Playback rate"
 
@@ -574,8 +1352,8 @@ msgstr "Please complete all required bug fields."
 msgid "Please complete all required feature fields."
 msgstr "Please complete all required feature fields."
 
-#: src/components/SettingsModal.tsx:440
-#: src/components/SettingsModal.tsx:506
+#: src/components/SettingsModal.tsx:448
+#: src/components/SettingsModal.tsx:514
 msgid "Please enter an API key"
 msgstr "Please enter an API key"
 
@@ -583,14 +1361,52 @@ msgstr "Please enter an API key"
 msgid "Please provide a valid email address or leave it empty."
 msgstr "Please provide a valid email address or leave it empty."
 
+#: src/components/editor/HeaderEditor.tsx:473
+msgid "Plugin Slug"
+msgstr "Plugin Slug"
+
+#: src/components/editor/HeaderEditor.tsx:515
+msgid "Plugin not found on WordPress.org"
+msgstr "Plugin not found on WordPress.org"
+
+#: src/components/editor/HeaderEditor.tsx:224
+msgid "Plural Forms"
+msgstr "Plural Forms"
+
+#: src/components/editor/EditorTable.tsx:1094
+msgid "Plural entry: {{completed}}/{{total}} forms translated"
+msgstr "Plural entry: {{completed}}/{{total}} forms translated"
+
+#: src/components/editor/HeaderEditor.tsx:116
+#: src/components/editor/HeaderEditor.tsx:184
+#: src/components/editor/TranslateToolbar.tsx:77
+#: src/components/editor/TranslateToolbar.tsx:110
+msgid "Polish"
+msgstr "Polish"
+
+#: src/components/editor/HeaderEditor.tsx:117
+#: src/components/editor/TranslateToolbar.tsx:78
+msgid "Portuguese"
+msgstr "Portuguese"
+
+#: src/components/editor/HeaderEditor.tsx:118
+#: src/components/editor/TranslateToolbar.tsx:111
+msgid "Portuguese (Brazil)"
+msgstr "Portuguese (Brazil)"
+
+#: src/components/editor/HeaderEditor.tsx:119
+#: src/components/editor/TranslateToolbar.tsx:112
+msgid "Portuguese (Portugal)"
+msgstr "Portuguese (Portugal)"
+
 #: src/components/feedback/FeedbackModal.tsx:453
 msgid "Preparing spam protection..."
 msgstr "Preparing spam protection..."
 
-#: src/components/SettingsModal.tsx:1162
-#: src/components/SettingsModal.tsx:1190
-#: src/components/SettingsModal.tsx:1331
-#: src/components/SettingsModal.tsx:1360
+#: src/components/SettingsModal.tsx:1179
+#: src/components/SettingsModal.tsx:1207
+#: src/components/SettingsModal.tsx:1348
+#: src/components/SettingsModal.tsx:1377
 msgid "Preview voice"
 msgstr "Preview voice"
 
@@ -599,11 +1415,11 @@ msgid "Previous field"
 msgstr "Previous field"
 
 #: src/components/feedback/FeedbackModal.tsx:416
-#: src/pages/Index.tsx:1815
+#: src/pages/Index.tsx:1510
 msgid "Privacy"
 msgstr "Privacy"
 
-#: src/components/SettingsModal.tsx:1012
+#: src/components/SettingsModal.tsx:1022
 msgid "Pro API"
 msgstr "Pro API"
 
@@ -611,67 +1427,146 @@ msgstr "Pro API"
 msgid "Problem / opportunity"
 msgstr "Problem / opportunity"
 
+#: src/components/editor/HeaderEditor.tsx:230
+msgid "Project"
+msgstr "Project"
+
+#: src/components/editor/HeaderEditor.tsx:232
+msgid "Project name and version"
+msgstr "Project name and version"
+
 #: src/components/feedback/FeedbackModal.tsx:389
 msgid "Proposed solution"
 msgstr "Proposed solution"
 
-#: src/components/SettingsModal.tsx:1107
+#: src/components/editor/TranslateToolbar.tsx:911
+msgid "Protect {{count}} manual edits from bulk translation"
+msgstr "Protect {{count}} manual edits from bulk translation"
+
+#: src/components/SettingsModal.tsx:1124
 msgid "Provider"
 msgstr "Provider"
 
-#: src/components/SettingsModal.tsx:1606
+#: src/components/editor/HeaderEditor.tsx:120
+msgid "Punjabi"
+msgstr "Punjabi"
+
+#: src/components/editor/TranslateToolbar.tsx:828
+msgid "Re-run glossary analysis on selected rows"
+msgstr "Re-run glossary analysis on selected rows"
+
+#: src/components/SettingsModal.tsx:1623
 msgid "Read the translation guide"
 msgstr "Read the translation guide"
 
-#: src/components/SettingsModal.tsx:1408
+#: src/components/editor/EditorTable.tsx:1185
+msgid "References"
+msgstr "References"
+
+#: src/components/SettingsModal.tsx:1425
+#: src/components/editor/GlossaryPanel.tsx:321
 msgid "Refresh from WordPress.org"
 msgstr "Refresh from WordPress.org"
 
-#: src/pages/Index.tsx:1121
+#: src/pages/Index.tsx:1137
 msgid "Release to load your translation file"
 msgstr "Release to load your translation file"
 
-#: src/components/SettingsModal.tsx:969
-#: src/components/SettingsModal.tsx:1218
+#: src/components/SettingsModal.tsx:979
+#: src/components/SettingsModal.tsx:1235
 msgid "Remember API key across sessions"
 msgstr "Remember API key across sessions"
 
-#: src/components/SettingsModal.tsx:1060
-#: src/components/SettingsModal.tsx:1266
+#: src/components/SettingsModal.tsx:1070
+#: src/components/SettingsModal.tsx:1283
 msgid "Remove saved key"
 msgstr "Remove saved key"
 
-#: src/pages/Index.tsx:1483
+#: src/components/editor/TranslateButton.tsx:260
+#: src/pages/Index.tsx:1543
 msgid "Replace"
 msgstr "Replace"
 
-#: src/pages/Index.tsx:1479
+#: src/pages/Index.tsx:1539
 msgid "Replace current file?"
 msgstr "Replace current file?"
 
-#: src/pages/Index.tsx:754
+#: src/components/editor/TranslateButton.tsx:249
+msgid "Replace existing translation?"
+msgstr "Replace existing translation?"
+
+#: src/components/editor/HeaderEditor.tsx:254
+msgid "Report Bugs To"
+msgstr "Report Bugs To"
+
+#: src/pages/Index.tsx:769
 msgid "Request timed out. Try downloading the file and uploading it directly."
 msgstr "Request timed out. Try downloading the file and uploading it directly."
 
-#: src/pages/Index.tsx:1588
+#: src/components/editor/EditorTable.tsx:2337
+msgid "Resize inspector"
+msgstr "Resize inspector"
+
+#: src/pages/Index.tsx:1648
 msgid "Restore draft"
 msgstr "Restore draft"
 
-#: src/components/SettingsModal.tsx:1502
+#: src/components/SettingsModal.tsx:1519
+#: src/components/editor/GlossaryPanel.tsx:256
 msgid "Resync"
 msgstr "Resync"
 
-#: src/components/editor/TranslateToolbar.tsx:576
+#: src/components/editor/TranslateToolbar.tsx:591
+#: src/components/editor/TranslateToolbar.tsx:729
 msgid "Retranslate All"
 msgstr "Retranslate All"
 
-#: src/components/SettingsModal.tsx:1516
+#: src/components/editor/TranslateToolbar.tsx:716
+msgid "Retranslate all entries"
+msgstr "Retranslate all entries"
+
+#: src/components/editor/TranslateToolbar.tsx:577
+msgid "Retranslate all entries?"
+msgstr "Retranslate all entries?"
+
+#: src/components/editor/TranslateToolbar.tsx:935
+msgid "Retranslating"
+msgstr "Retranslating"
+
+#: src/components/SettingsModal.tsx:1533
+#: src/components/editor/GlossaryPanel.tsx:269
 msgid "Retry"
 msgstr "Retry"
 
-#: src/components/SettingsModal.tsx:1056
-#: src/components/SettingsModal.tsx:1203
-#: src/components/SettingsModal.tsx:1262
+#: src/components/editor/TranslateButton.tsx:184
+#: src/components/editor/TranslateButton.tsx:203
+msgid "Retry translation"
+msgstr "Retry translation"
+
+#: src/components/editor/HeaderEditor.tsx:121
+#: src/components/editor/HeaderEditor.tsx:175
+#: src/components/editor/TranslateToolbar.tsx:79
+#: src/components/editor/TranslateToolbar.tsx:113
+msgid "Romanian"
+msgstr "Romanian"
+
+#: src/components/editor/EditorTable.tsx:2471
+msgid "Rows per page"
+msgstr "Rows per page"
+
+#: src/components/editor/HeaderEditor.tsx:122
+#: src/components/editor/TranslateToolbar.tsx:80
+#: src/components/editor/TranslateToolbar.tsx:114
+msgid "Russian"
+msgstr "Russian"
+
+#: src/components/editor/HeaderEditor.tsx:171
+msgid "Russian, Ukrainian, Serbian, Croatian"
+msgstr "Russian, Ukrainian, Serbian, Croatian"
+
+#: src/components/SettingsModal.tsx:1066
+#: src/components/SettingsModal.tsx:1220
+#: src/components/SettingsModal.tsx:1279
 msgid "Save"
 msgstr "Save"
 
@@ -688,45 +1583,94 @@ msgstr "Save current field and move to the next translation field"
 msgid "Save current field and move to the previous translation field"
 msgstr "Save current field and move to the previous translation field"
 
-#: src/components/SettingsModal.tsx:1390
+#: src/components/editor/HeaderEditor.tsx:319
+msgid "Search or type language code..."
+msgstr "Search or type language code..."
+
+#: src/components/editor/FilterToolbar.tsx:246
+msgid "Search source, translation, context..."
+msgstr "Search source, translation, context..."
+
+#: src/components/glossary/shared.tsx:66
+msgid "Search terms..."
+msgstr "Search terms..."
+
+#: src/components/editor/EditorTable.tsx:2450
+msgid "Select a row to inspect context and metadata."
+msgstr "Select a row to inspect context and metadata."
+
+#: src/components/editor/TranslateToolbar.tsx:768
+msgid "Select all filtered"
+msgstr "Select all filtered"
+
+#: src/components/editor/EditorTable.tsx:2249
+msgid "Select all filtered entries"
+msgstr "Select all filtered entries"
+
+#: src/components/SettingsModal.tsx:1407
 msgid "Select locale"
 msgstr "Select locale"
+
+#: src/components/editor/GlossaryPanel.tsx:370
+msgid "Select or type locale..."
+msgstr "Select or type locale..."
+
+#: src/components/editor/HeaderEditor.tsx:406
+msgid "Select plural form for your language..."
+msgstr "Select plural form for your language..."
+
+#: src/components/editor/TranslateToolbar.tsx:663
+msgid "Select target..."
+msgstr "Select target..."
+
+#: src/components/editor/EditorTable.tsx:2169
+msgid "Selected string"
+msgstr "Selected string"
 
 #: src/components/feedback/FeedbackModal.tsx:482
 msgid "Send feedback"
 msgstr "Send feedback"
 
-#: src/components/SettingsModal.tsx:899
-#: src/pages/Index.tsx:1437
+#: src/components/editor/HeaderEditor.tsx:123
+msgid "Serbian"
+msgstr "Serbian"
+
+#: src/components/editor/HeaderEditor.tsx:124
+msgid "Serbian (Latin)"
+msgstr "Serbian (Latin)"
+
+#: src/components/SettingsModal.tsx:907
+#: src/pages/Index.tsx:1458
 msgid "Settings"
 msgstr "Settings"
 
-#: src/pages/Index.tsx:1428
+#: src/pages/Index.tsx:1445
+#: src/pages/Index.tsx:1450
 msgid "Settings and actions"
 msgstr "Settings and actions"
 
-#: src/components/SettingsModal.tsx:681
+#: src/components/SettingsModal.tsx:689
 msgid "Settings exported with your DeepL API key."
 msgstr "Settings exported with your DeepL API key."
 
-#: src/components/SettingsModal.tsx:682
+#: src/components/SettingsModal.tsx:690
 msgid "Settings exported without your DeepL API key."
 msgstr "Settings exported without your DeepL API key."
 
-#: src/components/SettingsModal.tsx:1652
+#: src/components/SettingsModal.tsx:1669
 msgid "Settings file"
 msgstr "Settings file"
 
-#: src/components/SettingsModal.tsx:732
+#: src/components/SettingsModal.tsx:740
 msgid "Settings imported without changing your current DeepL API key."
 msgstr "Settings imported without changing your current DeepL API key."
 
-#: src/components/SettingsModal.tsx:731
+#: src/components/SettingsModal.tsx:739
 msgid "Settings imported, including your DeepL API key."
 msgstr "Settings imported, including your DeepL API key."
 
-#: src/components/SettingsModal.tsx:473
-#: src/components/SettingsModal.tsx:581
+#: src/components/SettingsModal.tsx:481
+#: src/components/SettingsModal.tsx:589
 msgid "Settings saved!"
 msgstr "Settings saved!"
 
@@ -734,7 +1678,7 @@ msgstr "Settings saved!"
 msgid "Share Feedback"
 msgstr "Share Feedback"
 
-#: src/pages/Index.tsx:1412
+#: src/pages/Index.tsx:1429
 msgid "Share feedback"
 msgstr "Share feedback"
 
@@ -750,11 +1694,23 @@ msgstr "Short summary of the request"
 msgid "Shortcut"
 msgstr "Shortcut"
 
-#: src/components/SettingsModal.tsx:1726
+#: src/components/editor/SourceCodeViewer.tsx:256
+msgid "Show all {{count}} lines"
+msgstr "Show all {{count}} lines"
+
+#: src/components/SettingsModal.tsx:1743
 msgid "Show branch chip"
 msgstr "Show branch chip"
 
-#: src/components/SettingsModal.tsx:1714
+#: src/components/editor/SourceCodeViewer.tsx:255
+msgid "Show context only"
+msgstr "Show context only"
+
+#: src/components/editor/HeaderEditor.tsx:684
+msgid "Show technical fields"
+msgstr "Show technical fields"
+
+#: src/components/SettingsModal.tsx:1731
 msgid ""
 "Show the current git branch in a small floating chip at the bottom right of "
 "the site."
@@ -762,26 +1718,116 @@ msgstr ""
 "Show the current git branch in a small floating chip at the bottom right of "
 "the site."
 
+#: src/components/editor/FilterToolbar.tsx:76
+msgid "Showing only {{label}} • Click to exclude"
+msgstr "Showing only {{label}} • Click to exclude"
+
+#: src/components/glossary/shared.tsx:74
+msgid "Showing {{shown}} of {{total}} terms"
+msgstr "Showing {{shown}} of {{total}} terms"
+
+#: src/components/editor/EditorTable.tsx:2474
+msgid "Showing {{start}}–{{end}} of {{total}} entries"
+msgstr "Showing {{start}}–{{end}} of {{total}} entries"
+
+#: src/components/editor/EditorTable.tsx:112
+#: src/components/editor/FilterToolbar.tsx:237
+msgid "Signals"
+msgstr "Signals"
+
+#: src/components/editor/EditorTable.tsx:1090
+msgid "Singular entry"
+msgstr "Singular entry"
+
+#: src/components/editor/HeaderEditor.tsx:198
+msgid "Six forms"
+msgstr "Six forms"
+
 #: src/components/SettingsModal.tsx:220
 msgid "Skip translated entries"
 msgstr "Skip translated entries"
 
-#: src/pages/Index.tsx:1785
+#: src/components/editor/HeaderEditor.tsx:125
+#: src/components/editor/TranslateToolbar.tsx:81
+#: src/components/editor/TranslateToolbar.tsx:115
+msgid "Slovak"
+msgstr "Slovak"
+
+#: src/components/editor/HeaderEditor.tsx:126
+#: src/components/editor/HeaderEditor.tsx:193
+#: src/components/editor/TranslateToolbar.tsx:82
+#: src/components/editor/TranslateToolbar.tsx:116
+msgid "Slovenian"
+msgstr "Slovenian"
+
+#: src/components/editor/FilterToolbar.tsx:542
+msgid "Sort entries"
+msgstr "Sort entries"
+
+#: src/pages/Index.tsx:1483
 msgid "Source"
 msgstr "Source"
 
-#: src/components/SettingsModal.tsx:1147
-#: src/components/SettingsModal.tsx:1316
+#: src/components/editor/FilterToolbar.tsx:217
+msgid "Source A-Z"
+msgstr "Source A-Z"
+
+#: src/components/editor/FilterToolbar.tsx:218
+msgid "Source Z-A"
+msgstr "Source Z-A"
+
+#: src/components/editor/TranslateToolbar.tsx:649
+msgid "Source language"
+msgstr "Source language"
+
+#: src/components/editor/EditorTable.tsx:110
+#: src/components/editor/FilterToolbar.tsx:235
+msgid "Source string"
+msgstr "Source string"
+
+#: src/components/SettingsModal.tsx:1164
+#: src/components/SettingsModal.tsx:1333
 msgid "Source voice"
 msgstr "Source voice"
 
-#: src/components/SettingsModal.tsx:906
+#: src/components/editor/HeaderEditor.tsx:127
+#: src/components/editor/TranslateToolbar.tsx:64
+#: src/components/editor/TranslateToolbar.tsx:97
+msgid "Spanish"
+msgstr "Spanish"
+
+#: src/components/editor/HeaderEditor.tsx:130
+msgid "Spanish (Argentina)"
+msgstr "Spanish (Argentina)"
+
+#: src/components/editor/HeaderEditor.tsx:129
+msgid "Spanish (Mexico)"
+msgstr "Spanish (Mexico)"
+
+#: src/components/editor/HeaderEditor.tsx:128
+msgid "Spanish (Spain)"
+msgstr "Spanish (Spain)"
+
+#: src/components/SettingsModal.tsx:914
 msgid "Speech"
 msgstr "Speech"
 
 #: src/components/ui/SpeakButton.tsx:47
 msgid "Speech synthesis is not available in this browser."
 msgstr "Speech synthesis is not available in this browser."
+
+#: src/components/editor/EditorTable.tsx:108
+#: src/components/editor/FilterToolbar.tsx:233
+msgid "Status"
+msgstr "Status"
+
+#: src/components/editor/FilterToolbar.tsx:222
+msgid "Status: translated first"
+msgstr "Status: translated first"
+
+#: src/components/editor/FilterToolbar.tsx:221
+msgid "Status: untranslated first"
+msgstr "Status: untranslated first"
 
 #: src/components/feedback/FeedbackModal.tsx:354
 msgid "Steps to reproduce"
@@ -792,6 +1838,14 @@ msgstr "Steps to reproduce"
 msgid "Stop playback"
 msgstr "Stop playback"
 
+#: src/components/editor/EditorTable.tsx:2376
+msgid "String Inspector"
+msgstr "String Inspector"
+
+#: src/components/editor/EditorTable.tsx:1175
+msgid "Structure"
+msgstr "Structure"
+
 #: src/components/feedback/FeedbackModal.tsx:412
 msgid ""
 "Submissions may create a GitHub issue and can include your optional contact "
@@ -800,35 +1854,79 @@ msgstr ""
 "Submissions may create a GitHub issue and can include your optional contact "
 "email for follow-up. See"
 
-#: src/components/SettingsModal.tsx:1509
+#: src/components/editor/TranslateToolbar.tsx:984
+msgid "Successfully translated {{count}} entries"
+msgstr "Successfully translated {{count}} entries"
+
+#: src/components/editor/HeaderEditor.tsx:131
+msgid "Swahili"
+msgstr "Swahili"
+
+#: src/components/editor/HeaderEditor.tsx:132
+#: src/components/editor/TranslateToolbar.tsx:83
+#: src/components/editor/TranslateToolbar.tsx:117
+msgid "Swedish"
+msgstr "Swedish"
+
+#: src/components/SettingsModal.tsx:1526
+#: src/components/editor/GlossaryPanel.tsx:266
 msgid "Sync failed"
 msgstr "Sync failed"
 
-#: src/components/SettingsModal.tsx:1485
+#: src/components/SettingsModal.tsx:1502
+#: src/components/editor/GlossaryPanel.tsx:236
 msgid "Syncing to DeepL..."
 msgstr "Syncing to DeepL..."
 
-#: src/components/SettingsModal.tsx:1546
+#: src/components/editor/HeaderEditor.tsx:133
+msgid "Tamil"
+msgstr "Tamil"
+
+#: src/components/editor/TranslateToolbar.tsx:669
+msgid "Target language"
+msgstr "Target language"
+
+#: src/components/editor/HeaderEditor.tsx:220
+msgid "Target language code"
+msgstr "Target language code"
+
+#: src/components/editor/HeaderEditor.tsx:134
+msgid "Telugu"
+msgstr "Telugu"
+
+#: src/components/glossary/shared.tsx:88
+msgid "Term (EN)"
+msgstr "Term (EN)"
+
+#: src/components/editor/GlossaryPanel.tsx:418
+msgid "Terms in selected row:"
+msgstr "Terms in selected row:"
+
+#: src/components/SettingsModal.tsx:1563
 msgid "Terms in selected text:"
 msgstr "Terms in selected text:"
 
-#: src/components/SettingsModal.tsx:1053
+#: src/components/SettingsModal.tsx:1063
 msgid "Test Connection"
 msgstr "Test Connection"
 
-#: src/components/SettingsModal.tsx:1256
+#: src/components/SettingsModal.tsx:1273
 msgid "Test connection"
 msgstr "Test connection"
 
-#: src/pages/Index.tsx:1216
+#: src/components/editor/HeaderEditor.tsx:135
+msgid "Thai"
+msgstr "Thai"
+
+#: src/pages/Index.tsx:1232
 msgid "Thanks. Issue #{issueNumber} was created."
 msgstr "Thanks. Issue #{issueNumber} was created."
 
-#: src/pages/Index.tsx:779
+#: src/pages/Index.tsx:794
 msgid "The URL must start with https://"
 msgstr "The URL must start with https://"
 
-#: src/components/SettingsModal.tsx:1700
+#: src/components/SettingsModal.tsx:1717
 msgid ""
 "These tools only appear while running the app locally in development and are"
 " not shown in production."
@@ -836,31 +1934,118 @@ msgstr ""
 "These tools only appear while running the app locally in development and are"
 " not shown in production."
 
-#: src/components/SettingsModal.tsx:611
+#: src/components/SettingsModal.tsx:619
 msgid "This is a preview of the selected voice."
 msgstr "This is a preview of the selected voice."
 
-#: src/components/SettingsModal.tsx:1767
+#: src/components/SettingsModal.tsx:1784
 msgid "This settings file contains your DeepL API key in plain text."
 msgstr "This settings file contains your DeepL API key in plain text."
 
-#: src/pages/Index.tsx:1466
+#: src/components/editor/TranslateButton.tsx:253
+msgid "This will overwrite your current translation with the DeepL result."
+msgstr "This will overwrite your current translation with the DeepL result."
+
+#: src/components/editor/TranslateToolbar.tsx:578
+msgid ""
+"This will overwrite {{count}} existing translations with new machine transla"
+"tions."
+msgstr ""
+"This will overwrite {{count}} existing translations with new machine transla"
+"tions."
+
+#: src/pages/Index.tsx:1526
 msgid "This will remove all your work on the current file."
 msgstr "This will remove all your work on the current file."
+
+#: src/components/editor/HeaderEditor.tsx:166
+msgid "Three forms"
+msgstr "Three forms"
 
 #: src/components/feedback/FeedbackModal.tsx:340
 #: src/components/feedback/FeedbackModal.tsx:375
 msgid "Title"
 msgstr "Title"
 
-#: src/pages/Index.tsx:1805
+#: src/components/editor/TranslateToolbar.tsx:657
+msgid "To"
+msgstr "To"
+
+#: src/pages/Index.tsx:1501
 msgid "Translate"
 msgstr "Translate"
 
-#: src/components/SettingsModal.tsx:1175
-#: src/components/SettingsModal.tsx:1345
+#: src/components/editor/TranslateButton.tsx:68
+#: src/components/editor/TranslateButton.tsx:73
+msgid "Translate with DeepL"
+msgstr "Translate with DeepL"
+
+#: src/components/editor/TranslateButton.tsx:72
+msgid "Translate with DeepL + Glossary"
+msgstr "Translate with DeepL + Glossary"
+
+#: src/components/editor/TranslateButton.tsx:68
+msgid "Translate with Glossary"
+msgstr "Translate with Glossary"
+
+#: src/components/editor/TranslateToolbar.tsx:740
+msgid "Translate {{count}} untranslated"
+msgstr "Translate {{count}} untranslated"
+
+#: src/components/editor/EditorTable.tsx:346
+#: src/components/editor/FilterToolbar.tsx:64
+msgid "Translated"
+msgstr "Translated"
+
+#: src/components/editor/EditorTable.tsx:111
+#: src/components/editor/FilterToolbar.tsx:236
+msgid "Translated string"
+msgstr "Translated string"
+
+#: src/components/editor/TranslateButton.tsx:161
+#: src/components/editor/TranslateToolbar.tsx:935
+msgid "Translating"
+msgstr "Translating"
+
+#: src/components/editor/TranslateButton.tsx:155
+msgid "Translating..."
+msgstr "Translating..."
+
+#: src/components/editor/EditorTable.tsx:2426
+#: src/components/glossary/shared.tsx:89
+msgid "Translation"
+msgstr "Translation"
+
+#: src/components/editor/FilterToolbar.tsx:219
+msgid "Translation A-Z"
+msgstr "Translation A-Z"
+
+#: src/components/editor/FilterToolbar.tsx:220
+msgid "Translation Z-A"
+msgstr "Translation Z-A"
+
+#: src/components/editor/HeaderEditor.tsx:244
+msgid "Translation team contact"
+msgstr "Translation team contact"
+
+#: src/components/SettingsModal.tsx:1192
+#: src/components/SettingsModal.tsx:1362
 msgid "Translation voice"
 msgstr "Translation voice"
+
+#: src/components/editor/GlossaryPanel.tsx:401
+msgid "Translations without glossary enforcement"
+msgstr "Translations without glossary enforcement"
+
+#: src/components/editor/EditorTable.tsx:2504
+msgid "Try adjusting your search or clearing some filters."
+msgstr "Try adjusting your search or clearing some filters."
+
+#: src/components/editor/HeaderEditor.tsx:136
+#: src/components/editor/TranslateToolbar.tsx:84
+#: src/components/editor/TranslateToolbar.tsx:118
+msgid "Turkish"
+msgstr "Turkish"
 
 #: src/components/feedback/FeedbackModal.tsx:460
 msgid "Turnstile bypass enabled for local development."
@@ -870,28 +2055,76 @@ msgstr "Turnstile bypass enabled for local development."
 msgid "Turnstile site key not set. Using local development bypass."
 msgstr "Turnstile site key not set. Using local development bypass."
 
-#: src/components/SettingsModal.tsx:779
+#: src/components/editor/HeaderEditor.tsx:156
+msgid "Two forms (singular/plural)"
+msgstr "Two forms (singular/plural)"
+
+#: src/components/glossary/shared.tsx:90
+msgid "Type"
+msgstr "Type"
+
+#: src/components/editor/GlossaryPanel.tsx:375
+msgid "Type a custom locale code"
+msgstr "Type a custom locale code"
+
+#: src/components/editor/HeaderEditor.tsx:137
+#: src/components/editor/TranslateToolbar.tsx:85
+#: src/components/editor/TranslateToolbar.tsx:119
+msgid "Ukrainian"
+msgstr "Ukrainian"
+
+#: src/components/SettingsModal.tsx:787
 msgid "Unable to import the selected settings file."
 msgstr "Unable to import the selected settings file."
 
-#: src/components/SettingsModal.tsx:789
+#: src/components/SettingsModal.tsx:797
 msgid "Unable to read the selected settings file."
 msgstr "Unable to read the selected settings file."
 
-#: src/components/SettingsModal.tsx:818
-#: src/pages/Index.tsx:761
+#: src/components/editor/TranslateToolbar.tsx:889
+msgid "Unapprove ({{count}})"
+msgstr "Unapprove ({{count}})"
+
+#: src/components/editor/TranslateToolbar.tsx:887
+msgid "Unapprove selected"
+msgstr "Unapprove selected"
+
+#: src/components/editor/TranslateToolbar.tsx:880
+msgid "Unapprove selected rows by adding fuzzy flag"
+msgstr "Unapprove selected rows by adding fuzzy flag"
+
+#: src/components/editor/EditorTable.tsx:969
+msgid "Unapprove: mark as fuzzy"
+msgstr "Unapprove: mark as fuzzy"
+
+#: src/components/editor/TranslateToolbar.tsx:558
+msgid "Unapproved {{count}} row(s): fuzzy flag added."
+msgstr "Unapproved {{count}} row(s): fuzzy flag added."
+
+#: src/components/SettingsModal.tsx:826
+#: src/components/editor/GlossaryPanel.tsx:194
+#: src/pages/Index.tsx:776
 msgid "Unknown error"
 msgstr "Unknown error"
 
-#: src/pages/Index.tsx:1562
+#: src/components/editor/HeaderEditor.tsx:587
+msgid "Unsaved changes"
+msgstr "Unsaved changes"
+
+#: src/pages/Index.tsx:1622
 msgid "Unsaved draft found"
 msgstr "Unsaved draft found"
 
-#: src/pages/Index.tsx:1401
+#: src/components/editor/EditorTable.tsx:347
+#: src/components/editor/FilterToolbar.tsx:63
+msgid "Untranslated"
+msgstr "Untranslated"
+
+#: src/pages/Index.tsx:1414
 msgid "Update"
 msgstr "Update"
 
-#: src/pages/Index.tsx:1389
+#: src/pages/Index.tsx:1402
 msgid ""
 "Update this file using a .pot template. Existing translations are kept when "
 "source strings still match, new strings are added, and obsolete strings are "
@@ -901,31 +2134,35 @@ msgstr ""
 "source strings still match, new strings are added, and obsolete strings are "
 "removed."
 
-#: src/pages/Index.tsx:1171
+#: src/pages/Index.tsx:1187
 msgid "Updated"
 msgstr "Updated"
 
-#: src/pages/Index.tsx:1299
+#: src/pages/Index.tsx:1312
 msgid "Upload"
 msgstr "Upload"
 
-#: src/components/SettingsModal.tsx:1446
+#: src/components/SettingsModal.tsx:1463
 msgid "Upload CSV"
 msgstr "Upload CSV"
 
-#: src/components/SettingsModal.tsx:1451
+#: src/components/SettingsModal.tsx:1468
 msgid "Upload a WordPress glossary CSV for the selected language"
 msgstr "Upload a WordPress glossary CSV for the selected language"
 
-#: src/pages/Index.tsx:1695
+#: src/pages/Index.tsx:1763
 msgid "Upload a translation file to start"
 msgstr "Upload a translation file to start"
 
-#: src/pages/Index.tsx:1493
+#: src/pages/Index.tsx:1553
 msgid "Upload failed"
 msgstr "Upload failed"
 
-#: src/components/SettingsModal.tsx:1296
+#: src/components/editor/HeaderEditor.tsx:138
+msgid "Urdu"
+msgstr "Urdu"
+
+#: src/components/SettingsModal.tsx:1313
 msgid ""
 "Usage is above 90%. ElevenLabs playback will stop once the provider quota is"
 " exhausted."
@@ -933,12 +2170,16 @@ msgstr ""
 "Usage is above 90%. ElevenLabs playback will stop once the provider quota is"
 " exhausted."
 
-#: src/components/SettingsModal.tsx:378
+#: src/components/SettingsModal.tsx:386
 msgid "Usage loaded from the last successful check."
 msgstr "Usage loaded from the last successful check."
 
-#: src/components/SettingsModal.tsx:1148
-#: src/components/SettingsModal.tsx:1176
+#: src/components/editor/HeaderEditor.tsx:347
+msgid "Use \"{{code}}\" as custom code"
+msgstr "Use \"{{code}}\" as custom code"
+
+#: src/components/SettingsModal.tsx:1165
+#: src/components/SettingsModal.tsx:1193
 msgid "Use browser default"
 msgstr "Use browser default"
 
@@ -946,25 +2187,42 @@ msgstr "Use browser default"
 msgid "Use case"
 msgstr "Use case"
 
-#: src/components/SettingsModal.tsx:1526
+#: src/components/SettingsModal.tsx:1543
 msgid "Use glossary for translations"
 msgstr "Use glossary for translations"
+
+#: src/components/editor/HeaderEditor.tsx:139
+msgid "Uzbek"
+msgstr "Uzbek"
 
 #: src/components/feedback/FeedbackModal.tsx:188
 msgid "Verification is still loading. Please try again in a moment."
 msgstr "Verification is still loading. Please try again in a moment."
 
-#: src/components/SettingsModal.tsx:1475
+#: src/components/editor/HeaderEditor.tsx:493
+msgid "Verify slug exists on WordPress.org"
+msgstr "Verify slug exists on WordPress.org"
+
+#: src/components/editor/HeaderEditor.tsx:140
+msgid "Vietnamese"
+msgstr "Vietnamese"
+
+#: src/components/SettingsModal.tsx:1492
+#: src/components/editor/GlossaryPanel.tsx:385
 msgid "View All"
 msgstr "View All"
 
-#: src/components/SettingsModal.tsx:1604
+#: src/components/SettingsModal.tsx:1621
 msgid "Want to help translate GlossBoss?"
 msgstr "Want to help translate GlossBoss?"
 
 #: src/components/feedback/FeedbackModal.tsx:436
 msgid "Website"
 msgstr "Website"
+
+#: src/components/editor/HeaderEditor.tsx:141
+msgid "Welsh"
+msgstr "Welsh"
 
 #: src/components/feedback/FeedbackModal.tsx:346
 msgid "What happened"
@@ -982,8 +2240,20 @@ msgstr "What should have happened"
 msgid "What would help?"
 msgstr "What would help?"
 
-#: src/components/SettingsModal.tsx:970
-#: src/components/SettingsModal.tsx:1219
+#: src/components/SettingsModal.tsx:1109
+msgid "When disabled, all speak buttons are hidden from the editor."
+msgstr "When disabled, all speak buttons are hidden from the editor."
+
+#: src/components/SettingsModal.tsx:945
+msgid ""
+"When disabled, all translate buttons and the bulk translation toolbar are hi"
+"dden."
+msgstr ""
+"When disabled, all translate buttons and the bulk translation toolbar are hi"
+"dden."
+
+#: src/components/SettingsModal.tsx:980
+#: src/components/SettingsModal.tsx:1236
 msgid ""
 "When enabled, your key is stored in localStorage and survives browser restar"
 "ts. Disable on shared or untrusted devices."
@@ -1003,15 +2273,23 @@ msgstr ""
 msgid "When would you use this?"
 msgstr "When would you use this?"
 
-#: src/pages/Index.tsx:1609
+#: src/components/glossary/shared.tsx:51
+msgid "WordPress Glossary"
+msgstr "WordPress Glossary"
+
+#: src/components/editor/HeaderEditor.tsx:477
+msgid "WordPress.org plugin slug for source code links"
+msgstr "WordPress.org plugin slug for source code links"
+
+#: src/pages/Index.tsx:1669
 msgid "Working from draft"
 msgstr "Working from draft"
 
-#: src/pages/Index.tsx:1318
+#: src/pages/Index.tsx:1331
 msgid "You have unsaved changes"
 msgstr "You have unsaved changes"
 
-#: src/pages/Index.tsx:1570
+#: src/pages/Index.tsx:1630
 msgid ""
 "You have unsaved changes from {age}. Would you like to restore your previous"
 " work?"
@@ -1019,11 +2297,11 @@ msgstr ""
 "You have unsaved changes from {age}. Would you like to restore your previous"
 " work?"
 
-#: src/pages/Index.tsx:1465
+#: src/pages/Index.tsx:1525
 msgid "You have unsaved changes. Are you sure you want to clear the editor?"
 msgstr "You have unsaved changes. Are you sure you want to clear the editor?"
 
-#: src/components/SettingsModal.tsx:1211
+#: src/components/SettingsModal.tsx:1228
 msgid ""
 "Your ElevenLabs API key is kept in this browser tab by default and will be c"
 "leared when you close the tab. Enable \"Remember API key\" below to persist "
@@ -1033,8 +2311,12 @@ msgstr ""
 "leared when you close the tab. Enable \"Remember API key\" below to persist "
 "it across sessions."
 
-#: src/components/SettingsModal.tsx:1084
-#: src/components/SettingsModal.tsx:1289
+#: src/components/editor/GlossaryPanel.tsx:302
+msgid "cached"
+msgstr "cached"
+
+#: src/components/SettingsModal.tsx:1094
+#: src/components/SettingsModal.tsx:1306
 msgid "characters"
 msgstr "characters"
 
@@ -1042,22 +2324,72 @@ msgstr "characters"
 msgid "for details."
 msgstr "for details."
 
-#: src/pages/Index.tsx:1380
+#: src/pages/Index.tsx:1393
 msgid "i18next JSON (.json)"
 msgstr "i18next JSON (.json)"
 
-#: src/pages/Index.tsx:1743
+#: src/components/feedback/FeedbackModal.tsx:424
+msgid "name@example.com"
+msgstr "name@example.com"
+
+#: src/pages/Index.tsx:1811
 msgid "or"
 msgstr "or"
 
-#: src/components/SettingsModal.tsx:1431
+#: src/components/SettingsModal.tsx:1448
 msgid "or upload manually"
 msgstr "or upload manually"
 
-#: src/components/SettingsModal.tsx:1462
+#: src/components/editor/TranslateToolbar.tsx:714
+msgid "overwritten"
+msgstr "overwritten"
+
+#: src/components/editor/TranslateToolbar.tsx:714
+msgid "skipped"
+msgstr "skipped"
+
+#: src/components/SettingsModal.tsx:1479
 msgid "terms"
 msgstr "terms"
 
-#: src/pages/Index.tsx:1578
+#: src/pages/Index.tsx:1638
 msgid "{count} modified entries will be restored."
 msgstr "{count} modified entries will be restored."
+
+#: src/components/editor/HeaderEditor.tsx:592
+msgid "{{count}} entries"
+msgstr "{{count}} entries"
+
+#: src/components/editor/TranslateToolbar.tsx:936
+msgid "{{count}} failed"
+msgstr "{{count}} failed"
+
+#: src/components/editor/TranslateToolbar.tsx:712
+msgid "{{count}} manual edits will be {{action}}"
+msgstr "{{count}} manual edits will be {{action}}"
+
+#: src/components/editor/TranslateToolbar.tsx:584
+msgid "{{count}} manually edited entries will be skipped."
+msgstr "{{count}} manually edited entries will be skipped."
+
+#: src/components/editor/EditorTable.tsx:2179
+#: src/components/editor/TranslateToolbar.tsx:616
+msgid "{{count}} selected"
+msgstr "{{count}} selected"
+
+#: src/components/editor/GlossaryPanel.tsx:295
+#: src/components/glossary/shared.tsx:56
+msgid "{{count}} terms"
+msgstr "{{count}} terms"
+
+#: src/components/editor/TranslateToolbar.tsx:617
+msgid "{{count}} untranslated"
+msgstr "{{count}} untranslated"
+
+#: src/components/editor/FilterToolbar.tsx:308
+msgid "{{percentage}}% translated"
+msgstr "{{percentage}}% translated"
+
+#: src/components/editor/TranslateToolbar.tsx:586
+msgid "⚠️ {{count}} manually edited entries will be overwritten!"
+msgstr "⚠️ {{count}} manually edited entries will be overwritten!"

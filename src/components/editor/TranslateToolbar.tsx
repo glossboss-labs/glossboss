@@ -139,12 +139,14 @@ interface TranslateToolbarProps {
   onLanguageChange?: (source: SourceLanguage | undefined, target: TargetLanguage) => void;
   deeplGlossaryId?: string | null;
   glossary?: Glossary | null;
+  translateEnabled?: boolean;
 }
 
 export function TranslateToolbar({
   onLanguageChange,
   deeplGlossaryId,
   glossary = null,
+  translateEnabled = true,
 }: TranslateToolbarProps) {
   const { t } = useTranslation();
   const {
@@ -563,6 +565,8 @@ export function TranslateToolbar({
   // Count already translated entries
   const translatedCount = allTranslatableEntries.length - untranslatedEntries.length;
 
+  if (!translateEnabled) return null;
+
   return (
     <>
       {/* Retranslate confirmation modal */}
@@ -642,7 +646,7 @@ export function TranslateToolbar({
               w={160}
               size="xs"
               disabled={!hasApiKey}
-              aria-label="Source language"
+              aria-label={t('Source language')}
             />
 
             <Text c="dimmed" size="sm">
@@ -656,13 +660,13 @@ export function TranslateToolbar({
               data={TARGET_LANGUAGES}
               value={targetLang}
               onChange={handleTargetChange}
-              placeholder="Select target..."
+              placeholder={t('Select target...')}
               searchable
               required
               w={170}
               size="xs"
               disabled={!hasApiKey}
-              aria-label="Target language"
+              aria-label={t('Target language')}
             />
 
             {inferredTarget && (
@@ -800,9 +804,11 @@ export function TranslateToolbar({
                       leftSection={<Zap size={14} />}
                       disabled={!hasApiKey || !targetLang}
                       onClick={handleSelectedAutoTranslate}
-                      aria-label="Auto translate selected"
+                      aria-label={t('Auto translate selected')}
                     >
-                      Auto Translate ({selectedAutoTranslateEntries.length})
+                      {t('Auto Translate ({{count}})', {
+                        count: selectedAutoTranslateEntries.length,
+                      })}
                     </Button>
                   </Tooltip>
                 </MotionDiv>
@@ -819,16 +825,16 @@ export function TranslateToolbar({
                   animate="visible"
                   exit="exit"
                 >
-                  <Tooltip label="Re-run glossary analysis on selected rows">
+                  <Tooltip label={t('Re-run glossary analysis on selected rows')}>
                     <Button
                       size="xs"
                       variant="light"
                       color="violet"
                       leftSection={<BookCheck size={14} />}
                       onClick={handleGlossaryCheckSelected}
-                      aria-label="Glossary check selected"
+                      aria-label={t('Glossary check selected')}
                     >
-                      Glossary Check
+                      {t('Glossary Check')}
                     </Button>
                   </Tooltip>
                 </MotionDiv>
@@ -845,16 +851,16 @@ export function TranslateToolbar({
                   animate="visible"
                   exit="exit"
                 >
-                  <Tooltip label="Approve selected rows by clearing fuzzy flag">
+                  <Tooltip label={t('Approve selected rows by clearing fuzzy flag')}>
                     <Button
                       size="xs"
                       variant="light"
                       color="green"
                       leftSection={<CheckCheck size={14} />}
                       onClick={handleApproveSelected}
-                      aria-label="Approve selected"
+                      aria-label={t('Approve selected')}
                     >
-                      Approve ({selectedFuzzyCount})
+                      {t('Approve ({{count}})', { count: selectedFuzzyCount })}
                     </Button>
                   </Tooltip>
                 </MotionDiv>
@@ -871,16 +877,16 @@ export function TranslateToolbar({
                   animate="visible"
                   exit="exit"
                 >
-                  <Tooltip label="Unapprove selected rows by adding fuzzy flag">
+                  <Tooltip label={t('Unapprove selected rows by adding fuzzy flag')}>
                     <Button
                       size="xs"
                       variant="light"
                       color="yellow"
                       leftSection={<RotateCcw size={14} />}
                       onClick={handleUnapproveSelected}
-                      aria-label="Unapprove selected"
+                      aria-label={t('Unapprove selected')}
                     >
-                      Unapprove ({selectedNonFuzzyCount})
+                      {t('Unapprove ({{count}})', { count: selectedNonFuzzyCount })}
                     </Button>
                   </Tooltip>
                 </MotionDiv>
@@ -902,7 +908,9 @@ export function TranslateToolbar({
                     <Group gap={4}>
                       <ShieldAlert size={14} />
                       <Text size="xs">
-                        Protect {manualEditCount} manual edits from bulk translation
+                        {t('Protect {{count}} manual edits from bulk translation', {
+                          count: manualEditCount,
+                        })}
                       </Text>
                     </Group>
                   }
@@ -924,8 +932,8 @@ export function TranslateToolbar({
             >
               <Group justify="space-between">
                 <Text size="sm" c="dimmed">
-                  {isRetranslateMode ? 'Retranslating' : 'Translating'}... {translateCount}
-                  {failedCount > 0 ? ` (${failedCount} failed)` : ''}
+                  {isRetranslateMode ? t('Retranslating') : t('Translating')}... {translateCount}
+                  {failedCount > 0 ? ` (${t('{{count}} failed', { count: failedCount })})` : ''}
                 </Text>
                 <Text size="sm" fw={500}>
                   {progress}%
@@ -973,7 +981,7 @@ export function TranslateToolbar({
           {!isTranslating && translateCount > 0 && !error && (
             <MotionDiv variants={contentVariants} initial="hidden" animate="visible" exit="exit">
               <Alert color="green" withCloseButton onClose={() => setTranslateCount(0)}>
-                Successfully translated {translateCount} entries
+                {t('Successfully translated {{count}} entries', { count: translateCount })}
               </Alert>
             </MotionDiv>
           )}

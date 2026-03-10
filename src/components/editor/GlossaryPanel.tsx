@@ -50,6 +50,7 @@ import {
   GLOSSARY_SELECTED_LOCALE_KEY,
 } from '@/components/glossary/constants';
 import type { Glossary } from '@/lib/glossary/types';
+import { useTranslation } from '@/lib/app-language';
 
 /** Sync status types */
 type SyncStatus = 'idle' | 'syncing' | 'ready' | 'failed';
@@ -86,6 +87,7 @@ export function GlossaryPanel({
   deeplTermCount,
   selectedSourceText,
 }: GlossaryPanelProps) {
+  const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(false);
   const [selectedLocale, setSelectedLocale] = useState<string>(() => {
     try {
@@ -185,17 +187,17 @@ export function GlossaryPanel({
           onGlossaryLoaded?.(result.glossary);
           if (result.error) setError(result.error);
         } else {
-          setError(result.error || 'Failed to load glossary');
+          setError(result.error || t('Failed to load glossary'));
           setGlossary(null);
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unknown error');
+        setError(err instanceof Error ? err.message : t('Unknown error'));
         setGlossary(null);
       } finally {
         setIsLoading(false);
       }
     },
-    [selectedLocale, onGlossaryLoaded],
+    [selectedLocale, onGlossaryLoaded, t],
   );
 
   const handleClear = useCallback(() => {
@@ -231,7 +233,7 @@ export function GlossaryPanel({
           <Group gap={4}>
             <Loader size={12} />
             <Text size="xs" c="dimmed">
-              Syncing to DeepL...
+              {t('Syncing to DeepL...')}
             </Text>
           </Group>
         );
@@ -240,16 +242,18 @@ export function GlossaryPanel({
           <Group gap={4}>
             <Check size={12} color="var(--mantine-color-green-6)" />
             <Text size="xs" c="green">
-              DeepL ready{deeplTermCount ? ` (${deeplTermCount} terms)` : ''}
+              {deeplTermCount
+                ? t('DeepL ready ({{count}} terms)', { count: deeplTermCount })
+                : t('DeepL ready')}
             </Text>
-            <Tooltip label="Force recreate glossary on DeepL" color="dark">
+            <Tooltip label={t('Force recreate glossary on DeepL')} color="dark">
               <Button
                 size="compact-xs"
                 variant="subtle"
                 color="gray"
                 onClick={() => onForceResync?.(glossary)}
               >
-                Resync
+                {t('Resync')}
               </Button>
             </Tooltip>
           </Group>
@@ -259,10 +263,10 @@ export function GlossaryPanel({
           <Group gap={4}>
             <X size={12} color="var(--mantine-color-red-6)" />
             <Text size="xs" c="red">
-              Sync failed
+              {t('Sync failed')}
             </Text>
             <Button size="compact-xs" variant="subtle" onClick={() => onGlossaryLoaded?.(glossary)}>
-              Retry
+              {t('Retry')}
             </Button>
           </Group>
         );
@@ -282,20 +286,20 @@ export function GlossaryPanel({
                 {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                 <BookOpen size={16} />
                 <Text size="sm" fw={500}>
-                  Glossary
+                  {t('Glossary')}
                 </Text>
 
                 {glossary && (
                   <>
                     <Badge color="green" size="xs" variant="light">
-                      {glossary.entries.length} terms
+                      {t('{{count}} terms', { count: glossary.entries.length })}
                     </Badge>
                     <Text size="xs" c="dimmed">
                       ({glossary.targetLocale})
                     </Text>
                     {fromCache && (
                       <Badge color="gray" size="xs" variant="light">
-                        cached
+                        {t('cached')}
                       </Badge>
                     )}
                   </>
@@ -303,7 +307,7 @@ export function GlossaryPanel({
 
                 {!glossary && !isLoading && (
                   <Text size="xs" c="dimmed">
-                    Not loaded
+                    {t('Not loaded')}
                   </Text>
                 )}
               </Group>
@@ -314,7 +318,7 @@ export function GlossaryPanel({
                 <Loader size="xs" />
               ) : glossary ? (
                 <>
-                  <Tooltip label="Refresh from WordPress.org" color="dark">
+                  <Tooltip label={t('Refresh from WordPress.org')} color="dark">
                     <ActionIcon
                       size="sm"
                       variant="subtle"
@@ -335,7 +339,7 @@ export function GlossaryPanel({
                       handleClear();
                     }}
                   >
-                    Clear
+                    {t('Clear')}
                   </Button>
                 </>
               ) : selectedLocale ? (
@@ -347,7 +351,7 @@ export function GlossaryPanel({
                     handleLoad(false);
                   }}
                 >
-                  Load
+                  {t('Load')}
                 </Button>
               ) : null}
             </Group>
@@ -359,16 +363,16 @@ export function GlossaryPanel({
               {/* Language selector row */}
               <Group gap="sm" align="flex-end">
                 <Select
-                  label="Language"
+                  label={t('Language')}
                   data={COMMON_GLOSSARY_LOCALES}
                   value={selectedLocale}
                   onChange={handleLocaleChange}
-                  placeholder="Select or type locale..."
+                  placeholder={t('Select or type locale...')}
                   searchable
                   clearable
                   w={200}
                   size="xs"
-                  nothingFoundMessage="Type a custom locale code"
+                  nothingFoundMessage={t('Type a custom locale code')}
                 />
 
                 {glossary && (
@@ -378,7 +382,7 @@ export function GlossaryPanel({
                     leftSection={<Eye size={14} />}
                     onClick={() => setViewerOpened(true)}
                   >
-                    View All
+                    {t('View All')}
                   </Button>
                 )}
               </Group>
@@ -390,11 +394,11 @@ export function GlossaryPanel({
                     size="sm"
                     checked={enforcementEnabled}
                     onChange={(e) => setEnforcementEnabled(e.currentTarget.checked)}
-                    label="Apply glossary terms during translation"
+                    label={t('Apply glossary terms during translation')}
                     description={
                       enforcementEnabled
-                        ? 'DeepL will use glossary for consistent terminology'
-                        : 'Translations without glossary enforcement'
+                        ? t('DeepL will use glossary for consistent terminology')
+                        : t('Translations without glossary enforcement')
                     }
                   />
 
@@ -411,7 +415,7 @@ export function GlossaryPanel({
               {glossary && selectedSourceText && (
                 <Box>
                   <Text size="xs" fw={500} mb={4}>
-                    Terms in selected row:
+                    {t('Terms in selected row:')}
                   </Text>
                   <GlossaryTermsPreview sourceText={selectedSourceText} glossary={glossary} />
                 </Box>

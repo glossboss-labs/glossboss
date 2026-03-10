@@ -100,6 +100,8 @@ const appIcon = '/icon.svg';
 
 const MotionDiv = motion.div;
 const DEV_BRANCH_CHIP_STORAGE_KEY = 'glossboss-dev-branch-chip-enabled';
+const SPEECH_ENABLED_KEY = 'glossboss-speech-enabled';
+const TRANSLATE_ENABLED_KEY = 'glossboss-translate-enabled';
 
 /** Encoding info for display */
 interface EncodingInfo {
@@ -355,6 +357,16 @@ export default function Index() {
   const [containerWidth, setContainerWidth] = useLocalStorage<ContainerWidth>({
     key: CONTAINER_WIDTH_KEY,
     defaultValue: 'xl',
+    getInitialValueInEffect: false,
+  });
+  const [speechEnabled, setSpeechEnabled] = useLocalStorage<boolean>({
+    key: SPEECH_ENABLED_KEY,
+    defaultValue: true,
+    getInitialValueInEffect: false,
+  });
+  const [translateEnabled, setTranslateEnabled] = useLocalStorage<boolean>({
+    key: TRANSLATE_ENABLED_KEY,
+    defaultValue: true,
     getInitialValueInEffect: false,
   });
 
@@ -1677,6 +1689,7 @@ export default function Index() {
                     onLanguageChange={handleLanguageChange}
                     deeplGlossaryId={glossaryEnforcementEnabled ? deeplGlossaryId : null}
                     glossary={glossary}
+                    translateEnabled={translateEnabled}
                   />
                   {glossary && (
                     <Group gap="xs">
@@ -1713,6 +1726,8 @@ export default function Index() {
                 deeplGlossaryId={glossaryEnforcementEnabled ? deeplGlossaryId : null}
                 glossaryEnforcementEnabled={glossaryEnforcementEnabled}
                 onEntrySelect={handleEntrySelect}
+                speechEnabled={speechEnabled}
+                translateEnabled={translateEnabled}
               />
             </MotionDiv>
           ) : (
@@ -1836,6 +1851,10 @@ export default function Index() {
         onBranchChipEnabledChange={setBranchChipEnabled}
         containerWidth={containerWidth}
         onContainerWidthChange={setContainerWidth}
+        speechEnabled={speechEnabled}
+        onSpeechEnabledChange={setSpeechEnabled}
+        translateEnabled={translateEnabled}
+        onTranslateEnabledChange={setTranslateEnabled}
       />
 
       {isDevelopment && branchChipEnabled && <DevBranchChip branch={__GIT_BRANCH__} />}

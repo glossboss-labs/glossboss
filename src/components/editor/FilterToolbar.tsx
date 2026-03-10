@@ -241,26 +241,50 @@ export function FilterToolbar() {
     <Stack gap="sm">
       {/* Row 1: Search + Progress */}
       <Group justify="space-between" align="center" wrap="wrap">
-        <TextInput
-          placeholder={t('Search source, translation, context...')}
-          leftSection={<Search size={16} />}
-          rightSection={
-            localQuery ? (
-              <ActionIcon
-                size="sm"
-                variant="subtle"
-                color="gray"
-                onClick={handleClearSearch}
-                aria-label={t('Clear search')}
-              >
-                <X size={14} />
-              </ActionIcon>
-            ) : null
-          }
-          value={localQuery}
-          onChange={(e) => setLocalQuery(e.currentTarget.value)}
-          style={{ flex: 1, minWidth: 260, maxWidth: 420 }}
-        />
+        <Group gap="sm" wrap="nowrap" style={{ flex: 1, minWidth: 260 }}>
+          <TextInput
+            placeholder={t('Search source, translation, context...')}
+            leftSection={<Search size={16} />}
+            rightSection={
+              localQuery ? (
+                <ActionIcon
+                  size="sm"
+                  variant="subtle"
+                  color="gray"
+                  onClick={handleClearSearch}
+                  aria-label={t('Clear search')}
+                >
+                  <X size={14} />
+                </ActionIcon>
+              ) : null
+            }
+            value={localQuery}
+            onChange={(e) => setLocalQuery(e.currentTarget.value)}
+            style={{ flex: 1, minWidth: 260, maxWidth: 420 }}
+          />
+
+          {/* Clear filters - next to search */}
+          <AnimatePresence>
+            {hasActiveFilters && (
+              <MotionDiv variants={contentVariants} initial="hidden" animate="visible" exit="exit">
+                <Text
+                  size="sm"
+                  c="blue"
+                  style={{ cursor: 'pointer', flexShrink: 0, whiteSpace: 'nowrap' }}
+                  onClick={clearFilters}
+                >
+                  {t('Clear filters')}
+                  {filteredCount !== stats.total && (
+                    <Text span c="dimmed" size="sm">
+                      {' '}
+                      ({filteredCount} shown)
+                    </Text>
+                  )}
+                </Text>
+              </MotionDiv>
+            )}
+          </AnimatePresence>
+        </Group>
 
         {/* Progress indicator */}
         <Group gap="sm" wrap="nowrap" style={{ flexShrink: 0 }}>
@@ -517,28 +541,6 @@ export function FilterToolbar() {
             w={220}
             aria-label={t('Sort entries')}
           />
-
-          {/* Clear filters link */}
-          <AnimatePresence>
-            {hasActiveFilters && (
-              <MotionDiv variants={contentVariants} initial="hidden" animate="visible" exit="exit">
-                <Text
-                  size="sm"
-                  c="blue"
-                  style={{ cursor: 'pointer', flexShrink: 0, whiteSpace: 'nowrap' }}
-                  onClick={clearFilters}
-                >
-                  {t('Clear filters')}
-                  {hasActiveFilters && filteredCount !== stats.total && (
-                    <Text span c="dimmed" size="sm">
-                      {' '}
-                      ({filteredCount} shown)
-                    </Text>
-                  )}
-                </Text>
-              </MotionDiv>
-            )}
-          </AnimatePresence>
         </Group>
       </Group>
     </Stack>
