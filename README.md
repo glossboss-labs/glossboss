@@ -10,6 +10,7 @@ It is maintained by Toine Rademacher and Bjorn Lammers.
 - Edit gettext `.po` and `.pot` files in the browser
 - Import and export i18next JSON resources
 - Translate entries and batches through DeepL
+- Play strings with browser TTS or ElevenLabs BYO cloud voices
 - Load WordPress.org glossary data and sync it to DeepL glossaries
 - Inspect WordPress plugin source references through proxied SVN lookups
 - Auto-save local drafts in the browser
@@ -106,6 +107,7 @@ Supabase Edge Functions proxy external services and keep server-managed secrets 
 Functions:
 
 - `deepl-translate`
+- `tts-elevenlabs`
 - `wp-glossary`
 - `wp-source`
 - `feedback-issue`
@@ -115,6 +117,7 @@ Deploy them with the Supabase CLI:
 ```bash
 bunx supabase link --project-ref <your-project-ref>
 bunx supabase functions deploy deepl-translate --no-verify-jwt
+bunx supabase functions deploy tts-elevenlabs --no-verify-jwt
 bunx supabase functions deploy wp-glossary --no-verify-jwt
 bunx supabase functions deploy wp-source --no-verify-jwt
 bunx supabase functions deploy feedback-issue --no-verify-jwt
