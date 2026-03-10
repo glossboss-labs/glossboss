@@ -867,6 +867,9 @@ export function SettingsModal({
             <Tabs.Tab value="api" leftSection={<Key size={14} />}>
               {t('DeepL API')}
             </Tabs.Tab>
+            <Tabs.Tab value="speech" leftSection={<Volume2 size={14} />}>
+              {t('Speech')}
+            </Tabs.Tab>
             <Tabs.Tab value="glossary" leftSection={<BookOpen size={14} />}>
               {t('Glossary')}
               {glossary && (
@@ -883,9 +886,6 @@ export function SettingsModal({
             </Tabs.Tab>
             <Tabs.Tab value="transfer" leftSection={<Download size={14} />}>
               {t('Backup')}
-            </Tabs.Tab>
-            <Tabs.Tab value="speech" leftSection={<Volume2 size={14} />}>
-              {t('Speech')}
             </Tabs.Tab>
             {isDevelopment && (
               <Tabs.Tab
@@ -1053,6 +1053,236 @@ export function SettingsModal({
                   </Stack>
                 </Alert>
               )}
+            </Stack>
+          </Tabs.Panel>
+
+          {/* Speech Tab */}
+          <Tabs.Panel value="speech">
+            <Stack gap="md">
+              <Text size="sm" c="dimmed">
+                {t(
+                  'Play strings with either browser voices or ElevenLabs. Browser playback stays free and local. ElevenLabs uses your own API key through a protected proxy.',
+                )}
+              </Text>
+
+              <Paper p="md" withBorder>
+                <Stack gap="md">
+                  <div>
+                    <Text size="sm" fw={500} mb={4}>
+                      {t('Provider')}
+                    </Text>
+                    <SegmentedControl
+                      value={ttsProvider}
+                      onChange={(value) => {
+                        setTtsProvider(value as TtsProviderId);
+                        setTtsSaved(false);
+                        setTtsResult(null);
+                      }}
+                      data={[
+                        { label: t('Browser'), value: 'browser' },
+                        { label: 'ElevenLabs', value: 'elevenlabs' },
+                      ]}
+                      fullWidth
+                    />
+                  </div>
+
+                  <div>
+                    <Text size="sm" fw={500} mb={4}>
+                      {t('Playback rate')}
+                    </Text>
+                    <SegmentedControl
+                      value={ttsRate}
+                      onChange={(value) => {
+                        setTtsRate(value);
+                        setTtsSaved(false);
+                      }}
+                      data={[
+                        { label: '0.9x', value: '0.9' },
+                        { label: '1.0x', value: '1' },
+                        { label: '1.1x', value: '1.1' },
+                      ]}
+                      fullWidth
+                    />
+                  </div>
+
+                  {ttsProvider === 'browser' ? (
+                    <>
+                      <Select
+                        label={t('Source voice')}
+                        placeholder={t('Use browser default')}
+                        data={browserVoices.map((voice) => ({
+                          value: voice.voiceURI,
+                          label: `${voice.name} (${voice.lang})`,
+                        }))}
+                        value={sourceBrowserVoiceURI}
+                        onChange={(value) => {
+                          setSourceBrowserVoiceURI(value);
+                          setTtsSaved(false);
+                        }}
+                        clearable
+                        searchable
+                      />
+
+                      <Select
+                        label={t('Translation voice')}
+                        placeholder={t('Use browser default')}
+                        data={browserVoices.map((voice) => ({
+                          value: voice.voiceURI,
+                          label: `${voice.name} (${voice.lang})`,
+                        }))}
+                        value={translationBrowserVoiceURI}
+                        onChange={(value) => {
+                          setTranslationBrowserVoiceURI(value);
+                          setTtsSaved(false);
+                        }}
+                        clearable
+                        searchable
+                      />
+
+                      <Group>
+                        <Button onClick={handleSaveTtsSettings} disabled={ttsSaved}>
+                          {t('Save')}
+                        </Button>
+                      </Group>
+                    </>
+                  ) : (
+                    <>
+                      <Alert color="yellow" icon={<AlertCircle size={16} />}>
+                        <Text size="sm">
+                          {t(
+                            'Your ElevenLabs API key is kept in this browser tab by default and will be cleared when you close the tab. Enable "Remember API key" below to persist it across sessions.',
+                          )}
+                        </Text>
+                      </Alert>
+
+                      <Switch
+                        label={t('Remember API key across sessions')}
+                        description={t(
+                          'When enabled, your key is stored in localStorage and survives browser restarts. Disable on shared or untrusted devices.',
+                        )}
+                        checked={ttsPersistKey}
+                        onChange={(e) => {
+                          const enabled = e.currentTarget.checked;
+                          setTtsPersistKey(enabled);
+                          setTtsPersistEnabled(enabled);
+                          setTtsSaved(false);
+                        }}
+                      />
+
+                      <PasswordInput
+                        label={t('API Key')}
+                        placeholder={t('Enter your ElevenLabs API key')}
+                        value={ttsApiKey}
+                        onChange={(e) => {
+                          setTtsApiKey(e.currentTarget.value);
+                          setTtsSaved(false);
+                          setTtsResult(null);
+                        }}
+                        rightSection={
+                          ttsSaved && ttsApiKey ? (
+                            <Tooltip label={t('Key saved')}>
+                              <Check size={16} color="var(--mantine-color-green-6)" />
+                            </Tooltip>
+                          ) : null
+                        }
+                      />
+
+                      <Group>
+                        <Button
+                          variant="light"
+                          onClick={handleTestTtsKey}
+                          loading={ttsTesting}
+                          disabled={!ttsApiKey.trim()}
+                        >
+                          {t('Test connection')}
+                        </Button>
+                        <Button
+                          onClick={handleSaveTtsSettings}
+                          disabled={!ttsApiKey.trim() || ttsSaved}
+                        >
+                          {t('Save')}
+                        </Button>
+                        {ttsApiKey && (
+                          <Button variant="subtle" color="red" onClick={handleClearTtsKey}>
+                            {t('Remove saved key')}
+                          </Button>
+                        )}
+                      </Group>
+
+                      {ttsResult && (
+                        <Alert
+                          color={ttsResult.success ? 'green' : 'red'}
+                          icon={ttsResult.success ? <Check size={16} /> : <AlertCircle size={16} />}
+                        >
+                          <Stack gap="xs">
+                            <Text size="sm">{ttsResult.message}</Text>
+                            {ttsUsage && (
+                              <>
+                                <Progress
+                                  value={(ttsUsage.used / ttsUsage.limit) * 100}
+                                  size="sm"
+                                  color={ttsUsage.used / ttsUsage.limit > 0.9 ? 'red' : 'blue'}
+                                />
+                                <Text size="xs" c="dimmed">
+                                  {ttsUsage.used.toLocaleString()} /{' '}
+                                  {ttsUsage.limit.toLocaleString()} {t('characters')}
+                                  {ttsUsage.tier ? ` • ${ttsUsage.tier}` : ''}
+                                </Text>
+                                {ttsUsage.used / ttsUsage.limit > 0.9 && !ttsUsageExceeded && (
+                                  <Text size="xs" c="red">
+                                    {t(
+                                      'Usage is above 90%. ElevenLabs playback will stop once the provider quota is exhausted.',
+                                    )}
+                                  </Text>
+                                )}
+                                {ttsUsageExceeded && (
+                                  <Text size="xs" c="red">
+                                    {t(
+                                      'ElevenLabs quota reached. Switch back to Browser playback or wait for the next provider reset.',
+                                    )}
+                                  </Text>
+                                )}
+                              </>
+                            )}
+                          </Stack>
+                        </Alert>
+                      )}
+
+                      <Select
+                        label={t('Source voice')}
+                        placeholder={t('Load voices by testing your key')}
+                        data={elevenLabsVoices.map((voice) => ({
+                          value: voice.voiceId,
+                          label: voice.name,
+                        }))}
+                        value={sourceElevenLabsVoiceId}
+                        onChange={(value) => {
+                          setSourceElevenLabsVoiceId(value);
+                          setTtsSaved(false);
+                        }}
+                        disabled={elevenLabsVoices.length === 0 || ttsVoicesLoading}
+                        searchable
+                      />
+
+                      <Select
+                        label={t('Translation voice')}
+                        placeholder={t('Load voices by testing your key')}
+                        data={elevenLabsVoices.map((voice) => ({
+                          value: voice.voiceId,
+                          label: voice.name,
+                        }))}
+                        value={translationElevenLabsVoiceId}
+                        onChange={(value) => {
+                          setTranslationElevenLabsVoiceId(value);
+                          setTtsSaved(false);
+                        }}
+                        disabled={elevenLabsVoices.length === 0 || ttsVoicesLoading}
+                        searchable
+                      />
+                    </>
+                  )}
+                </Stack>
+              </Paper>
             </Stack>
           </Tabs.Panel>
 
@@ -1313,235 +1543,6 @@ export function SettingsModal({
                     fullWidth
                     size="xs"
                   />
-                </Stack>
-              </Paper>
-            </Stack>
-          </Tabs.Panel>
-
-          <Tabs.Panel value="speech">
-            <Stack gap="md">
-              <Text size="sm" c="dimmed">
-                {t(
-                  'Play strings with either browser voices or ElevenLabs. Browser playback stays free and local. ElevenLabs uses your own API key through a protected proxy.',
-                )}
-              </Text>
-
-              <Paper p="md" withBorder>
-                <Stack gap="md">
-                  <div>
-                    <Text size="sm" fw={500} mb={4}>
-                      {t('Provider')}
-                    </Text>
-                    <SegmentedControl
-                      value={ttsProvider}
-                      onChange={(value) => {
-                        setTtsProvider(value as TtsProviderId);
-                        setTtsSaved(false);
-                        setTtsResult(null);
-                      }}
-                      data={[
-                        { label: t('Browser'), value: 'browser' },
-                        { label: 'ElevenLabs', value: 'elevenlabs' },
-                      ]}
-                      fullWidth
-                    />
-                  </div>
-
-                  <div>
-                    <Text size="sm" fw={500} mb={4}>
-                      {t('Playback rate')}
-                    </Text>
-                    <SegmentedControl
-                      value={ttsRate}
-                      onChange={(value) => {
-                        setTtsRate(value);
-                        setTtsSaved(false);
-                      }}
-                      data={[
-                        { label: '0.9x', value: '0.9' },
-                        { label: '1.0x', value: '1' },
-                        { label: '1.1x', value: '1.1' },
-                      ]}
-                      fullWidth
-                    />
-                  </div>
-
-                  {ttsProvider === 'browser' ? (
-                    <>
-                      <Select
-                        label={t('Source voice')}
-                        placeholder={t('Use browser default')}
-                        data={browserVoices.map((voice) => ({
-                          value: voice.voiceURI,
-                          label: `${voice.name} (${voice.lang})`,
-                        }))}
-                        value={sourceBrowserVoiceURI}
-                        onChange={(value) => {
-                          setSourceBrowserVoiceURI(value);
-                          setTtsSaved(false);
-                        }}
-                        clearable
-                        searchable
-                      />
-
-                      <Select
-                        label={t('Translation voice')}
-                        placeholder={t('Use browser default')}
-                        data={browserVoices.map((voice) => ({
-                          value: voice.voiceURI,
-                          label: `${voice.name} (${voice.lang})`,
-                        }))}
-                        value={translationBrowserVoiceURI}
-                        onChange={(value) => {
-                          setTranslationBrowserVoiceURI(value);
-                          setTtsSaved(false);
-                        }}
-                        clearable
-                        searchable
-                      />
-
-                      <Group>
-                        <Button onClick={handleSaveTtsSettings} disabled={ttsSaved}>
-                          {t('Save')}
-                        </Button>
-                      </Group>
-                    </>
-                  ) : (
-                    <>
-                      <Alert color="yellow" icon={<AlertCircle size={16} />}>
-                        <Text size="sm">
-                          {t(
-                            'Your ElevenLabs API key is kept in this browser tab by default and will be cleared when you close the tab. Enable "Remember API key" below to persist it across sessions.',
-                          )}
-                        </Text>
-                      </Alert>
-
-                      <Switch
-                        label={t('Remember API key across sessions')}
-                        description={t(
-                          'When enabled, your key is stored in localStorage and survives browser restarts. Disable on shared or untrusted devices.',
-                        )}
-                        checked={ttsPersistKey}
-                        onChange={(e) => {
-                          const enabled = e.currentTarget.checked;
-                          setTtsPersistKey(enabled);
-                          setTtsPersistEnabled(enabled);
-                          setTtsSaved(false);
-                        }}
-                      />
-
-                      <PasswordInput
-                        label={t('API Key')}
-                        placeholder={t('Enter your ElevenLabs API key')}
-                        value={ttsApiKey}
-                        onChange={(e) => {
-                          setTtsApiKey(e.currentTarget.value);
-                          setTtsSaved(false);
-                          setTtsResult(null);
-                        }}
-                        rightSection={
-                          ttsSaved && ttsApiKey ? (
-                            <Tooltip label={t('Key saved')}>
-                              <Check size={16} color="var(--mantine-color-green-6)" />
-                            </Tooltip>
-                          ) : null
-                        }
-                      />
-
-                      <Group>
-                        <Button
-                          variant="light"
-                          onClick={handleTestTtsKey}
-                          loading={ttsTesting}
-                          disabled={!ttsApiKey.trim()}
-                        >
-                          {t('Test connection')}
-                        </Button>
-                        <Button
-                          onClick={handleSaveTtsSettings}
-                          disabled={!ttsApiKey.trim() || ttsSaved}
-                        >
-                          {t('Save')}
-                        </Button>
-                        {ttsApiKey && (
-                          <Button variant="subtle" color="red" onClick={handleClearTtsKey}>
-                            {t('Remove saved key')}
-                          </Button>
-                        )}
-                      </Group>
-
-                      {ttsResult && (
-                        <Alert
-                          color={ttsResult.success ? 'green' : 'red'}
-                          icon={ttsResult.success ? <Check size={16} /> : <AlertCircle size={16} />}
-                        >
-                          <Stack gap="xs">
-                            <Text size="sm">{ttsResult.message}</Text>
-                            {ttsUsage && (
-                              <>
-                                <Progress
-                                  value={(ttsUsage.used / ttsUsage.limit) * 100}
-                                  size="sm"
-                                  color={ttsUsage.used / ttsUsage.limit > 0.9 ? 'red' : 'blue'}
-                                />
-                                <Text size="xs" c="dimmed">
-                                  {ttsUsage.used.toLocaleString()} /{' '}
-                                  {ttsUsage.limit.toLocaleString()} {t('characters')}
-                                  {ttsUsage.tier ? ` • ${ttsUsage.tier}` : ''}
-                                </Text>
-                                {ttsUsage.used / ttsUsage.limit > 0.9 && !ttsUsageExceeded && (
-                                  <Text size="xs" c="red">
-                                    {t(
-                                      'Usage is above 90%. ElevenLabs playback will stop once the provider quota is exhausted.',
-                                    )}
-                                  </Text>
-                                )}
-                                {ttsUsageExceeded && (
-                                  <Text size="xs" c="red">
-                                    {t(
-                                      'ElevenLabs quota reached. Switch back to Browser playback or wait for the next provider reset.',
-                                    )}
-                                  </Text>
-                                )}
-                              </>
-                            )}
-                          </Stack>
-                        </Alert>
-                      )}
-
-                      <Select
-                        label={t('Source voice')}
-                        placeholder={t('Load voices by testing your key')}
-                        data={elevenLabsVoices.map((voice) => ({
-                          value: voice.voiceId,
-                          label: voice.name,
-                        }))}
-                        value={sourceElevenLabsVoiceId}
-                        onChange={(value) => {
-                          setSourceElevenLabsVoiceId(value);
-                          setTtsSaved(false);
-                        }}
-                        disabled={elevenLabsVoices.length === 0 || ttsVoicesLoading}
-                        searchable
-                      />
-
-                      <Select
-                        label={t('Translation voice')}
-                        placeholder={t('Load voices by testing your key')}
-                        data={elevenLabsVoices.map((voice) => ({
-                          value: voice.voiceId,
-                          label: voice.name,
-                        }))}
-                        value={translationElevenLabsVoiceId}
-                        onChange={(value) => {
-                          setTranslationElevenLabsVoiceId(value);
-                          setTtsSaved(false);
-                        }}
-                        disabled={elevenLabsVoices.length === 0 || ttsVoicesLoading}
-                        searchable
-                      />
-                    </>
-                  )}
                 </Stack>
               </Paper>
             </Stack>

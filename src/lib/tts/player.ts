@@ -169,11 +169,9 @@ function playWithBrowser(request: TtsSpeakRequest, playbackId: string): void {
   }
 
   utterance.onend = () => {
-    activeUtterance = null;
     setSnapshot({ activeId: null, status: 'idle', error: null });
   };
   utterance.onerror = () => {
-    activeUtterance = null;
     setSnapshot({
       activeId: null,
       status: 'idle',

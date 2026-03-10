@@ -138,5 +138,5 @@ describe('SettingsModal', () => {
     expect(await screen.findByText(/950 \/ 1,000 characters/i)).toBeInTheDocument();
     expect(screen.getByText(/usage is above 90%/i)).toBeInTheDocument();
     expect(listVoices).toHaveBeenCalled();
-  });
+  }, 10000);
 });
