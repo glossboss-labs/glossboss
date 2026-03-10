@@ -980,7 +980,7 @@ export function SettingsModal({
               />
 
               <PasswordInput
-                label={t('API Key')}
+                label={t('API key')}
                 placeholder={t('Enter your DeepL API key')}
                 value={apiKey}
                 onChange={(e) => {
@@ -999,7 +999,7 @@ export function SettingsModal({
 
               <div data-ev-id="ev_a06444cf83">
                 <Text size="sm" fw={500} mb={4}>
-                  {t('API Type')}
+                  {t('API type')}
                 </Text>
                 <SegmentedControl
                   value={apiType}
@@ -1229,7 +1229,7 @@ export function SettingsModal({
                       />
 
                       <PasswordInput
-                        label={t('API Key')}
+                        label={t('API key')}
                         placeholder={t('Enter your ElevenLabs API key')}
                         value={ttsApiKey}
                         onChange={(e) => {
@@ -1708,11 +1708,11 @@ export function SettingsModal({
                     <Group justify="space-between" align="flex-start">
                       <div>
                         <Text size="sm" fw={500}>
-                          {t('Branch status chip')}
+                          {t('Branch status badge')}
                         </Text>
                         <Text size="xs" c="dimmed">
                           {t(
-                            'Show the current git branch in a small floating chip at the bottom right of the site.',
+                            'Show the current git branch in a small floating badge at the bottom right of the site.',
                           )}
                         </Text>
                       </div>
@@ -1723,7 +1723,7 @@ export function SettingsModal({
                     </Group>
 
                     <Switch
-                      label={t('Show branch chip')}
+                      label={t('Show branch badge')}
                       description={t('Only visible while running the app in development mode')}
                       checked={branchChipEnabled}
                       onChange={(e) => onBranchChipEnabledChange?.(e.currentTarget.checked)}

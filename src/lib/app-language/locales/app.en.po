@@ -7,17 +7,17 @@ msgstr ""
 
 #: src/components/SettingsModal.tsx:983
 #: src/components/SettingsModal.tsx:1232
-msgid "API Key"
-msgstr "API Key"
-
-#: src/components/SettingsModal.tsx:1002
-msgid "API Type"
-msgstr "API Type"
+msgid "API key"
+msgstr "API key"
 
 #: src/components/SettingsModal.tsx:454
 #: src/components/SettingsModal.tsx:528
 msgid "API key is valid!"
 msgstr "API key is valid!"
+
+#: src/components/SettingsModal.tsx:1002
+msgid "API type"
+msgstr "API type"
 
 #: src/components/SettingsModal.tsx:187
 msgid "Action"
@@ -44,8 +44,8 @@ msgid "Backup"
 msgstr "Backup"
 
 #: src/components/SettingsModal.tsx:1711
-msgid "Branch status chip"
-msgstr "Branch status chip"
+msgid "Branch status badge"
+msgstr "Branch status badge"
 
 #: src/components/SettingsModal.tsx:1117
 msgid "Browser"
@@ -192,8 +192,8 @@ msgid "Development Mode Only"
 msgstr "Development Mode Only"
 
 #: src/pages/Index.tsx:1597
-msgid "Discard and use fresh file"
-msgstr "Discard and use fresh file"
+msgid "Discard and use new file"
+msgstr "Discard and use new file"
 
 #: src/components/SettingsModal.tsx:136
 msgid "Discard changes and exit the current field"
@@ -230,6 +230,10 @@ msgstr "Drop it like it's hot"
 #: src/pages/Index.tsx:1286
 msgid "Edit gettext translation files with DeepL integration"
 msgstr "Edit gettext translation files with DeepL integration"
+
+#: src/pages/Index.tsx:1609
+msgid "Editing draft"
+msgstr "Editing draft"
 
 #: src/components/ui/SpeakButton.tsx:44
 msgid "ElevenLabs quota reached."
@@ -751,16 +755,16 @@ msgid "Shortcut"
 msgstr "Shortcut"
 
 #: src/components/SettingsModal.tsx:1726
-msgid "Show branch chip"
-msgstr "Show branch chip"
+msgid "Show branch badge"
+msgstr "Show branch badge"
 
 #: src/components/SettingsModal.tsx:1714
 msgid ""
-"Show the current git branch in a small floating chip at the bottom right of "
-"the site."
+"Show the current git branch in a small floating badge at the bottom right of"
+" the site."
 msgstr ""
-"Show the current git branch in a small floating chip at the bottom right of "
-"the site."
+"Show the current git branch in a small floating badge at the bottom right of"
+" the site."
 
 #: src/components/SettingsModal.tsx:220
 msgid "Skip translated entries"
@@ -1002,10 +1006,6 @@ msgstr ""
 #: src/components/feedback/FeedbackModal.tsx:398
 msgid "When would you use this?"
 msgstr "When would you use this?"
-
-#: src/pages/Index.tsx:1609
-msgid "Working from draft"
-msgstr "Working from draft"
 
 #: src/pages/Index.tsx:1318
 msgid "You have unsaved changes"
