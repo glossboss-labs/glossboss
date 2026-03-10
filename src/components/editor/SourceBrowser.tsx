@@ -16,6 +16,7 @@ import {
 import { ChevronRight, File, Folder } from 'lucide-react';
 import { getEffectiveSlug, useSourceStore } from '@/stores/source-store';
 import { SourceCodeViewer } from './SourceCodeViewer';
+import { useTranslation } from '@/lib/app-language';
 
 interface SourceBrowserProps {
   listingMaxHeight?: number;
@@ -37,6 +38,7 @@ export function SourceBrowser({
     isLoadingSource,
   } = useSourceStore();
   const slug = useSourceStore((state) => getEffectiveSlug(state));
+  const { t } = useTranslation();
   const [viewingFile, setViewingFile] = useState<string | null>(null);
 
   useEffect(() => {
@@ -66,7 +68,7 @@ export function SourceBrowser({
   if (!slug) {
     return (
       <Text size="sm" c="dimmed" p="md" ta="center">
-        Set a plugin slug to browse source files.
+        {t('Set a plugin slug to browse source files.')}
       </Text>
     );
   }
@@ -131,7 +133,7 @@ export function SourceBrowser({
             ))}
             {directoryTree.length === 0 && (
               <Text size="sm" c="dimmed" p="md" ta="center">
-                Empty directory
+                {t('Empty directory')}
               </Text>
             )}
           </Stack>
@@ -140,7 +142,7 @@ export function SourceBrowser({
 
       {!isLoadingDirectory && !viewingFile && !directoryTree && (
         <Text size="sm" c="dimmed" p="md" ta="center">
-          {directoryError ?? 'Directory listing is unavailable.'}
+          {directoryError ?? t('Directory listing is unavailable.')}
         </Text>
       )}
 
@@ -148,7 +150,7 @@ export function SourceBrowser({
         <Stack gap={0}>
           <Group gap="xs" p="xs" justify="space-between">
             <Anchor size="sm" onClick={() => setViewingFile(null)}>
-              Back to listing
+              {t('Back to listing')}
             </Anchor>
           </Group>
           {isLoadingSource ? (
@@ -164,7 +166,7 @@ export function SourceBrowser({
             />
           ) : (
             <Text size="sm" c="dimmed" p="md" ta="center">
-              Failed to load file.
+              {t('Failed to load file.')}
             </Text>
           )}
         </Stack>

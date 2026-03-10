@@ -277,7 +277,7 @@ export function FilterToolbar() {
                   {filteredCount !== stats.total && (
                     <Text span c="dimmed" size="sm">
                       {' '}
-                      ({filteredCount} shown)
+                      ({t('{{count}} shown', { count: filteredCount })})
                     </Text>
                   )}
                 </Text>
@@ -290,7 +290,7 @@ export function FilterToolbar() {
         <Group gap="sm" wrap="nowrap" style={{ flexShrink: 0 }}>
           <Group gap="xs" wrap="nowrap">
             <Text size="sm" c="dimmed">
-              {filteredCount} of {stats.total}
+              {t('{{filtered}} of {{total}}', { filtered: filteredCount, total: stats.total })}
             </Text>
             <Text size="sm" c="dimmed">
               •

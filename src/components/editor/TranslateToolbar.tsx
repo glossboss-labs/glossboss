@@ -468,7 +468,7 @@ export function TranslateToolbar({
         }
 
         if (failed > 0) {
-          setError(`${failed} translations failed`);
+          setError(t('{{count}} translations failed', { count: failed }));
         }
       } catch (err) {
         setError(formatDeepLError(err));
@@ -490,6 +490,7 @@ export function TranslateToolbar({
       skipManualEdits,
       manualEditIds,
       machineTranslatedIds,
+      t,
     ],
   );
 

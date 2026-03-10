@@ -8,6 +8,7 @@
 import { Badge, Tooltip, Stack, Text } from '@mantine/core';
 import { BookOpen } from 'lucide-react';
 import type { GlossaryAnalysisResult, TermAnalysisResult } from '@/lib/glossary/analyzer';
+import { useTranslation } from '@/lib/app-language';
 
 interface GlossaryIndicatorProps {
   /** Analysis result for this entry */
@@ -18,15 +19,16 @@ interface GlossaryIndicatorProps {
  * Format term details for tooltip
  */
 function TermDetails({ terms }: { terms: TermAnalysisResult[] }) {
-  const issues = terms.filter((t) => !t.found);
-  const verified = terms.filter((t) => t.found);
+  const { t } = useTranslation();
+  const issues = terms.filter((term) => !term.found);
+  const verified = terms.filter((term) => term.found);
 
   return (
     <Stack gap={6}>
       {issues.length > 0 && (
         <>
           <Text size="xs" fw={600} c="orange.3">
-            Needs review:
+            {t('Needs review:')}
           </Text>
           {issues.map((term, i) => (
             <Text key={i} size="xs">
@@ -41,7 +43,7 @@ function TermDetails({ terms }: { terms: TermAnalysisResult[] }) {
       {verified.length > 0 && (
         <>
           <Text size="xs" fw={600} c="green.4" mt={issues.length > 0 ? 4 : 0}>
-            OK:
+            {t('OK:')}
           </Text>
           {verified.map((term, i) => (
             <Text key={i} size="xs">

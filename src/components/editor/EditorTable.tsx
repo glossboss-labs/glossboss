@@ -543,6 +543,7 @@ function EditableField({
  * Source text display with plural support (read-only)
  */
 function SourceCell({ entry }: { entry: POEntry }) {
+  const { t } = useTranslation();
   const translateSettings = useContext(TranslateSettingsContext);
   const sourceLang = toSpeakLanguageTag(translateSettings.sourceLang);
   const hasPlural = Boolean(entry.msgidPlural);
@@ -552,7 +553,7 @@ function SourceCell({ entry }: { entry: POEntry }) {
       <Stack gap={4}>
         <Group gap={4} wrap="nowrap" align="flex-start">
           <Badge size="xs" variant="light" color="gray">
-            singular
+            {t('singular')}
           </Badge>
           <Box style={{ flex: 1, minWidth: 0 }}>
             <HighlightedText>{entry.msgid}</HighlightedText>
@@ -568,7 +569,7 @@ function SourceCell({ entry }: { entry: POEntry }) {
         </Group>
         <Group gap={4} wrap="nowrap" align="flex-start">
           <Badge size="xs" variant="light" color="gray">
-            plural
+            {t('plural')}
           </Badge>
           <Box style={{ flex: 1, minWidth: 0 }}>
             <HighlightedText>{entry.msgidPlural!}</HighlightedText>
@@ -744,7 +745,7 @@ function TranslationCell({
                 fieldId={`${entry.id}-plural-${index}`}
                 isPlural
                 pluralIndex={index}
-                placeholder={`Plural form ${index}`}
+                placeholder={t('Plural form {{index}}', { index })}
               />
             </Box>
             {translateSettings.translateEnabled &&
@@ -998,6 +999,7 @@ function MetaCell({
   entry: POEntry;
   onReferenceActivate?: (ref: ParsedReference) => void;
 }) {
+  const { t } = useTranslation();
   const hasReferences = entry.references.length > 0;
   const hasComments = entry.translatorComments.length > 0;
   const flags = entry.flags.filter((f) => f !== 'fuzzy');
@@ -1041,7 +1043,7 @@ function MetaCell({
           >
             <FileCode size={12} opacity={0.5} />
             <Text size="xs" c="dimmed" style={{ textDecoration: 'underline dotted' }}>
-              {parsedRefs.length} ref{parsedRefs.length !== 1 ? 's' : ''}
+              {t('{{count}} ref(s)', { count: parsedRefs.length })}
             </Text>
           </Group>
         </Tooltip>
@@ -1052,7 +1054,7 @@ function MetaCell({
           <Group gap={4} style={{ cursor: 'help' }}>
             <FileCode size={12} opacity={0.5} />
             <Text size="xs" c="dimmed">
-              {entry.references.length} ref{entry.references.length !== 1 ? 's' : ''}
+              {t('{{count}} ref(s)', { count: entry.references.length })}
             </Text>
           </Group>
         </Tooltip>
@@ -1063,8 +1065,7 @@ function MetaCell({
           <Group gap={4} style={{ cursor: 'help' }}>
             <MessageSquare size={12} opacity={0.5} />
             <Text size="xs" c="dimmed">
-              {entry.translatorComments.length} comment
-              {entry.translatorComments.length !== 1 ? 's' : ''}
+              {t('{{count}} comment(s)', { count: entry.translatorComments.length })}
             </Text>
           </Group>
         </Tooltip>
@@ -1242,7 +1243,7 @@ function EntryDetailsPanel({
       <Group align="flex-start" grow>
         <Stack gap={6}>
           <Text size="xs" fw={600} c="dimmed">
-            Translator comments
+            {t('Translator comments')}
           </Text>
           {entry.translatorComments.length > 0 ? (
             <Stack gap={3}>
@@ -1254,14 +1255,14 @@ function EntryDetailsPanel({
             </Stack>
           ) : (
             <Text size="sm" c="dimmed">
-              None
+              {t('None')}
             </Text>
           )}
         </Stack>
 
         <Stack gap={6}>
           <Text size="xs" fw={600} c="dimmed">
-            Extracted comments
+            {t('Extracted comments')}
           </Text>
           {entry.extractedComments.length > 0 ? (
             <Stack gap={3}>
@@ -1273,7 +1274,7 @@ function EntryDetailsPanel({
             </Stack>
           ) : (
             <Text size="sm" c="dimmed">
-              None
+              {t('None')}
             </Text>
           )}
         </Stack>
@@ -1284,7 +1285,7 @@ function EntryDetailsPanel({
           <Divider />
           <Stack gap={6}>
             <Text size="xs" fw={600} c="dimmed">
-              Flags
+              {t('Flags')}
             </Text>
             <Group gap={6} wrap="wrap">
               {flags.map((flag) => (
@@ -1301,18 +1302,18 @@ function EntryDetailsPanel({
 
       <Stack gap={6}>
         <Text size="xs" fw={600} c="dimmed">
-          Source preview
+          {t('Source preview')}
         </Text>
 
         {!pluginSlug && (
           <Text size="sm" c="dimmed">
-            Set a plugin slug in Settings to enable source preview.
+            {t('Set a plugin slug in Settings to enable source preview.')}
           </Text>
         )}
 
         {pluginSlug && parsedRefs.length > 0 && !entryActiveReference && (
           <Text size="sm" c="dimmed">
-            Select a reference above to load source context.
+            {t('Select a reference above to load source context.')}
           </Text>
         )}
 
@@ -1320,7 +1321,7 @@ function EntryDetailsPanel({
           <Group gap="xs">
             <Loader size="sm" />
             <Text size="sm" c="dimmed">
-              Loading source...
+              {t('Loading source...')}
             </Text>
           </Group>
         )}
@@ -1515,6 +1516,7 @@ const MobileEntryCard = memo(function MobileEntryCard({
   onKeyDown?: (e: KeyboardEvent<HTMLTextAreaElement>, fieldId: string) => void;
   onSelect?: (sourceText: string) => void;
 }) {
+  const { t } = useTranslation();
   const {
     selectedEntryId,
     selectEntry,
@@ -1593,7 +1595,7 @@ const MobileEntryCard = memo(function MobileEntryCard({
         >
           <Group gap={4} wrap="nowrap">
             <Text size="xs" fw={500}>
-              Details
+              {t('Details')}
             </Text>
             {detailsExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
           </Group>
@@ -1603,21 +1605,21 @@ const MobileEntryCard = memo(function MobileEntryCard({
       <Stack gap={8} mt="sm">
         <Box>
           <Text size="xs" fw={600} c="dimmed" mb={4}>
-            Source
+            {t('Source')}
           </Text>
           <SourceCell entry={entry} />
         </Box>
 
         <Box>
           <Text size="xs" fw={600} c="dimmed" mb={4}>
-            Translation
+            {t('Translation')}
           </Text>
           <TranslationCell entry={entry} onKeyDown={onKeyDown} />
         </Box>
 
         <Box>
           <Text size="xs" fw={600} c="dimmed" mb={4}>
-            Signals
+            {t('Signals')}
           </Text>
           <MetaCell entry={entry} onReferenceActivate={handleActivateReference} />
         </Box>
@@ -2250,7 +2252,7 @@ export function EditorTable({
                             data-testid="select-all-checkbox"
                           />
                         ) : (
-                          DATA_COLUMN_LABELS[columnKey]
+                          t(DATA_COLUMN_LABELS[columnKey])
                         );
 
                       const dropIndicator =
@@ -2465,7 +2467,7 @@ export function EditorTable({
                 <Select
                   value={rowsPerPage}
                   onChange={(value) => value && setRowsPerPage(value)}
-                  data={ROWS_PER_PAGE_OPTIONS}
+                  data={ROWS_PER_PAGE_OPTIONS.map((opt) => ({ ...opt, label: t(opt.label) }))}
                   size="xs"
                   w={120}
                   aria-label={t('Rows per page')}

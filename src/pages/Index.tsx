@@ -565,7 +565,9 @@ export default function Index() {
           {
             severity: 'error',
             code: 'INVALID_SYNTAX',
-            message: `Invalid file type: .${ext}. Please upload a .po, .pot, or .json file.`,
+            message: t('Invalid file type: .{{ext}}. Please upload a .po, .pot, or .json file.', {
+              ext,
+            }),
           },
         ]);
         return;
@@ -581,7 +583,7 @@ export default function Index() {
               {
                 severity: 'error',
                 code: 'INVALID_SYNTAX',
-                message: 'Invalid JSON file. Expected an i18next JSON resource object.',
+                message: t('Invalid JSON file. Expected an i18next JSON resource object.'),
               },
             ]);
             return;
@@ -613,7 +615,10 @@ export default function Index() {
             result.warnings.unshift({
               severity: 'warning',
               code: 'ENCODING_ERROR',
-              message: `Encoding detected as ${encoding.toUpperCase()} with ${confidence} confidence. If characters appear incorrect, the file may use a different encoding.`,
+              message: t(
+                'Encoding detected as {{encoding}} with {{confidence}} confidence. If characters appear incorrect, the file may use a different encoding.',
+                { encoding: encoding.toUpperCase(), confidence },
+              ),
             });
           }
 
@@ -656,12 +661,12 @@ export default function Index() {
           {
             severity: 'error',
             code: 'INVALID_SYNTAX',
-            message: err instanceof Error ? err.message : 'Failed to parse file',
+            message: err instanceof Error ? err.message : t('Failed to parse file'),
           },
         ]);
       }
     },
-    [loadFile],
+    [loadFile, t],
   );
 
   const handleLoadExamplePo = useCallback(async () => {
@@ -906,12 +911,12 @@ export default function Index() {
 
       const files = e.dataTransfer?.files;
       if (!files || files.length === 0) {
-        setDragError('No file was dropped');
+        setDragError(t('No file was dropped'));
         return;
       }
 
       if (files.length > 1) {
-        setDragError('Please drop only one file at a time');
+        setDragError(t('Please drop only one file at a time'));
         return;
       }
 
@@ -919,13 +924,15 @@ export default function Index() {
       const ext = file.name.toLowerCase().split('.').pop();
 
       if (ext !== 'po' && ext !== 'pot' && ext !== 'json') {
-        setDragError(`Invalid file type: .${ext}. Please drop a .po, .pot, or .json file.`);
+        setDragError(
+          t('Invalid file type: .{{ext}}. Please drop a .po, .pot, or .json file.', { ext }),
+        );
         return;
       }
 
       handleFileUpload(file);
     },
-    [handleFileUpload],
+    [handleFileUpload, t],
   );
 
   /**
@@ -1041,12 +1048,12 @@ export default function Index() {
           {
             severity: 'error',
             code: 'INVALID_SYNTAX',
-            message: err instanceof Error ? err.message : 'Failed to parse POT file',
+            message: err instanceof Error ? err.message : t('Failed to parse POT file'),
           },
         ]);
       }
     },
-    [entries, mergeEntries],
+    [entries, mergeEntries, t],
   );
 
   /**
@@ -1196,10 +1203,14 @@ export default function Index() {
             }}
           >
             <Text size="sm">
-              Updated from <strong>{mergeSuccess?.potFilename}</strong>: +{mergeSuccess?.added} new,
-              -{mergeSuccess?.removed} removed, {mergeSuccess?.kept} kept
+              {t('Updated from {{filename}}: +{{added}} new, -{{removed}} removed, {{kept}} kept', {
+                filename: mergeSuccess?.potFilename,
+                added: mergeSuccess?.added,
+                removed: mergeSuccess?.removed,
+                kept: mergeSuccess?.kept,
+              })}
               {mergeSuccess?.updatedMeta
-                ? ` (${mergeSuccess.updatedMeta} with updated references)`
+                ? ` (${t('{{count}} with updated references', { count: mergeSuccess.updatedMeta })})`
                 : ''}
             </Text>
           </Notification>
@@ -1590,7 +1601,7 @@ export default function Index() {
                 <Group gap="xs">
                   <AlertTriangle size={16} />
                   <span data-ev-id="ev_76292818e0">
-                    {warnings.length} warning{warnings.length > 1 ? 's' : ''} during parsing
+                    {t('{{count}} warning(s) during parsing', { count: warnings.length })}
                   </span>
                 </Group>
               }
@@ -1600,14 +1611,16 @@ export default function Index() {
               <List size="sm" spacing="xs">
                 {warnings.slice(0, 5).map((warning, idx) => (
                   <List.Item key={idx}>
-                    {warning.line && <Code mr={8}>Line {warning.line}</Code>}
+                    {warning.line && (
+                      <Code mr={8}>{t('Line {{line}}', { line: warning.line })}</Code>
+                    )}
                     {warning.message}
                   </List.Item>
                 ))}
                 {warnings.length > 5 && (
                   <List.Item>
                     <Text size="sm" c="dimmed">
-                      ...and {warnings.length - 5} more warnings
+                      {t('...and {{count}} more warnings', { count: warnings.length - 5 })}
                     </Text>
                   </List.Item>
                 )}
