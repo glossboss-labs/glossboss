@@ -1,9 +1,9 @@
 import { execSync } from 'node:child_process';
+import { existsSync, readFileSync } from 'node:fs';
+import path from 'node:path';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react-swc';
-import { readFileSync } from 'node:fs';
-import path from 'node:path';
-import { defineConfig } from 'vite';
+import { defineConfig, type Plugin } from 'vite';
 
 const packageJson = JSON.parse(
   readFileSync(new URL('./package.json', import.meta.url), 'utf-8'),
@@ -23,6 +23,29 @@ function getGitBranch() {
 
 const gitBranch = getGitBranch();
 
+/**
+ * Serve static sub-directory pages (e.g. /license/, /privacy/, /translate/)
+ * before Vite's SPA fallback rewrites them to the root index.html.
+ */
+function staticPages(): Plugin {
+  return {
+    name: 'static-pages',
+    configureServer(server) {
+      server.middlewares.use((req, _res, next) => {
+        const url = req.url ?? '';
+        if (/^\/(license|translate|privacy)(\/)?$/.test(url)) {
+          const dir = url.replace(/\/$/, '');
+          const filePath = path.resolve(import.meta.dirname, `public${dir}/index.html`);
+          if (existsSync(filePath)) {
+            req.url = `${dir}/index.html`;
+          }
+        }
+        next();
+      });
+    },
+  };
+}
+
 // https://vite.dev/config/
 export default defineConfig({
   server: {
@@ -40,7 +63,7 @@ export default defineConfig({
     },
     dedupe: ['react', 'react-dom', 'react-router'],
   },
-  plugins: [tailwindcss(), react()],
+  plugins: [staticPages(), tailwindcss(), react()],
   define: {
     __APP_VERSION__: JSON.stringify(appVersion),
     __GIT_BRANCH__: JSON.stringify(gitBranch),

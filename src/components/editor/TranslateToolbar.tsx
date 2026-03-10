@@ -7,7 +7,6 @@
 
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import {
-  Paper,
   Group,
   Select,
   Button,
@@ -32,7 +31,7 @@ import {
   RotateCcw,
   WandSparkles,
 } from 'lucide-react';
-import { msgid } from '@/lib/app-language';
+import { msgid, useTranslation } from '@/lib/app-language';
 import { useEditorStore } from '@/stores';
 import { getDeepLClient, hasUserApiKey } from '@/lib/deepl';
 import {
@@ -43,7 +42,7 @@ import {
 } from '@/lib/deepl/errors';
 import { analyzeTranslation } from '@/lib/glossary';
 import { ConfirmModal } from '@/components/ui';
-import { slideUpVariants, buttonStates, popVariants } from '@/lib/motion';
+import { contentVariants, buttonStates, badgeVariants } from '@/lib/motion';
 import type { TargetLanguage, SourceLanguage } from '@/lib/deepl/types';
 import type { Glossary, GlossaryAnalysisResult } from '@/lib/glossary/types';
 import { shouldAutoTranslateEntry } from './translate-utils';
@@ -55,70 +54,70 @@ type TranslateMode = 'untranslated' | 'overwrite-all' | 'selected-empty-or-fuzzy
 
 /** DeepL supported languages */
 const SOURCE_LANGUAGES: Array<{ value: string; label: string }> = [
-  { value: '', label: 'Auto-detect' },
-  { value: 'BG', label: 'Bulgarian' },
-  { value: 'CS', label: 'Czech' },
-  { value: 'DA', label: 'Danish' },
-  { value: 'DE', label: 'German' },
-  { value: 'EL', label: 'Greek' },
-  { value: 'EN', label: 'English' },
-  { value: 'ES', label: 'Spanish' },
-  { value: 'ET', label: 'Estonian' },
-  { value: 'FI', label: 'Finnish' },
-  { value: 'FR', label: 'French' },
-  { value: 'HU', label: 'Hungarian' },
-  { value: 'ID', label: 'Indonesian' },
-  { value: 'IT', label: 'Italian' },
-  { value: 'JA', label: 'Japanese' },
-  { value: 'KO', label: 'Korean' },
-  { value: 'LT', label: 'Lithuanian' },
-  { value: 'LV', label: 'Latvian' },
-  { value: 'NB', label: 'Norwegian' },
-  { value: 'NL', label: 'Dutch' },
-  { value: 'PL', label: 'Polish' },
-  { value: 'PT', label: 'Portuguese' },
-  { value: 'RO', label: 'Romanian' },
-  { value: 'RU', label: 'Russian' },
-  { value: 'SK', label: 'Slovak' },
-  { value: 'SL', label: 'Slovenian' },
-  { value: 'SV', label: 'Swedish' },
-  { value: 'TR', label: 'Turkish' },
-  { value: 'UK', label: 'Ukrainian' },
-  { value: 'ZH', label: 'Chinese' },
+  { value: '', label: msgid('Auto-detect') },
+  { value: 'BG', label: msgid('Bulgarian') },
+  { value: 'CS', label: msgid('Czech') },
+  { value: 'DA', label: msgid('Danish') },
+  { value: 'DE', label: msgid('German') },
+  { value: 'EL', label: msgid('Greek') },
+  { value: 'EN', label: msgid('English') },
+  { value: 'ES', label: msgid('Spanish') },
+  { value: 'ET', label: msgid('Estonian') },
+  { value: 'FI', label: msgid('Finnish') },
+  { value: 'FR', label: msgid('French') },
+  { value: 'HU', label: msgid('Hungarian') },
+  { value: 'ID', label: msgid('Indonesian') },
+  { value: 'IT', label: msgid('Italian') },
+  { value: 'JA', label: msgid('Japanese') },
+  { value: 'KO', label: msgid('Korean') },
+  { value: 'LT', label: msgid('Lithuanian') },
+  { value: 'LV', label: msgid('Latvian') },
+  { value: 'NB', label: msgid('Norwegian') },
+  { value: 'NL', label: msgid('Dutch') },
+  { value: 'PL', label: msgid('Polish') },
+  { value: 'PT', label: msgid('Portuguese') },
+  { value: 'RO', label: msgid('Romanian') },
+  { value: 'RU', label: msgid('Russian') },
+  { value: 'SK', label: msgid('Slovak') },
+  { value: 'SL', label: msgid('Slovenian') },
+  { value: 'SV', label: msgid('Swedish') },
+  { value: 'TR', label: msgid('Turkish') },
+  { value: 'UK', label: msgid('Ukrainian') },
+  { value: 'ZH', label: msgid('Chinese') },
 ];
 
 const TARGET_LANGUAGES: Array<{ value: string; label: string }> = [
-  { value: 'BG', label: 'Bulgarian' },
-  { value: 'CS', label: 'Czech' },
-  { value: 'DA', label: 'Danish' },
-  { value: 'DE', label: 'German' },
-  { value: 'EL', label: 'Greek' },
-  { value: 'EN-GB', label: 'English (UK)' },
-  { value: 'EN-US', label: 'English (US)' },
-  { value: 'ES', label: 'Spanish' },
-  { value: 'ET', label: 'Estonian' },
-  { value: 'FI', label: 'Finnish' },
-  { value: 'FR', label: 'French' },
-  { value: 'HU', label: 'Hungarian' },
-  { value: 'ID', label: 'Indonesian' },
-  { value: 'IT', label: 'Italian' },
-  { value: 'JA', label: 'Japanese' },
-  { value: 'KO', label: 'Korean' },
-  { value: 'LT', label: 'Lithuanian' },
-  { value: 'LV', label: 'Latvian' },
-  { value: 'NB', label: 'Norwegian' },
-  { value: 'NL', label: 'Dutch' },
-  { value: 'PL', label: 'Polish' },
-  { value: 'PT-BR', label: 'Portuguese (Brazil)' },
-  { value: 'PT-PT', label: 'Portuguese (Portugal)' },
-  { value: 'RO', label: 'Romanian' },
-  { value: 'RU', label: 'Russian' },
-  { value: 'SK', label: 'Slovak' },
-  { value: 'SL', label: 'Slovenian' },
-  { value: 'SV', label: 'Swedish' },
-  { value: 'TR', label: 'Turkish' },
-  { value: 'UK', label: 'Ukrainian' },
-  { value: 'ZH', label: 'Chinese' },
+  { value: 'BG', label: msgid('Bulgarian') },
+  { value: 'CS', label: msgid('Czech') },
+  { value: 'DA', label: msgid('Danish') },
+  { value: 'DE', label: msgid('German') },
+  { value: 'EL', label: msgid('Greek') },
+  { value: 'EN-GB', label: msgid('English (UK)') },
+  { value: 'EN-US', label: msgid('English (US)') },
+  { value: 'ES', label: msgid('Spanish') },
+  { value: 'ET', label: msgid('Estonian') },
+  { value: 'FI', label: msgid('Finnish') },
+  { value: 'FR', label: msgid('French') },
+  { value: 'HU', label: msgid('Hungarian') },
+  { value: 'ID', label: msgid('Indonesian') },
+  { value: 'IT', label: msgid('Italian') },
+  { value: 'JA', label: msgid('Japanese') },
+  { value: 'KO', label: msgid('Korean') },
+  { value: 'LT', label: msgid('Lithuanian') },
+  { value: 'LV', label: msgid('Latvian') },
+  { value: 'NB', label: msgid('Norwegian') },
+  { value: 'NL', label: msgid('Dutch') },
+  { value: 'PL', label: msgid('Polish') },
+  { value: 'PT-BR', label: msgid('Portuguese (Brazil)') },
+  { value: 'PT-PT', label: msgid('Portuguese (Portugal)') },
+  { value: 'RO', label: msgid('Romanian') },
+  { value: 'RU', label: msgid('Russian') },
+  { value: 'SK', label: msgid('Slovak') },
+  { value: 'SL', label: msgid('Slovenian') },
+  { value: 'SV', label: msgid('Swedish') },
+  { value: 'TR', label: msgid('Turkish') },
+  { value: 'UK', label: msgid('Ukrainian') },
+  { value: 'ZH', label: msgid('Chinese') },
 ];
 
 /** Map PO language codes to DeepL codes */
@@ -147,6 +146,7 @@ export function TranslateToolbar({
   deeplGlossaryId,
   glossary = null,
 }: TranslateToolbarProps) {
+  const { t } = useTranslation();
   const {
     header,
     entries,
@@ -214,15 +214,19 @@ export function TranslateToolbar({
       const context = custom.detail?.context;
       setGlossaryFallbackNotice(
         context === 'bulk'
-          ? 'Glossary not found in DeepL. Continued bulk translation without glossary. Re-sync in Settings is recommended.'
-          : 'Glossary not found in DeepL. This translation was done without glossary. Re-sync in Settings is recommended.',
+          ? t(
+              'Glossary not found in DeepL. Continued bulk translation without glossary. Re-sync in Settings is recommended.',
+            )
+          : t(
+              'Glossary not found in DeepL. This translation was done without glossary. Re-sync in Settings is recommended.',
+            ),
       );
     };
 
     window.addEventListener(DEEPL_GLOSSARY_FALLBACK_EVENT, handleFallback as EventListener);
     return () =>
       window.removeEventListener(DEEPL_GLOSSARY_FALLBACK_EVENT, handleFallback as EventListener);
-  }, []);
+  }, [t]);
 
   // Find untranslated entries
   const untranslatedEntries = useMemo(
@@ -520,37 +524,39 @@ export function TranslateToolbar({
     const needsReviewRows = withTerms.filter((analysis) => analysis.needsReviewCount > 0).length;
 
     if (withTerms.length === 0) {
-      setBulkActionMessage('Glossary check complete: no glossary terms found in selected rows.');
+      setBulkActionMessage(t('Glossary check complete: no glossary terms found in selected rows.'));
       return;
     }
 
     if (needsReviewRows === 0) {
-      setBulkActionMessage('Glossary check complete: all selected rows match glossary terms.');
+      setBulkActionMessage(t('Glossary check complete: all selected rows match glossary terms.'));
       return;
     }
 
     setBulkActionMessage(
-      `Glossary check complete: ${needsReviewRows} selected row(s) need review.`,
+      t('Glossary check complete: {{count}} selected row(s) need review.', {
+        count: needsReviewRows,
+      }),
     );
-  }, [glossary, selectedEntries, setGlossaryAnalysisBatch]);
+  }, [glossary, selectedEntries, setGlossaryAnalysisBatch, t]);
 
   const handleApproveSelected = useCallback(() => {
     clearFuzzyBatch(Array.from(selectedEntryIds));
     setBulkActionMessage(
       selectedFuzzyCount > 0
-        ? `Approved ${selectedFuzzyCount} row(s): fuzzy flag cleared.`
-        : 'No selected fuzzy rows to approve.',
+        ? t('Approved {{count}} row(s): fuzzy flag cleared.', { count: selectedFuzzyCount })
+        : t('No selected fuzzy rows to approve.'),
     );
-  }, [clearFuzzyBatch, selectedEntryIds, selectedFuzzyCount]);
+  }, [clearFuzzyBatch, selectedEntryIds, selectedFuzzyCount, t]);
 
   const handleUnapproveSelected = useCallback(() => {
     addFuzzyBatch(Array.from(selectedEntryIds));
     setBulkActionMessage(
       selectedNonFuzzyCount > 0
-        ? `Unapproved ${selectedNonFuzzyCount} row(s): fuzzy flag added.`
-        : 'No selected rows available to unapprove.',
+        ? t('Unapproved {{count}} row(s): fuzzy flag added.', { count: selectedNonFuzzyCount })
+        : t('No selected rows available to unapprove.'),
     );
-  }, [addFuzzyBatch, selectedEntryIds, selectedNonFuzzyCount]);
+  }, [addFuzzyBatch, selectedEntryIds, selectedNonFuzzyCount, t]);
 
   if (!entries.length) return null;
 
@@ -558,20 +564,25 @@ export function TranslateToolbar({
   const translatedCount = allTranslatableEntries.length - untranslatedEntries.length;
 
   return (
-    <Paper p="sm" withBorder>
+    <>
       {/* Retranslate confirmation modal */}
       <ConfirmModal
         opened={confirmRetranslateOpen}
         onClose={() => setConfirmRetranslateOpen(false)}
         onConfirm={handleRetranslateAll}
-        title="Retranslate all entries?"
-        message={`This will overwrite ${translatedCount} existing translations with new machine translations.`}
+        title={t('Retranslate all entries?')}
+        message={t(
+          'This will overwrite {{count}} existing translations with new machine translations.',
+          { count: translatedCount },
+        )}
         detail={
           manualEditCount > 0 && skipManualEdits
-            ? `${manualEditCount} manually edited entries will be skipped.`
+            ? t('{{count}} manually edited entries will be skipped.', { count: manualEditCount })
             : manualEditCount > 0
-              ? `⚠️ ${manualEditCount} manually edited entries will be overwritten!`
-              : 'Consider downloading a backup first.'
+              ? t('\u26a0\ufe0f {{count}} manually edited entries will be overwritten!', {
+                  count: manualEditCount,
+                })
+              : t('Consider downloading a backup first.')
         }
         confirmLabel={msgid('Retranslate All')}
         confirmColor="orange"
@@ -581,7 +592,7 @@ export function TranslateToolbar({
       <Stack gap="sm">
         <AnimatePresence>
           {glossaryFallbackNotice && (
-            <MotionDiv variants={slideUpVariants} initial="hidden" animate="visible" exit="exit">
+            <MotionDiv variants={contentVariants} initial="hidden" animate="visible" exit="exit">
               <Alert color="yellow" withCloseButton onClose={() => setGlossaryFallbackNotice(null)}>
                 <Text size="xs">{glossaryFallbackNotice}</Text>
               </Alert>
@@ -593,22 +604,24 @@ export function TranslateToolbar({
           <Group gap="xs">
             <WandSparkles size={14} />
             <Text size="sm" fw={600}>
-              Machine Translation
+              {t('Machine Translation')}
             </Text>
           </Group>
           <Text size="xs" c="dimmed">
             {selectedEntryIds.size > 0
-              ? `${selectedEntryIds.size} selected`
-              : `${untranslatedEntries.length} untranslated`}
+              ? t('{{count}} selected', { count: selectedEntryIds.size })
+              : t('{{count}} untranslated', { count: untranslatedEntries.length })}
           </Text>
         </Group>
 
         {/* API Key Warning */}
         <AnimatePresence>
           {!hasApiKey && (
-            <MotionDiv variants={slideUpVariants} initial="hidden" animate="visible" exit="exit">
+            <MotionDiv variants={contentVariants} initial="hidden" animate="visible" exit="exit">
               <Alert color="yellow" icon={<Key size={16} />}>
-                <Text size="sm">Add your DeepL API key in Settings to enable translations.</Text>
+                <Text size="sm">
+                  {t('Add your DeepL API key in Settings to enable translations.')}
+                </Text>
               </Alert>
             </MotionDiv>
           )}
@@ -617,13 +630,13 @@ export function TranslateToolbar({
         <Group justify="space-between" align="center" wrap="wrap">
           <Group gap="xs" align="center">
             <Text size="xs" c="dimmed" fw={500}>
-              From
+              {t('From')}
             </Text>
             <Select
               data={SOURCE_LANGUAGES}
               value={sourceLang}
               onChange={handleSourceChange}
-              placeholder="Auto-detect"
+              placeholder={t('Auto-detect')}
               searchable
               clearable
               w={160}
@@ -637,7 +650,7 @@ export function TranslateToolbar({
             </Text>
 
             <Text size="xs" c="dimmed" fw={500}>
-              To
+              {t('To')}
             </Text>
             <Select
               data={TARGET_LANGUAGES}
@@ -654,7 +667,7 @@ export function TranslateToolbar({
 
             {inferredTarget && (
               <Badge size="xs" variant="light" color="gray">
-                Detected: {inferredTarget}
+                {t('Detected: {{target}}', { target: inferredTarget })}
               </Badge>
             )}
           </Group>
@@ -664,7 +677,7 @@ export function TranslateToolbar({
               {isTranslating ? (
                 <MotionDiv
                   key="cancel"
-                  variants={slideUpVariants}
+                  variants={contentVariants}
                   initial="hidden"
                   animate="visible"
                   exit="exit"
@@ -683,7 +696,7 @@ export function TranslateToolbar({
               ) : (
                 <MotionDiv
                   key="actions"
-                  variants={slideUpVariants}
+                  variants={contentVariants}
                   initial="hidden"
                   animate="visible"
                   exit="exit"
@@ -692,8 +705,11 @@ export function TranslateToolbar({
                     <Tooltip
                       label={
                         manualEditCount > 0
-                          ? `${manualEditCount} manual edits will be ${skipManualEdits ? 'skipped' : 'overwritten'}`
-                          : 'Retranslate all entries'
+                          ? t('{{count}} manual edits will be {{action}}', {
+                              count: manualEditCount,
+                              action: skipManualEdits ? t('skipped') : t('overwritten'),
+                            })
+                          : t('Retranslate all entries')
                       }
                     >
                       <motion.div {...buttonStates}>
@@ -706,7 +722,7 @@ export function TranslateToolbar({
                           variant="subtle"
                           color="orange"
                         >
-                          Retranslate All
+                          {t('Retranslate All')}
                         </Button>
                       </motion.div>
                     </Tooltip>
@@ -717,7 +733,9 @@ export function TranslateToolbar({
                         disabled={!targetLang || untranslatedEntries.length === 0 || !hasApiKey}
                         variant="light"
                       >
-                        Translate {untranslatedEntries.length} untranslated
+                        {t('Translate {{count}} untranslated', {
+                          count: untranslatedEntries.length,
+                        })}
                       </Button>
                     </motion.div>
                   </Group>
@@ -730,14 +748,20 @@ export function TranslateToolbar({
         {/* Bulk selection + selected-row actions */}
         {!isTranslating && (
           <Group gap="xs" align="center" wrap="wrap">
-            <MotionDiv layout variants={popVariants} initial="hidden" animate="visible" exit="exit">
+            <MotionDiv
+              layout
+              variants={badgeVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+            >
               <Button
                 size="xs"
                 variant="subtle"
                 onClick={handleSelectAllFiltered}
                 disabled={filteredEntries.length === 0}
               >
-                Select all filtered
+                {t('Select all filtered')}
               </Button>
             </MotionDiv>
 
@@ -746,13 +770,13 @@ export function TranslateToolbar({
                 <MotionDiv
                   key="clear-selection"
                   layout
-                  variants={popVariants}
+                  variants={badgeVariants}
                   initial="hidden"
                   animate="visible"
                   exit="exit"
                 >
                   <Button size="xs" variant="subtle" color="gray" onClick={clearSelectedEntries}>
-                    Clear
+                    {t('Clear')}
                   </Button>
                 </MotionDiv>
               )}
@@ -763,12 +787,12 @@ export function TranslateToolbar({
                 <MotionDiv
                   key="auto-translate-selected"
                   layout
-                  variants={popVariants}
+                  variants={badgeVariants}
                   initial="hidden"
                   animate="visible"
                   exit="exit"
                 >
-                  <Tooltip label="Auto translate selected rows that are empty or fuzzy">
+                  <Tooltip label={t('Auto translate selected rows that are empty or fuzzy')}>
                     <Button
                       size="xs"
                       variant="light"
@@ -790,7 +814,7 @@ export function TranslateToolbar({
                 <MotionDiv
                   key="glossary-check-selected"
                   layout
-                  variants={popVariants}
+                  variants={badgeVariants}
                   initial="hidden"
                   animate="visible"
                   exit="exit"
@@ -816,7 +840,7 @@ export function TranslateToolbar({
                 <MotionDiv
                   key="approve-selected"
                   layout
-                  variants={popVariants}
+                  variants={badgeVariants}
                   initial="hidden"
                   animate="visible"
                   exit="exit"
@@ -842,7 +866,7 @@ export function TranslateToolbar({
                 <MotionDiv
                   key="unapprove-selected"
                   layout
-                  variants={popVariants}
+                  variants={badgeVariants}
                   initial="hidden"
                   animate="visible"
                   exit="exit"
@@ -868,7 +892,7 @@ export function TranslateToolbar({
         {/* Skip manual edits option */}
         <AnimatePresence>
           {manualEditCount > 0 && !isTranslating && (
-            <MotionDiv variants={slideUpVariants} initial="hidden" animate="visible" exit="exit">
+            <MotionDiv variants={contentVariants} initial="hidden" animate="visible" exit="exit">
               <Group gap="xs">
                 <Checkbox
                   size="xs"
@@ -893,7 +917,7 @@ export function TranslateToolbar({
           {isTranslating && (
             <MotionStack
               gap="xs"
-              variants={slideUpVariants}
+              variants={contentVariants}
               initial="hidden"
               animate="visible"
               exit="exit"
@@ -920,7 +944,7 @@ export function TranslateToolbar({
         {/* Error display */}
         <AnimatePresence>
           {error && !isTranslating && (
-            <MotionDiv variants={slideUpVariants} initial="hidden" animate="visible" exit="exit">
+            <MotionDiv variants={contentVariants} initial="hidden" animate="visible" exit="exit">
               <Alert
                 color="red"
                 icon={<AlertCircle size={16} />}
@@ -936,7 +960,7 @@ export function TranslateToolbar({
         {/* Bulk action feedback */}
         <AnimatePresence>
           {bulkActionMessage && !isTranslating && (
-            <MotionDiv variants={slideUpVariants} initial="hidden" animate="visible" exit="exit">
+            <MotionDiv variants={contentVariants} initial="hidden" animate="visible" exit="exit">
               <Alert color="blue" withCloseButton onClose={() => setBulkActionMessage(null)}>
                 {bulkActionMessage}
               </Alert>
@@ -947,7 +971,7 @@ export function TranslateToolbar({
         {/* Success message */}
         <AnimatePresence>
           {!isTranslating && translateCount > 0 && !error && (
-            <MotionDiv variants={slideUpVariants} initial="hidden" animate="visible" exit="exit">
+            <MotionDiv variants={contentVariants} initial="hidden" animate="visible" exit="exit">
               <Alert color="green" withCloseButton onClose={() => setTranslateCount(0)}>
                 Successfully translated {translateCount} entries
               </Alert>
@@ -955,6 +979,6 @@ export function TranslateToolbar({
           )}
         </AnimatePresence>
       </Stack>
-    </Paper>
+    </>
   );
 }

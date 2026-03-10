@@ -37,6 +37,8 @@
     ]
   },
   "dependencies": {
+    "@fontsource-variable/geist": "^5.2.8",
+    "@fontsource-variable/geist-mono": "^5.2.7",
     "@mantine/core": "^8.3.16",
     "@mantine/hooks": "^8.3.16",
     "@supabase/supabase-js": "^2.98.0",

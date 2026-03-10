@@ -8,7 +8,7 @@
 import { Modal, Stack, Text, Group, Button, ThemeIcon } from '@mantine/core';
 import { motion, AnimatePresence } from 'motion/react';
 import { AlertTriangle, Info } from 'lucide-react';
-import { slideUpVariants, buttonStates } from '@/lib/motion';
+import { contentVariants, buttonStates } from '@/lib/motion';
 import { msgid, useTranslation } from '@/lib/app-language';
 
 const MotionStack = motion.create(Stack);
@@ -59,7 +59,7 @@ export function ConfirmModal({
         {opened && (
           <MotionStack
             gap="md"
-            variants={slideUpVariants}
+            variants={contentVariants}
             initial="hidden"
             animate="visible"
             exit="exit"

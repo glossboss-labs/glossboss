@@ -31,6 +31,7 @@ import {
   Notification,
   ActionIcon,
   Transition,
+  Divider,
   useMantineColorScheme,
   Menu,
   TextInput,
@@ -54,6 +55,8 @@ import {
   ChevronDown,
   GitBranch,
   Link,
+  ExternalLink,
+  Info,
 } from 'lucide-react';
 import { EditorTable, FilterToolbar, HeaderEditor, TranslateToolbar } from '@/components/editor';
 import { FeedbackModal } from '@/components/feedback';
@@ -61,7 +64,7 @@ import { SettingsModal } from '@/components/SettingsModal';
 import { ConfirmModal } from '@/components/ui';
 import { useEditorStore, useSourceStore } from '@/stores';
 import { detectPluginSlug } from '@/lib/wp-source';
-import { slideUpVariants, fadeScaleVariants, buttonStates, gentleSpring } from '@/lib/motion';
+import { contentVariants, fadeVariants, sectionVariants, buttonStates } from '@/lib/motion';
 import {
   parsePOFileWithDiagnostics,
   serializePOFile,
@@ -295,7 +298,7 @@ function DevBranchChip({ branch }: { branch: string }) {
         py={6}
         style={{
           backdropFilter: 'blur(12px)',
-          background: 'color-mix(in srgb, var(--mantine-color-body) 82%, transparent)',
+          background: 'color-mix(in srgb, var(--gb-surface-1) 85%, transparent)',
         }}
       >
         <Group gap={6} wrap="nowrap">
@@ -1092,7 +1095,8 @@ export default function Index() {
               ...styles,
               position: 'fixed',
               inset: 0,
-              backgroundColor: 'rgba(0, 0, 0, 0.6)',
+              backgroundColor: 'rgba(0, 0, 0, 0.75)',
+              backdropFilter: 'blur(4px)',
               zIndex: 9999,
               display: 'flex',
               alignItems: 'center',
@@ -1267,11 +1271,7 @@ export default function Index() {
       >
         <Stack gap="lg">
           {/* Header */}
-          <MotionDiv
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={gentleSpring}
-          >
+          <MotionDiv variants={sectionVariants} initial="hidden" animate="visible">
             <Group justify="space-between" align="flex-start">
               <div data-ev-id="ev_c00be328c4">
                 <Group gap="xs" align="center">
@@ -1288,170 +1288,218 @@ export default function Index() {
               </div>
 
               <Group gap="sm">
-                <motion.div {...buttonStates}>
-                  <FileButton
-                    onChange={handleFileUpload}
-                    accept=".po,.pot,.json"
-                    resetRef={fileInputRef as React.MutableRefObject<() => void>}
-                  >
-                    {(props) => (
-                      <Button leftSection={<Upload size={16} />} {...props} ref={fileInputRef}>
-                        {t('Upload')}
-                      </Button>
-                    )}
-                  </FileButton>
-                </motion.div>
-
-                <AnimatePresence>
-                  {filename && (
-                    <MotionDiv
-                      variants={slideUpVariants}
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
+                <Group gap="sm">
+                  <motion.div {...buttonStates}>
+                    <FileButton
+                      onChange={handleFileUpload}
+                      accept=".po,.pot,.json"
+                      resetRef={fileInputRef as React.MutableRefObject<() => void>}
                     >
-                      <Group gap="sm">
-                        <Group gap={0} style={{ position: 'relative', overflow: 'visible' }}>
+                      {(props) => (
+                        <Button leftSection={<Upload size={16} />} {...props} ref={fileInputRef}>
+                          {t('Upload')}
+                        </Button>
+                      )}
+                    </FileButton>
+                  </motion.div>
+
+                  <AnimatePresence>
+                    {filename && (
+                      <MotionDiv
+                        variants={fadeVariants}
+                        initial="hidden"
+                        animate="visible"
+                        exit="exit"
+                      >
+                        <Group gap="sm">
+                          <Group gap={0} style={{ position: 'relative', overflow: 'visible' }}>
+                            <Tooltip
+                              label={
+                                hasUnsavedChanges
+                                  ? t('You have unsaved changes')
+                                  : t('Download as {format}', {
+                                      format: sourceFormat === 'i18next' ? 'JSON' : 'PO',
+                                    })
+                              }
+                            >
+                              <motion.div {...buttonStates}>
+                                <Button
+                                  leftSection={<Download size={16} />}
+                                  variant="light"
+                                  onClick={handleDownload}
+                                  style={{
+                                    borderTopRightRadius: 0,
+                                    borderBottomRightRadius: 0,
+                                    position: 'relative',
+                                    overflow: 'visible',
+                                  }}
+                                >
+                                  {t('Download')}
+                                  <AnimatePresence>
+                                    {hasUnsavedChanges && (
+                                      <MotionDiv
+                                        initial={{ scale: 0 }}
+                                        animate={{ scale: 1 }}
+                                        exit={{ scale: 0 }}
+                                        style={{
+                                          position: 'absolute',
+                                          top: -4,
+                                          right: -4,
+                                          width: 10,
+                                          height: 10,
+                                          borderRadius: '50%',
+                                          backgroundColor: 'var(--mantine-color-orange-5)',
+                                          border: '2px solid var(--mantine-color-body)',
+                                          zIndex: 1,
+                                        }}
+                                      />
+                                    )}
+                                  </AnimatePresence>
+                                </Button>
+                              </motion.div>
+                            </Tooltip>
+                            <Menu position="bottom-end" withinPortal>
+                              <Menu.Target>
+                                <Button
+                                  variant="light"
+                                  px={8}
+                                  style={{
+                                    borderTopLeftRadius: 0,
+                                    borderBottomLeftRadius: 0,
+                                    borderLeft: '1px solid var(--mantine-color-default-border)',
+                                  }}
+                                >
+                                  <ChevronDown size={14} />
+                                </Button>
+                              </Menu.Target>
+                              <Menu.Dropdown>
+                                <Menu.Label>{t('Download as')}</Menu.Label>
+                                <Menu.Item onClick={() => handleDownloadAs('po')}>
+                                  {t('PO file (.po)')}
+                                </Menu.Item>
+                                <Menu.Item onClick={() => handleDownloadAs('i18next')}>
+                                  {t('i18next JSON (.json)')}
+                                </Menu.Item>
+                              </Menu.Dropdown>
+                            </Menu>
+                          </Group>
+
                           <Tooltip
-                            label={
-                              hasUnsavedChanges
-                                ? t('You have unsaved changes')
-                                : t('Download as {format}', {
-                                    format: sourceFormat === 'i18next' ? 'JSON' : 'PO',
-                                  })
-                            }
+                            multiline
+                            w={340}
+                            label={t(
+                              'Update this file using a .pot template. Existing translations are kept when source strings still match, new strings are added, and obsolete strings are removed.',
+                            )}
                           >
                             <motion.div {...buttonStates}>
-                              <Button
-                                leftSection={<Download size={16} />}
-                                variant="light"
-                                onClick={handleDownload}
-                                style={{
-                                  borderTopRightRadius: 0,
-                                  borderBottomRightRadius: 0,
-                                  position: 'relative',
-                                  overflow: 'visible',
-                                }}
-                              >
-                                {t('Download')}
-                                <AnimatePresence>
-                                  {hasUnsavedChanges && (
-                                    <MotionDiv
-                                      initial={{ scale: 0 }}
-                                      animate={{ scale: 1 }}
-                                      exit={{ scale: 0 }}
-                                      style={{
-                                        position: 'absolute',
-                                        top: -4,
-                                        right: -4,
-                                        width: 10,
-                                        height: 10,
-                                        borderRadius: '50%',
-                                        backgroundColor: 'var(--mantine-color-orange-5)',
-                                        border: '2px solid var(--mantine-color-body)',
-                                        zIndex: 1,
-                                      }}
-                                    />
-                                  )}
-                                </AnimatePresence>
-                              </Button>
+                              <FileButton onChange={handlePotUpload} accept=".pot">
+                                {(props) => (
+                                  <Button
+                                    leftSection={<FileUp size={16} />}
+                                    variant="light"
+                                    {...props}
+                                  >
+                                    {t('Update')}
+                                  </Button>
+                                )}
+                              </FileButton>
                             </motion.div>
                           </Tooltip>
-                          <Menu position="bottom-end" withinPortal>
-                            <Menu.Target>
-                              <Button
-                                variant="light"
-                                px={8}
-                                style={{
-                                  borderTopLeftRadius: 0,
-                                  borderBottomLeftRadius: 0,
-                                  borderLeft: '1px solid var(--mantine-color-default-border)',
-                                }}
-                              >
-                                <ChevronDown size={14} />
-                              </Button>
-                            </Menu.Target>
-                            <Menu.Dropdown>
-                              <Menu.Label>{t('Download as')}</Menu.Label>
-                              <Menu.Item onClick={() => handleDownloadAs('po')}>
-                                {t('PO file (.po)')}
-                              </Menu.Item>
-                              <Menu.Item onClick={() => handleDownloadAs('i18next')}>
-                                {t('i18next JSON (.json)')}
-                              </Menu.Item>
-                            </Menu.Dropdown>
-                          </Menu>
                         </Group>
+                      </MotionDiv>
+                    )}
+                  </AnimatePresence>
+                </Group>
 
-                        <Tooltip
-                          multiline
-                          w={340}
-                          label={t(
-                            'Update this file using a .pot template. Existing translations are kept when source strings still match, new strings are added, and obsolete strings are removed.',
-                          )}
-                        >
-                          <motion.div {...buttonStates}>
-                            <FileButton onChange={handlePotUpload} accept=".pot">
-                              {(props) => (
-                                <Button
-                                  leftSection={<FileUp size={16} />}
-                                  variant="light"
-                                  {...props}
-                                >
-                                  {t('Update')}
-                                </Button>
-                              )}
-                            </FileButton>
-                          </motion.div>
-                        </Tooltip>
-                      </Group>
-                    </MotionDiv>
-                  )}
-                </AnimatePresence>
+                <Divider orientation="vertical" />
 
-                <Tooltip label={t('Share feedback')}>
-                  <motion.div {...buttonStates}>
-                    <Button
-                      variant="default"
-                      leftSection={<MessageSquare size={16} />}
-                      onClick={() => setFeedbackOpen(true)}
-                    >
-                      {t('Feedback')}
-                    </Button>
-                  </motion.div>
-                </Tooltip>
+                <Group gap="sm">
+                  <Tooltip label={t('Share feedback')}>
+                    <motion.div {...buttonStates}>
+                      <Button
+                        variant="subtle"
+                        leftSection={<MessageSquare size={16} />}
+                        onClick={() => setFeedbackOpen(true)}
+                      >
+                        {t('Feedback')}
+                      </Button>
+                    </motion.div>
+                  </Tooltip>
 
-                <ThemeToggle />
+                  <ThemeToggle />
 
-                <Menu position="bottom-end" withinPortal>
-                  <Menu.Target>
-                    <Tooltip label={t('Settings and actions')}>
-                      <motion.div {...buttonStates}>
-                        <ActionIcon variant="default" size="lg">
-                          <Settings size={18} />
-                        </ActionIcon>
-                      </motion.div>
-                    </Tooltip>
-                  </Menu.Target>
-                  <Menu.Dropdown>
-                    <Menu.Label>{t('Settings')}</Menu.Label>
-                    <Menu.Item
-                      leftSection={<Settings size={14} />}
-                      onClick={() => setSettingsOpen(true)}
-                    >
-                      {t('Open settings')}
-                    </Menu.Item>
-                    <Menu.Divider />
-                    <Menu.Label>{t('Actions')}</Menu.Label>
-                    <Menu.Item
-                      color="red"
-                      leftSection={<Trash2 size={14} />}
-                      onClick={handleClearClick}
-                    >
-                      {t('Clear editor')}
-                    </Menu.Item>
-                  </Menu.Dropdown>
-                </Menu>
+                  <Menu position="bottom-end" withinPortal>
+                    <Menu.Target>
+                      <Tooltip label={t('Settings and actions')}>
+                        <motion.div {...buttonStates}>
+                          <ActionIcon
+                            variant="default"
+                            size="lg"
+                            aria-label={t('Settings and actions')}
+                          >
+                            <Settings size={18} />
+                          </ActionIcon>
+                        </motion.div>
+                      </Tooltip>
+                    </Menu.Target>
+                    <Menu.Dropdown>
+                      <Menu.Label>{t('Settings')}</Menu.Label>
+                      <Menu.Item
+                        leftSection={<Settings size={14} />}
+                        onClick={() => setSettingsOpen(true)}
+                      >
+                        {t('Open settings')}
+                      </Menu.Item>
+                      <Menu.Divider />
+                      <Menu.Label>{t('Actions')}</Menu.Label>
+                      <Menu.Item
+                        color="red"
+                        leftSection={<Trash2 size={14} />}
+                        onClick={handleClearClick}
+                      >
+                        {t('Clear editor')}
+                      </Menu.Item>
+                      <Menu.Divider />
+                      <Menu.Label>GlossBoss v{__APP_VERSION__}</Menu.Label>
+                      <Menu.Item
+                        component="a"
+                        href="https://github.com/lammersbjorn/glossboss"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        leftSection={<ExternalLink size={14} />}
+                      >
+                        {t('Source')}
+                      </Menu.Item>
+                      <Menu.Item
+                        component="a"
+                        href="/license/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        leftSection={<Info size={14} />}
+                      >
+                        {t('License')}
+                      </Menu.Item>
+                      <Menu.Item
+                        component="a"
+                        href="/translate/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        leftSection={<ExternalLink size={14} />}
+                      >
+                        {t('Translate')}
+                      </Menu.Item>
+                      <Menu.Item
+                        component="a"
+                        href="/privacy/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        leftSection={<Info size={14} />}
+                      >
+                        {t('Privacy')}
+                      </Menu.Item>
+                    </Menu.Dropdown>
+                  </Menu>
+                </Group>
               </Group>
             </Group>
           </MotionDiv>
@@ -1487,7 +1535,7 @@ export default function Index() {
           {/* Drag error display */}
           <AnimatePresence>
             {dragError && (
-              <MotionDiv variants={slideUpVariants} initial="hidden" animate="visible" exit="exit">
+              <MotionDiv variants={contentVariants} initial="hidden" animate="visible" exit="exit">
                 <Alert
                   color="red"
                   title={t('Upload failed')}
@@ -1619,40 +1667,45 @@ export default function Index() {
 
           {/* Header and control workspace */}
           {filename && (
-            <Stack gap="sm">
+            <Stack gap="md">
               <HeaderEditor encodingInfo={encodingInfo} />
-
-              {/* Glossary status indicator (quick view) */}
-              {glossary && (
-                <Group gap="xs">
-                  <Badge color="green" variant="light" size="sm" leftSection={<Check size={10} />}>
-                    {t('Glossary: {count} terms ({locale})', {
-                      count: glossary.entries.length,
-                      locale: glossary.targetLocale,
-                    })}
-                  </Badge>
-                  {deeplGlossaryId && (
-                    <Badge color="blue" variant="light" size="sm">
-                      {t('DeepL synced')}
-                    </Badge>
+              <Paper p="md" withBorder>
+                <Stack gap="sm">
+                  <FilterToolbar />
+                  <Divider />
+                  <TranslateToolbar
+                    onLanguageChange={handleLanguageChange}
+                    deeplGlossaryId={glossaryEnforcementEnabled ? deeplGlossaryId : null}
+                    glossary={glossary}
+                  />
+                  {glossary && (
+                    <Group gap="xs">
+                      <Badge
+                        color="green"
+                        variant="light"
+                        size="sm"
+                        leftSection={<Check size={10} />}
+                      >
+                        {t('Glossary: {count} terms ({locale})', {
+                          count: glossary.entries.length,
+                          locale: glossary.targetLocale,
+                        })}
+                      </Badge>
+                      {deeplGlossaryId && (
+                        <Badge color="blue" variant="light" size="sm">
+                          {t('DeepL synced')}
+                        </Badge>
+                      )}
+                    </Group>
                   )}
-                </Group>
-              )}
-
-              <Stack gap="sm">
-                <FilterToolbar />
-                <TranslateToolbar
-                  onLanguageChange={handleLanguageChange}
-                  deeplGlossaryId={glossaryEnforcementEnabled ? deeplGlossaryId : null}
-                  glossary={glossary}
-                />
-              </Stack>
+                </Stack>
+              </Paper>
             </Stack>
           )}
 
           {/* Editor table or empty state */}
           {filename ? (
-            <MotionDiv variants={fadeScaleVariants} initial="hidden" animate="visible" key="editor">
+            <MotionDiv variants={sectionVariants} initial="hidden" animate="visible" key="editor">
               <EditorTable
                 targetLang={translateTargetLang}
                 sourceLang={translateSourceLang}
@@ -1664,19 +1717,19 @@ export default function Index() {
             </MotionDiv>
           ) : (
             <MotionDiv
-              variants={fadeScaleVariants}
+              variants={sectionVariants}
               initial="hidden"
               animate="visible"
               onClick={handleEmptyStateClick}
               style={{ cursor: 'pointer' }}
             >
               <Paper
-                p={rem(60)}
+                p={rem(80)}
                 withBorder
                 style={{
                   borderStyle: 'dashed',
                   borderWidth: 2,
-                  borderColor: 'var(--mantine-color-blue-4)',
+                  borderColor: 'var(--mantine-color-default-border)',
                 }}
               >
                 <Stack align="center" gap="lg">
@@ -1685,8 +1738,8 @@ export default function Index() {
                     src={appIcon}
                     alt="GlossBoss"
                     style={{
-                      width: 80,
-                      height: 80,
+                      width: 64,
+                      height: 64,
                       borderRadius: 16,
                     }}
                   />
@@ -1700,13 +1753,13 @@ export default function Index() {
                     </Text>
                   </Stack>
                   <Group gap="xs">
-                    <Badge variant="filled" color="blue">
+                    <Badge variant="light" color="blue">
                       .po
                     </Badge>
-                    <Badge variant="filled" color="blue">
+                    <Badge variant="light" color="blue">
                       .pot
                     </Badge>
-                    <Badge variant="filled" color="blue">
+                    <Badge variant="light" color="blue">
                       .json
                     </Badge>
                   </Group>
@@ -1763,59 +1816,6 @@ export default function Index() {
             </MotionDiv>
           )}
         </Stack>
-
-        <Group
-          justify="space-between"
-          mt="xl"
-          pt="md"
-          style={{ borderTop: '1px solid var(--mantine-color-default-border)' }}
-        >
-          <Text size="xs" c="dimmed">
-            GlossBoss v{__APP_VERSION__}
-          </Text>
-          <Group gap="md">
-            <Text
-              component="a"
-              href="https://github.com/lammersbjorn/glossboss"
-              target="_blank"
-              rel="noopener noreferrer"
-              size="xs"
-              c="dimmed"
-            >
-              {t('Source')}
-            </Text>
-            <Text
-              component="a"
-              href="/license/"
-              target="_blank"
-              rel="noopener noreferrer"
-              size="xs"
-              c="dimmed"
-            >
-              {t('License')}
-            </Text>
-            <Text
-              component="a"
-              href="/translate/"
-              target="_blank"
-              rel="noopener noreferrer"
-              size="xs"
-              c="dimmed"
-            >
-              {t('Translate')}
-            </Text>
-            <Text
-              component="a"
-              href="/privacy/"
-              target="_blank"
-              rel="noopener noreferrer"
-              size="xs"
-              c="dimmed"
-            >
-              {t('Privacy')}
-            </Text>
-          </Group>
-        </Group>
       </Container>
 
       {/* Settings Modal */}

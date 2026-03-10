@@ -101,7 +101,9 @@ export function GlossaryTermHighlight({
   children: React.ReactNode;
 }) {
   const color = term.found ? 'var(--mantine-color-green-6)' : 'var(--mantine-color-orange-6)';
-  const bgColor = term.found ? 'var(--mantine-color-green-0)' : 'var(--mantine-color-orange-0)';
+  const bgColor = term.found
+    ? 'var(--mantine-color-green-light)'
+    : 'var(--mantine-color-orange-light)';
 
   return (
     <Tooltip

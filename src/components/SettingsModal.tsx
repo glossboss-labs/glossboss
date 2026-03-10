@@ -461,7 +461,7 @@ export function SettingsModal({
 
   return (
     <>
-      <Modal opened={opened} onClose={onClose} title={t('Settings')} size="lg" centered>
+      <Modal opened={opened} onClose={onClose} title={t('Settings')} size="xl" centered>
         <Tabs defaultValue="api">
           <Tabs.List mb="md">
             <Tabs.Tab value="api" leftSection={<Key size={14} />}>
@@ -482,14 +482,7 @@ export function SettingsModal({
               {t('Display')}
             </Tabs.Tab>
             {isDevelopment && (
-              <Tabs.Tab
-                value="development"
-                leftSection={<GitBranch size={14} />}
-                style={{
-                  border: '1px dotted var(--mantine-color-orange-5)',
-                  borderRadius: 'var(--mantine-radius-md)',
-                }}
-              >
+              <Tabs.Tab value="development" leftSection={<GitBranch size={14} />}>
                 {t('Development')}
               </Tabs.Tab>
             )}

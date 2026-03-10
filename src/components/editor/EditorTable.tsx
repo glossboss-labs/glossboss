@@ -175,7 +175,7 @@ function ResizableTh({
         userSelect: 'none',
         textAlign: align,
         opacity: isDragging ? 0.3 : 1,
-        background: isDragging ? 'var(--mantine-color-gray-light)' : undefined,
+        background: isDragging ? 'var(--gb-surface-3)' : undefined,
         transition: 'opacity 140ms ease, background 140ms ease',
       }}
     >
@@ -219,7 +219,7 @@ function ResizableTh({
             onResize?.(Infinity); // sentinel for reset
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = 'var(--mantine-color-blue-light)';
+            e.currentTarget.style.backgroundColor = 'var(--gb-glow-focus)';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.backgroundColor = 'transparent';
@@ -451,7 +451,7 @@ function EditableField({
               pointerEvents: 'none',
               overflow: 'hidden',
               borderRadius: 'var(--mantine-radius-default)',
-              backgroundColor: 'var(--mantine-color-body)',
+              backgroundColor: 'var(--gb-surface-1)',
             }}
           >
             <HighlightedText>{editValue || ' '}</HighlightedText>
@@ -467,6 +467,7 @@ function EditableField({
             minRows={1}
             maxRows={8}
             size="sm"
+            classNames={{ input: 'inline-editor-input' }}
             styles={{
               input: {
                 ...sharedStyles,
@@ -479,6 +480,7 @@ function EditableField({
                 boxShadow: 'none',
                 position: 'relative',
                 zIndex: 1,
+                overflow: 'hidden',
               },
             }}
             data-field-id={fieldId}
@@ -1212,7 +1214,7 @@ function EntryDetailsPanel({
         )}
 
         {pluginSlug && entryActiveReference && sourceContent && !isLoadingSource && (
-          <Paper withBorder style={{ overflow: 'hidden' }}>
+          <Paper withBorder radius="md" style={{ overflow: 'hidden' }}>
             <SourceCodeViewer
               content={sourceContent}
               targetLine={entryActiveReference.line}
@@ -1280,13 +1282,11 @@ const EntryRow = memo(function EntryRow({
       style={{
         cursor: 'pointer',
         backgroundColor: isSelected
-          ? 'var(--mantine-color-blue-light)'
+          ? 'var(--gb-highlight-row)'
           : isUntranslated
-            ? 'var(--mantine-color-red-light)'
+            ? 'var(--gb-highlight-danger)'
             : undefined,
-        borderLeft: isModified
-          ? '4px solid var(--mantine-color-orange-5)'
-          : '4px solid transparent',
+        boxShadow: isModified ? 'inset 4px 0 0 var(--mantine-color-orange-5)' : undefined,
       }}
     >
       <Table.Td
@@ -1429,9 +1429,9 @@ const MobileEntryCard = memo(function MobileEntryCard({
         cursor: 'pointer',
         borderColor: isSelected ? 'var(--mantine-color-blue-4)' : undefined,
         backgroundColor: isSelected
-          ? 'var(--mantine-color-blue-light)'
+          ? 'var(--gb-highlight-row)'
           : isUntranslated
-            ? 'var(--mantine-color-red-light)'
+            ? 'var(--gb-highlight-danger)'
             : undefined,
       }}
     >
@@ -2064,7 +2064,7 @@ export function EditorTable({
               {inspectorOpen ? 'Hide info' : 'More info'}
             </Button>
           </Group>
-          <Group align="flex-start" wrap="nowrap" gap="md">
+          <Box style={{ display: 'flex', alignItems: 'flex-start' }}>
             <Box style={{ flex: 1, minWidth: 0 }}>
               <Table
                 ref={tableRef}
@@ -2084,7 +2084,7 @@ export function EditorTable({
                     position: 'sticky',
                     top: 0,
                     zIndex: 10,
-                    background: 'var(--mantine-color-body)',
+                    background: 'var(--gb-surface-2)',
                     touchAction: 'none',
                   }}
                 >
@@ -2170,171 +2170,181 @@ export function EditorTable({
               </Table>
             </Box>
 
-            {inspectorOpen && (
-              <>
-                <Box
-                  role="separator"
-                  aria-orientation="vertical"
-                  aria-label="Resize inspector"
-                  onPointerDown={handleInspectorResizeStart}
-                  onDoubleClick={() => setInspectorWidth(INSPECTOR_DEFAULT_WIDTH)}
-                  style={{
-                    width: 8,
-                    alignSelf: 'stretch',
-                    cursor: 'col-resize',
-                    borderRadius: 6,
-                    backgroundColor: 'var(--mantine-color-default-border)',
-                    opacity: 0.35,
-                    transition: 'opacity 120ms ease',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.opacity = '0.8';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.opacity = '0.35';
-                  }}
-                />
+            <Box
+              style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: 'var(--mantine-spacing-md)',
+                overflow: 'hidden',
+                flexShrink: 0,
+                width: inspectorOpen ? inspectorWidth + 24 : 0,
+                marginLeft: inspectorOpen ? 'var(--mantine-spacing-md)' : 0,
+                opacity: inspectorOpen ? 1 : 0,
+                transition: 'width 250ms ease, margin-left 250ms ease, opacity 150ms ease',
+                pointerEvents: inspectorOpen ? 'auto' : 'none',
+              }}
+            >
+              <Box
+                role="separator"
+                aria-orientation="vertical"
+                aria-label="Resize inspector"
+                onPointerDown={handleInspectorResizeStart}
+                onDoubleClick={() => setInspectorWidth(INSPECTOR_DEFAULT_WIDTH)}
+                style={{
+                  width: 8,
+                  flexShrink: 0,
+                  alignSelf: 'stretch',
+                  cursor: 'col-resize',
+                  borderRadius: 6,
+                  backgroundColor: 'var(--mantine-color-default-border)',
+                  opacity: 0.35,
+                  transition: 'opacity 120ms ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.opacity = '0.8';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.opacity = '0.35';
+                }}
+              />
 
-                <Paper
-                  withBorder
-                  p="sm"
-                  w={inspectorWidth}
-                  style={{
-                    flexShrink: 0,
-                    position: 'sticky',
-                    top: 16,
-                    height: 'calc(100vh - 32px)',
-                    maxHeight: 'calc(100vh - 32px)',
-                    overflow: 'hidden',
-                    display: 'flex',
-                    flexDirection: 'column',
-                  }}
-                >
-                  <Stack gap="sm" pt={2} style={{ height: '100%', minHeight: 0 }}>
-                    <Group justify="space-between" align="center">
-                      <Text fw={600} size="sm">
-                        String Inspector
+              <Paper
+                withBorder
+                p="sm"
+                w={inspectorWidth}
+                style={{
+                  flexShrink: 0,
+                  position: 'sticky',
+                  top: 16,
+                  height: 'calc(100vh - 32px)',
+                  maxHeight: 'calc(100vh - 32px)',
+                  overflow: 'hidden',
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+              >
+                <Stack gap="sm" pt={2} style={{ height: '100%', minHeight: 0 }}>
+                  <Group justify="space-between" align="center">
+                    <Text fw={600} size="sm">
+                      String Inspector
+                    </Text>
+                    <Tooltip
+                      label={selectedInspectorLabel}
+                      disabled={!selectedEntry}
+                      position="bottom"
+                    >
+                      <Text size="xs" c="dimmed" maw="58%" ta="right" truncate="end">
+                        {selectedInspectorLabel}
                       </Text>
-                      <Tooltip
-                        label={selectedInspectorLabel}
-                        disabled={!selectedEntry}
-                        position="bottom"
-                      >
-                        <Text size="xs" c="dimmed" maw="58%" ta="right" truncate="end">
-                          {selectedInspectorLabel}
-                        </Text>
+                    </Tooltip>
+                  </Group>
+
+                  <Group justify="space-between" align="center">
+                    <SegmentedControl
+                      size="xs"
+                      value={inspectorMode}
+                      onChange={(value) => setInspectorMode(value as 'context' | 'browse')}
+                      data={[
+                        { label: 'Context', value: 'context' },
+                        { label: 'Browse', value: 'browse' },
+                      ]}
+                    />
+
+                    {inspectorMode === 'context' && activeReference && (
+                      <Tooltip label="Clear active source reference">
+                        <ActionIcon
+                          variant="subtle"
+                          size="sm"
+                          onClick={() => setActiveReference(null)}
+                        >
+                          <X size={14} />
+                        </ActionIcon>
                       </Tooltip>
-                    </Group>
+                    )}
+                  </Group>
 
-                    <Group justify="space-between" align="center">
-                      <SegmentedControl
-                        size="xs"
-                        value={inspectorMode}
-                        onChange={(value) => setInspectorMode(value as 'context' | 'browse')}
-                        data={[
-                          { label: 'Context', value: 'context' },
-                          { label: 'Browse', value: 'browse' },
-                        ]}
-                      />
+                  <Divider />
 
-                      {inspectorMode === 'context' && activeReference && (
-                        <Tooltip label="Clear active source reference">
-                          <ActionIcon
-                            variant="subtle"
-                            size="sm"
-                            onClick={() => setActiveReference(null)}
-                          >
-                            <X size={14} />
-                          </ActionIcon>
-                        </Tooltip>
-                      )}
-                    </Group>
-
-                    <Divider />
-
-                    <Box style={{ flex: 1, minHeight: 0 }}>
-                      {inspectorMode === 'browse' ? (
-                        <Paper withBorder style={{ overflow: 'hidden', height: '100%' }}>
-                          <SourceBrowser listingMaxHeight={420} viewerMaxHeight={420} />
-                        </Paper>
-                      ) : (
-                        <ScrollArea h="100%" type="auto" offsetScrollbars="y">
-                          {selectedEntry && selectedStatus ? (
-                            <Stack gap="sm">
-                              <Stack gap={6}>
-                                <Text size="xs" fw={600} c="dimmed">
-                                  Translation
-                                </Text>
-                                <TranslationCell
-                                  entry={selectedEntry}
-                                  onKeyDown={handleKeyDown}
-                                  translateButtonSize="md"
-                                  translateButtonDisplay="icon"
-                                />
-                              </Stack>
-
-                              <Divider />
-
-                              <EntryDetailsPanel
+                  <Box style={{ flex: 1, minHeight: 0 }}>
+                    {inspectorMode === 'browse' ? (
+                      <Paper withBorder radius="md" style={{ overflow: 'hidden', height: '100%' }}>
+                        <SourceBrowser listingMaxHeight={420} viewerMaxHeight={420} />
+                      </Paper>
+                    ) : (
+                      <ScrollArea h="100%" type="auto" offsetScrollbars="y">
+                        {selectedEntry && selectedStatus ? (
+                          <Stack gap="sm">
+                            <Stack gap={6}>
+                              <Text size="xs" fw={600} c="dimmed">
+                                Translation
+                              </Text>
+                              <TranslationCell
                                 entry={selectedEntry}
-                                status={selectedStatus}
-                                isModified={selectedIsModified}
-                                isMT={selectedIsMT}
-                                isManualEdit={selectedIsManualEdit}
-                                hasGlossaryTerms={selectedHasGlossaryTerms}
-                                onActivateReference={handleInspectorReference}
+                                onKeyDown={handleKeyDown}
+                                translateButtonSize="md"
+                                translateButtonDisplay="icon"
                               />
                             </Stack>
-                          ) : (
-                            <Text size="sm" c="dimmed">
-                              Select a row to inspect context and metadata.
-                            </Text>
-                          )}
-                        </ScrollArea>
-                      )}
-                    </Box>
-                  </Stack>
-                </Paper>
-              </>
-            )}
-          </Group>
-        </Stack>
-      )}
 
-      {/* Pagination controls */}
-      {filteredEntries.length > 0 && (
-        <Paper p="sm" mt="md" withBorder>
-          <Group justify="space-between" align="center">
-            <Group gap="sm">
-              <Select
-                value={rowsPerPage}
-                onChange={(value) => value && setRowsPerPage(value)}
-                data={ROWS_PER_PAGE_OPTIONS}
-                size="xs"
-                w={120}
-                aria-label="Rows per page"
-              />
-              <Text size="sm" c="dimmed">
-                Showing {startItem}–{endItem} of {filteredEntries.length} entries
-              </Text>
+                            <Divider />
+
+                            <EntryDetailsPanel
+                              entry={selectedEntry}
+                              status={selectedStatus}
+                              isModified={selectedIsModified}
+                              isMT={selectedIsMT}
+                              isManualEdit={selectedIsManualEdit}
+                              hasGlossaryTerms={selectedHasGlossaryTerms}
+                              onActivateReference={handleInspectorReference}
+                            />
+                          </Stack>
+                        ) : (
+                          <Text size="sm" c="dimmed">
+                            Select a row to inspect context and metadata.
+                          </Text>
+                        )}
+                      </ScrollArea>
+                    )}
+                  </Box>
+                </Stack>
+              </Paper>
+            </Box>
+          </Box>
+
+          {/* Pagination controls */}
+          {filteredEntries.length > 0 && (
+            <Group justify="space-between" align="center" mt="xs">
+              <Group gap="sm">
+                <Select
+                  value={rowsPerPage}
+                  onChange={(value) => value && setRowsPerPage(value)}
+                  data={ROWS_PER_PAGE_OPTIONS}
+                  size="xs"
+                  w={120}
+                  aria-label="Rows per page"
+                />
+                <Text size="sm" c="dimmed">
+                  Showing {startItem}–{endItem} of {filteredEntries.length} entries
+                </Text>
+              </Group>
+
+              {totalPages > 1 && (
+                <Pagination
+                  value={currentPage}
+                  onChange={setCurrentPage}
+                  total={totalPages}
+                  size="sm"
+                  withEdges
+                />
+              )}
             </Group>
-
-            {totalPages > 1 && (
-              <Pagination
-                value={currentPage}
-                onChange={setCurrentPage}
-                total={totalPages}
-                size="sm"
-                withEdges
-              />
-            )}
-          </Group>
-        </Paper>
+          )}
+        </Stack>
       )}
 
       {/* Empty state for filtered results */}
       {filteredEntries.length === 0 && entries.length > 0 && (
-        <Paper p="xl" withBorder mt="md">
+        <Paper p="xl" withBorder radius="md" mt="md">
           <Stack align="center" gap="sm">
             <Text c="dimmed" ta="center">
               No entries match the current filters.

@@ -273,7 +273,7 @@ export function GlossaryPanel({
 
   return (
     <>
-      <Paper p="xs" withBorder>
+      <Paper p="xs" withBorder radius="md">
         <Stack gap="xs">
           {/* Header row */}
           <Group justify="space-between">

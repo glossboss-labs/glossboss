@@ -532,7 +532,7 @@ export function HeaderEditor({ encodingInfo }: HeaderEditorProps) {
   );
 
   return (
-    <Paper p="md" withBorder>
+    <Paper p="md" withBorder radius="md">
       {/* Summary row - always visible */}
       <UnstyledButton onClick={() => setIsExpanded(!isExpanded)} style={{ width: '100%' }}>
         <Group justify="space-between" align="center">
