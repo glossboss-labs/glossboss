@@ -13,6 +13,7 @@ import {
 import { BookOpen, Search } from 'lucide-react';
 import { findGlossaryMatches } from '@/lib/glossary/matcher';
 import type { Glossary } from '@/lib/glossary/types';
+import { useTranslation } from '@/lib/app-language';
 
 export function GlossaryViewerModal({
   glossary,
@@ -23,6 +24,7 @@ export function GlossaryViewerModal({
   opened: boolean;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   const [search, setSearch] = useState('');
 
   const filteredEntries = useMemo(() => {
@@ -46,12 +48,12 @@ export function GlossaryViewerModal({
       title={
         <Group gap="sm">
           <BookOpen size={20} />
-          <Text fw={600}>WordPress Glossary</Text>
+          <Text fw={600}>{t('WordPress Glossary')}</Text>
           <Badge color="blue" variant="light">
             {glossary.targetLocale.toUpperCase()}
           </Badge>
           <Badge color="gray" variant="light">
-            {glossary.entries.length} terms
+            {t('{{count}} terms', { count: glossary.entries.length })}
           </Badge>
         </Group>
       }
@@ -61,15 +63,19 @@ export function GlossaryViewerModal({
     >
       <Box p="sm" style={{ borderBottom: '1px solid var(--mantine-color-default-border)' }}>
         <TextInput
-          placeholder="Search terms..."
+          placeholder={t('Search terms...')}
           leftSection={<Search size={16} />}
           value={search}
           onChange={(event) => setSearch(event.currentTarget.value)}
           size="sm"
+          aria-label={t('Search terms...')}
         />
         {search && (
           <Text size="xs" c="dimmed" mt="xs">
-            Showing {filteredEntries.length} of {glossary.entries.length} terms
+            {t('Showing {{shown}} of {{total}} terms', {
+              shown: filteredEntries.length,
+              total: glossary.entries.length,
+            })}
           </Text>
         )}
       </Box>
@@ -80,10 +86,10 @@ export function GlossaryViewerModal({
             style={{ position: 'sticky', top: 0, background: 'var(--mantine-color-body)' }}
           >
             <Table.Tr>
-              <Table.Th style={{ width: '25%' }}>Term (EN)</Table.Th>
-              <Table.Th style={{ width: '25%' }}>Translation</Table.Th>
-              <Table.Th style={{ width: '15%' }}>Type</Table.Th>
-              <Table.Th style={{ width: '35%' }}>Notes</Table.Th>
+              <Table.Th style={{ width: '25%' }}>{t('Term (EN)')}</Table.Th>
+              <Table.Th style={{ width: '25%' }}>{t('Translation')}</Table.Th>
+              <Table.Th style={{ width: '15%' }}>{t('Type')}</Table.Th>
+              <Table.Th style={{ width: '35%' }}>{t('Notes')}</Table.Th>
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
@@ -125,7 +131,7 @@ export function GlossaryViewerModal({
               <Table.Tr>
                 <Table.Td colSpan={4}>
                   <Text size="sm" c="dimmed" ta="center" py="md">
-                    No terms match your search
+                    {t('No terms match your search')}
                   </Text>
                 </Table.Td>
               </Table.Tr>
@@ -144,6 +150,7 @@ export function GlossaryTermsPreview({
   sourceText: string;
   glossary: Glossary;
 }) {
+  const { t } = useTranslation();
   const matches = useMemo(() => {
     if (!sourceText) return [];
     return findGlossaryMatches(sourceText, glossary);
@@ -152,7 +159,7 @@ export function GlossaryTermsPreview({
   if (matches.length === 0) {
     return (
       <Text size="xs" c="dimmed" fs="italic">
-        No glossary terms in selected text
+        {t('No glossary terms in selected text')}
       </Text>
     );
   }
@@ -177,7 +184,7 @@ export function GlossaryTermsPreview({
       ))}
       {remaining > 0 && (
         <Text size="xs" c="dimmed">
-          +{remaining} more
+          {t('+{{count}} more', { count: remaining })}
         </Text>
       )}
     </Group>

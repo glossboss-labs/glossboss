@@ -16,6 +16,7 @@ import {
 import { ExternalLink, File } from 'lucide-react';
 import { getEffectiveSlug, useSourceStore } from '@/stores/source-store';
 import { buildTracUrl } from '@/lib/wp-source/references';
+import { useTranslation } from '@/lib/app-language';
 
 /** Number of context lines to show above/below the target line */
 const CONTEXT_LINES = 5;
@@ -158,6 +159,7 @@ export function SourceCodeViewer({
     }
   }, [targetLine, content]);
 
+  const { t } = useTranslation();
   const slug = useSourceStore((s) => getEffectiveSlug(s));
   const basePath = useSourceStore((s) => s.resolvedBasePath) ?? 'trunk';
 
@@ -173,7 +175,7 @@ export function SourceCodeViewer({
           {filePath}
         </Text>
         {slug && (
-          <Tooltip label="Open in Trac">
+          <Tooltip label={t('Open in Trac')}>
             <ActionIcon
               component="a"
               href={buildTracUrl(slug, filePath, targetLine ?? undefined, basePath)}
@@ -181,6 +183,7 @@ export function SourceCodeViewer({
               rel="noopener noreferrer"
               variant="subtle"
               size="sm"
+              aria-label={t('Open in Trac')}
             >
               <ExternalLink size={14} />
             </ActionIcon>
@@ -247,9 +250,12 @@ export function SourceCodeViewer({
           onClick={() => setExpanded(!expanded)}
           p="xs"
           style={{ borderTop: '1px solid var(--mantine-color-default-border)' }}
+          aria-expanded={expanded}
         >
           <Text size="xs" c="blue" ta="center">
-            {expanded ? 'Show context only' : `Show all ${lines.length} lines`}
+            {expanded
+              ? t('Show context only')
+              : t('Show all {{count}} lines', { count: lines.length })}
           </Text>
         </UnstyledButton>
       )}

@@ -20,6 +20,8 @@ interface AppSettingsPreferences {
   navSkipTranslated: boolean;
   containerWidth: ContainerWidth;
   branchChipEnabled?: boolean;
+  speechEnabled?: boolean;
+  translateEnabled?: boolean;
 }
 
 interface AppSettingsDeepLCredentials {
@@ -100,6 +102,9 @@ function parsePreferences(value: unknown): AppSettingsPreferences {
     containerWidth,
     branchChipEnabled:
       typeof value.branchChipEnabled === 'boolean' ? value.branchChipEnabled : undefined,
+    speechEnabled: typeof value.speechEnabled === 'boolean' ? value.speechEnabled : undefined,
+    translateEnabled:
+      typeof value.translateEnabled === 'boolean' ? value.translateEnabled : undefined,
   };
 }
 

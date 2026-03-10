@@ -6,19 +6,34 @@
     <title>GlossBoss Privacy</title>
     <style>
       :root {
-        color-scheme: light;
+        color-scheme: light dark;
         --bg: #eef3ef;
         --panel: #fcfefc;
         --text: #16211b;
         --muted: #52615a;
         --border: #c9d8cf;
         --accent: #1f5f4d;
+        --gradient: radial-gradient(circle at top, #f8fffb 0%, var(--bg) 60%);
+        --shadow: 0 12px 32px rgba(22, 33, 27, 0.06);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #080b09;
+          --panel: #111614;
+          --text: #dce5df;
+          --muted: #8a9b91;
+          --border: #1f2e26;
+          --accent: #5ebfa3;
+          --gradient: radial-gradient(circle at top, #0e1510 0%, var(--bg) 60%);
+          --shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+        }
       }
 
       body {
         margin: 0;
         font-family: 'IBM Plex Sans', 'Segoe UI', sans-serif;
-        background: radial-gradient(circle at top, #f8fffb 0%, var(--bg) 60%);
+        background: var(--gradient);
         color: var(--text);
       }
 
@@ -33,7 +48,7 @@
         border: 1px solid var(--border);
         border-radius: 18px;
         padding: 28px;
-        box-shadow: 0 20px 50px rgba(22, 33, 27, 0.08);
+        box-shadow: var(--shadow);
       }
 
       h1,
@@ -66,10 +81,10 @@
         <ul>
           <li>
             Editor state, draft data, glossary preferences, and some UI settings are stored in your
-            browser’s local storage.
+            browser's local storage.
           </li>
           <li>
-            If you enter a personal DeepL API key, it is kept in this browser’s session storage by
+            If you enter a personal DeepL API key, it is kept in this browser's session storage by
             default and cleared when you close all GlossBoss tabs. If you explicitly enable the
             option to remember the key, it is also stored in local storage on that browser until you
             clear it.
