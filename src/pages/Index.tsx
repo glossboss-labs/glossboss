@@ -1594,7 +1594,7 @@ export default function Index() {
                     leftSection={<X size={14} />}
                     onClick={handleDiscardDraft}
                   >
-                    {t('Discard and use fresh file')}
+                    {t('Discard and use new file')}
                   </Button>
                 </Group>
               </Stack>

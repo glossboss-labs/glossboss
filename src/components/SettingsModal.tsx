@@ -1708,11 +1708,11 @@ export function SettingsModal({
                     <Group justify="space-between" align="flex-start">
                       <div>
                         <Text size="sm" fw={500}>
-                          {t('Branch status chip')}
+                          {t('Branch status badge')}
                         </Text>
                         <Text size="xs" c="dimmed">
                           {t(
-                            'Show the current git branch in a small floating chip at the bottom right of the site.',
+                            'Show the current git branch in a small floating badge at the bottom right of the site.',
                           )}
                         </Text>
                       </div>
@@ -1723,7 +1723,7 @@ export function SettingsModal({
                     </Group>
 
                     <Switch
-                      label={t('Show branch chip')}
+                      label={t('Show branch badge')}
                       description={t('Only visible while running the app in development mode')}
                       checked={branchChipEnabled}
                       onChange={(e) => onBranchChipEnabledChange?.(e.currentTarget.checked)}

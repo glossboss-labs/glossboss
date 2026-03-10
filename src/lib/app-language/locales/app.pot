@@ -44,7 +44,7 @@ msgid "Backup"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:1711
-msgid "Branch status chip"
+msgid "Branch status badge"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:1117
@@ -179,7 +179,7 @@ msgid "Development Mode Only"
 msgstr ""
 
 #: src/pages/Index.tsx:1597
-msgid "Discard and use fresh file"
+msgid "Discard and use new file"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:136
@@ -720,13 +720,13 @@ msgid "Shortcut"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:1726
-msgid "Show branch chip"
+msgid "Show branch badge"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:1714
 msgid ""
-"Show the current git branch in a small floating chip at the bottom right of "
-"the site."
+"Show the current git branch in a small floating badge at the bottom right of"
+" the site."
 msgstr ""
 
 #: src/components/SettingsModal.tsx:220
