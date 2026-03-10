@@ -191,7 +191,7 @@ export function GlossaryPanel({
           setGlossary(null);
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : t('Unknown error'));
+        setError(err instanceof Error ? t(err.message) : t('Unknown error'));
         setGlossary(null);
       } finally {
         setIsLoading(false);

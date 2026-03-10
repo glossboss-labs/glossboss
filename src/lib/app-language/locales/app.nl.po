@@ -675,6 +675,10 @@ msgstr "Je kunt nu even geen feedback geven."
 msgid "Feedback failed"
 msgstr "Feedback mislukt"
 
+#: src/lib/cloud-backend.ts:16
+msgid "Feedback is unavailable in this deployment."
+msgstr "Feedback is niet beschikbaar in deze installatie."
+
 #: src/pages/Index.tsx:1220
 msgid "Feedback submitted"
 msgstr "Feedback ingediend"
@@ -1827,6 +1831,10 @@ msgstr "Spaans (Spanje)"
 msgid "Speech"
 msgstr "Spraak"
 
+#: src/lib/cloud-backend.ts:17
+msgid "Speech is unavailable in this deployment."
+msgstr "Spraak is niet beschikbaar in deze installatie."
+
 #: src/components/ui/SpeakButton.tsx:47
 msgid "Speech synthesis is not available in this browser."
 msgstr "Spraaksynthese is niet beschikbaar in deze browser."
@@ -2038,6 +2046,10 @@ msgstr "Vertaling A-Z"
 #: src/components/editor/FilterToolbar.tsx:220
 msgid "Translation Z-A"
 msgstr "Vertaling Z-A"
+
+#: src/lib/cloud-backend.ts:18
+msgid "Translation is unavailable in this deployment."
+msgstr "Vertaling is niet beschikbaar in deze installatie."
 
 #: src/components/editor/HeaderEditor.tsx:244
 msgid "Translation team contact"
@@ -2294,6 +2306,14 @@ msgstr "Wanneer zou je dit gebruiken?"
 #: src/components/glossary/shared.tsx:51
 msgid "WordPress Glossary"
 msgstr "WordPress-glossary"
+
+#: src/lib/cloud-backend.ts:19
+msgid "WordPress glossary loading is unavailable in this deployment."
+msgstr "WordPress-glossary laden is niet beschikbaar in deze installatie."
+
+#: src/lib/cloud-backend.ts:20
+msgid "WordPress source browsing is unavailable in this deployment."
+msgstr "WordPress-broncode bekijken is niet beschikbaar in deze installatie."
 
 #: src/components/editor/HeaderEditor.tsx:477
 msgid "WordPress.org plugin slug for source code links"

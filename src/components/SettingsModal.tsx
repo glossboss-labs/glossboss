@@ -823,7 +823,7 @@ export function SettingsModal({
         }
       } catch (err) {
         if (loadTokenRef.current !== token) return;
-        setGlossaryError(err instanceof Error ? err.message : t('Unknown error'));
+        setGlossaryError(err instanceof Error ? t(err.message) : t('Unknown error'));
       } finally {
         if (loadTokenRef.current === token) {
           setIsLoadingGlossary(false);

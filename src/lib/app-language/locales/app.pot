@@ -648,6 +648,10 @@ msgstr ""
 msgid "Feedback failed"
 msgstr ""
 
+#: src/lib/cloud-backend.ts:16
+msgid "Feedback is unavailable in this deployment."
+msgstr ""
+
 #: src/pages/Index.tsx:1220
 msgid "Feedback submitted"
 msgstr ""
@@ -1775,6 +1779,10 @@ msgstr ""
 msgid "Speech"
 msgstr ""
 
+#: src/lib/cloud-backend.ts:17
+msgid "Speech is unavailable in this deployment."
+msgstr ""
+
 #: src/components/ui/SpeakButton.tsx:47
 msgid "Speech synthesis is not available in this browser."
 msgstr ""
@@ -1979,6 +1987,10 @@ msgstr ""
 
 #: src/components/editor/FilterToolbar.tsx:220
 msgid "Translation Z-A"
+msgstr ""
+
+#: src/lib/cloud-backend.ts:18
+msgid "Translation is unavailable in this deployment."
 msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:244
@@ -2221,6 +2233,14 @@ msgstr ""
 
 #: src/components/glossary/shared.tsx:51
 msgid "WordPress Glossary"
+msgstr ""
+
+#: src/lib/cloud-backend.ts:19
+msgid "WordPress glossary loading is unavailable in this deployment."
+msgstr ""
+
+#: src/lib/cloud-backend.ts:20
+msgid "WordPress source browsing is unavailable in this deployment."
 msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:477
