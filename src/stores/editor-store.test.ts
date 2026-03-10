@@ -111,9 +111,12 @@ describe('editor-store selection and approve actions', () => {
   it('toggles column visibility and keeps at least one column visible', () => {
     const state = useEditorStore.getState();
 
-    expect(state.visibleColumns).toEqual(new Set(['status', 'source', 'translation', 'signals']));
+    expect(state.visibleColumns).toEqual(
+      new Set(['status', 'approve', 'source', 'translation', 'signals']),
+    );
 
     state.toggleColumnVisibility('status');
+    state.toggleColumnVisibility('approve');
     state.toggleColumnVisibility('source');
     state.toggleColumnVisibility('translation');
 
@@ -126,11 +129,12 @@ describe('editor-store selection and approve actions', () => {
 
   it('reorders columns left and right', () => {
     const state = useEditorStore.getState();
-    expect(state.columnOrder).toEqual(['status', 'source', 'translation', 'signals']);
+    expect(state.columnOrder).toEqual(['status', 'approve', 'source', 'translation', 'signals']);
 
     state.moveColumn('signals', 'left');
     expect(useEditorStore.getState().columnOrder).toEqual([
       'status',
+      'approve',
       'source',
       'signals',
       'translation',
@@ -138,26 +142,29 @@ describe('editor-store selection and approve actions', () => {
 
     state.moveColumn('status', 'right');
     expect(useEditorStore.getState().columnOrder).toEqual([
-      'source',
+      'approve',
       'status',
+      'source',
       'signals',
       'translation',
     ]);
 
     // No-op at edges
-    state.moveColumn('source', 'left');
+    state.moveColumn('approve', 'left');
     expect(useEditorStore.getState().columnOrder).toEqual([
-      'source',
+      'approve',
       'status',
+      'source',
       'signals',
       'translation',
     ]);
 
     state.moveColumnToIndex('translation', 1);
     expect(useEditorStore.getState().columnOrder).toEqual([
-      'source',
+      'approve',
       'translation',
       'status',
+      'source',
       'signals',
     ]);
   });
