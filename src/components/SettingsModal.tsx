@@ -396,7 +396,7 @@ export function SettingsModal({
     if (selectedLocale) {
       clearWPGlossaryCache(selectedLocale);
     }
-    setHasAttemptedAutoLoad(false); // Allow auto-load to try again after manual clear
+    setHasAttemptedAutoLoad(true); // Prevent auto-load from re-fetching after clear
     onGlossaryCleared?.();
   }, [selectedLocale, onGlossaryCleared]);
 
