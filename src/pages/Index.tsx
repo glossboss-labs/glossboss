@@ -1606,7 +1606,7 @@ export default function Index() {
             <Group gap="xs">
               {isFromDraft && (
                 <Badge color="orange" variant="light" size="sm">
-                  {t('Working from draft')}
+                  {t('Editing draft')}
                 </Badge>
               )}
               {lastAutoSave && (
