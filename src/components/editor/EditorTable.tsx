@@ -55,6 +55,8 @@ import {
   X,
   PanelRightOpen,
   PanelRightClose,
+  Check,
+  AlertTriangle,
 } from 'lucide-react';
 import { useEditorStore, useSourceStore, getEffectiveSlug } from '@/stores';
 import type { POEntry } from '@/lib/po';
@@ -67,6 +69,8 @@ import { SourceBrowser } from './SourceBrowser';
 import type { TargetLanguage, SourceLanguage } from '@/lib/deepl/types';
 import type { Glossary, GlossaryAnalysisResult } from '@/lib/glossary/types';
 import { useDragGhost } from '@/hooks/use-drag-ghost';
+import { toSpeakLanguageTag } from '@/lib/tts';
+import { SpeakButton } from '@/components/ui';
 
 /** localStorage key for skip-translated navigation setting */
 export const NAV_SKIP_TRANSLATED_KEY = 'glossboss-nav-skip-translated';
@@ -96,16 +100,17 @@ const ROWS_PER_PAGE_OPTIONS = [
 ];
 
 /** Column definitions with default proportional widths */
-const COLUMN_KEYS = ['select', 'status', 'source', 'translation', 'signals'] as const;
+const COLUMN_KEYS = ['select', 'status', 'approve', 'source', 'translation', 'signals'] as const;
 type TableColumnKey = (typeof COLUMN_KEYS)[number];
 type DataColumnKey = Exclude<TableColumnKey, 'select'>;
 const DATA_COLUMN_LABELS: Record<DataColumnKey, string> = {
   status: 'Status',
+  approve: 'Approve',
   source: 'Source string',
   translation: 'Translated string',
   signals: 'Signals',
 };
-const DEFAULT_COLUMN_WIDTHS = [72, 210, 320, 320, 220];
+const DEFAULT_COLUMN_WIDTHS = [72, 210, 48, 320, 320, 220];
 const MIN_COLUMN_WIDTH = 60; // minimum proportion
 
 /**
@@ -530,28 +535,58 @@ function EditableField({
  * Source text display with plural support (read-only)
  */
 function SourceCell({ entry }: { entry: POEntry }) {
+  const translateSettings = useContext(TranslateSettingsContext);
+  const sourceLang = toSpeakLanguageTag(translateSettings.sourceLang);
   const hasPlural = Boolean(entry.msgidPlural);
 
   if (hasPlural) {
     return (
       <Stack gap={4}>
-        <Group gap={4}>
+        <Group gap={4} wrap="nowrap" align="flex-start">
           <Badge size="xs" variant="light" color="gray">
             singular
           </Badge>
-          <HighlightedText>{entry.msgid}</HighlightedText>
+          <Box style={{ flex: 1, minWidth: 0 }}>
+            <HighlightedText>{entry.msgid}</HighlightedText>
+          </Box>
+          <SpeakButton
+            kind="source"
+            entryId={`${entry.id}-source-0`}
+            text={entry.msgid}
+            lang={sourceLang}
+          />
         </Group>
-        <Group gap={4}>
+        <Group gap={4} wrap="nowrap" align="flex-start">
           <Badge size="xs" variant="light" color="gray">
             plural
           </Badge>
-          <HighlightedText>{entry.msgidPlural!}</HighlightedText>
+          <Box style={{ flex: 1, minWidth: 0 }}>
+            <HighlightedText>{entry.msgidPlural!}</HighlightedText>
+          </Box>
+          <SpeakButton
+            kind="source"
+            entryId={`${entry.id}-source-1`}
+            text={entry.msgidPlural!}
+            lang={sourceLang}
+          />
         </Group>
       </Stack>
     );
   }
 
-  return <HighlightedText>{entry.msgid}</HighlightedText>;
+  return (
+    <Group gap="xs" wrap="nowrap" align="flex-start">
+      <Box style={{ flex: 1, minWidth: 0 }}>
+        <HighlightedText>{entry.msgid}</HighlightedText>
+      </Box>
+      <SpeakButton
+        kind="source"
+        entryId={`${entry.id}-source`}
+        text={entry.msgid}
+        lang={sourceLang}
+      />
+    </Group>
+  );
 }
 
 function SignalsOverviewCell({
@@ -624,6 +659,7 @@ function TranslationCell({
   const hasPlural = Boolean(entry.msgidPlural);
   const pluralForms = useMemo(() => entry.msgstrPlural ?? [], [entry.msgstrPlural]);
   const glossaryAnalysis = getGlossaryAnalysis(entry.id);
+  const translationLang = toSpeakLanguageTag(translateSettings.targetLang);
 
   const handleSingularChange = useCallback(
     (value: string) => {
@@ -711,6 +747,12 @@ function TranslationCell({
                 display={translateButtonDisplay}
               />
             )}
+            <SpeakButton
+              kind="translation"
+              entryId={`${entry.id}-translation-${index}`}
+              text={form}
+              lang={translationLang}
+            />
           </Group>
         ))}
 
@@ -765,6 +807,12 @@ function TranslationCell({
             display={translateButtonDisplay}
           />
         )}
+        <SpeakButton
+          kind="translation"
+          entryId={`${entry.id}-translation`}
+          text={entry.msgstr}
+          lang={translationLang}
+        />
       </Group>
 
       {/* MT badge under translation */}
@@ -871,6 +919,39 @@ const StatusBadges = memo(function StatusBadges({
         </Tooltip>
       )}
     </Group>
+  );
+});
+
+/**
+ * Approve/unapprove toggle for fuzzy entries
+ */
+const ApproveCell = memo(function ApproveCell({ entry }: { entry: POEntry }) {
+  const toggleFuzzy = useEditorStore((state) => state.toggleFuzzy);
+  const status = getTranslationStatus(entry.msgstr, entry.flags, entry.msgstrPlural);
+  const isFuzzy = status === 'fuzzy';
+  const isUntranslated = status === 'untranslated';
+
+  return (
+    <Box style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <Tooltip
+        label={isFuzzy ? 'Approve: clear fuzzy flag' : 'Unapprove: mark as fuzzy'}
+        disabled={isUntranslated}
+      >
+        <ActionIcon
+          variant={isFuzzy ? 'light' : 'subtle'}
+          color={isFuzzy ? 'yellow' : 'green'}
+          size="sm"
+          disabled={isUntranslated}
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleFuzzy(entry.id);
+          }}
+          aria-label={isFuzzy ? 'Approve translation' : 'Mark as fuzzy'}
+        >
+          {isFuzzy ? <AlertTriangle size={14} /> : <Check size={14} />}
+        </ActionIcon>
+      </Tooltip>
+    </Box>
   );
 });
 
@@ -1040,6 +1121,7 @@ function EntryDetailsPanel({
             Line {entry.lineNumber}
           </Badge>
         )}
+        <ApproveCell entry={entry} />
       </Group>
 
       <Group align="flex-start" grow>
@@ -1329,6 +1411,17 @@ const EntryRow = memo(function EntryRow({
           );
         }
 
+        if (columnKey === 'approve') {
+          return (
+            <Table.Td
+              key={`${entry.id}-approve`}
+              style={{ verticalAlign: 'middle', padding: '8px 4px', overflow: 'hidden' }}
+            >
+              <ApproveCell entry={entry} />
+            </Table.Td>
+          );
+        }
+
         if (columnKey === 'source') {
           return (
             <Table.Td
@@ -1451,6 +1544,7 @@ const MobileEntryCard = memo(function MobileEntryCard({
             hasGlossaryTerms={hasGlossaryTerms}
             isMT={isMT}
           />
+          <ApproveCell entry={entry} />
         </Group>
 
         <UnstyledButton
@@ -2102,14 +2196,8 @@ export function EditorTable({
                             aria-label="Select all filtered entries"
                             data-testid="select-all-checkbox"
                           />
-                        ) : columnKey === 'status' ? (
-                          DATA_COLUMN_LABELS.status
-                        ) : columnKey === 'source' ? (
-                          DATA_COLUMN_LABELS.source
-                        ) : columnKey === 'translation' ? (
-                          DATA_COLUMN_LABELS.translation
                         ) : (
-                          DATA_COLUMN_LABELS.signals
+                          DATA_COLUMN_LABELS[columnKey]
                         );
 
                       const dropIndicator =
@@ -2127,8 +2215,14 @@ export function EditorTable({
                               ? (delta) => handleColumnResize(columnKey, nextColumn, delta)
                               : undefined
                           }
-                          align={columnKey === 'select' ? 'center' : 'left'}
-                          padding={columnKey === 'select' ? '8px 8px' : undefined}
+                          align={
+                            columnKey === 'select' || columnKey === 'approve' ? 'center' : 'left'
+                          }
+                          padding={
+                            columnKey === 'select' || columnKey === 'approve'
+                              ? '8px 4px'
+                              : undefined
+                          }
                           dataColumnKey={isDataColumn ? columnKey : undefined}
                           onCellPointerDown={
                             isDataColumn ? handleHeaderPointerDown(columnKey) : undefined

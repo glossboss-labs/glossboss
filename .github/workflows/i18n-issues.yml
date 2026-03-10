@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'src/lib/app-language/locales/app.*.po'
+  workflow_dispatch:
 
 jobs:
   manage-translation-issues:
@@ -90,19 +91,29 @@ jobs:
           EOF
               )
 
-              # Build assignee flags
-              assignee_flags=""
+              # Build assignee flags (create uses --assignee, edit uses --add-assignee)
+              create_assignee_flags=""
+              edit_assignee_flags=""
               if [ -n "$assignees" ]; then
                 for user in $(echo "$assignees" | tr ',' ' '); do
-                  assignee_flags="$assignee_flags --assignee $user"
+                  create_assignee_flags="$create_assignee_flags --assignee $user"
+                  edit_assignee_flags="$edit_assignee_flags --add-assignee $user"
                 done
               fi
 
               if [ -n "$existing" ]; then
-                gh issue edit "$existing" --title "$title" --body "$body" $assignee_flags
+                # Remove assignees that are no longer in the config
+                current_assignees=$(gh issue view "$existing" --json assignees --jq '.assignees[].login' 2>/dev/null || true)
+                remove_assignee_flags=""
+                for current in $current_assignees; do
+                  if ! echo ",$assignees," | grep -q ",$current,"; then
+                    remove_assignee_flags="$remove_assignee_flags --remove-assignee $current"
+                  fi
+                done
+                gh issue edit "$existing" --title "$title" --body "$body" $edit_assignee_flags $remove_assignee_flags
                 echo "Updated issue #${existing} for ${lang}"
               else
-                gh issue create --title "$title" --label i18n --body "$body" $assignee_flags
+                gh issue create --title "$title" --label i18n --body "$body" $create_assignee_flags
                 echo "Created issue for ${lang}"
               fi
             else

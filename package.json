@@ -25,6 +25,7 @@
     "preview": "vite preview",
     "i18n:extract": "bun scripts/extract-i18n.ts",
     "i18n:add-lang": "bun scripts/add-language.ts",
+    "i18n:sync-en": "bun scripts/sync-en-strings.ts",
     "prepare": "husky"
   },
   "lint-staged": {

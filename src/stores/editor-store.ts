@@ -25,8 +25,8 @@ export type FilterType =
 export type FilterState = 'include' | 'exclude';
 
 /** Toggleable table columns */
-export type TableColumn = 'status' | 'source' | 'translation' | 'signals';
-const ALL_TABLE_COLUMNS: TableColumn[] = ['status', 'source', 'translation', 'signals'];
+export type TableColumn = 'status' | 'approve' | 'source' | 'translation' | 'signals';
+const ALL_TABLE_COLUMNS: TableColumn[] = ['status', 'approve', 'source', 'translation', 'signals'];
 
 /** Sort fields for table entries */
 export type SortField = 'default' | 'source' | 'translation' | 'status';
@@ -496,7 +496,7 @@ export const useEditorStore = create<EditorState & EditorActions>()(
 
             return {
               ...entry,
-              flags: [...entry.flags, 'fuzzy'],
+              flags: [...entry.flags, 'fuzzy' as const],
               isDirty: true,
             };
           });
@@ -1026,7 +1026,11 @@ export const useEditorStore = create<EditorState & EditorActions>()(
           const columns = (state.visibleColumns as unknown as string[]).filter((column) =>
             allowed.has(column as TableColumn),
           ) as TableColumn[];
-          state.visibleColumns = new Set(columns.length > 0 ? columns : ALL_TABLE_COLUMNS);
+          // Append newly-introduced columns that were not in the persisted set
+          const missing = ALL_TABLE_COLUMNS.filter((column) => !columns.includes(column));
+          state.visibleColumns = new Set(
+            columns.length > 0 ? [...columns, ...missing] : ALL_TABLE_COLUMNS,
+          );
         } else {
           state.visibleColumns = new Set(ALL_TABLE_COLUMNS);
         }
