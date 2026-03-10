@@ -192,7 +192,7 @@ msgid "Development Mode Only"
 msgstr "Development Mode Only"
 
 #: src/pages/Index.tsx:1597
-msgid "Discard and use new file"
+msgid "Discard and use fresh file"
 msgstr "Discard and use new file"
 
 #: src/components/SettingsModal.tsx:136
