@@ -34,7 +34,7 @@ msgstr "Pas het uiterlijk van de editor aan je scherm en voorkeuren aan."
 
 #: src/components/feedback/FeedbackModal.tsx:430
 msgid "Allow follow-up questions about this feedback"
-msgstr "Sta vervolgvragen over deze feedback toe."
+msgstr "Sta vervolgvragen over deze feedback toe"
 
 #: src/pages/Index.tsx:1614
 msgid "Auto-saved {age}"
@@ -195,11 +195,11 @@ msgstr "Alleen ontwikkelingsmodus"
 
 #: src/pages/Index.tsx:1597
 msgid "Discard and use fresh file"
-msgstr "Weggooien en nieuw bestand gebruiken."
+msgstr "Weggooien en nieuw bestand gebruiken"
 
 #: src/components/SettingsModal.tsx:136
 msgid "Discard changes and exit the current field"
-msgstr "Wijzigingen weggooien en huidig veld verlaten."
+msgstr "Wijzigingen weggooien en huidig veld verlaten"
 
 #: src/components/SettingsModal.tsx:920
 msgid "Display"
@@ -227,7 +227,7 @@ msgstr ""
 
 #: src/pages/Index.tsx:1119
 msgid "Drop it like it's hot"
-msgstr "Drop it like it's hot"
+msgstr "Gooi 'm erin!"
 
 #: src/pages/Index.tsx:1286
 msgid "Edit gettext translation files with DeepL integration"
@@ -900,7 +900,7 @@ msgstr "Onopgeslagen concept gevonden"
 
 #: src/pages/Index.tsx:1401
 msgid "Update"
-msgstr "Updaten"
+msgstr "Bijwerken"
 
 #: src/pages/Index.tsx:1389
 msgid ""
@@ -926,7 +926,7 @@ msgstr "CSV uploaden"
 
 #: src/components/SettingsModal.tsx:1451
 msgid "Upload a WordPress glossary CSV for the selected language"
-msgstr "Upload een WordPress-glossary CSV voor de geselecteerde taal."
+msgstr "Upload een WordPress-glossary CSV voor de geselecteerde taal"
 
 #: src/pages/Index.tsx:1695
 msgid "Upload a translation file to start"
