@@ -49,6 +49,7 @@ import {
   Upload,
   Volume2,
   Download,
+  Play,
 } from 'lucide-react';
 import {
   getDeepLSettings,
@@ -65,11 +66,14 @@ import {
   getBrowserVoices,
   getElevenLabsClient,
   getTtsSettings,
+  isBrowserTtsSupported,
   isTtsPersistEnabled,
   primeElevenLabsVoices,
+  resolveBrowserVoice,
   saveTtsSettings,
   saveTtsUsage,
   setTtsPersistEnabled,
+  stopPlayback,
   type TtsProviderId,
   type TtsUsageStats,
   type TtsVoiceSummary,
@@ -600,6 +604,22 @@ export function SettingsModal({
     setTranslationElevenLabsVoiceId(null);
   }, []);
 
+  const previewBrowserVoice = useCallback(
+    (voiceURI: string | null) => {
+      if (!isBrowserTtsSupported()) return;
+      stopPlayback();
+      const utterance = new SpeechSynthesisUtterance(t('This is a preview of the selected voice.'));
+      utterance.rate = Number(ttsRate);
+      const voice = resolveBrowserVoice(voiceURI);
+      if (voice) {
+        utterance.voice = voice;
+        utterance.lang = voice.lang;
+      }
+      window.speechSynthesis.speak(utterance);
+    },
+    [ttsRate, t],
+  );
+
   useEffect(() => {
     if (!opened || !ttsApiKey.trim() || ttsProvider !== 'elevenlabs') return;
     void loadElevenLabsVoices();
@@ -1109,37 +1129,61 @@ export function SettingsModal({
 
                   {ttsProvider === 'browser' ? (
                     <>
-                      <Select
-                        label={t('Source voice')}
-                        placeholder={t('Use browser default')}
-                        data={browserVoices.map((voice) => ({
-                          value: voice.voiceURI,
-                          label: `${voice.name} (${voice.lang})`,
-                        }))}
-                        value={sourceBrowserVoiceURI}
-                        onChange={(value) => {
-                          setSourceBrowserVoiceURI(value);
-                          setTtsSaved(false);
-                        }}
-                        clearable
-                        searchable
-                      />
+                      <Group align="end" gap="xs">
+                        <Select
+                          label={t('Source voice')}
+                          placeholder={t('Use browser default')}
+                          data={browserVoices.map((voice) => ({
+                            value: voice.voiceURI,
+                            label: `${voice.name} (${voice.lang})`,
+                          }))}
+                          value={sourceBrowserVoiceURI}
+                          onChange={(value) => {
+                            setSourceBrowserVoiceURI(value);
+                            setTtsSaved(false);
+                          }}
+                          clearable
+                          searchable
+                          style={{ flex: 1 }}
+                        />
+                        <Tooltip label={t('Preview voice')}>
+                          <ActionIcon
+                            variant="default"
+                            size="lg"
+                            onClick={() => previewBrowserVoice(sourceBrowserVoiceURI)}
+                          >
+                            <Play size={16} />
+                          </ActionIcon>
+                        </Tooltip>
+                      </Group>
 
-                      <Select
-                        label={t('Translation voice')}
-                        placeholder={t('Use browser default')}
-                        data={browserVoices.map((voice) => ({
-                          value: voice.voiceURI,
-                          label: `${voice.name} (${voice.lang})`,
-                        }))}
-                        value={translationBrowserVoiceURI}
-                        onChange={(value) => {
-                          setTranslationBrowserVoiceURI(value);
-                          setTtsSaved(false);
-                        }}
-                        clearable
-                        searchable
-                      />
+                      <Group align="end" gap="xs">
+                        <Select
+                          label={t('Translation voice')}
+                          placeholder={t('Use browser default')}
+                          data={browserVoices.map((voice) => ({
+                            value: voice.voiceURI,
+                            label: `${voice.name} (${voice.lang})`,
+                          }))}
+                          value={translationBrowserVoiceURI}
+                          onChange={(value) => {
+                            setTranslationBrowserVoiceURI(value);
+                            setTtsSaved(false);
+                          }}
+                          clearable
+                          searchable
+                          style={{ flex: 1 }}
+                        />
+                        <Tooltip label={t('Preview voice')}>
+                          <ActionIcon
+                            variant="default"
+                            size="lg"
+                            onClick={() => previewBrowserVoice(translationBrowserVoiceURI)}
+                          >
+                            <Play size={16} />
+                          </ActionIcon>
+                        </Tooltip>
+                      </Group>
 
                       <Group>
                         <Button onClick={handleSaveTtsSettings} disabled={ttsSaved}>

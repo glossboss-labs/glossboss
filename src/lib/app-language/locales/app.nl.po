@@ -5,21 +5,21 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 ""
 
-#: src/components/SettingsModal.tsx:950
-#: src/components/SettingsModal.tsx:1175
+#: src/components/SettingsModal.tsx:970
+#: src/components/SettingsModal.tsx:1219
 msgid "API Key"
 msgstr "API-sleutel"
 
-#: src/components/SettingsModal.tsx:969
+#: src/components/SettingsModal.tsx:989
 msgid "API Type"
 msgstr "API-type"
 
-#: src/components/SettingsModal.tsx:450
-#: src/components/SettingsModal.tsx:524
+#: src/components/SettingsModal.tsx:454
+#: src/components/SettingsModal.tsx:528
 msgid "API key is valid!"
 msgstr "De API-sleutel is geldig!"
 
-#: src/components/SettingsModal.tsx:183
+#: src/components/SettingsModal.tsx:187
 msgid "Action"
 msgstr "Actie"
 
@@ -27,7 +27,7 @@ msgstr "Actie"
 msgid "Actions"
 msgstr "Acties"
 
-#: src/components/SettingsModal.tsx:1490
+#: src/components/SettingsModal.tsx:1534
 msgid "Adjust the appearance of the editor to suit your screen and preferences."
 msgstr "Pas het uiterlijk van de editor aan op je scherm en voorkeuren."
 
@@ -39,15 +39,15 @@ msgstr "Vervolgvragen over deze feedback toestaan"
 msgid "Auto-saved {age}"
 msgstr "Automatisch opgeslagen {age}"
 
-#: src/components/SettingsModal.tsx:890
+#: src/components/SettingsModal.tsx:910
 msgid "Backup"
 msgstr "Back-up"
 
-#: src/components/SettingsModal.tsx:1628
+#: src/components/SettingsModal.tsx:1672
 msgid "Branch status chip"
 msgstr "Branch-statuschip"
 
-#: src/components/SettingsModal.tsx:1084
+#: src/components/SettingsModal.tsx:1104
 msgid "Browser"
 msgstr "Browser"
 
@@ -55,17 +55,17 @@ msgstr "Browser"
 msgid "Bug"
 msgstr "Bug"
 
-#: src/components/SettingsModal.tsx:1705
+#: src/components/SettingsModal.tsx:1749
 #: src/components/feedback/FeedbackModal.tsx:479
 #: src/components/ui/ConfirmModal.tsx:38
 msgid "Cancel"
 msgstr "Annuleren"
 
-#: src/components/SettingsModal.tsx:131
+#: src/components/SettingsModal.tsx:135
 msgid "Cancel edit"
 msgstr "Bewerken annuleren"
 
-#: src/components/SettingsModal.tsx:1694
+#: src/components/SettingsModal.tsx:1738
 msgid ""
 "Choose whether to export the key or keep the settings file free of credentia"
 "ls."
@@ -73,7 +73,7 @@ msgstr ""
 "Kies of je de sleutel wilt exporteren of het instellingenbestand vrij van in"
 "loggegevens wilt houden."
 
-#: src/components/SettingsModal.tsx:1693
+#: src/components/SettingsModal.tsx:1737
 msgid ""
 "Choose whether to import the key or keep the current key saved in this brows"
 "er."
@@ -81,11 +81,11 @@ msgstr ""
 "Kies of je de sleutel wilt importeren of de huidige sleutel in deze browser "
 "wilt behouden."
 
-#: src/components/SettingsModal.tsx:1500
+#: src/components/SettingsModal.tsx:1544
 msgid "Choose which language GlossBoss uses for its interface."
 msgstr "Kies welke taal GlossBoss voor de interface gebruikt."
 
-#: src/components/SettingsModal.tsx:1336
+#: src/components/SettingsModal.tsx:1380
 msgid "Clear"
 msgstr "Wissen"
 
@@ -109,11 +109,11 @@ msgstr "Bevestigen"
 msgid "Contact (optional)"
 msgstr "Contact (optioneel)"
 
-#: src/components/SettingsModal.tsx:1533
+#: src/components/SettingsModal.tsx:1577
 msgid "Container width"
 msgstr "Containerbreedte"
 
-#: src/components/SettingsModal.tsx:1536
+#: src/components/SettingsModal.tsx:1580
 msgid ""
 "Controls the maximum width of the main content area. Use a wider setting on "
 "large monitors, or full width to use all available space."
@@ -121,7 +121,7 @@ msgstr ""
 "Bepaalt de maximale breedte van het hoofdgedeelte. Gebruik een bredere inste"
 "lling op grote schermen, of volledige breedte om alle ruimte te benutten."
 
-#: src/components/SettingsModal.tsx:1007
+#: src/components/SettingsModal.tsx:1027
 msgid ""
 "Controls the tone of DeepL translations. Not all languages support formality"
 "."
@@ -139,11 +139,11 @@ msgstr ""
 msgid "Dark mode"
 msgstr "Donkere modus"
 
-#: src/components/SettingsModal.tsx:870
+#: src/components/SettingsModal.tsx:890
 msgid "DeepL API"
 msgstr "DeepL API"
 
-#: src/components/SettingsModal.tsx:929
+#: src/components/SettingsModal.tsx:949
 msgid ""
 "DeepL API is kept in this browser tab by default and will be cleared when yo"
 "u close the tab. Enable \"Remember API key\" below to persist it across sess"
@@ -154,11 +154,11 @@ msgstr ""
 " aan om de sleutel tussen sessies te bewaren — doe dit alleen op een persoon"
 "lijk, vertrouwd apparaat."
 
-#: src/components/SettingsModal.tsx:1411
+#: src/components/SettingsModal.tsx:1455
 msgid "DeepL ready"
 msgstr "DeepL klaar"
 
-#: src/components/SettingsModal.tsx:1410
+#: src/components/SettingsModal.tsx:1454
 msgid "DeepL ready ({count} terms)"
 msgstr "DeepL klaar ({count} termen)"
 
@@ -166,7 +166,7 @@ msgstr "DeepL klaar ({count} termen)"
 msgid "DeepL synced"
 msgstr "DeepL gesynchroniseerd"
 
-#: src/components/SettingsModal.tsx:1444
+#: src/components/SettingsModal.tsx:1488
 msgid "DeepL will enforce glossary terms in machine translations"
 msgstr "DeepL dwingt woordenlijsttermen af in automatische vertalingen"
 
@@ -174,15 +174,15 @@ msgstr "DeepL dwingt woordenlijsttermen af in automatische vertalingen"
 msgid "Describe what you saw"
 msgstr "Beschrijf wat je zag"
 
-#: src/components/SettingsModal.tsx:184
+#: src/components/SettingsModal.tsx:188
 msgid "Description"
 msgstr "Beschrijving"
 
-#: src/components/SettingsModal.tsx:901
+#: src/components/SettingsModal.tsx:921
 msgid "Development"
 msgstr "Ontwikkeling"
 
-#: src/components/SettingsModal.tsx:1614
+#: src/components/SettingsModal.tsx:1658
 msgid "Development Mode Only"
 msgstr "Alleen in ontwikkelmodus"
 
@@ -190,11 +190,11 @@ msgstr "Alleen in ontwikkelmodus"
 msgid "Discard and use fresh file"
 msgstr "Verwerpen en een nieuw bestand gebruiken"
 
-#: src/components/SettingsModal.tsx:132
+#: src/components/SettingsModal.tsx:136
 msgid "Discard changes and exit the current field"
 msgstr "Wijzigingen verwerpen en het huidige veld verlaten"
 
-#: src/components/SettingsModal.tsx:887
+#: src/components/SettingsModal.tsx:907
 msgid "Display"
 msgstr "Weergave"
 
@@ -230,7 +230,7 @@ msgstr "Bewerk gettext-vertaalbestanden met DeepL-integratie"
 msgid "ElevenLabs quota reached."
 msgstr "ElevenLabs-quotum bereikt."
 
-#: src/components/SettingsModal.tsx:1246
+#: src/components/SettingsModal.tsx:1290
 msgid ""
 "ElevenLabs quota reached. Switch back to Browser playback or wait for the ne"
 "xt provider reset."
@@ -242,17 +242,17 @@ msgstr ""
 msgid "Email"
 msgstr "E-mail"
 
-#: src/components/SettingsModal.tsx:951
+#: src/components/SettingsModal.tsx:971
 msgid "Enter your DeepL API key"
 msgstr "Voer je DeepL API-sleutel in"
 
-#: src/components/SettingsModal.tsx:910
+#: src/components/SettingsModal.tsx:930
 msgid "Enter your DeepL API key to enable machine translation. Get a free key at"
 msgstr ""
 "Voer je DeepL API-sleutel in om automatische vertaling te gebruiken. Vraag e"
 "en gratis sleutel aan via"
 
-#: src/components/SettingsModal.tsx:1176
+#: src/components/SettingsModal.tsx:1220
 msgid "Enter your ElevenLabs API key"
 msgstr "Voer je ElevenLabs API-sleutel in"
 
@@ -260,15 +260,15 @@ msgstr "Voer je ElevenLabs API-sleutel in"
 msgid "Expected behavior"
 msgstr "Verwacht gedrag"
 
-#: src/components/SettingsModal.tsx:1580
+#: src/components/SettingsModal.tsx:1624
 msgid "Export settings"
 msgstr "Instellingen exporteren"
 
-#: src/components/SettingsModal.tsx:1723
+#: src/components/SettingsModal.tsx:1767
 msgid "Export without key"
 msgstr "Exporteren zonder sleutel"
 
-#: src/components/SettingsModal.tsx:1560
+#: src/components/SettingsModal.tsx:1604
 msgid ""
 "Export your saved preferences to a JSON backup file, or restore them into th"
 "is browser. Glossary cache, drafts, and project files are not included."
@@ -277,7 +277,7 @@ msgstr ""
 "ze in deze browser. Woordenlijstcache, concepten en projectbestanden worden "
 "niet meegenomen."
 
-#: src/components/SettingsModal.tsx:1572
+#: src/components/SettingsModal.tsx:1616
 msgid ""
 "Exports DeepL preferences, glossary options, navigation behavior, display wi"
 "dth, and development-only toggles. If a DeepL API key is present, you can ch"
@@ -287,8 +287,8 @@ msgstr ""
 "eedte en toggles die alleen voor ontwikkeling gelden. Als er een DeepL API-s"
 "leutel aanwezig is, kun je kiezen of je die wilt meenemen."
 
-#: src/components/SettingsModal.tsx:457
-#: src/components/SettingsModal.tsx:536
+#: src/components/SettingsModal.tsx:461
+#: src/components/SettingsModal.tsx:540
 msgid "Failed to connect"
 msgstr "Verbinding mislukt"
 
@@ -296,7 +296,7 @@ msgstr "Verbinding mislukt"
 msgid "Failed to initialize verification."
 msgstr "Initialiseren van verificatie mislukt."
 
-#: src/components/SettingsModal.tsx:781
+#: src/components/SettingsModal.tsx:801
 msgid "Failed to load glossary"
 msgstr "Woordenlijst laden mislukt"
 
@@ -304,7 +304,7 @@ msgstr "Woordenlijst laden mislukt"
 msgid "Failed to parse file"
 msgstr "Bestand kon niet worden verwerkt"
 
-#: src/components/SettingsModal.tsx:842
+#: src/components/SettingsModal.tsx:862
 msgid "Failed to read the file."
 msgstr "Het bestand kon niet worden gelezen."
 
@@ -332,7 +332,7 @@ msgstr "Feedback verzonden"
 msgid "Feedback verification is not configured."
 msgstr "Feedbackverificatie is niet geconfigureerd."
 
-#: src/components/SettingsModal.tsx:816
+#: src/components/SettingsModal.tsx:836
 msgid "File does not appear to be a valid WordPress glossary CSV."
 msgstr "Het bestand lijkt geen geldige WordPress-woordenlijst-CSV te zijn."
 
@@ -340,23 +340,23 @@ msgstr "Het bestand lijkt geen geldige WordPress-woordenlijst-CSV te zijn."
 msgid "File downloaded"
 msgstr "Bestand gedownload"
 
-#: src/components/SettingsModal.tsx:1001
+#: src/components/SettingsModal.tsx:1021
 msgid "Formal"
 msgstr "Formeel"
 
-#: src/components/SettingsModal.tsx:991
+#: src/components/SettingsModal.tsx:1011
 msgid "Formality"
 msgstr "Formaliteit"
 
-#: src/components/SettingsModal.tsx:978
+#: src/components/SettingsModal.tsx:998
 msgid "Free API"
 msgstr "Gratis API"
 
-#: src/components/SettingsModal.tsx:985
+#: src/components/SettingsModal.tsx:1005
 msgid "Free: 500,000 chars/month • Pro: Pay per use"
 msgstr "Gratis: 500.000 tekens/maand • Pro: betalen naar gebruik"
 
-#: src/components/SettingsModal.tsx:876
+#: src/components/SettingsModal.tsx:896
 msgid "Glossary"
 msgstr "Woordenlijst"
 
@@ -364,27 +364,27 @@ msgstr "Woordenlijst"
 msgid "Glossary: {count} terms ({locale})"
 msgstr "Woordenlijst: {count} termen ({locale})"
 
-#: src/components/SettingsModal.tsx:1676
+#: src/components/SettingsModal.tsx:1720
 msgid "Import API key?"
 msgstr "API-sleutel importeren?"
 
-#: src/components/SettingsModal.tsx:1738
+#: src/components/SettingsModal.tsx:1782
 msgid "Import key"
 msgstr "Sleutel importeren"
 
-#: src/components/SettingsModal.tsx:1590
+#: src/components/SettingsModal.tsx:1634
 msgid "Import settings"
 msgstr "Instellingen importeren"
 
-#: src/components/SettingsModal.tsx:1676
+#: src/components/SettingsModal.tsx:1720
 msgid "Include API key?"
 msgstr "API-sleutel meenemen?"
 
-#: src/components/SettingsModal.tsx:1738
+#: src/components/SettingsModal.tsx:1782
 msgid "Include key"
 msgstr "Sleutel meenemen"
 
-#: src/components/SettingsModal.tsx:1685
+#: src/components/SettingsModal.tsx:1729
 msgid ""
 "Including your DeepL API key will store it in plain text inside the exported"
 " JSON file."
@@ -392,37 +392,37 @@ msgstr ""
 "Als je je DeepL API-sleutel meeneemt, wordt die als platte tekst in het geëx"
 "porteerde JSON-bestand opgeslagen."
 
-#: src/components/SettingsModal.tsx:1000
+#: src/components/SettingsModal.tsx:1020
 msgid "Informal"
 msgstr "Informeel"
 
-#: src/components/SettingsModal.tsx:119
+#: src/components/SettingsModal.tsx:123
 msgid "Insert a line break in the translation"
 msgstr "Voeg een nieuwe regel in de vertaling in"
 
-#: src/components/SettingsModal.tsx:1497
-#: src/components/SettingsModal.tsx:1505
+#: src/components/SettingsModal.tsx:1541
+#: src/components/SettingsModal.tsx:1549
 msgid "Interface language"
 msgstr "Interfacetaal"
 
-#: src/components/SettingsModal.tsx:1722
+#: src/components/SettingsModal.tsx:1766
 msgid "Keep current key"
 msgstr "Huidige sleutel behouden"
 
-#: src/components/SettingsModal.tsx:960
-#: src/components/SettingsModal.tsx:1185
+#: src/components/SettingsModal.tsx:980
+#: src/components/SettingsModal.tsx:1229
 msgid "Key saved"
 msgstr "Sleutel opgeslagen"
 
-#: src/components/SettingsModal.tsx:884
+#: src/components/SettingsModal.tsx:904
 msgid "Keyboard Shortcuts"
 msgstr "Sneltoetsen"
 
-#: src/components/SettingsModal.tsx:175
+#: src/components/SettingsModal.tsx:179
 msgid "Keyboard shortcuts available when editing translations."
 msgstr "Sneltoetsen die beschikbaar zijn tijdens het bewerken van vertalingen."
 
-#: src/components/SettingsModal.tsx:1306
+#: src/components/SettingsModal.tsx:1350
 msgid "Language"
 msgstr "Taal"
 
@@ -446,7 +446,7 @@ msgstr "Som stappen op die iemand anders kan volgen"
 msgid "Load"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1321
+#: src/components/SettingsModal.tsx:1365
 msgid "Load Glossary"
 msgstr "Woordenlijst laden"
 
@@ -458,7 +458,7 @@ msgstr "Laad een klein voorbeeld-PO-bestand van een WordPress-plugin (Hello Doll
 msgid "Load example PO"
 msgstr "Voorbeeld-PO laden"
 
-#: src/components/SettingsModal.tsx:1299
+#: src/components/SettingsModal.tsx:1343
 msgid ""
 "Load the official WordPress translation glossary to ensure consistent termin"
 "ology."
@@ -466,8 +466,8 @@ msgstr ""
 "Laad de officiële WordPress-vertaalwoordenlijst voor consistente terminologi"
 "e."
 
-#: src/components/SettingsModal.tsx:1259
-#: src/components/SettingsModal.tsx:1275
+#: src/components/SettingsModal.tsx:1303
+#: src/components/SettingsModal.tsx:1319
 msgid "Load voices by testing your key"
 msgstr "Laad stemmen door je sleutel te testen"
 
@@ -477,24 +477,24 @@ msgid ""
 "ved changes will be lost."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:212
+#: src/components/SettingsModal.tsx:216
 msgid "Navigation Settings"
 msgstr "Navigatie-instellingen"
 
-#: src/components/SettingsModal.tsx:118
+#: src/components/SettingsModal.tsx:122
 msgid "New line"
 msgstr "Nieuwe regel"
 
-#: src/components/SettingsModal.tsx:126
+#: src/components/SettingsModal.tsx:130
 msgid "Next entry"
 msgstr "Volgend item"
 
-#: src/components/SettingsModal.tsx:103
-#: src/components/SettingsModal.tsx:113
+#: src/components/SettingsModal.tsx:107
+#: src/components/SettingsModal.tsx:117
 msgid "Next field"
 msgstr "Volgend veld"
 
-#: src/components/SettingsModal.tsx:824
+#: src/components/SettingsModal.tsx:844
 msgid "No glossary entries found in the uploaded file."
 msgstr "Geen woordenlijstingangen gevonden in het geüploade bestand."
 
@@ -506,11 +506,11 @@ msgstr "Geen tekst om af te spelen."
 msgid "Nothing to play yet."
 msgstr "Nog niets om af te spelen."
 
-#: src/components/SettingsModal.tsx:1700
+#: src/components/SettingsModal.tsx:1744
 msgid "Only include credentials on personal, trusted devices."
 msgstr "Neem inloggegevens alleen mee op persoonlijke, vertrouwde apparaten."
 
-#: src/components/SettingsModal.tsx:1644
+#: src/components/SettingsModal.tsx:1688
 msgid "Only visible while running the app in development mode"
 msgstr "Alleen zichtbaar wanneer de app in ontwikkelmodus draait"
 
@@ -542,7 +542,7 @@ msgstr "Afspelen"
 msgid "Play source"
 msgstr "Bron afspelen"
 
-#: src/components/SettingsModal.tsx:1065
+#: src/components/SettingsModal.tsx:1085
 msgid ""
 "Play strings with either browser voices or ElevenLabs. Browser playback stay"
 "s free and local. ElevenLabs uses your own API key through a protected proxy"
@@ -556,7 +556,7 @@ msgstr ""
 msgid "Play translation"
 msgstr "Vertaling afspelen"
 
-#: src/components/SettingsModal.tsx:1093
+#: src/components/SettingsModal.tsx:1113
 msgid "Playback rate"
 msgstr "Afspeelsnelheid"
 
@@ -572,8 +572,8 @@ msgstr "Vul alle verplichte bugvelden in."
 msgid "Please complete all required feature fields."
 msgstr "Vul alle verplichte functievelden in."
 
-#: src/components/SettingsModal.tsx:436
-#: src/components/SettingsModal.tsx:502
+#: src/components/SettingsModal.tsx:440
+#: src/components/SettingsModal.tsx:506
 msgid "Please enter an API key"
 msgstr "Voer een API-sleutel in"
 
@@ -585,7 +585,12 @@ msgstr "Geef een geldig e-mailadres op of laat het leeg."
 msgid "Preparing spam protection..."
 msgstr "Spambeveiliging voorbereiden..."
 
-#: src/components/SettingsModal.tsx:108
+#: src/components/SettingsModal.tsx:1149
+#: src/components/SettingsModal.tsx:1177
+msgid "Preview voice"
+msgstr "Voorbeeld stem"
+
+#: src/components/SettingsModal.tsx:112
 msgid "Previous field"
 msgstr "Vorig veld"
 
@@ -594,7 +599,7 @@ msgstr "Vorig veld"
 msgid "Privacy"
 msgstr "Privacy"
 
-#: src/components/SettingsModal.tsx:979
+#: src/components/SettingsModal.tsx:999
 msgid "Pro API"
 msgstr "Pro API"
 
@@ -606,15 +611,15 @@ msgstr "Probleem / kans"
 msgid "Proposed solution"
 msgstr "Voorgestelde oplossing"
 
-#: src/components/SettingsModal.tsx:1074
+#: src/components/SettingsModal.tsx:1094
 msgid "Provider"
 msgstr "Aanbieder"
 
-#: src/components/SettingsModal.tsx:1523
+#: src/components/SettingsModal.tsx:1567
 msgid "Read the translation guide"
 msgstr "Lees de vertaalgids"
 
-#: src/components/SettingsModal.tsx:1325
+#: src/components/SettingsModal.tsx:1369
 msgid "Refresh from WordPress.org"
 msgstr "Verversen vanaf WordPress.org"
 
@@ -622,13 +627,13 @@ msgstr "Verversen vanaf WordPress.org"
 msgid "Release to load your translation file"
 msgstr "Laat los om je vertaalbestand te laden"
 
-#: src/components/SettingsModal.tsx:936
-#: src/components/SettingsModal.tsx:1161
+#: src/components/SettingsModal.tsx:956
+#: src/components/SettingsModal.tsx:1205
 msgid "Remember API key across sessions"
 msgstr "API-sleutel onthouden tussen sessies"
 
-#: src/components/SettingsModal.tsx:1027
-#: src/components/SettingsModal.tsx:1209
+#: src/components/SettingsModal.tsx:1047
+#: src/components/SettingsModal.tsx:1253
 msgid "Remove saved key"
 msgstr "Opgeslagen sleutel verwijderen"
 
@@ -648,7 +653,7 @@ msgstr ""
 msgid "Restore draft"
 msgstr "Concept herstellen"
 
-#: src/components/SettingsModal.tsx:1419
+#: src/components/SettingsModal.tsx:1463
 msgid "Resync"
 msgstr "Opnieuw synchroniseren"
 
@@ -656,32 +661,32 @@ msgstr "Opnieuw synchroniseren"
 msgid "Retranslate All"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1433
+#: src/components/SettingsModal.tsx:1477
 msgid "Retry"
 msgstr "Opnieuw proberen"
 
-#: src/components/SettingsModal.tsx:1023
-#: src/components/SettingsModal.tsx:1146
-#: src/components/SettingsModal.tsx:1205
+#: src/components/SettingsModal.tsx:1043
+#: src/components/SettingsModal.tsx:1190
+#: src/components/SettingsModal.tsx:1249
 msgid "Save"
 msgstr "Opslaan"
 
-#: src/components/SettingsModal.tsx:127
+#: src/components/SettingsModal.tsx:131
 msgid "Save and jump to the next translation entry (skips translated by default)"
 msgstr ""
 "Sla op en spring naar het volgende vertaalitem (vertaalde items worden stand"
 "aard overgeslagen)"
 
-#: src/components/SettingsModal.tsx:104
-#: src/components/SettingsModal.tsx:114
+#: src/components/SettingsModal.tsx:108
+#: src/components/SettingsModal.tsx:118
 msgid "Save current field and move to the next translation field"
 msgstr "Sla het huidige veld op en ga naar het volgende vertaalveld"
 
-#: src/components/SettingsModal.tsx:109
+#: src/components/SettingsModal.tsx:113
 msgid "Save current field and move to the previous translation field"
 msgstr "Sla het huidige veld op en ga naar het vorige vertaalveld"
 
-#: src/components/SettingsModal.tsx:1307
+#: src/components/SettingsModal.tsx:1351
 msgid "Select locale"
 msgstr "Selecteer locale"
 
@@ -689,7 +694,7 @@ msgstr "Selecteer locale"
 msgid "Send feedback"
 msgstr "Feedback versturen"
 
-#: src/components/SettingsModal.tsx:866
+#: src/components/SettingsModal.tsx:886
 #: src/pages/Index.tsx:1437
 msgid "Settings"
 msgstr "Instellingen"
@@ -698,28 +703,28 @@ msgstr "Instellingen"
 msgid "Settings and actions"
 msgstr "Instellingen en acties"
 
-#: src/components/SettingsModal.tsx:648
+#: src/components/SettingsModal.tsx:668
 msgid "Settings exported with your DeepL API key."
 msgstr "Instellingen geëxporteerd met je DeepL API-sleutel."
 
-#: src/components/SettingsModal.tsx:649
+#: src/components/SettingsModal.tsx:669
 msgid "Settings exported without your DeepL API key."
 msgstr "Instellingen geëxporteerd zonder je DeepL API-sleutel."
 
-#: src/components/SettingsModal.tsx:1569
+#: src/components/SettingsModal.tsx:1613
 msgid "Settings file"
 msgstr "Instellingenbestand"
 
-#: src/components/SettingsModal.tsx:699
+#: src/components/SettingsModal.tsx:719
 msgid "Settings imported without changing your current DeepL API key."
 msgstr "Instellingen geïmporteerd zonder je huidige DeepL API-sleutel te wijzigen."
 
-#: src/components/SettingsModal.tsx:698
+#: src/components/SettingsModal.tsx:718
 msgid "Settings imported, including your DeepL API key."
 msgstr "Instellingen geïmporteerd, inclusief je DeepL API-sleutel."
 
-#: src/components/SettingsModal.tsx:469
-#: src/components/SettingsModal.tsx:577
+#: src/components/SettingsModal.tsx:473
+#: src/components/SettingsModal.tsx:581
 msgid "Settings saved!"
 msgstr "Instellingen opgeslagen!"
 
@@ -739,15 +744,15 @@ msgstr "Korte samenvatting van het probleem"
 msgid "Short summary of the request"
 msgstr "Korte samenvatting van het verzoek"
 
-#: src/components/SettingsModal.tsx:182
+#: src/components/SettingsModal.tsx:186
 msgid "Shortcut"
 msgstr "Sneltoets"
 
-#: src/components/SettingsModal.tsx:1643
+#: src/components/SettingsModal.tsx:1687
 msgid "Show branch chip"
 msgstr "Branch-chip tonen"
 
-#: src/components/SettingsModal.tsx:1631
+#: src/components/SettingsModal.tsx:1675
 msgid ""
 "Show the current git branch in a small floating chip at the bottom right of "
 "the site."
@@ -755,7 +760,7 @@ msgstr ""
 "Toon de huidige git-branch in een kleine zwevende chip rechtsonder op de sit"
 "e."
 
-#: src/components/SettingsModal.tsx:216
+#: src/components/SettingsModal.tsx:220
 msgid "Skip translated entries"
 msgstr "Vertaalde items overslaan"
 
@@ -763,12 +768,12 @@ msgstr "Vertaalde items overslaan"
 msgid "Source"
 msgstr "Bron"
 
-#: src/components/SettingsModal.tsx:1113
-#: src/components/SettingsModal.tsx:1258
+#: src/components/SettingsModal.tsx:1134
+#: src/components/SettingsModal.tsx:1302
 msgid "Source voice"
 msgstr "Bronstem"
 
-#: src/components/SettingsModal.tsx:873
+#: src/components/SettingsModal.tsx:893
 msgid "Speech"
 msgstr "Spraak"
 
@@ -793,23 +798,23 @@ msgstr ""
 "Inzendingen kunnen een GitHub-issue aanmaken en je optionele e-mailadres bev"
 "atten voor vervolgvragen. Zie"
 
-#: src/components/SettingsModal.tsx:1426
+#: src/components/SettingsModal.tsx:1470
 msgid "Sync failed"
 msgstr "Synchronisatie mislukt"
 
-#: src/components/SettingsModal.tsx:1402
+#: src/components/SettingsModal.tsx:1446
 msgid "Syncing to DeepL..."
 msgstr "Synchroniseren met DeepL..."
 
-#: src/components/SettingsModal.tsx:1463
+#: src/components/SettingsModal.tsx:1507
 msgid "Terms in selected text:"
 msgstr "Termen in geselecteerde tekst:"
 
-#: src/components/SettingsModal.tsx:1020
+#: src/components/SettingsModal.tsx:1040
 msgid "Test Connection"
 msgstr "Verbinding testen"
 
-#: src/components/SettingsModal.tsx:1199
+#: src/components/SettingsModal.tsx:1243
 msgid "Test connection"
 msgstr "Verbinding testen"
 
@@ -821,7 +826,7 @@ msgstr "Bedankt. Issue #{issueNumber} is aangemaakt."
 msgid "The URL must start with https://"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1617
+#: src/components/SettingsModal.tsx:1661
 msgid ""
 "These tools only appear while running the app locally in development and are"
 " not shown in production."
@@ -829,7 +834,11 @@ msgstr ""
 "Deze hulpmiddelen verschijnen alleen wanneer de app lokaal in ontwikkelmodus"
 " draait en worden niet in productie getoond."
 
-#: src/components/SettingsModal.tsx:1684
+#: src/components/SettingsModal.tsx:611
+msgid "This is a preview of the selected voice."
+msgstr "Dit is een voorbeeld van de geselecteerde stem."
+
+#: src/components/SettingsModal.tsx:1728
 msgid "This settings file contains your DeepL API key in plain text."
 msgstr "Dit instellingenbestand bevat je DeepL API-sleutel als platte tekst."
 
@@ -846,8 +855,8 @@ msgstr "Titel"
 msgid "Translate"
 msgstr "Vertalen"
 
-#: src/components/SettingsModal.tsx:1129
-#: src/components/SettingsModal.tsx:1274
+#: src/components/SettingsModal.tsx:1162
+#: src/components/SettingsModal.tsx:1318
 msgid "Translation voice"
 msgstr "Vertaalstem"
 
@@ -859,15 +868,15 @@ msgstr "Turnstile-bypass is ingeschakeld voor lokale ontwikkeling."
 msgid "Turnstile site key not set. Using local development bypass."
 msgstr "Turnstile-sitekey is niet ingesteld. Lokale ontwikkel-bypass wordt gebruikt."
 
-#: src/components/SettingsModal.tsx:746
+#: src/components/SettingsModal.tsx:766
 msgid "Unable to import the selected settings file."
 msgstr "Het geselecteerde instellingenbestand kon niet worden geïmporteerd."
 
-#: src/components/SettingsModal.tsx:756
+#: src/components/SettingsModal.tsx:776
 msgid "Unable to read the selected settings file."
 msgstr "Het geselecteerde instellingenbestand kon niet worden gelezen."
 
-#: src/components/SettingsModal.tsx:785
+#: src/components/SettingsModal.tsx:805
 #: src/pages/Index.tsx:761
 msgid "Unknown error"
 msgstr "Onbekende fout"
@@ -898,11 +907,11 @@ msgstr "Bijgewerkt"
 msgid "Upload"
 msgstr "Uploaden"
 
-#: src/components/SettingsModal.tsx:1363
+#: src/components/SettingsModal.tsx:1407
 msgid "Upload CSV"
 msgstr "CSV uploaden"
 
-#: src/components/SettingsModal.tsx:1368
+#: src/components/SettingsModal.tsx:1412
 msgid "Upload a WordPress glossary CSV for the selected language"
 msgstr "Upload een WordPress-woordenlijst-CSV voor de geselecteerde taal"
 
@@ -914,7 +923,7 @@ msgstr "Upload een vertaalbestand om te beginnen"
 msgid "Upload failed"
 msgstr "Upload mislukt"
 
-#: src/components/SettingsModal.tsx:1239
+#: src/components/SettingsModal.tsx:1283
 msgid ""
 "Usage is above 90%. ElevenLabs playback will stop once the provider quota is"
 " exhausted."
@@ -922,12 +931,12 @@ msgstr ""
 "Gebruik is boven 90%. ElevenLabs-weergave stopt zodra het quotum van de aanb"
 "ieder is bereikt."
 
-#: src/components/SettingsModal.tsx:374
+#: src/components/SettingsModal.tsx:378
 msgid "Usage loaded from the last successful check."
 msgstr "Gebruik geladen van de laatste succesvolle controle."
 
-#: src/components/SettingsModal.tsx:1114
-#: src/components/SettingsModal.tsx:1130
+#: src/components/SettingsModal.tsx:1135
+#: src/components/SettingsModal.tsx:1163
 msgid "Use browser default"
 msgstr "Gebruik browserstandaard"
 
@@ -935,7 +944,7 @@ msgstr "Gebruik browserstandaard"
 msgid "Use case"
 msgstr "Gebruikssituatie"
 
-#: src/components/SettingsModal.tsx:1443
+#: src/components/SettingsModal.tsx:1487
 msgid "Use glossary for translations"
 msgstr "Woordenlijst gebruiken voor vertalingen"
 
@@ -943,11 +952,11 @@ msgstr "Woordenlijst gebruiken voor vertalingen"
 msgid "Verification is still loading. Please try again in a moment."
 msgstr "Verificatie wordt nog geladen. Probeer het zo meteen opnieuw."
 
-#: src/components/SettingsModal.tsx:1392
+#: src/components/SettingsModal.tsx:1436
 msgid "View All"
 msgstr "Alles bekijken"
 
-#: src/components/SettingsModal.tsx:1521
+#: src/components/SettingsModal.tsx:1565
 msgid "Want to help translate GlossBoss?"
 msgstr "Wil je GlossBoss helpen vertalen?"
 
@@ -971,8 +980,8 @@ msgstr "Wat had er moeten gebeuren"
 msgid "What would help?"
 msgstr "Wat zou helpen?"
 
-#: src/components/SettingsModal.tsx:937
-#: src/components/SettingsModal.tsx:1162
+#: src/components/SettingsModal.tsx:957
+#: src/components/SettingsModal.tsx:1206
 msgid ""
 "When enabled, your key is stored in localStorage and survives browser restar"
 "ts. Disable on shared or untrusted devices."
@@ -981,7 +990,7 @@ msgstr ""
 "die bewaard na het herstarten van de browser. Schakel dit uit op gedeelde of"
 " onbeheerde apparaten."
 
-#: src/components/SettingsModal.tsx:217
+#: src/components/SettingsModal.tsx:221
 msgid ""
 "When using ⌘/Ctrl+Enter, skip entries that are already translated and jump t"
 "o the next untranslated or fuzzy entry"
@@ -1015,15 +1024,15 @@ msgstr ""
 "Je hebt niet-opgeslagen wijzigingen. Weet je zeker dat je de editor wilt wis"
 "sen?"
 
-#: src/components/SettingsModal.tsx:1154
+#: src/components/SettingsModal.tsx:1198
 msgid ""
 "Your ElevenLabs API key is kept in this browser tab by default and will be c"
 "leared when you close the tab. Enable \"Remember API key\" below to persist "
 "it across sessions."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1051
-#: src/components/SettingsModal.tsx:1232
+#: src/components/SettingsModal.tsx:1071
+#: src/components/SettingsModal.tsx:1276
 msgid "characters"
 msgstr "tekens"
 
@@ -1039,11 +1048,11 @@ msgstr "i18next JSON (.json)"
 msgid "or"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1348
+#: src/components/SettingsModal.tsx:1392
 msgid "or upload manually"
 msgstr "of handmatig uploaden"
 
-#: src/components/SettingsModal.tsx:1379
+#: src/components/SettingsModal.tsx:1423
 msgid "terms"
 msgstr "termen"
 
