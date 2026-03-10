@@ -211,6 +211,19 @@ function cacheGlossary(locale: string, glossary: Glossary): void {
   }
 }
 
+function getMatchingStorageKeys(prefix: string): string[] {
+  const keys: string[] = [];
+
+  for (let index = 0; index < localStorage.length; index += 1) {
+    const key = localStorage.key(index);
+    if (key?.startsWith(prefix)) {
+      keys.push(key);
+    }
+  }
+
+  return keys;
+}
+
 /**
  * Clear cached glossary for a locale (or all if no locale specified)
  */
@@ -219,7 +232,7 @@ export function clearWPGlossaryCache(locale?: string): void {
     const key = `${CACHE_KEY_PREFIX}${locale.toLowerCase()}`;
     localStorage.removeItem(key);
   } else {
-    const keys = Object.keys(localStorage).filter((k) => k.startsWith(CACHE_KEY_PREFIX));
+    const keys = getMatchingStorageKeys(CACHE_KEY_PREFIX);
     keys.forEach((k) => localStorage.removeItem(k));
   }
 }
@@ -228,7 +241,7 @@ export function clearWPGlossaryCache(locale?: string): void {
  * Get list of cached glossary locales
  */
 export function getCachedWPGlossaryLocales(): string[] {
-  const keys = Object.keys(localStorage).filter((k) => k.startsWith(CACHE_KEY_PREFIX));
+  const keys = getMatchingStorageKeys(CACHE_KEY_PREFIX);
   return keys.map((k) => k.replace(CACHE_KEY_PREFIX, ''));
 }
 

@@ -15,8 +15,8 @@ function renderModal() {
 
 describe('SettingsModal', () => {
   beforeEach(() => {
-    localStorage.clear();
-    sessionStorage.clear();
+    window.localStorage.clear();
+    window.sessionStorage.clear();
   });
 
   it('resets formality to informal after clearing saved DeepL settings', async () => {
@@ -42,5 +42,29 @@ describe('SettingsModal', () => {
         formality: 'prefer_less',
       });
     });
+  });
+
+  it('prompts before exporting a settings file that includes an api key', async () => {
+    const user = userEvent.setup();
+    saveDeepLSettings({
+      apiKey: 'existing-key',
+      apiType: 'free',
+      formality: 'prefer_less',
+    });
+
+    renderModal();
+
+    await waitFor(() => {
+      expect(screen.getByLabelText(/^api key$/i)).toHaveValue('existing-key');
+    });
+
+    await user.click(screen.getByRole('tab', { name: /backup/i }));
+    await user.click(screen.getByRole('button', { name: /export settings/i }));
+
+    await waitFor(() => {
+      expect(screen.getByRole('dialog', { name: /include api key/i })).toBeInTheDocument();
+    });
+    expect(screen.getByRole('button', { name: /export without key/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^include key$/i })).toBeInTheDocument();
   });
 });

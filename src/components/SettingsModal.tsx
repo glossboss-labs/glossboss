@@ -46,6 +46,7 @@ import {
   GitBranch,
   Monitor,
   Upload,
+  Download,
 } from 'lucide-react';
 import {
   getDeepLSettings,
@@ -68,6 +69,15 @@ import {
 import type { Glossary } from '@/lib/glossary/types';
 import { NAV_SKIP_TRANSLATED_KEY } from '@/components/editor/EditorTable';
 import { CONTAINER_WIDTH_OPTIONS, type ContainerWidth } from '@/lib/container-width';
+import {
+  applyAppSettingsFile,
+  createAppSettingsFile,
+  createAppSettingsFilename,
+  parseAppSettingsFile,
+  serializeAppSettingsFile,
+  settingsFileHasCredentials,
+  type AppSettingsFile,
+} from '@/lib/app-settings';
 
 /** Keyboard shortcut definitions */
 const KEYBINDS: { keys: string[][]; action: string; description?: string }[] = [
@@ -134,12 +144,13 @@ function KeyCombo({ keys }: { keys: string[][] }) {
 }
 
 /** Keyboard shortcuts settings panel */
-function KeyboardShortcutsPanel() {
-  const [skipTranslated, setSkipTranslated] = useLocalStorage<boolean>({
-    key: NAV_SKIP_TRANSLATED_KEY,
-    defaultValue: true,
-  });
-
+function KeyboardShortcutsPanel({
+  skipTranslated,
+  onSkipTranslatedChange,
+}: {
+  skipTranslated: boolean;
+  onSkipTranslatedChange: (value: boolean) => void;
+}) {
   return (
     <Stack gap="md">
       <Text size="sm" c="dimmed">
@@ -187,7 +198,7 @@ function KeyboardShortcutsPanel() {
         label="Skip translated entries"
         description="When using ⌘/Ctrl+Enter, skip entries that are already translated and jump to the next untranslated or fuzzy entry"
         checked={skipTranslated}
-        onChange={(e) => setSkipTranslated(e.currentTarget.checked)}
+        onChange={(e) => onSkipTranslatedChange(e.currentTarget.checked)}
         styles={{
           track: {
             transition: 'background-color 0.2s ease, border-color 0.2s ease',
@@ -245,6 +256,10 @@ export function SettingsModal({
   const [apiType, setApiType] = useState<DeepLApiType>('free');
   const [formality, setFormality] = useState<DeepLFormality>('prefer_less');
   const [persistKey, setPersistKey] = useState(() => isPersistEnabled());
+  const [skipTranslated, setSkipTranslated] = useLocalStorage<boolean>({
+    key: NAV_SKIP_TRANSLATED_KEY,
+    defaultValue: true,
+  });
   const [isTesting, setIsTesting] = useState(false);
   const [testResult, setTestResult] = useState<{
     success: boolean;
@@ -252,6 +267,20 @@ export function SettingsModal({
     usage?: { used: number; limit: number };
   } | null>(null);
   const [isSaved, setIsSaved] = useState(false);
+  const [transferResult, setTransferResult] = useState<{
+    success: boolean;
+    message: string;
+  } | null>(null);
+  const [credentialPrompt, setCredentialPrompt] = useState<
+    | {
+        mode: 'export';
+      }
+    | {
+        mode: 'import';
+        file: AppSettingsFile;
+      }
+    | null
+  >(null);
 
   // Glossary state
   const [selectedLocale, setSelectedLocale] = useState<string>(() => {
@@ -274,6 +303,7 @@ export function SettingsModal({
   });
   const [viewerOpened, setViewerOpened] = useState(false);
   const [hasAttemptedAutoLoad, setHasAttemptedAutoLoad] = useState(false);
+  const settingsImportResetRef = useRef<() => void>(null);
 
   // Load saved settings on open
   useEffect(() => {
@@ -299,6 +329,8 @@ export function SettingsModal({
     try {
       if (selectedLocale) {
         localStorage.setItem(GLOSSARY_SELECTED_LOCALE_KEY, selectedLocale);
+      } else {
+        localStorage.removeItem(GLOSSARY_SELECTED_LOCALE_KEY);
       }
     } catch {
       // Ignore storage errors
@@ -358,9 +390,148 @@ export function SettingsModal({
     setApiKey('');
     setApiType('free');
     setFormality('prefer_less');
+    setPersistKey(false);
     setIsSaved(false);
     setTestResult(null);
   }, []);
+
+  const downloadSettingsFile = useCallback(
+    (includeApiKey: boolean) => {
+      const file = createAppSettingsFile(
+        {
+          deepl: {
+            apiKey,
+            apiType,
+            formality,
+            persistKey,
+          },
+          preferences: {
+            glossaryLocale: selectedLocale,
+            glossaryEnforcementEnabled: enforcementEnabled,
+            navSkipTranslated: skipTranslated,
+            containerWidth,
+            branchChipEnabled: isDevelopment ? branchChipEnabled : undefined,
+          },
+        },
+        { includeApiKey },
+      );
+
+      const blob = new Blob([serializeAppSettingsFile(file)], {
+        type: 'application/json;charset=utf-8',
+      });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+
+      anchor.href = url;
+      anchor.download = createAppSettingsFilename();
+      document.body.appendChild(anchor);
+      anchor.click();
+      document.body.removeChild(anchor);
+      URL.revokeObjectURL(url);
+
+      setTransferResult({
+        success: true,
+        message: includeApiKey
+          ? 'Settings exported with your DeepL API key.'
+          : 'Settings exported without your DeepL API key.',
+      });
+    },
+    [
+      apiKey,
+      apiType,
+      branchChipEnabled,
+      containerWidth,
+      enforcementEnabled,
+      formality,
+      isDevelopment,
+      persistKey,
+      selectedLocale,
+      skipTranslated,
+    ],
+  );
+
+  const applyImportedSettings = useCallback(
+    (file: AppSettingsFile, includeApiKey: boolean) => {
+      const applied = applyAppSettingsFile(file, { includeApiKey });
+
+      setApiKey(applied.deepl.apiKey);
+      setApiType(applied.deepl.apiType);
+      setFormality(applied.deepl.formality);
+      setPersistKey(applied.deepl.persistKey);
+      setIsSaved(Boolean(applied.deepl.apiKey.trim()));
+      setTestResult(null);
+      setSelectedLocale(applied.preferences.glossaryLocale);
+      setEnforcementEnabled(applied.preferences.glossaryEnforcementEnabled);
+      setSkipTranslated(applied.preferences.navSkipTranslated);
+      onContainerWidthChange?.(applied.preferences.containerWidth);
+
+      if (isDevelopment && typeof applied.preferences.branchChipEnabled === 'boolean') {
+        onBranchChipEnabledChange?.(applied.preferences.branchChipEnabled);
+      }
+
+      setTransferResult({
+        success: true,
+        message:
+          includeApiKey && settingsFileHasCredentials(file)
+            ? 'Settings imported, including your DeepL API key.'
+            : 'Settings imported without changing your current DeepL API key.',
+      });
+    },
+    [isDevelopment, onBranchChipEnabledChange, onContainerWidthChange, setSkipTranslated],
+  );
+
+  const handleExportClick = useCallback(() => {
+    if (apiKey.trim()) {
+      setCredentialPrompt({ mode: 'export' });
+      return;
+    }
+
+    downloadSettingsFile(false);
+  }, [apiKey, downloadSettingsFile]);
+
+  const handleImportFile = useCallback(
+    (file: File | null) => {
+      if (!file) return;
+
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        try {
+          const parsed = parseAppSettingsFile(String(reader.result ?? ''));
+
+          if (settingsFileHasCredentials(parsed)) {
+            setCredentialPrompt({
+              mode: 'import',
+              file: parsed,
+            });
+          } else {
+            applyImportedSettings(parsed, false);
+          }
+        } catch (error) {
+          setTransferResult({
+            success: false,
+            message:
+              error instanceof Error
+                ? error.message
+                : 'Unable to import the selected settings file.',
+          });
+        } finally {
+          settingsImportResetRef.current?.();
+        }
+      };
+
+      reader.onerror = () => {
+        setTransferResult({
+          success: false,
+          message: 'Unable to read the selected settings file.',
+        });
+        settingsImportResetRef.current?.();
+      };
+
+      reader.readAsText(file);
+    },
+    [applyImportedSettings],
+  );
 
   const handleLoadGlossary = useCallback(
     async (forceRefresh = false) => {
@@ -474,6 +645,9 @@ export function SettingsModal({
             </Tabs.Tab>
             <Tabs.Tab value="display" leftSection={<Monitor size={14} />}>
               Display
+            </Tabs.Tab>
+            <Tabs.Tab value="transfer" leftSection={<Download size={14} />}>
+              Backup
             </Tabs.Tab>
             {isDevelopment && (
               <Tabs.Tab
@@ -821,7 +995,10 @@ export function SettingsModal({
 
           {/* Keyboard Shortcuts Tab */}
           <Tabs.Panel value="keybinds">
-            <KeyboardShortcutsPanel />
+            <KeyboardShortcutsPanel
+              skipTranslated={skipTranslated}
+              onSkipTranslatedChange={setSkipTranslated}
+            />
           </Tabs.Panel>
 
           {/* Display Tab */}
@@ -855,6 +1032,57 @@ export function SettingsModal({
                   />
                 </Stack>
               </Paper>
+            </Stack>
+          </Tabs.Panel>
+
+          <Tabs.Panel value="transfer">
+            <Stack gap="md">
+              <Text size="sm" c="dimmed">
+                Export your saved preferences to a JSON backup file, or restore them into this
+                browser. Glossary cache, drafts, and project files are not included.
+              </Text>
+
+              <Paper p="md" withBorder>
+                <Stack gap="sm">
+                  <div>
+                    <Text size="sm" fw={500}>
+                      Settings file
+                    </Text>
+                    <Text size="xs" c="dimmed">
+                      Exports DeepL preferences, glossary options, navigation behavior, display
+                      width, and development-only toggles. If a DeepL API key is present, you can
+                      choose whether to include it.
+                    </Text>
+                  </div>
+
+                  <Group>
+                    <Button leftSection={<Download size={14} />} onClick={handleExportClick}>
+                      Export settings
+                    </Button>
+
+                    <FileButton
+                      resetRef={settingsImportResetRef}
+                      onChange={handleImportFile}
+                      accept=".json,application/json"
+                    >
+                      {(props) => (
+                        <Button variant="light" leftSection={<Upload size={14} />} {...props}>
+                          Import settings
+                        </Button>
+                      )}
+                    </FileButton>
+                  </Group>
+                </Stack>
+              </Paper>
+
+              {transferResult && (
+                <Alert
+                  color={transferResult.success ? 'green' : 'red'}
+                  icon={transferResult.success ? <Check size={16} /> : <AlertCircle size={16} />}
+                >
+                  <Text size="sm">{transferResult.message}</Text>
+                </Alert>
+              )}
             </Stack>
           </Tabs.Panel>
 
@@ -919,6 +1147,71 @@ export function SettingsModal({
           onClose={() => setViewerOpened(false)}
         />
       )}
+
+      <Modal
+        opened={credentialPrompt !== null}
+        onClose={() => setCredentialPrompt(null)}
+        title={credentialPrompt?.mode === 'import' ? 'Import API key?' : 'Include API key?'}
+        centered
+        size="sm"
+      >
+        <Stack gap="md">
+          <Alert color="yellow" icon={<AlertCircle size={16} />}>
+            <Text size="sm">
+              {credentialPrompt?.mode === 'import'
+                ? 'This settings file contains your DeepL API key in plain text.'
+                : 'Including your DeepL API key will store it in plain text inside the exported JSON file.'}
+            </Text>
+          </Alert>
+
+          <Text size="sm">
+            {credentialPrompt?.mode === 'import'
+              ? 'Choose whether to import the key or keep the current key saved in this browser.'
+              : 'Choose whether to export the key or keep the settings file free of credentials.'}
+          </Text>
+
+          <Text size="xs" c="dimmed">
+            Only include credentials on personal, trusted devices.
+          </Text>
+
+          <Group justify="flex-end">
+            <Button variant="default" onClick={() => setCredentialPrompt(null)}>
+              Cancel
+            </Button>
+            <Button
+              variant="default"
+              onClick={() => {
+                const currentPrompt = credentialPrompt;
+                setCredentialPrompt(null);
+
+                if (currentPrompt?.mode === 'import') {
+                  applyImportedSettings(currentPrompt.file, false);
+                  return;
+                }
+
+                downloadSettingsFile(false);
+              }}
+            >
+              {credentialPrompt?.mode === 'import' ? 'Keep current key' : 'Export without key'}
+            </Button>
+            <Button
+              onClick={() => {
+                const currentPrompt = credentialPrompt;
+                setCredentialPrompt(null);
+
+                if (currentPrompt?.mode === 'import') {
+                  applyImportedSettings(currentPrompt.file, true);
+                  return;
+                }
+
+                downloadSettingsFile(true);
+              }}
+            >
+              {credentialPrompt?.mode === 'import' ? 'Import key' : 'Include key'}
+            </Button>
+          </Group>
+        </Stack>
+      </Modal>
     </>
   );
 }
