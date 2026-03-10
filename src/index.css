@@ -4,7 +4,17 @@
 
 @import './theme.css' layer(theme);
 
-/* Smooth light/dark mode crossfade overlay */
+/* ----------------------------------------------------------------
+ * Typography smoothing (both modes)
+ * ---------------------------------------------------------------- */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ----------------------------------------------------------------
+ * Smooth light/dark mode crossfade overlay
+ * ---------------------------------------------------------------- */
 .theme-transition-overlay {
   position: fixed;
   inset: 0;
@@ -28,4 +38,57 @@
 
 .feedback-turnstile-mount:empty {
   display: contents;
+}
+
+/* ----------------------------------------------------------------
+ * Scrollbar styling
+ * ---------------------------------------------------------------- */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--gb-border-default);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gb-border-strong);
+}
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--gb-border-default) transparent;
+}
+
+/* ----------------------------------------------------------------
+ * Selection
+ * ---------------------------------------------------------------- */
+::selection {
+  background: var(--gb-glow-focus);
+  color: inherit;
+}
+
+/* ----------------------------------------------------------------
+ * Input focus ring (exclude inline editor textareas)
+ * ---------------------------------------------------------------- */
+.mantine-Input-input:focus:not(.inline-editor-input),
+.mantine-Textarea-input:focus:not(.inline-editor-input) {
+  box-shadow: 0 0 0 2px var(--gb-glow-focus) !important;
+}
+
+/* ----------------------------------------------------------------
+ * Tabs active state (dark)
+ * ---------------------------------------------------------------- */
+[data-mantine-color-scheme='dark'] .mantine-Tabs-tab[data-active] {
+  background-color: var(--gb-highlight-row);
+}
+
+/* ----------------------------------------------------------------
+ * SegmentedControl active indicator (dark)
+ * ---------------------------------------------------------------- */
+[data-mantine-color-scheme='dark'] .mantine-SegmentedControl-indicator {
+  background-color: var(--gb-surface-3);
+  box-shadow: var(--gb-shadow-tooltip);
 }

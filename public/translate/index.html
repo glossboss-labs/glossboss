@@ -6,19 +6,34 @@
     <title>Translate GlossBoss</title>
     <style>
       :root {
-        color-scheme: light;
+        color-scheme: light dark;
         --bg: #edf2ff;
         --panel: #fbfcff;
         --text: #162033;
         --muted: #566277;
         --border: #ced7ea;
         --accent: #2d5bd1;
+        --gradient: radial-gradient(circle at top, #f8faff 0%, var(--bg) 62%);
+        --shadow: 0 12px 32px rgba(22, 32, 51, 0.06);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #080a10;
+          --panel: #111420;
+          --text: #d8dde8;
+          --muted: #8892a6;
+          --border: #1e2438;
+          --accent: #6b9eff;
+          --gradient: radial-gradient(circle at top, #0c0f1a 0%, var(--bg) 62%);
+          --shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+        }
       }
 
       body {
         margin: 0;
         font-family: 'IBM Plex Sans', 'Segoe UI', sans-serif;
-        background: radial-gradient(circle at top, #f8faff 0%, var(--bg) 62%);
+        background: var(--gradient);
         color: var(--text);
       }
 
@@ -33,7 +48,7 @@
         border: 1px solid var(--border);
         border-radius: 18px;
         padding: 28px;
-        box-shadow: 0 20px 50px rgba(22, 32, 51, 0.08);
+        box-shadow: var(--shadow);
       }
 
       h1,

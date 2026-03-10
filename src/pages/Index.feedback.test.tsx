@@ -157,7 +157,8 @@ describe('Index feedback and empty state actions', () => {
     expect(screen.getByText('Detected: NL')).toBeInTheDocument();
   });
 
-  it('renders footer links for source, license, translate, and privacy', () => {
+  it('renders footer links for source, license, translate, and privacy in settings menu', async () => {
+    const user = userEvent.setup();
     render(
       <MemoryRouter>
         <AppProviders>
@@ -166,13 +167,22 @@ describe('Index feedback and empty state actions', () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByRole('link', { name: 'Source' })).toHaveAttribute(
-      'href',
-      'https://github.com/lammersbjorn/glossboss',
-    );
-    expect(screen.getByRole('link', { name: 'License' })).toHaveAttribute('href', '/license/');
-    expect(screen.getByRole('link', { name: 'Translate' })).toHaveAttribute('href', '/translate/');
-    expect(screen.getByRole('link', { name: 'Privacy' })).toHaveAttribute('href', '/privacy/');
+    // Open the settings menu
+    const settingsButton = screen.getByRole('button', { name: 'Settings and actions' });
+    await user.click(settingsButton);
+
+    // Menu items with component="a" render as links inside the portal
+    await waitFor(() => {
+      expect(screen.getByText('Source')).toBeInTheDocument();
+    });
+    const sourceLink = screen.getByText('Source').closest('a');
+    expect(sourceLink).toHaveAttribute('href', 'https://github.com/lammersbjorn/glossboss');
+    const licenseLink = screen.getByText('License').closest('a');
+    expect(licenseLink).toHaveAttribute('href', '/license/');
+    const translateLink = screen.getByText('Translate').closest('a');
+    expect(translateLink).toHaveAttribute('href', '/translate/');
+    const privacyLink = screen.getByText('Privacy').closest('a');
+    expect(privacyLink).toHaveAttribute('href', '/privacy/');
   });
 
   it('shows the development branch chip by default and hides it when disabled in storage', () => {

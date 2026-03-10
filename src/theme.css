@@ -6,42 +6,41 @@
  * Keep all { } braces balanced.
  */
 @theme {
-  /* Colors */
-  --color-primary: var(--color-blue-500);
+  /* Surface elevation — resolved per color scheme via cssVariablesResolver */
+  --color-surface-0: var(--gb-surface-0);
+  --color-surface-1: var(--gb-surface-1);
+  --color-surface-2: var(--gb-surface-2);
+  --color-surface-3: var(--gb-surface-3);
+
+  /* Borders */
+  --color-border-subtle: var(--gb-border-subtle);
+  --color-border-default: var(--gb-border-default);
+  --color-border-strong: var(--gb-border-strong);
+
+  /* Text */
+  --color-text-primary: var(--gb-text-primary);
+  --color-text-secondary: var(--gb-text-secondary);
+  --color-text-tertiary: var(--gb-text-tertiary);
+
+  /* Status (vivid, scheme-independent) */
+  --color-status-untranslated: #ef4444;
+  --color-status-translated: #22c55e;
+  --color-status-fuzzy: #f59e0b;
+  --color-status-modified: #f97316;
+
+  /* Accent — vibrant blue */
+  --color-accent: #3b82f6;
+  --color-accent-hover: #60a5fa;
+  --color-accent-muted: #1e3a8a;
+
+  /* Interaction / feedback */
+  --color-glow-focus: var(--gb-glow-focus);
+  --color-input-bg: var(--gb-input-bg);
+  --color-highlight-row: var(--gb-highlight-row);
+  --color-highlight-danger: var(--gb-highlight-danger);
+  --color-table-stripe: var(--gb-table-stripe);
+
+  /* Aliases */
+  --color-primary: var(--color-accent);
   --color-primary-foreground: var(--color-white);
-
-  --color-secondary: var(--color-gray-500);
-  --color-secondary-foreground: var(--color-white);
-
-  --color-destructive: var(--color-red-500);
-  --color-destructive-foreground: var(--color-white);
-
-  --color-muted: var(--color-gray-100);
-  --color-muted-foreground: var(--color-gray-500);
-
-  --color-accent: var(--color-purple-500);
-  --color-accent-foreground: var(--color-white);
-
-  --color-border: var(--color-gray-200);
-  --color-input: var(--color-gray-200);
-  --color-ring: var(--color-blue-500);
-
-  /* Radius */
-  --radius-sm: 0.5rem;
-  --radius-md: 0.75rem;
-  --radius-lg: 1rem;
-  --radius-xl: 1.5rem;
-}
-
-/* Animations */
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.6;
-    transform: scale(1.15);
-  }
 }

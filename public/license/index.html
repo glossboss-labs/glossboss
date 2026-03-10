@@ -6,19 +6,34 @@
     <title>GlossBoss License</title>
     <style>
       :root {
-        color-scheme: light;
+        color-scheme: light dark;
         --bg: #f6f4ee;
         --panel: #fffdf8;
         --text: #1f2933;
         --muted: #5b6875;
         --border: #d8d0c2;
         --accent: #225c5c;
+        --gradient: linear-gradient(180deg, #f8f3e8 0%, var(--bg) 100%);
+        --shadow: 0 12px 32px rgba(31, 41, 51, 0.06);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0a0a09;
+          --panel: #141413;
+          --text: #e8e6e0;
+          --muted: #9b978e;
+          --border: #2a2824;
+          --accent: #5eb8a0;
+          --gradient: linear-gradient(180deg, #0f0e0c 0%, var(--bg) 100%);
+          --shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+        }
       }
 
       body {
         margin: 0;
         font-family: 'IBM Plex Sans', 'Segoe UI', sans-serif;
-        background: linear-gradient(180deg, #f8f3e8 0%, var(--bg) 100%);
+        background: var(--gradient);
         color: var(--text);
       }
 
@@ -33,7 +48,7 @@
         border: 1px solid var(--border);
         border-radius: 18px;
         padding: 28px;
-        box-shadow: 0 20px 50px rgba(31, 41, 51, 0.08);
+        box-shadow: var(--shadow);
       }
 
       h1,

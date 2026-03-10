@@ -144,14 +144,14 @@ function KeyCombo({ keys }: { keys: string[][] }) {
       {keys.map((combo, ci) => (
         <Group key={ci} gap={4} wrap="nowrap">
           {ci > 0 && (
-            <Text size="xs" c="dimmed">
+            <Text size="xs" c="dimmed" aria-hidden="true">
               /
             </Text>
           )}
           {combo.map((key, ki) => (
             <span key={ki} style={{ display: 'inline-flex', alignItems: 'center', gap: 2 }}>
               {ki > 0 && (
-                <Text size="xs" c="dimmed">
+                <Text size="xs" c="dimmed" aria-hidden="true">
                   +
                 </Text>
               )}
@@ -253,6 +253,10 @@ interface SettingsModalProps {
   onBranchChipEnabledChange?: (enabled: boolean) => void;
   containerWidth?: ContainerWidth;
   onContainerWidthChange?: (width: ContainerWidth) => void;
+  speechEnabled?: boolean;
+  onSpeechEnabledChange?: (enabled: boolean) => void;
+  translateEnabled?: boolean;
+  onTranslateEnabledChange?: (enabled: boolean) => void;
 }
 
 export function SettingsModal({
@@ -272,6 +276,10 @@ export function SettingsModal({
   onBranchChipEnabledChange,
   containerWidth = 'xl',
   onContainerWidthChange,
+  speechEnabled = true,
+  onSpeechEnabledChange,
+  translateEnabled = true,
+  onTranslateEnabledChange,
 }: SettingsModalProps) {
   const { language, setLanguage, t } = useTranslation();
   const isDevelopment = import.meta.env.DEV;
@@ -657,6 +665,8 @@ export function SettingsModal({
             navSkipTranslated: skipTranslated,
             containerWidth,
             branchChipEnabled: isDevelopment ? branchChipEnabled : undefined,
+            speechEnabled,
+            translateEnabled,
           },
         },
         { includeApiKey },
@@ -693,6 +703,8 @@ export function SettingsModal({
       persistKey,
       selectedLocale,
       skipTranslated,
+      speechEnabled,
+      translateEnabled,
       t,
     ],
   );
@@ -724,6 +736,13 @@ export function SettingsModal({
         onBranchChipEnabledChange?.(applied.preferences.branchChipEnabled);
       }
 
+      if (typeof applied.preferences.speechEnabled === 'boolean') {
+        onSpeechEnabledChange?.(applied.preferences.speechEnabled);
+      }
+      if (typeof applied.preferences.translateEnabled === 'boolean') {
+        onTranslateEnabledChange?.(applied.preferences.translateEnabled);
+      }
+
       setTransferResult({
         success: true,
         message:
@@ -738,6 +757,8 @@ export function SettingsModal({
       onBranchChipEnabledChange,
       onContainerWidthChange,
       onGlossaryCleared,
+      onSpeechEnabledChange,
+      onTranslateEnabledChange,
       setSkipTranslated,
       t,
     ],
@@ -815,7 +836,7 @@ export function SettingsModal({
         }
       } catch (err) {
         if (loadTokenRef.current !== token) return;
-        setGlossaryError(err instanceof Error ? err.message : t('Unknown error'));
+        setGlossaryError(err instanceof Error ? t(err.message) : t('Unknown error'));
       } finally {
         if (loadTokenRef.current === token) {
           setIsLoadingGlossary(false);
@@ -896,7 +917,7 @@ export function SettingsModal({
 
   return (
     <>
-      <Modal opened={opened} onClose={onClose} title={t('Settings')} size="lg" centered>
+      <Modal opened={opened} onClose={onClose} title={t('Settings')} size="xl" centered>
         <Tabs defaultValue="api">
           <Tabs.List mb="md">
             <Tabs.Tab value="api" leftSection={<Key size={14} />}>
@@ -923,14 +944,7 @@ export function SettingsModal({
               {t('Backup')}
             </Tabs.Tab>
             {isDevelopment && (
-              <Tabs.Tab
-                value="development"
-                leftSection={<GitBranch size={14} />}
-                style={{
-                  border: '1px dotted var(--mantine-color-orange-5)',
-                  borderRadius: 'var(--mantine-radius-md)',
-                }}
-              >
+              <Tabs.Tab value="development" leftSection={<GitBranch size={14} />}>
                 {t('Development')}
               </Tabs.Tab>
             )}
@@ -939,6 +953,15 @@ export function SettingsModal({
           {/* DeepL API Tab */}
           <Tabs.Panel value="api">
             <Stack gap="md">
+              <Switch
+                label={t('Enable DeepL translation')}
+                description={t(
+                  'When disabled, all translate buttons and the bulk translation toolbar are hidden.',
+                )}
+                checked={translateEnabled}
+                onChange={(e) => onTranslateEnabledChange?.(e.currentTarget.checked)}
+              />
+
               <Text size="sm" c="dimmed">
                 {t('Enter your DeepL API key to enable machine translation. Get a free key at')}{' '}
                 <Anchor
@@ -1094,6 +1117,13 @@ export function SettingsModal({
           {/* Speech Tab */}
           <Tabs.Panel value="speech">
             <Stack gap="md">
+              <Switch
+                label={t('Enable speech playback')}
+                description={t('When disabled, all speak buttons are hidden from the editor.')}
+                checked={speechEnabled}
+                onChange={(e) => onSpeechEnabledChange?.(e.currentTarget.checked)}
+              />
+
               <Text size="sm" c="dimmed">
                 {t(
                   'Play strings with either browser voices or ElevenLabs. Browser playback stays free and local. ElevenLabs uses your own API key through a protected proxy.',

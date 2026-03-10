@@ -1,6 +1,8 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router';
+import '@fontsource-variable/geist';
+import '@fontsource-variable/geist-mono';
 import App from './App';
 import { AppProviders } from './providers';
 import './index.css';

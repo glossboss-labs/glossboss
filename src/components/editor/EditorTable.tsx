@@ -71,6 +71,7 @@ import type { Glossary, GlossaryAnalysisResult } from '@/lib/glossary/types';
 import { useDragGhost } from '@/hooks/use-drag-ghost';
 import { toSpeakLanguageTag } from '@/lib/tts';
 import { SpeakButton } from '@/components/ui';
+import { msgid, useTranslation } from '@/lib/app-language';
 
 /** localStorage key for skip-translated navigation setting */
 export const NAV_SKIP_TRANSLATED_KEY = 'glossboss-nav-skip-translated';
@@ -92,11 +93,11 @@ function entryNeedsTranslation(entry: POEntry): boolean {
 
 /** Rows per page options */
 const ROWS_PER_PAGE_OPTIONS = [
-  { value: '25', label: '25 rows' },
-  { value: '50', label: '50 rows' },
-  { value: '100', label: '100 rows' },
-  { value: '250', label: '250 rows' },
-  { value: '500', label: '500 rows' },
+  { value: '25', label: msgid('25 rows') },
+  { value: '50', label: msgid('50 rows') },
+  { value: '100', label: msgid('100 rows') },
+  { value: '250', label: msgid('250 rows') },
+  { value: '500', label: msgid('500 rows') },
 ];
 
 /** Column definitions with default proportional widths */
@@ -104,13 +105,13 @@ const COLUMN_KEYS = ['select', 'status', 'approve', 'source', 'translation', 'si
 type TableColumnKey = (typeof COLUMN_KEYS)[number];
 type DataColumnKey = Exclude<TableColumnKey, 'select'>;
 const DATA_COLUMN_LABELS: Record<DataColumnKey, string> = {
-  status: 'Status',
-  approve: 'Approve',
-  source: 'Source string',
-  translation: 'Translated string',
-  signals: 'Signals',
+  status: msgid('Status'),
+  approve: msgid('Approve'),
+  source: msgid('Source string'),
+  translation: msgid('Translated string'),
+  signals: msgid('Signals'),
 };
-const DEFAULT_COLUMN_WIDTHS = [72, 210, 48, 320, 320, 220];
+const DEFAULT_COLUMN_WIDTHS = [72, 210, 72, 310, 310, 220];
 const MIN_COLUMN_WIDTH = 60; // minimum proportion
 
 /**
@@ -179,8 +180,11 @@ function ResizableTh({
         position: 'relative',
         userSelect: 'none',
         textAlign: align,
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
         opacity: isDragging ? 0.3 : 1,
-        background: isDragging ? 'var(--mantine-color-gray-light)' : undefined,
+        background: isDragging ? 'var(--gb-surface-3)' : undefined,
         transition: 'opacity 140ms ease, background 140ms ease',
       }}
     >
@@ -224,7 +228,7 @@ function ResizableTh({
             onResize?.(Infinity); // sentinel for reset
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = 'var(--mantine-color-blue-light)';
+            e.currentTarget.style.backgroundColor = 'var(--gb-glow-focus)';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.backgroundColor = 'transparent';
@@ -242,6 +246,8 @@ interface TranslateSettings {
   glossary: Glossary | null;
   deeplGlossaryId: string | null;
   glossaryEnforcementEnabled: boolean;
+  speechEnabled: boolean;
+  translateEnabled: boolean;
 }
 
 const TranslateSettingsContext = createContext<TranslateSettings>({
@@ -250,6 +256,8 @@ const TranslateSettingsContext = createContext<TranslateSettings>({
   glossary: null,
   deeplGlossaryId: null,
   glossaryEnforcementEnabled: false,
+  speechEnabled: true,
+  translateEnabled: true,
 });
 
 /**
@@ -335,9 +343,9 @@ const STATUS_COLORS: Record<TranslationStatus, string> = {
 
 /** Status badge labels */
 const STATUS_LABELS: Record<TranslationStatus, string> = {
-  translated: 'Translated',
-  untranslated: 'Untranslated',
-  fuzzy: 'Fuzzy',
+  translated: msgid('Translated'),
+  untranslated: msgid('Untranslated'),
+  fuzzy: msgid('Fuzzy'),
 };
 
 /** Flag badge colors */
@@ -356,7 +364,7 @@ const FLAG_COLORS: Record<string, string> = {
  */
 function EditableField({
   value,
-  placeholder = 'Click to add translation',
+  placeholder = msgid('Click to add translation'),
   onChange,
   onKeyDown,
   entryId,
@@ -456,7 +464,7 @@ function EditableField({
               pointerEvents: 'none',
               overflow: 'hidden',
               borderRadius: 'var(--mantine-radius-default)',
-              backgroundColor: 'var(--mantine-color-body)',
+              backgroundColor: 'var(--gb-surface-1)',
             }}
           >
             <HighlightedText>{editValue || ' '}</HighlightedText>
@@ -472,6 +480,7 @@ function EditableField({
             minRows={1}
             maxRows={8}
             size="sm"
+            classNames={{ input: 'inline-editor-input' }}
             styles={{
               input: {
                 ...sharedStyles,
@@ -484,6 +493,7 @@ function EditableField({
                 boxShadow: 'none',
                 position: 'relative',
                 zIndex: 1,
+                overflow: 'hidden',
               },
             }}
             data-field-id={fieldId}
@@ -533,6 +543,7 @@ function EditableField({
  * Source text display with plural support (read-only)
  */
 function SourceCell({ entry }: { entry: POEntry }) {
+  const { t } = useTranslation();
   const translateSettings = useContext(TranslateSettingsContext);
   const sourceLang = toSpeakLanguageTag(translateSettings.sourceLang);
   const hasPlural = Boolean(entry.msgidPlural);
@@ -542,31 +553,35 @@ function SourceCell({ entry }: { entry: POEntry }) {
       <Stack gap={4}>
         <Group gap={4} wrap="nowrap" align="flex-start">
           <Badge size="xs" variant="light" color="gray">
-            singular
+            {t('singular')}
           </Badge>
           <Box style={{ flex: 1, minWidth: 0 }}>
             <HighlightedText>{entry.msgid}</HighlightedText>
           </Box>
-          <SpeakButton
-            kind="source"
-            entryId={`${entry.id}-source-0`}
-            text={entry.msgid}
-            lang={sourceLang}
-          />
+          {translateSettings.speechEnabled && (
+            <SpeakButton
+              kind="source"
+              entryId={`${entry.id}-source-0`}
+              text={entry.msgid}
+              lang={sourceLang}
+            />
+          )}
         </Group>
         <Group gap={4} wrap="nowrap" align="flex-start">
           <Badge size="xs" variant="light" color="gray">
-            plural
+            {t('plural')}
           </Badge>
           <Box style={{ flex: 1, minWidth: 0 }}>
             <HighlightedText>{entry.msgidPlural!}</HighlightedText>
           </Box>
-          <SpeakButton
-            kind="source"
-            entryId={`${entry.id}-source-1`}
-            text={entry.msgidPlural!}
-            lang={sourceLang}
-          />
+          {translateSettings.speechEnabled && (
+            <SpeakButton
+              kind="source"
+              entryId={`${entry.id}-source-1`}
+              text={entry.msgidPlural!}
+              lang={sourceLang}
+            />
+          )}
         </Group>
       </Stack>
     );
@@ -577,12 +592,14 @@ function SourceCell({ entry }: { entry: POEntry }) {
       <Box style={{ flex: 1, minWidth: 0 }}>
         <HighlightedText>{entry.msgid}</HighlightedText>
       </Box>
-      <SpeakButton
-        kind="source"
-        entryId={`${entry.id}-source`}
-        text={entry.msgid}
-        lang={sourceLang}
-      />
+      {translateSettings.speechEnabled && (
+        <SpeakButton
+          kind="source"
+          entryId={`${entry.id}-source`}
+          text={entry.msgid}
+          lang={sourceLang}
+        />
+      )}
     </Group>
   );
 }
@@ -596,6 +613,7 @@ function SignalsOverviewCell({
   usedGlossary: boolean;
   glossaryAnalysis: GlossaryAnalysisResult | null;
 }) {
+  const { t } = useTranslation();
   const hasGlossarySignals = (glossaryAnalysis?.terms.length ?? 0) > 0;
 
   if (!isMT && !hasGlossarySignals) {
@@ -610,7 +628,9 @@ function SignalsOverviewCell({
     <Stack gap={4}>
       {isMT && (
         <Tooltip
-          label={usedGlossary ? 'Machine translated with glossary' : 'Machine translated by DeepL'}
+          label={
+            usedGlossary ? t('Machine translated with glossary') : t('Machine translated by DeepL')
+          }
         >
           <Badge
             size="xs"
@@ -618,7 +638,7 @@ function SignalsOverviewCell({
             color={usedGlossary ? 'teal' : 'blue'}
             leftSection={<Bot size={10} />}
           >
-            {usedGlossary ? 'MT + Glossary' : 'Machine translated'}
+            {usedGlossary ? t('MT + Glossary') : t('Machine translated')}
           </Badge>
         </Tooltip>
       )}
@@ -641,6 +661,7 @@ function TranslationCell({
   translateButtonSize?: 'xs' | 'sm' | 'md';
   translateButtonDisplay?: 'icon' | 'button';
 }) {
+  const { t } = useTranslation();
   const updateEntry = useEditorStore((state) => state.updateEntry);
   const updateEntryPlural = useEditorStore((state) => state.updateEntryPlural);
   const markAsMachineTranslated = useEditorStore((state) => state.markAsMachineTranslated);
@@ -724,33 +745,37 @@ function TranslationCell({
                 fieldId={`${entry.id}-plural-${index}`}
                 isPlural
                 pluralIndex={index}
-                placeholder={`Plural form ${index}`}
+                placeholder={t('Plural form {{index}}', { index })}
               />
             </Box>
-            {translateSettings.targetLang && sourceTexts[index]?.trim() && (
-              <TranslateButton
-                text={sourceTexts[index]}
-                currentTranslation={form}
-                targetLang={translateSettings.targetLang}
-                sourceLang={translateSettings.sourceLang ?? undefined}
-                glossaryId={
-                  translateSettings.glossaryEnforcementEnabled
-                    ? (translateSettings.deeplGlossaryId ?? undefined)
-                    : undefined
-                }
-                onTranslated={(text, withGlossary) =>
-                  handlePluralTranslated(index, text, withGlossary)
-                }
-                size={translateButtonSize}
-                display={translateButtonDisplay}
+            {translateSettings.translateEnabled &&
+              translateSettings.targetLang &&
+              sourceTexts[index]?.trim() && (
+                <TranslateButton
+                  text={sourceTexts[index]}
+                  currentTranslation={form}
+                  targetLang={translateSettings.targetLang}
+                  sourceLang={translateSettings.sourceLang ?? undefined}
+                  glossaryId={
+                    translateSettings.glossaryEnforcementEnabled
+                      ? (translateSettings.deeplGlossaryId ?? undefined)
+                      : undefined
+                  }
+                  onTranslated={(text, withGlossary) =>
+                    handlePluralTranslated(index, text, withGlossary)
+                  }
+                  size={translateButtonSize}
+                  display={translateButtonDisplay}
+                />
+              )}
+            {translateSettings.speechEnabled && (
+              <SpeakButton
+                kind="translation"
+                entryId={`${entry.id}-translation-${index}`}
+                text={form}
+                lang={translationLang}
               />
             )}
-            <SpeakButton
-              kind="translation"
-              entryId={`${entry.id}-translation-${index}`}
-              text={form}
-              lang={translationLang}
-            />
           </Group>
         ))}
 
@@ -758,7 +783,9 @@ function TranslationCell({
         {isMT && (
           <Tooltip
             label={
-              usedGlossary ? 'Machine translated with glossary' : 'Machine translated by DeepL'
+              usedGlossary
+                ? t('Machine translated with glossary')
+                : t('Machine translated by DeepL')
             }
           >
             <Badge
@@ -767,7 +794,7 @@ function TranslationCell({
               color={usedGlossary ? 'teal' : 'blue'}
               leftSection={<Bot size={10} />}
             >
-              {usedGlossary ? 'MT + Glossary' : 'Machine translated'}
+              {usedGlossary ? t('MT + Glossary') : t('Machine translated')}
             </Badge>
           </Tooltip>
         )}
@@ -789,34 +816,40 @@ function TranslationCell({
             fieldId={`${entry.id}-singular`}
           />
         </Box>
-        {translateSettings.targetLang && entry.msgid.trim() && (
-          <TranslateButton
-            text={entry.msgid}
-            currentTranslation={entry.msgstr}
-            targetLang={translateSettings.targetLang}
-            sourceLang={translateSettings.sourceLang ?? undefined}
-            glossaryId={
-              translateSettings.glossaryEnforcementEnabled
-                ? (translateSettings.deeplGlossaryId ?? undefined)
-                : undefined
-            }
-            onTranslated={handleTranslated}
-            size={translateButtonSize}
-            display={translateButtonDisplay}
+        {translateSettings.translateEnabled &&
+          translateSettings.targetLang &&
+          entry.msgid.trim() && (
+            <TranslateButton
+              text={entry.msgid}
+              currentTranslation={entry.msgstr}
+              targetLang={translateSettings.targetLang}
+              sourceLang={translateSettings.sourceLang ?? undefined}
+              glossaryId={
+                translateSettings.glossaryEnforcementEnabled
+                  ? (translateSettings.deeplGlossaryId ?? undefined)
+                  : undefined
+              }
+              onTranslated={handleTranslated}
+              size={translateButtonSize}
+              display={translateButtonDisplay}
+            />
+          )}
+        {translateSettings.speechEnabled && (
+          <SpeakButton
+            kind="translation"
+            entryId={`${entry.id}-translation`}
+            text={entry.msgstr}
+            lang={translationLang}
           />
         )}
-        <SpeakButton
-          kind="translation"
-          entryId={`${entry.id}-translation`}
-          text={entry.msgstr}
-          lang={translationLang}
-        />
       </Group>
 
       {/* MT badge under translation */}
       {isMT && (
         <Tooltip
-          label={usedGlossary ? 'Machine translated with glossary' : 'Machine translated by DeepL'}
+          label={
+            usedGlossary ? t('Machine translated with glossary') : t('Machine translated by DeepL')
+          }
         >
           <Badge
             size="xs"
@@ -824,7 +857,7 @@ function TranslationCell({
             color={usedGlossary ? 'teal' : 'blue'}
             leftSection={<Bot size={10} />}
           >
-            {usedGlossary ? 'MT + Glossary' : 'Machine translated'}
+            {usedGlossary ? t('MT + Glossary') : t('Machine translated')}
           </Badge>
         </Tooltip>
       )}
@@ -850,6 +883,7 @@ const StatusBadges = memo(function StatusBadges({
   hasGlossaryTerms: boolean;
   isMT?: boolean;
 }) {
+  const { t } = useTranslation();
   const status = getTranslationStatus(entry.msgstr, entry.flags, entry.msgstrPlural);
 
   return (
@@ -864,11 +898,11 @@ const StatusBadges = memo(function StatusBadges({
       }}
     >
       <Badge color={STATUS_COLORS[status]} size="sm" variant="filled" style={{ flexShrink: 0 }}>
-        {STATUS_LABELS[status]}
+        {t(STATUS_LABELS[status])}
       </Badge>
 
       {isModified && (
-        <Tooltip label="Modified this session">
+        <Tooltip label={t('Modified this session')}>
           <Badge
             size="xs"
             variant="light"
@@ -876,13 +910,13 @@ const StatusBadges = memo(function StatusBadges({
             leftSection={<Edit3 size={10} />}
             style={{ flexShrink: 0 }}
           >
-            Modified
+            {t('Modified')}
           </Badge>
         </Tooltip>
       )}
 
       {isManualEdit && (
-        <Tooltip label="Manually edited - protected from bulk translation">
+        <Tooltip label={t('Manually edited - protected from bulk translation')}>
           <Badge
             size="xs"
             variant="light"
@@ -890,21 +924,21 @@ const StatusBadges = memo(function StatusBadges({
             leftSection={<Pencil size={10} />}
             style={{ flexShrink: 0 }}
           >
-            Manual
+            {t('Manual')}
           </Badge>
         </Tooltip>
       )}
 
       {hasGlossaryTerms && (
-        <Tooltip label="Contains glossary terms">
+        <Tooltip label={t('Contains glossary terms')}>
           <Badge size="xs" variant="dot" color="violet" style={{ flexShrink: 0 }}>
-            Glossary
+            {t('Glossary')}
           </Badge>
         </Tooltip>
       )}
 
       {isMT && (
-        <Tooltip label="Machine translated">
+        <Tooltip label={t('Machine translated')}>
           <Badge
             size="xs"
             variant="light"
@@ -924,6 +958,7 @@ const StatusBadges = memo(function StatusBadges({
  * Approve/unapprove toggle for fuzzy entries
  */
 const ApproveCell = memo(function ApproveCell({ entry }: { entry: POEntry }) {
+  const { t } = useTranslation();
   const toggleFuzzy = useEditorStore((state) => state.toggleFuzzy);
   const status = getTranslationStatus(entry.msgstr, entry.flags, entry.msgstrPlural);
   const isFuzzy = status === 'fuzzy';
@@ -932,7 +967,7 @@ const ApproveCell = memo(function ApproveCell({ entry }: { entry: POEntry }) {
   return (
     <Box style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       <Tooltip
-        label={isFuzzy ? 'Approve: clear fuzzy flag' : 'Unapprove: mark as fuzzy'}
+        label={isFuzzy ? t('Approve: clear fuzzy flag') : t('Unapprove: mark as fuzzy')}
         disabled={isUntranslated}
       >
         <ActionIcon
@@ -944,7 +979,7 @@ const ApproveCell = memo(function ApproveCell({ entry }: { entry: POEntry }) {
             e.stopPropagation();
             toggleFuzzy(entry.id);
           }}
-          aria-label={isFuzzy ? 'Approve translation' : 'Mark as fuzzy'}
+          aria-label={isFuzzy ? t('Approve translation') : t('Mark as fuzzy')}
         >
           {isFuzzy ? <AlertTriangle size={14} /> : <Check size={14} />}
         </ActionIcon>
@@ -964,6 +999,7 @@ function MetaCell({
   entry: POEntry;
   onReferenceActivate?: (ref: ParsedReference) => void;
 }) {
+  const { t } = useTranslation();
   const hasReferences = entry.references.length > 0;
   const hasComments = entry.translatorComments.length > 0;
   const flags = entry.flags.filter((f) => f !== 'fuzzy');
@@ -1007,7 +1043,7 @@ function MetaCell({
           >
             <FileCode size={12} opacity={0.5} />
             <Text size="xs" c="dimmed" style={{ textDecoration: 'underline dotted' }}>
-              {parsedRefs.length} ref{parsedRefs.length !== 1 ? 's' : ''}
+              {t('{{count}} ref(s)', { count: parsedRefs.length })}
             </Text>
           </Group>
         </Tooltip>
@@ -1018,7 +1054,7 @@ function MetaCell({
           <Group gap={4} style={{ cursor: 'help' }}>
             <FileCode size={12} opacity={0.5} />
             <Text size="xs" c="dimmed">
-              {entry.references.length} ref{entry.references.length !== 1 ? 's' : ''}
+              {t('{{count}} ref(s)', { count: entry.references.length })}
             </Text>
           </Group>
         </Tooltip>
@@ -1029,8 +1065,7 @@ function MetaCell({
           <Group gap={4} style={{ cursor: 'help' }}>
             <MessageSquare size={12} opacity={0.5} />
             <Text size="xs" c="dimmed">
-              {entry.translatorComments.length} comment
-              {entry.translatorComments.length !== 1 ? 's' : ''}
+              {t('{{count}} comment(s)', { count: entry.translatorComments.length })}
             </Text>
           </Group>
         </Tooltip>
@@ -1049,12 +1084,15 @@ function isSameReference(a: ParsedReference | null, b: ParsedReference): boolean
   return Boolean(a && a.path === b.path && a.line === b.line);
 }
 
-function pluralSummary(entry: POEntry): string {
-  if (!entry.msgidPlural) return 'Singular entry';
+function pluralSummary(
+  entry: POEntry,
+  t: (key: string, vars?: Record<string, unknown>) => string,
+): string {
+  if (!entry.msgidPlural) return t('Singular entry');
   const forms = entry.msgstrPlural ?? [];
   const completed = forms.filter((form) => form.trim()).length;
   const total = Math.max(forms.length, 2);
-  return `Plural entry: ${completed}/${total} forms translated`;
+  return t('Plural entry: {{completed}}/{{total}} forms translated', { completed, total });
 }
 
 function EntryDetailsPanel({
@@ -1074,6 +1112,7 @@ function EntryDetailsPanel({
   hasGlossaryTerms: boolean;
   onActivateReference: (ref: ParsedReference) => void;
 }) {
+  const { t } = useTranslation();
   const pluginSlug = useSourceStore((s) => getEffectiveSlug(s));
   const basePath = useSourceStore((s) => s.resolvedBasePath) ?? 'trunk';
   const activeReference = useSourceStore((s) => s.activeReference);
@@ -1092,31 +1131,31 @@ function EntryDetailsPanel({
     <Stack gap="sm" data-testid={`entry-details-${entry.id}`}>
       <Group gap="xs" wrap="wrap">
         <Badge color={STATUS_COLORS[status]} variant="light" size="sm">
-          {STATUS_LABELS[status]}
+          {t(STATUS_LABELS[status])}
         </Badge>
         {isModified && (
           <Badge color="orange" variant="light" size="sm">
-            Modified
+            {t('Modified')}
           </Badge>
         )}
         {isManualEdit && (
           <Badge color="grape" variant="light" size="sm">
-            Manual edit
+            {t('Manual edit')}
           </Badge>
         )}
         {isMT && (
           <Badge color="blue" variant="light" size="sm">
-            Machine translated
+            {t('Machine translated')}
           </Badge>
         )}
         {hasGlossaryTerms && (
           <Badge color="violet" variant="light" size="sm">
-            Glossary match
+            {t('Glossary match')}
           </Badge>
         )}
         {entry.lineNumber && (
           <Badge color="gray" variant="light" size="sm">
-            Line {entry.lineNumber}
+            {t('Line {{lineNumber}}', { lineNumber: entry.lineNumber })}
           </Badge>
         )}
         <ApproveCell entry={entry} />
@@ -1125,18 +1164,18 @@ function EntryDetailsPanel({
       <Group align="flex-start" grow>
         <Stack gap={4}>
           <Text size="xs" fw={600} c="dimmed">
-            Context
+            {t('Context')}
           </Text>
           <Text size="sm" style={{ whiteSpace: 'pre-wrap' }}>
-            {entry.msgctxt || 'No context'}
+            {entry.msgctxt || t('No context')}
           </Text>
         </Stack>
 
         <Stack gap={4}>
           <Text size="xs" fw={600} c="dimmed">
-            Structure
+            {t('Structure')}
           </Text>
-          <Text size="sm">{pluralSummary(entry)}</Text>
+          <Text size="sm">{pluralSummary(entry, t)}</Text>
         </Stack>
       </Group>
 
@@ -1144,12 +1183,12 @@ function EntryDetailsPanel({
 
       <Stack gap={6}>
         <Text size="xs" fw={600} c="dimmed">
-          References
+          {t('References')}
         </Text>
 
         {parsedRefs.length === 0 ? (
           <Text size="sm" c="dimmed">
-            No source references
+            {t('No source references')}
           </Text>
         ) : (
           <Stack gap={4}>
@@ -1178,7 +1217,7 @@ function EntryDetailsPanel({
                   </Anchor>
 
                   {pluginSlug && (
-                    <Tooltip label="Open in Trac">
+                    <Tooltip label={t('Open in Trac')}>
                       <ActionIcon
                         component="a"
                         href={buildTracUrl(pluginSlug, ref.path, ref.line ?? undefined, basePath)}
@@ -1204,7 +1243,7 @@ function EntryDetailsPanel({
       <Group align="flex-start" grow>
         <Stack gap={6}>
           <Text size="xs" fw={600} c="dimmed">
-            Translator comments
+            {t('Translator comments')}
           </Text>
           {entry.translatorComments.length > 0 ? (
             <Stack gap={3}>
@@ -1216,14 +1255,14 @@ function EntryDetailsPanel({
             </Stack>
           ) : (
             <Text size="sm" c="dimmed">
-              None
+              {t('None')}
             </Text>
           )}
         </Stack>
 
         <Stack gap={6}>
           <Text size="xs" fw={600} c="dimmed">
-            Extracted comments
+            {t('Extracted comments')}
           </Text>
           {entry.extractedComments.length > 0 ? (
             <Stack gap={3}>
@@ -1235,7 +1274,7 @@ function EntryDetailsPanel({
             </Stack>
           ) : (
             <Text size="sm" c="dimmed">
-              None
+              {t('None')}
             </Text>
           )}
         </Stack>
@@ -1246,7 +1285,7 @@ function EntryDetailsPanel({
           <Divider />
           <Stack gap={6}>
             <Text size="xs" fw={600} c="dimmed">
-              Flags
+              {t('Flags')}
             </Text>
             <Group gap={6} wrap="wrap">
               {flags.map((flag) => (
@@ -1263,18 +1302,18 @@ function EntryDetailsPanel({
 
       <Stack gap={6}>
         <Text size="xs" fw={600} c="dimmed">
-          Source preview
+          {t('Source preview')}
         </Text>
 
         {!pluginSlug && (
           <Text size="sm" c="dimmed">
-            Set a plugin slug in Settings to enable source preview.
+            {t('Set a plugin slug in Settings to enable source preview.')}
           </Text>
         )}
 
         {pluginSlug && parsedRefs.length > 0 && !entryActiveReference && (
           <Text size="sm" c="dimmed">
-            Select a reference above to load source context.
+            {t('Select a reference above to load source context.')}
           </Text>
         )}
 
@@ -1282,7 +1321,7 @@ function EntryDetailsPanel({
           <Group gap="xs">
             <Loader size="sm" />
             <Text size="sm" c="dimmed">
-              Loading source...
+              {t('Loading source...')}
             </Text>
           </Group>
         )}
@@ -1294,7 +1333,7 @@ function EntryDetailsPanel({
         )}
 
         {pluginSlug && entryActiveReference && sourceContent && !isLoadingSource && (
-          <Paper withBorder style={{ overflow: 'hidden' }}>
+          <Paper withBorder radius="md" style={{ overflow: 'hidden' }}>
             <SourceCodeViewer
               content={sourceContent}
               targetLine={entryActiveReference.line}
@@ -1362,13 +1401,11 @@ const EntryRow = memo(function EntryRow({
       style={{
         cursor: 'pointer',
         backgroundColor: isSelected
-          ? 'var(--mantine-color-blue-light)'
+          ? 'var(--gb-highlight-row)'
           : isUntranslated
-            ? 'var(--mantine-color-red-light)'
+            ? 'var(--gb-highlight-danger)'
             : undefined,
-        borderLeft: isModified
-          ? '4px solid var(--mantine-color-orange-5)'
-          : '4px solid transparent',
+        boxShadow: isModified ? 'inset 4px 0 0 var(--mantine-color-orange-5)' : undefined,
       }}
     >
       <Table.Td
@@ -1479,6 +1516,7 @@ const MobileEntryCard = memo(function MobileEntryCard({
   onKeyDown?: (e: KeyboardEvent<HTMLTextAreaElement>, fieldId: string) => void;
   onSelect?: (sourceText: string) => void;
 }) {
+  const { t } = useTranslation();
   const {
     selectedEntryId,
     selectEntry,
@@ -1522,9 +1560,9 @@ const MobileEntryCard = memo(function MobileEntryCard({
         cursor: 'pointer',
         borderColor: isSelected ? 'var(--mantine-color-blue-4)' : undefined,
         backgroundColor: isSelected
-          ? 'var(--mantine-color-blue-light)'
+          ? 'var(--gb-highlight-row)'
           : isUntranslated
-            ? 'var(--mantine-color-red-light)'
+            ? 'var(--gb-highlight-danger)'
             : undefined,
       }}
     >
@@ -1557,7 +1595,7 @@ const MobileEntryCard = memo(function MobileEntryCard({
         >
           <Group gap={4} wrap="nowrap">
             <Text size="xs" fw={500}>
-              Details
+              {t('Details')}
             </Text>
             {detailsExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
           </Group>
@@ -1567,21 +1605,21 @@ const MobileEntryCard = memo(function MobileEntryCard({
       <Stack gap={8} mt="sm">
         <Box>
           <Text size="xs" fw={600} c="dimmed" mb={4}>
-            Source
+            {t('Source')}
           </Text>
           <SourceCell entry={entry} />
         </Box>
 
         <Box>
           <Text size="xs" fw={600} c="dimmed" mb={4}>
-            Translation
+            {t('Translation')}
           </Text>
           <TranslationCell entry={entry} onKeyDown={onKeyDown} />
         </Box>
 
         <Box>
           <Text size="xs" fw={600} c="dimmed" mb={4}>
-            Signals
+            {t('Signals')}
           </Text>
           <MetaCell entry={entry} onReferenceActivate={handleActivateReference} />
         </Box>
@@ -1613,6 +1651,8 @@ export interface EditorTableProps {
   deeplGlossaryId?: string | null;
   glossaryEnforcementEnabled?: boolean;
   onEntrySelect?: (sourceText: string) => void;
+  speechEnabled?: boolean;
+  translateEnabled?: boolean;
 }
 
 export function EditorTable({
@@ -1622,7 +1662,10 @@ export function EditorTable({
   deeplGlossaryId = null,
   glossaryEnforcementEnabled = false,
   onEntrySelect,
+  speechEnabled = true,
+  translateEnabled = true,
 }: EditorTableProps) {
+  const { t } = useTranslation();
   const theme = useMantineTheme();
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
   const entries = useEditorStore((state) => state.entries);
@@ -1973,8 +2016,18 @@ export function EditorTable({
       glossary,
       deeplGlossaryId,
       glossaryEnforcementEnabled,
+      speechEnabled,
+      translateEnabled,
     }),
-    [targetLang, sourceLang, glossary, deeplGlossaryId, glossaryEnforcementEnabled],
+    [
+      targetLang,
+      sourceLang,
+      glossary,
+      deeplGlossaryId,
+      glossaryEnforcementEnabled,
+      speechEnabled,
+      translateEnabled,
+    ],
   );
 
   const handleKeyDown = useCallback(
@@ -2109,11 +2162,13 @@ export function EditorTable({
     ? (getGlossaryAnalysis(selectedEntry.id)?.matchedCount ?? 0) > 0
     : false;
   const selectedInspectorLabel = (() => {
-    if (!selectedEntry) return 'No selection';
+    if (!selectedEntry) return t('No selection');
 
-    const linePart = selectedEntry.lineNumber ? `Line ${selectedEntry.lineNumber}` : '';
+    const linePart = selectedEntry.lineNumber
+      ? t('Line {{lineNumber}}', { lineNumber: selectedEntry.lineNumber })
+      : '';
     const sourcePreview =
-      selectedEntry.msgid.trim() || selectedEntry.msgctxt?.trim() || 'Selected string';
+      selectedEntry.msgid.trim() || selectedEntry.msgctxt?.trim() || t('Selected string');
 
     return linePart ? `${linePart} · ${sourcePreview}` : sourcePreview;
   })();
@@ -2123,7 +2178,7 @@ export function EditorTable({
       {selectedEntryIds.size > 0 && (
         <Group gap={6} mb={6}>
           <Text size="xs" c="dimmed">
-            {selectedEntryIds.size} selected
+            {t('{{count}} selected', { count: selectedEntryIds.size })}
           </Text>
         </Group>
       )}
@@ -2155,10 +2210,10 @@ export function EditorTable({
               onClick={() => setInspectorOpen(!inspectorOpen)}
               data-testid="toggle-inspector-btn"
             >
-              {inspectorOpen ? 'Hide info' : 'More info'}
+              {inspectorOpen ? t('Hide info') : t('More info')}
             </Button>
           </Group>
-          <Group align="flex-start" wrap="nowrap" gap="md">
+          <Box style={{ display: 'flex', alignItems: 'flex-start' }}>
             <Box style={{ flex: 1, minWidth: 0 }}>
               <Table
                 ref={tableRef}
@@ -2178,7 +2233,7 @@ export function EditorTable({
                     position: 'sticky',
                     top: 0,
                     zIndex: 10,
-                    background: 'var(--mantine-color-body)',
+                    background: 'var(--gb-surface-2)',
                     touchAction: 'none',
                   }}
                 >
@@ -2193,11 +2248,11 @@ export function EditorTable({
                             checked={allFilteredSelected}
                             indeterminate={someFilteredSelected}
                             onChange={(e) => handleSelectAllFiltered(e.currentTarget.checked)}
-                            aria-label="Select all filtered entries"
+                            aria-label={t('Select all filtered entries')}
                             data-testid="select-all-checkbox"
                           />
                         ) : (
-                          DATA_COLUMN_LABELS[columnKey]
+                          t(DATA_COLUMN_LABELS[columnKey])
                         );
 
                       const dropIndicator =
@@ -2264,177 +2319,191 @@ export function EditorTable({
               </Table>
             </Box>
 
-            {inspectorOpen && (
-              <>
-                <Box
-                  role="separator"
-                  aria-orientation="vertical"
-                  aria-label="Resize inspector"
-                  onPointerDown={handleInspectorResizeStart}
-                  onDoubleClick={() => setInspectorWidth(INSPECTOR_DEFAULT_WIDTH)}
-                  style={{
-                    width: 8,
-                    alignSelf: 'stretch',
-                    cursor: 'col-resize',
-                    borderRadius: 6,
-                    backgroundColor: 'var(--mantine-color-default-border)',
-                    opacity: 0.35,
-                    transition: 'opacity 120ms ease',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.opacity = '0.8';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.opacity = '0.35';
-                  }}
-                />
+            <Box
+              style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: 'var(--mantine-spacing-md)',
+                overflow: 'hidden',
+                flexShrink: 0,
+                width: inspectorOpen ? inspectorWidth + 24 : 0,
+                marginLeft: inspectorOpen ? 'var(--mantine-spacing-md)' : 0,
+                opacity: inspectorOpen ? 1 : 0,
+                transition: 'width 250ms ease, margin-left 250ms ease, opacity 150ms ease',
+                pointerEvents: inspectorOpen ? 'auto' : 'none',
+              }}
+            >
+              <Box
+                role="separator"
+                aria-orientation="vertical"
+                aria-label={t('Resize inspector')}
+                onPointerDown={handleInspectorResizeStart}
+                onDoubleClick={() => setInspectorWidth(INSPECTOR_DEFAULT_WIDTH)}
+                style={{
+                  width: 8,
+                  flexShrink: 0,
+                  alignSelf: 'stretch',
+                  cursor: 'col-resize',
+                  borderRadius: 6,
+                  backgroundColor: 'var(--mantine-color-default-border)',
+                  opacity: 0.35,
+                  transition: 'opacity 120ms ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.opacity = '0.8';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.opacity = '0.35';
+                }}
+              />
 
-                <Paper
-                  withBorder
-                  p="sm"
-                  w={inspectorWidth}
-                  style={{
-                    flexShrink: 0,
-                    position: 'sticky',
-                    top: 16,
-                    height: 'calc(100vh - 32px)',
-                    maxHeight: 'calc(100vh - 32px)',
-                    overflow: 'hidden',
-                    display: 'flex',
-                    flexDirection: 'column',
-                  }}
-                >
-                  <Stack gap="sm" pt={2} style={{ height: '100%', minHeight: 0 }}>
-                    <Group justify="space-between" align="center">
-                      <Text fw={600} size="sm">
-                        String Inspector
+              <Paper
+                withBorder
+                p="sm"
+                w={inspectorWidth}
+                style={{
+                  flexShrink: 0,
+                  position: 'sticky',
+                  top: 16,
+                  height: 'calc(100vh - 32px)',
+                  maxHeight: 'calc(100vh - 32px)',
+                  overflow: 'hidden',
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+              >
+                <Stack gap="sm" pt={2} style={{ height: '100%', minHeight: 0 }}>
+                  <Group justify="space-between" align="center">
+                    <Text fw={600} size="sm">
+                      {t('String Inspector')}
+                    </Text>
+                    <Tooltip
+                      label={selectedInspectorLabel}
+                      disabled={!selectedEntry}
+                      position="bottom"
+                    >
+                      <Text size="xs" c="dimmed" maw="58%" ta="right" truncate="end">
+                        {selectedInspectorLabel}
                       </Text>
-                      <Tooltip
-                        label={selectedInspectorLabel}
-                        disabled={!selectedEntry}
-                        position="bottom"
-                      >
-                        <Text size="xs" c="dimmed" maw="58%" ta="right" truncate="end">
-                          {selectedInspectorLabel}
-                        </Text>
+                    </Tooltip>
+                  </Group>
+
+                  <Group justify="space-between" align="center">
+                    <SegmentedControl
+                      size="xs"
+                      value={inspectorMode}
+                      onChange={(value) => setInspectorMode(value as 'context' | 'browse')}
+                      data={[
+                        { label: t('Context'), value: 'context' },
+                        { label: t('Browse'), value: 'browse' },
+                      ]}
+                    />
+
+                    {inspectorMode === 'context' && activeReference && (
+                      <Tooltip label={t('Clear active source reference')}>
+                        <ActionIcon
+                          variant="subtle"
+                          size="sm"
+                          onClick={() => setActiveReference(null)}
+                        >
+                          <X size={14} />
+                        </ActionIcon>
                       </Tooltip>
-                    </Group>
+                    )}
+                  </Group>
 
-                    <Group justify="space-between" align="center">
-                      <SegmentedControl
-                        size="xs"
-                        value={inspectorMode}
-                        onChange={(value) => setInspectorMode(value as 'context' | 'browse')}
-                        data={[
-                          { label: 'Context', value: 'context' },
-                          { label: 'Browse', value: 'browse' },
-                        ]}
-                      />
+                  <Divider />
 
-                      {inspectorMode === 'context' && activeReference && (
-                        <Tooltip label="Clear active source reference">
-                          <ActionIcon
-                            variant="subtle"
-                            size="sm"
-                            onClick={() => setActiveReference(null)}
-                          >
-                            <X size={14} />
-                          </ActionIcon>
-                        </Tooltip>
-                      )}
-                    </Group>
-
-                    <Divider />
-
-                    <Box style={{ flex: 1, minHeight: 0 }}>
-                      {inspectorMode === 'browse' ? (
-                        <Paper withBorder style={{ overflow: 'hidden', height: '100%' }}>
-                          <SourceBrowser listingMaxHeight={420} viewerMaxHeight={420} />
-                        </Paper>
-                      ) : (
-                        <ScrollArea h="100%" type="auto" offsetScrollbars="y">
-                          {selectedEntry && selectedStatus ? (
-                            <Stack gap="sm">
-                              <Stack gap={6}>
-                                <Text size="xs" fw={600} c="dimmed">
-                                  Translation
-                                </Text>
-                                <TranslationCell
-                                  entry={selectedEntry}
-                                  onKeyDown={handleKeyDown}
-                                  translateButtonSize="md"
-                                  translateButtonDisplay="icon"
-                                />
-                              </Stack>
-
-                              <Divider />
-
-                              <EntryDetailsPanel
+                  <Box style={{ flex: 1, minHeight: 0 }}>
+                    {inspectorMode === 'browse' ? (
+                      <Paper withBorder radius="md" style={{ overflow: 'hidden', height: '100%' }}>
+                        <SourceBrowser listingMaxHeight={420} viewerMaxHeight={420} />
+                      </Paper>
+                    ) : (
+                      <ScrollArea h="100%" type="auto" offsetScrollbars="y">
+                        {selectedEntry && selectedStatus ? (
+                          <Stack gap="sm">
+                            <Stack gap={6}>
+                              <Text size="xs" fw={600} c="dimmed">
+                                {t('Translation')}
+                              </Text>
+                              <TranslationCell
                                 entry={selectedEntry}
-                                status={selectedStatus}
-                                isModified={selectedIsModified}
-                                isMT={selectedIsMT}
-                                isManualEdit={selectedIsManualEdit}
-                                hasGlossaryTerms={selectedHasGlossaryTerms}
-                                onActivateReference={handleInspectorReference}
+                                onKeyDown={handleKeyDown}
+                                translateButtonSize="md"
+                                translateButtonDisplay="icon"
                               />
                             </Stack>
-                          ) : (
-                            <Text size="sm" c="dimmed">
-                              Select a row to inspect context and metadata.
-                            </Text>
-                          )}
-                        </ScrollArea>
-                      )}
-                    </Box>
-                  </Stack>
-                </Paper>
-              </>
-            )}
-          </Group>
-        </Stack>
-      )}
 
-      {/* Pagination controls */}
-      {filteredEntries.length > 0 && (
-        <Paper p="sm" mt="md" withBorder>
-          <Group justify="space-between" align="center">
-            <Group gap="sm">
-              <Select
-                value={rowsPerPage}
-                onChange={(value) => value && setRowsPerPage(value)}
-                data={ROWS_PER_PAGE_OPTIONS}
-                size="xs"
-                w={120}
-                aria-label="Rows per page"
-              />
-              <Text size="sm" c="dimmed">
-                Showing {startItem}–{endItem} of {filteredEntries.length} entries
-              </Text>
+                            <Divider />
+
+                            <EntryDetailsPanel
+                              entry={selectedEntry}
+                              status={selectedStatus}
+                              isModified={selectedIsModified}
+                              isMT={selectedIsMT}
+                              isManualEdit={selectedIsManualEdit}
+                              hasGlossaryTerms={selectedHasGlossaryTerms}
+                              onActivateReference={handleInspectorReference}
+                            />
+                          </Stack>
+                        ) : (
+                          <Text size="sm" c="dimmed">
+                            {t('Select a row to inspect context and metadata.')}
+                          </Text>
+                        )}
+                      </ScrollArea>
+                    )}
+                  </Box>
+                </Stack>
+              </Paper>
+            </Box>
+          </Box>
+
+          {/* Pagination controls */}
+          {filteredEntries.length > 0 && (
+            <Group justify="space-between" align="center" mt="xs">
+              <Group gap="sm">
+                <Select
+                  value={rowsPerPage}
+                  onChange={(value) => value && setRowsPerPage(value)}
+                  data={ROWS_PER_PAGE_OPTIONS.map((opt) => ({ ...opt, label: t(opt.label) }))}
+                  size="xs"
+                  w={120}
+                  aria-label={t('Rows per page')}
+                />
+                <Text size="sm" c="dimmed">
+                  {t('Showing {{start}}–{{end}} of {{total}} entries', {
+                    start: startItem,
+                    end: endItem,
+                    total: filteredEntries.length,
+                  })}
+                </Text>
+              </Group>
+
+              {totalPages > 1 && (
+                <Pagination
+                  value={currentPage}
+                  onChange={setCurrentPage}
+                  total={totalPages}
+                  size="sm"
+                  withEdges
+                />
+              )}
             </Group>
-
-            {totalPages > 1 && (
-              <Pagination
-                value={currentPage}
-                onChange={setCurrentPage}
-                total={totalPages}
-                size="sm"
-                withEdges
-              />
-            )}
-          </Group>
-        </Paper>
+          )}
+        </Stack>
       )}
 
       {/* Empty state for filtered results */}
       {filteredEntries.length === 0 && entries.length > 0 && (
-        <Paper p="xl" withBorder mt="md">
+        <Paper p="xl" withBorder radius="md" mt="md">
           <Stack align="center" gap="sm">
             <Text c="dimmed" ta="center">
-              No entries match the current filters.
+              {t('No entries match the current filters.')}
             </Text>
             <Text size="sm" c="dimmed">
-              Try adjusting your search or clearing some filters.
+              {t('Try adjusting your search or clearing some filters.')}
             </Text>
           </Stack>
         </Paper>
