@@ -40,13 +40,18 @@ jobs:
             assignees=$(echo "$LANG_CONFIG" | jq -r --arg l "$lang" '.[$l].assignees // ""')
             title="[Translations] i18n: Untranslated strings in ${name} (${lang})"
 
-            # Collect untranslated msgids (msgstr "" that follow a non-empty msgid)
+            # Collect untranslated msgids (empty msgstr after a non-empty msgid).
+            # Handles multi-line msgid/msgstr continuation blocks correctly: a
+            # "msgstr """ opening followed by continuation lines "..." is NOT
+            # empty — only a msgstr block whose fully-assembled value is "" is
+            # considered untranslated.
             untranslated=$(awk '
               /^msgid "/ {
+                if (in_msgstr && msgstr == "" && msgid != "") print "- [ ] `" msgid "`"
                 msgid = $0
                 sub(/^msgid "/, "", msgid)
                 sub(/"$/, "", msgid)
-                in_msgid = 1
+                in_msgid = 1; in_msgstr = 0; msgstr = ""
                 next
               }
               in_msgid && /^"/ {
@@ -57,8 +62,27 @@ jobs:
                 next
               }
               in_msgid { in_msgid = 0 }
-              /^msgstr ""$/ && msgid != "" { print "- [ ] `" msgid "`"; msgid = "" }
-              /^msgstr ".+"/ { msgid = "" }
+              /^msgstr "/ {
+                in_msgstr = 1; in_msgid = 0
+                msgstr = $0
+                sub(/^msgstr "/, "", msgstr)
+                sub(/"$/, "", msgstr)
+                next
+              }
+              in_msgstr && /^"/ {
+                line = $0
+                sub(/^"/, "", line)
+                sub(/"$/, "", line)
+                msgstr = msgstr line
+                next
+              }
+              in_msgstr {
+                if (msgstr == "" && msgid != "") print "- [ ] `" msgid "`"
+                msgid = ""; msgstr = ""; in_msgstr = 0
+              }
+              END {
+                if (in_msgstr && msgstr == "" && msgid != "") print "- [ ] `" msgid "`"
+              }
             ' "$po")
 
             count=$(echo "$untranslated" | grep -c '^\- \[' || true)

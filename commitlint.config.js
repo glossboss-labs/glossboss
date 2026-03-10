@@ -1,4 +1,8 @@
-const historicalCommitlintIgnores = ['Initial plan', 'Update src/test/setup.ts'];
+const historicalCommitlintIgnores = [
+  'Initial plan',
+  'Update src/test/setup.ts',
+  'fix: Dutch translation for API key validation message',
+];
 
 export default {
   extends: ['@commitlint/config-conventional'],
