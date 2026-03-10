@@ -281,8 +281,8 @@ msgid ""
 "is browser. Glossary cache, drafts, and project files are not included."
 msgstr ""
 "Je kunt je opgeslagen voorkeuren exporteren naar een JSON-back-upbestand of "
-"ze terugzetten in deze browser. Glossary-cache, concepten en projectbestand"
-"en worden niet meegenomen."
+"ze terugzetten in deze browser. Glossary-cache, concepten en projectbestande"
+"n worden niet meegenomen."
 
 #: src/components/SettingsModal.tsx:1655
 msgid ""
@@ -842,8 +842,8 @@ msgid ""
 "These tools only appear while running the app locally in development and are"
 " not shown in production."
 msgstr ""
-"Deze tools zijn alleen zichtbaar wanneer je de app lokaal in de ontwikkelings"
-"modus gebruikt en worden niet getoond in productie."
+"Deze tools zijn alleen zichtbaar wanneer je de app lokaal in de ontwikkeling"
+"smodus gebruikt en worden niet getoond in productie."
 
 #: src/components/SettingsModal.tsx:611
 msgid "This is a preview of the selected voice."
@@ -909,8 +909,8 @@ msgid ""
 "removed."
 msgstr ""
 "Werk dit bestand bij met een .pot-template. Bestaande vertalingen blijven be"
-"houden als de bronteksten nog overeenkomen. Nieuwe teksten worden toegevoegd "
-"en verouderde teksten worden verwijderd."
+"houden als de bronteksten nog overeenkomen. Nieuwe teksten worden toegevoegd"
+" en verouderde teksten worden verwijderd."
 
 #: src/pages/Index.tsx:1171
 msgid "Updated"
