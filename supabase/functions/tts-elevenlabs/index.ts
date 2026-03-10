@@ -172,6 +172,19 @@ async function sendElevenLabsRequest(
   });
 }
 
+function extractElevenLabsMessage(raw: string, fallback: string): string {
+  try {
+    const body = JSON.parse(raw);
+    if (isObject(body?.detail) && typeof body.detail.message === 'string') {
+      return body.detail.message;
+    }
+    if (typeof body?.detail === 'string') return body.detail;
+  } catch {
+    // not JSON — fall through
+  }
+  return sanitizeUpstreamError(raw, fallback);
+}
+
 async function proxyElevenLabsError(
   req: Request,
   response: Response,
@@ -179,12 +192,13 @@ async function proxyElevenLabsError(
   fallback: string,
 ): Promise<Response> {
   const errorText = await response.text().catch(() => '');
+  const message = extractElevenLabsMessage(redactApiKey(errorText, apiKey), fallback);
   return jsonResponse(
     req,
     {
       ok: false,
-      code: 'UPSTREAM_ERROR',
-      message: sanitizeUpstreamError(redactApiKey(errorText, apiKey), fallback),
+      code: response.status === 401 ? 'INVALID_API_KEY' : 'UPSTREAM_ERROR',
+      message,
     },
     { status: response.status },
   );

@@ -223,7 +223,7 @@ export async function togglePlayback(request: TtsSpeakRequest): Promise<void> {
     playWithBrowser(request, playbackId);
   } catch (error) {
     setSnapshot({
-      activeId: null,
+      activeId: playbackId,
       status: 'idle',
       error: error instanceof Error ? error.message : 'Playback failed.',
     });

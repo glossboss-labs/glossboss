@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from 'react';
 import { ActionIcon, Tooltip } from '@mantine/core';
-import { Volume2, Square } from 'lucide-react';
+import { Volume2, Square, AlertTriangle } from 'lucide-react';
 import {
   buildPlaybackId,
   getPlaybackSnapshot,
@@ -47,19 +47,35 @@ export function SpeakButton({ text, lang, kind, entryId }: SpeakButtonProps) {
   };
 
   const disabledReason = getDisabledReason();
+  const hasError = playback.activeId === playbackId && !!playback.error;
   const tooltip =
     disabledReason ??
-    (isPlaying ? t('Stop playback') : kind === 'source' ? t('Play source') : t('Play translation'));
+    (hasError
+      ? playback.error
+      : isPlaying
+        ? t('Stop playback')
+        : kind === 'source'
+          ? t('Play source')
+          : t('Play translation'));
 
   if (settings.provider === 'browser' && !isBrowserTtsSupported()) {
     return null;
   }
+
+  const icon = hasError ? (
+    <AlertTriangle size={14} />
+  ) : isPlaying ? (
+    <Square size={14} />
+  ) : (
+    <Volume2 size={14} />
+  );
 
   return (
     <Tooltip label={tooltip}>
       <ActionIcon
         variant="default"
         size="sm"
+        color={hasError ? 'red' : undefined}
         aria-label={isPlaying ? t('Stop playback') : t('Play')}
         onClick={() => {
           if (disabledReason) return;
@@ -67,7 +83,7 @@ export function SpeakButton({ text, lang, kind, entryId }: SpeakButtonProps) {
         }}
         disabled={Boolean(disabledReason)}
       >
-        {isPlaying ? <Square size={14} /> : <Volume2 size={14} />}
+        {icon}
       </ActionIcon>
     </Tooltip>
   );
