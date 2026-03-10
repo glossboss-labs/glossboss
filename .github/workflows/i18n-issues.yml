@@ -46,12 +46,22 @@ jobs:
             # empty — only a msgstr block whose fully-assembled value is "" is
             # considered untranslated.
             untranslated=$(awk '
+              # Flush the previous entry: report if any msgstr was empty.
+              function flush() {
+                if (msgid != "" && has_empty_msgstr) print "- [ ] `" msgid "`"
+                msgid = ""; msgstr = ""; in_msgid = 0; in_msgstr = 0; has_empty_msgstr = 0
+              }
               /^msgid "/ {
-                if (in_msgstr && msgstr == "" && msgid != "") print "- [ ] `" msgid "`"
+                flush()
                 msgid = $0
                 sub(/^msgid "/, "", msgid)
                 sub(/"$/, "", msgid)
-                in_msgid = 1; in_msgstr = 0; msgstr = ""
+                in_msgid = 1
+                next
+              }
+              /^msgid_plural "/ {
+                # Still part of the same entry; stay in msgid-accumulation mode.
+                in_msgid = 1; in_msgstr = 0
                 next
               }
               in_msgid && /^"/ {
@@ -62,10 +72,13 @@ jobs:
                 next
               }
               in_msgid { in_msgid = 0 }
-              /^msgstr "/ {
+              /^msgstr "/ || /^msgstr\[[0-9]+\] "/ {
+                # Starting a new msgstr (singular or indexed plural).
+                # First, check whether the *previous* msgstr was empty.
+                if (in_msgstr && msgstr == "") has_empty_msgstr = 1
                 in_msgstr = 1; in_msgid = 0
                 msgstr = $0
-                sub(/^msgstr "/, "", msgstr)
+                sub(/^msgstr(\[[0-9]+\])? "/, "", msgstr)
                 sub(/"$/, "", msgstr)
                 next
               }
@@ -77,11 +90,13 @@ jobs:
                 next
               }
               in_msgstr {
-                if (msgstr == "" && msgid != "") print "- [ ] `" msgid "`"
-                msgid = ""; msgstr = ""; in_msgstr = 0
+                if (msgstr == "") has_empty_msgstr = 1
+                if (msgid != "" && has_empty_msgstr) print "- [ ] `" msgid "`"
+                msgid = ""; msgstr = ""; in_msgstr = 0; has_empty_msgstr = 0
               }
               END {
-                if (in_msgstr && msgstr == "" && msgid != "") print "- [ ] `" msgid "`"
+                if (in_msgstr && msgstr == "") has_empty_msgstr = 1
+                if (msgid != "" && has_empty_msgstr) print "- [ ] `" msgid "`"
               }
             ' "$po")
 
