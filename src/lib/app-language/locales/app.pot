@@ -724,13 +724,13 @@ msgid "Shortcut"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:1726
-msgid "Show branch chip"
+msgid "Show branch badge"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:1714
 msgid ""
-"Show the current git branch in a small floating chip at the bottom right of "
-"the site."
+"Show the current git branch in a small floating badge at the bottom right of"
+" the site."
 msgstr ""
 
 #: src/components/SettingsModal.tsx:220
