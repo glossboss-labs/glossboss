@@ -76,10 +76,6 @@ export function createElevenLabsClient(config: ElevenLabsClientConfig = {}) {
     modelId?: string;
     languageCode?: string | null;
   }): Promise<Blob> {
-    // Call ElevenLabs directly from the browser instead of proxying through the
-    // edge function. Free-tier keys are blocked when requests arrive from
-    // shared cloud infrastructure (Supabase Edge Functions) because ElevenLabs
-    // treats them as proxy/VPN traffic.
     const settings = getTtsSettings();
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);

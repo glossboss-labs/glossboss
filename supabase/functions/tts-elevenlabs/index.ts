@@ -1,5 +1,4 @@
 import {
-  buildCorsHeaders,
   fetchWithTimeout,
   forbiddenOrigin,
   isAbortError,
@@ -14,17 +13,15 @@ import {
 
 const ELEVENLABS_API_BASE = 'https://api.elevenlabs.io';
 const ELEVENLABS_TIMEOUT_MS = 20000;
-const MAX_TEXT_LENGTH = 500;
 const RATE_LIMIT_WINDOW_MS = 5 * 60 * 1000;
 const RATE_LIMIT_PER_IP = 30;
 const RATE_LIMIT_GLOBAL = 300;
 const API_KEY_RE = /^[A-Za-z0-9_-]{16,128}$/;
-const VOICE_ID_RE = /^[A-Za-z0-9_-]{4,64}$/;
 
 const ipRequestLog = new Map<string, number[]>();
 const globalRequestLog: number[] = [];
 
-type Action = 'usage' | 'listVoices' | 'speak';
+type Action = 'usage' | 'listVoices';
 
 interface UsageResponse {
   characterCount: number;
@@ -94,15 +91,10 @@ function isNonEmptyString(value: unknown): value is string {
   return typeof value === 'string' && value.trim().length > 0;
 }
 
-function trimAndLimit(value: string, maxLength: number): string {
-  return value.trim().slice(0, maxLength);
-}
-
 export function parseAction(value: unknown): Action | null {
   switch (value) {
     case 'usage':
     case 'listVoices':
-    case 'speak':
       return value;
     default:
       return null;
@@ -113,12 +105,6 @@ function parseApiKey(value: unknown): string | null {
   if (!isNonEmptyString(value)) return null;
   const apiKey = value.trim();
   return API_KEY_RE.test(apiKey) ? apiKey : null;
-}
-
-function parseVoiceId(value: unknown): string | null {
-  if (!isNonEmptyString(value)) return null;
-  const voiceId = value.trim();
-  return VOICE_ID_RE.test(voiceId) ? voiceId : null;
 }
 
 function normalizeUsage(value: Record<string, unknown>): UsageResponse {
@@ -321,57 +307,11 @@ export async function handleTtsElevenLabsRequest(req: Request): Promise<Response
       return jsonResponse(req, { voices });
     }
 
-    const voiceId = parseVoiceId(body.voiceId);
-    if (!voiceId) {
-      return jsonResponse(
-        req,
-        { ok: false, code: 'INVALID_PAYLOAD', message: 'Provide a valid ElevenLabs voiceId.' },
-        { status: 400 },
-      );
-    }
-
-    const text = isNonEmptyString(body.text) ? trimAndLimit(body.text, MAX_TEXT_LENGTH) : '';
-    if (!text) {
-      return jsonResponse(
-        req,
-        { ok: false, code: 'INVALID_PAYLOAD', message: 'Field "text" is required.' },
-        { status: 400 },
-      );
-    }
-
-    const requestBody: Record<string, unknown> = {
-      text,
-      model_id: isNonEmptyString(body.modelId)
-        ? trimAndLimit(body.modelId, 64)
-        : 'eleven_multilingual_v2',
-    };
-
-    if (isNonEmptyString(body.languageCode)) {
-      requestBody.language_code = trimAndLimit(body.languageCode, 24);
-    }
-
-    const response = await sendElevenLabsRequest(
-      `${ELEVENLABS_API_BASE}/v1/text-to-speech/${voiceId}`,
-      apiKey,
-      {
-        method: 'POST',
-        headers: { Accept: 'audio/mpeg' },
-        body: JSON.stringify(requestBody),
-      },
+    return jsonResponse(
+      req,
+      { ok: false, code: 'INVALID_ACTION', message: 'Unsupported TTS action.' },
+      { status: 400 },
     );
-
-    if (!response.ok) {
-      return await proxyElevenLabsError(req, response, apiKey, 'Failed to synthesize speech.');
-    }
-
-    const headers = new Headers(buildCorsHeaders(req.headers.get('origin')));
-    headers.set('Content-Type', response.headers.get('Content-Type') ?? 'audio/mpeg');
-    headers.set('Cache-Control', 'no-store');
-
-    return new Response(response.body, {
-      status: 200,
-      headers,
-    });
   } catch (error) {
     if (error instanceof SyntaxError) {
       return jsonResponse(

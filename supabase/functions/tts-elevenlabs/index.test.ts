@@ -41,7 +41,7 @@ describe('tts-elevenlabs handler', () => {
     vi.unstubAllGlobals();
   });
 
-  it.each(['usage', 'listVoices', 'speak'])('accepts valid action %s', (action) => {
+  it.each(['usage', 'listVoices'])('accepts valid action %s', (action) => {
     expect(parseAction(action)).toBe(action);
   });
 
@@ -94,41 +94,6 @@ describe('tts-elevenlabs handler', () => {
       status: 'active',
       nextResetUnix: 1736000000,
     });
-  });
-
-  it('rejects oversized or empty speech requests', async () => {
-    const emptyResponse = await handleTtsElevenLabsRequest(
-      makeRequest({
-        action: 'speak',
-        apiKey: 'not-a-real-elevenlabs-key',
-        voiceId: 'voice_1234',
-        text: '',
-      }),
-    );
-    expect(emptyResponse.status).toBe(400);
-
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValue(new Response(new Uint8Array([1, 2, 3]), { status: 200 }));
-    vi.stubGlobal('fetch', fetchMock);
-
-    const response = await handleTtsElevenLabsRequest(
-      makeRequest({
-        action: 'speak',
-        apiKey: 'not-a-real-elevenlabs-key',
-        voiceId: 'voice_1234',
-        text: 'a'.repeat(800),
-      }),
-    );
-
-    expect(response.status).toBe(200);
-    expect(fetchMock).toHaveBeenCalledWith(
-      expect.stringContaining('/v1/text-to-speech/voice_1234'),
-      expect.any(Object),
-    );
-    const [, init] = fetchMock.mock.calls[0]!;
-    const payload = JSON.parse(String(init?.body));
-    expect(payload.text).toBe('a'.repeat(500));
   });
 
   it('does not leak api keys in upstream errors', async () => {
