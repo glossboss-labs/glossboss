@@ -2170,8 +2170,14 @@ export function EditorTable({
                               ? (delta) => handleColumnResize(columnKey, nextColumn, delta)
                               : undefined
                           }
-                          align={columnKey === 'select' || columnKey === 'approve' ? 'center' : 'left'}
-                          padding={columnKey === 'select' || columnKey === 'approve' ? '8px 4px' : undefined}
+                          align={
+                            columnKey === 'select' || columnKey === 'approve' ? 'center' : 'left'
+                          }
+                          padding={
+                            columnKey === 'select' || columnKey === 'approve'
+                              ? '8px 4px'
+                              : undefined
+                          }
                           dataColumnKey={isDataColumn ? columnKey : undefined}
                           onCellPointerDown={
                             isDataColumn ? handleHeaderPointerDown(columnKey) : undefined
