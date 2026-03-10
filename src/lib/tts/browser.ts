@@ -42,7 +42,9 @@ export function selectVoiceForLanguage(
   const partial = voices.find((voice) => voice.lang.toLowerCase().startsWith(`${baseLang}-`));
   if (partial) return partial;
 
-  return voices.find((voice) => voice.default) ?? voices[0] ?? null;
+  // No voice matches the requested language — return null so the browser
+  // can route via utterance.lang instead of forcing a mismatched voice.
+  return null;
 }
 
 export function getPreferredBrowserVoiceURI(kind: TtsPlaybackKind): string | null {

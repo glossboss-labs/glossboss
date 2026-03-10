@@ -171,7 +171,9 @@ function playWithBrowser(request: TtsSpeakRequest, playbackId: string): void {
   );
   if (voice) {
     utterance.voice = voice;
-    utterance.lang = voice.lang;
+    if (!request.lang) {
+      utterance.lang = voice.lang;
+    }
   }
 
   utterance.onend = () => {
