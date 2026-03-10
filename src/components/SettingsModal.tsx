@@ -47,6 +47,7 @@ import {
   Monitor,
   Languages,
   Upload,
+  Download,
 } from 'lucide-react';
 import {
   getDeepLSettings,
@@ -69,6 +70,15 @@ import {
 import type { Glossary } from '@/lib/glossary/types';
 import { NAV_SKIP_TRANSLATED_KEY } from '@/components/editor/EditorTable';
 import { CONTAINER_WIDTH_OPTIONS, type ContainerWidth } from '@/lib/container-width';
+import {
+  applyAppSettingsFile,
+  createAppSettingsFile,
+  createAppSettingsFilename,
+  parseAppSettingsFile,
+  serializeAppSettingsFile,
+  settingsFileHasCredentials,
+  type AppSettingsFile,
+} from '@/lib/app-settings';
 import { APP_LANGUAGE_OPTIONS, msgid, useTranslation, type AppLanguage } from '@/lib/app-language';
 
 /** Keyboard shortcut definitions */
@@ -136,13 +146,14 @@ function KeyCombo({ keys }: { keys: string[][] }) {
 }
 
 /** Keyboard shortcuts settings panel */
-function KeyboardShortcutsPanel() {
+function KeyboardShortcutsPanel({
+  skipTranslated,
+  onSkipTranslatedChange,
+}: {
+  skipTranslated: boolean;
+  onSkipTranslatedChange: (value: boolean) => void;
+}) {
   const { t } = useTranslation();
-  const [skipTranslated, setSkipTranslated] = useLocalStorage<boolean>({
-    key: NAV_SKIP_TRANSLATED_KEY,
-    defaultValue: true,
-  });
-
   return (
     <Stack gap="md">
       <Text size="sm" c="dimmed">
@@ -192,7 +203,7 @@ function KeyboardShortcutsPanel() {
           'When using ⌘/Ctrl+Enter, skip entries that are already translated and jump to the next untranslated or fuzzy entry',
         )}
         checked={skipTranslated}
-        onChange={(e) => setSkipTranslated(e.currentTarget.checked)}
+        onChange={(e) => onSkipTranslatedChange(e.currentTarget.checked)}
         styles={{
           track: {
             transition: 'background-color 0.2s ease, border-color 0.2s ease',
@@ -251,6 +262,10 @@ export function SettingsModal({
   const [apiType, setApiType] = useState<DeepLApiType>('free');
   const [formality, setFormality] = useState<DeepLFormality>('prefer_less');
   const [persistKey, setPersistKey] = useState(() => isPersistEnabled());
+  const [skipTranslated, setSkipTranslated] = useLocalStorage<boolean>({
+    key: NAV_SKIP_TRANSLATED_KEY,
+    defaultValue: true,
+  });
   const [isTesting, setIsTesting] = useState(false);
   const [testResult, setTestResult] = useState<{
     success: boolean;
@@ -258,6 +273,20 @@ export function SettingsModal({
     usage?: { used: number; limit: number };
   } | null>(null);
   const [isSaved, setIsSaved] = useState(false);
+  const [transferResult, setTransferResult] = useState<{
+    success: boolean;
+    message: string;
+  } | null>(null);
+  const [credentialPrompt, setCredentialPrompt] = useState<
+    | {
+        mode: 'export';
+      }
+    | {
+        mode: 'import';
+        file: AppSettingsFile;
+      }
+    | null
+  >(null);
 
   // Glossary state
   const [selectedLocale, setSelectedLocale] = useState<string>(() => {
@@ -280,6 +309,7 @@ export function SettingsModal({
   });
   const [viewerOpened, setViewerOpened] = useState(false);
   const [hasAttemptedAutoLoad, setHasAttemptedAutoLoad] = useState(false);
+  const settingsImportResetRef = useRef<() => void>(null);
   const loadTokenRef = useRef(0);
 
   // Load saved settings on open
@@ -291,7 +321,10 @@ export function SettingsModal({
       setFormality(settings.formality);
       setIsSaved(Boolean(settings.apiKey));
       setPersistKey(isPersistEnabled());
+      return;
     }
+
+    setCredentialPrompt(null);
   }, [opened]);
 
   // Update locale when initialLocale changes
@@ -306,6 +339,8 @@ export function SettingsModal({
     try {
       if (selectedLocale) {
         localStorage.setItem(GLOSSARY_SELECTED_LOCALE_KEY, selectedLocale);
+      } else {
+        localStorage.removeItem(GLOSSARY_SELECTED_LOCALE_KEY);
       }
     } catch {
       // Ignore storage errors
@@ -365,9 +400,165 @@ export function SettingsModal({
     setApiKey('');
     setApiType('free');
     setFormality('prefer_less');
+    setPersistKey(false);
     setIsSaved(false);
     setTestResult(null);
   }, []);
+
+  const downloadSettingsFile = useCallback(
+    (includeApiKey: boolean) => {
+      const file = createAppSettingsFile(
+        {
+          deepl: {
+            apiKey,
+            apiType,
+            formality,
+            persistKey,
+          },
+          preferences: {
+            glossaryLocale: selectedLocale,
+            glossaryEnforcementEnabled: enforcementEnabled,
+            navSkipTranslated: skipTranslated,
+            containerWidth,
+            branchChipEnabled: isDevelopment ? branchChipEnabled : undefined,
+          },
+        },
+        { includeApiKey },
+      );
+
+      const blob = new Blob([serializeAppSettingsFile(file)], {
+        type: 'application/json;charset=utf-8',
+      });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+
+      anchor.href = url;
+      anchor.download = createAppSettingsFilename();
+      document.body.appendChild(anchor);
+      anchor.click();
+      document.body.removeChild(anchor);
+      URL.revokeObjectURL(url);
+
+      setTransferResult({
+        success: true,
+        message: includeApiKey
+          ? t('Settings exported with your DeepL API key.')
+          : t('Settings exported without your DeepL API key.'),
+      });
+    },
+    [
+      apiKey,
+      apiType,
+      branchChipEnabled,
+      containerWidth,
+      enforcementEnabled,
+      formality,
+      isDevelopment,
+      persistKey,
+      selectedLocale,
+      skipTranslated,
+      t,
+    ],
+  );
+
+  const applyImportedSettings = useCallback(
+    (file: AppSettingsFile, includeApiKey: boolean) => {
+      const applied = applyAppSettingsFile(file, { includeApiKey });
+      const nextGlossaryLocale = applied.preferences.glossaryLocale;
+      const shouldClearGlossary = glossary && glossary.targetLocale !== nextGlossaryLocale;
+
+      setApiKey(applied.deepl.apiKey);
+      setApiType(applied.deepl.apiType);
+      setFormality(applied.deepl.formality);
+      setPersistKey(applied.deepl.persistKey);
+      setIsSaved(Boolean(applied.deepl.apiKey.trim()));
+      setTestResult(null);
+      setSelectedLocale(nextGlossaryLocale);
+
+      if (shouldClearGlossary) {
+        onGlossaryCleared?.();
+        setHasAttemptedAutoLoad(false);
+      }
+
+      setEnforcementEnabled(applied.preferences.glossaryEnforcementEnabled);
+      setSkipTranslated(applied.preferences.navSkipTranslated);
+      onContainerWidthChange?.(applied.preferences.containerWidth);
+
+      if (isDevelopment && typeof applied.preferences.branchChipEnabled === 'boolean') {
+        onBranchChipEnabledChange?.(applied.preferences.branchChipEnabled);
+      }
+
+      setTransferResult({
+        success: true,
+        message:
+          includeApiKey && settingsFileHasCredentials(file)
+            ? t('Settings imported, including your DeepL API key.')
+            : t('Settings imported without changing your current DeepL API key.'),
+      });
+    },
+    [
+      glossary,
+      isDevelopment,
+      onBranchChipEnabledChange,
+      onContainerWidthChange,
+      onGlossaryCleared,
+      setSkipTranslated,
+      t,
+    ],
+  );
+
+  const handleExportClick = useCallback(() => {
+    if (apiKey.trim()) {
+      setCredentialPrompt({ mode: 'export' });
+      return;
+    }
+
+    downloadSettingsFile(false);
+  }, [apiKey, downloadSettingsFile]);
+
+  const handleImportFile = useCallback(
+    (file: File | null) => {
+      if (!file) return;
+
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        try {
+          const parsed = parseAppSettingsFile(String(reader.result ?? ''));
+
+          if (settingsFileHasCredentials(parsed)) {
+            setCredentialPrompt({
+              mode: 'import',
+              file: parsed,
+            });
+          } else {
+            applyImportedSettings(parsed, false);
+          }
+        } catch (error) {
+          setTransferResult({
+            success: false,
+            message:
+              error instanceof Error
+                ? error.message
+                : t('Unable to import the selected settings file.'),
+          });
+        } finally {
+          settingsImportResetRef.current?.();
+        }
+      };
+
+      reader.onerror = () => {
+        setTransferResult({
+          success: false,
+          message: t('Unable to read the selected settings file.'),
+        });
+        settingsImportResetRef.current?.();
+      };
+
+      reader.readAsText(file);
+    },
+    [applyImportedSettings, t],
+  );
 
   const handleLoadGlossary = useCallback(
     async (forceRefresh = false) => {
@@ -488,6 +679,9 @@ export function SettingsModal({
             </Tabs.Tab>
             <Tabs.Tab value="display" leftSection={<Monitor size={14} />}>
               {t('Display')}
+            </Tabs.Tab>
+            <Tabs.Tab value="transfer" leftSection={<Download size={14} />}>
+              {t('Backup')}
             </Tabs.Tab>
             {isDevelopment && (
               <Tabs.Tab
@@ -843,7 +1037,10 @@ export function SettingsModal({
 
           {/* Keyboard Shortcuts Tab */}
           <Tabs.Panel value="keybinds">
-            <KeyboardShortcutsPanel />
+            <KeyboardShortcutsPanel
+              skipTranslated={skipTranslated}
+              onSkipTranslatedChange={setSkipTranslated}
+            />
           </Tabs.Panel>
 
           {/* Display Tab */}
@@ -917,6 +1114,58 @@ export function SettingsModal({
             </Stack>
           </Tabs.Panel>
 
+          <Tabs.Panel value="transfer">
+            <Stack gap="md">
+              <Text size="sm" c="dimmed">
+                {t(
+                  'Export your saved preferences to a JSON backup file, or restore them into this browser. Glossary cache, drafts, and project files are not included.',
+                )}
+              </Text>
+
+              <Paper p="md" withBorder>
+                <Stack gap="sm">
+                  <div>
+                    <Text size="sm" fw={500}>
+                      {t('Settings file')}
+                    </Text>
+                    <Text size="xs" c="dimmed">
+                      {t(
+                        'Exports DeepL preferences, glossary options, navigation behavior, display width, and development-only toggles. If a DeepL API key is present, you can choose whether to include it.',
+                      )}
+                    </Text>
+                  </div>
+
+                  <Group>
+                    <Button leftSection={<Download size={14} />} onClick={handleExportClick}>
+                      {t('Export settings')}
+                    </Button>
+
+                    <FileButton
+                      resetRef={settingsImportResetRef}
+                      onChange={handleImportFile}
+                      accept=".json,application/json"
+                    >
+                      {(props) => (
+                        <Button variant="light" leftSection={<Upload size={14} />} {...props}>
+                          {t('Import settings')}
+                        </Button>
+                      )}
+                    </FileButton>
+                  </Group>
+                </Stack>
+              </Paper>
+
+              {transferResult && (
+                <Alert
+                  color={transferResult.success ? 'green' : 'red'}
+                  icon={transferResult.success ? <Check size={16} /> : <AlertCircle size={16} />}
+                >
+                  <Text size="sm">{transferResult.message}</Text>
+                </Alert>
+              )}
+            </Stack>
+          </Tabs.Panel>
+
           {isDevelopment && (
             <Tabs.Panel value="development">
               <Stack gap="md">
@@ -980,6 +1229,77 @@ export function SettingsModal({
           onClose={() => setViewerOpened(false)}
         />
       )}
+
+      <Modal
+        opened={credentialPrompt !== null}
+        onClose={() => setCredentialPrompt(null)}
+        title={credentialPrompt?.mode === 'import' ? t('Import API key?') : t('Include API key?')}
+        centered
+        size="sm"
+      >
+        <Stack gap="md">
+          <Alert color="yellow" icon={<AlertCircle size={16} />}>
+            <Text size="sm">
+              {credentialPrompt?.mode === 'import'
+                ? t('This settings file contains your DeepL API key in plain text.')
+                : t(
+                    'Including your DeepL API key will store it in plain text inside the exported JSON file.',
+                  )}
+            </Text>
+          </Alert>
+
+          <Text size="sm">
+            {credentialPrompt?.mode === 'import'
+              ? t('Choose whether to import the key or keep the current key saved in this browser.')
+              : t(
+                  'Choose whether to export the key or keep the settings file free of credentials.',
+                )}
+          </Text>
+
+          <Text size="xs" c="dimmed">
+            {t('Only include credentials on personal, trusted devices.')}
+          </Text>
+
+          <Group justify="flex-end">
+            <Button variant="default" onClick={() => setCredentialPrompt(null)}>
+              {t('Cancel')}
+            </Button>
+            <Button
+              variant="default"
+              onClick={() => {
+                const currentPrompt = credentialPrompt;
+                setCredentialPrompt(null);
+
+                if (currentPrompt?.mode === 'import') {
+                  applyImportedSettings(currentPrompt.file, false);
+                  return;
+                }
+
+                downloadSettingsFile(false);
+              }}
+            >
+              {credentialPrompt?.mode === 'import'
+                ? t('Keep current key')
+                : t('Export without key')}
+            </Button>
+            <Button
+              onClick={() => {
+                const currentPrompt = credentialPrompt;
+                setCredentialPrompt(null);
+
+                if (currentPrompt?.mode === 'import') {
+                  applyImportedSettings(currentPrompt.file, true);
+                  return;
+                }
+
+                downloadSettingsFile(true);
+              }}
+            >
+              {credentialPrompt?.mode === 'import' ? t('Import key') : t('Include key')}
+            </Button>
+          </Group>
+        </Stack>
+      </Modal>
     </>
   );
 }
