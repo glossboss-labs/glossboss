@@ -128,7 +128,6 @@ installStorageMock('sessionStorage', sessionStorageMock);
 
 (globalThis as { __APP_VERSION__?: string }).__APP_VERSION__ = 'test-version';
 (globalThis as { __GIT_BRANCH__?: string }).__GIT_BRANCH__ = 'test-branch';
-
 beforeEach(() => {
   localStorageMock.clear();
   sessionStorageMock.clear();
