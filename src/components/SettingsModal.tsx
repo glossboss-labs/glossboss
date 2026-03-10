@@ -980,7 +980,7 @@ export function SettingsModal({
               />
 
               <PasswordInput
-                label={t('API Key')}
+                label={t('API key')}
                 placeholder={t('Enter your DeepL API key')}
                 value={apiKey}
                 onChange={(e) => {
@@ -999,7 +999,7 @@ export function SettingsModal({
 
               <div data-ev-id="ev_a06444cf83">
                 <Text size="sm" fw={500} mb={4}>
-                  {t('API Type')}
+                  {t('API type')}
                 </Text>
                 <SegmentedControl
                   value={apiType}
@@ -1229,7 +1229,7 @@ export function SettingsModal({
                       />
 
                       <PasswordInput
-                        label={t('API Key')}
+                        label={t('API key')}
                         placeholder={t('Enter your ElevenLabs API key')}
                         value={ttsApiKey}
                         onChange={(e) => {
@@ -1708,7 +1708,7 @@ export function SettingsModal({
                     <Group justify="space-between" align="flex-start">
                       <div>
                         <Text size="sm" fw={500}>
-                          {t('Branch status chip')}
+                          {t('Branch status badge')}
                         </Text>
                         <Text size="xs" c="dimmed">
                           {t(
