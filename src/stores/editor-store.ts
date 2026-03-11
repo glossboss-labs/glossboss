@@ -9,6 +9,8 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import type { POFile, POEntry, POHeader } from '@/lib/po/types';
 import type { GlossaryAnalysisResult } from '@/lib/glossary/types';
+import { deriveProjectName } from '@/lib/translation-memory';
+import type { QAEntryReport } from '@/lib/qa';
 import { STORAGE_KEY } from '@/lib/storage';
 
 /** Available filter types */
@@ -17,6 +19,8 @@ export type FilterType =
   | 'fuzzy'
   | 'translated'
   | 'modified'
+  | 'qa-error'
+  | 'qa-warning'
   | 'glossary-review'
   | 'manual-edit'
   | 'machine-translated';
@@ -45,6 +49,9 @@ export type FileFormat = 'po' | 'i18next';
 
 /** Editor state */
 export interface EditorState {
+  /** Current translation-memory project name */
+  projectName: string;
+
   /** Currently loaded file info */
   filename: string | null;
 
@@ -71,6 +78,9 @@ export interface EditorState {
 
   /** Glossary analysis results per entry */
   glossaryAnalysis: Map<string, GlossaryAnalysisResult>;
+
+  /** QA results per entry */
+  qaReports: Map<string, QAEntryReport>;
 
   /** Currently selected entry ID */
   selectedEntryId: string | null;
@@ -110,6 +120,9 @@ export interface EditorState {
 export interface EditorActions {
   /** Load a PO file into the editor */
   loadFile: (file: POFile, format?: FileFormat) => void;
+
+  /** Set the current project name used for translation memory scoping */
+  setProjectName: (projectName: string) => void;
 
   /** Update a single entry's translation */
   updateEntry: (entryId: string, msgstr: string) => void;
@@ -210,6 +223,15 @@ export interface EditorActions {
   /** Clear all glossary analysis (e.g., when glossary changes) */
   clearGlossaryAnalysis: () => void;
 
+  /** Set QA reports for multiple entries at once */
+  setQaReports: (reports: Map<string, QAEntryReport>) => void;
+
+  /** Get QA report for an entry */
+  getQaReport: (entryId: string) => QAEntryReport | undefined;
+
+  /** Clear all QA reports */
+  clearQaReports: () => void;
+
   /** Get filtered entries based on current filters */
   getFilteredEntries: () => POEntry[];
 
@@ -235,11 +257,14 @@ export interface EditorActions {
     machineTranslated: number;
     manualEdits: number;
     glossaryNeedsReview: number;
+    qaErrors: number;
+    qaWarnings: number;
   };
 }
 
 /** Initial state */
 const initialState: EditorState = {
+  projectName: 'Untitled project',
   filename: null,
   sourceFormat: 'po',
   header: null,
@@ -249,6 +274,7 @@ const initialState: EditorState = {
   manualEditIds: new Set(),
   machineTranslationMeta: new Map(),
   glossaryAnalysis: new Map(),
+  qaReports: new Map(),
   selectedEntryId: null,
   selectedEntryIds: new Set(),
   filterQuery: '',
@@ -270,6 +296,7 @@ function entryMatchesFilter(
   filter: FilterType,
   dirtyEntryIds: Set<string>,
   glossaryAnalysis: Map<string, GlossaryAnalysisResult>,
+  qaReports: Map<string, QAEntryReport>,
   machineTranslatedIds: Set<string>,
   manualEditIds: Set<string>,
 ): boolean {
@@ -298,6 +325,14 @@ function entryMatchesFilter(
     }
     case 'modified':
       return dirtyEntryIds.has(entry.id);
+    case 'qa-error': {
+      const report = qaReports.get(entry.id);
+      return (report?.errorCount ?? 0) > 0;
+    }
+    case 'qa-warning': {
+      const report = qaReports.get(entry.id);
+      return (report?.warningCount ?? 0) > 0;
+    }
     case 'glossary-review': {
       const analysis = glossaryAnalysis.get(entry.id);
       return analysis ? analysis.needsReviewCount > 0 : false;
@@ -362,6 +397,7 @@ export const useEditorStore = create<EditorState & EditorActions>()(
 
       loadFile: (file: POFile, format: FileFormat = 'po') => {
         set((state) => ({
+          projectName: deriveProjectName(file.header, file.filename),
           filename: file.filename,
           sourceFormat: format,
           header: file.header,
@@ -371,6 +407,7 @@ export const useEditorStore = create<EditorState & EditorActions>()(
           manualEditIds: new Set(),
           machineTranslationMeta: new Map(),
           glossaryAnalysis: new Map(),
+          qaReports: new Map(),
           selectedEntryId: file.entries[0]?.id ?? null,
           selectedEntryIds: new Set(),
           filterQuery: '',
@@ -383,6 +420,12 @@ export const useEditorStore = create<EditorState & EditorActions>()(
           lastSavedAt: Date.now(),
           hasUnsavedChanges: false,
         }));
+      },
+
+      setProjectName: (projectName: string) => {
+        set({
+          projectName: projectName.trim() || 'Untitled project',
+        });
       },
 
       updateEntry: (entryId: string, msgstr: string) => {
@@ -705,6 +748,7 @@ export const useEditorStore = create<EditorState & EditorActions>()(
           manualEditIds: new Set(),
           machineTranslationMeta: new Map(),
           glossaryAnalysis: new Map(),
+          qaReports: new Map(),
           selectedEntryId: mergedEntries[0]?.id ?? null,
           selectedEntryIds: new Set(),
           hasUnsavedChanges: true,
@@ -776,6 +820,18 @@ export const useEditorStore = create<EditorState & EditorActions>()(
         set({ glossaryAnalysis: new Map() });
       },
 
+      setQaReports: (reports: Map<string, QAEntryReport>) => {
+        set({ qaReports: new Map(reports) });
+      },
+
+      getQaReport: (entryId: string) => {
+        return get().qaReports.get(entryId);
+      },
+
+      clearQaReports: () => {
+        set({ qaReports: new Map() });
+      },
+
       getFilteredEntries: () => {
         const {
           entries,
@@ -783,6 +839,7 @@ export const useEditorStore = create<EditorState & EditorActions>()(
           activeFilters,
           dirtyEntryIds,
           glossaryAnalysis,
+          qaReports,
           machineTranslatedIds,
           manualEditIds,
           sortField,
@@ -813,6 +870,7 @@ export const useEditorStore = create<EditorState & EditorActions>()(
                 filter,
                 dirtyEntryIds,
                 glossaryAnalysis,
+                qaReports,
                 machineTranslatedIds,
                 manualEditIds,
               ),
@@ -827,12 +885,13 @@ export const useEditorStore = create<EditorState & EditorActions>()(
               !excludeFilters.some((filter) =>
                 entryMatchesFilter(
                   entry,
-                  filter,
-                  dirtyEntryIds,
-                  glossaryAnalysis,
-                  machineTranslatedIds,
-                  manualEditIds,
-                ),
+                filter,
+                dirtyEntryIds,
+                glossaryAnalysis,
+                qaReports,
+                machineTranslatedIds,
+                manualEditIds,
+              ),
               ),
           );
         }
@@ -871,7 +930,7 @@ export const useEditorStore = create<EditorState & EditorActions>()(
       },
 
       getStats: () => {
-        const { entries, dirtyEntryIds, machineTranslatedIds, manualEditIds, glossaryAnalysis } =
+        const { entries, dirtyEntryIds, machineTranslatedIds, manualEditIds, glossaryAnalysis, qaReports } =
           get();
         const total = entries.length;
 
@@ -905,6 +964,8 @@ export const useEditorStore = create<EditorState & EditorActions>()(
         const glossaryNeedsReview = Array.from(glossaryAnalysis).filter(
           ([, analysis]) => analysis.needsReviewCount > 0,
         ).length;
+        const qaErrors = Array.from(qaReports.values()).filter((report) => report.errorCount > 0).length;
+        const qaWarnings = Array.from(qaReports.values()).filter((report) => report.warningCount > 0).length;
 
         return {
           total,
@@ -915,6 +976,8 @@ export const useEditorStore = create<EditorState & EditorActions>()(
           machineTranslated,
           manualEdits,
           glossaryNeedsReview,
+          qaErrors,
+          qaWarnings,
         };
       },
 
@@ -966,6 +1029,10 @@ export const useEditorStore = create<EditorState & EditorActions>()(
         // Default sourceFormat for older persisted state
         if (!state.sourceFormat) {
           state.sourceFormat = 'po';
+        }
+
+        if (!state.projectName) {
+          state.projectName = deriveProjectName(state.header ?? null, state.filename ?? null);
         }
 
         // Convert dirtyEntryIds array back to Set after rehydration
@@ -1052,6 +1119,7 @@ export const useEditorStore = create<EditorState & EditorActions>()(
 
         // Initialize glossaryAnalysis as empty Map (not persisted, recalculated on demand)
         state.glossaryAnalysis = new Map();
+        state.qaReports = new Map();
 
         // Initialize selectedEntryIds as empty Set (not persisted)
         state.selectedEntryIds = new Set();
