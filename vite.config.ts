@@ -11,6 +11,9 @@ const packageJson = JSON.parse(
 const appVersion = packageJson.version ?? '0.0.0';
 
 function getGitBranch() {
+  if (process.env.CF_PAGES_BRANCH) return process.env.CF_PAGES_BRANCH;
+  if (process.env.GITHUB_HEAD_REF) return process.env.GITHUB_HEAD_REF;
+  if (process.env.GITHUB_REF_NAME) return process.env.GITHUB_REF_NAME;
   try {
     return execSync('git rev-parse --abbrev-ref HEAD', {
       cwd: import.meta.dirname,
@@ -68,5 +71,16 @@ export default defineConfig({
     __APP_VERSION__: JSON.stringify(appVersion),
     __GIT_BRANCH__: JSON.stringify(gitBranch),
   },
-  build: { assetsInlineLimit: 100000 },
+  build: {
+    assetsInlineLimit: 100000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router'],
+          ui: ['@mantine/core', '@mantine/hooks'],
+          motion: ['motion'],
+        },
+      },
+    },
+  },
 });
