@@ -202,7 +202,7 @@ describe('parseCreateGlossaryPayload', () => {
     expect(
       parseCreateGlossaryPayload({
         name: 'G',
-        sourceLang: 'bad',
+        sourceLang: 'bad!',
         targetLang: 'DE',
         entries: validEntries,
       }),
@@ -214,7 +214,7 @@ describe('parseCreateGlossaryPayload', () => {
       parseCreateGlossaryPayload({
         name: 'G',
         sourceLang: 'EN',
-        targetLang: 'bad',
+        targetLang: 'bad!',
         entries: validEntries,
       }),
     ).toBeNull();

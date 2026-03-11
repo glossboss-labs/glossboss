@@ -624,17 +624,20 @@ function SourceCell({ entry }: { entry: POEntry }) {
 function SignalsOverviewCell({
   isMT,
   usedGlossary,
+  provider,
   glossaryAnalysis,
   qaReport,
 }: {
   isMT: boolean;
   usedGlossary: boolean;
+  provider?: string;
   glossaryAnalysis: GlossaryAnalysisResult | null;
   qaReport: QAEntryReport | null;
 }) {
   const { t } = useTranslation();
   const hasGlossarySignals = (glossaryAnalysis?.terms.length ?? 0) > 0;
   const hasQaSignals = Boolean(qaReport && (qaReport.errorCount > 0 || qaReport.warningCount > 0));
+  const providerLabel = provider === 'gemini' ? 'Gemini' : provider === 'azure' ? 'Azure' : 'DeepL';
 
   if (!isMT && !hasGlossarySignals && !hasQaSignals) {
     return (
@@ -649,7 +652,9 @@ function SignalsOverviewCell({
       {isMT && (
         <Tooltip
           label={
-            usedGlossary ? t('Machine translated with glossary') : t('Machine translated by DeepL')
+            usedGlossary
+              ? t('Machine translated with glossary by {{provider}}', { provider: providerLabel })
+              : t('Machine translated by {{provider}}', { provider: providerLabel })
           }
         >
           <Badge
@@ -845,6 +850,11 @@ function TranslationCell({
   const usedGlossary = useEditorStore(
     (state) => state.machineTranslationMeta.get(entry.id)?.usedGlossary ?? false,
   );
+  const mtProvider = useEditorStore(
+    (state) => state.machineTranslationMeta.get(entry.id)?.provider ?? 'deepl',
+  );
+  const mtProviderLabel =
+    mtProvider === 'gemini' ? 'Gemini' : mtProvider === 'azure' ? 'Azure' : 'DeepL';
   const signalsColumnHidden = useEditorStore((state) => !state.visibleColumns.has('signals'));
 
   const translateSettings = useContext(TranslateSettingsContext);
@@ -879,22 +889,39 @@ function TranslationCell({
   );
 
   const handleTranslated = useCallback(
-    (translatedText: string, withGlossary?: boolean) => {
+    (
+      translatedText: string,
+      meta?: {
+        usedGlossary?: boolean;
+        provider?: 'deepl' | 'azure' | 'gemini';
+        glossaryMode?: 'native' | 'prompt' | 'none';
+        contextUsed?: boolean;
+      },
+    ) => {
       updateEntry(entry.id, translatedText);
-      markAsMachineTranslated(entry.id, withGlossary);
+      markAsMachineTranslated(entry.id, meta);
     },
     [entry.id, updateEntry, markAsMachineTranslated],
   );
 
   const handlePluralTranslated = useCallback(
-    (index: number, translatedText: string, withGlossary?: boolean) => {
+    (
+      index: number,
+      translatedText: string,
+      meta?: {
+        usedGlossary?: boolean;
+        provider?: 'deepl' | 'azure' | 'gemini';
+        glossaryMode?: 'native' | 'prompt' | 'none';
+        contextUsed?: boolean;
+      },
+    ) => {
       const newPlurals = [...pluralForms];
       while (newPlurals.length <= index) {
         newPlurals.push('');
       }
       newPlurals[index] = translatedText;
       updateEntryPlural(entry.id, newPlurals);
-      markAsMachineTranslated(entry.id, withGlossary);
+      markAsMachineTranslated(entry.id, meta);
     },
     [entry.id, pluralForms, updateEntryPlural, markAsMachineTranslated],
   );
@@ -935,9 +962,9 @@ function TranslationCell({
                       ? (translateSettings.deeplGlossaryId ?? undefined)
                       : undefined
                   }
-                  onTranslated={(text, withGlossary) =>
-                    handlePluralTranslated(index, text, withGlossary)
-                  }
+                  glossary={translateSettings.glossary}
+                  references={entry.references}
+                  onTranslated={(text, meta) => handlePluralTranslated(index, text, meta)}
                   size={translateButtonSize}
                   display={translateButtonDisplay}
                 />
@@ -959,8 +986,10 @@ function TranslationCell({
               <Tooltip
                 label={
                   usedGlossary
-                    ? t('Machine translated with glossary')
-                    : t('Machine translated by DeepL')
+                    ? t('Machine translated with glossary by {{provider}}', {
+                        provider: mtProviderLabel,
+                      })
+                    : t('Machine translated by {{provider}}', { provider: mtProviderLabel })
                 }
               >
                 <Badge
@@ -1006,6 +1035,8 @@ function TranslationCell({
                   ? (translateSettings.deeplGlossaryId ?? undefined)
                   : undefined
               }
+              glossary={translateSettings.glossary}
+              references={entry.references}
               onTranslated={handleTranslated}
               size={translateButtonSize}
               display={translateButtonDisplay}
@@ -1027,8 +1058,10 @@ function TranslationCell({
             <Tooltip
               label={
                 usedGlossary
-                  ? t('Machine translated with glossary')
-                  : t('Machine translated by DeepL')
+                  ? t('Machine translated with glossary by {{provider}}', {
+                      provider: mtProviderLabel,
+                    })
+                  : t('Machine translated by {{provider}}', { provider: mtProviderLabel })
               }
             >
               <Badge
@@ -1594,6 +1627,7 @@ const EntryRow = memo(function EntryRow({
   const isModified = dirtyEntryIds.has(entry.id);
   const isMT = machineTranslatedIds.has(entry.id);
   const usedGlossary = machineTranslationMeta.get(entry.id)?.usedGlossary ?? false;
+  const mtProvider = machineTranslationMeta.get(entry.id)?.provider;
   const isManualEdit = manualEditIds.has(entry.id) && !isMT;
   const glossaryAnalysis = getGlossaryAnalysis(entry.id);
   const qaReport = getQaReport(entry.id);
@@ -1705,6 +1739,7 @@ const EntryRow = memo(function EntryRow({
             <SignalsOverviewCell
               isMT={isMT}
               usedGlossary={usedGlossary}
+              provider={mtProvider}
               glossaryAnalysis={glossaryAnalysis ?? null}
               qaReport={qaReport ?? null}
             />

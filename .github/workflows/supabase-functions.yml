@@ -40,6 +40,8 @@ jobs:
       - name: Deploy Edge Functions
         run: |
           supabase functions deploy deepl-translate --project-ref "$SUPABASE_PROJECT_REF" --use-api --no-verify-jwt
+          supabase functions deploy azure-translate --project-ref "$SUPABASE_PROJECT_REF" --use-api --no-verify-jwt
+          supabase functions deploy gemini-translate --project-ref "$SUPABASE_PROJECT_REF" --use-api --no-verify-jwt
           supabase functions deploy tts-elevenlabs --project-ref "$SUPABASE_PROJECT_REF" --use-api --no-verify-jwt
           supabase functions deploy wp-glossary --project-ref "$SUPABASE_PROJECT_REF" --use-api --no-verify-jwt
           supabase functions deploy wp-source --project-ref "$SUPABASE_PROJECT_REF" --use-api --no-verify-jwt
