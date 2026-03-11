@@ -1846,7 +1846,9 @@ msgstr "Instellingen en acties"
 
 #: src/pages/Index.tsx:996
 msgid "Settings could not be loaded. Please refresh and try again."
-msgstr "Instellingen konden niet worden geladen. Vernieuw de pagina en probeer het opnieuw."
+msgstr ""
+"Instellingen konden niet worden geladen. Vernieuw de pagina en probeer het o"
+"pnieuw."
 
 #: src/components/SettingsModal.tsx:694
 msgid "Settings exported with your DeepL API key."
@@ -2153,7 +2155,9 @@ msgstr "De URL moet beginnen met https://"
 #: src/pages/Index.tsx:887
 #: src/pages/Index.tsx:979
 msgid "The editor interface could not be loaded. Please refresh and try again."
-msgstr "De editorinterface kon niet worden geladen. Vernieuw de pagina en probeer het opnieuw."
+msgstr ""
+"De editorinterface kon niet worden geladen. Vernieuw de pagina en probeer he"
+"t opnieuw."
 
 #: src/components/SettingsModal.tsx:1741
 msgid ""
