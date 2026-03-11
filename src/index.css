@@ -86,6 +86,32 @@ body {
 }
 
 /* ----------------------------------------------------------------
+ * iOS auto-zoom prevention
+ * iOS Safari zooms in on any input whose font-size is below 16 px.
+ * On touch-primary devices we clamp input / select / textarea font
+ * sizes to at least 16 px without changing layout on larger screens.
+ * We deliberately do NOT set user-scalable=no (which breaks
+ * accessibility); this CSS-only approach is the preferred fix.
+ *
+ * We target the raw HTML elements so the rule works regardless of
+ * Mantine's hashed class names, and cover both the pointer-coarse
+ * (touch-screen) and max-width (narrow viewport) conditions so the
+ * fix applies both on real iOS devices and in Playwright's viewport-
+ * based simulation.
+ *
+ * !important is required here because Mantine sets font-size via an
+ * inline CSS variable (--input-fz) resolved at the element level,
+ * which has higher specificity than any class-based rule.
+ * ---------------------------------------------------------------- */
+@media (hover: none) and (pointer: coarse), (max-width: 767px) {
+  input:not([type='range']):not([type='checkbox']):not([type='radio']),
+  textarea,
+  select {
+    font-size: max(16px, 1em) !important;
+  }
+}
+
+/* ----------------------------------------------------------------
  * Tabs active state (dark)
  * ---------------------------------------------------------------- */
 [data-mantine-color-scheme='dark'] .mantine-Tabs-tab[data-active] {

@@ -21,7 +21,9 @@ import {
   Checkbox,
   Select,
   UnstyledButton,
+  useMantineTheme,
 } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Search,
@@ -49,7 +51,6 @@ import { msgid, useTranslation } from '@/lib/app-language';
 import type { UsageStats } from '@/lib/deepl/types';
 import { badgeVariants, contentVariants, interactiveSpring } from '@/lib/motion';
 import { useDragGhost } from '@/hooks/use-drag-ghost';
-import { useMediaQuery } from '@mantine/hooks';
 
 const MotionDiv = motion.div;
 
@@ -107,7 +108,8 @@ function getBadgeStyle(state: FilterState | null): {
 
 export function FilterToolbar() {
   const { t } = useTranslation();
-  const isNarrowViewport = useMediaQuery('(max-width: 30em)');
+  const theme = useMantineTheme();
+  const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
   const {
     filterQuery,
     activeFilters,
@@ -313,17 +315,19 @@ export function FilterToolbar() {
               </Text>
             </motion.span>
           </Group>
-          <Box style={{ width: 100 }}>
-            <motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} style={{ originX: 0 }}>
-              <Progress
-                value={percentage}
-                size="sm"
-                radius="xl"
-                color={percentage === 100 ? 'green' : percentage > 50 ? 'blue' : 'orange'}
-                animated={percentage < 100}
-              />
-            </motion.div>
-          </Box>
+          {!isMobile && (
+            <Box style={{ width: 100 }}>
+              <motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} style={{ originX: 0 }}>
+                <Progress
+                  value={percentage}
+                  size="sm"
+                  radius="xl"
+                  color={percentage === 100 ? 'green' : percentage > 50 ? 'blue' : 'orange'}
+                  animated={percentage < 100}
+                />
+              </motion.div>
+            </Box>
+          )}
         </Group>
       </Group>
 
@@ -459,10 +463,10 @@ export function FilterToolbar() {
 
         <Group
           gap="xs"
-          wrap={isNarrowViewport ? 'wrap' : 'nowrap'}
+          wrap={isMobile ? 'wrap' : 'nowrap'}
           style={{
-            flexShrink: 0,
-            width: isNarrowViewport ? '100%' : undefined,
+            flexShrink: isMobile ? undefined : 0,
+            ...(isMobile && { width: '100%' }),
           }}
         >
           <Menu position="bottom-end" shadow="sm" withArrow>
@@ -472,7 +476,7 @@ export function FilterToolbar() {
                 variant="subtle"
                 leftSection={<Columns3 size={14} />}
                 aria-label={t('Choose visible columns')}
-                style={isNarrowViewport ? { flex: '1 1 100%' } : undefined}
+                style={isMobile ? { flex: '1 1 100%' } : undefined}
               >
                 {t('Columns')}
               </Button>
@@ -523,7 +527,9 @@ export function FilterToolbar() {
                             const menuItem = e.currentTarget.closest(
                               '[data-column]',
                             ) as HTMLElement;
-                            if (menuItem) dragGhost.show(menuItem, e.clientX, e.clientY);
+                            if (menuItem) {
+                              dragGhost.show(menuItem, e.clientX, e.clientY, columnLabels[column]);
+                            }
                           }}
                           onPointerMove={(e) => {
                             if (dragPointerId.current !== e.pointerId) return;
@@ -574,9 +580,9 @@ export function FilterToolbar() {
             onChange={handleSortChange}
             data={sortOptions}
             leftSection={<ArrowUpDown size={14} />}
-            w={isNarrowViewport ? '100%' : 220}
+            w={isMobile ? undefined : 220}
+            style={isMobile ? { flex: 1, minWidth: 0 } : undefined}
             aria-label={t('Sort entries')}
-            style={isNarrowViewport ? { flex: '1 1 100%', minWidth: 0 } : undefined}
           />
         </Group>
       </Group>

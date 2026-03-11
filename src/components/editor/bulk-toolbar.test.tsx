@@ -315,4 +315,43 @@ describe('editor details and mobile layout', () => {
     expect(screen.getByTestId('mobile-entry-card-list')).toBeInTheDocument();
     expect(screen.queryByTestId('editor-table-desktop')).not.toBeInTheDocument();
   });
+
+  it('uses the native textarea text color for translation editing on mobile', async () => {
+    const user = userEvent.setup();
+    setMatchMedia(true);
+    useEditorStore
+      .getState()
+      .loadFile(
+        makeFile([makeEntry('a', { msgid: 'Source message', msgstr: 'Mobile translation' })]),
+      );
+
+    renderWithMantine(<EditorTable />);
+
+    await user.click(screen.getByText('Mobile translation'));
+
+    const textarea = await screen.findByDisplayValue('Mobile translation');
+    expect((textarea as HTMLTextAreaElement).style.color).toBe('var(--mantine-color-text)');
+    expect((textarea as HTMLTextAreaElement).style.backgroundColor).toBe('var(--gb-surface-1)');
+    expect(screen.queryByTestId('highlighted-backdrop-a-singular')).not.toBeInTheDocument();
+  });
+
+  it('keeps the highlighted overlay editing style on desktop', async () => {
+    const user = userEvent.setup();
+    useEditorStore
+      .getState()
+      .loadFile(
+        makeFile([makeEntry('a', { msgid: 'Source message', msgstr: 'Desktop translation' })]),
+      );
+
+    const { container } = renderWithMantine(<EditorTable />);
+
+    const editableField = container.querySelector('[data-field-id="a-singular"]');
+    expect(editableField).not.toBeNull();
+    await user.click(editableField!);
+
+    const textarea = await screen.findByDisplayValue('Desktop translation');
+    expect((textarea as HTMLTextAreaElement).style.color).toBe('transparent');
+    expect((textarea as HTMLTextAreaElement).style.backgroundColor).toBe('transparent');
+    expect(screen.getByTestId('highlighted-backdrop-a-singular')).toBeInTheDocument();
+  });
 });

@@ -371,6 +371,7 @@ function EditableField({
   fieldId,
   isPlural = false,
   pluralIndex,
+  useNativeTextColor = false,
 }: {
   value: string;
   placeholder?: string;
@@ -380,6 +381,7 @@ function EditableField({
   fieldId: string;
   isPlural?: boolean;
   pluralIndex?: number;
+  useNativeTextColor?: boolean;
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(value);
@@ -454,21 +456,23 @@ function EditableField({
           </Text>
         )}
         <Box style={{ position: 'relative' }}>
-          {/* Highlighted backdrop */}
-          <Box
-            aria-hidden
-            style={{
-              ...sharedStyles,
-              position: 'absolute',
-              inset: 0,
-              pointerEvents: 'none',
-              overflow: 'hidden',
-              borderRadius: 'var(--mantine-radius-default)',
-              backgroundColor: 'var(--gb-surface-1)',
-            }}
-          >
-            <HighlightedText>{editValue || ' '}</HighlightedText>
-          </Box>
+          {!useNativeTextColor && (
+            <Box
+              aria-hidden
+              data-testid={`highlighted-backdrop-${fieldId}`}
+              style={{
+                ...sharedStyles,
+                position: 'absolute',
+                inset: 0,
+                pointerEvents: 'none',
+                overflow: 'hidden',
+                borderRadius: 'var(--mantine-radius-default)',
+                backgroundColor: 'var(--gb-surface-1)',
+              }}
+            >
+              <HighlightedText>{editValue || ' '}</HighlightedText>
+            </Box>
+          )}
           <Textarea
             ref={textareaRef}
             value={editValue}
@@ -485,9 +489,11 @@ function EditableField({
               input: {
                 ...sharedStyles,
                 fontFamily: 'inherit',
-                color: 'transparent',
+                // Mobile browsers can misplace the caret when the textarea text is transparent
+                // and a separate overlay renders the visible content.
+                color: useNativeTextColor ? 'var(--mantine-color-text)' : 'transparent',
                 caretColor: 'var(--mantine-color-text)',
-                backgroundColor: 'transparent',
+                backgroundColor: useNativeTextColor ? 'var(--gb-surface-1)' : 'transparent',
                 border: 'none',
                 outline: 'none',
                 boxShadow: 'none',
@@ -655,11 +661,13 @@ function TranslationCell({
   onKeyDown,
   translateButtonSize = 'sm',
   translateButtonDisplay = 'icon',
+  useNativeTextColor = false,
 }: {
   entry: POEntry;
   onKeyDown?: (e: KeyboardEvent<HTMLTextAreaElement>, fieldId: string) => void;
   translateButtonSize?: 'xs' | 'sm' | 'md';
   translateButtonDisplay?: 'icon' | 'button';
+  useNativeTextColor?: boolean;
 }) {
   const { t } = useTranslation();
   const updateEntry = useEditorStore((state) => state.updateEntry);
@@ -673,11 +681,12 @@ function TranslationCell({
   const usedGlossary = useEditorStore(
     (state) => state.machineTranslationMeta.get(entry.id)?.usedGlossary ?? false,
   );
+  const signalsColumnHidden = useEditorStore((state) => !state.visibleColumns.has('signals'));
 
   const translateSettings = useContext(TranslateSettingsContext);
   const hasPlural = Boolean(entry.msgidPlural);
   const pluralForms = useMemo(() => entry.msgstrPlural ?? [], [entry.msgstrPlural]);
-  const glossaryAnalysis = getGlossaryAnalysis(entry.id);
+  const glossaryAnalysis = signalsColumnHidden ? getGlossaryAnalysis(entry.id) : null;
   const translationLang = toSpeakLanguageTag(translateSettings.targetLang);
 
   const handleSingularChange = useCallback(
@@ -746,6 +755,7 @@ function TranslationCell({
                 isPlural
                 pluralIndex={index}
                 placeholder={t('Plural form {{index}}', { index })}
+                useNativeTextColor={useNativeTextColor}
               />
             </Box>
             {translateSettings.translateEnabled &&
@@ -779,27 +789,29 @@ function TranslationCell({
           </Group>
         ))}
 
-        {/* MT badge under translation */}
-        {isMT && (
-          <Tooltip
-            label={
-              usedGlossary
-                ? t('Machine translated with glossary')
-                : t('Machine translated by DeepL')
-            }
-          >
-            <Badge
-              size="xs"
-              variant="light"
-              color={usedGlossary ? 'teal' : 'blue'}
-              leftSection={<Bot size={10} />}
-            >
-              {usedGlossary ? t('MT + Glossary') : t('Machine translated')}
-            </Badge>
-          </Tooltip>
+        {signalsColumnHidden && (
+          <>
+            {isMT && (
+              <Tooltip
+                label={
+                  usedGlossary
+                    ? t('Machine translated with glossary')
+                    : t('Machine translated by DeepL')
+                }
+              >
+                <Badge
+                  size="xs"
+                  variant="light"
+                  color={usedGlossary ? 'teal' : 'blue'}
+                  leftSection={<Bot size={10} />}
+                >
+                  {usedGlossary ? t('MT + Glossary') : t('Machine translated')}
+                </Badge>
+              </Tooltip>
+            )}
+            <GlossaryIndicator analysis={glossaryAnalysis} />
+          </>
         )}
-
-        <GlossaryIndicator analysis={glossaryAnalysis ?? null} />
       </Stack>
     );
   }
@@ -814,6 +826,7 @@ function TranslationCell({
             onKeyDown={onKeyDown}
             entryId={entry.id}
             fieldId={`${entry.id}-singular`}
+            useNativeTextColor={useNativeTextColor}
           />
         </Box>
         {translateSettings.translateEnabled &&
@@ -844,25 +857,29 @@ function TranslationCell({
         )}
       </Group>
 
-      {/* MT badge under translation */}
-      {isMT && (
-        <Tooltip
-          label={
-            usedGlossary ? t('Machine translated with glossary') : t('Machine translated by DeepL')
-          }
-        >
-          <Badge
-            size="xs"
-            variant="light"
-            color={usedGlossary ? 'teal' : 'blue'}
-            leftSection={<Bot size={10} />}
-          >
-            {usedGlossary ? t('MT + Glossary') : t('Machine translated')}
-          </Badge>
-        </Tooltip>
+      {signalsColumnHidden && (
+        <>
+          {isMT && (
+            <Tooltip
+              label={
+                usedGlossary
+                  ? t('Machine translated with glossary')
+                  : t('Machine translated by DeepL')
+              }
+            >
+              <Badge
+                size="xs"
+                variant="light"
+                color={usedGlossary ? 'teal' : 'blue'}
+                leftSection={<Bot size={10} />}
+              >
+                {usedGlossary ? t('MT + Glossary') : t('Machine translated')}
+              </Badge>
+            </Tooltip>
+          )}
+          <GlossaryIndicator analysis={glossaryAnalysis} />
+        </>
       )}
-
-      <GlossaryIndicator analysis={glossaryAnalysis ?? null} />
     </Stack>
   );
 }
@@ -1614,7 +1631,7 @@ const MobileEntryCard = memo(function MobileEntryCard({
           <Text size="xs" fw={600} c="dimmed" mb={4}>
             {t('Translation')}
           </Text>
-          <TranslationCell entry={entry} onKeyDown={onKeyDown} />
+          <TranslationCell entry={entry} onKeyDown={onKeyDown} useNativeTextColor />
         </Box>
 
         <Box>
@@ -1819,9 +1836,9 @@ export function EditorTable({
       e.currentTarget.setPointerCapture(e.pointerId);
       setDraggingHeaderColumn(columnKey);
       setHeaderDropTarget(null);
-      headerDragGhost.show(e.currentTarget, e.clientX, e.clientY, DATA_COLUMN_LABELS[columnKey]);
+      headerDragGhost.show(e.currentTarget, e.clientX, e.clientY, t(DATA_COLUMN_LABELS[columnKey]));
     },
-    [headerDragGhost],
+    [headerDragGhost, t],
   );
 
   const handleHeaderPointerMove = useCallback(
@@ -2324,7 +2341,12 @@ export function EditorTable({
                 display: 'flex',
                 alignItems: 'flex-start',
                 gap: 'var(--mantine-spacing-md)',
-                overflow: 'hidden',
+                overflow:
+                  typeof CSS !== 'undefined' &&
+                  typeof CSS.supports === 'function' &&
+                  CSS.supports('overflow', 'clip')
+                    ? 'clip'
+                    : 'hidden',
                 flexShrink: 0,
                 width: inspectorOpen ? inspectorWidth + 24 : 0,
                 marginLeft: inspectorOpen ? 'var(--mantine-spacing-md)' : 0,
@@ -2462,7 +2484,7 @@ export function EditorTable({
 
           {/* Pagination controls */}
           {filteredEntries.length > 0 && (
-            <Group justify="space-between" align="center" mt="xs">
+            <Group justify="space-between" align="center" mt="xs" wrap="wrap">
               <Group gap="sm">
                 <Select
                   value={rowsPerPage}
@@ -2472,13 +2494,15 @@ export function EditorTable({
                   w={120}
                   aria-label={t('Rows per page')}
                 />
-                <Text size="sm" c="dimmed">
-                  {t('Showing {{start}}–{{end}} of {{total}} entries', {
-                    start: startItem,
-                    end: endItem,
-                    total: filteredEntries.length,
-                  })}
-                </Text>
+                {!isMobile && (
+                  <Text size="sm" c="dimmed">
+                    {t('Showing {{start}}–{{end}} of {{total}} entries', {
+                      start: startItem,
+                      end: endItem,
+                      total: filteredEntries.length,
+                    })}
+                  </Text>
+                )}
               </Group>
 
               {totalPages > 1 && (
@@ -2486,7 +2510,7 @@ export function EditorTable({
                   value={currentPage}
                   onChange={setCurrentPage}
                   total={totalPages}
-                  size="sm"
+                  size={isMobile ? 'xs' : 'sm'}
                   withEdges
                 />
               )}
