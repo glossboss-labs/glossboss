@@ -59,7 +59,12 @@ import {
   AlertTriangle,
   ShieldAlert,
 } from 'lucide-react';
-import { useEditorStore, useSourceStore, useTranslationMemoryStore, getEffectiveSlug } from '@/stores';
+import {
+  useEditorStore,
+  useSourceStore,
+  useTranslationMemoryStore,
+  getEffectiveSlug,
+} from '@/stores';
 import type { POEntry } from '@/lib/po';
 import { parseReferences, buildTracUrl, type ParsedReference } from '@/lib/wp-source';
 import { getTranslationStatus, type TranslationStatus } from '@/types';
@@ -73,7 +78,10 @@ import { useDragGhost } from '@/hooks/use-drag-ghost';
 import { toSpeakLanguageTag } from '@/lib/tts';
 import { SpeakButton } from '@/components/ui';
 import { msgid, useTranslation } from '@/lib/app-language';
-import { createTranslationMemoryScope, type TranslationMemoryScope } from '@/lib/translation-memory';
+import {
+  createTranslationMemoryScope,
+  type TranslationMemoryScope,
+} from '@/lib/translation-memory';
 import { QA_RULE_LABELS, type QAEntryReport } from '@/lib/qa';
 
 /** localStorage key for skip-translated navigation setting */
@@ -689,7 +697,11 @@ function QaIssuesPanel({ report }: { report: QAEntryReport | null }) {
               <Text size="sm" fw={500}>
                 {t(QA_RULE_LABELS[issue.ruleId])}
               </Text>
-              <Badge size="xs" color={issue.severity === 'error' ? 'red' : 'orange'} variant="light">
+              <Badge
+                size="xs"
+                color={issue.severity === 'error' ? 'red' : 'orange'}
+                variant="light"
+              >
                 {issue.severity === 'error' ? t('Error') : t('Warning')}
               </Badge>
             </Group>
@@ -726,7 +738,10 @@ function TranslationMemoryPanel({
 
     return getSuggestions(scope, entry).filter((suggestion) => {
       if (entry.msgidPlural) {
-        return JSON.stringify(suggestion.entry.targetTextPlural ?? []) !== JSON.stringify(entry.msgstrPlural ?? []);
+        return (
+          JSON.stringify(suggestion.entry.targetTextPlural ?? []) !==
+          JSON.stringify(entry.msgstrPlural ?? [])
+        );
       }
 
       return suggestion.entry.targetText !== entry.msgstr;
@@ -756,7 +771,11 @@ function TranslationMemoryPanel({
           <Stack gap={6}>
             <Group justify="space-between" align="flex-start" wrap="nowrap">
               <Group gap={6} wrap="wrap">
-                <Badge size="xs" variant="light" color={suggestion.matchType === 'exact' ? 'green' : 'blue'}>
+                <Badge
+                  size="xs"
+                  variant="light"
+                  color={suggestion.matchType === 'exact' ? 'green' : 'blue'}
+                >
                   {suggestion.matchType === 'exact' ? t('Exact match') : t('Fuzzy match')}
                 </Badge>
                 <Badge size="xs" variant="light" color="gray">
@@ -1683,14 +1702,14 @@ const EntryRow = memo(function EntryRow({
             key={`${entry.id}-signals`}
             style={{ verticalAlign: 'top', padding: '12px 8px', overflow: 'hidden' }}
           >
-              <SignalsOverviewCell
-                isMT={isMT}
-                usedGlossary={usedGlossary}
-                glossaryAnalysis={glossaryAnalysis ?? null}
-                qaReport={qaReport ?? null}
-              />
-            </Table.Td>
-          );
+            <SignalsOverviewCell
+              isMT={isMT}
+              usedGlossary={usedGlossary}
+              glossaryAnalysis={glossaryAnalysis ?? null}
+              qaReport={qaReport ?? null}
+            />
+          </Table.Td>
+        );
       })}
     </Table.Tr>
   );
@@ -1872,6 +1891,7 @@ export function EditorTable({
   const machineTranslatedIds = useEditorStore((state) => state.machineTranslatedIds);
   const manualEditIds = useEditorStore((state) => state.manualEditIds);
   const header = useEditorStore((state) => state.header);
+  const projectName = useEditorStore((state) => state.projectName);
   const getGlossaryAnalysis = useEditorStore((state) => state.getGlossaryAnalysis);
   const getQaReport = useEditorStore((state) => state.getQaReport);
   const selectEntry = useEditorStore((state) => state.selectEntry);
@@ -2228,6 +2248,14 @@ export function EditorTable({
       translateEnabled,
     ],
   );
+  const targetLanguageForMemory = header?.language ?? targetLang ?? null;
+  const translationMemoryScope = useMemo(
+    () =>
+      targetLanguageForMemory
+        ? createTranslationMemoryScope(projectName, targetLanguageForMemory, sourceLang ?? null)
+        : null,
+    [projectName, sourceLang, targetLanguageForMemory],
+  );
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLTextAreaElement>, fieldId: string) => {
@@ -2360,16 +2388,7 @@ export function EditorTable({
   const selectedHasGlossaryTerms = selectedEntry
     ? (getGlossaryAnalysis(selectedEntry.id)?.matchedCount ?? 0) > 0
     : false;
-  const selectedQaReport = selectedEntry ? getQaReport(selectedEntry.id) ?? null : null;
-  const projectName = useEditorStore((state) => state.projectName);
-  const targetLanguageForMemory = header?.language ?? targetLang ?? null;
-  const translationMemoryScope = useMemo(
-    () =>
-      targetLanguageForMemory
-        ? createTranslationMemoryScope(projectName, targetLanguageForMemory, sourceLang ?? null)
-        : null,
-    [projectName, sourceLang, targetLanguageForMemory],
-  );
+  const selectedQaReport = selectedEntry ? (getQaReport(selectedEntry.id) ?? null) : null;
   const selectedInspectorLabel = (() => {
     if (!selectedEntry) return t('No selection');
 

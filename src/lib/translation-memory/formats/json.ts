@@ -1,4 +1,8 @@
-import type { TranslationMemoryEntry, TranslationMemoryJsonFile, TranslationMemoryScope } from '../types';
+import type {
+  TranslationMemoryEntry,
+  TranslationMemoryJsonFile,
+  TranslationMemoryScope,
+} from '../types';
 
 export function serializeTranslationMemoryToJson(
   scope: TranslationMemoryScope,
@@ -36,7 +40,8 @@ export function parseTranslationMemoryJson(content: string): TranslationMemoryJs
       typeof parsed.sourceLanguage === 'string' || parsed.sourceLanguage === null
         ? parsed.sourceLanguage
         : null,
-    exportedAt: typeof parsed.exportedAt === 'string' ? parsed.exportedAt : new Date().toISOString(),
+    exportedAt:
+      typeof parsed.exportedAt === 'string' ? parsed.exportedAt : new Date().toISOString(),
     entries: parsed.entries as TranslationMemoryEntry[],
   };
 }

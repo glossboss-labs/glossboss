@@ -17,7 +17,10 @@ function makeEntry(id: string, overrides: Partial<POEntry> = {}): POEntry {
 
 describe('qa analyzer', () => {
   it('flags placeholder and punctuation drift errors', () => {
-    const reports = analyzeQaForEntries([makeEntry('a', { msgid: 'Save %s.', msgstr: 'Opslaan' })], new Map());
+    const reports = analyzeQaForEntries(
+      [makeEntry('a', { msgid: 'Save %s.', msgstr: 'Opslaan' })],
+      new Map(),
+    );
     const report = reports.get('a');
 
     expect(report?.issues.some((issue) => issue.ruleId === 'placeholder-parity')).toBe(true);
@@ -33,12 +36,19 @@ describe('qa analyzer', () => {
       new Map(),
     );
 
-    expect(reports.get('a')?.issues.some((issue) => issue.ruleId === 'repeated-source-consistency')).toBe(true);
-    expect(reports.get('b')?.issues.some((issue) => issue.ruleId === 'repeated-source-consistency')).toBe(true);
+    expect(
+      reports.get('a')?.issues.some((issue) => issue.ruleId === 'repeated-source-consistency'),
+    ).toBe(true);
+    expect(
+      reports.get('b')?.issues.some((issue) => issue.ruleId === 'repeated-source-consistency'),
+    ).toBe(true);
   });
 
   it('summarizes report counts', () => {
-    const reports = analyzeQaForEntries([makeEntry('a', { msgid: 'Hello', msgstr: ' Hello ' })], new Map());
+    const reports = analyzeQaForEntries(
+      [makeEntry('a', { msgid: 'Hello', msgstr: ' Hello ' })],
+      new Map(),
+    );
     const summary = summarizeQaReports(reports);
 
     expect(summary.entriesWithIssues).toBe(1);

@@ -24,7 +24,11 @@ interface TranslationMemoryActions {
   getEntryCount: (scope: TranslationMemoryScope) => number;
   upsertApprovedEntry: (scope: TranslationMemoryScope, entry: POEntry) => void;
   upsertApprovedEntries: (scope: TranslationMemoryScope, entries: POEntry[]) => void;
-  getSuggestions: (scope: TranslationMemoryScope, entry: POEntry, limit?: number) => TranslationMemorySuggestion[];
+  getSuggestions: (
+    scope: TranslationMemoryScope,
+    entry: POEntry,
+    limit?: number,
+  ) => TranslationMemorySuggestion[];
   importEntries: (scope: TranslationMemoryScope, entries: TranslationMemoryEntry[]) => void;
   clearProject: (scope: TranslationMemoryScope) => void;
 }
@@ -56,7 +60,9 @@ function upsertEntriesIntoProject(
   };
 }
 
-export const useTranslationMemoryStore = create<TranslationMemoryState & TranslationMemoryActions>()(
+export const useTranslationMemoryStore = create<
+  TranslationMemoryState & TranslationMemoryActions
+>()(
   persist(
     (set, get) => ({
       projects: {},
@@ -105,7 +111,10 @@ export const useTranslationMemoryStore = create<TranslationMemoryState & Transla
           const key = createTranslationMemoryProjectKey(scope);
           const current = state.projects[key] ?? null;
           const existingByFingerprint = new Map(
-            (current?.entries ?? []).map((entry) => [createTranslationMemoryEntryFingerprint(entry), entry]),
+            (current?.entries ?? []).map((entry) => [
+              createTranslationMemoryEntryFingerprint(entry),
+              entry,
+            ]),
           );
           const now = new Date().toISOString();
           const nextEntries = approvedEntries.map((entry) => {

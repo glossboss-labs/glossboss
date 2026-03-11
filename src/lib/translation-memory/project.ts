@@ -2,7 +2,11 @@ import type { POEntry, POHeader } from '@/lib/po';
 import type { TranslationMemoryEntry, TranslationMemoryScope } from './types';
 
 function sanitizeProjectSegment(value: string): string {
-  return value.trim().toLowerCase().replace(/\s+/g, ' ').replace(/[^\w.-]+/g, '-');
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, ' ')
+    .replace(/[^\w.-]+/g, '-');
 }
 
 export function deriveProjectName(header: POHeader | null, filename: string | null): string {

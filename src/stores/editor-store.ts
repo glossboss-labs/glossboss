@@ -885,13 +885,13 @@ export const useEditorStore = create<EditorState & EditorActions>()(
               !excludeFilters.some((filter) =>
                 entryMatchesFilter(
                   entry,
-                filter,
-                dirtyEntryIds,
-                glossaryAnalysis,
-                qaReports,
-                machineTranslatedIds,
-                manualEditIds,
-              ),
+                  filter,
+                  dirtyEntryIds,
+                  glossaryAnalysis,
+                  qaReports,
+                  machineTranslatedIds,
+                  manualEditIds,
+                ),
               ),
           );
         }
@@ -930,8 +930,14 @@ export const useEditorStore = create<EditorState & EditorActions>()(
       },
 
       getStats: () => {
-        const { entries, dirtyEntryIds, machineTranslatedIds, manualEditIds, glossaryAnalysis, qaReports } =
-          get();
+        const {
+          entries,
+          dirtyEntryIds,
+          machineTranslatedIds,
+          manualEditIds,
+          glossaryAnalysis,
+          qaReports,
+        } = get();
         const total = entries.length;
 
         // Helper to check if an entry is fully translated (handles plurals)
@@ -964,8 +970,12 @@ export const useEditorStore = create<EditorState & EditorActions>()(
         const glossaryNeedsReview = Array.from(glossaryAnalysis).filter(
           ([, analysis]) => analysis.needsReviewCount > 0,
         ).length;
-        const qaErrors = Array.from(qaReports.values()).filter((report) => report.errorCount > 0).length;
-        const qaWarnings = Array.from(qaReports.values()).filter((report) => report.warningCount > 0).length;
+        const qaErrors = Array.from(qaReports.values()).filter(
+          (report) => report.errorCount > 0,
+        ).length;
+        const qaWarnings = Array.from(qaReports.values()).filter(
+          (report) => report.warningCount > 0,
+        ).length;
 
         return {
           total,

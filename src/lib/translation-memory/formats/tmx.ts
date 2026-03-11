@@ -27,7 +27,10 @@ export function serializeTranslationMemoryToTmx(
   scope: TranslationMemoryScope,
   entries: TranslationMemoryEntry[],
 ): string {
-  const now = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
+  const now = new Date()
+    .toISOString()
+    .replace(/[-:]/g, '')
+    .replace(/\.\d{3}Z$/, 'Z');
 
   const body = entries
     .map((entry) => {
@@ -85,7 +88,9 @@ export function parseTranslationMemoryTmx(content: string): {
       props.set(match[1], match[2]);
     }
 
-    const tuvMatches = Array.from(tu.matchAll(/<tuv xml:lang="([^"]+)"><seg>([\s\S]*?)<\/seg><\/tuv>/g));
+    const tuvMatches = Array.from(
+      tu.matchAll(/<tuv xml:lang="([^"]+)"><seg>([\s\S]*?)<\/seg><\/tuv>/g),
+    );
     if (tuvMatches.length < 2) continue;
 
     const sourceLang = decodeXml(tuvMatches[0][1]);

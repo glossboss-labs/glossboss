@@ -806,7 +806,9 @@ export function SettingsModal({
       if (!activeTranslationMemoryScope) {
         setTransferResult({
           success: false,
-          message: t('Load a translation file first so GlossBoss knows which target language to use.'),
+          message: t(
+            'Load a translation file first so GlossBoss knows which target language to use.',
+          ),
         });
         return;
       }
@@ -877,7 +879,8 @@ export function SettingsModal({
         } catch (error) {
           setTransferResult({
             success: false,
-            message: error instanceof Error ? error.message : t('Failed to import translation memory.'),
+            message:
+              error instanceof Error ? error.message : t('Failed to import translation memory.'),
           });
         }
       })();

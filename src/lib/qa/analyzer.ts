@@ -103,10 +103,7 @@ function getTerminalPunctuation(value: string): string | null {
   return match?.[1] ?? null;
 }
 
-function analyzeEntry(
-  entry: POEntry,
-  glossaryAnalysis?: GlossaryAnalysisResult,
-): QAEntryReport {
+function analyzeEntry(entry: POEntry, glossaryAnalysis?: GlossaryAnalysisResult): QAEntryReport {
   const report = createEmptyReport(entry.id);
   const sourceText = getSourceText(entry);
   const targetText = getTargetText(entry);
@@ -187,10 +184,7 @@ function analyzeEntry(
       ruleId: 'punctuation-drift',
       severity: 'warning',
       message: 'Terminal punctuation differs from the source string.',
-      details: [
-        `Source: ${sourcePunctuation ?? 'none'}`,
-        `Target: ${targetPunctuation ?? 'none'}`,
-      ],
+      details: [`Source: ${sourcePunctuation ?? 'none'}`, `Target: ${targetPunctuation ?? 'none'}`],
     });
   }
 
@@ -220,7 +214,9 @@ function addRepeatedSourceWarnings(entries: POEntry[], reports: Map<string, QAEn
         ruleId: 'repeated-source-consistency',
         severity: 'warning',
         message: 'Matching source strings have inconsistent approved translations.',
-        details: group.map((candidate) => candidate.msgidPlural ? (candidate.msgstrPlural ?? []).join(' | ') : candidate.msgstr),
+        details: group.map((candidate) =>
+          candidate.msgidPlural ? (candidate.msgstrPlural ?? []).join(' | ') : candidate.msgstr,
+        ),
       });
 
       reports.set(entry.id, report);

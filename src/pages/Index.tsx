@@ -434,7 +434,11 @@ export default function Index() {
   const translationMemoryScope = useMemo(
     () =>
       targetLanguageForMemory
-        ? createTranslationMemoryScope(projectName, targetLanguageForMemory, translateSourceLang ?? null)
+        ? createTranslationMemoryScope(
+            projectName,
+            targetLanguageForMemory,
+            translateSourceLang ?? null,
+          )
         : null,
     [projectName, targetLanguageForMemory, translateSourceLang],
   );
