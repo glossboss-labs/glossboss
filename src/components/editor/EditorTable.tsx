@@ -1819,9 +1819,9 @@ export function EditorTable({
       e.currentTarget.setPointerCapture(e.pointerId);
       setDraggingHeaderColumn(columnKey);
       setHeaderDropTarget(null);
-      headerDragGhost.show(e.currentTarget, e.clientX, e.clientY, DATA_COLUMN_LABELS[columnKey]);
+      headerDragGhost.show(e.currentTarget, e.clientX, e.clientY, t(DATA_COLUMN_LABELS[columnKey]));
     },
-    [headerDragGhost],
+    [headerDragGhost, t],
   );
 
   const handleHeaderPointerMove = useCallback(
