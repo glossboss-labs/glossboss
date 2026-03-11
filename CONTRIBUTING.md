@@ -45,7 +45,7 @@ Examples:
 - Keep client-side environment variables under `VITE_*`.
 - Do not commit secrets or local `.env` files.
 - Add or update tests when behavior changes.
-- If you touch translation memory or QA, read `docs/translation-memory-and-qa.md` first.
+- If you touch translation memory or QA, read the Translation Memory and QA Checks sections in `README.md` first. TM logic lives in `src/lib/translation-memory/`, QA logic in `src/lib/qa/`. To add a new QA rule, update `types.ts` (rule identifier and label) and `analyzer.ts` (check implementation).
 
 ## Translating the app
 
