@@ -57,8 +57,9 @@ import {
   PanelRightClose,
   Check,
   AlertTriangle,
+  ShieldAlert,
 } from 'lucide-react';
-import { useEditorStore, useSourceStore, getEffectiveSlug } from '@/stores';
+import { useEditorStore, useSourceStore, useTranslationMemoryStore, getEffectiveSlug } from '@/stores';
 import type { POEntry } from '@/lib/po';
 import { parseReferences, buildTracUrl, type ParsedReference } from '@/lib/wp-source';
 import { getTranslationStatus, type TranslationStatus } from '@/types';
@@ -72,6 +73,8 @@ import { useDragGhost } from '@/hooks/use-drag-ghost';
 import { toSpeakLanguageTag } from '@/lib/tts';
 import { SpeakButton } from '@/components/ui';
 import { msgid, useTranslation } from '@/lib/app-language';
+import { createTranslationMemoryScope, type TranslationMemoryScope } from '@/lib/translation-memory';
+import { QA_RULE_LABELS, type QAEntryReport } from '@/lib/qa';
 
 /** localStorage key for skip-translated navigation setting */
 export const NAV_SKIP_TRANSLATED_KEY = 'glossboss-nav-skip-translated';
@@ -614,15 +617,18 @@ function SignalsOverviewCell({
   isMT,
   usedGlossary,
   glossaryAnalysis,
+  qaReport,
 }: {
   isMT: boolean;
   usedGlossary: boolean;
   glossaryAnalysis: GlossaryAnalysisResult | null;
+  qaReport: QAEntryReport | null;
 }) {
   const { t } = useTranslation();
   const hasGlossarySignals = (glossaryAnalysis?.terms.length ?? 0) > 0;
+  const hasQaSignals = Boolean(qaReport && (qaReport.errorCount > 0 || qaReport.warningCount > 0));
 
-  if (!isMT && !hasGlossarySignals) {
+  if (!isMT && !hasGlossarySignals && !hasQaSignals) {
     return (
       <Text size="xs" c="dimmed">
         —
@@ -649,6 +655,145 @@ function SignalsOverviewCell({
         </Tooltip>
       )}
       <GlossaryIndicator analysis={hasGlossarySignals ? glossaryAnalysis : null} />
+      {qaReport && qaReport.errorCount > 0 && (
+        <Badge size="xs" variant="light" color="red" leftSection={<ShieldAlert size={10} />}>
+          {t('{{count}} QA error(s)', { count: qaReport.errorCount })}
+        </Badge>
+      )}
+      {qaReport && qaReport.warningCount > 0 && (
+        <Badge size="xs" variant="light" color="orange" leftSection={<AlertTriangle size={10} />}>
+          {t('{{count}} QA warning(s)', { count: qaReport.warningCount })}
+        </Badge>
+      )}
+    </Stack>
+  );
+}
+
+function QaIssuesPanel({ report }: { report: QAEntryReport | null }) {
+  const { t } = useTranslation();
+
+  if (!report || report.issues.length === 0) {
+    return (
+      <Text size="sm" c="dimmed">
+        {t('No QA issues for this string.')}
+      </Text>
+    );
+  }
+
+  return (
+    <Stack gap={6}>
+      {report.issues.map((issue, index) => (
+        <Paper key={`${issue.ruleId}-${index}`} withBorder p="sm" radius="md">
+          <Stack gap={4}>
+            <Group justify="space-between" align="flex-start" wrap="nowrap">
+              <Text size="sm" fw={500}>
+                {t(QA_RULE_LABELS[issue.ruleId])}
+              </Text>
+              <Badge size="xs" color={issue.severity === 'error' ? 'red' : 'orange'} variant="light">
+                {issue.severity === 'error' ? t('Error') : t('Warning')}
+              </Badge>
+            </Group>
+            {issue.details?.length ? (
+              <Stack gap={2}>
+                {issue.details.map((detail) => (
+                  <Text key={detail} size="xs" c="dimmed">
+                    {detail}
+                  </Text>
+                ))}
+              </Stack>
+            ) : null}
+          </Stack>
+        </Paper>
+      ))}
+    </Stack>
+  );
+}
+
+function TranslationMemoryPanel({
+  entry,
+  scope,
+}: {
+  entry: POEntry;
+  scope: TranslationMemoryScope | null;
+}) {
+  const { t } = useTranslation();
+  const updateEntry = useEditorStore((state) => state.updateEntry);
+  const updateEntryPlural = useEditorStore((state) => state.updateEntryPlural);
+  const getSuggestions = useTranslationMemoryStore((state) => state.getSuggestions);
+
+  const suggestions = useMemo(() => {
+    if (!scope) return [];
+
+    return getSuggestions(scope, entry).filter((suggestion) => {
+      if (entry.msgidPlural) {
+        return JSON.stringify(suggestion.entry.targetTextPlural ?? []) !== JSON.stringify(entry.msgstrPlural ?? []);
+      }
+
+      return suggestion.entry.targetText !== entry.msgstr;
+    });
+  }, [entry, getSuggestions, scope]);
+
+  if (!scope) {
+    return (
+      <Text size="sm" c="dimmed">
+        {t('Load a file with a target language before using translation memory.')}
+      </Text>
+    );
+  }
+
+  if (suggestions.length === 0) {
+    return (
+      <Text size="sm" c="dimmed">
+        {t('No translation memory suggestions yet.')}
+      </Text>
+    );
+  }
+
+  return (
+    <Stack gap={6}>
+      {suggestions.map((suggestion) => (
+        <Paper key={`${suggestion.entry.id}-${suggestion.matchType}`} withBorder p="sm" radius="md">
+          <Stack gap={6}>
+            <Group justify="space-between" align="flex-start" wrap="nowrap">
+              <Group gap={6} wrap="wrap">
+                <Badge size="xs" variant="light" color={suggestion.matchType === 'exact' ? 'green' : 'blue'}>
+                  {suggestion.matchType === 'exact' ? t('Exact match') : t('Fuzzy match')}
+                </Badge>
+                <Badge size="xs" variant="light" color="gray">
+                  {t('{{score}}% match', { score: Math.round(suggestion.score * 100) })}
+                </Badge>
+              </Group>
+              <Button
+                size="xs"
+                variant="light"
+                onClick={() => {
+                  if (entry.msgidPlural) {
+                    updateEntryPlural(entry.id, suggestion.entry.targetTextPlural ?? ['', '']);
+                    return;
+                  }
+                  updateEntry(entry.id, suggestion.entry.targetText);
+                }}
+              >
+                {t('Apply')}
+              </Button>
+            </Group>
+
+            {entry.msgidPlural ? (
+              <Stack gap={3}>
+                {(suggestion.entry.targetTextPlural ?? []).map((form, index) => (
+                  <Text key={`${suggestion.entry.id}-plural-${index}`} size="sm" c="dimmed">
+                    {t('Plural {{index}}: {{value}}', { index, value: form || t('Empty') })}
+                  </Text>
+                ))}
+              </Stack>
+            ) : (
+              <Text size="sm" c="dimmed">
+                {suggestion.entry.targetText || t('Empty')}
+              </Text>
+            )}
+          </Stack>
+        </Paper>
+      ))}
     </Stack>
   );
 }
@@ -1119,6 +1264,8 @@ function EntryDetailsPanel({
   isMT,
   isManualEdit,
   hasGlossaryTerms,
+  qaReport,
+  translationMemoryScope,
   onActivateReference,
 }: {
   entry: POEntry;
@@ -1127,6 +1274,8 @@ function EntryDetailsPanel({
   isMT: boolean;
   isManualEdit: boolean;
   hasGlossaryTerms: boolean;
+  qaReport: QAEntryReport | null;
+  translationMemoryScope: TranslationMemoryScope | null;
   onActivateReference: (ref: ParsedReference) => void;
 }) {
   const { t } = useTranslation();
@@ -1170,6 +1319,16 @@ function EntryDetailsPanel({
             {t('Glossary match')}
           </Badge>
         )}
+        {qaReport && qaReport.errorCount > 0 && (
+          <Badge color="red" variant="light" size="sm">
+            {t('{{count}} QA error(s)', { count: qaReport.errorCount })}
+          </Badge>
+        )}
+        {qaReport && qaReport.warningCount > 0 && (
+          <Badge color="orange" variant="light" size="sm">
+            {t('{{count}} QA warning(s)', { count: qaReport.warningCount })}
+          </Badge>
+        )}
         {entry.lineNumber && (
           <Badge color="gray" variant="light" size="sm">
             {t('Line {{lineNumber}}', { lineNumber: entry.lineNumber })}
@@ -1195,6 +1354,24 @@ function EntryDetailsPanel({
           <Text size="sm">{pluralSummary(entry, t)}</Text>
         </Stack>
       </Group>
+
+      <Divider />
+
+      <Stack gap={6}>
+        <Text size="xs" fw={600} c="dimmed">
+          {t('Translation memory')}
+        </Text>
+        <TranslationMemoryPanel entry={entry} scope={translationMemoryScope} />
+      </Stack>
+
+      <Divider />
+
+      <Stack gap={6}>
+        <Text size="xs" fw={600} c="dimmed">
+          {t('QA checks')}
+        </Text>
+        <QaIssuesPanel report={qaReport} />
+      </Stack>
 
       <Divider />
 
@@ -1392,6 +1569,7 @@ const EntryRow = memo(function EntryRow({
     machineTranslationMeta,
   } = useEditorStore();
   const getGlossaryAnalysis = useEditorStore((state) => state.getGlossaryAnalysis);
+  const getQaReport = useEditorStore((state) => state.getQaReport);
 
   const isSelected = selectedEntryId === entry.id;
   const isModified = dirtyEntryIds.has(entry.id);
@@ -1399,6 +1577,7 @@ const EntryRow = memo(function EntryRow({
   const usedGlossary = machineTranslationMeta.get(entry.id)?.usedGlossary ?? false;
   const isManualEdit = manualEditIds.has(entry.id) && !isMT;
   const glossaryAnalysis = getGlossaryAnalysis(entry.id);
+  const qaReport = getQaReport(entry.id);
   const hasGlossaryTerms = (glossaryAnalysis?.matchedCount ?? 0) > 0;
   const status = getTranslationStatus(entry.msgstr, entry.flags, entry.msgstrPlural);
   const isUntranslated = status === 'untranslated';
@@ -1504,13 +1683,14 @@ const EntryRow = memo(function EntryRow({
             key={`${entry.id}-signals`}
             style={{ verticalAlign: 'top', padding: '12px 8px', overflow: 'hidden' }}
           >
-            <SignalsOverviewCell
-              isMT={isMT}
-              usedGlossary={usedGlossary}
-              glossaryAnalysis={glossaryAnalysis ?? null}
-            />
-          </Table.Td>
-        );
+              <SignalsOverviewCell
+                isMT={isMT}
+                usedGlossary={usedGlossary}
+                glossaryAnalysis={glossaryAnalysis ?? null}
+                qaReport={qaReport ?? null}
+              />
+            </Table.Td>
+          );
       })}
     </Table.Tr>
   );
@@ -1691,7 +1871,9 @@ export function EditorTable({
   const dirtyEntryIds = useEditorStore((state) => state.dirtyEntryIds);
   const machineTranslatedIds = useEditorStore((state) => state.machineTranslatedIds);
   const manualEditIds = useEditorStore((state) => state.manualEditIds);
+  const header = useEditorStore((state) => state.header);
   const getGlossaryAnalysis = useEditorStore((state) => state.getGlossaryAnalysis);
+  const getQaReport = useEditorStore((state) => state.getQaReport);
   const selectEntry = useEditorStore((state) => state.selectEntry);
   const selectedEntryIds = useEditorStore((state) => state.selectedEntryIds);
   const setEntrySelection = useEditorStore((state) => state.setEntrySelection);
@@ -2178,6 +2360,16 @@ export function EditorTable({
   const selectedHasGlossaryTerms = selectedEntry
     ? (getGlossaryAnalysis(selectedEntry.id)?.matchedCount ?? 0) > 0
     : false;
+  const selectedQaReport = selectedEntry ? getQaReport(selectedEntry.id) ?? null : null;
+  const projectName = useEditorStore((state) => state.projectName);
+  const targetLanguageForMemory = header?.language ?? targetLang ?? null;
+  const translationMemoryScope = useMemo(
+    () =>
+      targetLanguageForMemory
+        ? createTranslationMemoryScope(projectName, targetLanguageForMemory, sourceLang ?? null)
+        : null,
+    [projectName, sourceLang, targetLanguageForMemory],
+  );
   const selectedInspectorLabel = (() => {
     if (!selectedEntry) return t('No selection');
 
@@ -2466,6 +2658,8 @@ export function EditorTable({
                               isMT={selectedIsMT}
                               isManualEdit={selectedIsManualEdit}
                               hasGlossaryTerms={selectedHasGlossaryTerms}
+                              qaReport={selectedQaReport}
+                              translationMemoryScope={translationMemoryScope}
                               onActivateReference={handleInspectorReference}
                             />
                           </Stack>

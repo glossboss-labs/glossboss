@@ -1004,6 +1004,7 @@ export const useEditorStore = create<EditorState & EditorActions>()(
       name: STORAGE_KEY,
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
+        projectName: state.projectName,
         filename: state.filename,
         sourceFormat: state.sourceFormat,
         header: state.header,

@@ -16,6 +16,7 @@ import {
   Button,
   Group,
   Text,
+  TextInput,
   Alert,
   Badge,
   SegmentedControl,
@@ -100,6 +101,14 @@ import {
   type AppSettingsFile,
 } from '@/lib/app-settings';
 import { APP_LANGUAGE_OPTIONS, msgid, useTranslation, type AppLanguage } from '@/lib/app-language';
+import { useEditorStore, useTranslationMemoryStore } from '@/stores';
+import {
+  createTranslationMemoryScope,
+  parseTranslationMemoryJson,
+  parseTranslationMemoryTmx,
+  serializeTranslationMemoryToJson,
+  serializeTranslationMemoryToTmx,
+} from '@/lib/translation-memory';
 
 /** Keyboard shortcut definitions */
 const KEYBINDS: { keys: string[][]; action: string; description?: string }[] = [
@@ -327,6 +336,7 @@ export function SettingsModal({
     success: boolean;
     message: string;
   } | null>(null);
+  const translationMemoryImportResetRef = useRef<() => void | null>(null);
   const [credentialPrompt, setCredentialPrompt] = useState<
     | {
         mode: 'export';
@@ -337,6 +347,21 @@ export function SettingsModal({
       }
     | null
   >(null);
+  const projectName = useEditorStore((state) => state.projectName);
+  const setProjectName = useEditorStore((state) => state.setProjectName);
+  const targetLanguage = useEditorStore((state) => state.header?.language ?? null);
+  const tmEntryCount = useTranslationMemoryStore((state) =>
+    targetLanguage
+      ? state.getEntryCount(createTranslationMemoryScope(projectName, targetLanguage))
+      : 0,
+  );
+  const getTranslationMemoryProject = useTranslationMemoryStore((state) => state.getProject);
+  const importTranslationMemoryEntries = useTranslationMemoryStore((state) => state.importEntries);
+  const clearTranslationMemoryProject = useTranslationMemoryStore((state) => state.clearProject);
+
+  const activeTranslationMemoryScope = targetLanguage
+    ? createTranslationMemoryScope(projectName, targetLanguage)
+    : null;
 
   // Glossary state
   const [selectedLocale, setSelectedLocale] = useState<string>(() => {
@@ -775,6 +800,106 @@ export function SettingsModal({
 
     downloadSettingsFile(false);
   }, [apiKey, downloadSettingsFile]);
+
+  const downloadTranslationMemoryFile = useCallback(
+    (format: 'json' | 'tmx') => {
+      if (!activeTranslationMemoryScope) {
+        setTransferResult({
+          success: false,
+          message: t('Load a translation file first so GlossBoss knows which target language to use.'),
+        });
+        return;
+      }
+
+      const project = getTranslationMemoryProject(activeTranslationMemoryScope);
+      if (!project || project.entries.length === 0) {
+        setTransferResult({
+          success: false,
+          message: t('No translation memory entries are stored for this project yet.'),
+        });
+        return;
+      }
+
+      const content =
+        format === 'json'
+          ? serializeTranslationMemoryToJson(activeTranslationMemoryScope, project.entries)
+          : serializeTranslationMemoryToTmx(activeTranslationMemoryScope, project.entries);
+      const blob = new Blob([content], {
+        type:
+          format === 'json'
+            ? 'application/json;charset=utf-8'
+            : 'application/octet-stream;charset=utf-8',
+      });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = `${project.projectName.replace(/[^\w.-]+/g, '-').toLowerCase() || 'translation-memory'}.${format}`;
+      document.body.appendChild(anchor);
+      anchor.click();
+      document.body.removeChild(anchor);
+      URL.revokeObjectURL(url);
+
+      setTransferResult({
+        success: true,
+        message:
+          format === 'json'
+            ? t('Translation memory exported as JSON.')
+            : t('Translation memory exported as TMX.'),
+      });
+    },
+    [activeTranslationMemoryScope, getTranslationMemoryProject, t],
+  );
+
+  const handleTranslationMemoryImport = useCallback(
+    (file: File | null) => {
+      if (!file) return;
+
+      void (async () => {
+        try {
+          const content = await file.text();
+          const imported =
+            file.name.toLowerCase().endsWith('.tmx') || file.name.toLowerCase().endsWith('.xml')
+              ? parseTranslationMemoryTmx(content)
+              : {
+                  scope: activeTranslationMemoryScope,
+                  entries: parseTranslationMemoryJson(content).entries,
+                };
+
+          const scope = activeTranslationMemoryScope ?? imported.scope;
+          importTranslationMemoryEntries(scope, imported.entries);
+          translationMemoryImportResetRef.current?.();
+          setTransferResult({
+            success: true,
+            message: t('Imported {{count}} translation memory entries.', {
+              count: imported.entries.length,
+            }),
+          });
+        } catch (error) {
+          setTransferResult({
+            success: false,
+            message: error instanceof Error ? error.message : t('Failed to import translation memory.'),
+          });
+        }
+      })();
+    },
+    [activeTranslationMemoryScope, importTranslationMemoryEntries, t],
+  );
+
+  const handleClearTranslationMemory = useCallback(() => {
+    if (!activeTranslationMemoryScope) {
+      setTransferResult({
+        success: false,
+        message: t('Load a translation file before clearing project translation memory.'),
+      });
+      return;
+    }
+
+    clearTranslationMemoryProject(activeTranslationMemoryScope);
+    setTransferResult({
+      success: true,
+      message: t('Cleared translation memory for this project.'),
+    });
+  }, [activeTranslationMemoryScope, clearTranslationMemoryProject, t]);
 
   const handleImportFile = useCallback(
     (file: File | null) => {
@@ -1682,9 +1807,92 @@ export function SettingsModal({
             <Stack gap="md">
               <Text size="sm" c="dimmed">
                 {t(
-                  'Export your saved preferences to a JSON backup file, or restore them into this browser. Glossary cache, drafts, and project files are not included.',
+                  'Export your saved preferences to a JSON backup file, or restore them into this browser. Translation memory is managed separately below.',
                 )}
               </Text>
+
+              <Paper p="md" withBorder>
+                <Stack gap="sm">
+                  <div>
+                    <Text size="sm" fw={500}>
+                      {t('Translation memory')}
+                    </Text>
+                    <Text size="xs" c="dimmed">
+                      {targetLanguage
+                        ? t(
+                            'Manage reusable approved translations for the current project. Import merges into the active project scope.',
+                          )
+                        : t(
+                            'Load a translation file before managing translation memory so GlossBoss can scope entries to the active target language.',
+                          )}
+                    </Text>
+                  </div>
+
+                  <TextInput
+                    label={t('Project name')}
+                    value={projectName}
+                    onChange={(event) => setProjectName(event.currentTarget.value)}
+                    disabled={!targetLanguage}
+                    placeholder={t('Project name')}
+                  />
+
+                  <Group gap="xs" wrap="wrap">
+                    <Badge variant="light" color="gray">
+                      {targetLanguage
+                        ? t('{{count}} stored entries', { count: tmEntryCount })
+                        : t('No active project')}
+                    </Badge>
+                    {targetLanguage && (
+                      <Badge variant="light" color="blue">
+                        {t('Target: {{language}}', { language: targetLanguage })}
+                      </Badge>
+                    )}
+                  </Group>
+
+                  <Group>
+                    <Button
+                      leftSection={<Download size={14} />}
+                      variant="light"
+                      onClick={() => downloadTranslationMemoryFile('json')}
+                      disabled={!targetLanguage || tmEntryCount === 0}
+                    >
+                      {t('Export JSON')}
+                    </Button>
+                    <Button
+                      leftSection={<Download size={14} />}
+                      variant="light"
+                      onClick={() => downloadTranslationMemoryFile('tmx')}
+                      disabled={!targetLanguage || tmEntryCount === 0}
+                    >
+                      {t('Export TMX')}
+                    </Button>
+                    <FileButton
+                      resetRef={translationMemoryImportResetRef}
+                      onChange={handleTranslationMemoryImport}
+                      accept=".json,.tmx,.xml,application/json,text/xml,application/xml"
+                    >
+                      {(props) => (
+                        <Button
+                          variant="default"
+                          leftSection={<Upload size={14} />}
+                          {...props}
+                          disabled={!targetLanguage}
+                        >
+                          {t('Import memory')}
+                        </Button>
+                      )}
+                    </FileButton>
+                    <Button
+                      variant="subtle"
+                      color="red"
+                      onClick={handleClearTranslationMemory}
+                      disabled={!targetLanguage || tmEntryCount === 0}
+                    >
+                      {t('Clear memory')}
+                    </Button>
+                  </Group>
+                </Stack>
+              </Paper>
 
               <Paper p="md" withBorder>
                 <Stack gap="sm">

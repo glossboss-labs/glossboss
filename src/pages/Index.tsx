@@ -9,6 +9,7 @@ import {
   useCallback,
   useRef,
   useEffect,
+  useMemo,
   type DragEvent,
   type KeyboardEvent,
 } from 'react';
@@ -32,6 +33,7 @@ import {
   ActionIcon,
   Transition,
   Divider,
+  Modal,
   useMantineColorScheme,
   Menu,
   TextInput,
@@ -63,7 +65,7 @@ import { ConfirmModal } from '@/components/ui';
 import { EditorTable, FilterToolbar, HeaderEditor, TranslateToolbar } from '@/components/editor';
 import { FeedbackModal } from '@/components/feedback';
 import { SettingsModal } from '@/components/SettingsModal';
-import { useEditorStore, useSourceStore } from '@/stores';
+import { useEditorStore, useSourceStore, useTranslationMemoryStore } from '@/stores';
 import { detectPluginSlug } from '@/lib/wp-source';
 import { contentVariants, fadeVariants, sectionVariants, buttonStates } from '@/lib/motion';
 import {
@@ -80,6 +82,7 @@ import type { TargetLanguage, SourceLanguage } from '@/lib/deepl/types';
 import type { FeedbackIssueSuccess } from '@/lib/feedback';
 import type { Glossary } from '@/lib/glossary/types';
 import { batchAnalyzeTranslations, syncGlossaryToDeepL } from '@/lib/glossary';
+import { QA_RULE_LABELS, analyzeQaForEntries, summarizeQaReports } from '@/lib/qa';
 import { debugError, debugLog } from '@/lib/debug';
 import { getBundledExamplePo } from '@/lib/example-po';
 import {
@@ -93,6 +96,7 @@ import {
 import { CONTAINER_WIDTH_KEY, type ContainerWidth } from '@/lib/container-width';
 import { useSearchParams } from 'react-router';
 import { msgid, useTranslation } from '@/lib/app-language';
+import { createTranslationMemoryScope } from '@/lib/translation-memory';
 const appIcon = '/icon.svg';
 
 const MotionDiv = motion.div;
@@ -323,6 +327,8 @@ export default function Index() {
   const [confirmClearOpen, setConfirmClearOpen] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState<DownloadInfo | null>(null);
   const [mergeSuccess, setMergeSuccess] = useState<MergeInfo | null>(null);
+  const [qaSummaryOpen, setQaSummaryOpen] = useState(false);
+  const [pendingExportFormat, setPendingExportFormat] = useState<FileFormat | null>(null);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [feedbackSuccess, setFeedbackSuccess] = useState<FeedbackInfo | null>(null);
   const [feedbackError, setFeedbackError] = useState<string | null>(null);
@@ -402,6 +408,7 @@ export default function Index() {
 
   const {
     filename,
+    projectName,
     sourceFormat,
     header,
     entries,
@@ -413,13 +420,25 @@ export default function Index() {
     markAsSaved,
     setGlossaryAnalysisBatch,
     clearGlossaryAnalysis,
+    qaReports,
+    setQaReports,
     mergeEntries,
   } = useEditorStore();
+  const upsertApprovedEntries = useTranslationMemoryStore((state) => state.upsertApprovedEntries);
 
   /**
    * Derive locale from PO header for glossary
    */
   const glossaryLocale = header?.language?.toLowerCase().split('_')[0] || '';
+  const targetLanguageForMemory = header?.language ?? translateTargetLang ?? null;
+  const translationMemoryScope = useMemo(
+    () =>
+      targetLanguageForMemory
+        ? createTranslationMemoryScope(projectName, targetLanguageForMemory, translateSourceLang ?? null)
+        : null,
+    [projectName, targetLanguageForMemory, translateSourceLang],
+  );
+  const qaSummary = useMemo(() => summarizeQaReports(qaReports), [qaReports]);
 
   /**
    * Handle glossary loaded - sync to DeepL and run analysis
@@ -432,7 +451,9 @@ export default function Index() {
       // Run glossary analysis on all entries
       if (entries.length > 0) {
         const analyses = batchAnalyzeTranslations(entries, loadedGlossary);
+        clearGlossaryAnalysis();
         setGlossaryAnalysisBatch(analyses);
+        setQaReports(analyzeQaForEntries(entries, analyses));
       }
 
       // Sync to DeepL for native glossary support
@@ -448,7 +469,7 @@ export default function Index() {
         // Continue without DeepL glossary - translations will still work, just without glossary enforcement
       }
     },
-    [entries, setGlossaryAnalysisBatch],
+    [clearGlossaryAnalysis, entries, setGlossaryAnalysisBatch, setQaReports],
   );
 
   /**
@@ -460,7 +481,8 @@ export default function Index() {
     setDeeplTermCount(0);
     setGlossarySyncStatus(null);
     clearGlossaryAnalysis();
-  }, [clearGlossaryAnalysis]);
+    setQaReports(analyzeQaForEntries(entries, new Map()));
+  }, [clearGlossaryAnalysis, entries, setQaReports]);
 
   /**
    * Handle glossary enforcement toggle
@@ -499,16 +521,36 @@ export default function Index() {
    * This uses a simple debounce approach - only analyze if glossary is loaded
    */
   useEffect(() => {
-    if (glossary && entries.length > 0) {
-      // Debounce to avoid excessive analysis during rapid edits
-      const timer = setTimeout(() => {
-        const analyses = batchAnalyzeTranslations(entries, glossary);
-        setGlossaryAnalysisBatch(analyses);
-      }, 300);
-
-      return () => clearTimeout(timer);
+    if (entries.length === 0) {
+      clearGlossaryAnalysis();
+      setQaReports(new Map());
+      return;
     }
-  }, [entries, glossary, setGlossaryAnalysisBatch]);
+
+    // Debounce to avoid excessive analysis during rapid edits
+    const timer = setTimeout(() => {
+      const analyses = glossary ? batchAnalyzeTranslations(entries, glossary) : new Map();
+      clearGlossaryAnalysis();
+      if (analyses.size > 0) {
+        setGlossaryAnalysisBatch(analyses);
+      }
+      setQaReports(analyzeQaForEntries(entries, analyses));
+
+      if (translationMemoryScope) {
+        upsertApprovedEntries(translationMemoryScope, entries);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [
+    clearGlossaryAnalysis,
+    entries,
+    glossary,
+    setGlossaryAnalysisBatch,
+    setQaReports,
+    translationMemoryScope,
+    upsertApprovedEntries,
+  ]);
 
   /**
    * Auto-save draft when entries change
@@ -990,7 +1032,7 @@ export default function Index() {
   /**
    * Handle file download
    */
-  const handleDownloadAs = useCallback(
+  const performDownloadAs = useCallback(
     (format: FileFormat) => {
       if (!filename || entries.length === 0) return;
 
@@ -1041,6 +1083,19 @@ export default function Index() {
       markAsSaved();
     },
     [filename, header, entries, markAsSaved],
+  );
+
+  const handleDownloadAs = useCallback(
+    (format: FileFormat) => {
+      if (qaSummary.totalIssues > 0) {
+        setPendingExportFormat(format);
+        setQaSummaryOpen(true);
+        return;
+      }
+
+      performDownloadAs(format);
+    },
+    [performDownloadAs, qaSummary.totalIssues],
   );
 
   const handleDownload = useCallback(() => {
@@ -1936,6 +1991,70 @@ export default function Index() {
           onTranslateEnabledChange={setTranslateEnabled}
         />
       )}
+
+      <Modal
+        opened={qaSummaryOpen}
+        onClose={() => {
+          setQaSummaryOpen(false);
+          setPendingExportFormat(null);
+        }}
+        title={t('QA summary before export')}
+        centered
+        size="lg"
+        closeButtonProps={{ 'aria-label': t('Close QA summary') }}
+      >
+        <Stack gap="md">
+          <Alert color="yellow" icon={<AlertTriangle size={16} />}>
+            <Text size="sm">
+              {t(
+                'GlossBoss found QA issues in the current file. You can review them now or export anyway.',
+              )}
+            </Text>
+          </Alert>
+
+          <Group gap="xs" wrap="wrap">
+            <Badge color="red" variant="light">
+              {t('{{count}} error issue(s)', { count: qaSummary.errors })}
+            </Badge>
+            <Badge color="orange" variant="light">
+              {t('{{count}} warning issue(s)', { count: qaSummary.warnings })}
+            </Badge>
+            <Badge color="gray" variant="light">
+              {t('{{count}} total issues', { count: qaSummary.totalIssues })}
+            </Badge>
+          </Group>
+
+          <Stack gap="xs">
+            {Object.entries(qaSummary.byRule)
+              .filter(([, count]) => count > 0)
+              .map(([ruleId, count]) => (
+                <Group key={ruleId} justify="space-between">
+                  <Text size="sm">{t(QA_RULE_LABELS[ruleId as keyof typeof QA_RULE_LABELS])}</Text>
+                  <Badge variant="light" color="gray">
+                    {count}
+                  </Badge>
+                </Group>
+              ))}
+          </Stack>
+
+          <Group justify="flex-end">
+            <Button variant="default" onClick={() => setQaSummaryOpen(false)}>
+              {t('Review issues')}
+            </Button>
+            <Button
+              onClick={() => {
+                if (pendingExportFormat) {
+                  performDownloadAs(pendingExportFormat);
+                }
+                setQaSummaryOpen(false);
+                setPendingExportFormat(null);
+              }}
+            >
+              {t('Export anyway')}
+            </Button>
+          </Group>
+        </Stack>
+      </Modal>
 
       {isDevelopment && branchChipEnabled && <DevBranchChip branch={__GIT_BRANCH__} />}
 
