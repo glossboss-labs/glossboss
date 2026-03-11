@@ -1273,20 +1273,33 @@ export function SettingsModal({
         closeButtonProps={{ 'aria-label': t('Close settings') }}
       >
         <Tabs defaultValue={initialTab ?? 'api'}>
-          <Tabs.List mb="md" style={{ overflowX: 'auto', flexWrap: 'nowrap' }}>
+          <Tabs.List
+            mb="md"
+            style={{
+              flexWrap: 'nowrap',
+              overflowX: 'auto',
+              scrollbarWidth: 'none',
+              WebkitOverflowScrolling: 'touch',
+            }}
+          >
             <Tabs.Tab value="api" leftSection={<Key size={14} />}>
               {t('Translation')}
             </Tabs.Tab>
             <Tabs.Tab value="speech" leftSection={<Volume2 size={14} />}>
               {t('Speech')}
             </Tabs.Tab>
-            <Tabs.Tab value="glossary" leftSection={<BookOpen size={14} />}>
+            <Tabs.Tab
+              value="glossary"
+              leftSection={<BookOpen size={14} />}
+              rightSection={
+                glossary ? (
+                  <Badge size="xs" color="green">
+                    {glossary.entries.length}
+                  </Badge>
+                ) : undefined
+              }
+            >
               {t('Glossary')}
-              {glossary && (
-                <Badge size="xs" color="green" ml={6}>
-                  {glossary.entries.length}
-                </Badge>
-              )}
             </Tabs.Tab>
             <Tabs.Tab value="keybinds" leftSection={<Keyboard size={14} />}>
               {t('Keyboard Shortcuts')}
