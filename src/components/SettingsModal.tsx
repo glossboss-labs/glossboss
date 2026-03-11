@@ -917,7 +917,14 @@ export function SettingsModal({
 
   return (
     <>
-      <Modal opened={opened} onClose={onClose} title={t('Settings')} size="xl" centered>
+      <Modal
+        opened={opened}
+        onClose={onClose}
+        title={t('Settings')}
+        size="xl"
+        centered
+        closeButtonProps={{ 'aria-label': t('Close settings') }}
+      >
         <Tabs defaultValue="api">
           <Tabs.List mb="md">
             <Tabs.Tab value="api" leftSection={<Key size={14} />}>
@@ -1789,6 +1796,7 @@ export function SettingsModal({
         title={credentialPrompt?.mode === 'import' ? t('Import API key?') : t('Include API key?')}
         centered
         size="sm"
+        closeButtonProps={{ 'aria-label': t('Close credential prompt') }}
       >
         <Stack gap="md">
           <Alert color="yellow" icon={<AlertCircle size={16} />}>

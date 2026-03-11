@@ -1,9 +1,3 @@
-@layer theme, base, components, utilities;
-
-@import 'tailwindcss';
-
-@import './theme.css' layer(theme);
-
 /* ----------------------------------------------------------------
  * Typography smoothing (both modes)
  * ---------------------------------------------------------------- */
@@ -38,6 +32,19 @@ body {
 
 .feedback-turnstile-mount:empty {
   display: contents;
+}
+
+@keyframes icon-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.icon-spin {
+  animation: icon-spin 1s linear infinite;
 }
 
 /* ----------------------------------------------------------------

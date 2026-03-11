@@ -49,6 +49,7 @@ import { msgid, useTranslation } from '@/lib/app-language';
 import type { UsageStats } from '@/lib/deepl/types';
 import { badgeVariants, contentVariants, interactiveSpring } from '@/lib/motion';
 import { useDragGhost } from '@/hooks/use-drag-ghost';
+import { useMediaQuery } from '@mantine/hooks';
 
 const MotionDiv = motion.div;
 
@@ -106,6 +107,7 @@ function getBadgeStyle(state: FilterState | null): {
 
 export function FilterToolbar() {
   const { t } = useTranslation();
+  const isNarrowViewport = useMediaQuery('(max-width: 30em)');
   const {
     filterQuery,
     activeFilters,
@@ -455,7 +457,14 @@ export function FilterToolbar() {
           </AnimatePresence>
         </Group>
 
-        <Group gap="xs" wrap="nowrap" style={{ flexShrink: 0 }}>
+        <Group
+          gap="xs"
+          wrap={isNarrowViewport ? 'wrap' : 'nowrap'}
+          style={{
+            flexShrink: 0,
+            width: isNarrowViewport ? '100%' : undefined,
+          }}
+        >
           <Menu position="bottom-end" shadow="sm" withArrow>
             <Menu.Target>
               <Button
@@ -463,6 +472,7 @@ export function FilterToolbar() {
                 variant="subtle"
                 leftSection={<Columns3 size={14} />}
                 aria-label={t('Choose visible columns')}
+                style={isNarrowViewport ? { flex: '1 1 100%' } : undefined}
               >
                 {t('Columns')}
               </Button>
@@ -564,8 +574,9 @@ export function FilterToolbar() {
             onChange={handleSortChange}
             data={sortOptions}
             leftSection={<ArrowUpDown size={14} />}
-            w={220}
+            w={isNarrowViewport ? '100%' : 220}
             aria-label={t('Sort entries')}
+            style={isNarrowViewport ? { flex: '1 1 100%', minWidth: 0 } : undefined}
           />
         </Group>
       </Group>

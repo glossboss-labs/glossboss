@@ -59,6 +59,7 @@ export function GlossaryViewerModal({
       }
       size="xl"
       centered
+      closeButtonProps={{ 'aria-label': t('Close glossary viewer') }}
       styles={{ body: { padding: 0 } }}
     >
       <Box p="sm" style={{ borderBottom: '1px solid var(--mantine-color-default-border)' }}>
