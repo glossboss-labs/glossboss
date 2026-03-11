@@ -4,6 +4,8 @@
  * Components for the PO file editor interface.
  */
 
+import '@fontsource-variable/geist-mono';
+
 export { EditorTable } from './EditorTable';
 export type { EditorTableProps } from './EditorTable';
 export { FilterToolbar } from './FilterToolbar';

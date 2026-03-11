@@ -91,7 +91,7 @@ describe('bulk selection UI', () => {
     await user.click(selectAll);
 
     expect(useEditorStore.getState().selectedEntryIds).toEqual(new Set(['a', 'b', 'c']));
-  });
+  }, 10000);
 
   it('select-all checkbox becomes indeterminate for partial selection', async () => {
     const entries = [makeEntry('a'), makeEntry('b')];

@@ -307,6 +307,7 @@ function LanguageSelector({
         <InputBase
           rightSection={<Combobox.Chevron />}
           rightSectionPointerEvents="none"
+          aria-label={t('Language code')}
           onClick={() => combobox.openDropdown()}
           onFocus={() => combobox.openDropdown()}
           onBlur={() => {
@@ -408,6 +409,7 @@ function PluralFormsSelector({
         searchable
         clearable={false}
         nothingFoundMessage={t('No matching plural form')}
+        aria-label={t('Plural form preset')}
       />
 
       {isCustomInputVisible ? (
@@ -417,6 +419,7 @@ function PluralFormsSelector({
             placeholder="nplurals=2; plural=(n != 1);"
             value={value}
             onChange={(e) => onChange(e.currentTarget.value)}
+            aria-label={t('Custom plural expression')}
             styles={{
               input: {
                 fontFamily: 'monospace',
@@ -481,6 +484,7 @@ function PluginSlugInput() {
           placeholder={autoDetectedSlug || 'e.g. woocommerce'}
           value={pluginSlug ?? ''}
           onChange={(e) => setPluginSlug(e.currentTarget.value || null)}
+          aria-label={t('Plugin Slug')}
           style={{ flex: 1 }}
           rightSection={
             isSlugValid === true ? (
@@ -494,6 +498,7 @@ function PluginSlugInput() {
           <UnstyledButton
             onClick={handleVerify}
             disabled={!effectiveSlug || isValidating}
+            aria-label={t('Verify plugin slug')}
             style={{
               padding: '7px 12px',
               borderRadius: 'var(--mantine-radius-default)',
@@ -501,7 +506,7 @@ function PluginSlugInput() {
               opacity: !effectiveSlug ? 0.5 : 1,
             }}
           >
-            {isValidating ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
+            {isValidating ? <Loader2 size={14} className="icon-spin" /> : <Check size={14} />}
           </UnstyledButton>
         </Tooltip>
       </Group>

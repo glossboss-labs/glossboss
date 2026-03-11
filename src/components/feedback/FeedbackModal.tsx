@@ -321,6 +321,7 @@ export function FeedbackModal({
       }
       centered
       size="lg"
+      closeButtonProps={{ 'aria-label': t('Close feedback form') }}
     >
       <form onSubmit={handleSubmit}>
         <Stack gap="md">
