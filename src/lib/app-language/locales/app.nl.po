@@ -313,23 +313,23 @@ msgstr "Klik om alleen {{label}} te tonen"
 
 #: src/components/SettingsModal.tsx:1803
 msgid "Close credential prompt"
-msgstr ""
+msgstr "Inlogprompt sluiten"
 
 #: src/components/ui/ConfirmModal.tsx:57
 msgid "Close dialog"
-msgstr ""
+msgstr "Dialoogvenster sluiten"
 
 #: src/components/feedback/FeedbackModal.tsx:324
 msgid "Close feedback form"
-msgstr ""
+msgstr "Feedbackformulier sluiten"
 
 #: src/components/glossary/shared.tsx:62
 msgid "Close glossary viewer"
-msgstr ""
+msgstr "Glossaryweergave sluiten"
 
 #: src/components/SettingsModal.tsx:930
 msgid "Close settings"
-msgstr ""
+msgstr "Instellingen sluiten"
 
 #: src/components/editor/FilterToolbar.tsx:481
 msgid "Columns"
@@ -404,7 +404,7 @@ msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:422
 msgid "Custom plural expression"
-msgstr ""
+msgstr "Aangepaste meervoudsexpressie"
 
 #: src/components/editor/HeaderEditor.tsx:406
 msgid "Custom value set — select to change"
@@ -1123,7 +1123,7 @@ msgstr "Vertaalteam"
 
 #: src/components/editor/HeaderEditor.tsx:310
 msgid "Language code"
-msgstr ""
+msgstr "Taalcode"
 
 #: src/components/editor/HeaderEditor.tsx:236
 msgid "Last Translator"
@@ -1537,7 +1537,7 @@ msgstr "Meervoudig item: {{completed}}/{{total}} vormen vertaald"
 
 #: src/components/editor/HeaderEditor.tsx:412
 msgid "Plural form preset"
-msgstr ""
+msgstr "Voorinstelling meervoudsvorm"
 
 #: src/components/editor/EditorTable.tsx:757
 msgid "Plural form {{index}}"
@@ -2068,11 +2068,11 @@ msgstr "Zweeds"
 
 #: src/pages/Index.tsx:145
 msgid "Switch to dark mode"
-msgstr ""
+msgstr "Schakel naar donkere modus"
 
 #: src/pages/Index.tsx:145
 msgid "Switch to light mode"
-msgstr ""
+msgstr "Schakel naar lichte modus"
 
 #: src/components/SettingsModal.tsx:1550
 #: src/components/editor/GlossaryPanel.tsx:266
@@ -2432,7 +2432,7 @@ msgstr "De verificatie laadt nog. Probeer het zometeen nog eens."
 
 #: src/components/editor/HeaderEditor.tsx:501
 msgid "Verify plugin slug"
-msgstr ""
+msgstr "Plugin-slug controleren"
 
 #: src/components/editor/HeaderEditor.tsx:497
 msgid "Verify slug exists on WordPress.org"
