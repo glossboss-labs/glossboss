@@ -36,8 +36,9 @@ import {
   Menu,
   TextInput,
   useComputedColorScheme,
+  useMantineTheme,
 } from '@mantine/core';
-import { useLocalStorage } from '@mantine/hooks';
+import { useLocalStorage, useMediaQuery } from '@mantine/hooks';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Upload,
@@ -133,25 +134,14 @@ interface PendingDraft {
   filename: string;
 }
 
-function ThemeToggle() {
+function ThemeToggle({ onToggle }: { onToggle: () => void }) {
   const { t } = useTranslation();
-  const { setColorScheme } = useMantineColorScheme();
   const computedColorScheme = useComputedColorScheme('light');
-
-  const toggleColorScheme = () => {
-    const oldBg = getComputedStyle(document.body).backgroundColor;
-    setColorScheme(computedColorScheme === 'dark' ? 'light' : 'dark');
-    const overlay = document.createElement('div');
-    overlay.className = 'theme-transition-overlay';
-    overlay.style.backgroundColor = oldBg;
-    document.body.appendChild(overlay);
-    overlay.addEventListener('animationend', () => overlay.remove());
-  };
 
   return (
     <Tooltip label={computedColorScheme === 'dark' ? t('Light mode') : t('Dark mode')}>
       <motion.div {...buttonStates}>
-        <ActionIcon variant="default" size="lg" onClick={toggleColorScheme}>
+        <ActionIcon variant="default" size="lg" onClick={onToggle}>
           {computedColorScheme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
         </ActionIcon>
       </motion.div>
@@ -316,6 +306,10 @@ function DevBranchChip({ branch }: { branch: string }) {
 
 export default function Index() {
   const { t } = useTranslation();
+  const theme = useMantineTheme();
+  const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
+  const { setColorScheme } = useMantineColorScheme();
+  const computedColorScheme = useComputedColorScheme('light');
   const isDevelopment = import.meta.env.DEV;
   const [errors, setErrors] = useState<ParseIssue[]>([]);
   const [warnings, setWarnings] = useState<ParseIssue[]>([]);
@@ -369,6 +363,29 @@ export default function Index() {
     defaultValue: true,
     getInitialValueInEffect: false,
   });
+
+  const toggleColorScheme = useCallback(() => {
+    const oldBg = getComputedStyle(document.body).backgroundColor;
+    setColorScheme(computedColorScheme === 'dark' ? 'light' : 'dark');
+
+    const prefersReducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) return;
+
+    const overlay = document.createElement('div');
+    overlay.className = 'theme-transition-overlay';
+    overlay.style.backgroundColor = oldBg;
+    document.body.appendChild(overlay);
+
+    let cleanedUp = false;
+    const cleanup = () => {
+      if (cleanedUp) return;
+      cleanedUp = true;
+      overlay.remove();
+    };
+
+    overlay.addEventListener('animationend', cleanup, { once: true });
+    setTimeout(cleanup, 1500);
+  }, [computedColorScheme, setColorScheme]);
 
   // Draft state
   const [pendingDraft, setPendingDraft] = useState<PendingDraft | null>(null);
@@ -1438,97 +1455,118 @@ export default function Index() {
                   </AnimatePresence>
                 </Group>
 
-                <Divider orientation="vertical" />
+                {!isMobile && <Divider orientation="vertical" />}
 
-                <Group gap="sm">
-                  <Tooltip label={t('Share feedback')}>
-                    <motion.div {...buttonStates}>
-                      <Button
-                        variant="subtle"
-                        leftSection={<MessageSquare size={16} />}
+                {!isMobile && (
+                  <Group gap="sm">
+                    <Tooltip label={t('Share feedback')}>
+                      <motion.div {...buttonStates}>
+                        <Button
+                          variant="subtle"
+                          leftSection={<MessageSquare size={16} />}
+                          onClick={() => setFeedbackOpen(true)}
+                        >
+                          {t('Feedback')}
+                        </Button>
+                      </motion.div>
+                    </Tooltip>
+
+                    <ThemeToggle onToggle={toggleColorScheme} />
+                  </Group>
+                )}
+
+                <Menu position="bottom-end" withinPortal>
+                  <Menu.Target>
+                    <Tooltip label={t('Settings and actions')}>
+                      <motion.div {...buttonStates}>
+                        <ActionIcon
+                          variant="default"
+                          size="lg"
+                          aria-label={t('Settings and actions')}
+                        >
+                          <Settings size={18} />
+                        </ActionIcon>
+                      </motion.div>
+                    </Tooltip>
+                  </Menu.Target>
+                  <Menu.Dropdown>
+                    {isMobile && (
+                      <Menu.Item
+                        leftSection={<MessageSquare size={14} />}
                         onClick={() => setFeedbackOpen(true)}
                       >
-                        {t('Feedback')}
-                      </Button>
-                    </motion.div>
-                  </Tooltip>
-
-                  <ThemeToggle />
-
-                  <Menu position="bottom-end" withinPortal>
-                    <Menu.Target>
-                      <Tooltip label={t('Settings and actions')}>
-                        <motion.div {...buttonStates}>
-                          <ActionIcon
-                            variant="default"
-                            size="lg"
-                            aria-label={t('Settings and actions')}
-                          >
-                            <Settings size={18} />
-                          </ActionIcon>
-                        </motion.div>
-                      </Tooltip>
-                    </Menu.Target>
-                    <Menu.Dropdown>
-                      <Menu.Label>{t('Settings')}</Menu.Label>
-                      <Menu.Item
-                        leftSection={<Settings size={14} />}
-                        onClick={() => setSettingsOpen(true)}
-                      >
-                        {t('Open settings')}
+                        {t('Share feedback')}
                       </Menu.Item>
-                      <Menu.Divider />
-                      <Menu.Label>{t('Actions')}</Menu.Label>
+                    )}
+                    {isMobile && (
                       <Menu.Item
-                        color="red"
-                        leftSection={<Trash2 size={14} />}
-                        onClick={handleClearClick}
+                        leftSection={
+                          computedColorScheme === 'dark' ? <Sun size={14} /> : <Moon size={14} />
+                        }
+                        onClick={toggleColorScheme}
                       >
-                        {t('Clear editor')}
+                        {computedColorScheme === 'dark' ? t('Light mode') : t('Dark mode')}
                       </Menu.Item>
-                      <Menu.Divider />
-                      <Menu.Label>
-                        {t('GlossBoss v{version}', { version: __APP_VERSION__ })}
-                      </Menu.Label>
-                      <Menu.Item
-                        component="a"
-                        href="https://github.com/lammersbjorn/glossboss"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        leftSection={<ExternalLink size={14} />}
-                      >
-                        {t('Source')}
-                      </Menu.Item>
-                      <Menu.Item
-                        component="a"
-                        href="/license/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        leftSection={<Info size={14} />}
-                      >
-                        {t('License')}
-                      </Menu.Item>
-                      <Menu.Item
-                        component="a"
-                        href="/translate/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        leftSection={<ExternalLink size={14} />}
-                      >
-                        {t('Translate')}
-                      </Menu.Item>
-                      <Menu.Item
-                        component="a"
-                        href="/privacy/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        leftSection={<Info size={14} />}
-                      >
-                        {t('Privacy')}
-                      </Menu.Item>
-                    </Menu.Dropdown>
-                  </Menu>
-                </Group>
+                    )}
+                    {isMobile && <Menu.Divider />}
+                    <Menu.Label>{t('Settings')}</Menu.Label>
+                    <Menu.Item
+                      leftSection={<Settings size={14} />}
+                      onClick={() => setSettingsOpen(true)}
+                    >
+                      {t('Open settings')}
+                    </Menu.Item>
+                    <Menu.Divider />
+                    <Menu.Label>{t('Actions')}</Menu.Label>
+                    <Menu.Item
+                      color="red"
+                      leftSection={<Trash2 size={14} />}
+                      onClick={handleClearClick}
+                    >
+                      {t('Clear editor')}
+                    </Menu.Item>
+                    <Menu.Divider />
+                    <Menu.Label>
+                      {t('GlossBoss v{version}', { version: __APP_VERSION__ })}
+                    </Menu.Label>
+                    <Menu.Item
+                      component="a"
+                      href="https://github.com/lammersbjorn/glossboss"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      leftSection={<ExternalLink size={14} />}
+                    >
+                      {t('Source')}
+                    </Menu.Item>
+                    <Menu.Item
+                      component="a"
+                      href="/license/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      leftSection={<Info size={14} />}
+                    >
+                      {t('License')}
+                    </Menu.Item>
+                    <Menu.Item
+                      component="a"
+                      href="/translate/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      leftSection={<ExternalLink size={14} />}
+                    >
+                      {t('Translate')}
+                    </Menu.Item>
+                    <Menu.Item
+                      component="a"
+                      href="/privacy/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      leftSection={<Info size={14} />}
+                    >
+                      {t('Privacy')}
+                    </Menu.Item>
+                  </Menu.Dropdown>
+                </Menu>
               </Group>
             </Group>
           </MotionDiv>
