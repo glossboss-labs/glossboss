@@ -371,6 +371,7 @@ function EditableField({
   fieldId,
   isPlural = false,
   pluralIndex,
+  useNativeTextColor = false,
 }: {
   value: string;
   placeholder?: string;
@@ -380,6 +381,7 @@ function EditableField({
   fieldId: string;
   isPlural?: boolean;
   pluralIndex?: number;
+  useNativeTextColor?: boolean;
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(value);
@@ -454,21 +456,22 @@ function EditableField({
           </Text>
         )}
         <Box style={{ position: 'relative' }}>
-          {/* Highlighted backdrop */}
-          <Box
-            aria-hidden
-            style={{
-              ...sharedStyles,
-              position: 'absolute',
-              inset: 0,
-              pointerEvents: 'none',
-              overflow: 'hidden',
-              borderRadius: 'var(--mantine-radius-default)',
-              backgroundColor: 'var(--gb-surface-1)',
-            }}
-          >
-            <HighlightedText>{editValue || ' '}</HighlightedText>
-          </Box>
+          {!useNativeTextColor && (
+            <Box
+              aria-hidden
+              style={{
+                ...sharedStyles,
+                position: 'absolute',
+                inset: 0,
+                pointerEvents: 'none',
+                overflow: 'hidden',
+                borderRadius: 'var(--mantine-radius-default)',
+                backgroundColor: 'var(--gb-surface-1)',
+              }}
+            >
+              <HighlightedText>{editValue || ' '}</HighlightedText>
+            </Box>
+          )}
           <Textarea
             ref={textareaRef}
             value={editValue}
@@ -485,9 +488,9 @@ function EditableField({
               input: {
                 ...sharedStyles,
                 fontFamily: 'inherit',
-                color: 'transparent',
+                color: useNativeTextColor ? 'var(--mantine-color-text)' : 'transparent',
                 caretColor: 'var(--mantine-color-text)',
-                backgroundColor: 'transparent',
+                backgroundColor: useNativeTextColor ? 'var(--gb-surface-1)' : 'transparent',
                 border: 'none',
                 outline: 'none',
                 boxShadow: 'none',
@@ -655,11 +658,13 @@ function TranslationCell({
   onKeyDown,
   translateButtonSize = 'sm',
   translateButtonDisplay = 'icon',
+  useNativeTextColor = false,
 }: {
   entry: POEntry;
   onKeyDown?: (e: KeyboardEvent<HTMLTextAreaElement>, fieldId: string) => void;
   translateButtonSize?: 'xs' | 'sm' | 'md';
   translateButtonDisplay?: 'icon' | 'button';
+  useNativeTextColor?: boolean;
 }) {
   const { t } = useTranslation();
   const updateEntry = useEditorStore((state) => state.updateEntry);
@@ -747,6 +752,7 @@ function TranslationCell({
                 isPlural
                 pluralIndex={index}
                 placeholder={t('Plural form {{index}}', { index })}
+                useNativeTextColor={useNativeTextColor}
               />
             </Box>
             {translateSettings.translateEnabled &&
@@ -817,6 +823,7 @@ function TranslationCell({
             onKeyDown={onKeyDown}
             entryId={entry.id}
             fieldId={`${entry.id}-singular`}
+            useNativeTextColor={useNativeTextColor}
           />
         </Box>
         {translateSettings.translateEnabled &&
@@ -1621,7 +1628,7 @@ const MobileEntryCard = memo(function MobileEntryCard({
           <Text size="xs" fw={600} c="dimmed" mb={4}>
             {t('Translation')}
           </Text>
-          <TranslationCell entry={entry} onKeyDown={onKeyDown} />
+          <TranslationCell entry={entry} onKeyDown={onKeyDown} useNativeTextColor />
         </Box>
 
         <Box>
