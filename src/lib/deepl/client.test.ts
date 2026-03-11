@@ -82,8 +82,9 @@ describe('createDeepLClient', () => {
 
     expect(body).toMatchObject({
       action: 'translate',
-      text: 'Hello world',
+      text: ['Hello world'],
       targetLang: 'NL',
+      tagHandling: 'xml',
       formality: 'prefer_more',
     });
   });

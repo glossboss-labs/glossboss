@@ -31,6 +31,7 @@ import {
   FileQuestion,
   CheckCircle,
   AlertTriangle,
+  ShieldAlert,
   Pencil,
   Bot,
   Edit3,
@@ -67,6 +68,8 @@ const FILTERS: FilterConfig[] = [
   { id: 'translated', label: msgid('Translated'), icon: CheckCircle, color: 'green' },
   { id: 'fuzzy', label: msgid('Fuzzy'), icon: AlertTriangle, color: 'yellow' },
   { id: 'modified', label: msgid('Modified'), icon: Pencil, color: 'orange' },
+  { id: 'qa-error', label: msgid('QA errors'), icon: ShieldAlert, color: 'red' },
+  { id: 'qa-warning', label: msgid('QA warnings'), icon: AlertTriangle, color: 'orange' },
 ];
 
 /** Get tooltip text based on current filter state */
@@ -211,6 +214,10 @@ export function FilterToolbar() {
         return stats.fuzzy;
       case 'modified':
         return stats.modified;
+      case 'qa-error':
+        return stats.qaErrors;
+      case 'qa-warning':
+        return stats.qaWarnings;
       default:
         return 0;
     }
