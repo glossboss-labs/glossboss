@@ -19,8 +19,8 @@ Run the full local check suite:
 bun run lint
 bun run format:check
 bun run typecheck
-bun run test
 bun run build
+bun run test:coverage
 ```
 
 ## Commit style
@@ -45,6 +45,49 @@ Examples:
 - Keep client-side environment variables under `VITE_*`.
 - Do not commit secrets or local `.env` files.
 - Add or update tests when behavior changes.
+
+## Translation memory and QA architecture
+
+GlossBoss now has two browser-local review subsystems on top of the editor.
+
+### Translation memory
+
+Translation memory is implemented in `src/lib/translation-memory/` and persisted through
+`src/stores/translation-memory-store.ts`.
+
+- Scope is `projectName + targetLanguage`.
+- `projectName` is derived from the loaded file and kept editable in `editor-store`.
+- Only approved entries are written into memory: translated entries without the `fuzzy` flag.
+- Import/export supports JSON and TMX.
+- Suggestions are rendered in the string inspector and applied back into the active entry.
+
+### QA checks
+
+QA rules live in `src/lib/qa/` and reports are stored in `src/stores/editor-store.ts`.
+
+Current rules cover:
+
+- placeholders
+- HTML tags
+- ICU variables
+- glossary conflicts
+- repeated-source consistency
+- whitespace drift
+- punctuation drift
+
+The main orchestration happens in `src/pages/Index.tsx`:
+
+1. Load or update entries.
+2. Recompute glossary analysis when glossary data is available.
+3. Recompute QA reports from the current entries and glossary results.
+4. Upsert approved entries into translation memory for the active project scope.
+5. Gate export behind a warning modal if QA issues remain.
+
+UI surfaces live in:
+
+- `src/components/editor/EditorTable.tsx`
+- `src/components/SettingsModal.tsx`
+- `src/pages/Index.tsx`
 
 ## Translating the app
 
@@ -97,6 +140,13 @@ re-runs the extractor. CI fails if pending renames are not applied.
    automatically. English entries get `msgstr = msgid`; other languages get empty `msgstr`.
 3. Commit the updated PO/POT files alongside your code changes.
 4. CI will fail if you forget to run the extractor.
+
+Important:
+
+- Run `bun run i18n:extract` after changing user-facing strings.
+- Also run it after moving code around existing `t()` / `msgid()` calls if the touched files are in
+  the app catalog. The extractor updates source reference comments in `app.pot` and `app.*.po`,
+  and CI checks those files with `git diff --exit-code`.
 
 ### Adding a new app language
 
