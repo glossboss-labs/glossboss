@@ -31,8 +31,9 @@ import {
   Table,
   Kbd,
   FileButton,
+  useMantineTheme,
 } from '@mantine/core';
-import { useLocalStorage } from '@mantine/hooks';
+import { useLocalStorage, useMediaQuery } from '@mantine/hooks';
 import {
   Key,
   BookOpen,
@@ -282,6 +283,8 @@ export function SettingsModal({
   onTranslateEnabledChange,
 }: SettingsModalProps) {
   const { language, setLanguage, t } = useTranslation();
+  const themeSettings = useMantineTheme();
+  const isMobile = useMediaQuery(`(max-width: ${themeSettings.breakpoints.sm})`);
   const isDevelopment = import.meta.env.DEV;
 
   // DeepL API settings state
@@ -917,9 +920,16 @@ export function SettingsModal({
 
   return (
     <>
-      <Modal opened={opened} onClose={onClose} title={t('Settings')} size="xl" centered>
+      <Modal
+        opened={opened}
+        onClose={onClose}
+        title={t('Settings')}
+        size={isMobile ? '100%' : 'xl'}
+        fullScreen={isMobile}
+        centered
+      >
         <Tabs defaultValue="api">
-          <Tabs.List mb="md">
+          <Tabs.List mb="md" style={{ overflowX: 'auto', flexWrap: 'nowrap' }}>
             <Tabs.Tab value="api" leftSection={<Key size={14} />}>
               {t('DeepL API')}
             </Tabs.Tab>

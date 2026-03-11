@@ -21,7 +21,9 @@ import {
   Checkbox,
   Select,
   UnstyledButton,
+  useMantineTheme,
 } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Search,
@@ -106,6 +108,8 @@ function getBadgeStyle(state: FilterState | null): {
 
 export function FilterToolbar() {
   const { t } = useTranslation();
+  const theme = useMantineTheme();
+  const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
   const {
     filterQuery,
     activeFilters,
@@ -311,17 +315,19 @@ export function FilterToolbar() {
               </Text>
             </motion.span>
           </Group>
-          <Box style={{ width: 100 }}>
-            <motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} style={{ originX: 0 }}>
-              <Progress
-                value={percentage}
-                size="sm"
-                radius="xl"
-                color={percentage === 100 ? 'green' : percentage > 50 ? 'blue' : 'orange'}
-                animated={percentage < 100}
-              />
-            </motion.div>
-          </Box>
+          {!isMobile && (
+            <Box style={{ width: 100 }}>
+              <motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} style={{ originX: 0 }}>
+                <Progress
+                  value={percentage}
+                  size="sm"
+                  radius="xl"
+                  color={percentage === 100 ? 'green' : percentage > 50 ? 'blue' : 'orange'}
+                  animated={percentage < 100}
+                />
+              </motion.div>
+            </Box>
+          )}
         </Group>
       </Group>
 
@@ -455,7 +461,14 @@ export function FilterToolbar() {
           </AnimatePresence>
         </Group>
 
-        <Group gap="xs" wrap="nowrap" style={{ flexShrink: 0 }}>
+        <Group
+          gap="xs"
+          wrap="nowrap"
+          style={{
+            flexShrink: isMobile ? undefined : 0,
+            ...(isMobile && { width: '100%' }),
+          }}
+        >
           <Menu position="bottom-end" shadow="sm" withArrow>
             <Menu.Target>
               <Button
@@ -564,7 +577,8 @@ export function FilterToolbar() {
             onChange={handleSortChange}
             data={sortOptions}
             leftSection={<ArrowUpDown size={14} />}
-            w={220}
+            w={isMobile ? undefined : 220}
+            style={isMobile ? { flex: 1, minWidth: 0 } : undefined}
             aria-label={t('Sort entries')}
           />
         </Group>

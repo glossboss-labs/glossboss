@@ -26,6 +26,8 @@
     "i18n:extract": "bun scripts/extract-i18n.ts",
     "i18n:add-lang": "bun scripts/add-language.ts",
     "i18n:sync-en": "bun scripts/sync-en-strings.ts",
+    "test:e2e": "playwright test",
+    "test:e2e:report": "playwright show-report",
     "prepare": "husky"
   },
   "lint-staged": {
@@ -76,6 +78,7 @@
     "tailwindcss": "^4.2.1",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.56.1",
+    "@playwright/test": "^1.52.0",
     "vite": "^7.3.1",
     "vitest": "^4.0.18"
   }

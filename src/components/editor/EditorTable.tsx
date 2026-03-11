@@ -673,11 +673,12 @@ function TranslationCell({
   const usedGlossary = useEditorStore(
     (state) => state.machineTranslationMeta.get(entry.id)?.usedGlossary ?? false,
   );
+  const signalsColumnHidden = useEditorStore((state) => !state.visibleColumns.has('signals'));
 
   const translateSettings = useContext(TranslateSettingsContext);
   const hasPlural = Boolean(entry.msgidPlural);
   const pluralForms = useMemo(() => entry.msgstrPlural ?? [], [entry.msgstrPlural]);
-  const glossaryAnalysis = getGlossaryAnalysis(entry.id);
+  const glossaryAnalysis = signalsColumnHidden ? getGlossaryAnalysis(entry.id) : null;
   const translationLang = toSpeakLanguageTag(translateSettings.targetLang);
 
   const handleSingularChange = useCallback(
@@ -779,27 +780,29 @@ function TranslationCell({
           </Group>
         ))}
 
-        {/* MT badge under translation */}
-        {isMT && (
-          <Tooltip
-            label={
-              usedGlossary
-                ? t('Machine translated with glossary')
-                : t('Machine translated by DeepL')
-            }
-          >
-            <Badge
-              size="xs"
-              variant="light"
-              color={usedGlossary ? 'teal' : 'blue'}
-              leftSection={<Bot size={10} />}
-            >
-              {usedGlossary ? t('MT + Glossary') : t('Machine translated')}
-            </Badge>
-          </Tooltip>
+        {signalsColumnHidden && (
+          <>
+            {isMT && (
+              <Tooltip
+                label={
+                  usedGlossary
+                    ? t('Machine translated with glossary')
+                    : t('Machine translated by DeepL')
+                }
+              >
+                <Badge
+                  size="xs"
+                  variant="light"
+                  color={usedGlossary ? 'teal' : 'blue'}
+                  leftSection={<Bot size={10} />}
+                >
+                  {usedGlossary ? t('MT + Glossary') : t('Machine translated')}
+                </Badge>
+              </Tooltip>
+            )}
+            <GlossaryIndicator analysis={glossaryAnalysis} />
+          </>
         )}
-
-        <GlossaryIndicator analysis={glossaryAnalysis ?? null} />
       </Stack>
     );
   }
@@ -844,25 +847,29 @@ function TranslationCell({
         )}
       </Group>
 
-      {/* MT badge under translation */}
-      {isMT && (
-        <Tooltip
-          label={
-            usedGlossary ? t('Machine translated with glossary') : t('Machine translated by DeepL')
-          }
-        >
-          <Badge
-            size="xs"
-            variant="light"
-            color={usedGlossary ? 'teal' : 'blue'}
-            leftSection={<Bot size={10} />}
-          >
-            {usedGlossary ? t('MT + Glossary') : t('Machine translated')}
-          </Badge>
-        </Tooltip>
+      {signalsColumnHidden && (
+        <>
+          {isMT && (
+            <Tooltip
+              label={
+                usedGlossary
+                  ? t('Machine translated with glossary')
+                  : t('Machine translated by DeepL')
+              }
+            >
+              <Badge
+                size="xs"
+                variant="light"
+                color={usedGlossary ? 'teal' : 'blue'}
+                leftSection={<Bot size={10} />}
+              >
+                {usedGlossary ? t('MT + Glossary') : t('Machine translated')}
+              </Badge>
+            </Tooltip>
+          )}
+          <GlossaryIndicator analysis={glossaryAnalysis} />
+        </>
       )}
-
-      <GlossaryIndicator analysis={glossaryAnalysis ?? null} />
     </Stack>
   );
 }
@@ -2324,7 +2331,12 @@ export function EditorTable({
                 display: 'flex',
                 alignItems: 'flex-start',
                 gap: 'var(--mantine-spacing-md)',
-                overflow: 'hidden',
+                overflow:
+                  typeof CSS !== 'undefined' &&
+                  typeof CSS.supports === 'function' &&
+                  CSS.supports('overflow', 'clip')
+                    ? 'clip'
+                    : 'hidden',
                 flexShrink: 0,
                 width: inspectorOpen ? inspectorWidth + 24 : 0,
                 marginLeft: inspectorOpen ? 'var(--mantine-spacing-md)' : 0,
@@ -2462,7 +2474,7 @@ export function EditorTable({
 
           {/* Pagination controls */}
           {filteredEntries.length > 0 && (
-            <Group justify="space-between" align="center" mt="xs">
+            <Group justify="space-between" align="center" mt="xs" wrap="wrap">
               <Group gap="sm">
                 <Select
                   value={rowsPerPage}
@@ -2472,13 +2484,15 @@ export function EditorTable({
                   w={120}
                   aria-label={t('Rows per page')}
                 />
-                <Text size="sm" c="dimmed">
-                  {t('Showing {{start}}–{{end}} of {{total}} entries', {
-                    start: startItem,
-                    end: endItem,
-                    total: filteredEntries.length,
-                  })}
-                </Text>
+                {!isMobile && (
+                  <Text size="sm" c="dimmed">
+                    {t('Showing {{start}}–{{end}} of {{total}} entries', {
+                      start: startItem,
+                      end: endItem,
+                      total: filteredEntries.length,
+                    })}
+                  </Text>
+                )}
               </Group>
 
               {totalPages > 1 && (
@@ -2486,7 +2500,7 @@ export function EditorTable({
                   value={currentPage}
                   onChange={setCurrentPage}
                   total={totalPages}
-                  size="sm"
+                  size={isMobile ? 'xs' : 'sm'}
                   withEdges
                 />
               )}
