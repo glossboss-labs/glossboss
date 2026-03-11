@@ -77,6 +77,9 @@ jobs:
       - name: Typecheck
         run: bun run typecheck
 
+      - name: Build
+        run: bun run build
+
       - name: Summary
         if: failure()
         run: |
@@ -196,7 +199,9 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Test (coverage)
-        run: bun run test:coverage 2>&1 | tee test-output.txt
+        run: |
+          set -o pipefail
+          bun run test:coverage 2>&1 | tee test-output.txt
 
       - name: Summary
         if: always()
@@ -236,10 +241,10 @@ jobs:
 
           RESULTS='${{ toJSON(needs.*.result) }}'
           echo "Results: $RESULTS"
-          if echo "$RESULTS" | grep -q '"failure"'; then
+          if echo "$RESULTS" | grep -qE '"failure"|"cancelled"'; then
             echo "" >> "$GITHUB_STEP_SUMMARY"
             echo "**Result: FAILED**" >> "$GITHUB_STEP_SUMMARY"
-            echo "::error::One or more CI jobs failed"
+            echo "::error::One or more CI jobs failed or were cancelled"
             exit 1
           fi
           echo "" >> "$GITHUB_STEP_SUMMARY"
