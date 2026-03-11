@@ -410,6 +410,7 @@ export default function Index() {
 
   const dragCounterRef = useRef(0);
   const fileInputRef = useRef<HTMLButtonElement>(null);
+  const fileResetRef = useRef<(() => void) | null>(null);
   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const ensureEditorShell = useCallback(async () => {
@@ -511,6 +512,14 @@ export default function Index() {
     setGlossarySyncStatus(null);
     clearGlossaryAnalysis();
   }, [clearGlossaryAnalysis]);
+
+  const reportLazyLoadError = useCallback(
+    (error: unknown, message: string) => {
+      debugError('[UI] Failed to lazy-load interface chunk:', error);
+      setErrors([{ severity: 'error', code: 'INVALID_SYNTAX', message }]);
+    },
+    [setErrors],
+  );
 
   /**
    * Handle glossary enforcement toggle
@@ -661,7 +670,17 @@ export default function Index() {
           }
 
           const poFile = parseI18nextJSON(text, file.name);
-          void ensureEditorShell();
+
+          try {
+            await ensureEditorShell();
+          } catch (error) {
+            reportLazyLoadError(
+              error,
+              t('The editor interface could not be loaded. Please refresh and try again.'),
+            );
+            return;
+          }
+
           loadFile(poFile, 'i18next');
 
           debugLog(`[i18next] Parsed ${poFile.entries.length} entries from ${file.name}`);
@@ -708,15 +727,24 @@ export default function Index() {
 
           // Check if there's an existing draft for this file
           const existingDraft = loadDraft(file.name);
+
+          try {
+            await ensureEditorShell();
+          } catch (error) {
+            reportLazyLoadError(
+              error,
+              t('The editor interface could not be loaded. Please refresh and try again.'),
+            );
+            return;
+          }
+
           if (existingDraft && existingDraft.dirtyEntryIds.length > 0) {
             // Show recovery prompt
             setPendingDraft({ draft: existingDraft, filename: file.name });
             // Still load the fresh file - user can choose to restore draft
-            void ensureEditorShell();
             loadFile(result.file);
           } else {
             // No draft or draft has no changes - load fresh
-            void ensureEditorShell();
             loadFile(result.file);
           }
 
@@ -740,7 +768,7 @@ export default function Index() {
         ]);
       }
     },
-    [ensureEditorShell, loadFile, t],
+    [ensureEditorShell, loadFile, reportLazyLoadError, t],
   );
 
   const handleLoadExamplePo = useCallback(async () => {
@@ -767,7 +795,16 @@ export default function Index() {
         setShowWarnings(true);
       }
 
-      void ensureEditorShell();
+      try {
+        await ensureEditorShell();
+      } catch (error) {
+        reportLazyLoadError(
+          error,
+          t('The editor interface could not be loaded. Please refresh and try again.'),
+        );
+        return;
+      }
+
       loadFile(result.file);
 
       const detected = detectPluginSlug(result.file.header, result.file.filename);
@@ -778,7 +815,7 @@ export default function Index() {
     } finally {
       setIsLoadingExample(false);
     }
-  }, [ensureEditorShell, loadFile]);
+  }, [ensureEditorShell, loadFile, reportLazyLoadError, t]);
 
   const executeUrlLoad = useCallback(
     async (url: string) => {
@@ -817,7 +854,17 @@ export default function Index() {
         // Try i18next JSON if content looks like JSON
         if (isI18nextContent(text)) {
           const i18nResult = parseI18nextJSON(text, name);
-          void ensureEditorShell();
+
+          try {
+            await ensureEditorShell();
+          } catch (error) {
+            reportLazyLoadError(
+              error,
+              t('The editor interface could not be loaded. Please refresh and try again.'),
+            );
+            return;
+          }
+
           loadFile(i18nResult.file);
         } else {
           const result = parsePOFileWithDiagnostics(text, name);
@@ -832,7 +879,16 @@ export default function Index() {
             setShowWarnings(true);
           }
 
-          void ensureEditorShell();
+          try {
+            await ensureEditorShell();
+          } catch (error) {
+            reportLazyLoadError(
+              error,
+              t('The editor interface could not be loaded. Please refresh and try again.'),
+            );
+            return;
+          }
+
           loadFile(result.file);
 
           const detected = detectPluginSlug(result.file.header, name);
@@ -861,7 +917,7 @@ export default function Index() {
         setIsLoadingUrl(false);
       }
     },
-    [ensureEditorShell, loadFile, t],
+    [ensureEditorShell, loadFile, reportLazyLoadError, t],
   );
 
   const handleLoadFromUrl = useCallback(
@@ -902,7 +958,7 @@ export default function Index() {
   /**
    * Restore from pending draft
    */
-  const handleRestoreDraft = useCallback(() => {
+  const handleRestoreDraft = useCallback(async () => {
     if (!pendingDraft) return;
 
     const { draft } = pendingDraft;
@@ -915,25 +971,40 @@ export default function Index() {
       charset: 'UTF-8' as const,
     };
 
-    void ensureEditorShell();
+    try {
+      await ensureEditorShell();
+    } catch (error) {
+      reportLazyLoadError(
+        error,
+        t('The editor interface could not be loaded. Please refresh and try again.'),
+      );
+      return;
+    }
+
     loadFile(restoredFile);
     setIsFromDraft(true);
     setPendingDraft(null);
 
     debugLog('[Drafts] Restored from draft');
-  }, [ensureEditorShell, pendingDraft, loadFile]);
+  }, [ensureEditorShell, loadFile, pendingDraft, reportLazyLoadError, t]);
 
-  const handleOpenSettings = useCallback(() => {
-    void ensureSettingsModal().then(() => {
+  const handleOpenSettings = useCallback(async () => {
+    try {
+      await ensureSettingsModal();
       setSettingsOpen(true);
-    });
-  }, [ensureSettingsModal]);
+    } catch (error) {
+      reportLazyLoadError(error, t('Settings could not be loaded. Please refresh and try again.'));
+    }
+  }, [ensureSettingsModal, reportLazyLoadError, t]);
 
-  const handleOpenFeedback = useCallback(() => {
-    void ensureFeedbackModal().then(() => {
+  const handleOpenFeedback = useCallback(async () => {
+    try {
+      await ensureFeedbackModal();
       setFeedbackOpen(true);
-    });
-  }, [ensureFeedbackModal]);
+    } catch (error) {
+      reportLazyLoadError(error, t('Feedback could not be loaded. Please refresh and try again.'));
+    }
+  }, [ensureFeedbackModal, reportLazyLoadError, t]);
 
   /**
    * Discard pending draft and continue with fresh file
@@ -1405,7 +1476,7 @@ export default function Index() {
                       <FileButton
                         onChange={handleFileUpload}
                         accept=".po,.pot,.json"
-                        resetRef={fileInputRef as React.MutableRefObject<() => void>}
+                        resetRef={fileResetRef}
                       >
                         {(props) => (
                           <Button leftSection={<Upload size={16} />} {...props} ref={fileInputRef}>
