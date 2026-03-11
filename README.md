@@ -81,66 +81,11 @@ GlossBoss ships with an app UI translation system backed by gettext `.po` catalo
 For the full contributor workflow, see `CONTRIBUTING.md`. The deployed app also includes a
 translation guide at `/translate/`.
 
-## Translation Memory And QA
+## Architecture docs
 
-GlossBoss now has two browser-local review layers on top of the editor:
+Detailed subsystem docs:
 
-- Translation memory stores approved translations per project name and target language.
-- QA checks analyze the current file for common translation breakage before export.
-
-### Translation memory
-
-Translation memory lives entirely in the browser today.
-
-- Scope is derived from the current file and stored as `projectName + targetLanguage`.
-- The editable project name is kept in the editor store and exposed in Settings.
-- Only approved entries are written into memory: translated entries without the `fuzzy` flag.
-- Suggestions are shown in the string inspector and can be applied with one click.
-- Import/export supports app-native JSON and TMX.
-
-Key implementation paths:
-
-- `src/lib/translation-memory/`
-- `src/stores/translation-memory-store.ts`
-- `src/components/SettingsModal.tsx`
-- `src/components/editor/EditorTable.tsx`
-
-### QA checks
-
-QA results are recalculated client-side whenever entries or glossary analysis change.
-
-Current rules:
-
-- placeholder parity
-- HTML tag parity
-- ICU variable parity
-- glossary conflicts
-- repeated-source consistency
-- whitespace drift
-- punctuation drift
-
-QA results appear in three places:
-
-- the table signals column
-- the string inspector
-- the pre-export summary modal
-
-Key implementation paths:
-
-- `src/lib/qa/`
-- `src/stores/editor-store.ts`
-- `src/components/editor/EditorTable.tsx`
-- `src/pages/Index.tsx`
-
-### Data flow
-
-At a high level:
-
-1. File load initializes the editor store, including the derived project name.
-2. Glossary analysis runs first when a glossary is available.
-3. QA analysis runs over the current entries and glossary results.
-4. Approved entries are upserted into translation memory for the active project scope.
-5. Export checks the latest QA summary and warns before download if issues remain.
+- `docs/translation-memory-and-qa.md`
 
 ## Deployment model
 
