@@ -10,6 +10,8 @@ It is maintained by Toine Rademacher and Bjorn Lammers.
 - Edit gettext `.po` and `.pot` files in the browser
 - Import and export i18next JSON resources
 - Translate entries and batches through DeepL
+- Reuse approved translations across files with local translation memory (exact and fuzzy matching, JSON/TMX import and export)
+- Catch broken placeholders, mismatched tags, and inconsistencies before export with inline QA checks
 - Play strings with browser TTS or ElevenLabs BYO cloud voices
 - Load WordPress.org glossary data and sync it to DeepL glossaries
 - Inspect WordPress plugin source references through proxied SVN lookups
@@ -78,6 +80,35 @@ GlossBoss ships with an app UI translation system backed by gettext `.po` catalo
 
 For the full contributor workflow, see `CONTRIBUTING.md`. The deployed app also includes a
 translation guide at `/translate/`.
+
+## Translation Memory
+
+GlossBoss stores your approved (translated, non-fuzzy) entries in a local memory bank scoped by
+project and target language. When you select a row in the editor, the inspector panel suggests
+matching translations from memory — exact matches appear first, then fuzzy matches scored at 75% or
+above using bigram similarity.
+
+Manage memory in **Settings → Backup**: export as JSON (lossless backup) or TMX (for other CAT
+tools like memoQ, Trados, OmegaT), import `.json`/`.tmx`/`.xml` files to merge into the current
+project, or clear the current project memory.
+
+## QA Checks
+
+QA checks run automatically as you edit and flag issues that could break output or cause
+inconsistencies:
+
+| Rule                        | Severity | What it catches                                                 |
+| --------------------------- | -------- | --------------------------------------------------------------- |
+| Placeholder parity          | Error    | `%s`, `%d`, `%1$s` count differs between source and translation |
+| HTML tag parity             | Error    | `<b>`, `</a>`, `<br />` tags don't match                        |
+| ICU variable parity         | Error    | `{count}`, `{name}` variables don't match                       |
+| Glossary conflict           | Warning  | Translation doesn't use expected glossary terms                 |
+| Repeated-source consistency | Warning  | Same source string translated differently in the same file      |
+| Whitespace drift            | Warning  | Leading/trailing spaces or newlines differ                      |
+| Punctuation drift           | Warning  | Terminal punctuation (`.` `!` `?` `…` `:` `;`) differs          |
+
+Issues appear as badges in the signals column, as details in the inspector panel, and as a summary
+modal before export. Export is never blocked — you can always export anyway after reviewing.
 
 ## Deployment model
 

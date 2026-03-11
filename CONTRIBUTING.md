@@ -19,8 +19,8 @@ Run the full local check suite:
 bun run lint
 bun run format:check
 bun run typecheck
-bun run test
 bun run build
+bun run test:coverage
 ```
 
 ## Commit style
@@ -45,6 +45,7 @@ Examples:
 - Keep client-side environment variables under `VITE_*`.
 - Do not commit secrets or local `.env` files.
 - Add or update tests when behavior changes.
+- If you touch translation memory or QA, read the Translation Memory and QA Checks sections in `README.md` first. TM logic lives in `src/lib/translation-memory/`, QA logic in `src/lib/qa/`. To add a new QA rule, update `types.ts` (rule identifier and label) and `analyzer.ts` (check implementation).
 
 ## Translating the app
 
@@ -97,6 +98,13 @@ re-runs the extractor. CI fails if pending renames are not applied.
    automatically. English entries get `msgstr = msgid`; other languages get empty `msgstr`.
 3. Commit the updated PO/POT files alongside your code changes.
 4. CI will fail if you forget to run the extractor.
+
+Important:
+
+- Run `bun run i18n:extract` after changing user-facing strings.
+- Also run it after moving code around existing `t()` / `msgid()` calls if the touched files are in
+  the app catalog. The extractor updates source reference comments in `app.pot` and `app.*.po`,
+  and CI checks those files with `git diff --exit-code`.
 
 ### Adding a new app language
 
