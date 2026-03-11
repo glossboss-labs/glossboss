@@ -938,7 +938,7 @@ export default function Index() {
   }, [loadFile, pendingDraft]);
 
   const handleOpenSettings = useCallback((tab?: string) => {
-    setSettingsInitialTab(tab);
+    setSettingsInitialTab(typeof tab === 'string' ? tab : undefined);
     setSettingsOpen(true);
   }, []);
 
