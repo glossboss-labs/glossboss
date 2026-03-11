@@ -62,7 +62,7 @@ function sameMultiset(left: string[], right: string[]): boolean {
 }
 
 function extractPlaceholders(value: string): string[] {
-  return Array.from(value.matchAll(/%(?:\d+\$)?[#+\-0 ]?(?:\d+)?(?:\.\d+)?[bcdeEufFgGosxX]/g)).map(
+  return Array.from(value.matchAll(/%(?:\d+\$)?[#+\-0 ]?(?:\d+)?(?:\.\d+)?[bcdeEufFgGiosxX]/g)).map(
     (match) => match[0],
   );
 }
@@ -108,84 +108,94 @@ function analyzeEntry(entry: POEntry, glossaryAnalysis?: GlossaryAnalysisResult)
   const sourceText = getSourceText(entry);
   const targetText = getTargetText(entry);
 
-  const sourcePlaceholders = extractPlaceholders(sourceText);
-  const targetPlaceholders = extractPlaceholders(targetText);
-  if (!sameMultiset(sourcePlaceholders, targetPlaceholders)) {
-    addIssue(report, {
-      ruleId: 'placeholder-parity',
-      severity: 'error',
-      message: 'Placeholder mismatch between source and translation.',
-      details: [
-        `Source: ${sourcePlaceholders.join(', ') || 'none'}`,
-        `Target: ${targetPlaceholders.join(', ') || 'none'}`,
-      ],
-    });
-  }
+  // Skip parity/drift checks for untranslated or fuzzy entries — they produce noise
+  const hasTranslation = targetText.trim() !== '';
+  const isFuzzy = entry.flags.includes('fuzzy');
+  const shouldRunParityChecks = hasTranslation && !isFuzzy;
 
-  const sourceTags = extractHtmlTags(sourceText);
-  const targetTags = extractHtmlTags(targetText);
-  if (!sameMultiset(sourceTags, targetTags)) {
-    addIssue(report, {
-      ruleId: 'html-tag-parity',
-      severity: 'error',
-      message: 'HTML tag mismatch between source and translation.',
-      details: [
-        `Source: ${sourceTags.join(', ') || 'none'}`,
-        `Target: ${targetTags.join(', ') || 'none'}`,
-      ],
-    });
-  }
+  if (shouldRunParityChecks) {
+    const sourcePlaceholders = extractPlaceholders(sourceText);
+    const targetPlaceholders = extractPlaceholders(targetText);
+    if (!sameMultiset(sourcePlaceholders, targetPlaceholders)) {
+      addIssue(report, {
+        ruleId: 'placeholder-parity',
+        severity: 'error',
+        message: 'Placeholder mismatch between source and translation.',
+        details: [
+          `Source: ${sourcePlaceholders.join(', ') || 'none'}`,
+          `Target: ${targetPlaceholders.join(', ') || 'none'}`,
+        ],
+      });
+    }
 
-  const sourceVariables = extractIcuVariables(sourceText);
-  const targetVariables = extractIcuVariables(targetText);
-  if (!sameMultiset(sourceVariables, targetVariables)) {
-    addIssue(report, {
-      ruleId: 'icu-variable-parity',
-      severity: 'error',
-      message: 'ICU-style variable mismatch between source and translation.',
-      details: [
-        `Source: ${sourceVariables.join(', ') || 'none'}`,
-        `Target: ${targetVariables.join(', ') || 'none'}`,
-      ],
-    });
-  }
+    const sourceTags = extractHtmlTags(sourceText);
+    const targetTags = extractHtmlTags(targetText);
+    if (!sameMultiset(sourceTags, targetTags)) {
+      addIssue(report, {
+        ruleId: 'html-tag-parity',
+        severity: 'error',
+        message: 'HTML tag mismatch between source and translation.',
+        details: [
+          `Source: ${sourceTags.join(', ') || 'none'}`,
+          `Target: ${targetTags.join(', ') || 'none'}`,
+        ],
+      });
+    }
 
-  if (glossaryAnalysis && glossaryAnalysis.needsReviewCount > 0) {
-    addIssue(report, {
-      ruleId: 'glossary-conflict',
-      severity: 'warning',
-      message: `${glossaryAnalysis.needsReviewCount} glossary term(s) need review.`,
-      details: glossaryAnalysis.terms
-        .filter((term) => !term.found)
-        .map((term) => `${term.term} -> ${term.expectedTranslation}`),
-    });
-    report.glossaryAnalysis = glossaryAnalysis;
-  }
+    const sourceVariables = extractIcuVariables(sourceText);
+    const targetVariables = extractIcuVariables(targetText);
+    if (!sameMultiset(sourceVariables, targetVariables)) {
+      addIssue(report, {
+        ruleId: 'icu-variable-parity',
+        severity: 'error',
+        message: 'ICU-style variable mismatch between source and translation.',
+        details: [
+          `Source: ${sourceVariables.join(', ') || 'none'}`,
+          `Target: ${targetVariables.join(', ') || 'none'}`,
+        ],
+      });
+    }
 
-  const sourceWhitespace = getWhitespaceSignature(sourceText);
-  const targetWhitespace = getWhitespaceSignature(targetText);
-  if (
-    sourceWhitespace.leadingSpaces !== targetWhitespace.leadingSpaces ||
-    sourceWhitespace.trailingSpaces !== targetWhitespace.trailingSpaces ||
-    sourceWhitespace.leadingNewlines !== targetWhitespace.leadingNewlines ||
-    sourceWhitespace.trailingNewlines !== targetWhitespace.trailingNewlines
-  ) {
-    addIssue(report, {
-      ruleId: 'whitespace-drift',
-      severity: 'warning',
-      message: 'Leading or trailing whitespace differs from the source string.',
-    });
-  }
+    if (glossaryAnalysis && glossaryAnalysis.needsReviewCount > 0) {
+      addIssue(report, {
+        ruleId: 'glossary-conflict',
+        severity: 'warning',
+        message: `${glossaryAnalysis.needsReviewCount} glossary term(s) need review.`,
+        details: glossaryAnalysis.terms
+          .filter((term) => !term.found)
+          .map((term) => `${term.term} -> ${term.expectedTranslation}`),
+      });
+      report.glossaryAnalysis = glossaryAnalysis;
+    }
 
-  const sourcePunctuation = getTerminalPunctuation(sourceText);
-  const targetPunctuation = getTerminalPunctuation(targetText);
-  if (sourcePunctuation !== targetPunctuation) {
-    addIssue(report, {
-      ruleId: 'punctuation-drift',
-      severity: 'warning',
-      message: 'Terminal punctuation differs from the source string.',
-      details: [`Source: ${sourcePunctuation ?? 'none'}`, `Target: ${targetPunctuation ?? 'none'}`],
-    });
+    const sourceWhitespace = getWhitespaceSignature(sourceText);
+    const targetWhitespace = getWhitespaceSignature(targetText);
+    if (
+      sourceWhitespace.leadingSpaces !== targetWhitespace.leadingSpaces ||
+      sourceWhitespace.trailingSpaces !== targetWhitespace.trailingSpaces ||
+      sourceWhitespace.leadingNewlines !== targetWhitespace.leadingNewlines ||
+      sourceWhitespace.trailingNewlines !== targetWhitespace.trailingNewlines
+    ) {
+      addIssue(report, {
+        ruleId: 'whitespace-drift',
+        severity: 'warning',
+        message: 'Leading or trailing whitespace differs from the source string.',
+      });
+    }
+
+    const sourcePunctuation = getTerminalPunctuation(sourceText);
+    const targetPunctuation = getTerminalPunctuation(targetText);
+    if (sourcePunctuation !== targetPunctuation) {
+      addIssue(report, {
+        ruleId: 'punctuation-drift',
+        severity: 'warning',
+        message: 'Terminal punctuation differs from the source string.',
+        details: [
+          `Source: ${sourcePunctuation ?? 'none'}`,
+          `Target: ${targetPunctuation ?? 'none'}`,
+        ],
+      });
+    }
   }
 
   return report;

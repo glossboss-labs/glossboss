@@ -51,5 +51,7 @@ export function unmaskPlaceholders(text: string, tokens: Map<number, string>): s
  * Returns true when the text contains placeholders that need masking.
  */
 export function hasPlaceholders(text: string): boolean {
+  PRINTF_RE.lastIndex = 0;
+  ICU_RE.lastIndex = 0;
   return PRINTF_RE.test(text) || ICU_RE.test(text);
 }

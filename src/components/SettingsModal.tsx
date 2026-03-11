@@ -338,7 +338,7 @@ export function SettingsModal({
     success: boolean;
     message: string;
   } | null>(null);
-  const translationMemoryImportResetRef = useRef<() => void | null>(null);
+  const translationMemoryImportResetRef = useRef<(() => void) | null>(null);
   const [credentialPrompt, setCredentialPrompt] = useState<
     | {
         mode: 'export';

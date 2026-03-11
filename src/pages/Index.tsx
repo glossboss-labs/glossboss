@@ -97,7 +97,7 @@ import {
 import { CONTAINER_WIDTH_KEY, type ContainerWidth } from '@/lib/container-width';
 import { useSearchParams } from 'react-router';
 import { msgid, useTranslation } from '@/lib/app-language';
-import { createTranslationMemoryScope } from '@/lib/translation-memory';
+import { createTranslationMemoryScope, isApprovedTranslationEntry } from '@/lib/translation-memory';
 const appIcon = '/icon.svg';
 
 const MotionDiv = motion.div;
@@ -542,7 +542,7 @@ export default function Index() {
       }
       setQaReports(analyzeQaForEntries(entries, analyses));
 
-      if (translationMemoryScope) {
+      if (translationMemoryScope && entries.some(isApprovedTranslationEntry)) {
         upsertApprovedEntries(translationMemoryScope, entries);
       }
     }, 300);

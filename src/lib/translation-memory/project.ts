@@ -40,6 +40,9 @@ export function createTranslationMemoryEntryFromPoEntry(
   now: string,
   previous?: TranslationMemoryEntry,
 ): TranslationMemoryEntry {
+  // Only bump usageCount and updatedAt when the target text actually changed
+  const targetChanged = !previous || previous.targetText !== entry.msgstr;
+
   return {
     id: previous?.id ?? entry.id,
     projectName: scope.projectName,
@@ -51,7 +54,7 @@ export function createTranslationMemoryEntryFromPoEntry(
     targetTextPlural: entry.msgstrPlural,
     context: entry.msgctxt,
     approvedAt: previous?.approvedAt ?? now,
-    updatedAt: now,
-    usageCount: (previous?.usageCount ?? 0) + 1,
+    updatedAt: targetChanged ? now : (previous?.updatedAt ?? now),
+    usageCount: targetChanged ? (previous?.usageCount ?? 0) + 1 : (previous?.usageCount ?? 1),
   };
 }
