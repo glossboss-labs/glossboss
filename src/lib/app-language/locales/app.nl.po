@@ -313,7 +313,7 @@ msgstr "Klik om alleen {{label}} te tonen"
 
 #: src/components/SettingsModal.tsx:1803
 msgid "Close credential prompt"
-msgstr "Inloggegevensprompt sluiten"
+msgstr "Inlogprompt sluiten"
 
 #: src/components/ui/ConfirmModal.tsx:57
 msgid "Close dialog"
@@ -325,7 +325,7 @@ msgstr "Feedbackformulier sluiten"
 
 #: src/components/glossary/shared.tsx:62
 msgid "Close glossary viewer"
-msgstr "Glossaryviewer sluiten"
+msgstr "Glossaryweergave sluiten"
 
 #: src/components/SettingsModal.tsx:930
 msgid "Close settings"
@@ -1537,7 +1537,7 @@ msgstr "Meervoudig item: {{completed}}/{{total}} vormen vertaald"
 
 #: src/components/editor/HeaderEditor.tsx:412
 msgid "Plural form preset"
-msgstr "Meervoudsvormvoorinstelling"
+msgstr "Voorinstelling meervoudsvorm"
 
 #: src/components/editor/EditorTable.tsx:757
 msgid "Plural form {{index}}"
@@ -2068,11 +2068,11 @@ msgstr "Zweeds"
 
 #: src/pages/Index.tsx:145
 msgid "Switch to dark mode"
-msgstr "Overschakelen naar donkere modus"
+msgstr "Schakel naar donkere modus"
 
 #: src/pages/Index.tsx:145
 msgid "Switch to light mode"
-msgstr "Overschakelen naar lichte modus"
+msgstr "Schakel naar lichte modus"
 
 #: src/components/SettingsModal.tsx:1550
 #: src/components/editor/GlossaryPanel.tsx:266
@@ -2432,7 +2432,7 @@ msgstr "De verificatie laadt nog. Probeer het zometeen nog eens."
 
 #: src/components/editor/HeaderEditor.tsx:501
 msgid "Verify plugin slug"
-msgstr "Plugin-slug verifiëren"
+msgstr "Plugin-slug controleren"
 
 #: src/components/editor/HeaderEditor.tsx:497
 msgid "Verify slug exists on WordPress.org"
