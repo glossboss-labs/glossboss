@@ -51,6 +51,11 @@ import {
 } from '@/components/glossary/constants';
 import type { Glossary } from '@/lib/glossary/types';
 import { useTranslation } from '@/lib/app-language';
+import {
+  getActiveTranslationProvider,
+  getTranslationProviderLabel,
+  TRANSLATION_PROVIDER_CAPABILITIES,
+} from '@/lib/translation';
 
 /** Sync status types */
 type SyncStatus = 'idle' | 'syncing' | 'ready' | 'failed';
@@ -62,16 +67,16 @@ interface GlossaryPanelProps {
   onGlossaryCleared?: () => void;
   /** Callback when enforcement setting changes */
   onEnforcementChange?: (enabled: boolean) => void;
-  /** Callback for force resync to DeepL */
+  /** Callback for force resync (DeepL only) */
   onForceResync?: (glossary: Glossary) => void;
   /** Initial locale to select (e.g., from PO file header) */
   initialLocale?: string;
   /** Current sync status from parent */
   syncStatus?: string | null;
-  /** DeepL glossary ID (indicates sync success) */
+  /** DeepL glossary ID (indicates native sync success) */
   deeplGlossaryId?: string | null;
-  /** Number of terms synced to DeepL */
-  deeplTermCount?: number;
+  /** Number of glossary terms loaded */
+  glossaryTermCount?: number;
   /** Currently selected entry's source text (for preview) */
   selectedSourceText?: string | null;
 }
@@ -84,7 +89,7 @@ export function GlossaryPanel({
   initialLocale,
   syncStatus,
   deeplGlossaryId,
-  deeplTermCount,
+  glossaryTermCount,
   selectedSourceText,
 }: GlossaryPanelProps) {
   const { t } = useTranslation();
@@ -116,7 +121,7 @@ export function GlossaryPanel({
     if (!glossary) return 'idle';
     if (syncStatus?.includes('Syncing')) return 'syncing';
     if (syncStatus?.includes('failed')) return 'failed';
-    if (deeplGlossaryId) return 'ready';
+    if (deeplGlossaryId || syncStatus === 'ready') return 'ready';
     return 'syncing';
   }, [glossary, syncStatus, deeplGlossaryId]);
 
@@ -227,13 +232,17 @@ export function GlossaryPanel({
   const renderSyncStatus = () => {
     if (!glossary) return null;
 
+    const provider = getActiveTranslationProvider();
+    const providerLabel = getTranslationProviderLabel(provider);
+    const capabilities = TRANSLATION_PROVIDER_CAPABILITIES[provider];
+
     switch (syncState) {
       case 'syncing':
         return (
           <Group gap={4}>
             <Loader size={12} />
             <Text size="xs" c="dimmed">
-              {t('Syncing to DeepL...')}
+              {t('Syncing glossary...')}
             </Text>
           </Group>
         );
@@ -242,20 +251,28 @@ export function GlossaryPanel({
           <Group gap={4}>
             <Check size={12} color="var(--mantine-color-green-6)" />
             <Text size="xs" c="green">
-              {deeplTermCount
-                ? t('DeepL ready ({{count}} terms)', { count: deeplTermCount })
-                : t('DeepL ready')}
+              {glossaryTermCount
+                ? t('{{provider}} ready ({{count}} terms)', {
+                    provider: providerLabel,
+                    count: glossaryTermCount,
+                  })
+                : t('{{provider}} ready', { provider: providerLabel })}
             </Text>
-            <Tooltip label={t('Force recreate glossary on DeepL')} color="dark">
-              <Button
-                size="compact-xs"
-                variant="subtle"
-                color="gray"
-                onClick={() => onForceResync?.(glossary)}
+            {capabilities.nativeGlossary && (
+              <Tooltip
+                label={t('Force recreate glossary on {{provider}}', { provider: providerLabel })}
+                color="dark"
               >
-                {t('Resync')}
-              </Button>
-            </Tooltip>
+                <Button
+                  size="compact-xs"
+                  variant="subtle"
+                  color="gray"
+                  onClick={() => onForceResync?.(glossary)}
+                >
+                  {t('Resync')}
+                </Button>
+              </Tooltip>
+            )}
           </Group>
         );
       case 'failed':
@@ -398,7 +415,30 @@ export function GlossaryPanel({
                     label={t('Apply glossary terms during translation')}
                     description={
                       enforcementEnabled
-                        ? t('DeepL will use glossary for consistent terminology')
+                        ? (() => {
+                            const provider = getActiveTranslationProvider();
+                            const capabilities = TRANSLATION_PROVIDER_CAPABILITIES[provider];
+                            const providerLabel = getTranslationProviderLabel(provider);
+                            if (capabilities.nativeGlossary) {
+                              return t('{{provider}} will enforce glossary terms in translations', {
+                                provider: providerLabel,
+                              });
+                            }
+                            if (capabilities.promptGlossary) {
+                              return t(
+                                '{{provider}} will include glossary terms in the translation prompt',
+                                {
+                                  provider: providerLabel,
+                                },
+                              );
+                            }
+                            return t(
+                              'Glossary loaded for analysis — {{provider}} does not support glossary enforcement',
+                              {
+                                provider: providerLabel,
+                              },
+                            );
+                          })()
                         : t('Translations without glossary enforcement')
                     }
                   />

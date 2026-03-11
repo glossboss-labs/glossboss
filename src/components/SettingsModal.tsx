@@ -132,6 +132,7 @@ import {
   getTranslationProviderSettings,
   getTranslationProviderLabel,
   saveActiveTranslationProvider,
+  TRANSLATION_PROVIDER_CAPABILITIES,
   type TranslationProviderId,
 } from '@/lib/translation';
 
@@ -283,7 +284,7 @@ interface SettingsModalProps {
   glossary?: Glossary | null;
   syncStatus?: string | null;
   deeplGlossaryId?: string | null;
-  deeplTermCount?: number;
+  glossaryTermCount?: number;
   selectedSourceText?: string | null;
   branchChipEnabled?: boolean;
   onBranchChipEnabledChange?: (enabled: boolean) => void;
@@ -313,7 +314,7 @@ export function SettingsModal({
   glossary,
   syncStatus,
   deeplGlossaryId,
-  deeplTermCount,
+  glossaryTermCount,
   selectedSourceText,
   branchChipEnabled = true,
   onBranchChipEnabledChange,
@@ -2158,31 +2159,39 @@ export function SettingsModal({
                       </Button>
                     </Group>
 
-                    {/* DeepL sync status */}
+                    {/* Provider sync status */}
                     <Group gap="xs">
                       {syncStatus?.includes('Syncing') ? (
                         <>
                           <Loader size={12} />
                           <Text size="xs" c="dimmed">
-                            {t('Syncing to DeepL...')}
+                            {t('Syncing glossary...')}
                           </Text>
                         </>
-                      ) : deeplGlossaryId ? (
+                      ) : deeplGlossaryId || syncStatus === 'ready' ? (
                         <>
                           <Check size={12} color="var(--mantine-color-green-6)" />
                           <Text size="xs" c="green">
-                            {deeplTermCount
-                              ? t('DeepL ready ({count} terms)', { count: deeplTermCount })
-                              : t('DeepL ready')}
+                            {glossaryTermCount
+                              ? t('{{provider}} ready ({{count}} terms)', {
+                                  provider: getTranslationProviderLabel(translationProvider),
+                                  count: glossaryTermCount,
+                                })
+                              : t('{{provider}} ready', {
+                                  provider: getTranslationProviderLabel(translationProvider),
+                                })}
                           </Text>
-                          <Button
-                            size="compact-xs"
-                            variant="subtle"
-                            color="gray"
-                            onClick={() => onForceResync?.(glossary)}
-                          >
-                            {t('Resync')}
-                          </Button>
+                          {TRANSLATION_PROVIDER_CAPABILITIES[translationProvider]
+                            .nativeGlossary && (
+                            <Button
+                              size="compact-xs"
+                              variant="subtle"
+                              color="gray"
+                              onClick={() => onForceResync?.(glossary)}
+                            >
+                              {t('Resync')}
+                            </Button>
+                          )}
                         </>
                       ) : syncStatus?.includes('failed') ? (
                         <>
@@ -2206,7 +2215,25 @@ export function SettingsModal({
                     {/* Enforcement toggle */}
                     <Switch
                       label={t('Use glossary for translations')}
-                      description={t('DeepL will enforce glossary terms in machine translations')}
+                      description={
+                        TRANSLATION_PROVIDER_CAPABILITIES[translationProvider].nativeGlossary
+                          ? t('{{provider}} will enforce glossary terms in machine translations', {
+                              provider: getTranslationProviderLabel(translationProvider),
+                            })
+                          : TRANSLATION_PROVIDER_CAPABILITIES[translationProvider].promptGlossary
+                            ? t(
+                                '{{provider}} will include glossary terms in the translation prompt',
+                                {
+                                  provider: getTranslationProviderLabel(translationProvider),
+                                },
+                              )
+                            : t(
+                                'Glossary analysis is active but {{provider}} does not support glossary enforcement',
+                                {
+                                  provider: getTranslationProviderLabel(translationProvider),
+                                },
+                              )
+                      }
                       checked={enforcementEnabled}
                       onChange={(e) => setEnforcementEnabled(e.currentTarget.checked)}
                       styles={{
