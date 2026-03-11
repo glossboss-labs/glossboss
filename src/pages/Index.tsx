@@ -472,15 +472,14 @@ export default function Index() {
 
       if (capabilities.nativeGlossary) {
         // DeepL: sync to native glossary API
-        const providerLabel = getTranslationProviderLabel(provider);
-        setGlossarySyncStatus(`Syncing to ${providerLabel}...`);
+        setGlossarySyncStatus('syncing');
         try {
           const glossaryId = await syncGlossaryToDeepL(loadedGlossary, setGlossarySyncStatus);
           setDeeplGlossaryId(glossaryId);
           debugLog('[Glossary] DeepL glossary ID:', glossaryId);
         } catch (error) {
           debugError('[Glossary] Failed to sync to DeepL:', error);
-          setGlossarySyncStatus('Sync failed - using fallback');
+          setGlossarySyncStatus('sync-failed');
         }
       } else if (capabilities.promptGlossary) {
         // Gemini: terms are sent in the prompt, no sync needed
@@ -521,7 +520,7 @@ export default function Index() {
     const provider = getActiveTranslationProvider();
     if (!TRANSLATION_PROVIDER_CAPABILITIES[provider].nativeGlossary) return;
 
-    setGlossarySyncStatus('Force resyncing to DeepL...');
+    setGlossarySyncStatus('syncing');
 
     try {
       const glossaryId = await syncGlossaryToDeepL(glossaryToSync, setGlossarySyncStatus, true);
@@ -530,8 +529,8 @@ export default function Index() {
       debugLog('[Glossary] Force resync complete, DeepL glossary ID:', glossaryId);
     } catch (error) {
       debugError('[Glossary] Force resync failed:', error);
-      setGlossarySyncStatus('Sync failed - using fallback');
-      setGlossaryTermCount(0);
+      setGlossarySyncStatus('sync-failed');
+      setGlossaryTermCount(glossaryToSync.entries.length);
     }
   }, []);
 

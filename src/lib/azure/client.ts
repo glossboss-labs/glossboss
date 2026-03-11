@@ -1,3 +1,4 @@
+import { msgid } from '@/lib/app-language';
 import { getSupabaseAnonKey, getSupabaseFunctionBaseUrl } from '@/lib/cloud-backend';
 import { buildSupabaseFunctionHeaders } from '@/lib/supabase-function-headers';
 import { getAzureSettings } from './settings';
@@ -50,7 +51,7 @@ export function createAzureClient(functionUrl: string = getDefaultFunctionUrl())
     const payload = await response.json().catch(() => ({}));
     if (!response.ok) {
       throw new Error(
-        typeof payload?.message === 'string' ? payload.message : 'Azure translation failed',
+        typeof payload?.message === 'string' ? payload.message : msgid('Azure translation failed'),
       );
     }
 

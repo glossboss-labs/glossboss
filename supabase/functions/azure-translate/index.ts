@@ -56,12 +56,14 @@ export function parseAzureTranslatePayload(
   value: Record<string, unknown>,
 ): AzureTranslatePayload | null {
   const rawText = Array.isArray(value.text) ? value.text : [value.text];
-  const text = rawText
-    .filter((item): item is string => typeof item === 'string')
-    .map((item) => trimAndLimit(item, MAX_TEXT_LENGTH))
-    .filter(Boolean);
 
-  if (text.length === 0 || text.length > MAX_TRANSLATE_TEXTS) {
+  if (rawText.length === 0 || rawText.length > MAX_TRANSLATE_TEXTS) {
+    return null;
+  }
+  const text = rawText.map((item) =>
+    typeof item === 'string' ? trimAndLimit(item, MAX_TEXT_LENGTH) : '',
+  );
+  if (text.some((item) => !item)) {
     return null;
   }
 

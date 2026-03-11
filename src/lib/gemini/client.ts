@@ -1,3 +1,4 @@
+import { msgid } from '@/lib/app-language';
 import { getSupabaseAnonKey, getSupabaseFunctionBaseUrl } from '@/lib/cloud-backend';
 import { buildSupabaseFunctionHeaders } from '@/lib/supabase-function-headers';
 import { getApplicableTerms } from '@/lib/glossary/enforcer';
@@ -50,7 +51,7 @@ export function createGeminiClient(functionUrl: string = getDefaultFunctionUrl()
     const payload = await response.json().catch(() => ({}));
     if (!response.ok) {
       throw new Error(
-        typeof payload?.message === 'string' ? payload.message : 'Gemini translation failed',
+        typeof payload?.message === 'string' ? payload.message : msgid('Gemini translation failed'),
       );
     }
 

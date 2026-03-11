@@ -108,12 +108,13 @@ describe('parseAzureTranslatePayload', () => {
     expect(result?.endpoint?.length).toBe(160);
   });
 
-  it('filters out non-string text entries', () => {
-    const result = parseAzureTranslatePayload({
-      text: ['Hello', 42, null, 'World'],
-      targetLang: 'de',
-    });
-    expect(result?.text).toEqual(['Hello', 'World']);
+  it('rejects arrays containing non-string text entries', () => {
+    expect(
+      parseAzureTranslatePayload({
+        text: ['Hello', 42, null, 'World'],
+        targetLang: 'de',
+      }),
+    ).toBeNull();
   });
 
   it('accepts language codes with region suffix', () => {

@@ -119,8 +119,8 @@ export function GlossaryPanel({
   // Determine sync status display
   const syncState: SyncStatus = useMemo(() => {
     if (!glossary) return 'idle';
-    if (syncStatus?.includes('Syncing')) return 'syncing';
-    if (syncStatus?.includes('failed')) return 'failed';
+    if (syncStatus === 'syncing') return 'syncing';
+    if (syncStatus === 'sync-failed') return 'failed';
     if (deeplGlossaryId || syncStatus === 'ready') return 'ready';
     return 'syncing';
   }, [glossary, syncStatus, deeplGlossaryId]);
@@ -251,7 +251,7 @@ export function GlossaryPanel({
           <Group gap={4}>
             <Check size={12} color="var(--mantine-color-green-6)" />
             <Text size="xs" c="green">
-              {glossaryTermCount
+              {glossaryTermCount != null
                 ? t('{{provider}} ready ({{count}} terms)', {
                     provider: providerLabel,
                     count: glossaryTermCount,

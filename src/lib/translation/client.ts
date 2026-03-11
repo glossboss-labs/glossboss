@@ -92,8 +92,10 @@ export async function translateWithProvider(
     case 'gemini': {
       const glossaryEntries =
         request.glossaryEntries ??
-        (request.glossary && !Array.isArray(request.text)
-          ? getApplicableTerms(request.text, request.glossary)
+        (request.glossary
+          ? Array.isArray(request.text)
+            ? request.text.flatMap((t) => getApplicableTerms(t, request.glossary!))
+            : getApplicableTerms(request.text, request.glossary)
           : []);
       return await getGeminiClient().translate({
         ...request,

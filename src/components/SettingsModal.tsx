@@ -2173,7 +2173,7 @@ export function SettingsModal({
 
                     {/* Provider sync status */}
                     <Group gap="xs">
-                      {syncStatus?.includes('Syncing') ? (
+                      {syncStatus === 'syncing' ? (
                         <>
                           <Loader size={12} />
                           <Text size="xs" c="dimmed">
@@ -2184,7 +2184,7 @@ export function SettingsModal({
                         <>
                           <Check size={12} color="var(--mantine-color-green-6)" />
                           <Text size="xs" c="green">
-                            {glossaryTermCount
+                            {glossaryTermCount != null
                               ? t('{{provider}} ready ({{count}} terms)', {
                                   provider: getTranslationProviderLabel(translationProvider),
                                   count: glossaryTermCount,
@@ -2205,7 +2205,7 @@ export function SettingsModal({
                             </Button>
                           )}
                         </>
-                      ) : syncStatus?.includes('failed') ? (
+                      ) : syncStatus === 'sync-failed' ? (
                         <>
                           <X size={12} color="var(--mantine-color-red-6)" />
                           <Text size="xs" c="red">

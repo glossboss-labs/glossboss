@@ -121,8 +121,12 @@ export function TranslateButton({
           deeplGlossaryId: activeProvider === 'deepl' ? glossaryId : undefined,
           references,
         });
-        resultText = response.translations[0]?.text ?? '';
-        resultMeta = response.translations[0]?.metadata;
+        const translated = response.translations[0];
+        if (!translated?.text) {
+          throw new Error('No translation returned');
+        }
+        resultText = translated.text;
+        resultMeta = translated.metadata;
       } catch (glossaryError) {
         // If glossary is stale/deleted, retry once without glossary.
         if (activeProvider === 'deepl' && glossaryId && isGlossaryNotFoundError(glossaryError)) {
@@ -135,8 +139,12 @@ export function TranslateButton({
             deeplGlossaryId: undefined,
             references,
           });
-          resultText = fallbackResponse.translations[0]?.text ?? '';
-          resultMeta = fallbackResponse.translations[0]?.metadata;
+          const fallbackTranslated = fallbackResponse.translations[0];
+          if (!fallbackTranslated?.text) {
+            throw new Error('No translation returned', { cause: glossaryError });
+          }
+          resultText = fallbackTranslated.text;
+          resultMeta = fallbackTranslated.metadata;
         } else {
           throw glossaryError;
         }

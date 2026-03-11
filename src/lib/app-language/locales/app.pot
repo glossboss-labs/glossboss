@@ -9,7 +9,7 @@ msgstr ""
 msgid "+{{count}} more"
 msgstr ""
 
-#: src/pages/Index.tsx:1771
+#: src/pages/Index.tsx:1770
 msgid "...and {{count}} more warnings"
 msgstr ""
 
@@ -55,7 +55,7 @@ msgstr ""
 msgid "Action"
 msgstr ""
 
-#: src/pages/Index.tsx:1622
+#: src/pages/Index.tsx:1621
 msgid "Actions"
 msgstr ""
 
@@ -159,7 +159,7 @@ msgstr ""
 msgid "Auto-detected: {{slug}}"
 msgstr ""
 
-#: src/pages/Index.tsx:1838
+#: src/pages/Index.tsx:1837
 msgid "Auto-saved {age}"
 msgstr ""
 
@@ -179,12 +179,16 @@ msgid ""
 " API key\" only on a personal, trusted device."
 msgstr ""
 
+#: src/lib/azure/client.ts:54
+msgid "Azure translation failed"
+msgstr ""
+
 #: src/components/editor/SourceBrowser.tsx:153
 msgid "Back to listing"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:1311
-#: src/pages/Index.tsx:1530
+#: src/pages/Index.tsx:1529
 msgid "Backup"
 msgstr ""
 
@@ -297,15 +301,15 @@ msgstr ""
 msgid "Clear active source reference"
 msgstr ""
 
-#: src/pages/Index.tsx:1684
+#: src/pages/Index.tsx:1683
 msgid "Clear anyway"
 msgstr ""
 
-#: src/pages/Index.tsx:1628
+#: src/pages/Index.tsx:1627
 msgid "Clear editor"
 msgstr ""
 
-#: src/pages/Index.tsx:1681
+#: src/pages/Index.tsx:1680
 msgid "Clear editor?"
 msgstr ""
 
@@ -333,7 +337,7 @@ msgstr ""
 msgid "Click to show only {{label}}"
 msgstr ""
 
-#: src/pages/Index.tsx:2044
+#: src/pages/Index.tsx:2043
 msgid "Close QA summary"
 msgstr ""
 
@@ -406,7 +410,7 @@ msgid ""
 "."
 msgstr ""
 
-#: src/pages/Index.tsx:866
+#: src/pages/Index.tsx:865
 msgid ""
 "Could not fetch the file. The server may not allow cross-origin requests. Tr"
 "y downloading the file and uploading it directly."
@@ -445,7 +449,7 @@ msgid "Danish"
 msgstr ""
 
 #: src/pages/Index.tsx:148
-#: src/pages/Index.tsx:1613
+#: src/pages/Index.tsx:1612
 msgid "Dark mode"
 msgstr ""
 
@@ -493,7 +497,7 @@ msgstr ""
 msgid "Directory listing is unavailable."
 msgstr ""
 
-#: src/pages/Index.tsx:1821
+#: src/pages/Index.tsx:1820
 msgid "Discard and use new file"
 msgstr ""
 
@@ -505,27 +509,27 @@ msgstr ""
 msgid "Display"
 msgstr ""
 
-#: src/pages/Index.tsx:1478
+#: src/pages/Index.tsx:1477
 msgid "Download"
 msgstr ""
 
-#: src/pages/Index.tsx:1468
+#: src/pages/Index.tsx:1467
 msgid "Download (unsaved changes)"
 msgstr ""
 
-#: src/pages/Index.tsx:1518
+#: src/pages/Index.tsx:1517
 msgid "Download as"
 msgstr ""
 
-#: src/pages/Index.tsx:1456
+#: src/pages/Index.tsx:1455
 msgid "Download as {format}"
 msgstr ""
 
-#: src/pages/Index.tsx:1507
+#: src/pages/Index.tsx:1506
 msgid "Download format options"
 msgstr ""
 
-#: src/pages/Index.tsx:1931
+#: src/pages/Index.tsx:1930
 msgid ""
 "Drag and drop your translation file here, or click to browse. Your translati"
 "ons will be saved locally in your browser."
@@ -535,7 +539,7 @@ msgstr ""
 msgid "Drag {{columnLabel}}"
 msgstr ""
 
-#: src/pages/Index.tsx:1254
+#: src/pages/Index.tsx:1253
 msgid "Drop it like it's hot"
 msgstr ""
 
@@ -557,11 +561,11 @@ msgstr ""
 msgid "Edit Header"
 msgstr ""
 
-#: src/pages/Index.tsx:1422
+#: src/pages/Index.tsx:1421
 msgid "Edit gettext translation files with DeepL integration"
 msgstr ""
 
-#: src/pages/Index.tsx:1833
+#: src/pages/Index.tsx:1832
 msgid "Editing draft"
 msgstr ""
 
@@ -600,7 +604,7 @@ msgstr ""
 msgid "Encoding"
 msgstr ""
 
-#: src/pages/Index.tsx:708
+#: src/pages/Index.tsx:707
 msgid ""
 "Encoding detected as {{encoding}} with {{confidence}} confidence. If charact"
 "ers appear incorrect, the file may use a different encoding."
@@ -669,8 +673,8 @@ msgstr ""
 msgid "Error"
 msgstr ""
 
-#: src/components/editor/TranslateButton.tsx:211
-#: src/components/editor/TranslateButton.tsx:232
+#: src/components/editor/TranslateButton.tsx:219
+#: src/components/editor/TranslateButton.tsx:240
 msgid "Error: {{error}}. Click to retry."
 msgstr ""
 
@@ -696,7 +700,7 @@ msgstr ""
 msgid "Export TMX"
 msgstr ""
 
-#: src/pages/Index.tsx:2093
+#: src/pages/Index.tsx:2092
 msgid "Export anyway"
 msgstr ""
 
@@ -750,12 +754,12 @@ msgstr ""
 msgid "Failed to load glossary"
 msgstr ""
 
-#: src/pages/Index.tsx:1163
+#: src/pages/Index.tsx:1162
 msgid "Failed to parse POT file"
 msgstr ""
 
-#: src/pages/Index.tsx:755
-#: src/pages/Index.tsx:1729
+#: src/pages/Index.tsx:754
+#: src/pages/Index.tsx:1728
 msgid "Failed to parse file"
 msgstr ""
 
@@ -767,7 +771,7 @@ msgstr ""
 msgid "Feature"
 msgstr ""
 
-#: src/pages/Index.tsx:1574
+#: src/pages/Index.tsx:1573
 msgid "Feedback"
 msgstr ""
 
@@ -775,7 +779,7 @@ msgstr ""
 msgid "Feedback could not be submitted at this time."
 msgstr ""
 
-#: src/pages/Index.tsx:1386
+#: src/pages/Index.tsx:1385
 msgid "Feedback failed"
 msgstr ""
 
@@ -783,7 +787,7 @@ msgstr ""
 msgid "Feedback is unavailable in this deployment."
 msgstr ""
 
-#: src/pages/Index.tsx:1343
+#: src/pages/Index.tsx:1342
 msgid "Feedback submitted"
 msgstr ""
 
@@ -795,7 +799,7 @@ msgstr ""
 msgid "File does not appear to be a valid WordPress glossary CSV."
 msgstr ""
 
-#: src/pages/Index.tsx:1276
+#: src/pages/Index.tsx:1275
 msgid "File downloaded"
 msgstr ""
 
@@ -894,6 +898,10 @@ msgid ""
 "I Studio."
 msgstr ""
 
+#: src/lib/gemini/client.ts:54
+msgid "Gemini translation failed"
+msgstr ""
+
 #: src/components/editor/HeaderEditor.tsx:258
 msgid "Generator"
 msgstr ""
@@ -924,13 +932,13 @@ msgstr ""
 msgid "Get API key"
 msgstr ""
 
-#: src/pages/Index.tsx:2049
+#: src/pages/Index.tsx:2048
 msgid ""
 "GlossBoss found QA issues in the current file. You can review them now or ex"
 "port anyway."
 msgstr ""
 
-#: src/pages/Index.tsx:1632
+#: src/pages/Index.tsx:1631
 msgid "GlossBoss v{version}"
 msgstr ""
 
@@ -992,7 +1000,7 @@ msgid ""
 "sync in Settings is recommended."
 msgstr ""
 
-#: src/pages/Index.tsx:1866
+#: src/pages/Index.tsx:1865
 msgid "Glossary: {count} terms ({locale})"
 msgstr ""
 
@@ -1105,15 +1113,15 @@ msgstr ""
 msgid "Interface language"
 msgstr ""
 
-#: src/pages/Index.tsx:675
+#: src/pages/Index.tsx:674
 msgid "Invalid JSON file. Expected an i18next JSON resource object."
 msgstr ""
 
-#: src/pages/Index.tsx:1027
+#: src/pages/Index.tsx:1026
 msgid "Invalid file type: .{{ext}}. Please drop a .po, .pot, or .json file."
 msgstr ""
 
-#: src/pages/Index.tsx:657
+#: src/pages/Index.tsx:656
 msgid "Invalid file type: .{{ext}}. Please upload a .po, .pot, or .json file."
 msgstr ""
 
@@ -1153,7 +1161,7 @@ msgstr ""
 msgid "Keep current key"
 msgstr ""
 
-#: src/components/editor/TranslateButton.tsx:299
+#: src/components/editor/TranslateButton.tsx:307
 msgid "Keep original"
 msgstr ""
 
@@ -1207,16 +1215,16 @@ msgstr ""
 msgid "Latvian"
 msgstr ""
 
-#: src/pages/Index.tsx:1650
+#: src/pages/Index.tsx:1649
 msgid "License"
 msgstr ""
 
 #: src/pages/Index.tsx:148
-#: src/pages/Index.tsx:1613
+#: src/pages/Index.tsx:1612
 msgid "Light mode"
 msgstr ""
 
-#: src/pages/Index.tsx:1736
+#: src/pages/Index.tsx:1735
 msgid "Line {line}"
 msgstr ""
 
@@ -1225,7 +1233,7 @@ msgstr ""
 msgid "Line {{lineNumber}}"
 msgstr ""
 
-#: src/pages/Index.tsx:1763
+#: src/pages/Index.tsx:1762
 msgid "Line {{line}}"
 msgstr ""
 
@@ -1240,7 +1248,7 @@ msgid "Lithuanian"
 msgstr ""
 
 #: src/components/editor/GlossaryPanel.tsx:372
-#: src/pages/Index.tsx:1972
+#: src/pages/Index.tsx:1971
 msgid "Load"
 msgstr ""
 
@@ -1252,7 +1260,7 @@ msgstr ""
 msgid "Load a file with a target language before using translation memory."
 msgstr ""
 
-#: src/pages/Index.tsx:1981
+#: src/pages/Index.tsx:1980
 msgid "Load a small example WordPress plugin PO file (Hello Dolly)"
 msgstr ""
 
@@ -1272,7 +1280,7 @@ msgid ""
 "e."
 msgstr ""
 
-#: src/pages/Index.tsx:1993
+#: src/pages/Index.tsx:1992
 msgid "Load example PO"
 msgstr ""
 
@@ -1287,7 +1295,7 @@ msgstr ""
 msgid "Load voices by testing your key"
 msgstr ""
 
-#: src/pages/Index.tsx:1697
+#: src/pages/Index.tsx:1696
 msgid ""
 "Loading a new file from URL will replace the currently loaded file. Any unsa"
 "ved changes will be lost."
@@ -1449,7 +1457,7 @@ msgstr ""
 msgid "No entries match the current filters."
 msgstr ""
 
-#: src/pages/Index.tsx:1013
+#: src/pages/Index.tsx:1012
 msgid "No file was dropped"
 msgstr ""
 
@@ -1550,19 +1558,19 @@ msgstr ""
 msgid "Open in Trac"
 msgstr ""
 
-#: src/pages/Index.tsx:1368
+#: src/pages/Index.tsx:1367
 msgid "Open issue"
 msgstr ""
 
-#: src/pages/Index.tsx:1619
+#: src/pages/Index.tsx:1618
 msgid "Open settings"
 msgstr ""
 
-#: src/pages/Index.tsx:1520
+#: src/pages/Index.tsx:1519
 msgid "PO file (.po)"
 msgstr ""
 
-#: src/pages/Index.tsx:1955
+#: src/pages/Index.tsx:1954
 msgid "PO file URL"
 msgstr ""
 
@@ -1570,7 +1578,7 @@ msgstr ""
 msgid "POT Created"
 msgstr ""
 
-#: src/pages/Index.tsx:1954
+#: src/pages/Index.tsx:1953
 msgid "Paste a .po file URL"
 msgstr ""
 
@@ -1615,7 +1623,7 @@ msgstr ""
 msgid "Please complete all required feature fields."
 msgstr ""
 
-#: src/pages/Index.tsx:1018
+#: src/pages/Index.tsx:1017
 msgid "Please drop only one file at a time"
 msgstr ""
 
@@ -1700,7 +1708,7 @@ msgid "Previous field"
 msgstr ""
 
 #: src/components/feedback/FeedbackModal.tsx:417
-#: src/pages/Index.tsx:1668
+#: src/pages/Index.tsx:1667
 msgid "Privacy"
 msgstr ""
 
@@ -1753,7 +1761,7 @@ msgstr ""
 msgid "QA errors"
 msgstr ""
 
-#: src/pages/Index.tsx:2041
+#: src/pages/Index.tsx:2040
 msgid "QA summary before export"
 msgstr ""
 
@@ -1788,7 +1796,7 @@ msgstr ""
 msgid "Region"
 msgstr ""
 
-#: src/pages/Index.tsx:1256
+#: src/pages/Index.tsx:1255
 msgid "Release to load your translation file"
 msgstr ""
 
@@ -1810,16 +1818,16 @@ msgstr ""
 msgid "Repeated-source consistency"
 msgstr ""
 
-#: src/components/editor/TranslateButton.tsx:302
-#: src/pages/Index.tsx:1700
+#: src/components/editor/TranslateButton.tsx:310
+#: src/pages/Index.tsx:1699
 msgid "Replace"
 msgstr ""
 
-#: src/pages/Index.tsx:1696
+#: src/pages/Index.tsx:1695
 msgid "Replace current file?"
 msgstr ""
 
-#: src/components/editor/TranslateButton.tsx:289
+#: src/components/editor/TranslateButton.tsx:297
 msgid "Replace existing translation?"
 msgstr ""
 
@@ -1827,7 +1835,7 @@ msgstr ""
 msgid "Report Bugs To"
 msgstr ""
 
-#: src/pages/Index.tsx:864
+#: src/pages/Index.tsx:863
 msgid "Request timed out. Try downloading the file and uploading it directly."
 msgstr ""
 
@@ -1835,7 +1843,7 @@ msgstr ""
 msgid "Resize inspector"
 msgstr ""
 
-#: src/pages/Index.tsx:1812
+#: src/pages/Index.tsx:1811
 msgid "Restore draft"
 msgstr ""
 
@@ -1866,12 +1874,12 @@ msgstr ""
 msgid "Retry"
 msgstr ""
 
-#: src/components/editor/TranslateButton.tsx:224
-#: src/components/editor/TranslateButton.tsx:243
+#: src/components/editor/TranslateButton.tsx:232
+#: src/components/editor/TranslateButton.tsx:251
 msgid "Retry translation"
 msgstr ""
 
-#: src/pages/Index.tsx:2082
+#: src/pages/Index.tsx:2081
 msgid "Review issues"
 msgstr ""
 
@@ -1993,12 +2001,12 @@ msgid "Set a plugin slug to browse source files."
 msgstr ""
 
 #: src/components/SettingsModal.tsx:1269
-#: src/pages/Index.tsx:1617
+#: src/pages/Index.tsx:1616
 msgid "Settings"
 msgstr ""
 
-#: src/pages/Index.tsx:1585
-#: src/pages/Index.tsx:1590
+#: src/pages/Index.tsx:1584
+#: src/pages/Index.tsx:1589
 msgid "Settings and actions"
 msgstr ""
 
@@ -2035,8 +2043,8 @@ msgstr ""
 msgid "Share Feedback"
 msgstr ""
 
-#: src/pages/Index.tsx:1567
-#: src/pages/Index.tsx:1603
+#: src/pages/Index.tsx:1566
+#: src/pages/Index.tsx:1602
 msgid "Share feedback"
 msgstr ""
 
@@ -2122,7 +2130,7 @@ msgid "Sort entries"
 msgstr ""
 
 #: src/components/editor/EditorTable.tsx:1859
-#: src/pages/Index.tsx:1641
+#: src/pages/Index.tsx:1640
 msgid "Source"
 msgstr ""
 
@@ -2298,11 +2306,11 @@ msgstr ""
 msgid "Thai"
 msgstr ""
 
-#: src/pages/Index.tsx:1355
+#: src/pages/Index.tsx:1354
 msgid "Thanks. Issue #{issueNumber} was created."
 msgstr ""
 
-#: src/pages/Index.tsx:889
+#: src/pages/Index.tsx:888
 msgid "The URL must start with https://"
 msgstr ""
 
@@ -2320,7 +2328,7 @@ msgstr ""
 msgid "This settings file contains saved translation credentials in plain text."
 msgstr ""
 
-#: src/components/editor/TranslateButton.tsx:293
+#: src/components/editor/TranslateButton.tsx:301
 msgid "This will overwrite your current translation with the {{provider}} result."
 msgstr ""
 
@@ -2330,7 +2338,7 @@ msgid ""
 "tions."
 msgstr ""
 
-#: src/pages/Index.tsx:1683
+#: src/pages/Index.tsx:1682
 msgid "This will remove all your work on the current file."
 msgstr ""
 
@@ -2348,7 +2356,7 @@ msgstr ""
 msgid "To"
 msgstr ""
 
-#: src/pages/Index.tsx:1659
+#: src/pages/Index.tsx:1658
 msgid "Translate"
 msgstr ""
 
@@ -2379,12 +2387,12 @@ msgstr ""
 msgid "Translated string"
 msgstr ""
 
-#: src/components/editor/TranslateButton.tsx:201
+#: src/components/editor/TranslateButton.tsx:209
 #: src/components/editor/TranslateToolbar.tsx:1057
 msgid "Translating"
 msgstr ""
 
-#: src/components/editor/TranslateButton.tsx:195
+#: src/components/editor/TranslateButton.tsx:203
 msgid "Translating..."
 msgstr ""
 
@@ -2511,7 +2519,7 @@ msgstr ""
 
 #: src/components/SettingsModal.tsx:1185
 #: src/components/editor/GlossaryPanel.tsx:199
-#: src/pages/Index.tsx:871
+#: src/pages/Index.tsx:870
 msgid "Unknown error"
 msgstr ""
 
@@ -2519,7 +2527,7 @@ msgstr ""
 msgid "Unsaved changes"
 msgstr ""
 
-#: src/pages/Index.tsx:1786
+#: src/pages/Index.tsx:1785
 msgid "Unsaved draft found"
 msgstr ""
 
@@ -2528,28 +2536,28 @@ msgstr ""
 msgid "Untranslated"
 msgstr ""
 
-#: src/pages/Index.tsx:1551
+#: src/pages/Index.tsx:1550
 msgid "Update"
 msgstr ""
 
-#: src/pages/Index.tsx:1539
+#: src/pages/Index.tsx:1538
 msgid ""
 "Update this file using a .pot template. Existing translations are kept when "
 "source strings still match, new strings are added, and obsolete strings are "
 "removed."
 msgstr ""
 
-#: src/pages/Index.tsx:1306
+#: src/pages/Index.tsx:1305
 msgid "Updated"
 msgstr ""
 
-#: src/pages/Index.tsx:1318
+#: src/pages/Index.tsx:1317
 msgid ""
 "Updated from {{filename}}: +{{added}} new, -{{removed}} removed, {{kept}} ke"
 "pt"
 msgstr ""
 
-#: src/pages/Index.tsx:1436
+#: src/pages/Index.tsx:1435
 msgid "Upload"
 msgstr ""
 
@@ -2561,11 +2569,11 @@ msgstr ""
 msgid "Upload a WordPress glossary CSV for the selected language"
 msgstr ""
 
-#: src/pages/Index.tsx:1929
+#: src/pages/Index.tsx:1928
 msgid "Upload a translation file to start"
 msgstr ""
 
-#: src/pages/Index.tsx:1715
+#: src/pages/Index.tsx:1714
 msgid "Upload failed"
 msgstr ""
 
@@ -2726,17 +2734,17 @@ msgstr ""
 msgid "WordPress.org plugin slug for source code links"
 msgstr ""
 
-#: src/pages/Index.tsx:1455
+#: src/pages/Index.tsx:1454
 msgid "You have unsaved changes"
 msgstr ""
 
-#: src/pages/Index.tsx:1794
+#: src/pages/Index.tsx:1793
 msgid ""
 "You have unsaved changes from {age}. Would you like to restore your previous"
 " work?"
 msgstr ""
 
-#: src/pages/Index.tsx:1682
+#: src/pages/Index.tsx:1681
 msgid "You have unsaved changes. Are you sure you want to clear the editor?"
 msgstr ""
 
@@ -2764,7 +2772,7 @@ msgstr ""
 msgid "for details."
 msgstr ""
 
-#: src/pages/Index.tsx:1523
+#: src/pages/Index.tsx:1522
 msgid "i18next JSON (.json)"
 msgstr ""
 
@@ -2776,7 +2784,7 @@ msgstr ""
 msgid "name@example.com"
 msgstr ""
 
-#: src/pages/Index.tsx:1977
+#: src/pages/Index.tsx:1976
 msgid "or"
 msgstr ""
 
@@ -2804,7 +2812,7 @@ msgstr ""
 msgid "terms"
 msgstr ""
 
-#: src/pages/Index.tsx:1802
+#: src/pages/Index.tsx:1801
 msgid "{count} modified entries will be restored."
 msgstr ""
 
@@ -2842,7 +2850,7 @@ msgstr ""
 msgid "{{count}} entries"
 msgstr ""
 
-#: src/pages/Index.tsx:2057
+#: src/pages/Index.tsx:2056
 msgid "{{count}} error issue(s)"
 msgstr ""
 
@@ -2897,7 +2905,7 @@ msgstr ""
 msgid "{{count}} terms"
 msgstr ""
 
-#: src/pages/Index.tsx:2063
+#: src/pages/Index.tsx:2062
 msgid "{{count}} total issues"
 msgstr ""
 
@@ -2909,15 +2917,15 @@ msgstr ""
 msgid "{{count}} untranslated"
 msgstr ""
 
-#: src/pages/Index.tsx:2060
+#: src/pages/Index.tsx:2059
 msgid "{{count}} warning issue(s)"
 msgstr ""
 
-#: src/pages/Index.tsx:1752
+#: src/pages/Index.tsx:1751
 msgid "{{count}} warning(s) during parsing"
 msgstr ""
 
-#: src/pages/Index.tsx:1325
+#: src/pages/Index.tsx:1324
 msgid "{{count}} with updated references"
 msgstr ""
 
@@ -2931,7 +2939,7 @@ msgstr ""
 
 #: src/components/SettingsModal.tsx:2192
 #: src/components/editor/GlossaryPanel.tsx:259
-#: src/pages/Index.tsx:1873
+#: src/pages/Index.tsx:1872
 msgid "{{provider}} ready"
 msgstr ""
 
