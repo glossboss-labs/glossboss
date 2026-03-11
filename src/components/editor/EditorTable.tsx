@@ -489,6 +489,8 @@ function EditableField({
               input: {
                 ...sharedStyles,
                 fontFamily: 'inherit',
+                // Mobile browsers can misplace the caret when the textarea text is transparent
+                // and a separate overlay renders the visible content.
                 color: useNativeTextColor ? 'var(--mantine-color-text)' : 'transparent',
                 caretColor: 'var(--mantine-color-text)',
                 backgroundColor: useNativeTextColor ? 'var(--gb-surface-1)' : 'transparent',

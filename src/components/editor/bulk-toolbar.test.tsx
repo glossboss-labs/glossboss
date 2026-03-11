@@ -322,16 +322,16 @@ describe('editor details and mobile layout', () => {
     useEditorStore
       .getState()
       .loadFile(
-        makeFile([makeEntry('a', { msgid: 'Source message', msgstr: 'Mobiele vertaling' })]),
+        makeFile([makeEntry('a', { msgid: 'Source message', msgstr: 'Mobile translation' })]),
       );
 
     renderWithMantine(<EditorTable />);
 
-    await user.click(screen.getByText('Mobiele vertaling'));
+    await user.click(screen.getByText('Mobile translation'));
 
-    const textarea = await screen.findByDisplayValue('Mobiele vertaling');
-    expect(textarea).toHaveStyle({ color: 'var(--mantine-color-text)' });
-    expect(textarea).toHaveStyle({ backgroundColor: 'var(--gb-surface-1)' });
+    const textarea = await screen.findByDisplayValue('Mobile translation');
+    expect((textarea as HTMLTextAreaElement).style.color).toBe('var(--mantine-color-text)');
+    expect((textarea as HTMLTextAreaElement).style.backgroundColor).toBe('var(--gb-surface-1)');
     expect(screen.queryByTestId('highlighted-backdrop-a-singular')).not.toBeInTheDocument();
   });
 
@@ -350,9 +350,8 @@ describe('editor details and mobile layout', () => {
     await user.click(editableField!);
 
     const textarea = await screen.findByDisplayValue('Desktop translation');
-    const styles = getComputedStyle(textarea);
-    expect(styles.color).toBe('rgba(0, 0, 0, 0)');
-    expect(styles.backgroundColor).toBe('rgba(0, 0, 0, 0)');
+    expect((textarea as HTMLTextAreaElement).style.color).toBe('transparent');
+    expect((textarea as HTMLTextAreaElement).style.backgroundColor).toBe('transparent');
     expect(screen.getByTestId('highlighted-backdrop-a-singular')).toBeInTheDocument();
   });
 });
