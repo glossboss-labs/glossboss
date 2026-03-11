@@ -1911,46 +1911,51 @@ export default function Index() {
         </Container>
       </Box>
 
-      {/* Settings Modal */}
-      <SettingsModal
-        opened={settingsOpen}
-        onClose={() => setSettingsOpen(false)}
-        initialLocale={glossaryLocale}
-        onGlossaryLoaded={handleGlossaryLoaded}
-        onGlossaryCleared={handleGlossaryCleared}
-        onEnforcementChange={handleEnforcementChange}
-        onForceResync={handleForceResync}
-        glossary={glossary}
-        syncStatus={glossarySyncStatus}
-        deeplGlossaryId={deeplGlossaryId}
-        deeplTermCount={deeplTermCount}
-        selectedSourceText={selectedSourceText}
-        branchChipEnabled={branchChipEnabled}
-        onBranchChipEnabledChange={setBranchChipEnabled}
-        containerWidth={containerWidth}
-        onContainerWidthChange={setContainerWidth}
-        speechEnabled={speechEnabled}
-        onSpeechEnabledChange={setSpeechEnabled}
-        translateEnabled={translateEnabled}
-        onTranslateEnabledChange={setTranslateEnabled}
-      />
+      {/* Settings Modal — mount only when open to avoid background effects */}
+      {settingsOpen && (
+        <SettingsModal
+          opened={settingsOpen}
+          onClose={() => setSettingsOpen(false)}
+          initialLocale={glossaryLocale}
+          onGlossaryLoaded={handleGlossaryLoaded}
+          onGlossaryCleared={handleGlossaryCleared}
+          onEnforcementChange={handleEnforcementChange}
+          onForceResync={handleForceResync}
+          glossary={glossary}
+          syncStatus={glossarySyncStatus}
+          deeplGlossaryId={deeplGlossaryId}
+          deeplTermCount={deeplTermCount}
+          selectedSourceText={selectedSourceText}
+          branchChipEnabled={branchChipEnabled}
+          onBranchChipEnabledChange={setBranchChipEnabled}
+          containerWidth={containerWidth}
+          onContainerWidthChange={setContainerWidth}
+          speechEnabled={speechEnabled}
+          onSpeechEnabledChange={setSpeechEnabled}
+          translateEnabled={translateEnabled}
+          onTranslateEnabledChange={setTranslateEnabled}
+        />
+      )}
 
       {isDevelopment && branchChipEnabled && <DevBranchChip branch={__GIT_BRANCH__} />}
 
-      <FeedbackModal
-        opened={feedbackOpen}
-        onClose={() => setFeedbackOpen(false)}
-        currentFilename={filename}
-        onSubmitted={(result) => {
-          setFeedbackSuccess({ issueNumber: result.issueNumber, issueUrl: result.issueUrl });
-          setFeedbackError(null);
-          window.setTimeout(() => setFeedbackSuccess(null), 5000);
-        }}
-        onSubmitError={(message) => {
-          setFeedbackError(message);
-          window.setTimeout(() => setFeedbackError(null), 6000);
-        }}
-      />
+      {/* Feedback Modal — mount only when open to avoid background effects */}
+      {feedbackOpen && (
+        <FeedbackModal
+          opened={feedbackOpen}
+          onClose={() => setFeedbackOpen(false)}
+          currentFilename={filename}
+          onSubmitted={(result) => {
+            setFeedbackSuccess({ issueNumber: result.issueNumber, issueUrl: result.issueUrl });
+            setFeedbackError(null);
+            window.setTimeout(() => setFeedbackSuccess(null), 5000);
+          }}
+          onSubmitError={(message) => {
+            setFeedbackError(message);
+            window.setTimeout(() => setFeedbackError(null), 6000);
+          }}
+        />
+      )}
     </Box>
   );
 }
