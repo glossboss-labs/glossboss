@@ -352,13 +352,15 @@ export function parseAppSettingsFile(content: string): AppSettingsFile {
     throw new Error('This file is not a GlossBoss settings export.');
   }
 
-  if (parsed.version !== APP_SETTINGS_VERSION) {
+  if (parsed.version !== 1 && parsed.version !== APP_SETTINGS_VERSION) {
     throw new Error(`Unsupported settings file version: ${String(parsed.version)}.`);
   }
 
   if (typeof parsed.exportedAt !== 'string') {
     throw new Error('Settings file is missing an export timestamp.');
   }
+
+  const isV1 = parsed.version === 1;
 
   return {
     schema: APP_SETTINGS_SCHEMA,
@@ -368,8 +370,12 @@ export function parseAppSettingsFile(content: string): AppSettingsFile {
       ? parsed.translationProvider
       : 'deepl',
     deepl: parseDeepL(parsed.deepl),
-    azure: parseAzure(parsed.azure),
-    gemini: parseGemini(parsed.gemini),
+    azure: isV1
+      ? { region: '', endpoint: 'https://api.cognitive.microsofttranslator.com' }
+      : parseAzure(parsed.azure),
+    gemini: isV1
+      ? { modelId: 'gemini-flash-lite-latest', useProjectContext: false }
+      : parseGemini(parsed.gemini),
     preferences: parsePreferences(parsed.preferences),
   };
 }

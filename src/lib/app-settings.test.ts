@@ -112,6 +112,40 @@ describe('app settings', () => {
     });
   });
 
+  it('imports v1 settings files with default Azure and Gemini settings', () => {
+    const v1File = JSON.stringify({
+      schema: 'glossboss-settings',
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      deepl: {
+        apiType: 'free',
+        formality: 'prefer_less',
+        credentials: { apiKey: 'old-deepl-key', persistKey: false },
+      },
+      preferences: {
+        glossaryLocale: 'de',
+        glossaryEnforcementEnabled: true,
+        navSkipTranslated: false,
+        containerWidth: 'xl',
+      },
+    });
+
+    const parsed = parseAppSettingsFile(v1File);
+
+    expect(parsed.version).toBe(2);
+    expect(parsed.translationProvider).toBe('deepl');
+    expect(parsed.deepl.apiType).toBe('free');
+    expect(parsed.deepl.credentials?.apiKey).toBe('old-deepl-key');
+    expect(parsed.azure).toEqual({
+      region: '',
+      endpoint: 'https://api.cognitive.microsofttranslator.com',
+    });
+    expect(parsed.gemini).toEqual({
+      modelId: 'gemini-flash-lite-latest',
+      useProjectContext: false,
+    });
+  });
+
   it('rejects unsupported settings versions', () => {
     expect(() =>
       parseAppSettingsFile(
