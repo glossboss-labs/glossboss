@@ -4,6 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Translate GlossBoss</title>
+    <meta
+      name="description"
+      content="Contributor guide for translating the GlossBoss app interface and keeping gettext catalogs in sync."
+    />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="icon" type="image/png" href="/icon.png" />
+    <link rel="apple-touch-icon" href="/icon.png" />
     <style>
       :root {
         color-scheme: light dark;
@@ -105,18 +112,28 @@
         <h2>Add a new UI string</h2>
         <ol>
           <li>Add the string in code with <code>t('Your new string')</code>.</li>
-          <li>Add the same <code>msgid</code> to <code>app.en.po</code>.</li>
+          <li>Use <code>msgid('...')</code> for module-scope strings that are translated later.</li>
           <li>
-            Add that <code>msgid</code> to the other <code>app.*.po</code> files so CI can verify
-            the catalogs stay in sync.
+            Run <code>bun run i18n:extract</code> to update <code>app.pot</code> and merge all
+            <code>app.*.po</code> files.
+          </li>
+          <li>
+            Review the generated entries: English keeps <code>msgstr = msgid</code>, while other
+            languages get empty <code>msgstr</code> values that still need translation.
           </li>
         </ol>
 
         <h2>Add a new language</h2>
         <ol>
-          <li>Create a new file such as <code>src/lib/app-language/locales/app.de.po</code>.</li>
+          <li>
+            Run <code>bun run i18n:add-lang de</code> or create a new file such as
+            <code>src/lib/app-language/locales/app.de.po</code>.
+          </li>
           <li>Set the PO header <code>Language: de</code> or use the matching filename.</li>
-          <li>Copy the same <code>msgid</code> keys from <code>app.en.po</code>.</li>
+          <li>
+            Use <code>bun run i18n:extract</code> after adding new UI strings so the catalog stays
+            current.
+          </li>
           <li>The app discovers the new locale automatically in Settings → Display.</li>
         </ol>
 

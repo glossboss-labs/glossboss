@@ -463,7 +463,7 @@ export function FilterToolbar() {
 
         <Group
           gap="xs"
-          wrap="nowrap"
+          wrap={isMobile ? 'wrap' : 'nowrap'}
           style={{
             flexShrink: isMobile ? undefined : 0,
             ...(isMobile && { width: '100%' }),
@@ -476,6 +476,7 @@ export function FilterToolbar() {
                 variant="subtle"
                 leftSection={<Columns3 size={14} />}
                 aria-label={t('Choose visible columns')}
+                style={isMobile ? { flex: '1 1 100%' } : undefined}
               >
                 {t('Columns')}
               </Button>

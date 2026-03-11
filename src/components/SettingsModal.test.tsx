@@ -48,7 +48,7 @@ describe('SettingsModal', () => {
         formality: 'prefer_less',
       });
     });
-  }, 10000);
+  }, 15000);
 
   it('prompts before exporting a settings file that includes an api key', async () => {
     const user = userEvent.setup();

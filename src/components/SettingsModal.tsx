@@ -927,6 +927,7 @@ export function SettingsModal({
         size={isMobile ? '100%' : 'xl'}
         fullScreen={isMobile}
         centered
+        closeButtonProps={{ 'aria-label': t('Close settings') }}
       >
         <Tabs defaultValue="api">
           <Tabs.List mb="md" style={{ overflowX: 'auto', flexWrap: 'nowrap' }}>
@@ -1799,6 +1800,7 @@ export function SettingsModal({
         title={credentialPrompt?.mode === 'import' ? t('Import API key?') : t('Include API key?')}
         centered
         size="sm"
+        closeButtonProps={{ 'aria-label': t('Close credential prompt') }}
       >
         <Stack gap="md">
           <Alert color="yellow" icon={<AlertCircle size={16} />}>

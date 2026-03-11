@@ -11,6 +11,7 @@ import {
   useEffect,
   type DragEvent,
   type KeyboardEvent,
+  type ComponentType,
 } from 'react';
 import {
   Container,
@@ -36,6 +37,7 @@ import {
   Menu,
   TextInput,
   useComputedColorScheme,
+  Loader,
   useMantineTheme,
 } from '@mantine/core';
 import { useLocalStorage, useMediaQuery } from '@mantine/hooks';
@@ -59,9 +61,6 @@ import {
   ExternalLink,
   Info,
 } from 'lucide-react';
-import { EditorTable, FilterToolbar, HeaderEditor, TranslateToolbar } from '@/components/editor';
-import { FeedbackModal } from '@/components/feedback';
-import { SettingsModal } from '@/components/SettingsModal';
 import { ConfirmModal } from '@/components/ui';
 import { useEditorStore, useSourceStore } from '@/stores';
 import { detectPluginSlug } from '@/lib/wp-source';
@@ -81,11 +80,7 @@ import type { FeedbackIssueSuccess } from '@/lib/feedback';
 import type { Glossary } from '@/lib/glossary/types';
 import { batchAnalyzeTranslations, syncGlossaryToDeepL } from '@/lib/glossary';
 import { debugError, debugLog } from '@/lib/debug';
-import {
-  fetchExamplePoFromWordPress,
-  getBundledExamplePo,
-  getDeviceExampleTargetLanguage,
-} from '@/lib/example-po';
+import { getBundledExamplePo } from '@/lib/example-po';
 import {
   saveDraft,
   loadDraft,
@@ -127,6 +122,13 @@ interface MergeInfo {
 }
 
 type FeedbackInfo = Pick<FeedbackIssueSuccess, 'issueNumber' | 'issueUrl'>;
+type EditorModule = typeof import('@/components/editor');
+type FeedbackModalModule = typeof import('@/components/feedback');
+type SettingsModalModule = typeof import('@/components/SettingsModal');
+type EditorShellComponents = Pick<
+  EditorModule,
+  'EditorTable' | 'FilterToolbar' | 'HeaderEditor' | 'TranslateToolbar'
+>;
 
 /** Pending draft info for recovery prompt */
 interface PendingDraft {
@@ -141,7 +143,14 @@ function ThemeToggle({ onToggle }: { onToggle: () => void }) {
   return (
     <Tooltip label={computedColorScheme === 'dark' ? t('Light mode') : t('Dark mode')}>
       <motion.div {...buttonStates}>
-        <ActionIcon variant="default" size="lg" onClick={onToggle}>
+        <ActionIcon
+          variant="default"
+          size="lg"
+          onClick={onToggle}
+          aria-label={
+            computedColorScheme === 'dark' ? t('Switch to light mode') : t('Switch to dark mode')
+          }
+        >
           {computedColorScheme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
         </ActionIcon>
       </motion.div>
@@ -325,6 +334,13 @@ export default function Index() {
   const [feedbackError, setFeedbackError] = useState<string | null>(null);
   const [isLoadingExample, setIsLoadingExample] = useState(false);
   const [isLoadingUrl, setIsLoadingUrl] = useState(false);
+  const [editorShell, setEditorShell] = useState<EditorShellComponents | null>(null);
+  const [SettingsModalComponent, setSettingsModalComponent] = useState<ComponentType<
+    SettingsModalModule['SettingsModal'] extends ComponentType<infer P> ? P : never
+  > | null>(null);
+  const [FeedbackModalComponent, setFeedbackModalComponent] = useState<ComponentType<
+    FeedbackModalModule['FeedbackModal'] extends ComponentType<infer P> ? P : never
+  > | null>(null);
   const [urlInput, setUrlInput] = useState('');
   const [pendingUrl, setPendingUrl] = useState<string | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -394,7 +410,46 @@ export default function Index() {
 
   const dragCounterRef = useRef(0);
   const fileInputRef = useRef<HTMLButtonElement>(null);
+  const fileResetRef = useRef<(() => void) | null>(null);
   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const ensureEditorShell = useCallback(async () => {
+    if (editorShell) {
+      return editorShell;
+    }
+
+    const module = await import('@/components/editor');
+    const nextShell: EditorShellComponents = {
+      EditorTable: module.EditorTable,
+      FilterToolbar: module.FilterToolbar,
+      HeaderEditor: module.HeaderEditor,
+      TranslateToolbar: module.TranslateToolbar,
+    };
+    setEditorShell((current) => current ?? nextShell);
+    return nextShell;
+  }, [editorShell]);
+
+  const ensureSettingsModal = useCallback(async () => {
+    if (SettingsModalComponent) {
+      return SettingsModalComponent;
+    }
+
+    const module = await import('@/components/SettingsModal');
+    const nextComponent = module.SettingsModal;
+    setSettingsModalComponent(() => nextComponent);
+    return nextComponent;
+  }, [SettingsModalComponent]);
+
+  const ensureFeedbackModal = useCallback(async () => {
+    if (FeedbackModalComponent) {
+      return FeedbackModalComponent;
+    }
+
+    const module = await import('@/components/feedback');
+    const nextComponent = module.FeedbackModal;
+    setFeedbackModalComponent(() => nextComponent);
+    return nextComponent;
+  }, [FeedbackModalComponent]);
 
   const {
     filename,
@@ -457,6 +512,14 @@ export default function Index() {
     setGlossarySyncStatus(null);
     clearGlossaryAnalysis();
   }, [clearGlossaryAnalysis]);
+
+  const reportLazyLoadError = useCallback(
+    (error: unknown, message: string) => {
+      debugError('[UI] Failed to lazy-load interface chunk:', error);
+      setErrors([{ severity: 'error', code: 'INVALID_SYNTAX', message }]);
+    },
+    [setErrors],
+  );
 
   /**
    * Handle glossary enforcement toggle
@@ -607,6 +670,17 @@ export default function Index() {
           }
 
           const poFile = parseI18nextJSON(text, file.name);
+
+          try {
+            await ensureEditorShell();
+          } catch (error) {
+            reportLazyLoadError(
+              error,
+              t('The editor interface could not be loaded. Please refresh and try again.'),
+            );
+            return;
+          }
+
           loadFile(poFile, 'i18next');
 
           debugLog(`[i18next] Parsed ${poFile.entries.length} entries from ${file.name}`);
@@ -653,6 +727,17 @@ export default function Index() {
 
           // Check if there's an existing draft for this file
           const existingDraft = loadDraft(file.name);
+
+          try {
+            await ensureEditorShell();
+          } catch (error) {
+            reportLazyLoadError(
+              error,
+              t('The editor interface could not be loaded. Please refresh and try again.'),
+            );
+            return;
+          }
+
           if (existingDraft && existingDraft.dirtyEntryIds.length > 0) {
             // Show recovery prompt
             setPendingDraft({ draft: existingDraft, filename: file.name });
@@ -683,7 +768,7 @@ export default function Index() {
         ]);
       }
     },
-    [loadFile, t],
+    [ensureEditorShell, loadFile, reportLazyLoadError, t],
   );
 
   const handleLoadExamplePo = useCallback(async () => {
@@ -697,9 +782,7 @@ export default function Index() {
     setIsFromDraft(false);
 
     try {
-      const preferredTargetLanguage = getDeviceExampleTargetLanguage();
-      const examplePo =
-        (await fetchExamplePoFromWordPress(preferredTargetLanguage)) ?? getBundledExamplePo();
+      const examplePo = getBundledExamplePo();
       const result = parsePOFileWithDiagnostics(examplePo.content, examplePo.filename);
 
       if (!result.success || !result.file) {
@@ -712,6 +795,16 @@ export default function Index() {
         setShowWarnings(true);
       }
 
+      try {
+        await ensureEditorShell();
+      } catch (error) {
+        reportLazyLoadError(
+          error,
+          t('The editor interface could not be loaded. Please refresh and try again.'),
+        );
+        return;
+      }
+
       loadFile(result.file);
 
       const detected = detectPluginSlug(result.file.header, result.file.filename);
@@ -722,7 +815,7 @@ export default function Index() {
     } finally {
       setIsLoadingExample(false);
     }
-  }, [loadFile]);
+  }, [ensureEditorShell, loadFile, reportLazyLoadError, t]);
 
   const executeUrlLoad = useCallback(
     async (url: string) => {
@@ -761,6 +854,17 @@ export default function Index() {
         // Try i18next JSON if content looks like JSON
         if (isI18nextContent(text)) {
           const i18nResult = parseI18nextJSON(text, name);
+
+          try {
+            await ensureEditorShell();
+          } catch (error) {
+            reportLazyLoadError(
+              error,
+              t('The editor interface could not be loaded. Please refresh and try again.'),
+            );
+            return;
+          }
+
           loadFile(i18nResult.file);
         } else {
           const result = parsePOFileWithDiagnostics(text, name);
@@ -773,6 +877,16 @@ export default function Index() {
           if (result.warnings.length > 0) {
             setWarnings(result.warnings);
             setShowWarnings(true);
+          }
+
+          try {
+            await ensureEditorShell();
+          } catch (error) {
+            reportLazyLoadError(
+              error,
+              t('The editor interface could not be loaded. Please refresh and try again.'),
+            );
+            return;
           }
 
           loadFile(result.file);
@@ -803,7 +917,7 @@ export default function Index() {
         setIsLoadingUrl(false);
       }
     },
-    [loadFile, t],
+    [ensureEditorShell, loadFile, reportLazyLoadError, t],
   );
 
   const handleLoadFromUrl = useCallback(
@@ -844,7 +958,7 @@ export default function Index() {
   /**
    * Restore from pending draft
    */
-  const handleRestoreDraft = useCallback(() => {
+  const handleRestoreDraft = useCallback(async () => {
     if (!pendingDraft) return;
 
     const { draft } = pendingDraft;
@@ -857,12 +971,40 @@ export default function Index() {
       charset: 'UTF-8' as const,
     };
 
+    try {
+      await ensureEditorShell();
+    } catch (error) {
+      reportLazyLoadError(
+        error,
+        t('The editor interface could not be loaded. Please refresh and try again.'),
+      );
+      return;
+    }
+
     loadFile(restoredFile);
     setIsFromDraft(true);
     setPendingDraft(null);
 
     debugLog('[Drafts] Restored from draft');
-  }, [pendingDraft, loadFile]);
+  }, [ensureEditorShell, loadFile, pendingDraft, reportLazyLoadError, t]);
+
+  const handleOpenSettings = useCallback(async () => {
+    try {
+      await ensureSettingsModal();
+      setSettingsOpen(true);
+    } catch (error) {
+      reportLazyLoadError(error, t('Settings could not be loaded. Please refresh and try again.'));
+    }
+  }, [ensureSettingsModal, reportLazyLoadError, t]);
+
+  const handleOpenFeedback = useCallback(async () => {
+    try {
+      await ensureFeedbackModal();
+      setFeedbackOpen(true);
+    } catch (error) {
+      reportLazyLoadError(error, t('Feedback could not be loaded. Please refresh and try again.'));
+    }
+  }, [ensureFeedbackModal, reportLazyLoadError, t]);
 
   /**
    * Discard pending draft and continue with fresh file
@@ -1304,632 +1446,664 @@ export default function Index() {
         )}
       </Transition>
 
-      <Container
-        size={containerWidth === '100%' ? undefined : containerWidth}
-        fluid={containerWidth === '100%'}
-        py="xl"
-      >
-        <Stack gap="lg">
-          {/* Header */}
-          <MotionDiv variants={sectionVariants} initial="hidden" animate="visible">
-            <Group justify="space-between" align="flex-start">
-              <div data-ev-id="ev_c00be328c4">
-                <Group gap="xs" align="center">
-                  <img
-                    src={appIcon}
-                    alt="GlossBoss"
-                    style={{ width: 28, height: 28, borderRadius: 6 }}
-                  />
-                  <Title order={1}>GlossBoss</Title>
-                </Group>
-                <Text c="dimmed" size="sm" mt={4}>
-                  {t('Edit gettext translation files with DeepL integration')}
-                </Text>
-              </div>
+      <Box component="main">
+        <Container
+          size={containerWidth === '100%' ? undefined : containerWidth}
+          fluid={containerWidth === '100%'}
+          py="xl"
+        >
+          <Stack gap="lg">
+            {/* Header */}
+            <MotionDiv variants={sectionVariants} initial="hidden" animate="visible">
+              <Group justify="space-between" align="flex-start">
+                <div data-ev-id="ev_c00be328c4">
+                  <Group gap="xs" align="center">
+                    <img
+                      src={appIcon}
+                      alt="GlossBoss"
+                      style={{ width: 28, height: 28, borderRadius: 6 }}
+                    />
+                    <Title order={1}>GlossBoss</Title>
+                  </Group>
+                  <Text size="sm" mt={4} style={{ color: 'var(--gb-text-secondary)' }}>
+                    {t('Edit gettext translation files with DeepL integration')}
+                  </Text>
+                </div>
 
-              <Group gap="sm">
                 <Group gap="sm">
-                  <motion.div {...buttonStates}>
-                    <FileButton
-                      onChange={handleFileUpload}
-                      accept=".po,.pot,.json"
-                      resetRef={fileInputRef as React.MutableRefObject<() => void>}
-                    >
-                      {(props) => (
-                        <Button leftSection={<Upload size={16} />} {...props} ref={fileInputRef}>
-                          {t('Upload')}
-                        </Button>
-                      )}
-                    </FileButton>
-                  </motion.div>
-
-                  <AnimatePresence>
-                    {filename && (
-                      <MotionDiv
-                        variants={fadeVariants}
-                        initial="hidden"
-                        animate="visible"
-                        exit="exit"
+                  <Group gap="sm">
+                    <motion.div {...buttonStates}>
+                      <FileButton
+                        onChange={handleFileUpload}
+                        accept=".po,.pot,.json"
+                        resetRef={fileResetRef}
                       >
-                        <Group gap="sm">
-                          <Group gap={0} style={{ position: 'relative', overflow: 'visible' }}>
+                        {(props) => (
+                          <Button leftSection={<Upload size={16} />} {...props} ref={fileInputRef}>
+                            {t('Upload')}
+                          </Button>
+                        )}
+                      </FileButton>
+                    </motion.div>
+
+                    <AnimatePresence>
+                      {filename && (
+                        <MotionDiv
+                          variants={fadeVariants}
+                          initial="hidden"
+                          animate="visible"
+                          exit="exit"
+                        >
+                          <Group gap="sm">
+                            <Group gap={0} style={{ position: 'relative', overflow: 'visible' }}>
+                              <Tooltip
+                                label={
+                                  hasUnsavedChanges
+                                    ? t('You have unsaved changes')
+                                    : t('Download as {format}', {
+                                        format: sourceFormat === 'i18next' ? 'JSON' : 'PO',
+                                      })
+                                }
+                              >
+                                <motion.div {...buttonStates}>
+                                  <Button
+                                    leftSection={<Download size={16} />}
+                                    variant="light"
+                                    onClick={handleDownload}
+                                    aria-label={
+                                      hasUnsavedChanges
+                                        ? t('Download (unsaved changes)')
+                                        : undefined
+                                    }
+                                    style={{
+                                      borderTopRightRadius: 0,
+                                      borderBottomRightRadius: 0,
+                                      position: 'relative',
+                                      overflow: 'visible',
+                                    }}
+                                  >
+                                    {t('Download')}
+                                    <AnimatePresence>
+                                      {hasUnsavedChanges && (
+                                        <MotionDiv
+                                          initial={{ scale: 0 }}
+                                          animate={{ scale: 1 }}
+                                          exit={{ scale: 0 }}
+                                          style={{
+                                            position: 'absolute',
+                                            top: -4,
+                                            right: -4,
+                                            width: 10,
+                                            height: 10,
+                                            borderRadius: '50%',
+                                            backgroundColor: 'var(--mantine-color-orange-5)',
+                                            border: '2px solid var(--mantine-color-body)',
+                                            zIndex: 1,
+                                          }}
+                                        />
+                                      )}
+                                    </AnimatePresence>
+                                  </Button>
+                                </motion.div>
+                              </Tooltip>
+                              <Menu position="bottom-end" withinPortal>
+                                <Menu.Target>
+                                  <Button
+                                    variant="light"
+                                    px={8}
+                                    aria-label={t('Download format options')}
+                                    style={{
+                                      borderTopLeftRadius: 0,
+                                      borderBottomLeftRadius: 0,
+                                      borderLeft: '1px solid var(--mantine-color-default-border)',
+                                    }}
+                                  >
+                                    <ChevronDown size={14} />
+                                  </Button>
+                                </Menu.Target>
+                                <Menu.Dropdown>
+                                  <Menu.Label>{t('Download as')}</Menu.Label>
+                                  <Menu.Item onClick={() => handleDownloadAs('po')}>
+                                    {t('PO file (.po)')}
+                                  </Menu.Item>
+                                  <Menu.Item onClick={() => handleDownloadAs('i18next')}>
+                                    {t('i18next JSON (.json)')}
+                                  </Menu.Item>
+                                </Menu.Dropdown>
+                              </Menu>
+                            </Group>
+
                             <Tooltip
-                              label={
-                                hasUnsavedChanges
-                                  ? t('You have unsaved changes')
-                                  : t('Download as {format}', {
-                                      format: sourceFormat === 'i18next' ? 'JSON' : 'PO',
-                                    })
-                              }
+                              multiline
+                              w={340}
+                              label={t(
+                                'Update this file using a .pot template. Existing translations are kept when source strings still match, new strings are added, and obsolete strings are removed.',
+                              )}
                             >
                               <motion.div {...buttonStates}>
-                                <Button
-                                  leftSection={<Download size={16} />}
-                                  variant="light"
-                                  onClick={handleDownload}
-                                  aria-label={
-                                    hasUnsavedChanges ? t('Download (unsaved changes)') : undefined
-                                  }
-                                  style={{
-                                    borderTopRightRadius: 0,
-                                    borderBottomRightRadius: 0,
-                                    position: 'relative',
-                                    overflow: 'visible',
-                                  }}
-                                >
-                                  {t('Download')}
-                                  <AnimatePresence>
-                                    {hasUnsavedChanges && (
-                                      <MotionDiv
-                                        initial={{ scale: 0 }}
-                                        animate={{ scale: 1 }}
-                                        exit={{ scale: 0 }}
-                                        style={{
-                                          position: 'absolute',
-                                          top: -4,
-                                          right: -4,
-                                          width: 10,
-                                          height: 10,
-                                          borderRadius: '50%',
-                                          backgroundColor: 'var(--mantine-color-orange-5)',
-                                          border: '2px solid var(--mantine-color-body)',
-                                          zIndex: 1,
-                                        }}
-                                      />
-                                    )}
-                                  </AnimatePresence>
-                                </Button>
+                                <FileButton onChange={handlePotUpload} accept=".pot">
+                                  {(props) => (
+                                    <Button
+                                      leftSection={<FileUp size={16} />}
+                                      variant="light"
+                                      {...props}
+                                    >
+                                      {t('Update')}
+                                    </Button>
+                                  )}
+                                </FileButton>
                               </motion.div>
                             </Tooltip>
-                            <Menu position="bottom-end" withinPortal>
-                              <Menu.Target>
-                                <Button
-                                  variant="light"
-                                  px={8}
-                                  aria-label={t('Download format options')}
-                                  style={{
-                                    borderTopLeftRadius: 0,
-                                    borderBottomLeftRadius: 0,
-                                    borderLeft: '1px solid var(--mantine-color-default-border)',
-                                  }}
-                                >
-                                  <ChevronDown size={14} />
-                                </Button>
-                              </Menu.Target>
-                              <Menu.Dropdown>
-                                <Menu.Label>{t('Download as')}</Menu.Label>
-                                <Menu.Item onClick={() => handleDownloadAs('po')}>
-                                  {t('PO file (.po)')}
-                                </Menu.Item>
-                                <Menu.Item onClick={() => handleDownloadAs('i18next')}>
-                                  {t('i18next JSON (.json)')}
-                                </Menu.Item>
-                              </Menu.Dropdown>
-                            </Menu>
                           </Group>
+                        </MotionDiv>
+                      )}
+                    </AnimatePresence>
+                  </Group>
 
-                          <Tooltip
-                            multiline
-                            w={340}
-                            label={t(
-                              'Update this file using a .pot template. Existing translations are kept when source strings still match, new strings are added, and obsolete strings are removed.',
-                            )}
+                  {!isMobile && <Divider orientation="vertical" />}
+
+                  {!isMobile && (
+                    <Group gap="sm">
+                      <Tooltip label={t('Share feedback')}>
+                        <motion.div {...buttonStates}>
+                          <Button
+                            variant="subtle"
+                            leftSection={<MessageSquare size={16} />}
+                            onClick={handleOpenFeedback}
                           >
-                            <motion.div {...buttonStates}>
-                              <FileButton onChange={handlePotUpload} accept=".pot">
-                                {(props) => (
-                                  <Button
-                                    leftSection={<FileUp size={16} />}
-                                    variant="light"
-                                    {...props}
-                                  >
-                                    {t('Update')}
-                                  </Button>
-                                )}
-                              </FileButton>
-                            </motion.div>
-                          </Tooltip>
-                        </Group>
-                      </MotionDiv>
-                    )}
-                  </AnimatePresence>
+                            {t('Feedback')}
+                          </Button>
+                        </motion.div>
+                      </Tooltip>
+
+                      <ThemeToggle onToggle={toggleColorScheme} />
+                    </Group>
+                  )}
+
+                  <Menu position="bottom-end" withinPortal>
+                    <Menu.Target>
+                      <Tooltip label={t('Settings and actions')}>
+                        <motion.div {...buttonStates}>
+                          <ActionIcon
+                            variant="default"
+                            size="lg"
+                            aria-label={t('Settings and actions')}
+                          >
+                            <Settings size={18} />
+                          </ActionIcon>
+                        </motion.div>
+                      </Tooltip>
+                    </Menu.Target>
+                    <Menu.Dropdown>
+                      {isMobile && (
+                        <Menu.Item
+                          leftSection={<MessageSquare size={14} />}
+                          onClick={handleOpenFeedback}
+                        >
+                          {t('Share feedback')}
+                        </Menu.Item>
+                      )}
+                      {isMobile && (
+                        <Menu.Item
+                          leftSection={
+                            computedColorScheme === 'dark' ? <Sun size={14} /> : <Moon size={14} />
+                          }
+                          onClick={toggleColorScheme}
+                        >
+                          {computedColorScheme === 'dark' ? t('Light mode') : t('Dark mode')}
+                        </Menu.Item>
+                      )}
+                      {isMobile && <Menu.Divider />}
+                      <Menu.Label>{t('Settings')}</Menu.Label>
+                      <Menu.Item leftSection={<Settings size={14} />} onClick={handleOpenSettings}>
+                        {t('Open settings')}
+                      </Menu.Item>
+                      <Menu.Divider />
+                      <Menu.Label>{t('Actions')}</Menu.Label>
+                      <Menu.Item
+                        color="red"
+                        leftSection={<Trash2 size={14} />}
+                        onClick={handleClearClick}
+                      >
+                        {t('Clear editor')}
+                      </Menu.Item>
+                      <Menu.Divider />
+                      <Menu.Label>
+                        {t('GlossBoss v{version}', { version: __APP_VERSION__ })}
+                      </Menu.Label>
+                      <Menu.Item
+                        component="a"
+                        href="https://github.com/lammersbjorn/glossboss"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        leftSection={<ExternalLink size={14} />}
+                      >
+                        {t('Source')}
+                      </Menu.Item>
+                      <Menu.Item
+                        component="a"
+                        href="/license/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        leftSection={<Info size={14} />}
+                      >
+                        {t('License')}
+                      </Menu.Item>
+                      <Menu.Item
+                        component="a"
+                        href="/translate/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        leftSection={<ExternalLink size={14} />}
+                      >
+                        {t('Translate')}
+                      </Menu.Item>
+                      <Menu.Item
+                        component="a"
+                        href="/privacy/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        leftSection={<Info size={14} />}
+                      >
+                        {t('Privacy')}
+                      </Menu.Item>
+                    </Menu.Dropdown>
+                  </Menu>
                 </Group>
+              </Group>
+            </MotionDiv>
 
-                {!isMobile && <Divider orientation="vertical" />}
+            {/* Confirmation modal for clear */}
+            <ConfirmModal
+              opened={confirmClearOpen}
+              onClose={() => setConfirmClearOpen(false)}
+              onConfirm={handleClear}
+              title={t('Clear editor?')}
+              message={t('You have unsaved changes. Are you sure you want to clear the editor?')}
+              detail={t('This will remove all your work on the current file.')}
+              confirmLabel={msgid('Clear anyway')}
+              confirmColor="red"
+              variant="danger"
+            />
 
-                {!isMobile && (
+            {/* Confirmation modal for URL overwrite */}
+            <ConfirmModal
+              opened={pendingUrl !== null}
+              onClose={() => setPendingUrl(null)}
+              onConfirm={() => {
+                if (pendingUrl) void executeUrlLoad(pendingUrl);
+              }}
+              title={t('Replace current file?')}
+              message={t(
+                'Loading a new file from URL will replace the currently loaded file. Any unsaved changes will be lost.',
+              )}
+              confirmLabel={msgid('Replace')}
+              variant="warning"
+            />
+
+            {/* Drag error display */}
+            <AnimatePresence>
+              {dragError && (
+                <MotionDiv
+                  variants={contentVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                >
+                  <Alert
+                    color="red"
+                    title={t('Upload failed')}
+                    onClose={() => setDragError(null)}
+                    withCloseButton
+                  >
+                    {dragError}
+                  </Alert>
+                </MotionDiv>
+              )}
+            </AnimatePresence>
+
+            {/* Error display */}
+            {errors.length > 0 && (
+              <Alert
+                color="red"
+                title={t('Failed to parse file')}
+                onClose={() => setErrors([])}
+                withCloseButton
+              >
+                <List size="sm" spacing="xs">
+                  {errors.map((error, idx) => (
+                    <List.Item key={idx}>
+                      {error.line && <Code mr={8}>{t('Line {line}', { line: error.line })}</Code>}
+                      {error.message}
+                    </List.Item>
+                  ))}
+                </List>
+              </Alert>
+            )}
+
+            {/* Warnings display */}
+            {warnings.length > 0 && showWarnings && (
+              <Alert
+                color="yellow"
+                title={
+                  <Group gap="xs">
+                    <AlertTriangle size={16} />
+                    <span data-ev-id="ev_76292818e0">
+                      {t('{{count}} warning(s) during parsing', { count: warnings.length })}
+                    </span>
+                  </Group>
+                }
+                onClose={() => setShowWarnings(false)}
+                withCloseButton
+              >
+                <List size="sm" spacing="xs">
+                  {warnings.slice(0, 5).map((warning, idx) => (
+                    <List.Item key={idx}>
+                      {warning.line && (
+                        <Code mr={8}>{t('Line {{line}}', { line: warning.line })}</Code>
+                      )}
+                      {warning.message}
+                    </List.Item>
+                  ))}
+                  {warnings.length > 5 && (
+                    <List.Item>
+                      <Text size="sm" c="dimmed">
+                        {t('...and {{count}} more warnings', { count: warnings.length - 5 })}
+                      </Text>
+                    </List.Item>
+                  )}
+                </List>
+              </Alert>
+            )}
+
+            {/* Draft recovery banner */}
+            {pendingDraft && (
+              <Alert
+                color="blue"
+                title={
+                  <Group gap="xs">
+                    <RotateCcw size={16} />
+                    <span data-ev-id="ev_be4d010bf8">{t('Unsaved draft found')}</span>
+                  </Group>
+                }
+                withCloseButton
+                onClose={handleDiscardDraft}
+              >
+                <Stack gap="sm">
+                  <Text size="sm">
+                    {t(
+                      'You have unsaved changes from {age}. Would you like to restore your previous work?',
+                      {
+                        age: formatDraftAge(pendingDraft.draft.savedAt, t),
+                      },
+                    )}
+                  </Text>
+                  <Text size="xs" c="dimmed">
+                    {t('{count} modified entries will be restored.', {
+                      count: pendingDraft.draft.dirtyEntryIds.length,
+                    })}
+                  </Text>
                   <Group gap="sm">
-                    <Tooltip label={t('Share feedback')}>
+                    <Button
+                      size="xs"
+                      leftSection={<RotateCcw size={14} />}
+                      onClick={handleRestoreDraft}
+                    >
+                      {t('Restore draft')}
+                    </Button>
+                    <Button
+                      size="xs"
+                      variant="subtle"
+                      color="gray"
+                      leftSection={<X size={14} />}
+                      onClick={handleDiscardDraft}
+                    >
+                      {t('Discard and use new file')}
+                    </Button>
+                  </Group>
+                </Stack>
+              </Alert>
+            )}
+
+            {/* Draft status indicator */}
+            {filename && (isFromDraft || lastAutoSave) && (
+              <Group gap="xs">
+                {isFromDraft && (
+                  <Badge color="orange" variant="light" size="sm">
+                    {t('Editing draft')}
+                  </Badge>
+                )}
+                {lastAutoSave && (
+                  <Text size="xs" c="dimmed">
+                    {t('Auto-saved {age}', { age: formatDraftAge(lastAutoSave, t) })}
+                  </Text>
+                )}
+              </Group>
+            )}
+
+            {/* Header and control workspace */}
+            {filename && (
+              <Stack gap="md">
+                {editorShell ? (
+                  <>
+                    <editorShell.HeaderEditor encodingInfo={encodingInfo} />
+                    <Paper p="md" withBorder>
+                      <Stack gap="sm">
+                        <editorShell.FilterToolbar />
+                        <Divider />
+                        <editorShell.TranslateToolbar
+                          onLanguageChange={handleLanguageChange}
+                          deeplGlossaryId={glossaryEnforcementEnabled ? deeplGlossaryId : null}
+                          glossary={glossary}
+                          translateEnabled={translateEnabled}
+                        />
+                        {glossary && (
+                          <Group gap="xs">
+                            <Badge
+                              color="green"
+                              variant="light"
+                              size="sm"
+                              leftSection={<Check size={10} />}
+                            >
+                              {t('Glossary: {count} terms ({locale})', {
+                                count: glossary.entries.length,
+                                locale: glossary.targetLocale,
+                              })}
+                            </Badge>
+                            {deeplGlossaryId && (
+                              <Badge color="blue" variant="light" size="sm">
+                                {t('DeepL synced')}
+                              </Badge>
+                            )}
+                          </Group>
+                        )}
+                      </Stack>
+                    </Paper>
+                  </>
+                ) : (
+                  <Paper p="xl" withBorder>
+                    <Group justify="center" gap="sm">
+                      <Loader size="sm" />
+                      <Text size="sm">{t('Loading editor interface...')}</Text>
+                    </Group>
+                  </Paper>
+                )}
+              </Stack>
+            )}
+
+            {/* Editor table or empty state */}
+            {filename ? (
+              <MotionDiv variants={sectionVariants} initial="hidden" animate="visible" key="editor">
+                {editorShell ? (
+                  <editorShell.EditorTable
+                    targetLang={translateTargetLang}
+                    sourceLang={translateSourceLang}
+                    glossary={glossary}
+                    deeplGlossaryId={glossaryEnforcementEnabled ? deeplGlossaryId : null}
+                    glossaryEnforcementEnabled={glossaryEnforcementEnabled}
+                    onEntrySelect={handleEntrySelect}
+                    speechEnabled={speechEnabled}
+                    translateEnabled={translateEnabled}
+                  />
+                ) : (
+                  <Paper p="xl" withBorder>
+                    <Group justify="center" gap="sm">
+                      <Loader size="sm" />
+                      <Text size="sm">{t('Loading editor interface...')}</Text>
+                    </Group>
+                  </Paper>
+                )}
+              </MotionDiv>
+            ) : (
+              <MotionDiv
+                variants={sectionVariants}
+                initial="hidden"
+                animate="visible"
+                onClick={handleEmptyStateClick}
+                style={{ cursor: 'pointer' }}
+              >
+                <Paper
+                  p={rem(80)}
+                  withBorder
+                  style={{
+                    borderStyle: 'dashed',
+                    borderWidth: 2,
+                    borderColor: 'var(--mantine-color-default-border)',
+                  }}
+                >
+                  <Stack align="center" gap="lg">
+                    <img
+                      data-ev-id="ev_1ff14ea799"
+                      src={appIcon}
+                      alt="GlossBoss"
+                      style={{
+                        width: 64,
+                        height: 64,
+                        borderRadius: 16,
+                      }}
+                    />
+
+                    <Stack align="center" gap="xs">
+                      <Title order={2}>{t('Upload a translation file to start')}</Title>
+                      <Text ta="center" maw={400} style={{ color: 'var(--gb-text-secondary)' }}>
+                        {t(
+                          'Drag and drop your translation file here, or click to browse. Your translations will be saved locally in your browser.',
+                        )}
+                      </Text>
+                    </Stack>
+                    <Group gap="xs">
+                      <Badge variant="light" color="blue">
+                        .po
+                      </Badge>
+                      <Badge variant="light" color="blue">
+                        .pot
+                      </Badge>
+                      <Badge variant="light" color="blue">
+                        .json
+                      </Badge>
+                    </Group>
+                    <Group
+                      gap="xs"
+                      w="100%"
+                      maw={500}
+                      onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                    >
+                      <TextInput
+                        placeholder={t('Paste a .po file URL')}
+                        aria-label={t('PO file URL')}
+                        value={urlInput}
+                        onChange={(e) => setUrlInput(e.currentTarget.value)}
+                        onKeyDown={(e: KeyboardEvent) => {
+                          if (e.key === 'Enter' && urlInput.trim() && !isLoadingUrl) {
+                            void handleLoadFromUrl(urlInput.trim());
+                          }
+                        }}
+                        style={{ flex: 1 }}
+                        leftSection={<Link size={16} />}
+                        disabled={isLoadingUrl}
+                      />
+                      <Button
+                        onClick={() => void handleLoadFromUrl(urlInput.trim())}
+                        loading={isLoadingUrl}
+                        disabled={!urlInput.trim() || isLoadingUrl}
+                      >
+                        {t('Load')}
+                      </Button>
+                    </Group>
+
+                    <Text size="sm" style={{ color: 'var(--gb-text-secondary)' }}>
+                      {t('or')}
+                    </Text>
+
+                    <Tooltip
+                      label={t('Load a small example WordPress plugin PO file (Hello Dolly)')}
+                    >
                       <motion.div {...buttonStates}>
                         <Button
-                          variant="subtle"
-                          leftSection={<MessageSquare size={16} />}
-                          onClick={() => setFeedbackOpen(true)}
+                          variant="default"
+                          leftSection={<FileUp size={16} />}
+                          loading={isLoadingExample}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            void handleLoadExamplePo();
+                          }}
                         >
-                          {t('Feedback')}
+                          {t('Load example PO')}
                         </Button>
                       </motion.div>
                     </Tooltip>
-
-                    <ThemeToggle onToggle={toggleColorScheme} />
-                  </Group>
-                )}
-
-                <Menu position="bottom-end" withinPortal>
-                  <Menu.Target>
-                    <Tooltip label={t('Settings and actions')}>
-                      <motion.div {...buttonStates}>
-                        <ActionIcon
-                          variant="default"
-                          size="lg"
-                          aria-label={t('Settings and actions')}
-                        >
-                          <Settings size={18} />
-                        </ActionIcon>
-                      </motion.div>
-                    </Tooltip>
-                  </Menu.Target>
-                  <Menu.Dropdown>
-                    {isMobile && (
-                      <Menu.Item
-                        leftSection={<MessageSquare size={14} />}
-                        onClick={() => setFeedbackOpen(true)}
-                      >
-                        {t('Share feedback')}
-                      </Menu.Item>
-                    )}
-                    {isMobile && (
-                      <Menu.Item
-                        leftSection={
-                          computedColorScheme === 'dark' ? <Sun size={14} /> : <Moon size={14} />
-                        }
-                        onClick={toggleColorScheme}
-                      >
-                        {computedColorScheme === 'dark' ? t('Light mode') : t('Dark mode')}
-                      </Menu.Item>
-                    )}
-                    {isMobile && <Menu.Divider />}
-                    <Menu.Label>{t('Settings')}</Menu.Label>
-                    <Menu.Item
-                      leftSection={<Settings size={14} />}
-                      onClick={() => setSettingsOpen(true)}
-                    >
-                      {t('Open settings')}
-                    </Menu.Item>
-                    <Menu.Divider />
-                    <Menu.Label>{t('Actions')}</Menu.Label>
-                    <Menu.Item
-                      color="red"
-                      leftSection={<Trash2 size={14} />}
-                      onClick={handleClearClick}
-                    >
-                      {t('Clear editor')}
-                    </Menu.Item>
-                    <Menu.Divider />
-                    <Menu.Label>
-                      {t('GlossBoss v{version}', { version: __APP_VERSION__ })}
-                    </Menu.Label>
-                    <Menu.Item
-                      component="a"
-                      href="https://github.com/lammersbjorn/glossboss"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      leftSection={<ExternalLink size={14} />}
-                    >
-                      {t('Source')}
-                    </Menu.Item>
-                    <Menu.Item
-                      component="a"
-                      href="/license/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      leftSection={<Info size={14} />}
-                    >
-                      {t('License')}
-                    </Menu.Item>
-                    <Menu.Item
-                      component="a"
-                      href="/translate/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      leftSection={<ExternalLink size={14} />}
-                    >
-                      {t('Translate')}
-                    </Menu.Item>
-                    <Menu.Item
-                      component="a"
-                      href="/privacy/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      leftSection={<Info size={14} />}
-                    >
-                      {t('Privacy')}
-                    </Menu.Item>
-                  </Menu.Dropdown>
-                </Menu>
-              </Group>
-            </Group>
-          </MotionDiv>
-
-          {/* Confirmation modal for clear */}
-          <ConfirmModal
-            opened={confirmClearOpen}
-            onClose={() => setConfirmClearOpen(false)}
-            onConfirm={handleClear}
-            title={t('Clear editor?')}
-            message={t('You have unsaved changes. Are you sure you want to clear the editor?')}
-            detail={t('This will remove all your work on the current file.')}
-            confirmLabel={msgid('Clear anyway')}
-            confirmColor="red"
-            variant="danger"
-          />
-
-          {/* Confirmation modal for URL overwrite */}
-          <ConfirmModal
-            opened={pendingUrl !== null}
-            onClose={() => setPendingUrl(null)}
-            onConfirm={() => {
-              if (pendingUrl) void executeUrlLoad(pendingUrl);
-            }}
-            title={t('Replace current file?')}
-            message={t(
-              'Loading a new file from URL will replace the currently loaded file. Any unsaved changes will be lost.',
-            )}
-            confirmLabel={msgid('Replace')}
-            variant="warning"
-          />
-
-          {/* Drag error display */}
-          <AnimatePresence>
-            {dragError && (
-              <MotionDiv variants={contentVariants} initial="hidden" animate="visible" exit="exit">
-                <Alert
-                  color="red"
-                  title={t('Upload failed')}
-                  onClose={() => setDragError(null)}
-                  withCloseButton
-                >
-                  {dragError}
-                </Alert>
+                  </Stack>
+                </Paper>
               </MotionDiv>
             )}
-          </AnimatePresence>
-
-          {/* Error display */}
-          {errors.length > 0 && (
-            <Alert
-              color="red"
-              title={t('Failed to parse file')}
-              onClose={() => setErrors([])}
-              withCloseButton
-            >
-              <List size="sm" spacing="xs">
-                {errors.map((error, idx) => (
-                  <List.Item key={idx}>
-                    {error.line && <Code mr={8}>{t('Line {line}', { line: error.line })}</Code>}
-                    {error.message}
-                  </List.Item>
-                ))}
-              </List>
-            </Alert>
-          )}
-
-          {/* Warnings display */}
-          {warnings.length > 0 && showWarnings && (
-            <Alert
-              color="yellow"
-              title={
-                <Group gap="xs">
-                  <AlertTriangle size={16} />
-                  <span data-ev-id="ev_76292818e0">
-                    {t('{{count}} warning(s) during parsing', { count: warnings.length })}
-                  </span>
-                </Group>
-              }
-              onClose={() => setShowWarnings(false)}
-              withCloseButton
-            >
-              <List size="sm" spacing="xs">
-                {warnings.slice(0, 5).map((warning, idx) => (
-                  <List.Item key={idx}>
-                    {warning.line && (
-                      <Code mr={8}>{t('Line {{line}}', { line: warning.line })}</Code>
-                    )}
-                    {warning.message}
-                  </List.Item>
-                ))}
-                {warnings.length > 5 && (
-                  <List.Item>
-                    <Text size="sm" c="dimmed">
-                      {t('...and {{count}} more warnings', { count: warnings.length - 5 })}
-                    </Text>
-                  </List.Item>
-                )}
-              </List>
-            </Alert>
-          )}
-
-          {/* Draft recovery banner */}
-          {pendingDraft && (
-            <Alert
-              color="blue"
-              title={
-                <Group gap="xs">
-                  <RotateCcw size={16} />
-                  <span data-ev-id="ev_be4d010bf8">{t('Unsaved draft found')}</span>
-                </Group>
-              }
-              withCloseButton
-              onClose={handleDiscardDraft}
-            >
-              <Stack gap="sm">
-                <Text size="sm">
-                  {t(
-                    'You have unsaved changes from {age}. Would you like to restore your previous work?',
-                    {
-                      age: formatDraftAge(pendingDraft.draft.savedAt, t),
-                    },
-                  )}
-                </Text>
-                <Text size="xs" c="dimmed">
-                  {t('{count} modified entries will be restored.', {
-                    count: pendingDraft.draft.dirtyEntryIds.length,
-                  })}
-                </Text>
-                <Group gap="sm">
-                  <Button
-                    size="xs"
-                    leftSection={<RotateCcw size={14} />}
-                    onClick={handleRestoreDraft}
-                  >
-                    {t('Restore draft')}
-                  </Button>
-                  <Button
-                    size="xs"
-                    variant="subtle"
-                    color="gray"
-                    leftSection={<X size={14} />}
-                    onClick={handleDiscardDraft}
-                  >
-                    {t('Discard and use new file')}
-                  </Button>
-                </Group>
-              </Stack>
-            </Alert>
-          )}
-
-          {/* Draft status indicator */}
-          {filename && (isFromDraft || lastAutoSave) && (
-            <Group gap="xs">
-              {isFromDraft && (
-                <Badge color="orange" variant="light" size="sm">
-                  {t('Editing draft')}
-                </Badge>
-              )}
-              {lastAutoSave && (
-                <Text size="xs" c="dimmed">
-                  {t('Auto-saved {age}', { age: formatDraftAge(lastAutoSave, t) })}
-                </Text>
-              )}
-            </Group>
-          )}
-
-          {/* Header and control workspace */}
-          {filename && (
-            <Stack gap="md">
-              <HeaderEditor encodingInfo={encodingInfo} />
-              <Paper p="md" withBorder>
-                <Stack gap="sm">
-                  <FilterToolbar />
-                  <Divider />
-                  <TranslateToolbar
-                    onLanguageChange={handleLanguageChange}
-                    deeplGlossaryId={glossaryEnforcementEnabled ? deeplGlossaryId : null}
-                    glossary={glossary}
-                    translateEnabled={translateEnabled}
-                  />
-                  {glossary && (
-                    <Group gap="xs">
-                      <Badge
-                        color="green"
-                        variant="light"
-                        size="sm"
-                        leftSection={<Check size={10} />}
-                      >
-                        {t('Glossary: {count} terms ({locale})', {
-                          count: glossary.entries.length,
-                          locale: glossary.targetLocale,
-                        })}
-                      </Badge>
-                      {deeplGlossaryId && (
-                        <Badge color="blue" variant="light" size="sm">
-                          {t('DeepL synced')}
-                        </Badge>
-                      )}
-                    </Group>
-                  )}
-                </Stack>
-              </Paper>
-            </Stack>
-          )}
-
-          {/* Editor table or empty state */}
-          {filename ? (
-            <MotionDiv variants={sectionVariants} initial="hidden" animate="visible" key="editor">
-              <EditorTable
-                targetLang={translateTargetLang}
-                sourceLang={translateSourceLang}
-                glossary={glossary}
-                deeplGlossaryId={glossaryEnforcementEnabled ? deeplGlossaryId : null}
-                glossaryEnforcementEnabled={glossaryEnforcementEnabled}
-                onEntrySelect={handleEntrySelect}
-                speechEnabled={speechEnabled}
-                translateEnabled={translateEnabled}
-              />
-            </MotionDiv>
-          ) : (
-            <MotionDiv
-              variants={sectionVariants}
-              initial="hidden"
-              animate="visible"
-              onClick={handleEmptyStateClick}
-              style={{ cursor: 'pointer' }}
-            >
-              <Paper
-                p={rem(80)}
-                withBorder
-                style={{
-                  borderStyle: 'dashed',
-                  borderWidth: 2,
-                  borderColor: 'var(--mantine-color-default-border)',
-                }}
-              >
-                <Stack align="center" gap="lg">
-                  <img
-                    data-ev-id="ev_1ff14ea799"
-                    src={appIcon}
-                    alt="GlossBoss"
-                    style={{
-                      width: 64,
-                      height: 64,
-                      borderRadius: 16,
-                    }}
-                  />
-
-                  <Stack align="center" gap="xs">
-                    <Title order={3}>{t('Upload a translation file to start')}</Title>
-                    <Text c="dimmed" ta="center" maw={400}>
-                      {t(
-                        'Drag and drop your translation file here, or click to browse. Your translations will be saved locally in your browser.',
-                      )}
-                    </Text>
-                  </Stack>
-                  <Group gap="xs">
-                    <Badge variant="light" color="blue">
-                      .po
-                    </Badge>
-                    <Badge variant="light" color="blue">
-                      .pot
-                    </Badge>
-                    <Badge variant="light" color="blue">
-                      .json
-                    </Badge>
-                  </Group>
-                  <Group
-                    gap="xs"
-                    w="100%"
-                    maw={500}
-                    onClick={(e: React.MouseEvent) => e.stopPropagation()}
-                  >
-                    <TextInput
-                      placeholder={t('Paste a .po file URL')}
-                      aria-label={t('PO file URL')}
-                      value={urlInput}
-                      onChange={(e) => setUrlInput(e.currentTarget.value)}
-                      onKeyDown={(e: KeyboardEvent) => {
-                        if (e.key === 'Enter' && urlInput.trim() && !isLoadingUrl) {
-                          void handleLoadFromUrl(urlInput.trim());
-                        }
-                      }}
-                      style={{ flex: 1 }}
-                      leftSection={<Link size={16} />}
-                      disabled={isLoadingUrl}
-                    />
-                    <Button
-                      onClick={() => void handleLoadFromUrl(urlInput.trim())}
-                      loading={isLoadingUrl}
-                      disabled={!urlInput.trim() || isLoadingUrl}
-                    >
-                      {t('Load')}
-                    </Button>
-                  </Group>
-
-                  <Text size="sm" c="dimmed">
-                    {t('or')}
-                  </Text>
-
-                  <Tooltip label={t('Load a small example WordPress plugin PO file (Hello Dolly)')}>
-                    <motion.div {...buttonStates}>
-                      <Button
-                        variant="default"
-                        leftSection={<FileUp size={16} />}
-                        loading={isLoadingExample}
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          void handleLoadExamplePo();
-                        }}
-                      >
-                        {t('Load example PO')}
-                      </Button>
-                    </motion.div>
-                  </Tooltip>
-                </Stack>
-              </Paper>
-            </MotionDiv>
-          )}
-        </Stack>
-      </Container>
+          </Stack>
+        </Container>
+      </Box>
 
       {/* Settings Modal */}
-      <SettingsModal
-        opened={settingsOpen}
-        onClose={() => setSettingsOpen(false)}
-        initialLocale={glossaryLocale}
-        onGlossaryLoaded={handleGlossaryLoaded}
-        onGlossaryCleared={handleGlossaryCleared}
-        onEnforcementChange={handleEnforcementChange}
-        onForceResync={handleForceResync}
-        glossary={glossary}
-        syncStatus={glossarySyncStatus}
-        deeplGlossaryId={deeplGlossaryId}
-        deeplTermCount={deeplTermCount}
-        selectedSourceText={selectedSourceText}
-        branchChipEnabled={branchChipEnabled}
-        onBranchChipEnabledChange={setBranchChipEnabled}
-        containerWidth={containerWidth}
-        onContainerWidthChange={setContainerWidth}
-        speechEnabled={speechEnabled}
-        onSpeechEnabledChange={setSpeechEnabled}
-        translateEnabled={translateEnabled}
-        onTranslateEnabledChange={setTranslateEnabled}
-      />
+      {SettingsModalComponent && (
+        <SettingsModalComponent
+          opened={settingsOpen}
+          onClose={() => setSettingsOpen(false)}
+          initialLocale={glossaryLocale}
+          onGlossaryLoaded={handleGlossaryLoaded}
+          onGlossaryCleared={handleGlossaryCleared}
+          onEnforcementChange={handleEnforcementChange}
+          onForceResync={handleForceResync}
+          glossary={glossary}
+          syncStatus={glossarySyncStatus}
+          deeplGlossaryId={deeplGlossaryId}
+          deeplTermCount={deeplTermCount}
+          selectedSourceText={selectedSourceText}
+          branchChipEnabled={branchChipEnabled}
+          onBranchChipEnabledChange={setBranchChipEnabled}
+          containerWidth={containerWidth}
+          onContainerWidthChange={setContainerWidth}
+          speechEnabled={speechEnabled}
+          onSpeechEnabledChange={setSpeechEnabled}
+          translateEnabled={translateEnabled}
+          onTranslateEnabledChange={setTranslateEnabled}
+        />
+      )}
 
       {isDevelopment && branchChipEnabled && <DevBranchChip branch={__GIT_BRANCH__} />}
 
-      <FeedbackModal
-        opened={feedbackOpen}
-        onClose={() => setFeedbackOpen(false)}
-        currentFilename={filename}
-        onSubmitted={(result) => {
-          setFeedbackSuccess({ issueNumber: result.issueNumber, issueUrl: result.issueUrl });
-          setFeedbackError(null);
-          window.setTimeout(() => setFeedbackSuccess(null), 5000);
-        }}
-        onSubmitError={(message) => {
-          setFeedbackError(message);
-          window.setTimeout(() => setFeedbackError(null), 6000);
-        }}
-      />
+      {FeedbackModalComponent && (
+        <FeedbackModalComponent
+          opened={feedbackOpen}
+          onClose={() => setFeedbackOpen(false)}
+          currentFilename={filename}
+          onSubmitted={(result) => {
+            setFeedbackSuccess({ issueNumber: result.issueNumber, issueUrl: result.issueUrl });
+            setFeedbackError(null);
+            window.setTimeout(() => setFeedbackSuccess(null), 5000);
+          }}
+          onSubmitError={(message) => {
+            setFeedbackError(message);
+            window.setTimeout(() => setFeedbackError(null), 6000);
+          }}
+        />
+      )}
     </Box>
   );
 }

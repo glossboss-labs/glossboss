@@ -54,6 +54,7 @@ export function ConfirmModal({
       withCloseButton={!loading}
       closeOnClickOutside={!loading}
       closeOnEscape={!loading}
+      closeButtonProps={{ 'aria-label': t('Close dialog') }}
     >
       <AnimatePresence mode="wait">
         {opened && (
