@@ -11,7 +11,6 @@ import {
   useEffect,
   type DragEvent,
   type KeyboardEvent,
-  type ComponentType,
 } from 'react';
 import {
   Container,
@@ -37,7 +36,6 @@ import {
   Menu,
   TextInput,
   useComputedColorScheme,
-  Loader,
   useMantineTheme,
 } from '@mantine/core';
 import { useLocalStorage, useMediaQuery } from '@mantine/hooks';
@@ -62,6 +60,9 @@ import {
   Info,
 } from 'lucide-react';
 import { ConfirmModal } from '@/components/ui';
+import { EditorTable, FilterToolbar, HeaderEditor, TranslateToolbar } from '@/components/editor';
+import { FeedbackModal } from '@/components/feedback';
+import { SettingsModal } from '@/components/SettingsModal';
 import { useEditorStore, useSourceStore } from '@/stores';
 import { detectPluginSlug } from '@/lib/wp-source';
 import { contentVariants, fadeVariants, sectionVariants, buttonStates } from '@/lib/motion';
@@ -122,13 +123,6 @@ interface MergeInfo {
 }
 
 type FeedbackInfo = Pick<FeedbackIssueSuccess, 'issueNumber' | 'issueUrl'>;
-type EditorModule = typeof import('@/components/editor');
-type FeedbackModalModule = typeof import('@/components/feedback');
-type SettingsModalModule = typeof import('@/components/SettingsModal');
-type EditorShellComponents = Pick<
-  EditorModule,
-  'EditorTable' | 'FilterToolbar' | 'HeaderEditor' | 'TranslateToolbar'
->;
 
 /** Pending draft info for recovery prompt */
 interface PendingDraft {
@@ -334,13 +328,6 @@ export default function Index() {
   const [feedbackError, setFeedbackError] = useState<string | null>(null);
   const [isLoadingExample, setIsLoadingExample] = useState(false);
   const [isLoadingUrl, setIsLoadingUrl] = useState(false);
-  const [editorShell, setEditorShell] = useState<EditorShellComponents | null>(null);
-  const [SettingsModalComponent, setSettingsModalComponent] = useState<ComponentType<
-    SettingsModalModule['SettingsModal'] extends ComponentType<infer P> ? P : never
-  > | null>(null);
-  const [FeedbackModalComponent, setFeedbackModalComponent] = useState<ComponentType<
-    FeedbackModalModule['FeedbackModal'] extends ComponentType<infer P> ? P : never
-  > | null>(null);
   const [urlInput, setUrlInput] = useState('');
   const [pendingUrl, setPendingUrl] = useState<string | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -413,44 +400,6 @@ export default function Index() {
   const fileResetRef = useRef<(() => void) | null>(null);
   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const ensureEditorShell = useCallback(async () => {
-    if (editorShell) {
-      return editorShell;
-    }
-
-    const module = await import('@/components/editor');
-    const nextShell: EditorShellComponents = {
-      EditorTable: module.EditorTable,
-      FilterToolbar: module.FilterToolbar,
-      HeaderEditor: module.HeaderEditor,
-      TranslateToolbar: module.TranslateToolbar,
-    };
-    setEditorShell((current) => current ?? nextShell);
-    return nextShell;
-  }, [editorShell]);
-
-  const ensureSettingsModal = useCallback(async () => {
-    if (SettingsModalComponent) {
-      return SettingsModalComponent;
-    }
-
-    const module = await import('@/components/SettingsModal');
-    const nextComponent = module.SettingsModal;
-    setSettingsModalComponent(() => nextComponent);
-    return nextComponent;
-  }, [SettingsModalComponent]);
-
-  const ensureFeedbackModal = useCallback(async () => {
-    if (FeedbackModalComponent) {
-      return FeedbackModalComponent;
-    }
-
-    const module = await import('@/components/feedback');
-    const nextComponent = module.FeedbackModal;
-    setFeedbackModalComponent(() => nextComponent);
-    return nextComponent;
-  }, [FeedbackModalComponent]);
-
   const {
     filename,
     sourceFormat,
@@ -512,14 +461,6 @@ export default function Index() {
     setGlossarySyncStatus(null);
     clearGlossaryAnalysis();
   }, [clearGlossaryAnalysis]);
-
-  const reportLazyLoadError = useCallback(
-    (error: unknown, message: string) => {
-      debugError('[UI] Failed to lazy-load interface chunk:', error);
-      setErrors([{ severity: 'error', code: 'INVALID_SYNTAX', message }]);
-    },
-    [setErrors],
-  );
 
   /**
    * Handle glossary enforcement toggle
@@ -671,16 +612,6 @@ export default function Index() {
 
           const poFile = parseI18nextJSON(text, file.name);
 
-          try {
-            await ensureEditorShell();
-          } catch (error) {
-            reportLazyLoadError(
-              error,
-              t('The editor interface could not be loaded. Please refresh and try again.'),
-            );
-            return;
-          }
-
           loadFile(poFile, 'i18next');
 
           debugLog(`[i18next] Parsed ${poFile.entries.length} entries from ${file.name}`);
@@ -728,16 +659,6 @@ export default function Index() {
           // Check if there's an existing draft for this file
           const existingDraft = loadDraft(file.name);
 
-          try {
-            await ensureEditorShell();
-          } catch (error) {
-            reportLazyLoadError(
-              error,
-              t('The editor interface could not be loaded. Please refresh and try again.'),
-            );
-            return;
-          }
-
           if (existingDraft && existingDraft.dirtyEntryIds.length > 0) {
             // Show recovery prompt
             setPendingDraft({ draft: existingDraft, filename: file.name });
@@ -768,10 +689,10 @@ export default function Index() {
         ]);
       }
     },
-    [ensureEditorShell, loadFile, reportLazyLoadError, t],
+    [loadFile, t],
   );
 
-  const handleLoadExamplePo = useCallback(async () => {
+  const handleLoadExamplePo = useCallback(() => {
     setIsLoadingExample(true);
     setErrors([]);
     setWarnings([]);
@@ -795,16 +716,6 @@ export default function Index() {
         setShowWarnings(true);
       }
 
-      try {
-        await ensureEditorShell();
-      } catch (error) {
-        reportLazyLoadError(
-          error,
-          t('The editor interface could not be loaded. Please refresh and try again.'),
-        );
-        return;
-      }
-
       loadFile(result.file);
 
       const detected = detectPluginSlug(result.file.header, result.file.filename);
@@ -815,7 +726,7 @@ export default function Index() {
     } finally {
       setIsLoadingExample(false);
     }
-  }, [ensureEditorShell, loadFile, reportLazyLoadError, t]);
+  }, [loadFile]);
 
   const executeUrlLoad = useCallback(
     async (url: string) => {
@@ -855,16 +766,6 @@ export default function Index() {
         if (isI18nextContent(text)) {
           const i18nResult = parseI18nextJSON(text, name);
 
-          try {
-            await ensureEditorShell();
-          } catch (error) {
-            reportLazyLoadError(
-              error,
-              t('The editor interface could not be loaded. Please refresh and try again.'),
-            );
-            return;
-          }
-
           loadFile(i18nResult.file);
         } else {
           const result = parsePOFileWithDiagnostics(text, name);
@@ -877,16 +778,6 @@ export default function Index() {
           if (result.warnings.length > 0) {
             setWarnings(result.warnings);
             setShowWarnings(true);
-          }
-
-          try {
-            await ensureEditorShell();
-          } catch (error) {
-            reportLazyLoadError(
-              error,
-              t('The editor interface could not be loaded. Please refresh and try again.'),
-            );
-            return;
           }
 
           loadFile(result.file);
@@ -917,7 +808,7 @@ export default function Index() {
         setIsLoadingUrl(false);
       }
     },
-    [ensureEditorShell, loadFile, reportLazyLoadError, t],
+    [loadFile, t],
   );
 
   const handleLoadFromUrl = useCallback(
@@ -958,7 +849,7 @@ export default function Index() {
   /**
    * Restore from pending draft
    */
-  const handleRestoreDraft = useCallback(async () => {
+  const handleRestoreDraft = useCallback(() => {
     if (!pendingDraft) return;
 
     const { draft } = pendingDraft;
@@ -971,40 +862,20 @@ export default function Index() {
       charset: 'UTF-8' as const,
     };
 
-    try {
-      await ensureEditorShell();
-    } catch (error) {
-      reportLazyLoadError(
-        error,
-        t('The editor interface could not be loaded. Please refresh and try again.'),
-      );
-      return;
-    }
-
     loadFile(restoredFile);
     setIsFromDraft(true);
     setPendingDraft(null);
 
     debugLog('[Drafts] Restored from draft');
-  }, [ensureEditorShell, loadFile, pendingDraft, reportLazyLoadError, t]);
+  }, [loadFile, pendingDraft]);
 
-  const handleOpenSettings = useCallback(async () => {
-    try {
-      await ensureSettingsModal();
-      setSettingsOpen(true);
-    } catch (error) {
-      reportLazyLoadError(error, t('Settings could not be loaded. Please refresh and try again.'));
-    }
-  }, [ensureSettingsModal, reportLazyLoadError, t]);
+  const handleOpenSettings = useCallback(() => {
+    setSettingsOpen(true);
+  }, []);
 
-  const handleOpenFeedback = useCallback(async () => {
-    try {
-      await ensureFeedbackModal();
-      setFeedbackOpen(true);
-    } catch (error) {
-      reportLazyLoadError(error, t('Feedback could not be loaded. Please refresh and try again.'));
-    }
-  }, [ensureFeedbackModal, reportLazyLoadError, t]);
+  const handleOpenFeedback = useCallback(() => {
+    setFeedbackOpen(true);
+  }, []);
 
   /**
    * Discard pending draft and continue with fresh file
@@ -1884,75 +1755,55 @@ export default function Index() {
             {/* Header and control workspace */}
             {filename && (
               <Stack gap="md">
-                {editorShell ? (
-                  <>
-                    <editorShell.HeaderEditor encodingInfo={encodingInfo} />
-                    <Paper p="md" withBorder>
-                      <Stack gap="sm">
-                        <editorShell.FilterToolbar />
-                        <Divider />
-                        <editorShell.TranslateToolbar
-                          onLanguageChange={handleLanguageChange}
-                          deeplGlossaryId={glossaryEnforcementEnabled ? deeplGlossaryId : null}
-                          glossary={glossary}
-                          translateEnabled={translateEnabled}
-                        />
-                        {glossary && (
-                          <Group gap="xs">
-                            <Badge
-                              color="green"
-                              variant="light"
-                              size="sm"
-                              leftSection={<Check size={10} />}
-                            >
-                              {t('Glossary: {count} terms ({locale})', {
-                                count: glossary.entries.length,
-                                locale: glossary.targetLocale,
-                              })}
-                            </Badge>
-                            {deeplGlossaryId && (
-                              <Badge color="blue" variant="light" size="sm">
-                                {t('DeepL synced')}
-                              </Badge>
-                            )}
-                          </Group>
+                <HeaderEditor encodingInfo={encodingInfo} />
+                <Paper p="md" withBorder>
+                  <Stack gap="sm">
+                    <FilterToolbar />
+                    <Divider />
+                    <TranslateToolbar
+                      onLanguageChange={handleLanguageChange}
+                      deeplGlossaryId={glossaryEnforcementEnabled ? deeplGlossaryId : null}
+                      glossary={glossary}
+                      translateEnabled={translateEnabled}
+                    />
+                    {glossary && (
+                      <Group gap="xs">
+                        <Badge
+                          color="green"
+                          variant="light"
+                          size="sm"
+                          leftSection={<Check size={10} />}
+                        >
+                          {t('Glossary: {count} terms ({locale})', {
+                            count: glossary.entries.length,
+                            locale: glossary.targetLocale,
+                          })}
+                        </Badge>
+                        {deeplGlossaryId && (
+                          <Badge color="blue" variant="light" size="sm">
+                            {t('DeepL synced')}
+                          </Badge>
                         )}
-                      </Stack>
-                    </Paper>
-                  </>
-                ) : (
-                  <Paper p="xl" withBorder>
-                    <Group justify="center" gap="sm">
-                      <Loader size="sm" />
-                      <Text size="sm">{t('Loading editor interface...')}</Text>
-                    </Group>
-                  </Paper>
-                )}
+                      </Group>
+                    )}
+                  </Stack>
+                </Paper>
               </Stack>
             )}
 
             {/* Editor table or empty state */}
             {filename ? (
               <MotionDiv variants={sectionVariants} initial="hidden" animate="visible" key="editor">
-                {editorShell ? (
-                  <editorShell.EditorTable
-                    targetLang={translateTargetLang}
-                    sourceLang={translateSourceLang}
-                    glossary={glossary}
-                    deeplGlossaryId={glossaryEnforcementEnabled ? deeplGlossaryId : null}
-                    glossaryEnforcementEnabled={glossaryEnforcementEnabled}
-                    onEntrySelect={handleEntrySelect}
-                    speechEnabled={speechEnabled}
-                    translateEnabled={translateEnabled}
-                  />
-                ) : (
-                  <Paper p="xl" withBorder>
-                    <Group justify="center" gap="sm">
-                      <Loader size="sm" />
-                      <Text size="sm">{t('Loading editor interface...')}</Text>
-                    </Group>
-                  </Paper>
-                )}
+                <EditorTable
+                  targetLang={translateTargetLang}
+                  sourceLang={translateSourceLang}
+                  glossary={glossary}
+                  deeplGlossaryId={glossaryEnforcementEnabled ? deeplGlossaryId : null}
+                  glossaryEnforcementEnabled={glossaryEnforcementEnabled}
+                  onEntrySelect={handleEntrySelect}
+                  speechEnabled={speechEnabled}
+                  translateEnabled={translateEnabled}
+                />
               </MotionDiv>
             ) : (
               <MotionDiv
@@ -2060,9 +1911,9 @@ export default function Index() {
         </Container>
       </Box>
 
-      {/* Settings Modal */}
-      {SettingsModalComponent && (
-        <SettingsModalComponent
+      {/* Settings Modal — mount only when open to avoid background effects */}
+      {settingsOpen && (
+        <SettingsModal
           opened={settingsOpen}
           onClose={() => setSettingsOpen(false)}
           initialLocale={glossaryLocale}
@@ -2088,8 +1939,9 @@ export default function Index() {
 
       {isDevelopment && branchChipEnabled && <DevBranchChip branch={__GIT_BRANCH__} />}
 
-      {FeedbackModalComponent && (
-        <FeedbackModalComponent
+      {/* Feedback Modal — mount only when open to avoid background effects */}
+      {feedbackOpen && (
+        <FeedbackModal
           opened={feedbackOpen}
           onClose={() => setFeedbackOpen(false)}
           currentFilename={filename}
