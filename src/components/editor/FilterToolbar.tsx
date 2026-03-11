@@ -526,7 +526,9 @@ export function FilterToolbar() {
                             const menuItem = e.currentTarget.closest(
                               '[data-column]',
                             ) as HTMLElement;
-                            if (menuItem) dragGhost.show(menuItem, e.clientX, e.clientY);
+                            if (menuItem) {
+                              dragGhost.show(menuItem, e.clientX, e.clientY, columnLabels[column]);
+                            }
                           }}
                           onPointerMove={(e) => {
                             if (dragPointerId.current !== e.pointerId) return;

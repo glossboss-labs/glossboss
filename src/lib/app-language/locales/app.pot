@@ -1856,7 +1856,7 @@ msgstr ""
 msgid "Slovenian"
 msgstr ""
 
-#: src/components/editor/FilterToolbar.tsx:582
+#: src/components/editor/FilterToolbar.tsx:584
 msgid "Sort entries"
 msgstr ""
 
