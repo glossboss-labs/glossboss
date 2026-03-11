@@ -15,6 +15,7 @@ import type {
   DeepLGlossary,
 } from './types';
 import { getDeepLSettings } from './settings';
+import { maskPlaceholders, unmaskPlaceholders } from './placeholder-mask';
 import { getSupabaseAnonKey, getSupabaseFunctionBaseUrl } from '@/lib/cloud-backend';
 import { buildSupabaseFunctionHeaders } from '@/lib/supabase-function-headers';
 
@@ -101,14 +102,29 @@ export function createDeepLClient(config: DeepLClientConfig = {}) {
   async function translate(req: TranslateRequest): Promise<TranslateResponse> {
     // Apply formality from settings if not explicitly set in request
     const settings = getDeepLSettings();
-    const requestWithFormality: TranslateRequest = {
+    const prepared: TranslateRequest = {
       ...req,
+      tagHandling: 'xml',
     };
 
-    if (requestWithFormality.formality == null) {
-      requestWithFormality.formality = settings.formality;
+    if (prepared.formality == null) {
+      prepared.formality = settings.formality;
     }
-    return request<TranslateResponse>('translate', { ...requestWithFormality });
+
+    // Mask printf/ICU placeholders so DeepL preserves them
+    const texts = Array.isArray(prepared.text) ? prepared.text : [prepared.text];
+    const masked = texts.map((t) => maskPlaceholders(t));
+    prepared.text = masked.map((m) => m.text);
+
+    const response = await request<TranslateResponse>('translate', { ...prepared });
+
+    // Restore original placeholders in translated text
+    response.translations = response.translations.map((translation, i) => ({
+      ...translation,
+      text: unmaskPlaceholders(translation.text, masked[i].tokens),
+    }));
+
+    return response;
   }
 
   /**

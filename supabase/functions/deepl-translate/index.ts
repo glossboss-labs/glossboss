@@ -49,6 +49,7 @@ interface TranslatePayload {
   sourceLang?: string;
   formality?: string;
   glossaryId?: string;
+  tagHandling?: 'xml' | 'html';
 }
 
 interface CreateGlossaryPayload {
@@ -144,6 +145,8 @@ export function parseTranslatePayload(value: Record<string, unknown>): Translate
     isNonEmptyString(value.glossaryId) && isValidGlossaryId(value.glossaryId)
       ? value.glossaryId
       : undefined;
+  const tagHandling =
+    value.tagHandling === 'xml' || value.tagHandling === 'html' ? value.tagHandling : undefined;
 
   return {
     text: texts,
@@ -151,6 +154,7 @@ export function parseTranslatePayload(value: Record<string, unknown>): Translate
     sourceLang,
     formality,
     glossaryId,
+    tagHandling,
   };
 }
 
@@ -348,6 +352,7 @@ export async function handleDeepLTranslateRequest(req: Request): Promise<Respons
       if (payload.sourceLang) translateBody.source_lang = payload.sourceLang;
       if (payload.formality) translateBody.formality = payload.formality;
       if (payload.glossaryId) translateBody.glossary_id = payload.glossaryId;
+      if (payload.tagHandling) translateBody.tag_handling = payload.tagHandling;
 
       const response = await sendDeepLRequest(`${baseUrl}/translate`, apiKey, {
         method: 'POST',
