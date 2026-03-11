@@ -145,7 +145,16 @@ jobs:
                 current_assignees=$(gh issue view "$existing" --json assignees --jq '.assignees[].login' 2>/dev/null || true)
                 for current in $current_assignees; do
                   if ! echo ",$assignees," | grep -q ",$current,"; then
-                    gh issue edit "$existing" --remove-assignee "$current" 2>/dev/null || echo "Skipping removal of $current (may be a bot)"
+                    # Try to remove the assignee; only tolerate specific "not found"/bot-style failures
+                    if ! remove_output=$(gh issue edit "$existing" --remove-assignee "$current" 2>&1); then
+                      if echo "$remove_output" | grep -qiE 'not found|could not find the requested user'; then
+                        echo "Skipping removal of $current (may be a bot or unknown user)"
+                      else
+                        echo "$remove_output" >&2
+                        echo "Failed to remove assignee $current from issue #$existing" >&2
+                        exit 1
+                      fi
+                    fi
                   fi
                 done
                 gh issue edit "$existing" --title "$title" --body "$body" $edit_assignee_flags
