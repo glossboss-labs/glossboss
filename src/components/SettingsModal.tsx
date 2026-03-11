@@ -32,7 +32,6 @@ import {
   Table,
   Kbd,
   FileButton,
-  TextInput,
   useMantineTheme,
 } from '@mantine/core';
 import { useLocalStorage, useMediaQuery } from '@mantine/hooks';
