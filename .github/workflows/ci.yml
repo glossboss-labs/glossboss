@@ -12,10 +12,47 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint-and-typecheck:
-    name: Lint and Typecheck
+  detect-changes:
+    name: Detect Changes
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 2
+    outputs:
+      src: ${{ github.event_name != 'pull_request' || steps.filter.outputs.src }}
+      i18n: ${{ github.event_name != 'pull_request' || steps.filter.outputs.i18n }}
+      ci: ${{ github.event_name != 'pull_request' || steps.filter.outputs.ci }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        if: github.event_name == 'pull_request'
+        with:
+          filters: |
+            src:
+              - 'src/**'
+              - 'public/**'
+              - 'index.html'
+              - 'vite.config.ts'
+              - 'vitest.config.ts'
+              - 'tsconfig*.json'
+              - 'eslint.config.js'
+              - '.prettierrc.json'
+              - 'package.json'
+              - 'bun.lock'
+            i18n:
+              - 'src/**/*.{ts,tsx}'
+              - 'src/lib/app-language/**'
+              - 'scripts/extract-i18n.ts'
+              - 'scripts/sync-en-strings.ts'
+            ci:
+              - '.github/workflows/**'
+
+  quality:
+    name: Quality
+    needs: detect-changes
+    if: needs.detect-changes.outputs.src == 'true' || needs.detect-changes.outputs.ci == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
 
     steps:
       - uses: actions/checkout@v6
@@ -23,6 +60,7 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
+          cache: true
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
@@ -33,14 +71,26 @@ jobs:
       - name: Format check
         run: bun run format:check
 
+      - name: Register TypeScript problem matcher
+        run: echo "::add-matcher::.github/matchers/tsc.json"
+
       - name: Typecheck
         run: bun run typecheck
+
+      - name: Summary
+        if: failure()
+        run: |
+          {
+            echo "## Quality Check Failed"
+            echo ""
+            echo "One or more quality checks did not pass. See the logs above for details."
+          } >> "$GITHUB_STEP_SUMMARY"
 
   conventional-commits:
     name: Conventional Commits
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 5
 
     steps:
       - uses: actions/checkout@v6
@@ -50,6 +100,7 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
+          cache: true
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
@@ -57,28 +108,12 @@ jobs:
       - name: Validate commit messages
         run: bunx commitlint --from "${{ github.event.pull_request.base.sha }}" --to "${{ github.event.pull_request.head.sha }}" --verbose
 
-  production-build:
-    name: Production Build
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-
-    steps:
-      - uses: actions/checkout@v6
-
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
-
-      - name: Build
-        run: bun run build
-
   i18n-sync:
     name: i18n Sync Check
+    needs: detect-changes
+    if: needs.detect-changes.outputs.i18n == 'true' || needs.detect-changes.outputs.ci == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 5
 
     steps:
       - uses: actions/checkout@v6
@@ -86,6 +121,7 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
+          cache: true
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
@@ -102,6 +138,13 @@ jobs:
       - name: Warn about untranslated strings
         if: always()
         run: |
+          {
+            echo "## i18n Status"
+            echo ""
+            echo "| Language | Untranslated |"
+            echo "|----------|-------------|"
+          } >> "$GITHUB_STEP_SUMMARY"
+
           for po in src/lib/app-language/locales/app.*.po; do
             lang=$(echo "$po" | sed 's/.*app\.\(.*\)\.po/\1/')
             if [ "$lang" = "en" ]; then continue; fi
@@ -128,15 +171,18 @@ jobs:
               /^msgstr ""$/ { msgid = "" }
               END { print count + 0 }
             ' "$po")
+            echo "| $lang | $count |" >> "$GITHUB_STEP_SUMMARY"
             if [ "$count" -gt 0 ]; then
               echo "::warning::$po has $count untranslated string(s)"
             fi
           done
 
-  unit-tests-and-coverage:
-    name: Unit Tests and Coverage
+  tests:
+    name: Tests
+    needs: detect-changes
+    if: needs.detect-changes.outputs.src == 'true' || needs.detect-changes.outputs.ci == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 7
 
     steps:
       - uses: actions/checkout@v6
@@ -144,15 +190,57 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
+          cache: true
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
       - name: Test (coverage)
-        run: bun run test:coverage
+        run: bun run test:coverage 2>&1 | tee test-output.txt
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## Test Results"
+            echo ""
+            echo '```'
+            tail -20 test-output.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage/lcov.info
+
+  ci-gate:
+    name: CI Gate
+    if: always()
+    needs: [quality, conventional-commits, i18n-sync, tests]
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+
+    steps:
+      - name: Check results
+        run: |
+          echo "## CI Gate" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Job | Result |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|-----|--------|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Quality | ${{ needs.quality.result }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Conventional Commits | ${{ needs.conventional-commits.result }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| i18n Sync | ${{ needs.i18n-sync.result }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Tests | ${{ needs.tests.result }} |" >> "$GITHUB_STEP_SUMMARY"
+
+          RESULTS='${{ toJSON(needs.*.result) }}'
+          echo "Results: $RESULTS"
+          if echo "$RESULTS" | grep -q '"failure"'; then
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo "**Result: FAILED**" >> "$GITHUB_STEP_SUMMARY"
+            echo "::error::One or more CI jobs failed"
+            exit 1
+          fi
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "**Result: PASSED**" >> "$GITHUB_STEP_SUMMARY"

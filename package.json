@@ -43,7 +43,6 @@
     "@mantine/core": "^8.3.16",
     "@mantine/hooks": "^8.3.16",
     "@supabase/supabase-js": "^2.98.0",
-    "@tanstack/react-virtual": "^3.13.21",
     "lucide-react": "^0.577.0",
     "motion": "^12.35.0",
     "react": "^19.2.4",
