@@ -12,6 +12,7 @@ import type { GlossaryAnalysisResult } from '@/lib/glossary/types';
 import { deriveProjectName } from '@/lib/translation-memory';
 import type { QAEntryReport } from '@/lib/qa';
 import { STORAGE_KEY } from '@/lib/storage';
+import type { TranslationGlossaryMode, TranslationProviderId } from '@/lib/translation/types';
 
 /** Available filter types */
 export type FilterType =
@@ -41,6 +42,9 @@ export type SortDirection = 'asc' | 'desc';
 /** Machine translation metadata */
 export interface MachineTranslationMeta {
   usedGlossary: boolean;
+  glossaryMode?: TranslationGlossaryMode;
+  provider?: TranslationProviderId;
+  contextUsed?: boolean;
   timestamp: number;
 }
 
@@ -200,7 +204,10 @@ export interface EditorActions {
   clearEditor: () => void;
 
   /** Mark an entry as machine translated */
-  markAsMachineTranslated: (entryId: string, usedGlossary?: boolean) => void;
+  markAsMachineTranslated: (
+    entryId: string,
+    meta?: Partial<Omit<MachineTranslationMeta, 'timestamp'>>,
+  ) => void;
 
   /** Clear machine translated flag for an entry (when manually edited) */
   clearMachineTranslated: (entryId: string) => void;
@@ -755,14 +762,20 @@ export const useEditorStore = create<EditorState & EditorActions>()(
         });
       },
 
-      markAsMachineTranslated: (entryId: string, usedGlossary: boolean = false) => {
+      markAsMachineTranslated: (
+        entryId: string,
+        meta: Partial<Omit<MachineTranslationMeta, 'timestamp'>> = {},
+      ) => {
         set((state) => {
           const machineTranslatedIds = new Set(state.machineTranslatedIds);
           machineTranslatedIds.add(entryId);
 
           const machineTranslationMeta = new Map(state.machineTranslationMeta);
           machineTranslationMeta.set(entryId, {
-            usedGlossary,
+            usedGlossary: Boolean(meta.usedGlossary),
+            glossaryMode: meta.glossaryMode ?? (meta.usedGlossary ? 'native' : 'none'),
+            provider: meta.provider,
+            contextUsed: Boolean(meta.contextUsed),
             timestamp: Date.now(),
           });
 

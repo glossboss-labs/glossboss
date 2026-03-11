@@ -68,10 +68,12 @@ describe('SettingsModal', () => {
     await user.click(screen.getByRole('button', { name: /export settings/i }));
 
     await waitFor(() => {
-      expect(screen.getByRole('dialog', { name: /include api key/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('dialog', { name: /include saved credentials/i }),
+      ).toBeInTheDocument();
     });
-    expect(screen.getByRole('button', { name: /export without key/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /^include key$/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /export without credentials/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^include credentials$/i })).toBeInTheDocument();
   });
 
   it('persists the selected app language from display settings', async () => {

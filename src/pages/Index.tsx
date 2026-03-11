@@ -84,6 +84,11 @@ import type { FeedbackIssueSuccess } from '@/lib/feedback';
 import type { Glossary } from '@/lib/glossary/types';
 import { batchAnalyzeTranslations, syncGlossaryToDeepL } from '@/lib/glossary';
 import { QA_RULE_LABELS, analyzeQaForEntries, summarizeQaReports } from '@/lib/qa';
+import {
+  getActiveTranslationProvider,
+  getTranslationProviderLabel,
+  TRANSLATION_PROVIDER_CAPABILITIES,
+} from '@/lib/translation';
 import { debugError, debugLog } from '@/lib/debug';
 import { getBundledExamplePo } from '@/lib/example-po';
 import {
@@ -346,7 +351,7 @@ export default function Index() {
   );
   const [glossary, setGlossary] = useState<Glossary | null>(null);
   const [deeplGlossaryId, setDeeplGlossaryId] = useState<string | null>(null);
-  const [deeplTermCount, setDeeplTermCount] = useState<number>(0);
+  const [glossaryTermCount, setGlossaryTermCount] = useState<number>(0);
   const [glossarySyncStatus, setGlossarySyncStatus] = useState<string | null>(null);
   const [glossaryEnforcementEnabled, setGlossaryEnforcementEnabled] = useState(true);
   const [selectedSourceText, setSelectedSourceText] = useState<string | null>(null);
@@ -447,12 +452,12 @@ export default function Index() {
   const qaSummary = useMemo(() => summarizeQaReports(qaReports), [qaReports]);
 
   /**
-   * Handle glossary loaded - sync to DeepL and run analysis
+   * Handle glossary loaded - sync to provider and run analysis
    */
   const handleGlossaryLoaded = useCallback(
     async (loadedGlossary: Glossary) => {
       setGlossary(loadedGlossary);
-      setGlossarySyncStatus('Syncing to DeepL...');
+      setGlossaryTermCount(loadedGlossary.entries.length);
 
       // Run glossary analysis on all entries
       if (entries.length > 0) {
@@ -462,17 +467,28 @@ export default function Index() {
         setQaReports(analyzeQaForEntries(entries, analyses));
       }
 
-      // Sync to DeepL for native glossary support
-      try {
-        const glossaryId = await syncGlossaryToDeepL(loadedGlossary, setGlossarySyncStatus);
-        setDeeplGlossaryId(glossaryId);
-        setDeeplTermCount(loadedGlossary.entries.length);
-        debugLog('[Glossary] DeepL glossary ID:', glossaryId);
-      } catch (error) {
-        debugError('[Glossary] Failed to sync to DeepL:', error);
-        setGlossarySyncStatus('Sync failed - using fallback');
-        setDeeplTermCount(0);
-        // Continue without DeepL glossary - translations will still work, just without glossary enforcement
+      const provider = getActiveTranslationProvider();
+      const capabilities = TRANSLATION_PROVIDER_CAPABILITIES[provider];
+
+      if (capabilities.nativeGlossary) {
+        // DeepL: sync to native glossary API
+        setGlossarySyncStatus('syncing');
+        try {
+          const glossaryId = await syncGlossaryToDeepL(loadedGlossary, setGlossarySyncStatus);
+          setDeeplGlossaryId(glossaryId);
+          debugLog('[Glossary] DeepL glossary ID:', glossaryId);
+        } catch (error) {
+          debugError('[Glossary] Failed to sync to DeepL:', error);
+          setGlossarySyncStatus('sync-failed');
+        }
+      } else if (capabilities.promptGlossary) {
+        // Gemini: terms are sent in the prompt, no sync needed
+        setDeeplGlossaryId(null);
+        setGlossarySyncStatus('ready');
+      } else {
+        // Azure: no glossary support in translations, analysis only
+        setDeeplGlossaryId(null);
+        setGlossarySyncStatus('ready');
       }
     },
     [clearGlossaryAnalysis, entries, setGlossaryAnalysisBatch, setQaReports],
@@ -484,7 +500,7 @@ export default function Index() {
   const handleGlossaryCleared = useCallback(() => {
     setGlossary(null);
     setDeeplGlossaryId(null);
-    setDeeplTermCount(0);
+    setGlossaryTermCount(0);
     setGlossarySyncStatus(null);
     clearGlossaryAnalysis();
     setQaReports(analyzeQaForEntries(entries, new Map()));
@@ -498,20 +514,23 @@ export default function Index() {
   }, []);
 
   /**
-   * Handle force resync glossary to DeepL
+   * Handle force resync glossary (DeepL only — other providers don't need sync)
    */
   const handleForceResync = useCallback(async (glossaryToSync: Glossary) => {
-    setGlossarySyncStatus('Force resyncing to DeepL...');
+    const provider = getActiveTranslationProvider();
+    if (!TRANSLATION_PROVIDER_CAPABILITIES[provider].nativeGlossary) return;
+
+    setGlossarySyncStatus('syncing');
 
     try {
       const glossaryId = await syncGlossaryToDeepL(glossaryToSync, setGlossarySyncStatus, true);
       setDeeplGlossaryId(glossaryId);
-      setDeeplTermCount(glossaryToSync.entries.length);
+      setGlossaryTermCount(glossaryToSync.entries.length);
       debugLog('[Glossary] Force resync complete, DeepL glossary ID:', glossaryId);
     } catch (error) {
       debugError('[Glossary] Force resync failed:', error);
-      setGlossarySyncStatus('Sync failed - using fallback');
-      setDeeplTermCount(0);
+      setGlossarySyncStatus('sync-failed');
+      setGlossaryTermCount(glossaryToSync.entries.length);
     }
   }, []);
 
@@ -918,7 +937,7 @@ export default function Index() {
   }, [loadFile, pendingDraft]);
 
   const handleOpenSettings = useCallback((tab?: string) => {
-    setSettingsInitialTab(tab);
+    setSettingsInitialTab(typeof tab === 'string' ? tab : undefined);
     setSettingsOpen(true);
   }, []);
 
@@ -1848,11 +1867,13 @@ export default function Index() {
                             locale: glossary.targetLocale,
                           })}
                         </Badge>
-                        {deeplGlossaryId && (
+                        {glossarySyncStatus === 'ready' || deeplGlossaryId ? (
                           <Badge color="blue" variant="light" size="sm">
-                            {t('DeepL synced')}
+                            {t('{{provider}} ready', {
+                              provider: getTranslationProviderLabel(getActiveTranslationProvider()),
+                            })}
                           </Badge>
-                        )}
+                        ) : null}
                       </Group>
                     )}
                   </Stack>
@@ -1997,7 +2018,7 @@ export default function Index() {
           glossary={glossary}
           syncStatus={glossarySyncStatus}
           deeplGlossaryId={deeplGlossaryId}
-          deeplTermCount={deeplTermCount}
+          glossaryTermCount={glossaryTermCount}
           selectedSourceText={selectedSourceText}
           branchChipEnabled={branchChipEnabled}
           onBranchChipEnabledChange={setBranchChipEnabled}

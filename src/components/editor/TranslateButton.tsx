@@ -9,8 +9,8 @@
 
 import { useState, useCallback } from 'react';
 import { ActionIcon, Tooltip, Loader, Popover, Button, Text, Stack, Group } from '@mantine/core';
+import { useLocalStorage } from '@mantine/hooks';
 import { Languages, AlertCircle, AlertTriangle } from 'lucide-react';
-import { getDeepLClient, hasUserApiKey } from '@/lib/deepl';
 import { useTranslation } from '@/lib/app-language';
 import {
   formatDeepLError,
@@ -18,6 +18,17 @@ import {
   notifyGlossaryFallback,
 } from '@/lib/deepl/errors';
 import type { TargetLanguage, SourceLanguage } from '@/lib/deepl/types';
+import type { Glossary } from '@/lib/glossary/types';
+import {
+  getTranslationProviderLabel,
+  hasProviderCredentials,
+  translateWithActiveProvider,
+  type ProviderTranslationMetadata,
+} from '@/lib/translation';
+import {
+  TRANSLATION_PROVIDER_STORAGE_KEY,
+  type TranslationProviderSettings,
+} from '@/lib/translation/settings';
 
 interface TranslateButtonProps {
   /** Text to translate */
@@ -30,8 +41,12 @@ interface TranslateButtonProps {
   sourceLang?: SourceLanguage;
   /** DeepL glossary ID for native glossary support */
   glossaryId?: string;
-  /** Callback when translation completes (second param indicates glossary was used) */
-  onTranslated: (translatedText: string, usedGlossary?: boolean) => void;
+  /** Glossary data for prompt-aware providers */
+  glossary?: Glossary | null;
+  /** Source references for project-context providers */
+  references?: string[];
+  /** Callback when translation completes */
+  onTranslated: (translatedText: string, meta?: ProviderTranslationMetadata) => void;
   /** Callback when translation fails */
   onError?: (error: string) => void;
   /** Whether translation is disabled */
@@ -48,6 +63,8 @@ export function TranslateButton({
   targetLang,
   sourceLang,
   glossaryId,
+  glossary = null,
+  references,
   onTranslated,
   onError,
   disabled = false,
@@ -59,18 +76,32 @@ export function TranslateButton({
   const [error, setError] = useState<string | null>(null);
   const [showConfirm, setShowConfirm] = useState(false);
   const [pendingTranslation, setPendingTranslation] = useState<string | null>(null);
-  const [pendingUsedGlossary, setPendingUsedGlossary] = useState(false);
-  const apiKeyConfigured = hasUserApiKey();
+  const [pendingMeta, setPendingMeta] = useState<ProviderTranslationMetadata | null>(null);
+  const [providerState] = useLocalStorage<TranslationProviderSettings>({
+    key: TRANSLATION_PROVIDER_STORAGE_KEY,
+    defaultValue: {
+      provider: 'deepl',
+      updatedAt: 0,
+    },
+  });
+  const activeProvider = providerState.provider;
+  const providerLabel = getTranslationProviderLabel(activeProvider);
+  const apiKeyConfigured = hasProviderCredentials(activeProvider);
   const isDisabled = disabled || !text.trim() || !apiKeyConfigured;
 
   const iconSize = size === 'xs' ? 12 : size === 'sm' ? 14 : 16;
   const hasExistingTranslation = currentTranslation.trim().length > 0;
-  const label = glossaryId ? t('Translate with Glossary') : t('Translate with DeepL');
+  const label =
+    glossaryId && activeProvider === 'deepl'
+      ? t('Translate with Glossary')
+      : t('Translate with {{provider}}', { provider: providerLabel });
   const tooltipLabel = !apiKeyConfigured
-    ? t('Add your DeepL API key in Settings to enable translation')
+    ? t('Add your {{provider}} credentials in Settings to enable translation', {
+        provider: providerLabel,
+      })
     : glossaryId
-      ? t('Translate with DeepL + Glossary')
-      : t('Translate with DeepL');
+      ? t('Translate with {{provider}} + Glossary', { provider: providerLabel })
+      : t('Translate with {{provider}}', { provider: providerLabel });
 
   const doTranslate = useCallback(async () => {
     if (!text.trim() || isLoading || isDisabled) return;
@@ -79,40 +110,54 @@ export function TranslateButton({
     setError(null);
 
     try {
-      const client = getDeepLClient();
-
-      // When using a glossary, source_lang is REQUIRED by DeepL
-      // Default to 'EN' since WordPress glossaries are English source
-      const effectiveSourceLang = glossaryId ? sourceLang || 'EN' : sourceLang;
-
-      let usedGlossary = Boolean(glossaryId);
-      let result: string;
+      let resultText = '';
+      let resultMeta: ProviderTranslationMetadata | undefined;
       try {
-        // Use DeepL's native glossary support if available
-        result = await client.translateText(text, targetLang, effectiveSourceLang, glossaryId);
+        const response = await translateWithActiveProvider({
+          text,
+          targetLang,
+          sourceLang,
+          glossary,
+          deeplGlossaryId: activeProvider === 'deepl' ? glossaryId : undefined,
+          references,
+        });
+        const translated = response.translations[0];
+        if (!translated?.text) {
+          throw new Error('No translation returned');
+        }
+        resultText = translated.text;
+        resultMeta = translated.metadata;
       } catch (glossaryError) {
         // If glossary is stale/deleted, retry once without glossary.
-        if (glossaryId && isGlossaryNotFoundError(glossaryError)) {
-          usedGlossary = false;
+        if (activeProvider === 'deepl' && glossaryId && isGlossaryNotFoundError(glossaryError)) {
           notifyGlossaryFallback('single');
-          result = await client.translateText(text, targetLang, sourceLang, undefined);
+          const fallbackResponse = await translateWithActiveProvider({
+            text,
+            targetLang,
+            sourceLang,
+            glossary,
+            deeplGlossaryId: undefined,
+            references,
+          });
+          const fallbackTranslated = fallbackResponse.translations[0];
+          if (!fallbackTranslated?.text) {
+            throw new Error('No translation returned', { cause: glossaryError });
+          }
+          resultText = fallbackTranslated.text;
+          resultMeta = fallbackTranslated.metadata;
         } else {
           throw glossaryError;
         }
       }
 
-      if (usedGlossary) {
-        console.log('[DeepL] Translated with glossary:', glossaryId);
-      }
-
       // If there's existing translation, show confirmation first
       if (hasExistingTranslation) {
-        setPendingTranslation(result);
-        setPendingUsedGlossary(usedGlossary);
+        setPendingTranslation(resultText);
+        setPendingMeta(resultMeta ?? null);
         setShowConfirm(true);
       } else {
         // No existing translation, apply directly
-        onTranslated(result, usedGlossary);
+        onTranslated(resultText, resultMeta);
       }
     } catch (err) {
       const errorMessage = formatDeepLError(err);
@@ -126,25 +171,28 @@ export function TranslateButton({
     targetLang,
     sourceLang,
     glossaryId,
+    glossary,
+    references,
     onTranslated,
     onError,
     isLoading,
     isDisabled,
     hasExistingTranslation,
+    activeProvider,
   ]);
 
   const handleConfirm = useCallback(() => {
     if (pendingTranslation) {
-      onTranslated(pendingTranslation, pendingUsedGlossary);
+      onTranslated(pendingTranslation, pendingMeta ?? undefined);
     }
     setPendingTranslation(null);
-    setPendingUsedGlossary(false);
+    setPendingMeta(null);
     setShowConfirm(false);
-  }, [pendingTranslation, pendingUsedGlossary, onTranslated]);
+  }, [pendingMeta, pendingTranslation, onTranslated]);
 
   const handleCancel = useCallback(() => {
     setPendingTranslation(null);
-    setPendingUsedGlossary(false);
+    setPendingMeta(null);
     setShowConfirm(false);
   }, []);
 
@@ -250,7 +298,9 @@ export function TranslateButton({
             </Text>
           </Group>
           <Text size="xs" c="dimmed">
-            {t('This will overwrite your current translation with the DeepL result.')}
+            {t('This will overwrite your current translation with the {{provider}} result.', {
+              provider: providerLabel,
+            })}
           </Text>
           <Group gap="xs" justify="flex-end">
             <Button size="xs" variant="subtle" onClick={handleCancel}>

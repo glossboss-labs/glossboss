@@ -138,6 +138,8 @@ Supabase Edge Functions proxy external services and keep server-managed secrets 
 Functions:
 
 - `deepl-translate`
+- `azure-translate`
+- `gemini-translate`
 - `tts-elevenlabs`
 - `wp-glossary`
 - `wp-source`
@@ -148,6 +150,8 @@ Deploy them with the Supabase CLI:
 ```bash
 bunx supabase link --project-ref <your-project-ref>
 bunx supabase functions deploy deepl-translate --no-verify-jwt
+bunx supabase functions deploy azure-translate --no-verify-jwt
+bunx supabase functions deploy gemini-translate --no-verify-jwt
 bunx supabase functions deploy tts-elevenlabs --no-verify-jwt
 bunx supabase functions deploy wp-glossary --no-verify-jwt
 bunx supabase functions deploy wp-source --no-verify-jwt
@@ -167,6 +171,10 @@ Required Supabase secrets / environment variables:
 Optional Supabase secrets:
 
 - `DEEPL_KEY`
+- `AZURE_TRANSLATOR_KEY`
+- `AZURE_TRANSLATOR_REGION`
+- `AZURE_TRANSLATOR_ENDPOINT`
+- `GEMINI_API_KEY`
 - `GITHUB_OWNER`
 - `GITHUB_REPO`
 - `ALLOW_TURNSTILE_BYPASS`
@@ -183,14 +191,21 @@ bunx supabase secrets set ALLOWED_ORIGINS=https://glossboss.example,https://prev
 bunx supabase secrets set TURNSTILE_SECRET=your-turnstile-secret
 bunx supabase secrets set GITHUB_TOKEN=your-fine-grained-token
 bunx supabase secrets set DEEPL_KEY=your-server-side-deepl-key
+bunx supabase secrets set AZURE_TRANSLATOR_KEY=your-server-side-azure-key
+bunx supabase secrets set AZURE_TRANSLATOR_REGION=your-azure-region
+bunx supabase secrets set GEMINI_API_KEY=your-server-side-gemini-key
 ```
 
 ## Security notes
 
 - Edge functions reject requests from origins not listed in `ALLOWED_ORIGINS`.
 - `feedback-issue` uses Cloudflare Turnstile plus best-effort in-memory rate limiting.
-- DeepL personal API keys can be stored locally in the browser if the user chooses to save them.
-- For shared or untrusted machines, saved DeepL keys should be removed after use.
+- Translation provider API keys (DeepL, Azure Translator, Gemini) can be stored locally in the
+  browser if the user chooses to save them. For shared or untrusted machines, saved keys should be
+  removed after use.
+- Azure Translator endpoint URLs are validated against a known domain allowlist to prevent SSRF.
+- Gemini API keys are sent via the `x-goog-api-key` header rather than URL query parameters to
+  avoid accidental exposure in server logs and referrer headers.
 
 If you find a security issue, please follow `SECURITY.md` instead of opening a public issue.
 

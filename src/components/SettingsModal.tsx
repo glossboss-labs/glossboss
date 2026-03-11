@@ -64,6 +64,24 @@ import {
   getDeepLClient,
 } from '@/lib/deepl';
 import {
+  clearAzureSettings,
+  getAzureClient,
+  getAzureSettings,
+  getDefaultAzureEndpoint,
+  isAzurePersistEnabled,
+  saveAzureSettings,
+  setAzurePersistEnabled,
+} from '@/lib/azure';
+import {
+  clearGeminiSettings,
+  getDefaultGeminiModel,
+  getGeminiClient,
+  getGeminiSettings,
+  isGeminiPersistEnabled,
+  saveGeminiSettings,
+  setGeminiPersistEnabled,
+} from '@/lib/gemini';
+import {
   clearTtsSettings,
   getBrowserVoices,
   getElevenLabsClient,
@@ -109,6 +127,13 @@ import {
   serializeTranslationMemoryToJson,
   serializeTranslationMemoryToTmx,
 } from '@/lib/translation-memory';
+import {
+  getTranslationProviderSettings,
+  getTranslationProviderLabel,
+  saveActiveTranslationProvider,
+  TRANSLATION_PROVIDER_CAPABILITIES,
+  type TranslationProviderId,
+} from '@/lib/translation';
 
 /** Keyboard shortcut definitions */
 const KEYBINDS: { keys: string[][]; action: string; description?: string }[] = [
@@ -258,7 +283,7 @@ interface SettingsModalProps {
   glossary?: Glossary | null;
   syncStatus?: string | null;
   deeplGlossaryId?: string | null;
-  deeplTermCount?: number;
+  glossaryTermCount?: number;
   selectedSourceText?: string | null;
   branchChipEnabled?: boolean;
   onBranchChipEnabledChange?: (enabled: boolean) => void;
@@ -268,6 +293,12 @@ interface SettingsModalProps {
   onSpeechEnabledChange?: (enabled: boolean) => void;
   translateEnabled?: boolean;
   onTranslateEnabledChange?: (enabled: boolean) => void;
+}
+
+interface TranslationConnectionResult {
+  success: boolean;
+  message: string;
+  usage?: { used: number; limit: number };
 }
 
 export function SettingsModal({
@@ -282,7 +313,7 @@ export function SettingsModal({
   glossary,
   syncStatus,
   deeplGlossaryId,
-  deeplTermCount,
+  glossaryTermCount,
   selectedSourceText,
   branchChipEnabled = true,
   onBranchChipEnabledChange,
@@ -299,20 +330,33 @@ export function SettingsModal({
   const isDevelopment = import.meta.env.DEV;
 
   // DeepL API settings state
+  const [translationProvider, setTranslationProvider] = useState<TranslationProviderId>('deepl');
   const [apiKey, setApiKey] = useState('');
   const [apiType, setApiType] = useState<DeepLApiType>('free');
   const [formality, setFormality] = useState<DeepLFormality>('prefer_less');
   const [persistKey, setPersistKey] = useState(() => isPersistEnabled());
+  const [azureApiKey, setAzureApiKey] = useState('');
+  const [azureRegion, setAzureRegion] = useState('');
+  const [azureEndpoint, setAzureEndpoint] = useState(getDefaultAzureEndpoint());
+  const [azurePersistKey, setAzurePersistKey] = useState(() => isAzurePersistEnabled());
+  const [azureTesting, setAzureTesting] = useState(false);
+  const [azureSaved, setAzureSaved] = useState(false);
+  const [azureTestResult, setAzureTestResult] = useState<TranslationConnectionResult | null>(null);
+  const [geminiApiKey, setGeminiApiKey] = useState('');
+  const [geminiModelId, setGeminiModelId] = useState(getDefaultGeminiModel());
+  const [geminiUseProjectContext, setGeminiUseProjectContext] = useState(false);
+  const [geminiPersistKey, setGeminiPersistKey] = useState(() => isGeminiPersistEnabled());
+  const [geminiTesting, setGeminiTesting] = useState(false);
+  const [geminiSaved, setGeminiSaved] = useState(false);
+  const [geminiTestResult, setGeminiTestResult] = useState<TranslationConnectionResult | null>(
+    null,
+  );
   const [skipTranslated, setSkipTranslated] = useLocalStorage<boolean>({
     key: NAV_SKIP_TRANSLATED_KEY,
     defaultValue: true,
   });
   const [isTesting, setIsTesting] = useState(false);
-  const [testResult, setTestResult] = useState<{
-    success: boolean;
-    message: string;
-    usage?: { used: number; limit: number };
-  } | null>(null);
+  const [testResult, setTestResult] = useState<TranslationConnectionResult | null>(null);
   const [isSaved, setIsSaved] = useState(false);
   const [ttsProvider, setTtsProvider] = useState<TtsProviderId>('browser');
   const [ttsApiKey, setTtsApiKey] = useState('');
@@ -392,12 +436,31 @@ export function SettingsModal({
   // Load saved settings on open
   useEffect(() => {
     if (opened) {
+      setTranslationProvider(getTranslationProviderSettings().provider);
+
       const settings = getDeepLSettings();
       setApiKey(settings.apiKey);
       setApiType(settings.apiType);
       setFormality(settings.formality);
       setIsSaved(Boolean(settings.apiKey));
       setPersistKey(isPersistEnabled());
+      setTestResult(null);
+
+      const azureSettings = getAzureSettings();
+      setAzureApiKey(azureSettings.apiKey);
+      setAzureRegion(azureSettings.region);
+      setAzureEndpoint(azureSettings.endpoint);
+      setAzurePersistKey(isAzurePersistEnabled());
+      setAzureSaved(Boolean(azureSettings.apiKey.trim() && azureSettings.region.trim()));
+      setAzureTestResult(null);
+
+      const geminiSettings = getGeminiSettings();
+      setGeminiApiKey(geminiSettings.apiKey);
+      setGeminiModelId(geminiSettings.modelId);
+      setGeminiUseProjectContext(geminiSettings.useProjectContext);
+      setGeminiPersistKey(isGeminiPersistEnabled());
+      setGeminiSaved(Boolean(geminiSettings.apiKey.trim()));
+      setGeminiTestResult(null);
 
       const ttsSettings = getTtsSettings();
       setTtsProvider(ttsSettings.provider);
@@ -519,6 +582,121 @@ export function SettingsModal({
     setPersistKey(false);
     setIsSaved(false);
     setTestResult(null);
+  }, []);
+
+  const handleTranslationProviderChange = useCallback((provider: TranslationProviderId) => {
+    setTranslationProvider(provider);
+    saveActiveTranslationProvider(provider);
+  }, []);
+
+  const handleTestAzureKey = useCallback(async () => {
+    if (!azureApiKey.trim() || !azureRegion.trim()) {
+      setAzureTestResult({
+        success: false,
+        message: t('Please enter an API key and region'),
+      });
+      return;
+    }
+
+    setAzureTesting(true);
+    setAzureTestResult(null);
+
+    try {
+      saveAzureSettings({
+        apiKey: azureApiKey,
+        region: azureRegion,
+        endpoint: azureEndpoint,
+      });
+      await getAzureClient().testKey();
+      setAzureTestResult({
+        success: true,
+        message: t('API key is valid!'),
+      });
+      setAzureSaved(true);
+    } catch (error) {
+      setAzureTestResult({
+        success: false,
+        message: error instanceof Error ? error.message : t('Failed to connect'),
+      });
+      setAzureSaved(false);
+    } finally {
+      setAzureTesting(false);
+    }
+  }, [azureApiKey, azureEndpoint, azureRegion, t]);
+
+  const handleSaveAzureSettings = useCallback(() => {
+    saveAzureSettings({
+      apiKey: azureApiKey,
+      region: azureRegion,
+      endpoint: azureEndpoint,
+    });
+    setAzureSaved(true);
+    setAzureTestResult((current) => current ?? { success: true, message: t('Settings saved!') });
+  }, [azureApiKey, azureEndpoint, azureRegion, t]);
+
+  const handleClearAzureKey = useCallback(() => {
+    clearAzureSettings();
+    setAzureApiKey('');
+    setAzureRegion('');
+    setAzureEndpoint(getDefaultAzureEndpoint());
+    setAzurePersistKey(false);
+    setAzureSaved(false);
+    setAzureTestResult(null);
+  }, []);
+
+  const handleTestGeminiKey = useCallback(async () => {
+    if (!geminiApiKey.trim()) {
+      setGeminiTestResult({
+        success: false,
+        message: t('Please enter an API key'),
+      });
+      return;
+    }
+
+    setGeminiTesting(true);
+    setGeminiTestResult(null);
+
+    try {
+      saveGeminiSettings({
+        apiKey: geminiApiKey,
+        modelId: geminiModelId,
+        useProjectContext: geminiUseProjectContext,
+      });
+      await getGeminiClient().testKey();
+      setGeminiTestResult({
+        success: true,
+        message: t('API key is valid!'),
+      });
+      setGeminiSaved(true);
+    } catch (error) {
+      setGeminiTestResult({
+        success: false,
+        message: error instanceof Error ? error.message : t('Failed to connect'),
+      });
+      setGeminiSaved(false);
+    } finally {
+      setGeminiTesting(false);
+    }
+  }, [geminiApiKey, geminiModelId, geminiUseProjectContext, t]);
+
+  const handleSaveGeminiSettings = useCallback(() => {
+    saveGeminiSettings({
+      apiKey: geminiApiKey,
+      modelId: geminiModelId,
+      useProjectContext: geminiUseProjectContext,
+    });
+    setGeminiSaved(true);
+    setGeminiTestResult((current) => current ?? { success: true, message: t('Settings saved!') });
+  }, [geminiApiKey, geminiModelId, geminiUseProjectContext, t]);
+
+  const handleClearGeminiKey = useCallback(() => {
+    clearGeminiSettings();
+    setGeminiApiKey('');
+    setGeminiModelId(getDefaultGeminiModel());
+    setGeminiUseProjectContext(false);
+    setGeminiPersistKey(false);
+    setGeminiSaved(false);
+    setGeminiTestResult(null);
   }, []);
 
   const loadElevenLabsVoices = useCallback(async () => {
@@ -683,11 +861,24 @@ export function SettingsModal({
     (includeApiKey: boolean) => {
       const file = createAppSettingsFile(
         {
+          translationProvider,
           deepl: {
             apiKey,
             apiType,
             formality,
             persistKey,
+          },
+          azure: {
+            apiKey: azureApiKey,
+            region: azureRegion,
+            endpoint: azureEndpoint,
+            persistKey: azurePersistKey,
+          },
+          gemini: {
+            apiKey: geminiApiKey,
+            modelId: geminiModelId,
+            useProjectContext: geminiUseProjectContext,
+            persistKey: geminiPersistKey,
           },
           preferences: {
             glossaryLocale: selectedLocale,
@@ -718,22 +909,31 @@ export function SettingsModal({
       setTransferResult({
         success: true,
         message: includeApiKey
-          ? t('Settings exported with your DeepL API key.')
-          : t('Settings exported without your DeepL API key.'),
+          ? t('Settings exported with your saved translation credentials.')
+          : t('Settings exported without your saved translation credentials.'),
       });
     },
     [
       apiKey,
       apiType,
+      azureApiKey,
+      azureEndpoint,
+      azurePersistKey,
+      azureRegion,
       branchChipEnabled,
       containerWidth,
       enforcementEnabled,
       formality,
+      geminiApiKey,
+      geminiModelId,
+      geminiPersistKey,
+      geminiUseProjectContext,
       isDevelopment,
       persistKey,
       selectedLocale,
       skipTranslated,
       speechEnabled,
+      translationProvider,
       translateEnabled,
       t,
     ],
@@ -745,12 +945,25 @@ export function SettingsModal({
       const nextGlossaryLocale = applied.preferences.glossaryLocale;
       const shouldClearGlossary = glossary && glossary.targetLocale !== nextGlossaryLocale;
 
+      setTranslationProvider(applied.translationProvider);
       setApiKey(applied.deepl.apiKey);
       setApiType(applied.deepl.apiType);
       setFormality(applied.deepl.formality);
       setPersistKey(applied.deepl.persistKey);
       setIsSaved(Boolean(applied.deepl.apiKey.trim()));
       setTestResult(null);
+      setAzureApiKey(applied.azure.apiKey);
+      setAzureRegion(applied.azure.region);
+      setAzureEndpoint(applied.azure.endpoint);
+      setAzurePersistKey(applied.azure.persistKey);
+      setAzureSaved(Boolean(applied.azure.apiKey.trim() && applied.azure.region.trim()));
+      setAzureTestResult(null);
+      setGeminiApiKey(applied.gemini.apiKey);
+      setGeminiModelId(applied.gemini.modelId);
+      setGeminiUseProjectContext(applied.gemini.useProjectContext);
+      setGeminiPersistKey(applied.gemini.persistKey);
+      setGeminiSaved(Boolean(applied.gemini.apiKey.trim()));
+      setGeminiTestResult(null);
       setSelectedLocale(nextGlossaryLocale);
 
       if (shouldClearGlossary) {
@@ -777,8 +990,8 @@ export function SettingsModal({
         success: true,
         message:
           includeApiKey && settingsFileHasCredentials(file)
-            ? t('Settings imported, including your DeepL API key.')
-            : t('Settings imported without changing your current DeepL API key.'),
+            ? t('Settings imported, including your saved translation credentials.')
+            : t('Settings imported without changing your current saved translation credentials.'),
       });
     },
     [
@@ -1060,20 +1273,33 @@ export function SettingsModal({
         closeButtonProps={{ 'aria-label': t('Close settings') }}
       >
         <Tabs defaultValue={initialTab ?? 'api'}>
-          <Tabs.List mb="md" style={{ overflowX: 'auto', flexWrap: 'nowrap' }}>
+          <Tabs.List
+            mb="md"
+            style={{
+              flexWrap: 'nowrap',
+              overflowX: 'auto',
+              scrollbarWidth: 'none',
+              WebkitOverflowScrolling: 'touch',
+            }}
+          >
             <Tabs.Tab value="api" leftSection={<Key size={14} />}>
-              {t('DeepL API')}
+              {t('Translation')}
             </Tabs.Tab>
             <Tabs.Tab value="speech" leftSection={<Volume2 size={14} />}>
               {t('Speech')}
             </Tabs.Tab>
-            <Tabs.Tab value="glossary" leftSection={<BookOpen size={14} />}>
+            <Tabs.Tab
+              value="glossary"
+              leftSection={<BookOpen size={14} />}
+              rightSection={
+                glossary ? (
+                  <Badge size="xs" color="green">
+                    {glossary.entries.length}
+                  </Badge>
+                ) : undefined
+              }
+            >
               {t('Glossary')}
-              {glossary && (
-                <Badge size="xs" color="green" ml={6}>
-                  {glossary.entries.length}
-                </Badge>
-              )}
             </Tabs.Tab>
             <Tabs.Tab value="keybinds" leftSection={<Keyboard size={14} />}>
               {t('Keyboard Shortcuts')}
@@ -1095,7 +1321,7 @@ export function SettingsModal({
           <Tabs.Panel value="api">
             <Stack gap="md">
               <Switch
-                label={t('Enable DeepL translation')}
+                label={t('Enable machine translation')}
                 description={t(
                   'When disabled, all translate buttons and the bulk translation toolbar are hidden.',
                 )}
@@ -1103,154 +1329,452 @@ export function SettingsModal({
                 onChange={(e) => onTranslateEnabledChange?.(e.currentTarget.checked)}
               />
 
-              <Text size="sm" c="dimmed">
-                {t('Enter your DeepL API key to enable machine translation. Get a free key at')}{' '}
-                <Anchor
-                  href="https://www.deepl.com/pro-api"
-                  target="_blank"
-                  size="sm"
-                  style={{
-                    whiteSpace: 'nowrap',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 4,
-                  }}
-                >
-                  deepl.com/pro-api
-                  <ExternalLink size={12} />
-                </Anchor>
-              </Text>
+              <Select
+                label={t('Translation provider')}
+                value={translationProvider}
+                onChange={(value) => {
+                  if (value === 'deepl' || value === 'azure' || value === 'gemini') {
+                    handleTranslationProviderChange(value);
+                  }
+                }}
+                data={[
+                  { value: 'deepl', label: 'DeepL' },
+                  { value: 'azure', label: 'Azure Translator' },
+                  { value: 'gemini', label: 'Gemini' },
+                ]}
+              />
 
-              <Alert color="yellow" icon={<AlertCircle size={16} />}>
+              <Alert color="blue" icon={<Languages size={16} />}>
                 <Text size="sm">
-                  {t(
-                    'DeepL API is kept in this browser tab by default and will be cleared when you close the tab. Enable "Remember API key" below to persist it across sessions — only do this on a personal, trusted device.',
-                  )}
+                  {t('Selected provider: {{provider}}', {
+                    provider: getTranslationProviderLabel(translationProvider),
+                  })}
                 </Text>
               </Alert>
 
-              <Switch
-                label={t('Remember API key across sessions')}
-                description={t(
-                  'When enabled, your key is stored in localStorage and survives browser restarts. Disable on shared or untrusted devices.',
-                )}
-                checked={persistKey}
-                onChange={(e) => {
-                  const enabled = e.currentTarget.checked;
-                  setPersistKey(enabled);
-                  setPersistEnabled(enabled);
-                  setIsSaved(false);
-                }}
-              />
+              {translationProvider === 'deepl' && (
+                <>
+                  <Text size="sm" c="dimmed">
+                    {t('Enter your DeepL API key to enable machine translation. Get a free key at')}{' '}
+                    <Anchor
+                      href="https://www.deepl.com/pro-api"
+                      target="_blank"
+                      size="sm"
+                      style={{
+                        whiteSpace: 'nowrap',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 4,
+                      }}
+                    >
+                      deepl.com/pro-api
+                      <ExternalLink size={12} />
+                    </Anchor>
+                  </Text>
 
-              <PasswordInput
-                label={t('API key')}
-                placeholder={t('Enter your DeepL API key')}
-                value={apiKey}
-                onChange={(e) => {
-                  setApiKey(e.currentTarget.value);
-                  setIsSaved(false);
-                  setTestResult(null);
-                }}
-                rightSection={
-                  isSaved && apiKey ? (
-                    <Tooltip label={t('Key saved')}>
-                      <Check size={16} color="var(--mantine-color-green-6)" />
-                    </Tooltip>
-                  ) : null
-                }
-              />
+                  <Alert color="yellow" icon={<AlertCircle size={16} />}>
+                    <Text size="sm">
+                      {t(
+                        'DeepL API is kept in this browser tab by default and will be cleared when you close the tab. Enable "Remember API key" below to persist it across sessions — only do this on a personal, trusted device.',
+                      )}
+                    </Text>
+                  </Alert>
 
-              <div data-ev-id="ev_a06444cf83">
-                <Text size="sm" fw={500} mb={4}>
-                  {t('API type')}
-                </Text>
-                <SegmentedControl
-                  value={apiType}
-                  onChange={(value) => {
-                    setApiType(value as DeepLApiType);
-                    setIsSaved(false);
-                  }}
-                  data={[
-                    { label: t('Free API'), value: 'free' },
-                    { label: t('Pro API'), value: 'pro' },
-                  ]}
-                  fullWidth
-                />
-
-                <Text size="xs" c="dimmed" mt={4}>
-                  {t('Free: 500,000 chars/month • Pro: Pay per use')}
-                </Text>
-              </div>
-
-              <div>
-                <Text size="sm" fw={500} mb={4}>
-                  {t('Formality')}
-                </Text>
-                <SegmentedControl
-                  value={formality}
-                  onChange={(value) => {
-                    setFormality(value as DeepLFormality);
-                    saveDeepLSettings({ formality: value as DeepLFormality });
-                  }}
-                  data={[
-                    { label: t('Informal'), value: 'prefer_less' },
-                    { label: t('Formal'), value: 'prefer_more' },
-                  ]}
-                  fullWidth
-                />
-
-                <Text size="xs" c="dimmed" mt={4}>
-                  {t(
-                    'Controls the tone of DeepL translations. Not all languages support formality.',
-                  )}
-                </Text>
-              </div>
-
-              <Group>
-                <Button
-                  variant="light"
-                  onClick={handleTestKey}
-                  loading={isTesting}
-                  disabled={!apiKey.trim()}
-                >
-                  {t('Test Connection')}
-                </Button>
-                <Button onClick={handleSaveApiKey} disabled={!apiKey.trim() || isSaved}>
-                  {t('Save')}
-                </Button>
-                {apiKey && (
-                  <Button variant="subtle" color="red" onClick={handleClearApiKey}>
-                    {t('Remove saved key')}
-                  </Button>
-                )}
-              </Group>
-
-              {testResult && (
-                <Alert
-                  color={testResult.success ? 'green' : 'red'}
-                  icon={testResult.success ? <Check size={16} /> : <AlertCircle size={16} />}
-                >
-                  <Stack gap="xs">
-                    <Text size="sm">{testResult.message}</Text>
-                    {testResult.usage && (
-                      <>
-                        <Progress
-                          value={(testResult.usage.used / testResult.usage.limit) * 100}
-                          size="sm"
-                          color={
-                            testResult.usage.used / testResult.usage.limit > 0.9 ? 'red' : 'blue'
-                          }
-                        />
-
-                        <Text size="xs" c="dimmed">
-                          {testResult.usage.used.toLocaleString()} /{' '}
-                          {testResult.usage.limit.toLocaleString()} {t('characters')}
-                        </Text>
-                      </>
+                  <Switch
+                    label={t('Remember API key across sessions')}
+                    description={t(
+                      'When enabled, your key is stored in localStorage and survives browser restarts. Disable on shared or untrusted devices.',
                     )}
-                  </Stack>
-                </Alert>
+                    checked={persistKey}
+                    onChange={(e) => {
+                      const enabled = e.currentTarget.checked;
+                      setPersistKey(enabled);
+                      setPersistEnabled(enabled);
+                      setIsSaved(false);
+                    }}
+                  />
+
+                  <PasswordInput
+                    label={t('API key')}
+                    placeholder={t('Enter your DeepL API key')}
+                    value={apiKey}
+                    onChange={(e) => {
+                      setApiKey(e.currentTarget.value);
+                      setIsSaved(false);
+                      setTestResult(null);
+                    }}
+                    rightSection={
+                      isSaved && apiKey ? (
+                        <Tooltip label={t('Key saved')}>
+                          <Check size={16} color="var(--mantine-color-green-6)" />
+                        </Tooltip>
+                      ) : null
+                    }
+                  />
+
+                  <div data-ev-id="ev_a06444cf83">
+                    <Text size="sm" fw={500} mb={4}>
+                      {t('API type')}
+                    </Text>
+                    <SegmentedControl
+                      value={apiType}
+                      onChange={(value) => {
+                        setApiType(value as DeepLApiType);
+                        setIsSaved(false);
+                      }}
+                      data={[
+                        { label: t('Free API'), value: 'free' },
+                        { label: t('Pro API'), value: 'pro' },
+                      ]}
+                      fullWidth
+                    />
+
+                    <Text size="xs" c="dimmed" mt={4}>
+                      {t('Free: 500,000 chars/month • Pro: Pay per use')}
+                    </Text>
+                  </div>
+
+                  <div>
+                    <Text size="sm" fw={500} mb={4}>
+                      {t('Formality')}
+                    </Text>
+                    <SegmentedControl
+                      value={formality}
+                      onChange={(value) => {
+                        setFormality(value as DeepLFormality);
+                        saveDeepLSettings({ formality: value as DeepLFormality });
+                      }}
+                      data={[
+                        { label: t('Informal'), value: 'prefer_less' },
+                        { label: t('Formal'), value: 'prefer_more' },
+                      ]}
+                      fullWidth
+                    />
+
+                    <Text size="xs" c="dimmed" mt={4}>
+                      {t(
+                        'Controls the tone of DeepL translations. Not all languages support formality.',
+                      )}
+                    </Text>
+                  </div>
+
+                  <Group>
+                    <Button
+                      variant="light"
+                      onClick={handleTestKey}
+                      loading={isTesting}
+                      disabled={!apiKey.trim()}
+                    >
+                      {t('Test Connection')}
+                    </Button>
+                    <Button onClick={handleSaveApiKey} disabled={!apiKey.trim() || isSaved}>
+                      {t('Save')}
+                    </Button>
+                    {apiKey && (
+                      <Button variant="subtle" color="red" onClick={handleClearApiKey}>
+                        {t('Remove saved key')}
+                      </Button>
+                    )}
+                  </Group>
+
+                  {testResult && (
+                    <Alert
+                      color={testResult.success ? 'green' : 'red'}
+                      icon={testResult.success ? <Check size={16} /> : <AlertCircle size={16} />}
+                    >
+                      <Stack gap="xs">
+                        <Text size="sm">{testResult.message}</Text>
+                        {testResult.usage && (
+                          <>
+                            <Progress
+                              value={(testResult.usage.used / testResult.usage.limit) * 100}
+                              size="sm"
+                              color={
+                                testResult.usage.used / testResult.usage.limit > 0.9
+                                  ? 'red'
+                                  : 'blue'
+                              }
+                            />
+
+                            <Text size="xs" c="dimmed">
+                              {testResult.usage.used.toLocaleString()} /{' '}
+                              {testResult.usage.limit.toLocaleString()} {t('characters')}
+                            </Text>
+                          </>
+                        )}
+                      </Stack>
+                    </Alert>
+                  )}
+                </>
+              )}
+
+              {translationProvider === 'azure' && (
+                <>
+                  <Text size="sm" c="dimmed">
+                    {t(
+                      'Azure Translator offers 2 million characters/month free. Create a Translator resource in the Azure portal to get your API key and region.',
+                    )}{' '}
+                    <Anchor
+                      href="https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation"
+                      target="_blank"
+                      size="sm"
+                      style={{
+                        whiteSpace: 'nowrap',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 4,
+                      }}
+                    >
+                      {t('Create resource')}
+                      <ExternalLink size={12} />
+                    </Anchor>
+                    {' · '}
+                    <Anchor
+                      href="https://learn.microsoft.com/en-us/azure/ai-services/translator/quickstart-text-rest-api"
+                      target="_blank"
+                      size="sm"
+                      style={{
+                        whiteSpace: 'nowrap',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 4,
+                      }}
+                    >
+                      {t('Quickstart guide')}
+                      <ExternalLink size={12} />
+                    </Anchor>
+                  </Text>
+
+                  <Alert color="yellow" icon={<AlertCircle size={16} />}>
+                    <Text size="sm">
+                      {t(
+                        'Azure credentials are kept in this browser tab by default. Enable "Remember API key" only on a personal, trusted device.',
+                      )}
+                    </Text>
+                  </Alert>
+
+                  <Switch
+                    label={t('Remember API key across sessions')}
+                    description={t(
+                      'When enabled, your Azure key is stored in localStorage and survives browser restarts.',
+                    )}
+                    checked={azurePersistKey}
+                    onChange={(e) => {
+                      const enabled = e.currentTarget.checked;
+                      setAzurePersistKey(enabled);
+                      setAzurePersistEnabled(enabled);
+                      setAzureSaved(false);
+                    }}
+                  />
+
+                  <PasswordInput
+                    label={t('API key')}
+                    placeholder={t('Enter your Azure Translator API key')}
+                    value={azureApiKey}
+                    onChange={(e) => {
+                      setAzureApiKey(e.currentTarget.value);
+                      setAzureSaved(false);
+                      setAzureTestResult(null);
+                    }}
+                    rightSection={
+                      azureSaved && azureApiKey ? (
+                        <Tooltip label={t('Key saved')}>
+                          <Check size={16} color="var(--mantine-color-green-6)" />
+                        </Tooltip>
+                      ) : null
+                    }
+                  />
+
+                  <TextInput
+                    label={t('Region')}
+                    placeholder={t('e.g. westeurope')}
+                    value={azureRegion}
+                    onChange={(e) => {
+                      setAzureRegion(e.currentTarget.value);
+                      setAzureSaved(false);
+                      setAzureTestResult(null);
+                    }}
+                  />
+
+                  <TextInput
+                    label={t('Endpoint')}
+                    placeholder={getDefaultAzureEndpoint()}
+                    value={azureEndpoint}
+                    onChange={(e) => {
+                      setAzureEndpoint(e.currentTarget.value);
+                      setAzureSaved(false);
+                      setAzureTestResult(null);
+                    }}
+                  />
+
+                  <Group>
+                    <Button
+                      variant="light"
+                      onClick={handleTestAzureKey}
+                      loading={azureTesting}
+                      disabled={!azureApiKey.trim() || !azureRegion.trim()}
+                    >
+                      {t('Test Connection')}
+                    </Button>
+                    <Button
+                      onClick={handleSaveAzureSettings}
+                      disabled={!azureApiKey.trim() || !azureRegion.trim() || azureSaved}
+                    >
+                      {t('Save')}
+                    </Button>
+                    {azureApiKey && (
+                      <Button variant="subtle" color="red" onClick={handleClearAzureKey}>
+                        {t('Remove saved key')}
+                      </Button>
+                    )}
+                  </Group>
+
+                  {azureTestResult && (
+                    <Alert
+                      color={azureTestResult.success ? 'green' : 'red'}
+                      icon={
+                        azureTestResult.success ? <Check size={16} /> : <AlertCircle size={16} />
+                      }
+                    >
+                      <Text size="sm">{azureTestResult.message}</Text>
+                    </Alert>
+                  )}
+                </>
+              )}
+
+              {translationProvider === 'gemini' && (
+                <>
+                  <Text size="sm" c="dimmed">
+                    {t(
+                      'Gemini translates with AI and can optionally use project source context from the current WordPress slug when available. Get a free API key from Google AI Studio.',
+                    )}{' '}
+                    <Anchor
+                      href="https://aistudio.google.com/apikey"
+                      target="_blank"
+                      size="sm"
+                      style={{
+                        whiteSpace: 'nowrap',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 4,
+                      }}
+                    >
+                      {t('Get API key')}
+                      <ExternalLink size={12} />
+                    </Anchor>
+                    {' · '}
+                    <Anchor
+                      href="https://ai.google.dev/gemini-api/docs/quickstart"
+                      target="_blank"
+                      size="sm"
+                      style={{
+                        whiteSpace: 'nowrap',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 4,
+                      }}
+                    >
+                      {t('Quickstart guide')}
+                      <ExternalLink size={12} />
+                    </Anchor>
+                  </Text>
+
+                  <Alert color="yellow" icon={<AlertCircle size={16} />}>
+                    <Text size="sm">
+                      {t(
+                        'Gemini credentials are kept in this browser tab by default. Enable "Remember API key" only on a personal, trusted device.',
+                      )}
+                    </Text>
+                  </Alert>
+
+                  <Switch
+                    label={t('Remember API key across sessions')}
+                    description={t(
+                      'When enabled, your Gemini key is stored in localStorage and survives browser restarts.',
+                    )}
+                    checked={geminiPersistKey}
+                    onChange={(e) => {
+                      const enabled = e.currentTarget.checked;
+                      setGeminiPersistKey(enabled);
+                      setGeminiPersistEnabled(enabled);
+                      setGeminiSaved(false);
+                    }}
+                  />
+
+                  <PasswordInput
+                    label={t('API key')}
+                    placeholder={t('Enter your Gemini API key')}
+                    value={geminiApiKey}
+                    onChange={(e) => {
+                      setGeminiApiKey(e.currentTarget.value);
+                      setGeminiSaved(false);
+                      setGeminiTestResult(null);
+                    }}
+                    rightSection={
+                      geminiSaved && geminiApiKey ? (
+                        <Tooltip label={t('Key saved')}>
+                          <Check size={16} color="var(--mantine-color-green-6)" />
+                        </Tooltip>
+                      ) : null
+                    }
+                  />
+
+                  <TextInput
+                    label={t('Model')}
+                    placeholder={getDefaultGeminiModel()}
+                    value={geminiModelId}
+                    onChange={(e) => {
+                      setGeminiModelId(e.currentTarget.value);
+                      setGeminiSaved(false);
+                      setGeminiTestResult(null);
+                    }}
+                  />
+
+                  <Switch
+                    label={t('Use project slug context when available')}
+                    description={t(
+                      'When enabled, Gemini can use relevant WordPress plugin source excerpts for the current project slug as extra translation context.',
+                    )}
+                    checked={geminiUseProjectContext}
+                    onChange={(e) => {
+                      setGeminiUseProjectContext(e.currentTarget.checked);
+                      setGeminiSaved(false);
+                    }}
+                  />
+
+                  <Group>
+                    <Button
+                      variant="light"
+                      onClick={handleTestGeminiKey}
+                      loading={geminiTesting}
+                      disabled={!geminiApiKey.trim()}
+                    >
+                      {t('Test Connection')}
+                    </Button>
+                    <Button
+                      onClick={handleSaveGeminiSettings}
+                      disabled={!geminiApiKey.trim() || geminiSaved}
+                    >
+                      {t('Save')}
+                    </Button>
+                    {geminiApiKey && (
+                      <Button variant="subtle" color="red" onClick={handleClearGeminiKey}>
+                        {t('Remove saved key')}
+                      </Button>
+                    )}
+                  </Group>
+
+                  {geminiTestResult && (
+                    <Alert
+                      color={geminiTestResult.success ? 'green' : 'red'}
+                      icon={
+                        geminiTestResult.success ? <Check size={16} /> : <AlertCircle size={16} />
+                      }
+                    >
+                      <Text size="sm">{geminiTestResult.message}</Text>
+                    </Alert>
+                  )}
+                </>
               )}
             </Stack>
           </Tabs.Panel>
@@ -1647,33 +2171,41 @@ export function SettingsModal({
                       </Button>
                     </Group>
 
-                    {/* DeepL sync status */}
+                    {/* Provider sync status */}
                     <Group gap="xs">
-                      {syncStatus?.includes('Syncing') ? (
+                      {syncStatus === 'syncing' ? (
                         <>
                           <Loader size={12} />
                           <Text size="xs" c="dimmed">
-                            {t('Syncing to DeepL...')}
+                            {t('Syncing glossary...')}
                           </Text>
                         </>
-                      ) : deeplGlossaryId ? (
+                      ) : deeplGlossaryId || syncStatus === 'ready' ? (
                         <>
                           <Check size={12} color="var(--mantine-color-green-6)" />
                           <Text size="xs" c="green">
-                            {deeplTermCount
-                              ? t('DeepL ready ({count} terms)', { count: deeplTermCount })
-                              : t('DeepL ready')}
+                            {glossaryTermCount != null
+                              ? t('{{provider}} ready ({{count}} terms)', {
+                                  provider: getTranslationProviderLabel(translationProvider),
+                                  count: glossaryTermCount,
+                                })
+                              : t('{{provider}} ready', {
+                                  provider: getTranslationProviderLabel(translationProvider),
+                                })}
                           </Text>
-                          <Button
-                            size="compact-xs"
-                            variant="subtle"
-                            color="gray"
-                            onClick={() => onForceResync?.(glossary)}
-                          >
-                            {t('Resync')}
-                          </Button>
+                          {TRANSLATION_PROVIDER_CAPABILITIES[translationProvider]
+                            .nativeGlossary && (
+                            <Button
+                              size="compact-xs"
+                              variant="subtle"
+                              color="gray"
+                              onClick={() => onForceResync?.(glossary)}
+                            >
+                              {t('Resync')}
+                            </Button>
+                          )}
                         </>
-                      ) : syncStatus?.includes('failed') ? (
+                      ) : syncStatus === 'sync-failed' ? (
                         <>
                           <X size={12} color="var(--mantine-color-red-6)" />
                           <Text size="xs" c="red">
@@ -1695,7 +2227,25 @@ export function SettingsModal({
                     {/* Enforcement toggle */}
                     <Switch
                       label={t('Use glossary for translations')}
-                      description={t('DeepL will enforce glossary terms in machine translations')}
+                      description={
+                        TRANSLATION_PROVIDER_CAPABILITIES[translationProvider].nativeGlossary
+                          ? t('{{provider}} will enforce glossary terms in machine translations', {
+                              provider: getTranslationProviderLabel(translationProvider),
+                            })
+                          : TRANSLATION_PROVIDER_CAPABILITIES[translationProvider].promptGlossary
+                            ? t(
+                                '{{provider}} will include glossary terms in the translation prompt',
+                                {
+                                  provider: getTranslationProviderLabel(translationProvider),
+                                },
+                              )
+                            : t(
+                                'Glossary analysis is active but {{provider}} does not support glossary enforcement',
+                                {
+                                  provider: getTranslationProviderLabel(translationProvider),
+                                },
+                              )
+                      }
                       checked={enforcementEnabled}
                       onChange={(e) => setEnforcementEnabled(e.currentTarget.checked)}
                       styles={{
@@ -1907,7 +2457,7 @@ export function SettingsModal({
                     </Text>
                     <Text size="xs" c="dimmed">
                       {t(
-                        'Exports DeepL preferences, glossary options, navigation behavior, display width, and development-only toggles. If a DeepL API key is present, you can choose whether to include it.',
+                        'Exports translation provider preferences, provider-specific settings, glossary options, navigation behavior, display width, and development-only toggles. If saved translation credentials are present, you can choose whether to include them.',
                       )}
                     </Text>
                   </div>
@@ -2010,7 +2560,11 @@ export function SettingsModal({
       <Modal
         opened={credentialPrompt !== null}
         onClose={() => setCredentialPrompt(null)}
-        title={credentialPrompt?.mode === 'import' ? t('Import API key?') : t('Include API key?')}
+        title={
+          credentialPrompt?.mode === 'import'
+            ? t('Import saved credentials?')
+            : t('Include saved credentials?')
+        }
         centered
         size="sm"
         closeButtonProps={{ 'aria-label': t('Close credential prompt') }}
@@ -2019,18 +2573,20 @@ export function SettingsModal({
           <Alert color="yellow" icon={<AlertCircle size={16} />}>
             <Text size="sm">
               {credentialPrompt?.mode === 'import'
-                ? t('This settings file contains your DeepL API key in plain text.')
+                ? t('This settings file contains saved translation credentials in plain text.')
                 : t(
-                    'Including your DeepL API key will store it in plain text inside the exported JSON file.',
+                    'Including saved translation credentials will store them in plain text inside the exported JSON file.',
                   )}
             </Text>
           </Alert>
 
           <Text size="sm">
             {credentialPrompt?.mode === 'import'
-              ? t('Choose whether to import the key or keep the current key saved in this browser.')
+              ? t(
+                  'Choose whether to import the saved translation credentials or keep the current credentials saved in this browser.',
+                )
               : t(
-                  'Choose whether to export the key or keep the settings file free of credentials.',
+                  'Choose whether to export saved translation credentials or keep the settings file free of credentials.',
                 )}
           </Text>
 
@@ -2058,7 +2614,7 @@ export function SettingsModal({
             >
               {credentialPrompt?.mode === 'import'
                 ? t('Keep current key')
-                : t('Export without key')}
+                : t('Export without credentials')}
             </Button>
             <Button
               onClick={() => {
@@ -2073,7 +2629,9 @@ export function SettingsModal({
                 downloadSettingsFile(true);
               }}
             >
-              {credentialPrompt?.mode === 'import' ? t('Import key') : t('Include key')}
+              {credentialPrompt?.mode === 'import'
+                ? t('Import credentials')
+                : t('Include credentials')}
             </Button>
           </Group>
         </Stack>

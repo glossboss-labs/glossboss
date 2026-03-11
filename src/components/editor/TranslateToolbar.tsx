@@ -19,7 +19,7 @@ import {
   Badge,
   useMantineTheme,
 } from '@mantine/core';
-import { useMediaQuery } from '@mantine/hooks';
+import { useLocalStorage, useMediaQuery } from '@mantine/hooks';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Zap,
@@ -35,7 +35,6 @@ import {
 } from 'lucide-react';
 import { msgid, useTranslation } from '@/lib/app-language';
 import { useEditorStore } from '@/stores';
-import { getDeepLClient, hasUserApiKey } from '@/lib/deepl';
 import {
   DEEPL_GLOSSARY_FALLBACK_EVENT,
   formatDeepLError,
@@ -47,6 +46,16 @@ import { ConfirmModal } from '@/components/ui';
 import { contentVariants, buttonStates, badgeVariants } from '@/lib/motion';
 import type { TargetLanguage, SourceLanguage } from '@/lib/deepl/types';
 import type { Glossary, GlossaryAnalysisResult } from '@/lib/glossary/types';
+import {
+  getTranslationProviderLabel,
+  hasProviderCredentials,
+  translateWithProvider,
+  type TranslationProviderId,
+} from '@/lib/translation';
+import {
+  TRANSLATION_PROVIDER_STORAGE_KEY,
+  type TranslationProviderSettings,
+} from '@/lib/translation/settings';
 import { shouldAutoTranslateEntry } from './translate-utils';
 
 const MotionDiv = motion.div;
@@ -192,9 +201,18 @@ export function TranslateToolbar({
   const [glossaryFallbackNotice, setGlossaryFallbackNotice] = useState<string | null>(null);
   const cancelRef = useRef(false);
   const batchCountRef = useRef(0);
+  const [providerState] = useLocalStorage<TranslationProviderSettings>({
+    key: TRANSLATION_PROVIDER_STORAGE_KEY,
+    defaultValue: {
+      provider: 'deepl',
+      updatedAt: 0,
+    },
+  });
+  const activeProvider = providerState.provider;
+  const providerLabel = getTranslationProviderLabel(activeProvider);
 
   // Check if API key is configured
-  const hasApiKey = hasUserApiKey();
+  const hasApiKey = hasProviderCredentials(activeProvider);
 
   // Sync inferred target language when header changes
   useEffect(() => {
@@ -312,7 +330,6 @@ export function TranslateToolbar({
       cancelRef.current = false;
       batchCountRef.current = 0;
 
-      const client = getDeepLClient();
       let completed = 0;
       let failed = 0;
       let activeGlossaryId = deeplGlossaryId ?? undefined;
@@ -378,96 +395,139 @@ export function TranslateToolbar({
           return;
         }
 
-        const batchSize = 10;
+        const applyTranslationResult = (
+          job: TranslationJob,
+          translated: NonNullable<
+            Awaited<ReturnType<typeof translateWithProvider>>['translations'][number]
+          >,
+        ) => {
+          const entry = entryById.get(job.entryId);
 
-        for (let i = 0; i < jobs.length; i += batchSize) {
-          if (cancelRef.current) break;
-
-          const batch = jobs.slice(i, i + batchSize);
-          const texts = batch.map((j) => j.text);
-          const effectiveSourceLang = activeGlossaryId
-            ? ((sourceLang || 'EN') as SourceLanguage)
-            : sourceLang
-              ? (sourceLang as SourceLanguage)
-              : undefined;
-
-          try {
-            let translations: string[];
-            try {
-              translations = await client.translateBatch(
-                texts,
-                targetLang as TargetLanguage,
-                effectiveSourceLang,
-                activeGlossaryId,
-              );
-            } catch (batchErr) {
-              if (activeGlossaryId && isGlossaryNotFoundError(batchErr)) {
-                // Disable glossary for remaining batches when DeepL reports stale glossary.
-                activeGlossaryId = undefined;
-                notifyGlossaryFallback('bulk');
-                translations = await client.translateBatch(
-                  texts,
-                  targetLang as TargetLanguage,
-                  sourceLang ? (sourceLang as SourceLanguage) : undefined,
-                  undefined,
-                );
-              } else {
-                throw batchErr;
-              }
+          if (job.isPlural && job.pluralIndex !== undefined) {
+            const existing = entry?.msgstrPlural ?? [];
+            const nextPlurals = existing.length >= 2 ? [...existing] : ['', ''];
+            while (nextPlurals.length <= job.pluralIndex) {
+              nextPlurals.push('');
             }
-
-            const pluralUpdates = new Map<string, string[]>();
-            const translatedEntryIds = new Set<string>();
-
-            batch.forEach((job, idx) => {
-              const translated = translations[idx];
-              if (!translated) return;
-
-              if (job.isPlural && job.pluralIndex !== undefined) {
-                let nextPlurals = pluralUpdates.get(job.entryId);
-                if (!nextPlurals) {
-                  const existing = entryById.get(job.entryId)?.msgstrPlural ?? [];
-                  nextPlurals = existing.length >= 2 ? [...existing] : ['', ''];
-                }
-                while (nextPlurals.length <= job.pluralIndex) {
-                  nextPlurals.push('');
-                }
-                nextPlurals[job.pluralIndex] = translated;
-                pluralUpdates.set(job.entryId, nextPlurals);
-                translatedEntryIds.add(job.entryId);
-                return;
-              }
-
-              updateEntry(job.entryId, translated);
-              translatedEntryIds.add(job.entryId);
-            });
-
-            pluralUpdates.forEach((plurals, entryId) => {
-              updateEntryPlural(entryId, plurals);
-              const entry = entryById.get(entryId);
-              if (entry) {
-                entry.msgstrPlural = plurals;
-              }
-            });
-
-            translatedEntryIds.forEach((entryId) => {
-              markAsMachineTranslated(entryId, Boolean(activeGlossaryId));
-            });
-
-            completed += batch.length;
-          } catch (batchErr) {
-            failed += batch.length;
-            console.error('Batch translation failed:', batchErr);
+            nextPlurals[job.pluralIndex] = translated.text;
+            updateEntryPlural(job.entryId, nextPlurals);
+            if (entry) {
+              entry.msgstrPlural = nextPlurals;
+            }
+          } else {
+            updateEntry(job.entryId, translated.text);
+            if (entry) {
+              entry.msgstr = translated.text;
+            }
           }
 
-          setProgress(Math.round(((completed + failed) / totalJobs) * 100));
-          setTranslateCount(completed);
-          setFailedCount(failed);
+          markAsMachineTranslated(job.entryId, translated.metadata);
+        };
 
-          // Signal usage refresh every other batch
-          batchCountRef.current++;
-          if (batchCountRef.current % 2 === 0) {
-            window.dispatchEvent(new Event('deepl-usage-refresh'));
+        if (activeProvider === 'gemini') {
+          for (const job of jobs) {
+            if (cancelRef.current) break;
+
+            try {
+              const effectiveSourceLang = activeGlossaryId
+                ? ((sourceLang || 'EN') as SourceLanguage)
+                : sourceLang
+                  ? (sourceLang as SourceLanguage)
+                  : undefined;
+              const entry = entryById.get(job.entryId);
+              const translationResponse = await translateWithProvider('gemini', {
+                text: job.text,
+                targetLang: targetLang as TargetLanguage,
+                sourceLang: effectiveSourceLang,
+                glossary,
+                references: entry?.references,
+              });
+              const translated = translationResponse.translations[0];
+              if (!translated?.text) {
+                failed += 1;
+              } else {
+                applyTranslationResult(job, translated);
+                completed += 1;
+              }
+            } catch (jobErr) {
+              failed += 1;
+              console.error('Translation failed:', jobErr);
+            }
+
+            setProgress(Math.round(((completed + failed) / totalJobs) * 100));
+            setTranslateCount(completed);
+            setFailedCount(failed);
+          }
+        } else {
+          const batchSize = 10;
+
+          for (let i = 0; i < jobs.length; i += batchSize) {
+            if (cancelRef.current) break;
+
+            const batch = jobs.slice(i, i + batchSize);
+            const texts = batch.map((job) => job.text);
+            const effectiveSourceLang = activeGlossaryId
+              ? ((sourceLang || 'EN') as SourceLanguage)
+              : sourceLang
+                ? (sourceLang as SourceLanguage)
+                : undefined;
+
+            try {
+              let translationResponse;
+              try {
+                translationResponse = await translateWithProvider(
+                  activeProvider as Exclude<TranslationProviderId, 'gemini'>,
+                  {
+                    text: texts,
+                    targetLang: targetLang as TargetLanguage,
+                    sourceLang: effectiveSourceLang,
+                    glossary,
+                    deeplGlossaryId: activeProvider === 'deepl' ? activeGlossaryId : undefined,
+                  },
+                );
+              } catch (translationError) {
+                if (
+                  activeProvider === 'deepl' &&
+                  activeGlossaryId &&
+                  isGlossaryNotFoundError(translationError)
+                ) {
+                  activeGlossaryId = undefined;
+                  notifyGlossaryFallback('bulk');
+                  translationResponse = await translateWithProvider('deepl', {
+                    text: texts,
+                    targetLang: targetLang as TargetLanguage,
+                    sourceLang: sourceLang ? (sourceLang as SourceLanguage) : undefined,
+                    glossary,
+                    deeplGlossaryId: undefined,
+                  });
+                } else {
+                  throw translationError;
+                }
+              }
+
+              batch.forEach((job, index) => {
+                const translated = translationResponse.translations[index];
+                if (!translated?.text) {
+                  failed += 1;
+                  return;
+                }
+
+                applyTranslationResult(job, translated);
+                completed += 1;
+              });
+            } catch (batchErr) {
+              failed += batch.length;
+              console.error('Batch translation failed:', batchErr);
+            }
+
+            setProgress(Math.round(((completed + failed) / totalJobs) * 100));
+            setTranslateCount(completed);
+            setFailedCount(failed);
+
+            batchCountRef.current++;
+            if (activeProvider === 'deepl' && batchCountRef.current % 2 === 0) {
+              window.dispatchEvent(new Event('deepl-usage-refresh'));
+            }
           }
         }
 
@@ -480,8 +540,9 @@ export function TranslateToolbar({
         setIsTranslating(false);
         setIsRetranslateMode(false);
         cancelRef.current = false;
-        // Signal final usage refresh
-        window.dispatchEvent(new Event('deepl-usage-refresh'));
+        if (activeProvider === 'deepl') {
+          window.dispatchEvent(new Event('deepl-usage-refresh'));
+        }
       }
     },
     [
@@ -494,7 +555,9 @@ export function TranslateToolbar({
       skipManualEdits,
       manualEditIds,
       machineTranslatedIds,
+      glossary,
       t,
+      activeProvider,
     ],
   );
 
@@ -615,6 +678,9 @@ export function TranslateToolbar({
             <Text size="sm" fw={600}>
               {t('Machine Translation')}
             </Text>
+            <Badge size="xs" variant="light" color="gray">
+              {providerLabel}
+            </Badge>
           </Group>
           <Text size="xs" c="dimmed">
             {selectedEntryIds.size > 0
@@ -629,7 +695,9 @@ export function TranslateToolbar({
             <MotionDiv variants={contentVariants} initial="hidden" animate="visible" exit="exit">
               <Alert color="yellow" icon={<Key size={16} />}>
                 <Text size="sm">
-                  {t('Add your DeepL API key in Settings to enable translations.')}
+                  {t('Add your {{provider}} credentials in Settings to enable translations.', {
+                    provider: providerLabel,
+                  })}
                 </Text>
               </Alert>
             </MotionDiv>
