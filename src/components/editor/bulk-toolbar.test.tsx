@@ -332,6 +332,7 @@ describe('editor details and mobile layout', () => {
     const textarea = await screen.findByDisplayValue('Mobiele vertaling');
     expect(textarea).toHaveStyle({ color: 'var(--mantine-color-text)' });
     expect(textarea).toHaveStyle({ backgroundColor: 'var(--gb-surface-1)' });
+    expect(screen.queryByTestId('highlighted-backdrop-a-singular')).not.toBeInTheDocument();
   });
 
   it('keeps the highlighted overlay editing style on desktop', async () => {
@@ -352,5 +353,6 @@ describe('editor details and mobile layout', () => {
     const styles = getComputedStyle(textarea);
     expect(styles.color).toBe('rgba(0, 0, 0, 0)');
     expect(styles.backgroundColor).toBe('rgba(0, 0, 0, 0)');
+    expect(screen.getByTestId('highlighted-backdrop-a-singular')).toBeInTheDocument();
   });
 });

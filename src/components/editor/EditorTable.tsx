@@ -459,6 +459,7 @@ function EditableField({
           {!useNativeTextColor && (
             <Box
               aria-hidden
+              data-testid={`highlighted-backdrop-${fieldId}`}
               style={{
                 ...sharedStyles,
                 position: 'absolute',
