@@ -141,15 +141,14 @@ jobs:
               fi
 
               if [ -n "$existing" ]; then
-                # Remove assignees that are no longer in the config
+                # Remove assignees that are no longer in the config (tolerate bots that can't be unassigned)
                 current_assignees=$(gh issue view "$existing" --json assignees --jq '.assignees[].login' 2>/dev/null || true)
-                remove_assignee_flags=""
                 for current in $current_assignees; do
                   if ! echo ",$assignees," | grep -q ",$current,"; then
-                    remove_assignee_flags="$remove_assignee_flags --remove-assignee $current"
+                    gh issue edit "$existing" --remove-assignee "$current" 2>/dev/null || echo "Skipping removal of $current (may be a bot)"
                   fi
                 done
-                gh issue edit "$existing" --title "$title" --body "$body" $edit_assignee_flags $remove_assignee_flags
+                gh issue edit "$existing" --title "$title" --body "$body" $edit_assignee_flags
                 echo "Updated issue #${existing} for ${lang}"
               else
                 gh issue create --title "$title" --label i18n --body "$body" $create_assignee_flags
