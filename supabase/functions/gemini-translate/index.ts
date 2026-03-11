@@ -23,7 +23,7 @@ const MAX_TEXT_LENGTH = 5000;
 const MAX_GLOSSARY_ENTRIES = 32;
 const MAX_CONTEXT_EXCERPTS = 3;
 const MAX_CONTEXT_CHARS = 9000;
-const DEFAULT_MODEL = 'gemini-2.5-flash-lite';
+const DEFAULT_MODEL = 'gemini-flash-lite-latest';
 
 interface GlossaryEntry {
   term: string;

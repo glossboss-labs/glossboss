@@ -1499,8 +1499,37 @@ export function SettingsModal({
                 <>
                   <Text size="sm" c="dimmed">
                     {t(
-                      'Azure Translator gives you a generous free tier, but you need an API key and region from your Azure resource.',
-                    )}
+                      'Azure Translator offers 2 million characters/month free. Create a Translator resource in the Azure portal to get your API key and region.',
+                    )}{' '}
+                    <Anchor
+                      href="https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation"
+                      target="_blank"
+                      size="sm"
+                      style={{
+                        whiteSpace: 'nowrap',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 4,
+                      }}
+                    >
+                      {t('Create resource')}
+                      <ExternalLink size={12} />
+                    </Anchor>
+                    {' · '}
+                    <Anchor
+                      href="https://learn.microsoft.com/en-us/azure/ai-services/translator/quickstart-text-rest-api"
+                      target="_blank"
+                      size="sm"
+                      style={{
+                        whiteSpace: 'nowrap',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 4,
+                      }}
+                    >
+                      {t('Quickstart guide')}
+                      <ExternalLink size={12} />
+                    </Anchor>
                   </Text>
 
                   <Alert color="yellow" icon={<AlertCircle size={16} />}>
@@ -1604,8 +1633,37 @@ export function SettingsModal({
                 <>
                   <Text size="sm" c="dimmed">
                     {t(
-                      'Gemini translates with AI and can optionally use project source context from the current WordPress slug when available.',
-                    )}
+                      'Gemini translates with AI and can optionally use project source context from the current WordPress slug when available. Get a free API key from Google AI Studio.',
+                    )}{' '}
+                    <Anchor
+                      href="https://aistudio.google.com/apikey"
+                      target="_blank"
+                      size="sm"
+                      style={{
+                        whiteSpace: 'nowrap',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 4,
+                      }}
+                    >
+                      {t('Get API key')}
+                      <ExternalLink size={12} />
+                    </Anchor>
+                    {' · '}
+                    <Anchor
+                      href="https://ai.google.dev/gemini-api/docs/quickstart"
+                      target="_blank"
+                      size="sm"
+                      style={{
+                        whiteSpace: 'nowrap',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 4,
+                      }}
+                    >
+                      {t('Quickstart guide')}
+                      <ExternalLink size={12} />
+                    </Anchor>
                   </Text>
 
                   <Alert color="yellow" icon={<AlertCircle size={16} />}>

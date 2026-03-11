@@ -1,6 +1,6 @@
 const STORAGE_KEY = 'glossboss-gemini-settings';
 const PERSIST_KEY = 'glossboss-gemini-persist';
-const DEFAULT_MODEL = 'gemini-2.5-flash-lite';
+const DEFAULT_MODEL = 'gemini-flash-lite-latest';
 
 export interface GeminiSettings {
   apiKey: string;
