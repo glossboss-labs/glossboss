@@ -8,13 +8,29 @@ import {
   settingsFileHasCredentials,
   type AppSettingsSnapshot,
 } from './app-settings';
+import { getAzureSettings, isAzurePersistEnabled } from './azure';
 import { getDeepLSettings, isPersistEnabled, saveDeepLSettings, setPersistEnabled } from './deepl';
+import { getGeminiSettings, isGeminiPersistEnabled } from './gemini';
+import { getActiveTranslationProvider } from './translation';
 
 const baseSnapshot: AppSettingsSnapshot = {
+  translationProvider: 'gemini',
   deepl: {
     apiKey: 'deepl-key',
     apiType: 'pro',
     formality: 'prefer_more',
+    persistKey: true,
+  },
+  azure: {
+    apiKey: 'azure-key',
+    region: 'westeurope',
+    endpoint: 'https://api.cognitive.microsofttranslator.com',
+    persistKey: true,
+  },
+  gemini: {
+    apiKey: 'gemini-key',
+    modelId: 'gemini-2.5-flash-lite',
+    useProjectContext: true,
     persistKey: true,
   },
   preferences: {
@@ -36,8 +52,10 @@ describe('app settings', () => {
     const file = createAppSettingsFile(baseSnapshot, { includeApiKey: false });
 
     expect(file.schema).toBe('glossboss-settings');
-    expect(file.version).toBe(1);
+    expect(file.version).toBe(2);
     expect(file.deepl.credentials).toBeUndefined();
+    expect(file.azure.credentials).toBeUndefined();
+    expect(file.gemini.credentials).toBeUndefined();
     expect(file.preferences).toEqual(baseSnapshot.preferences);
   });
 
@@ -46,6 +64,14 @@ describe('app settings', () => {
 
     expect(file.deepl.credentials).toEqual({
       apiKey: 'deepl-key',
+      persistKey: true,
+    });
+    expect(file.azure.credentials).toEqual({
+      apiKey: 'azure-key',
+      persistKey: true,
+    });
+    expect(file.gemini.credentials).toEqual({
+      apiKey: 'gemini-key',
       persistKey: true,
     });
     expect(settingsFileHasCredentials(file)).toBe(true);
@@ -57,11 +83,28 @@ describe('app settings', () => {
     );
 
     expect(parseAppSettingsFile(content)).toMatchObject({
+      translationProvider: 'gemini',
       deepl: {
         apiType: 'pro',
         formality: 'prefer_more',
         credentials: {
           apiKey: 'deepl-key',
+          persistKey: true,
+        },
+      },
+      azure: {
+        region: 'westeurope',
+        endpoint: 'https://api.cognitive.microsofttranslator.com',
+        credentials: {
+          apiKey: 'azure-key',
+          persistKey: true,
+        },
+      },
+      gemini: {
+        modelId: 'gemini-2.5-flash-lite',
+        useProjectContext: true,
+        credentials: {
+          apiKey: 'gemini-key',
           persistKey: true,
         },
       },
@@ -76,9 +119,18 @@ describe('app settings', () => {
           schema: 'glossboss-settings',
           version: 99,
           exportedAt: new Date().toISOString(),
+          translationProvider: 'deepl',
           deepl: {
             apiType: 'free',
             formality: 'prefer_less',
+          },
+          azure: {
+            region: 'westeurope',
+            endpoint: 'https://api.cognitive.microsofttranslator.com',
+          },
+          gemini: {
+            modelId: 'gemini-2.5-flash-lite',
+            useProjectContext: false,
           },
           preferences: {
             glossaryLocale: '',
@@ -96,11 +148,20 @@ describe('app settings', () => {
       parseAppSettingsFile(
         JSON.stringify({
           schema: 'not-glossboss-settings',
-          version: 1,
+          version: 2,
           exportedAt: new Date().toISOString(),
+          translationProvider: 'deepl',
           deepl: {
             apiType: 'free',
             formality: 'prefer_less',
+          },
+          azure: {
+            region: 'westeurope',
+            endpoint: 'https://api.cognitive.microsofttranslator.com',
+          },
+          gemini: {
+            modelId: 'gemini-2.5-flash-lite',
+            useProjectContext: false,
           },
           preferences: {
             glossaryLocale: '',
@@ -123,8 +184,22 @@ describe('app settings', () => {
       apiType: 'pro',
       formality: 'prefer_more',
     });
+    expect(getAzureSettings()).toMatchObject({
+      apiKey: 'azure-key',
+      region: 'westeurope',
+    });
+    expect(getGeminiSettings()).toMatchObject({
+      apiKey: 'gemini-key',
+      modelId: 'gemini-2.5-flash-lite',
+      useProjectContext: true,
+    });
     expect(isPersistEnabled()).toBe(true);
+    expect(isAzurePersistEnabled()).toBe(true);
+    expect(isGeminiPersistEnabled()).toBe(true);
+    expect(getActiveTranslationProvider()).toBe('gemini');
     expect(applied.deepl.persistKey).toBe(true);
+    expect(applied.azure.persistKey).toBe(true);
+    expect(applied.gemini.persistKey).toBe(true);
     expect(applied.preferences.containerWidth).toBe('100%');
   });
 

@@ -138,6 +138,8 @@ Supabase Edge Functions proxy external services and keep server-managed secrets 
 Functions:
 
 - `deepl-translate`
+- `azure-translate`
+- `gemini-translate`
 - `tts-elevenlabs`
 - `wp-glossary`
 - `wp-source`
@@ -148,6 +150,8 @@ Deploy them with the Supabase CLI:
 ```bash
 bunx supabase link --project-ref <your-project-ref>
 bunx supabase functions deploy deepl-translate --no-verify-jwt
+bunx supabase functions deploy azure-translate --no-verify-jwt
+bunx supabase functions deploy gemini-translate --no-verify-jwt
 bunx supabase functions deploy tts-elevenlabs --no-verify-jwt
 bunx supabase functions deploy wp-glossary --no-verify-jwt
 bunx supabase functions deploy wp-source --no-verify-jwt
@@ -167,6 +171,10 @@ Required Supabase secrets / environment variables:
 Optional Supabase secrets:
 
 - `DEEPL_KEY`
+- `AZURE_TRANSLATOR_KEY`
+- `AZURE_TRANSLATOR_REGION`
+- `AZURE_TRANSLATOR_ENDPOINT`
+- `GEMINI_API_KEY`
 - `GITHUB_OWNER`
 - `GITHUB_REPO`
 - `ALLOW_TURNSTILE_BYPASS`
@@ -183,6 +191,9 @@ bunx supabase secrets set ALLOWED_ORIGINS=https://glossboss.example,https://prev
 bunx supabase secrets set TURNSTILE_SECRET=your-turnstile-secret
 bunx supabase secrets set GITHUB_TOKEN=your-fine-grained-token
 bunx supabase secrets set DEEPL_KEY=your-server-side-deepl-key
+bunx supabase secrets set AZURE_TRANSLATOR_KEY=your-server-side-azure-key
+bunx supabase secrets set AZURE_TRANSLATOR_REGION=your-azure-region
+bunx supabase secrets set GEMINI_API_KEY=your-server-side-gemini-key
 ```
 
 ## Security notes
