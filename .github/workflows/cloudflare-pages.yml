@@ -18,9 +18,34 @@ permissions:
   pull-requests: write
 
 jobs:
+  detect-changes:
+    name: Detect Changes
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    outputs:
+      frontend: ${{ steps.filter.outputs.frontend }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            frontend:
+              - 'src/**'
+              - 'public/**'
+              - 'index.html'
+              - 'vite.config.ts'
+              - 'tsconfig*.json'
+              - 'package.json'
+              - 'bun.lock'
+
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
+    needs: detect-changes
+    if: always() && (github.event_name == 'push' || github.event_name == 'workflow_dispatch' || needs.detect-changes.outputs.frontend == 'true')
 
     steps:
       - name: Checkout
@@ -30,6 +55,7 @@ jobs:
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
+          cache: true
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
@@ -103,6 +129,55 @@ jobs:
             const body = [
               marker,
               `🚀 Preview deployment is ready: [${process.env.PREVIEW_URL}](${process.env.PREVIEW_URL})`,
+            ].join('\n')
+
+            let existingComment
+
+            for await (const { data: comments } of github.paginate.iterator(github.rest.issues.listComments, {
+              ...context.repo,
+              issue_number: context.issue.number,
+              per_page: 100,
+            })) {
+              existingComment = comments.find((comment) => {
+                return comment.user?.login === 'github-actions[bot]' && comment.body?.includes(marker)
+              })
+
+              if (existingComment) {
+                break
+              }
+            }
+
+            if (existingComment) {
+              await github.rest.issues.updateComment({
+                ...context.repo,
+                comment_id: existingComment.id,
+                body,
+              })
+              return
+            }
+
+            await github.rest.issues.createComment({
+              ...context.repo,
+              issue_number: context.issue.number,
+              body,
+            })
+
+  skip-comment:
+    name: Skip Comment
+    needs: detect-changes
+    if: github.event_name == 'pull_request' && needs.detect-changes.outputs.frontend == 'false'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+
+    steps:
+      - name: Comment PR with skip notice
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const marker = '<!-- cloudflare-pages-preview-link -->'
+            const body = [
+              marker,
+              'No frontend changes — preview deploy skipped.',
             ].join('\n')
 
             let existingComment
