@@ -134,25 +134,14 @@ interface PendingDraft {
   filename: string;
 }
 
-function ThemeToggle() {
+function ThemeToggle({ onToggle }: { onToggle: () => void }) {
   const { t } = useTranslation();
-  const { setColorScheme } = useMantineColorScheme();
   const computedColorScheme = useComputedColorScheme('light');
-
-  const toggleColorScheme = () => {
-    const oldBg = getComputedStyle(document.body).backgroundColor;
-    setColorScheme(computedColorScheme === 'dark' ? 'light' : 'dark');
-    const overlay = document.createElement('div');
-    overlay.className = 'theme-transition-overlay';
-    overlay.style.backgroundColor = oldBg;
-    document.body.appendChild(overlay);
-    overlay.addEventListener('animationend', () => overlay.remove());
-  };
 
   return (
     <Tooltip label={computedColorScheme === 'dark' ? t('Light mode') : t('Dark mode')}>
       <motion.div {...buttonStates}>
-        <ActionIcon variant="default" size="lg" onClick={toggleColorScheme}>
+        <ActionIcon variant="default" size="lg" onClick={onToggle}>
           {computedColorScheme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
         </ActionIcon>
       </motion.div>
@@ -378,11 +367,24 @@ export default function Index() {
   const toggleColorScheme = useCallback(() => {
     const oldBg = getComputedStyle(document.body).backgroundColor;
     setColorScheme(computedColorScheme === 'dark' ? 'light' : 'dark');
+
+    const prefersReducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) return;
+
     const overlay = document.createElement('div');
     overlay.className = 'theme-transition-overlay';
     overlay.style.backgroundColor = oldBg;
     document.body.appendChild(overlay);
-    overlay.addEventListener('animationend', () => overlay.remove());
+
+    let cleanedUp = false;
+    const cleanup = () => {
+      if (cleanedUp) return;
+      cleanedUp = true;
+      overlay.remove();
+    };
+
+    overlay.addEventListener('animationend', cleanup, { once: true });
+    setTimeout(cleanup, 1500);
   }, [computedColorScheme, setColorScheme]);
 
   // Draft state
@@ -1469,7 +1471,7 @@ export default function Index() {
                       </motion.div>
                     </Tooltip>
 
-                    <ThemeToggle />
+                    <ThemeToggle onToggle={toggleColorScheme} />
                   </Group>
                 )}
 

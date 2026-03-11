@@ -2331,7 +2331,12 @@ export function EditorTable({
                 display: 'flex',
                 alignItems: 'flex-start',
                 gap: 'var(--mantine-spacing-md)',
-                overflow: 'clip',
+                overflow:
+                  typeof CSS !== 'undefined' &&
+                  typeof CSS.supports === 'function' &&
+                  CSS.supports('overflow', 'clip')
+                    ? 'clip'
+                    : 'hidden',
                 flexShrink: 0,
                 width: inspectorOpen ? inspectorWidth + 24 : 0,
                 marginLeft: inspectorOpen ? 'var(--mantine-spacing-md)' : 0,
