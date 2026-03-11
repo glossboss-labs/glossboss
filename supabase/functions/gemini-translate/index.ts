@@ -10,6 +10,12 @@ import {
   sanitizeUpstreamError,
   validateRequestOrigin,
 } from '../_shared/http.ts';
+import {
+  isNonEmptyString,
+  isObject,
+  isValidLanguageCode,
+  trimAndLimit,
+} from '../_shared/validation.ts';
 
 const GEMINI_FETCH_TIMEOUT_MS = 30000;
 const MAX_TRANSLATE_TEXTS = 25;
@@ -40,22 +46,6 @@ interface GeminiPayload {
   glossaryEntries: GlossaryEntry[];
   contextExcerpts: ContextExcerpt[];
   projectSlug?: string;
-}
-
-function isObject(value: unknown): value is Record<string, unknown> {
-  return !!value && typeof value === 'object' && !Array.isArray(value);
-}
-
-function isNonEmptyString(value: unknown): value is string {
-  return typeof value === 'string' && value.trim().length > 0;
-}
-
-function trimAndLimit(value: string, maxLength: number): string {
-  return value.trim().slice(0, maxLength);
-}
-
-function isValidLanguageCode(value: string): boolean {
-  return /^[A-Z]{2,3}(?:-[A-Z]{2})?$/i.test(value);
 }
 
 function parseGlossaryEntries(value: unknown): GlossaryEntry[] {
@@ -258,11 +248,12 @@ async function generateGeminiResponse(
 ): Promise<{
   translations: Array<{ text: string; warnings?: string[]; usedGlossaryTerms?: string[] }>;
 }> {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(modelId)}:generateContent?key=${encodeURIComponent(apiKey)}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(modelId)}:generateContent`;
   const response = await fetchWithTimeout(url, GEMINI_FETCH_TIMEOUT_MS, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'x-goog-api-key': apiKey,
     },
     body: JSON.stringify({
       generationConfig: {

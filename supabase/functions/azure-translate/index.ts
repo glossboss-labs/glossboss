@@ -10,6 +10,12 @@ import {
   sanitizeUpstreamError,
   validateRequestOrigin,
 } from '../_shared/http.ts';
+import {
+  isNonEmptyString,
+  isObject,
+  isValidLanguageCode,
+  trimAndLimit,
+} from '../_shared/validation.ts';
 
 const AZURE_FETCH_TIMEOUT_MS = 15000;
 const MAX_TRANSLATE_TEXTS = 50;
@@ -17,6 +23,12 @@ const MAX_TEXT_LENGTH = 5000;
 const MAX_REGION_LENGTH = 64;
 const MAX_ENDPOINT_LENGTH = 160;
 const DEFAULT_ENDPOINT = 'https://api.cognitive.microsofttranslator.com';
+
+const ALLOWED_AZURE_HOSTS = [
+  '.cognitive.microsofttranslator.com',
+  '.cognitiveservices.azure.com',
+  '.api.cognitive.microsoft.com',
+];
 
 interface AzureTranslatePayload {
   text: string[];
@@ -27,20 +39,17 @@ interface AzureTranslatePayload {
   endpoint?: string;
 }
 
-function isObject(value: unknown): value is Record<string, unknown> {
-  return !!value && typeof value === 'object' && !Array.isArray(value);
-}
-
-function isNonEmptyString(value: unknown): value is string {
-  return typeof value === 'string' && value.trim().length > 0;
-}
-
-function trimAndLimit(value: string, maxLength: number): string {
-  return value.trim().slice(0, maxLength);
-}
-
-function isValidLanguageCode(value: string): boolean {
-  return /^[a-z]{2,3}(?:-[a-z]{2})?$/i.test(value);
+function isAllowedAzureEndpoint(endpoint: string): boolean {
+  try {
+    const url = new URL(endpoint);
+    if (url.protocol !== 'https:') return false;
+    const hostname = url.hostname.toLowerCase();
+    return ALLOWED_AZURE_HOSTS.some(
+      (suffix) => hostname === suffix.slice(1) || hostname.endsWith(suffix),
+    );
+  } catch {
+    return false;
+  }
 }
 
 export function parseAzureTranslatePayload(
@@ -153,6 +162,18 @@ export async function handleAzureTranslateRequest(req: Request): Promise<Respons
     const region = payload.userRegion || Deno.env.get('AZURE_TRANSLATOR_REGION') || '';
     const endpoint =
       payload.endpoint || Deno.env.get('AZURE_TRANSLATOR_ENDPOINT') || DEFAULT_ENDPOINT;
+
+    if (!isAllowedAzureEndpoint(endpoint)) {
+      return jsonResponse(
+        req,
+        {
+          ok: false,
+          code: 'INVALID_PAYLOAD',
+          message: 'Azure endpoint must be an HTTPS URL on a known Azure Translator domain.',
+        },
+        { status: 400 },
+      );
+    }
 
     if (!apiKey || !region) {
       return jsonResponse(

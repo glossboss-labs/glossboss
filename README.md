@@ -200,8 +200,12 @@ bunx supabase secrets set GEMINI_API_KEY=your-server-side-gemini-key
 
 - Edge functions reject requests from origins not listed in `ALLOWED_ORIGINS`.
 - `feedback-issue` uses Cloudflare Turnstile plus best-effort in-memory rate limiting.
-- DeepL personal API keys can be stored locally in the browser if the user chooses to save them.
-- For shared or untrusted machines, saved DeepL keys should be removed after use.
+- Translation provider API keys (DeepL, Azure Translator, Gemini) can be stored locally in the
+  browser if the user chooses to save them. For shared or untrusted machines, saved keys should be
+  removed after use.
+- Azure Translator endpoint URLs are validated against a known domain allowlist to prevent SSRF.
+- Gemini API keys are sent via the `x-goog-api-key` header rather than URL query parameters to
+  avoid accidental exposure in server logs and referrer headers.
 
 If you find a security issue, please follow `SECURITY.md` instead of opening a public issue.
 

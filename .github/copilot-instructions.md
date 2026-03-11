@@ -21,6 +21,28 @@ Only keep non-obvious, repo-specific failure modes here. If an agent can infer s
 - PO files live in `src/lib/app-language/locales/`. The `app.pot` template is committed and generated — do not hand-edit it.
 - English PO (`app.en.po`) auto-fills `msgstr = msgid` for new entries. Other languages get empty `msgstr` that must be translated.
 
+## Translation Providers
+
+The app supports three translation backends — DeepL (default), Azure Translator, and Gemini. The
+active provider is stored in `localStorage` via `src/lib/translation/settings.ts`.
+
+- **Provider-specific modules** live in `src/lib/deepl/`, `src/lib/azure/`, and `src/lib/gemini/`.
+  Each has `client.ts` (edge function caller) and `settings.ts` (credential storage).
+- **Provider abstraction** lives in `src/lib/translation/`. `client.ts` dispatches to the active
+  provider; `types.ts` defines the shared request/response contract.
+- **Edge functions** (`supabase/functions/{deepl,azure,gemini}-translate/`) proxy API calls and keep
+  server-managed credentials private. Shared validation helpers live in
+  `supabase/functions/_shared/validation.ts`.
+- **Glossary support** differs by provider: DeepL uses server-managed glossaries (CRUD API), Gemini
+  uses prompt-based glossary injection with post-generation validation, Azure has no glossary
+  support.
+- **Project context** is Gemini-only: `src/lib/gemini/context.ts` resolves WordPress source file
+  excerpts that get included in the translation prompt.
+
+When adding a new provider, add a module under `src/lib/<provider>/`, add the
+`TranslationProviderId` union member in `types.ts`, handle it in `client.ts`, add an edge function,
+and update the deploy workflow.
+
 ## Frontend Design Policy
 
 - For any frontend design or UI generation work done by Codex or GPT-family models, load and follow the repo-local Uncodixfy skill at `.codex/skills/uncodixfy/SKILL.md`.

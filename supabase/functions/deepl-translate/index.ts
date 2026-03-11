@@ -17,6 +17,12 @@ import {
   sanitizeUpstreamError,
   validateRequestOrigin,
 } from '../_shared/http.ts';
+import {
+  isNonEmptyString,
+  isObject,
+  isValidLanguageCode,
+  trimAndLimit,
+} from '../_shared/validation.ts';
 
 const DEEPL_FETCH_TIMEOUT_MS = 15000;
 const MAX_TRANSLATE_TEXTS = 50;
@@ -25,7 +31,6 @@ const MAX_GLOSSARY_ENTRIES = 10000;
 const MAX_GLOSSARY_NAME_LENGTH = 120;
 const MAX_GLOSSARY_TERM_LENGTH = 250;
 const MAX_GLOSSARY_ID_LENGTH = 128;
-const LANGUAGE_CODE_RE = /^[A-Z]{2,3}(?:-[A-Z]{2})?$/;
 const GLOSSARY_ID_RE = /^[a-zA-Z0-9-]{1,128}$/;
 const DEEPL_USER_API_KEY_RE = /^[A-Za-z0-9._:-]{20,128}$/;
 
@@ -59,18 +64,6 @@ interface CreateGlossaryPayload {
   entries: GlossaryEntry[];
 }
 
-function isObject(value: unknown): value is Record<string, unknown> {
-  return !!value && typeof value === 'object' && !Array.isArray(value);
-}
-
-function isNonEmptyString(value: unknown): value is string {
-  return typeof value === 'string' && value.trim().length > 0;
-}
-
-function trimAndLimit(value: string, maxLength: number): string {
-  return value.trim().slice(0, maxLength);
-}
-
 export function parseAction(value: unknown): Action | null {
   switch (value) {
     case 'translate':
@@ -91,10 +84,6 @@ export function parseApiType(value: unknown): ApiType | null {
   }
 
   return value === 'free' || value === 'pro' ? value : null;
-}
-
-function isValidLanguageCode(value: string): boolean {
-  return LANGUAGE_CODE_RE.test(value);
 }
 
 function isValidGlossaryId(value: string): boolean {
