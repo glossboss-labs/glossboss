@@ -2331,7 +2331,12 @@ export function EditorTable({
                 display: 'flex',
                 alignItems: 'flex-start',
                 gap: 'var(--mantine-spacing-md)',
-                overflow: 'hidden',
+                overflow:
+                  typeof CSS !== 'undefined' &&
+                  typeof CSS.supports === 'function' &&
+                  CSS.supports('overflow', 'clip')
+                    ? 'clip'
+                    : 'hidden',
                 flexShrink: 0,
                 width: inspectorOpen ? inspectorWidth + 24 : 0,
                 marginLeft: inspectorOpen ? 'var(--mantine-spacing-md)' : 0,
@@ -2469,7 +2474,7 @@ export function EditorTable({
 
           {/* Pagination controls */}
           {filteredEntries.length > 0 && (
-            <Group justify="space-between" align="center" mt="xs">
+            <Group justify="space-between" align="center" mt="xs" wrap="wrap">
               <Group gap="sm">
                 <Select
                   value={rowsPerPage}
@@ -2479,13 +2484,15 @@ export function EditorTable({
                   w={120}
                   aria-label={t('Rows per page')}
                 />
-                <Text size="sm" c="dimmed">
-                  {t('Showing {{start}}–{{end}} of {{total}} entries', {
-                    start: startItem,
-                    end: endItem,
-                    total: filteredEntries.length,
-                  })}
-                </Text>
+                {!isMobile && (
+                  <Text size="sm" c="dimmed">
+                    {t('Showing {{start}}–{{end}} of {{total}} entries', {
+                      start: startItem,
+                      end: endItem,
+                      total: filteredEntries.length,
+                    })}
+                  </Text>
+                )}
               </Group>
 
               {totalPages > 1 && (
@@ -2493,7 +2500,7 @@ export function EditorTable({
                   value={currentPage}
                   onChange={setCurrentPage}
                   total={totalPages}
-                  size="sm"
+                  size={isMobile ? 'xs' : 'sm'}
                   withEdges
                 />
               )}

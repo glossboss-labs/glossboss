@@ -17,7 +17,9 @@ import {
   Checkbox,
   Tooltip,
   Badge,
+  useMantineTheme,
 } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Zap,
@@ -149,6 +151,8 @@ export function TranslateToolbar({
   translateEnabled = true,
 }: TranslateToolbarProps) {
   const { t } = useTranslation();
+  const theme = useMantineTheme();
+  const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
   const {
     header,
     entries,
@@ -632,52 +636,101 @@ export function TranslateToolbar({
           )}
         </AnimatePresence>
 
-        <Group justify="space-between" align="center" wrap="wrap">
-          <Group gap="xs" align="center">
-            <Text size="xs" c="dimmed" fw={500}>
-              {t('From')}
-            </Text>
-            <Select
-              data={SOURCE_LANGUAGES.map((opt) => ({ ...opt, label: t(opt.label) }))}
-              value={sourceLang}
-              onChange={handleSourceChange}
-              placeholder={t('Auto-detect')}
-              searchable
-              clearable
-              w={160}
-              size="xs"
-              disabled={!hasApiKey}
-              aria-label={t('Source language')}
-            />
+        <Group
+          justify="space-between"
+          align={isMobile ? 'stretch' : 'center'}
+          wrap="wrap"
+          style={isMobile ? { flexDirection: 'column' } : undefined}
+        >
+          {isMobile ? (
+            <Stack gap="xs" w="100%">
+              <Group gap="xs" align="center" wrap="nowrap">
+                <Text size="xs" c="dimmed" fw={500}>
+                  {t('From')}
+                </Text>
+                <Select
+                  data={SOURCE_LANGUAGES.map((opt) => ({ ...opt, label: t(opt.label) }))}
+                  value={sourceLang}
+                  onChange={handleSourceChange}
+                  placeholder={t('Auto-detect')}
+                  searchable
+                  clearable
+                  size="xs"
+                  disabled={!hasApiKey}
+                  aria-label={t('Source language')}
+                  style={{ flex: 1, minWidth: 0 }}
+                />
+              </Group>
+              <Group gap="xs" align="center" wrap="nowrap">
+                <Text size="xs" c="dimmed" fw={500}>
+                  {t('To')}
+                </Text>
+                <Select
+                  data={TARGET_LANGUAGES.map((opt) => ({ ...opt, label: t(opt.label) }))}
+                  value={targetLang}
+                  onChange={handleTargetChange}
+                  placeholder={t('Select target...')}
+                  searchable
+                  required
+                  size="xs"
+                  disabled={!hasApiKey}
+                  aria-label={t('Target language')}
+                  style={{ flex: 1, minWidth: 0 }}
+                />
+                {inferredTarget && (
+                  <Badge size="xs" variant="light" color="gray" style={{ flexShrink: 0 }}>
+                    {t('Detected: {{target}}', { target: inferredTarget })}
+                  </Badge>
+                )}
+              </Group>
+            </Stack>
+          ) : (
+            <Group gap="xs" align="center">
+              <Text size="xs" c="dimmed" fw={500}>
+                {t('From')}
+              </Text>
+              <Select
+                data={SOURCE_LANGUAGES.map((opt) => ({ ...opt, label: t(opt.label) }))}
+                value={sourceLang}
+                onChange={handleSourceChange}
+                placeholder={t('Auto-detect')}
+                searchable
+                clearable
+                w={160}
+                size="xs"
+                disabled={!hasApiKey}
+                aria-label={t('Source language')}
+              />
 
-            <Text c="dimmed" size="sm" aria-hidden="true">
-              →
-            </Text>
+              <Text c="dimmed" size="sm" aria-hidden="true">
+                →
+              </Text>
 
-            <Text size="xs" c="dimmed" fw={500}>
-              {t('To')}
-            </Text>
-            <Select
-              data={TARGET_LANGUAGES.map((opt) => ({ ...opt, label: t(opt.label) }))}
-              value={targetLang}
-              onChange={handleTargetChange}
-              placeholder={t('Select target...')}
-              searchable
-              required
-              w={170}
-              size="xs"
-              disabled={!hasApiKey}
-              aria-label={t('Target language')}
-            />
+              <Text size="xs" c="dimmed" fw={500}>
+                {t('To')}
+              </Text>
+              <Select
+                data={TARGET_LANGUAGES.map((opt) => ({ ...opt, label: t(opt.label) }))}
+                value={targetLang}
+                onChange={handleTargetChange}
+                placeholder={t('Select target...')}
+                searchable
+                required
+                w={170}
+                size="xs"
+                disabled={!hasApiKey}
+                aria-label={t('Target language')}
+              />
 
-            {inferredTarget && (
-              <Badge size="xs" variant="light" color="gray">
-                {t('Detected: {{target}}', { target: inferredTarget })}
-              </Badge>
-            )}
-          </Group>
+              {inferredTarget && (
+                <Badge size="xs" variant="light" color="gray">
+                  {t('Detected: {{target}}', { target: inferredTarget })}
+                </Badge>
+              )}
+            </Group>
+          )}
 
-          <Group gap="sm">
+          <Group gap="sm" wrap="wrap">
             <AnimatePresence mode="wait">
               {isTranslating ? (
                 <MotionDiv
