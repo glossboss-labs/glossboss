@@ -9,7 +9,7 @@ msgstr ""
 msgid "+{{count}} more"
 msgstr ""
 
-#: src/pages/Index.tsx:1741
+#: src/pages/Index.tsx:1751
 msgid "...and {{count}} more warnings"
 msgstr ""
 
@@ -33,17 +33,17 @@ msgstr ""
 msgid "500 rows"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1145
-#: src/components/SettingsModal.tsx:1401
+#: src/components/SettingsModal.tsx:1147
+#: src/components/SettingsModal.tsx:1403
 msgid "API key"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:490
-#: src/components/SettingsModal.tsx:564
+#: src/components/SettingsModal.tsx:492
+#: src/components/SettingsModal.tsx:566
 msgid "API key is valid!"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1164
+#: src/components/SettingsModal.tsx:1166
 msgid "API type"
 msgstr ""
 
@@ -51,7 +51,7 @@ msgstr ""
 msgid "Action"
 msgstr ""
 
-#: src/pages/Index.tsx:1592
+#: src/pages/Index.tsx:1602
 msgid "Actions"
 msgstr ""
 
@@ -63,7 +63,7 @@ msgstr ""
 msgid "Add your DeepL API key in Settings to enable translations."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1742
+#: src/components/SettingsModal.tsx:1744
 msgid "Adjust the appearance of the editor to suit your screen and preferences."
 msgstr ""
 
@@ -155,7 +155,7 @@ msgstr ""
 msgid "Auto-detected: {{slug}}"
 msgstr ""
 
-#: src/pages/Index.tsx:1808
+#: src/pages/Index.tsx:1818
 msgid "Auto-saved {age}"
 msgstr ""
 
@@ -167,7 +167,8 @@ msgstr ""
 msgid "Back to listing"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1083
+#: src/components/SettingsModal.tsx:1085
+#: src/pages/Index.tsx:1510
 msgid "Backup"
 msgstr ""
 
@@ -187,7 +188,7 @@ msgstr ""
 msgid "Bosnian"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1963
+#: src/components/SettingsModal.tsx:1965
 msgid "Branch status badge"
 msgstr ""
 
@@ -195,7 +196,7 @@ msgstr ""
 msgid "Browse"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1286
+#: src/components/SettingsModal.tsx:1288
 msgid "Browser"
 msgstr ""
 
@@ -209,7 +210,7 @@ msgstr ""
 msgid "Bulgarian"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2041
+#: src/components/SettingsModal.tsx:2043
 #: src/components/editor/TranslateToolbar.tsx:750
 #: src/components/feedback/FeedbackModal.tsx:480
 #: src/components/ui/ConfirmModal.tsx:38
@@ -254,23 +255,23 @@ msgstr ""
 msgid "Choose visible columns"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2030
+#: src/components/SettingsModal.tsx:2032
 msgid ""
 "Choose whether to export the key or keep the settings file free of credentia"
 "ls."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2029
+#: src/components/SettingsModal.tsx:2031
 msgid ""
 "Choose whether to import the key or keep the current key saved in this brows"
 "er."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1752
+#: src/components/SettingsModal.tsx:1754
 msgid "Choose which language GlossBoss uses for its interface."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1588
+#: src/components/SettingsModal.tsx:1590
 #: src/components/editor/GlossaryPanel.tsx:343
 #: src/components/editor/TranslateToolbar.tsx:837
 msgid "Clear"
@@ -280,15 +281,15 @@ msgstr ""
 msgid "Clear active source reference"
 msgstr ""
 
-#: src/pages/Index.tsx:1654
+#: src/pages/Index.tsx:1664
 msgid "Clear anyway"
 msgstr ""
 
-#: src/pages/Index.tsx:1598
+#: src/pages/Index.tsx:1608
 msgid "Clear editor"
 msgstr ""
 
-#: src/pages/Index.tsx:1651
+#: src/pages/Index.tsx:1661
 msgid "Clear editor?"
 msgstr ""
 
@@ -296,7 +297,7 @@ msgstr ""
 msgid "Clear filters"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1894
+#: src/components/SettingsModal.tsx:1896
 msgid "Clear memory"
 msgstr ""
 
@@ -304,7 +305,7 @@ msgstr ""
 msgid "Clear search"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:903
+#: src/components/SettingsModal.tsx:905
 msgid "Cleared translation memory for this project."
 msgstr ""
 
@@ -316,11 +317,11 @@ msgstr ""
 msgid "Click to show only {{label}}"
 msgstr ""
 
-#: src/pages/Index.tsx:2008
+#: src/pages/Index.tsx:2022
 msgid "Close QA summary"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2014
+#: src/components/SettingsModal.tsx:2016
 msgid "Close credential prompt"
 msgstr ""
 
@@ -336,7 +337,7 @@ msgstr ""
 msgid "Close glossary viewer"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1058
+#: src/components/SettingsModal.tsx:1060
 msgid "Close settings"
 msgstr ""
 
@@ -360,7 +361,7 @@ msgstr ""
 msgid "Contact (optional)"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1785
+#: src/components/SettingsModal.tsx:1787
 msgid "Container width"
 msgstr ""
 
@@ -377,19 +378,19 @@ msgstr ""
 msgid "Context"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1788
+#: src/components/SettingsModal.tsx:1790
 msgid ""
 "Controls the maximum width of the main content area. Use a wider setting on "
 "large monitors, or full width to use all available space."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1202
+#: src/components/SettingsModal.tsx:1204
 msgid ""
 "Controls the tone of DeepL translations. Not all languages support formality"
 "."
 msgstr ""
 
-#: src/pages/Index.tsx:844
+#: src/pages/Index.tsx:846
 msgid ""
 "Could not fetch the file. The server may not allow cross-origin requests. Tr"
 "y downloading the file and uploading it directly."
@@ -423,28 +424,28 @@ msgstr ""
 msgid "Danish"
 msgstr ""
 
-#: src/pages/Index.tsx:142
-#: src/pages/Index.tsx:1583
+#: src/pages/Index.tsx:143
+#: src/pages/Index.tsx:1593
 msgid "Dark mode"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1063
+#: src/components/SettingsModal.tsx:1065
 msgid "DeepL API"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1124
+#: src/components/SettingsModal.tsx:1126
 msgid ""
 "DeepL API is kept in this browser tab by default and will be cleared when yo"
 "u close the tab. Enable \"Remember API key\" below to persist it across sess"
 "ions — only do this on a personal, trusted device."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1663
+#: src/components/SettingsModal.tsx:1665
 #: src/components/editor/GlossaryPanel.tsx:247
 msgid "DeepL ready"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1662
+#: src/components/SettingsModal.tsx:1664
 msgid "DeepL ready ({count} terms)"
 msgstr ""
 
@@ -452,7 +453,7 @@ msgstr ""
 msgid "DeepL ready ({{count}} terms)"
 msgstr ""
 
-#: src/pages/Index.tsx:1843
+#: src/pages/Index.tsx:1853
 msgid "DeepL synced"
 msgstr ""
 
@@ -460,7 +461,7 @@ msgstr ""
 msgid "DeepL usage:"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1696
+#: src/components/SettingsModal.tsx:1698
 msgid "DeepL will enforce glossary terms in machine translations"
 msgstr ""
 
@@ -489,11 +490,11 @@ msgstr ""
 msgid "Detected: {{target}}"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1087
+#: src/components/SettingsModal.tsx:1089
 msgid "Development"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1949
+#: src/components/SettingsModal.tsx:1951
 msgid "Development Mode Only"
 msgstr ""
 
@@ -501,7 +502,7 @@ msgstr ""
 msgid "Directory listing is unavailable."
 msgstr ""
 
-#: src/pages/Index.tsx:1791
+#: src/pages/Index.tsx:1801
 msgid "Discard and use new file"
 msgstr ""
 
@@ -509,31 +510,31 @@ msgstr ""
 msgid "Discard changes and exit the current field"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1080
+#: src/components/SettingsModal.tsx:1082
 msgid "Display"
 msgstr ""
 
-#: src/pages/Index.tsx:1455
+#: src/pages/Index.tsx:1458
 msgid "Download"
 msgstr ""
 
-#: src/pages/Index.tsx:1445
+#: src/pages/Index.tsx:1448
 msgid "Download (unsaved changes)"
 msgstr ""
 
-#: src/pages/Index.tsx:1495
+#: src/pages/Index.tsx:1498
 msgid "Download as"
 msgstr ""
 
-#: src/pages/Index.tsx:1433
+#: src/pages/Index.tsx:1436
 msgid "Download as {format}"
 msgstr ""
 
-#: src/pages/Index.tsx:1484
+#: src/pages/Index.tsx:1487
 msgid "Download format options"
 msgstr ""
 
-#: src/pages/Index.tsx:1899
+#: src/pages/Index.tsx:1909
 msgid ""
 "Drag and drop your translation file here, or click to browse. Your translati"
 "ons will be saved locally in your browser."
@@ -543,7 +544,7 @@ msgstr ""
 msgid "Drag {{columnLabel}}"
 msgstr ""
 
-#: src/pages/Index.tsx:1231
+#: src/pages/Index.tsx:1234
 msgid "Drop it like it's hot"
 msgstr ""
 
@@ -565,11 +566,11 @@ msgstr ""
 msgid "Edit Header"
 msgstr ""
 
-#: src/pages/Index.tsx:1399
+#: src/pages/Index.tsx:1402
 msgid "Edit gettext translation files with DeepL integration"
 msgstr ""
 
-#: src/pages/Index.tsx:1803
+#: src/pages/Index.tsx:1813
 msgid "Editing draft"
 msgstr ""
 
@@ -577,7 +578,7 @@ msgstr ""
 msgid "ElevenLabs quota reached."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1472
+#: src/components/SettingsModal.tsx:1474
 msgid ""
 "ElevenLabs quota reached. Switch back to Browser playback or wait for the ne"
 "xt provider reset."
@@ -596,11 +597,11 @@ msgstr ""
 msgid "Empty directory"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1096
+#: src/components/SettingsModal.tsx:1098
 msgid "Enable DeepL translation"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1260
+#: src/components/SettingsModal.tsx:1262
 msgid "Enable speech playback"
 msgstr ""
 
@@ -608,7 +609,7 @@ msgstr ""
 msgid "Encoding"
 msgstr ""
 
-#: src/pages/Index.tsx:686
+#: src/pages/Index.tsx:688
 msgid ""
 "Encoding detected as {{encoding}} with {{confidence}} confidence. If charact"
 "ers appear incorrect, the file may use a different encoding."
@@ -645,15 +646,15 @@ msgstr ""
 msgid "Enter custom expression"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1146
+#: src/components/SettingsModal.tsx:1148
 msgid "Enter your DeepL API key"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1105
+#: src/components/SettingsModal.tsx:1107
 msgid "Enter your DeepL API key to enable machine translation. Get a free key at"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1402
+#: src/components/SettingsModal.tsx:1404
 msgid "Enter your ElevenLabs API key"
 msgstr ""
 
@@ -684,33 +685,33 @@ msgstr ""
 msgid "Expected behavior"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1862
+#: src/components/SettingsModal.tsx:1864
 msgid "Export JSON"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1870
+#: src/components/SettingsModal.tsx:1872
 msgid "Export TMX"
 msgstr ""
 
-#: src/pages/Index.tsx:2057
+#: src/pages/Index.tsx:2071
 msgid "Export anyway"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1915
+#: src/components/SettingsModal.tsx:1917
 msgid "Export settings"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2059
+#: src/components/SettingsModal.tsx:2061
 msgid "Export without key"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1812
+#: src/components/SettingsModal.tsx:1814
 msgid ""
 "Export your saved preferences to a JSON backup file, or restore them into th"
 "is browser. Translation memory is managed separately below."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1907
+#: src/components/SettingsModal.tsx:1909
 msgid ""
 "Exports DeepL preferences, glossary options, navigation behavior, display wi"
 "dth, and development-only toggles. If a DeepL API key is present, you can ch"
@@ -721,12 +722,12 @@ msgstr ""
 msgid "Extracted comments"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:497
-#: src/components/SettingsModal.tsx:576
+#: src/components/SettingsModal.tsx:499
+#: src/components/SettingsModal.tsx:578
 msgid "Failed to connect"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:883
+#: src/components/SettingsModal.tsx:885
 msgid "Failed to import translation memory."
 msgstr ""
 
@@ -738,21 +739,21 @@ msgstr ""
 msgid "Failed to load file."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:966
+#: src/components/SettingsModal.tsx:968
 #: src/components/editor/GlossaryPanel.tsx:190
 msgid "Failed to load glossary"
 msgstr ""
 
-#: src/pages/Index.tsx:1140
+#: src/pages/Index.tsx:1143
 msgid "Failed to parse POT file"
 msgstr ""
 
-#: src/pages/Index.tsx:733
-#: src/pages/Index.tsx:1699
+#: src/pages/Index.tsx:735
+#: src/pages/Index.tsx:1709
 msgid "Failed to parse file"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1027
+#: src/components/SettingsModal.tsx:1029
 msgid "Failed to read the file."
 msgstr ""
 
@@ -760,7 +761,7 @@ msgstr ""
 msgid "Feature"
 msgstr ""
 
-#: src/pages/Index.tsx:1544
+#: src/pages/Index.tsx:1554
 msgid "Feedback"
 msgstr ""
 
@@ -768,7 +769,7 @@ msgstr ""
 msgid "Feedback could not be submitted at this time."
 msgstr ""
 
-#: src/pages/Index.tsx:1363
+#: src/pages/Index.tsx:1366
 msgid "Feedback failed"
 msgstr ""
 
@@ -776,7 +777,7 @@ msgstr ""
 msgid "Feedback is unavailable in this deployment."
 msgstr ""
 
-#: src/pages/Index.tsx:1320
+#: src/pages/Index.tsx:1323
 msgid "Feedback submitted"
 msgstr ""
 
@@ -784,11 +785,11 @@ msgstr ""
 msgid "Feedback verification is not configured."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1001
+#: src/components/SettingsModal.tsx:1003
 msgid "File does not appear to be a valid WordPress glossary CSV."
 msgstr ""
 
-#: src/pages/Index.tsx:1253
+#: src/pages/Index.tsx:1256
 msgid "File downloaded"
 msgstr ""
 
@@ -810,11 +811,11 @@ msgstr ""
 msgid "Force recreate glossary on DeepL"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1196
+#: src/components/SettingsModal.tsx:1198
 msgid "Formal"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1186
+#: src/components/SettingsModal.tsx:1188
 msgid "Formality"
 msgstr ""
 
@@ -822,11 +823,11 @@ msgstr ""
 msgid "Four forms"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1173
+#: src/components/SettingsModal.tsx:1175
 msgid "Free API"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1180
+#: src/components/SettingsModal.tsx:1182
 msgid "Free: 500,000 chars/month • Pro: Pay per use"
 msgstr ""
 
@@ -900,17 +901,17 @@ msgstr ""
 msgid "German (Switzerland)"
 msgstr ""
 
-#: src/pages/Index.tsx:2013
+#: src/pages/Index.tsx:2027
 msgid ""
 "GlossBoss found QA issues in the current file. You can review them now or ex"
 "port anyway."
 msgstr ""
 
-#: src/pages/Index.tsx:1602
+#: src/pages/Index.tsx:1612
 msgid "GlossBoss v{version}"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1069
+#: src/components/SettingsModal.tsx:1071
 #: src/components/editor/EditorTable.tsx:1116
 #: src/components/editor/GlossaryPanel.tsx:289
 msgid "Glossary"
@@ -956,7 +957,7 @@ msgid ""
 "sync in Settings is recommended."
 msgstr ""
 
-#: src/pages/Index.tsx:1836
+#: src/pages/Index.tsx:1846
 msgid "Glossary: {count} terms ({locale})"
 msgstr ""
 
@@ -1016,35 +1017,35 @@ msgstr ""
 msgid "Icelandic"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2011
+#: src/components/SettingsModal.tsx:2013
 msgid "Import API key?"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2074
+#: src/components/SettingsModal.tsx:2076
 msgid "Import key"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1884
+#: src/components/SettingsModal.tsx:1886
 msgid "Import memory"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1925
+#: src/components/SettingsModal.tsx:1927
 msgid "Import settings"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:875
+#: src/components/SettingsModal.tsx:877
 msgid "Imported {{count}} translation memory entries."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2011
+#: src/components/SettingsModal.tsx:2013
 msgid "Include API key?"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2074
+#: src/components/SettingsModal.tsx:2076
 msgid "Include key"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2021
+#: src/components/SettingsModal.tsx:2023
 msgid ""
 "Including your DeepL API key will store it in plain text inside the exported"
 " JSON file."
@@ -1056,7 +1057,7 @@ msgstr ""
 msgid "Indonesian"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1195
+#: src/components/SettingsModal.tsx:1197
 msgid "Informal"
 msgstr ""
 
@@ -1064,20 +1065,20 @@ msgstr ""
 msgid "Insert a line break in the translation"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1749
-#: src/components/SettingsModal.tsx:1757
+#: src/components/SettingsModal.tsx:1751
+#: src/components/SettingsModal.tsx:1759
 msgid "Interface language"
 msgstr ""
 
-#: src/pages/Index.tsx:653
+#: src/pages/Index.tsx:655
 msgid "Invalid JSON file. Expected an i18next JSON resource object."
 msgstr ""
 
-#: src/pages/Index.tsx:1004
+#: src/pages/Index.tsx:1007
 msgid "Invalid file type: .{{ext}}. Please drop a .po, .pot, or .json file."
 msgstr ""
 
-#: src/pages/Index.tsx:635
+#: src/pages/Index.tsx:637
 msgid "Invalid file type: .{{ext}}. Please upload a .po, .pot, or .json file."
 msgstr ""
 
@@ -1113,7 +1114,7 @@ msgstr ""
 msgid "Kazakh"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2058
+#: src/components/SettingsModal.tsx:2060
 msgid "Keep current key"
 msgstr ""
 
@@ -1121,12 +1122,12 @@ msgstr ""
 msgid "Keep original"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1155
-#: src/components/SettingsModal.tsx:1411
+#: src/components/SettingsModal.tsx:1157
+#: src/components/SettingsModal.tsx:1413
 msgid "Key saved"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1077
+#: src/components/SettingsModal.tsx:1079
 msgid "Keyboard Shortcuts"
 msgstr ""
 
@@ -1140,7 +1141,7 @@ msgstr ""
 msgid "Korean"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1558
+#: src/components/SettingsModal.tsx:1560
 #: src/components/editor/GlossaryPanel.tsx:367
 #: src/components/editor/HeaderEditor.tsx:218
 msgid "Language"
@@ -1169,16 +1170,16 @@ msgstr ""
 msgid "Latvian"
 msgstr ""
 
-#: src/pages/Index.tsx:1620
+#: src/pages/Index.tsx:1630
 msgid "License"
 msgstr ""
 
-#: src/pages/Index.tsx:142
-#: src/pages/Index.tsx:1583
+#: src/pages/Index.tsx:143
+#: src/pages/Index.tsx:1593
 msgid "Light mode"
 msgstr ""
 
-#: src/pages/Index.tsx:1706
+#: src/pages/Index.tsx:1716
 msgid "Line {line}"
 msgstr ""
 
@@ -1187,7 +1188,7 @@ msgstr ""
 msgid "Line {{lineNumber}}"
 msgstr ""
 
-#: src/pages/Index.tsx:1733
+#: src/pages/Index.tsx:1743
 msgid "Line {{line}}"
 msgstr ""
 
@@ -1202,11 +1203,11 @@ msgid "Lithuanian"
 msgstr ""
 
 #: src/components/editor/GlossaryPanel.tsx:355
-#: src/pages/Index.tsx:1940
+#: src/pages/Index.tsx:1950
 msgid "Load"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1573
+#: src/components/SettingsModal.tsx:1575
 msgid "Load Glossary"
 msgstr ""
 
@@ -1214,42 +1215,42 @@ msgstr ""
 msgid "Load a file with a target language before using translation memory."
 msgstr ""
 
-#: src/pages/Index.tsx:1949
+#: src/pages/Index.tsx:1959
 msgid "Load a small example WordPress plugin PO file (Hello Dolly)"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:895
+#: src/components/SettingsModal.tsx:897
 msgid "Load a translation file before clearing project translation memory."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1828
+#: src/components/SettingsModal.tsx:1830
 msgid ""
 "Load a translation file before managing translation memory so GlossBoss can "
 "scope entries to the active target language."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:809
+#: src/components/SettingsModal.tsx:811
 msgid ""
 "Load a translation file first so GlossBoss knows which target language to us"
 "e."
 msgstr ""
 
-#: src/pages/Index.tsx:1961
+#: src/pages/Index.tsx:1971
 msgid "Load example PO"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1551
+#: src/components/SettingsModal.tsx:1553
 msgid ""
 "Load the official WordPress translation glossary to ensure consistent termin"
 "ology."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1486
-#: src/components/SettingsModal.tsx:1515
+#: src/components/SettingsModal.tsx:1488
+#: src/components/SettingsModal.tsx:1517
 msgid "Load voices by testing your key"
 msgstr ""
 
-#: src/pages/Index.tsx:1667
+#: src/pages/Index.tsx:1677
 msgid ""
 "Loading a new file from URL will replace the currently loaded file. Any unsa"
 "ved changes will be lost."
@@ -1310,7 +1311,7 @@ msgstr ""
 msgid "Maltese"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1825
+#: src/components/SettingsModal.tsx:1827
 msgid ""
 "Manage reusable approved translations for the current project. Import merges"
 " into the active project scope."
@@ -1391,7 +1392,7 @@ msgstr ""
 msgid "No QA issues for this string."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1846
+#: src/components/SettingsModal.tsx:1848
 msgid "No active project"
 msgstr ""
 
@@ -1407,11 +1408,11 @@ msgstr ""
 msgid "No entries match the current filters."
 msgstr ""
 
-#: src/pages/Index.tsx:990
+#: src/pages/Index.tsx:993
 msgid "No file was dropped"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1009
+#: src/components/SettingsModal.tsx:1011
 msgid "No glossary entries found in the uploaded file."
 msgstr ""
 
@@ -1447,7 +1448,7 @@ msgstr ""
 msgid "No text to play."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:820
+#: src/components/SettingsModal.tsx:822
 msgid "No translation memory entries are stored for this project yet."
 msgstr ""
 
@@ -1494,11 +1495,11 @@ msgstr ""
 msgid "One form (no plurals)"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2036
+#: src/components/SettingsModal.tsx:2038
 msgid "Only include credentials on personal, trusted devices."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1979
+#: src/components/SettingsModal.tsx:1981
 msgid "Only visible while running the app in development mode"
 msgstr ""
 
@@ -1508,19 +1509,19 @@ msgstr ""
 msgid "Open in Trac"
 msgstr ""
 
-#: src/pages/Index.tsx:1345
+#: src/pages/Index.tsx:1348
 msgid "Open issue"
 msgstr ""
 
-#: src/pages/Index.tsx:1589
+#: src/pages/Index.tsx:1599
 msgid "Open settings"
 msgstr ""
 
-#: src/pages/Index.tsx:1497
+#: src/pages/Index.tsx:1500
 msgid "PO file (.po)"
 msgstr ""
 
-#: src/pages/Index.tsx:1923
+#: src/pages/Index.tsx:1933
 msgid "PO file URL"
 msgstr ""
 
@@ -1528,7 +1529,7 @@ msgstr ""
 msgid "POT Created"
 msgstr ""
 
-#: src/pages/Index.tsx:1922
+#: src/pages/Index.tsx:1932
 msgid "Paste a .po file URL"
 msgstr ""
 
@@ -1545,7 +1546,7 @@ msgstr ""
 msgid "Play source"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1267
+#: src/components/SettingsModal.tsx:1269
 msgid ""
 "Play strings with either browser voices or ElevenLabs. Browser playback stay"
 "s free and local. ElevenLabs uses your own API key through a protected proxy"
@@ -1557,7 +1558,7 @@ msgstr ""
 msgid "Play translation"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1295
+#: src/components/SettingsModal.tsx:1297
 msgid "Playback rate"
 msgstr ""
 
@@ -1573,12 +1574,12 @@ msgstr ""
 msgid "Please complete all required feature fields."
 msgstr ""
 
-#: src/pages/Index.tsx:995
+#: src/pages/Index.tsx:998
 msgid "Please drop only one file at a time"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:476
-#: src/components/SettingsModal.tsx:542
+#: src/components/SettingsModal.tsx:478
+#: src/components/SettingsModal.tsx:544
 msgid "Please enter an API key"
 msgstr ""
 
@@ -1641,10 +1642,10 @@ msgstr ""
 msgid "Preparing spam protection..."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1331
-#: src/components/SettingsModal.tsx:1359
-#: src/components/SettingsModal.tsx:1500
-#: src/components/SettingsModal.tsx:1529
+#: src/components/SettingsModal.tsx:1333
+#: src/components/SettingsModal.tsx:1361
+#: src/components/SettingsModal.tsx:1502
+#: src/components/SettingsModal.tsx:1531
 msgid "Preview voice"
 msgstr ""
 
@@ -1653,11 +1654,11 @@ msgid "Previous field"
 msgstr ""
 
 #: src/components/feedback/FeedbackModal.tsx:417
-#: src/pages/Index.tsx:1638
+#: src/pages/Index.tsx:1648
 msgid "Privacy"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1174
+#: src/components/SettingsModal.tsx:1176
 msgid "Pro API"
 msgstr ""
 
@@ -1669,8 +1670,8 @@ msgstr ""
 msgid "Project"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1835
-#: src/components/SettingsModal.tsx:1839
+#: src/components/SettingsModal.tsx:1837
+#: src/components/SettingsModal.tsx:1841
 msgid "Project name"
 msgstr ""
 
@@ -1686,7 +1687,7 @@ msgstr ""
 msgid "Protect {{count}} manual edits from bulk translation"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1276
+#: src/components/SettingsModal.tsx:1278
 msgid "Provider"
 msgstr ""
 
@@ -1706,7 +1707,7 @@ msgstr ""
 msgid "QA errors"
 msgstr ""
 
-#: src/pages/Index.tsx:2005
+#: src/pages/Index.tsx:2019
 msgid "QA summary before export"
 msgstr ""
 
@@ -1718,7 +1719,7 @@ msgstr ""
 msgid "Re-run glossary analysis on selected rows"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1775
+#: src/components/SettingsModal.tsx:1777
 msgid "Read the translation guide"
 msgstr ""
 
@@ -1726,23 +1727,23 @@ msgstr ""
 msgid "References"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1577
+#: src/components/SettingsModal.tsx:1579
 #: src/components/editor/GlossaryPanel.tsx:321
 #: src/components/editor/GlossaryPanel.tsx:325
 msgid "Refresh from WordPress.org"
 msgstr ""
 
-#: src/pages/Index.tsx:1233
+#: src/pages/Index.tsx:1236
 msgid "Release to load your translation file"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1131
-#: src/components/SettingsModal.tsx:1387
+#: src/components/SettingsModal.tsx:1133
+#: src/components/SettingsModal.tsx:1389
 msgid "Remember API key across sessions"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1222
-#: src/components/SettingsModal.tsx:1435
+#: src/components/SettingsModal.tsx:1224
+#: src/components/SettingsModal.tsx:1437
 msgid "Remove saved key"
 msgstr ""
 
@@ -1751,11 +1752,11 @@ msgid "Repeated-source consistency"
 msgstr ""
 
 #: src/components/editor/TranslateButton.tsx:260
-#: src/pages/Index.tsx:1670
+#: src/pages/Index.tsx:1680
 msgid "Replace"
 msgstr ""
 
-#: src/pages/Index.tsx:1666
+#: src/pages/Index.tsx:1676
 msgid "Replace current file?"
 msgstr ""
 
@@ -1767,7 +1768,7 @@ msgstr ""
 msgid "Report Bugs To"
 msgstr ""
 
-#: src/pages/Index.tsx:842
+#: src/pages/Index.tsx:844
 msgid "Request timed out. Try downloading the file and uploading it directly."
 msgstr ""
 
@@ -1775,11 +1776,11 @@ msgstr ""
 msgid "Resize inspector"
 msgstr ""
 
-#: src/pages/Index.tsx:1782
+#: src/pages/Index.tsx:1792
 msgid "Restore draft"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1671
+#: src/components/SettingsModal.tsx:1673
 #: src/components/editor/GlossaryPanel.tsx:256
 msgid "Resync"
 msgstr ""
@@ -1801,7 +1802,7 @@ msgstr ""
 msgid "Retranslating"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1685
+#: src/components/SettingsModal.tsx:1687
 #: src/components/editor/GlossaryPanel.tsx:269
 msgid "Retry"
 msgstr ""
@@ -1811,7 +1812,7 @@ msgstr ""
 msgid "Retry translation"
 msgstr ""
 
-#: src/pages/Index.tsx:2046
+#: src/pages/Index.tsx:2060
 msgid "Review issues"
 msgstr ""
 
@@ -1836,9 +1837,9 @@ msgstr ""
 msgid "Russian, Ukrainian, Serbian, Croatian"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1218
-#: src/components/SettingsModal.tsx:1372
-#: src/components/SettingsModal.tsx:1431
+#: src/components/SettingsModal.tsx:1220
+#: src/components/SettingsModal.tsx:1374
+#: src/components/SettingsModal.tsx:1433
 msgid "Save"
 msgstr ""
 
@@ -1885,7 +1886,7 @@ msgstr ""
 msgid "Select all filtered entries"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1559
+#: src/components/SettingsModal.tsx:1561
 msgid "Select locale"
 msgstr ""
 
@@ -1926,38 +1927,38 @@ msgstr ""
 msgid "Set a plugin slug to browse source files."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1054
-#: src/pages/Index.tsx:1587
+#: src/components/SettingsModal.tsx:1056
+#: src/pages/Index.tsx:1597
 msgid "Settings"
 msgstr ""
 
-#: src/pages/Index.tsx:1555
-#: src/pages/Index.tsx:1560
+#: src/pages/Index.tsx:1565
+#: src/pages/Index.tsx:1570
 msgid "Settings and actions"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:719
+#: src/components/SettingsModal.tsx:721
 msgid "Settings exported with your DeepL API key."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:720
+#: src/components/SettingsModal.tsx:722
 msgid "Settings exported without your DeepL API key."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1904
+#: src/components/SettingsModal.tsx:1906
 msgid "Settings file"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:779
+#: src/components/SettingsModal.tsx:781
 msgid "Settings imported without changing your current DeepL API key."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:778
+#: src/components/SettingsModal.tsx:780
 msgid "Settings imported, including your DeepL API key."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:509
-#: src/components/SettingsModal.tsx:617
+#: src/components/SettingsModal.tsx:511
+#: src/components/SettingsModal.tsx:619
 msgid "Settings saved!"
 msgstr ""
 
@@ -1965,8 +1966,8 @@ msgstr ""
 msgid "Share Feedback"
 msgstr ""
 
-#: src/pages/Index.tsx:1537
-#: src/pages/Index.tsx:1573
+#: src/pages/Index.tsx:1547
+#: src/pages/Index.tsx:1583
 msgid "Share feedback"
 msgstr ""
 
@@ -1986,7 +1987,7 @@ msgstr ""
 msgid "Show all {{count}} lines"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1978
+#: src/components/SettingsModal.tsx:1980
 msgid "Show branch badge"
 msgstr ""
 
@@ -1998,7 +1999,7 @@ msgstr ""
 msgid "Show technical fields"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1966
+#: src/components/SettingsModal.tsx:1968
 msgid ""
 "Show the current git branch in a small floating badge at the bottom right of"
 " the site."
@@ -2052,7 +2053,7 @@ msgid "Sort entries"
 msgstr ""
 
 #: src/components/editor/EditorTable.tsx:1824
-#: src/pages/Index.tsx:1611
+#: src/pages/Index.tsx:1621
 msgid "Source"
 msgstr ""
 
@@ -2078,8 +2079,8 @@ msgstr ""
 msgid "Source string"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1316
-#: src/components/SettingsModal.tsx:1485
+#: src/components/SettingsModal.tsx:1318
+#: src/components/SettingsModal.tsx:1487
 msgid "Source voice"
 msgstr ""
 
@@ -2101,7 +2102,7 @@ msgstr ""
 msgid "Spanish (Spain)"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1066
+#: src/components/SettingsModal.tsx:1068
 msgid "Speech"
 msgstr ""
 
@@ -2163,20 +2164,20 @@ msgstr ""
 msgid "Swedish"
 msgstr ""
 
-#: src/pages/Index.tsx:149
+#: src/pages/Index.tsx:150
 msgid "Switch to dark mode"
 msgstr ""
 
-#: src/pages/Index.tsx:149
+#: src/pages/Index.tsx:150
 msgid "Switch to light mode"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1678
+#: src/components/SettingsModal.tsx:1680
 #: src/components/editor/GlossaryPanel.tsx:266
 msgid "Sync failed"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1654
+#: src/components/SettingsModal.tsx:1656
 #: src/components/editor/GlossaryPanel.tsx:236
 msgid "Syncing to DeepL..."
 msgstr ""
@@ -2194,7 +2195,7 @@ msgstr ""
 msgid "Target language code"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1850
+#: src/components/SettingsModal.tsx:1852
 msgid "Target: {{language}}"
 msgstr ""
 
@@ -2210,15 +2211,15 @@ msgstr ""
 msgid "Terms in selected row:"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1715
+#: src/components/SettingsModal.tsx:1717
 msgid "Terms in selected text:"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1215
+#: src/components/SettingsModal.tsx:1217
 msgid "Test Connection"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1425
+#: src/components/SettingsModal.tsx:1427
 msgid "Test connection"
 msgstr ""
 
@@ -2226,25 +2227,25 @@ msgstr ""
 msgid "Thai"
 msgstr ""
 
-#: src/pages/Index.tsx:1332
+#: src/pages/Index.tsx:1335
 msgid "Thanks. Issue #{issueNumber} was created."
 msgstr ""
 
-#: src/pages/Index.tsx:867
+#: src/pages/Index.tsx:869
 msgid "The URL must start with https://"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1952
+#: src/components/SettingsModal.tsx:1954
 msgid ""
 "These tools only appear while running the app locally in development and are"
 " not shown in production."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:647
+#: src/components/SettingsModal.tsx:649
 msgid "This is a preview of the selected voice."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2020
+#: src/components/SettingsModal.tsx:2022
 msgid "This settings file contains your DeepL API key in plain text."
 msgstr ""
 
@@ -2258,7 +2259,7 @@ msgid ""
 "tions."
 msgstr ""
 
-#: src/pages/Index.tsx:1653
+#: src/pages/Index.tsx:1663
 msgid "This will remove all your work on the current file."
 msgstr ""
 
@@ -2276,7 +2277,7 @@ msgstr ""
 msgid "To"
 msgstr ""
 
-#: src/pages/Index.tsx:1629
+#: src/pages/Index.tsx:1639
 msgid "Translate"
 msgstr ""
 
@@ -2334,16 +2335,16 @@ msgstr ""
 msgid "Translation is unavailable in this deployment."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1821
+#: src/components/SettingsModal.tsx:1823
 #: src/components/editor/EditorTable.tsx:1381
 msgid "Translation memory"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:848
+#: src/components/SettingsModal.tsx:850
 msgid "Translation memory exported as JSON."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:849
+#: src/components/SettingsModal.tsx:851
 msgid "Translation memory exported as TMX."
 msgstr ""
 
@@ -2355,8 +2356,8 @@ msgstr ""
 msgid "Translation team contact"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1344
-#: src/components/SettingsModal.tsx:1514
+#: src/components/SettingsModal.tsx:1346
+#: src/components/SettingsModal.tsx:1516
 msgid "Translation voice"
 msgstr ""
 
@@ -2404,11 +2405,11 @@ msgstr ""
 msgid "Ukrainian"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:931
+#: src/components/SettingsModal.tsx:933
 msgid "Unable to import the selected settings file."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:941
+#: src/components/SettingsModal.tsx:943
 msgid "Unable to read the selected settings file."
 msgstr ""
 
@@ -2432,9 +2433,9 @@ msgstr ""
 msgid "Unapproved {{count}} row(s): fuzzy flag added."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:970
+#: src/components/SettingsModal.tsx:972
 #: src/components/editor/GlossaryPanel.tsx:194
-#: src/pages/Index.tsx:849
+#: src/pages/Index.tsx:851
 msgid "Unknown error"
 msgstr ""
 
@@ -2442,7 +2443,7 @@ msgstr ""
 msgid "Unsaved changes"
 msgstr ""
 
-#: src/pages/Index.tsx:1756
+#: src/pages/Index.tsx:1766
 msgid "Unsaved draft found"
 msgstr ""
 
@@ -2451,44 +2452,44 @@ msgstr ""
 msgid "Untranslated"
 msgstr ""
 
-#: src/pages/Index.tsx:1521
+#: src/pages/Index.tsx:1531
 msgid "Update"
 msgstr ""
 
-#: src/pages/Index.tsx:1509
+#: src/pages/Index.tsx:1519
 msgid ""
 "Update this file using a .pot template. Existing translations are kept when "
 "source strings still match, new strings are added, and obsolete strings are "
 "removed."
 msgstr ""
 
-#: src/pages/Index.tsx:1283
+#: src/pages/Index.tsx:1286
 msgid "Updated"
 msgstr ""
 
-#: src/pages/Index.tsx:1295
+#: src/pages/Index.tsx:1298
 msgid ""
 "Updated from {{filename}}: +{{added}} new, -{{removed}} removed, {{kept}} ke"
 "pt"
 msgstr ""
 
-#: src/pages/Index.tsx:1413
+#: src/pages/Index.tsx:1416
 msgid "Upload"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1615
+#: src/components/SettingsModal.tsx:1617
 msgid "Upload CSV"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1620
+#: src/components/SettingsModal.tsx:1622
 msgid "Upload a WordPress glossary CSV for the selected language"
 msgstr ""
 
-#: src/pages/Index.tsx:1897
+#: src/pages/Index.tsx:1907
 msgid "Upload a translation file to start"
 msgstr ""
 
-#: src/pages/Index.tsx:1685
+#: src/pages/Index.tsx:1695
 msgid "Upload failed"
 msgstr ""
 
@@ -2496,13 +2497,13 @@ msgstr ""
 msgid "Urdu"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1465
+#: src/components/SettingsModal.tsx:1467
 msgid ""
 "Usage is above 90%. ElevenLabs playback will stop once the provider quota is"
 " exhausted."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:414
+#: src/components/SettingsModal.tsx:416
 msgid "Usage loaded from the last successful check."
 msgstr ""
 
@@ -2510,8 +2511,8 @@ msgstr ""
 msgid "Use \"{{code}}\" as custom code"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1317
-#: src/components/SettingsModal.tsx:1345
+#: src/components/SettingsModal.tsx:1319
+#: src/components/SettingsModal.tsx:1347
 msgid "Use browser default"
 msgstr ""
 
@@ -2519,7 +2520,7 @@ msgstr ""
 msgid "Use case"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1695
+#: src/components/SettingsModal.tsx:1697
 msgid "Use glossary for translations"
 msgstr ""
 
@@ -2543,12 +2544,12 @@ msgstr ""
 msgid "Vietnamese"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1644
+#: src/components/SettingsModal.tsx:1646
 #: src/components/editor/GlossaryPanel.tsx:386
 msgid "View All"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1773
+#: src/components/SettingsModal.tsx:1775
 msgid "Want to help translate GlossBoss?"
 msgstr ""
 
@@ -2580,18 +2581,18 @@ msgstr ""
 msgid "What would help?"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1261
+#: src/components/SettingsModal.tsx:1263
 msgid "When disabled, all speak buttons are hidden from the editor."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1097
+#: src/components/SettingsModal.tsx:1099
 msgid ""
 "When disabled, all translate buttons and the bulk translation toolbar are hi"
 "dden."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1132
-#: src/components/SettingsModal.tsx:1388
+#: src/components/SettingsModal.tsx:1134
+#: src/components/SettingsModal.tsx:1390
 msgid ""
 "When enabled, your key is stored in localStorage and survives browser restar"
 "ts. Disable on shared or untrusted devices."
@@ -2627,21 +2628,21 @@ msgstr ""
 msgid "WordPress.org plugin slug for source code links"
 msgstr ""
 
-#: src/pages/Index.tsx:1432
+#: src/pages/Index.tsx:1435
 msgid "You have unsaved changes"
 msgstr ""
 
-#: src/pages/Index.tsx:1764
+#: src/pages/Index.tsx:1774
 msgid ""
 "You have unsaved changes from {age}. Would you like to restore your previous"
 " work?"
 msgstr ""
 
-#: src/pages/Index.tsx:1652
+#: src/pages/Index.tsx:1662
 msgid "You have unsaved changes. Are you sure you want to clear the editor?"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1380
+#: src/components/SettingsModal.tsx:1382
 msgid ""
 "Your ElevenLabs API key is kept in this browser tab by default and will be c"
 "leared when you close the tab. Enable \"Remember API key\" below to persist "
@@ -2652,8 +2653,8 @@ msgstr ""
 msgid "cached"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1246
-#: src/components/SettingsModal.tsx:1458
+#: src/components/SettingsModal.tsx:1248
+#: src/components/SettingsModal.tsx:1460
 msgid "characters"
 msgstr ""
 
@@ -2661,7 +2662,7 @@ msgstr ""
 msgid "for details."
 msgstr ""
 
-#: src/pages/Index.tsx:1500
+#: src/pages/Index.tsx:1503
 msgid "i18next JSON (.json)"
 msgstr ""
 
@@ -2673,11 +2674,11 @@ msgstr ""
 msgid "name@example.com"
 msgstr ""
 
-#: src/pages/Index.tsx:1945
+#: src/pages/Index.tsx:1955
 msgid "or"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1600
+#: src/components/SettingsModal.tsx:1602
 msgid "or upload manually"
 msgstr ""
 
@@ -2697,11 +2698,11 @@ msgstr ""
 msgid "skipped"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1631
+#: src/components/SettingsModal.tsx:1633
 msgid "terms"
 msgstr ""
 
-#: src/pages/Index.tsx:1772
+#: src/pages/Index.tsx:1782
 msgid "{count} modified entries will be restored."
 msgstr ""
 
@@ -2739,7 +2740,7 @@ msgstr ""
 msgid "{{count}} entries"
 msgstr ""
 
-#: src/pages/Index.tsx:2021
+#: src/pages/Index.tsx:2035
 msgid "{{count}} error issue(s)"
 msgstr ""
 
@@ -2785,7 +2786,7 @@ msgstr ""
 msgid "{{count}} shown"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1845
+#: src/components/SettingsModal.tsx:1847
 msgid "{{count}} stored entries"
 msgstr ""
 
@@ -2794,7 +2795,7 @@ msgstr ""
 msgid "{{count}} terms"
 msgstr ""
 
-#: src/pages/Index.tsx:2027
+#: src/pages/Index.tsx:2041
 msgid "{{count}} total issues"
 msgstr ""
 
@@ -2806,15 +2807,15 @@ msgstr ""
 msgid "{{count}} untranslated"
 msgstr ""
 
-#: src/pages/Index.tsx:2024
+#: src/pages/Index.tsx:2038
 msgid "{{count}} warning issue(s)"
 msgstr ""
 
-#: src/pages/Index.tsx:1722
+#: src/pages/Index.tsx:1732
 msgid "{{count}} warning(s) during parsing"
 msgstr ""
 
-#: src/pages/Index.tsx:1302
+#: src/pages/Index.tsx:1305
 msgid "{{count}} with updated references"
 msgstr ""
 

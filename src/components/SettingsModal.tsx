@@ -249,6 +249,7 @@ function KeyboardShortcutsPanel({
 interface SettingsModalProps {
   opened: boolean;
   onClose: () => void;
+  initialTab?: string;
   initialLocale?: string;
   onGlossaryLoaded?: (glossary: Glossary) => void;
   onGlossaryCleared?: () => void;
@@ -272,6 +273,7 @@ interface SettingsModalProps {
 export function SettingsModal({
   opened,
   onClose,
+  initialTab,
   initialLocale,
   onGlossaryLoaded,
   onGlossaryCleared,
@@ -1057,7 +1059,7 @@ export function SettingsModal({
         centered
         closeButtonProps={{ 'aria-label': t('Close settings') }}
       >
-        <Tabs defaultValue="api">
+        <Tabs defaultValue={initialTab ?? 'api'}>
           <Tabs.List mb="md" style={{ overflowX: 'auto', flexWrap: 'nowrap' }}>
             <Tabs.Tab value="api" leftSection={<Key size={14} />}>
               {t('DeepL API')}

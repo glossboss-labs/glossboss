@@ -60,6 +60,7 @@ import {
   Link,
   ExternalLink,
   Info,
+  Archive,
 } from 'lucide-react';
 import { ConfirmModal } from '@/components/ui';
 import { EditorTable, FilterToolbar, HeaderEditor, TranslateToolbar } from '@/components/editor';
@@ -352,6 +353,7 @@ export default function Index() {
 
   // Settings modal state
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [settingsInitialTab, setSettingsInitialTab] = useState<string | undefined>(undefined);
   const [branchChipEnabled, setBranchChipEnabled] = useLocalStorage<boolean>({
     key: DEV_BRANCH_CHIP_STORAGE_KEY,
     defaultValue: true,
@@ -915,7 +917,8 @@ export default function Index() {
     debugLog('[Drafts] Restored from draft');
   }, [loadFile, pendingDraft]);
 
-  const handleOpenSettings = useCallback(() => {
+  const handleOpenSettings = useCallback((tab?: string) => {
+    setSettingsInitialTab(tab);
     setSettingsOpen(true);
   }, []);
 
@@ -1499,6 +1502,13 @@ export default function Index() {
                                   <Menu.Item onClick={() => handleDownloadAs('i18next')}>
                                     {t('i18next JSON (.json)')}
                                   </Menu.Item>
+                                  <Menu.Divider />
+                                  <Menu.Item
+                                    leftSection={<Archive size={14} />}
+                                    onClick={() => handleOpenSettings('transfer')}
+                                  >
+                                    {t('Backup')}
+                                  </Menu.Item>
                                 </Menu.Dropdown>
                               </Menu>
                             </Group>
@@ -1974,7 +1984,11 @@ export default function Index() {
       {settingsOpen && (
         <SettingsModal
           opened={settingsOpen}
-          onClose={() => setSettingsOpen(false)}
+          onClose={() => {
+            setSettingsOpen(false);
+            setSettingsInitialTab(undefined);
+          }}
+          initialTab={settingsInitialTab}
           initialLocale={glossaryLocale}
           onGlossaryLoaded={handleGlossaryLoaded}
           onGlossaryCleared={handleGlossaryCleared}
