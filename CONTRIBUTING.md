@@ -46,7 +46,7 @@ Examples:
 - Do not commit secrets or local `.env` files.
 - Add or update tests when behavior changes.
 
-- If you touch translation memory or QA, start with the TM and QA sections in `README.md`.
+- If you touch translation memory or QA, review the existing implementations in `src/lib/translation-memory/` and `src/lib/qa/` first.
 - To add a new QA rule, update `types.ts` (rule identifier and label) and `analyzer.ts` (check implementation) in `src/lib/qa/`.
 - To add a new translation provider or repo sync provider, follow the existing pattern in `src/lib/`.
 
