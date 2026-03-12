@@ -111,11 +111,11 @@ msgstr ""
 msgid "Apply glossary terms during translation"
 msgstr ""
 
-#: src/components/editor/WordPressRefreshModal.tsx:270
+#: src/components/editor/WordPressRefreshModal.tsx:280
 msgid "Apply refresh"
 msgstr ""
 
-#: src/components/editor/WordPressRefreshModal.tsx:253
+#: src/components/editor/WordPressRefreshModal.tsx:263
 msgid ""
 "Applying this refresh will merge the upstream template into your current fil"
 "e and focus the resulting upstream delta entries."
@@ -273,6 +273,7 @@ msgstr ""
 #: src/components/editor/HeaderEditor.tsx:58
 #: src/components/editor/TranslateToolbar.tsx:74
 #: src/components/editor/TranslateToolbar.tsx:106
+#: src/components/editor/WordPressProjectModal.tsx:44
 msgid "Bulgarian"
 msgstr ""
 
@@ -282,8 +283,8 @@ msgstr ""
 
 #: src/components/SettingsModal.tsx:2628
 #: src/components/editor/TranslateToolbar.tsx:926
-#: src/components/editor/WordPressProjectModal.tsx:251
-#: src/components/editor/WordPressRefreshModal.tsx:263
+#: src/components/editor/WordPressProjectModal.tsx:318
+#: src/components/editor/WordPressRefreshModal.tsx:273
 #: src/components/feedback/FeedbackModal.tsx:480
 #: src/components/ui/ConfirmModal.tsx:38
 #: src/components/ui/PromptModal.tsx:34
@@ -329,6 +330,7 @@ msgstr ""
 #: src/components/editor/HeaderEditor.tsx:60
 #: src/components/editor/TranslateToolbar.tsx:102
 #: src/components/editor/TranslateToolbar.tsx:136
+#: src/components/editor/WordPressProjectModal.tsx:74
 msgid "Chinese"
 msgstr ""
 
@@ -348,7 +350,7 @@ msgstr ""
 msgid "Chinese, Japanese, Korean, Vietnamese, Thai, Indonesian"
 msgstr ""
 
-#: src/components/editor/WordPressProjectModal.tsx:118
+#: src/components/editor/WordPressProjectModal.tsx:184
 msgid "Choose a slug and locale before opening a project."
 msgstr ""
 
@@ -617,12 +619,14 @@ msgstr ""
 #: src/components/editor/HeaderEditor.tsx:65
 #: src/components/editor/TranslateToolbar.tsx:75
 #: src/components/editor/TranslateToolbar.tsx:107
+#: src/components/editor/WordPressProjectModal.tsx:45
 msgid "Czech"
 msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:66
 #: src/components/editor/TranslateToolbar.tsx:76
 #: src/components/editor/TranslateToolbar.tsx:108
+#: src/components/editor/WordPressProjectModal.tsx:46
 msgid "Danish"
 msgstr ""
 
@@ -664,8 +668,8 @@ msgid "Detected: {{target}}"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:1326
-#: src/components/editor/WordPressProjectModal.tsx:186
-#: src/components/editor/WordPressRefreshModal.tsx:191
+#: src/components/editor/WordPressProjectModal.tsx:253
+#: src/components/editor/WordPressRefreshModal.tsx:201
 msgid "Development"
 msgstr ""
 
@@ -730,6 +734,7 @@ msgstr ""
 #: src/components/editor/HeaderEditor.tsx:67
 #: src/components/editor/TranslateToolbar.tsx:92
 #: src/components/editor/TranslateToolbar.tsx:125
+#: src/components/editor/WordPressProjectModal.tsx:63
 msgid "Dutch"
 msgstr ""
 
@@ -821,11 +826,13 @@ msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:72
 #: src/components/editor/TranslateToolbar.tsx:111
+#: src/components/editor/WordPressProjectModal.tsx:49
 msgid "English (UK)"
 msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:71
 #: src/components/editor/TranslateToolbar.tsx:112
+#: src/components/editor/WordPressProjectModal.tsx:50
 msgid "English (US)"
 msgstr ""
 
@@ -873,6 +880,7 @@ msgstr ""
 #: src/components/editor/HeaderEditor.tsx:75
 #: src/components/editor/TranslateToolbar.tsx:81
 #: src/components/editor/TranslateToolbar.tsx:114
+#: src/components/editor/WordPressProjectModal.tsx:52
 msgid "Estonian"
 msgstr ""
 
@@ -922,11 +930,11 @@ msgstr ""
 msgid "Extracted comments"
 msgstr ""
 
-#: src/components/editor/WordPressRefreshModal.tsx:167
+#: src/components/editor/WordPressRefreshModal.tsx:177
 msgid "Failed to apply the refresh."
 msgstr ""
 
-#: src/components/editor/WordPressRefreshModal.tsx:143
+#: src/components/editor/WordPressRefreshModal.tsx:153
 msgid "Failed to compare releases."
 msgstr ""
 
@@ -954,15 +962,15 @@ msgstr ""
 msgid "Failed to load glossary"
 msgstr ""
 
-#: src/components/editor/WordPressProjectModal.tsx:93
+#: src/components/editor/WordPressProjectModal.tsx:145
 msgid "Failed to load project metadata."
 msgstr ""
 
-#: src/components/editor/WordPressRefreshModal.tsx:87
+#: src/components/editor/WordPressRefreshModal.tsx:97
 msgid "Failed to load releases."
 msgstr ""
 
-#: src/components/editor/WordPressProjectModal.tsx:137
+#: src/components/editor/WordPressProjectModal.tsx:203
 msgid "Failed to open the WordPress project."
 msgstr ""
 
@@ -1035,6 +1043,7 @@ msgstr ""
 #: src/components/editor/HeaderEditor.tsx:76
 #: src/components/editor/TranslateToolbar.tsx:82
 #: src/components/editor/TranslateToolbar.tsx:115
+#: src/components/editor/WordPressProjectModal.tsx:53
 msgid "Finnish"
 msgstr ""
 
@@ -1069,6 +1078,7 @@ msgstr ""
 #: src/components/editor/HeaderEditor.tsx:77
 #: src/components/editor/TranslateToolbar.tsx:83
 #: src/components/editor/TranslateToolbar.tsx:116
+#: src/components/editor/WordPressProjectModal.tsx:54
 msgid "French"
 msgstr ""
 
@@ -1138,6 +1148,7 @@ msgstr ""
 #: src/components/editor/HeaderEditor.tsx:84
 #: src/components/editor/TranslateToolbar.tsx:77
 #: src/components/editor/TranslateToolbar.tsx:109
+#: src/components/editor/WordPressProjectModal.tsx:47
 msgid "German"
 msgstr ""
 
@@ -1240,6 +1251,7 @@ msgstr ""
 #: src/components/editor/HeaderEditor.tsx:88
 #: src/components/editor/TranslateToolbar.tsx:78
 #: src/components/editor/TranslateToolbar.tsx:110
+#: src/components/editor/WordPressProjectModal.tsx:48
 msgid "Greek"
 msgstr ""
 
@@ -1282,6 +1294,7 @@ msgstr ""
 #: src/components/editor/HeaderEditor.tsx:92
 #: src/components/editor/TranslateToolbar.tsx:84
 #: src/components/editor/TranslateToolbar.tsx:117
+#: src/components/editor/WordPressProjectModal.tsx:55
 msgid "Hungarian"
 msgstr ""
 
@@ -1334,6 +1347,7 @@ msgstr ""
 #: src/components/editor/HeaderEditor.tsx:94
 #: src/components/editor/TranslateToolbar.tsx:85
 #: src/components/editor/TranslateToolbar.tsx:118
+#: src/components/editor/WordPressProjectModal.tsx:56
 msgid "Indonesian"
 msgstr ""
 
@@ -1370,6 +1384,7 @@ msgstr ""
 #: src/components/editor/HeaderEditor.tsx:96
 #: src/components/editor/TranslateToolbar.tsx:86
 #: src/components/editor/TranslateToolbar.tsx:119
+#: src/components/editor/WordPressProjectModal.tsx:57
 msgid "Italian"
 msgstr ""
 
@@ -1384,6 +1399,7 @@ msgstr ""
 #: src/components/editor/HeaderEditor.tsx:99
 #: src/components/editor/TranslateToolbar.tsx:87
 #: src/components/editor/TranslateToolbar.tsx:120
+#: src/components/editor/WordPressProjectModal.tsx:58
 msgid "Japanese"
 msgstr ""
 
@@ -1421,6 +1437,7 @@ msgstr ""
 #: src/components/editor/HeaderEditor.tsx:102
 #: src/components/editor/TranslateToolbar.tsx:88
 #: src/components/editor/TranslateToolbar.tsx:121
+#: src/components/editor/WordPressProjectModal.tsx:59
 msgid "Korean"
 msgstr ""
 
@@ -1446,7 +1463,7 @@ msgstr ""
 msgid "Last Updated"
 msgstr ""
 
-#: src/components/editor/WordPressProjectModal.tsx:195
+#: src/components/editor/WordPressProjectModal.tsx:262
 msgid "Latest"
 msgstr ""
 
@@ -1454,6 +1471,7 @@ msgstr ""
 #: src/components/editor/HeaderEditor.tsx:179
 #: src/components/editor/TranslateToolbar.tsx:90
 #: src/components/editor/TranslateToolbar.tsx:123
+#: src/components/editor/WordPressProjectModal.tsx:61
 msgid "Latvian"
 msgstr ""
 
@@ -1486,6 +1504,7 @@ msgstr ""
 #: src/components/editor/HeaderEditor.tsx:104
 #: src/components/editor/TranslateToolbar.tsx:89
 #: src/components/editor/TranslateToolbar.tsx:122
+#: src/components/editor/WordPressProjectModal.tsx:60
 msgid "Lithuanian"
 msgstr ""
 
@@ -1553,11 +1572,11 @@ msgstr ""
 msgid "Loading file..."
 msgstr ""
 
-#: src/components/editor/WordPressProjectModal.tsx:219
+#: src/components/editor/WordPressProjectModal.tsx:286
 msgid "Loading project metadata..."
 msgstr ""
 
-#: src/components/editor/WordPressRefreshModal.tsx:222
+#: src/components/editor/WordPressRefreshModal.tsx:232
 msgid "Loading releases..."
 msgstr ""
 
@@ -1569,7 +1588,7 @@ msgstr ""
 msgid "Loading..."
 msgstr ""
 
-#: src/components/editor/WordPressProjectModal.tsx:174
+#: src/components/editor/WordPressProjectModal.tsx:240
 msgid "Locale"
 msgstr ""
 
@@ -1718,7 +1737,7 @@ msgstr ""
 msgid "Needs review:"
 msgstr ""
 
-#: src/components/editor/WordPressRefreshModal.tsx:134
+#: src/components/editor/WordPressRefreshModal.tsx:144
 msgid "Neither a POT template nor a usable translation export was found."
 msgstr ""
 
@@ -1739,7 +1758,7 @@ msgstr ""
 msgid "Next field"
 msgstr ""
 
-#: src/components/editor/WordPressRefreshModal.tsx:123
+#: src/components/editor/WordPressRefreshModal.tsx:133
 msgid "No POT template was found for the selected release."
 msgstr ""
 
@@ -1787,8 +1806,8 @@ msgstr ""
 msgid "No matching plural form"
 msgstr ""
 
-#: src/components/editor/WordPressProjectModal.tsx:212
-#: src/components/editor/WordPressRefreshModal.tsx:208
+#: src/components/editor/WordPressProjectModal.tsx:279
+#: src/components/editor/WordPressRefreshModal.tsx:218
 msgid "No releases found"
 msgstr ""
 
@@ -1844,6 +1863,7 @@ msgstr ""
 #: src/components/editor/HeaderEditor.tsx:114
 #: src/components/editor/TranslateToolbar.tsx:91
 #: src/components/editor/TranslateToolbar.tsx:124
+#: src/components/editor/WordPressProjectModal.tsx:62
 msgid "Norwegian"
 msgstr ""
 
@@ -1895,7 +1915,7 @@ msgstr ""
 msgid "Open a locale file from a GitHub or GitLab repository"
 msgstr ""
 
-#: src/components/editor/WordPressProjectModal.tsx:148
+#: src/components/editor/WordPressProjectModal.tsx:214
 #: src/pages/Index.tsx:1900
 #: src/pages/Index.tsx:2395
 msgid "Open from WordPress.org"
@@ -1916,7 +1936,7 @@ msgstr ""
 msgid "Open issue"
 msgstr ""
 
-#: src/components/editor/WordPressProjectModal.tsx:254
+#: src/components/editor/WordPressProjectModal.tsx:321
 msgid "Open project"
 msgstr ""
 
@@ -2018,7 +2038,7 @@ msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:494
 #: src/components/editor/SourceBrowser.tsx:86
-#: src/components/editor/WordPressProjectModal.tsx:159
+#: src/components/editor/WordPressProjectModal.tsx:225
 msgid "Plugin"
 msgstr ""
 
@@ -2046,6 +2066,7 @@ msgstr ""
 #: src/components/editor/HeaderEditor.tsx:184
 #: src/components/editor/TranslateToolbar.tsx:93
 #: src/components/editor/TranslateToolbar.tsx:126
+#: src/components/editor/WordPressProjectModal.tsx:64
 msgid "Polish"
 msgstr ""
 
@@ -2056,11 +2077,13 @@ msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:118
 #: src/components/editor/TranslateToolbar.tsx:127
+#: src/components/editor/WordPressProjectModal.tsx:65
 msgid "Portuguese (Brazil)"
 msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:119
 #: src/components/editor/TranslateToolbar.tsx:128
+#: src/components/editor/WordPressProjectModal.tsx:66
 msgid "Portuguese (Portugal)"
 msgstr ""
 
@@ -2068,7 +2091,7 @@ msgstr ""
 msgid "Preparing spam protection..."
 msgstr ""
 
-#: src/components/editor/WordPressRefreshModal.tsx:267
+#: src/components/editor/WordPressRefreshModal.tsx:277
 msgid "Preview diff"
 msgstr ""
 
@@ -2113,11 +2136,11 @@ msgstr ""
 msgid "Project not found on WordPress.org"
 msgstr ""
 
-#: src/components/editor/WordPressProjectModal.tsx:80
+#: src/components/editor/WordPressProjectModal.tsx:127
 msgid "Project not found on WordPress.org."
 msgstr ""
 
-#: src/components/editor/WordPressProjectModal.tsx:155
+#: src/components/editor/WordPressProjectModal.tsx:221
 msgid "Project type"
 msgstr ""
 
@@ -2211,13 +2234,13 @@ msgstr ""
 #: src/components/SettingsModal.tsx:2132
 #: src/components/editor/GlossaryPanel.tsx:338
 #: src/components/editor/GlossaryPanel.tsx:342
-#: src/components/editor/WordPressRefreshModal.tsx:178
+#: src/components/editor/WordPressRefreshModal.tsx:188
 #: src/pages/Index.tsx:1916
 #: src/pages/Index.tsx:2256
 msgid "Refresh from WordPress.org"
 msgstr ""
 
-#: src/components/editor/WordPressRefreshModal.tsx:215
+#: src/components/editor/WordPressRefreshModal.tsx:225
 msgid "Refresh glossary after applying this update"
 msgstr ""
 
@@ -2225,8 +2248,8 @@ msgstr ""
 msgid "Region"
 msgstr ""
 
-#: src/components/editor/WordPressProjectModal.tsx:192
-#: src/components/editor/WordPressRefreshModal.tsx:197
+#: src/components/editor/WordPressProjectModal.tsx:259
+#: src/components/editor/WordPressRefreshModal.tsx:207
 msgid "Release"
 msgstr ""
 
@@ -2414,6 +2437,7 @@ msgstr ""
 #: src/components/editor/HeaderEditor.tsx:175
 #: src/components/editor/TranslateToolbar.tsx:95
 #: src/components/editor/TranslateToolbar.tsx:129
+#: src/components/editor/WordPressProjectModal.tsx:67
 msgid "Romanian"
 msgstr ""
 
@@ -2424,6 +2448,7 @@ msgstr ""
 #: src/components/editor/HeaderEditor.tsx:122
 #: src/components/editor/TranslateToolbar.tsx:96
 #: src/components/editor/TranslateToolbar.tsx:130
+#: src/components/editor/WordPressProjectModal.tsx:68
 msgid "Russian"
 msgstr ""
 
@@ -2474,8 +2499,8 @@ msgstr ""
 msgid "Select a reference above to load source context."
 msgstr ""
 
-#: src/components/editor/WordPressProjectModal.tsx:208
-#: src/components/editor/WordPressRefreshModal.tsx:204
+#: src/components/editor/WordPressProjectModal.tsx:275
+#: src/components/editor/WordPressRefreshModal.tsx:214
 msgid "Select a release"
 msgstr ""
 
@@ -2669,6 +2694,7 @@ msgstr ""
 #: src/components/editor/HeaderEditor.tsx:125
 #: src/components/editor/TranslateToolbar.tsx:97
 #: src/components/editor/TranslateToolbar.tsx:131
+#: src/components/editor/WordPressProjectModal.tsx:69
 msgid "Slovak"
 msgstr ""
 
@@ -2676,10 +2702,11 @@ msgstr ""
 #: src/components/editor/HeaderEditor.tsx:193
 #: src/components/editor/TranslateToolbar.tsx:98
 #: src/components/editor/TranslateToolbar.tsx:132
+#: src/components/editor/WordPressProjectModal.tsx:70
 msgid "Slovenian"
 msgstr ""
 
-#: src/components/editor/WordPressProjectModal.tsx:165
+#: src/components/editor/WordPressProjectModal.tsx:231
 msgid "Slug"
 msgstr ""
 
@@ -2709,7 +2736,7 @@ msgstr ""
 msgid "Source preview"
 msgstr ""
 
-#: src/components/editor/WordPressProjectModal.tsx:201
+#: src/components/editor/WordPressProjectModal.tsx:268
 msgid "Source release"
 msgstr ""
 
@@ -2726,6 +2753,7 @@ msgstr ""
 #: src/components/editor/HeaderEditor.tsx:127
 #: src/components/editor/TranslateToolbar.tsx:80
 #: src/components/editor/TranslateToolbar.tsx:113
+#: src/components/editor/WordPressProjectModal.tsx:51
 msgid "Spanish"
 msgstr ""
 
@@ -2753,8 +2781,8 @@ msgstr ""
 msgid "Speech synthesis is not available in this browser."
 msgstr ""
 
-#: src/components/editor/WordPressProjectModal.tsx:185
-#: src/components/editor/WordPressRefreshModal.tsx:190
+#: src/components/editor/WordPressProjectModal.tsx:252
+#: src/components/editor/WordPressRefreshModal.tsx:200
 msgid "Stable"
 msgstr ""
 
@@ -2810,6 +2838,7 @@ msgstr ""
 #: src/components/editor/HeaderEditor.tsx:132
 #: src/components/editor/TranslateToolbar.tsx:99
 #: src/components/editor/TranslateToolbar.tsx:133
+#: src/components/editor/WordPressProjectModal.tsx:71
 msgid "Swedish"
 msgstr ""
 
@@ -2852,7 +2881,7 @@ msgstr ""
 msgid "Telugu"
 msgstr ""
 
-#: src/components/editor/WordPressRefreshModal.tsx:249
+#: src/components/editor/WordPressRefreshModal.tsx:259
 msgid "Template path: {{path}}"
 msgstr ""
 
@@ -2894,13 +2923,13 @@ msgstr ""
 msgid "The WordPress.org translation export could not be parsed."
 msgstr ""
 
-#: src/components/editor/WordPressProjectModal.tsx:235
+#: src/components/editor/WordPressProjectModal.tsx:302
 msgid ""
 "The translation file will be loaded from WordPress.org and source browsing w"
 "ill use the selected release."
 msgstr ""
 
-#: src/components/editor/WordPressProjectModal.tsx:232
+#: src/components/editor/WordPressProjectModal.tsx:299
 msgid ""
 "The translation file will be loaded from the development track and source br"
 "owsing will follow trunk."
@@ -2908,7 +2937,7 @@ msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:495
 #: src/components/editor/SourceBrowser.tsx:86
-#: src/components/editor/WordPressProjectModal.tsx:160
+#: src/components/editor/WordPressProjectModal.tsx:226
 msgid "Theme"
 msgstr ""
 
@@ -2962,7 +2991,7 @@ msgstr ""
 msgid "Token not configured. Go to Connect tab to set up authentication."
 msgstr ""
 
-#: src/components/editor/WordPressRefreshModal.tsx:186
+#: src/components/editor/WordPressRefreshModal.tsx:196
 msgid "Track"
 msgstr ""
 
@@ -3050,7 +3079,7 @@ msgstr ""
 msgid "Translation team contact"
 msgstr ""
 
-#: src/components/editor/WordPressProjectModal.tsx:181
+#: src/components/editor/WordPressProjectModal.tsx:248
 msgid "Translation track"
 msgstr ""
 
@@ -3067,8 +3096,8 @@ msgstr ""
 msgid "Translator comments"
 msgstr ""
 
-#: src/components/editor/WordPressProjectModal.tsx:207
-#: src/components/editor/WordPressRefreshModal.tsx:203
+#: src/components/editor/WordPressProjectModal.tsx:274
+#: src/components/editor/WordPressRefreshModal.tsx:213
 msgid "Trunk / development"
 msgstr ""
 
@@ -3079,6 +3108,7 @@ msgstr ""
 #: src/components/editor/HeaderEditor.tsx:136
 #: src/components/editor/TranslateToolbar.tsx:100
 #: src/components/editor/TranslateToolbar.tsx:134
+#: src/components/editor/WordPressProjectModal.tsx:72
 msgid "Turkish"
 msgstr ""
 
@@ -3105,6 +3135,7 @@ msgstr ""
 #: src/components/editor/HeaderEditor.tsx:137
 #: src/components/editor/TranslateToolbar.tsx:101
 #: src/components/editor/TranslateToolbar.tsx:135
+#: src/components/editor/WordPressProjectModal.tsx:73
 msgid "Ukrainian"
 msgstr ""
 
@@ -3392,7 +3423,7 @@ msgstr ""
 msgid "WordPress.org refresh"
 msgstr ""
 
-#: src/components/editor/WordPressRefreshModal.tsx:137
+#: src/components/editor/WordPressRefreshModal.tsx:147
 msgid "WordPress.org translation export"
 msgstr ""
 
@@ -3524,11 +3555,11 @@ msgstr ""
 msgid "{{count}} QA warning(s)"
 msgstr ""
 
-#: src/components/editor/WordPressRefreshModal.tsx:238
+#: src/components/editor/WordPressRefreshModal.tsx:248
 msgid "{{count}} added"
 msgstr ""
 
-#: src/components/editor/WordPressRefreshModal.tsx:241
+#: src/components/editor/WordPressRefreshModal.tsx:251
 msgid "{{count}} changed"
 msgstr ""
 
@@ -3593,7 +3624,7 @@ msgstr ""
 msgid "{{count}} ref(s)"
 msgstr ""
 
-#: src/components/editor/WordPressRefreshModal.tsx:244
+#: src/components/editor/WordPressRefreshModal.tsx:254
 msgid "{{count}} removed"
 msgstr ""
 
