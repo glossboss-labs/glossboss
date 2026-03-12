@@ -19,7 +19,7 @@ export function ReviewSummary() {
           {stats.readyToExport ? t('Ready for export') : t('Review in progress')}
         </Badge>
       </Group>
-      <Group gap="sm" align="flex-end" wrap="wrap">
+      <Group gap="sm" align="center" wrap="wrap">
         <TextInput
           value={reviewerName}
           onChange={(event) => setReviewerName(event.currentTarget.value)}
@@ -33,7 +33,6 @@ export function ReviewSummary() {
           checked={lockApprovedEntries}
           onChange={(event) => setLockApprovedEntries(event.currentTarget.checked)}
           size="xs"
-          styles={{ body: { alignItems: 'center' } }}
         />
       </Group>
     </Stack>
