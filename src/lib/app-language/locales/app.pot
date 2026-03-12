@@ -183,6 +183,10 @@ msgstr ""
 msgid "Azure translation failed"
 msgstr ""
 
+#: src/components/repo-sync/RepoSyncModal.tsx:619
+msgid "Back to detected files"
+msgstr ""
+
 #: src/components/editor/SourceBrowser.tsx:153
 msgid "Back to listing"
 msgstr ""
@@ -221,8 +225,16 @@ msgid "Branch:"
 msgstr ""
 
 #: src/components/editor/EditorTable.tsx:2666
-#: src/components/repo-sync/RepoSyncModal.tsx:236
+#: src/components/repo-sync/RepoSyncModal.tsx:359
 msgid "Browse"
+msgstr ""
+
+#: src/components/repo-sync/RepoSyncModal.tsx:543
+msgid "Browse all files"
+msgstr ""
+
+#: src/components/repo-sync/RepoSyncModal.tsx:600
+msgid "Browse files manually"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:1812
@@ -338,7 +350,7 @@ msgstr ""
 msgid "Clear search"
 msgstr ""
 
-#: src/components/repo-sync/RepoSyncModal.tsx:349
+#: src/components/repo-sync/RepoSyncModal.tsx:472
 msgid "Clear token"
 msgstr ""
 
@@ -402,15 +414,15 @@ msgstr ""
 msgid "Confirm"
 msgstr ""
 
-#: src/components/repo-sync/RepoSyncModal.tsx:233
+#: src/components/repo-sync/RepoSyncModal.tsx:356
 msgid "Connect"
 msgstr ""
 
-#: src/components/repo-sync/RepoSyncModal.tsx:345
+#: src/components/repo-sync/RepoSyncModal.tsx:468
 msgid "Connect & list repositories"
 msgstr ""
 
-#: src/components/repo-sync/RepoSyncModal.tsx:362
+#: src/components/repo-sync/RepoSyncModal.tsx:485
 msgid "Connect to a provider first to browse repositories"
 msgstr ""
 
@@ -461,11 +473,11 @@ msgstr ""
 msgid "Create a feature branch for these changes"
 msgstr ""
 
-#: src/components/repo-sync/RepoSyncModal.tsx:310
+#: src/components/repo-sync/RepoSyncModal.tsx:433
 msgid "Create a token"
 msgstr ""
 
-#: src/components/repo-sync/RepoSyncModal.tsx:272
+#: src/components/repo-sync/RepoSyncModal.tsx:395
 msgid "Create a token with repo scope pre-selected"
 msgstr ""
 
@@ -861,6 +873,10 @@ msgstr ""
 msgid "Feedback verification is not configured."
 msgstr ""
 
+#: src/components/repo-sync/RepoSyncModal.tsx:615
+msgid "File browser"
+msgstr ""
+
 #: src/components/SettingsModal.tsx:1216
 msgid "File does not appear to be a valid WordPress glossary CSV."
 msgstr ""
@@ -1002,7 +1018,7 @@ msgstr ""
 msgid "Get API key"
 msgstr ""
 
-#: src/components/repo-sync/RepoSyncModal.tsx:295
+#: src/components/repo-sync/RepoSyncModal.tsx:418
 msgid "GitLab instance URL"
 msgstr ""
 
@@ -1078,7 +1094,7 @@ msgstr ""
 msgid "Glossary: {count} terms ({locale})"
 msgstr ""
 
-#: src/components/repo-sync/RepoSyncModal.tsx:365
+#: src/components/repo-sync/RepoSyncModal.tsx:488
 msgid "Go to Connect"
 msgstr ""
 
@@ -1384,7 +1400,7 @@ msgid ""
 "ved changes will be lost."
 msgstr ""
 
-#: src/components/repo-sync/RepoSyncModal.tsx:390
+#: src/components/repo-sync/RepoSyncModal.tsx:513
 msgid "Loading file..."
 msgstr ""
 
@@ -1564,11 +1580,15 @@ msgstr ""
 msgid "No glossary terms in selected text"
 msgstr ""
 
+#: src/components/repo-sync/RepoSyncModal.tsx:592
+msgid "No locale files detected automatically"
+msgstr ""
+
 #: src/components/editor/HeaderEditor.tsx:411
 msgid "No matching plural form"
 msgstr ""
 
-#: src/components/repo-sync/RepoSyncModal.tsx:377
+#: src/components/repo-sync/RepoSyncModal.tsx:500
 msgid "No repositories found"
 msgstr ""
 
@@ -1706,8 +1726,8 @@ msgstr ""
 msgid "Persian"
 msgstr ""
 
-#: src/components/repo-sync/RepoSyncModal.tsx:263
-#: src/components/repo-sync/RepoSyncModal.tsx:301
+#: src/components/repo-sync/RepoSyncModal.tsx:386
+#: src/components/repo-sync/RepoSyncModal.tsx:424
 msgid "Personal access token"
 msgstr ""
 
@@ -1867,7 +1887,7 @@ msgid "Protect {{count}} manual edits from bulk translation"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:1802
-#: src/components/repo-sync/RepoSyncModal.tsx:249
+#: src/components/repo-sync/RepoSyncModal.tsx:372
 msgid "Provider"
 msgstr ""
 
@@ -1883,7 +1903,7 @@ msgstr ""
 msgid "Punjabi"
 msgstr ""
 
-#: src/components/repo-sync/RepoSyncModal.tsx:240
+#: src/components/repo-sync/RepoSyncModal.tsx:363
 #: src/pages/Index.tsx:1668
 msgid "Push"
 msgstr ""
@@ -1954,8 +1974,8 @@ msgstr ""
 msgid "Remember API key across sessions"
 msgstr ""
 
-#: src/components/repo-sync/RepoSyncModal.tsx:285
-#: src/components/repo-sync/RepoSyncModal.tsx:324
+#: src/components/repo-sync/RepoSyncModal.tsx:408
+#: src/components/repo-sync/RepoSyncModal.tsx:447
 msgid "Remember token"
 msgstr ""
 
@@ -1987,11 +2007,11 @@ msgstr ""
 msgid "Report Bugs To"
 msgstr ""
 
-#: src/components/repo-sync/RepoSyncModal.tsx:371
+#: src/components/repo-sync/RepoSyncModal.tsx:494
 msgid "Repository"
 msgstr ""
 
-#: src/components/repo-sync/RepoSyncModal.tsx:225
+#: src/components/repo-sync/RepoSyncModal.tsx:348
 #: src/pages/Index.tsx:1757
 msgid "Repository sync"
 msgstr ""
@@ -2090,6 +2110,10 @@ msgstr ""
 msgid "Save current field and move to the previous translation field"
 msgstr ""
 
+#: src/components/repo-sync/RepoSyncModal.tsx:513
+msgid "Scanning for locale files..."
+msgstr ""
+
 #: src/components/editor/HeaderEditor.tsx:320
 msgid "Search or type language code..."
 msgstr ""
@@ -2108,7 +2132,7 @@ msgstr ""
 msgid "Select a reference above to load source context."
 msgstr ""
 
-#: src/components/repo-sync/RepoSyncModal.tsx:376
+#: src/components/repo-sync/RepoSyncModal.tsx:499
 msgid "Select a repository"
 msgstr ""
 
@@ -2386,8 +2410,8 @@ msgstr ""
 msgid "Stop playback"
 msgstr ""
 
-#: src/components/repo-sync/RepoSyncModal.tsx:286
-#: src/components/repo-sync/RepoSyncModal.tsx:325
+#: src/components/repo-sync/RepoSyncModal.tsx:409
+#: src/components/repo-sync/RepoSyncModal.tsx:448
 msgid "Store in localStorage (persists across sessions)"
 msgstr ""
 
@@ -2534,7 +2558,7 @@ msgstr ""
 msgid "To"
 msgstr ""
 
-#: src/components/repo-sync/RepoSyncModal.tsx:421
+#: src/components/repo-sync/RepoSyncModal.tsx:649
 msgid "Token not configured. Go to Connect tab to set up authentication."
 msgstr ""
 
@@ -3010,7 +3034,7 @@ msgstr ""
 msgid "terms"
 msgstr ""
 
-#: src/components/repo-sync/RepoSyncModal.tsx:316
+#: src/components/repo-sync/RepoSyncModal.tsx:439
 msgid "with api scope"
 msgstr ""
 
@@ -3066,6 +3090,10 @@ msgstr ""
 
 #: src/lib/storage/drafts.ts:303
 msgid "{{count}} hours ago"
+msgstr ""
+
+#: src/components/repo-sync/RepoSyncModal.tsx:535
+msgid "{{count}} locale files found"
 msgstr ""
 
 #: src/components/editor/TranslateToolbar.tsx:834

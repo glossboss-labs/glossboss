@@ -24,6 +24,7 @@ export interface RepoClient {
   listBranches(owner: string, repo: string, page?: number, perPage?: number): Promise<RepoBranch[]>;
   getDefaultBranch(owner: string, repo: string): Promise<string>;
   listTree(owner: string, repo: string, branch: string, path?: string): Promise<RepoTreeEntry[]>;
+  searchLocaleFiles(owner: string, repo: string, branch: string): Promise<RepoTreeEntry[]>;
   getFileContent(
     owner: string,
     repo: string,
@@ -45,6 +46,7 @@ export function createRepoClient(provider: RepoProviderId): RepoClient {
         listBranches: github.listBranches,
         getDefaultBranch: github.getDefaultBranch,
         listTree: github.listTree,
+        searchLocaleFiles: github.searchLocaleFiles,
         getFileContent: github.getFileContent,
         commitFile: github.commitFile,
         createBranch: github.createBranch,
@@ -57,6 +59,7 @@ export function createRepoClient(provider: RepoProviderId): RepoClient {
         listBranches: gitlab.listBranches,
         getDefaultBranch: gitlab.getDefaultBranch,
         listTree: gitlab.listTree,
+        searchLocaleFiles: gitlab.searchLocaleFiles,
         getFileContent: gitlab.getFileContent,
         commitFile: gitlab.commitFile,
         createBranch: gitlab.createBranch,

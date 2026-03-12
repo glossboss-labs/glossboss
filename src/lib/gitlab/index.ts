@@ -8,6 +8,7 @@ export {
   createBranch,
   getBranchSha,
   createPullRequest,
+  searchLocaleFiles,
 } from './client';
 export {
   getGitLabSettings,

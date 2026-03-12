@@ -131,6 +131,41 @@ export async function listTree(
   }));
 }
 
+/** Search the full repository tree for locale files (.po, .pot, .json) */
+export async function searchLocaleFiles(
+  owner: string,
+  repo: string,
+  branch: string,
+): Promise<RepoTreeEntry[]> {
+  const pid = projectId(owner, repo);
+  const allEntries: GitLabTreeEntry[] = [];
+  let page = 1;
+  const perPage = 100;
+
+  // GitLab recursive tree may be paginated
+  while (true) {
+    const entries = await request<GitLabTreeEntry[]>(
+      `/projects/${pid}/repository/tree?ref=${encodeURIComponent(branch)}&recursive=true&per_page=${perPage}&page=${page}`,
+    );
+    allEntries.push(...entries);
+    if (entries.length < perPage) break;
+    page++;
+  }
+
+  return allEntries
+    .filter((e) => {
+      if (e.type !== 'blob') return false;
+      const lower = e.path.toLowerCase();
+      return lower.endsWith('.po') || lower.endsWith('.pot') || lower.endsWith('.json');
+    })
+    .map((e) => ({
+      path: e.path,
+      name: e.name,
+      type: 'file' as const,
+      sha: e.id,
+    }));
+}
+
 /** Get file content from a project */
 export async function getFileContent(
   owner: string,

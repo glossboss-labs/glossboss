@@ -20,8 +20,20 @@ import {
   Switch,
   Loader,
   Anchor,
+  Badge,
+  Paper,
+  UnstyledButton,
 } from '@mantine/core';
-import { GitBranch, Key, FolderOpen, Upload, AlertCircle, ExternalLink } from 'lucide-react';
+import {
+  GitBranch,
+  Key,
+  FolderOpen,
+  Upload,
+  AlertCircle,
+  ExternalLink,
+  FileText,
+  Search,
+} from 'lucide-react';
 import {
   getGitHubSettings,
   saveGitHubSettings,
@@ -39,7 +51,12 @@ import {
   setGitLabPersistEnabled,
 } from '@/lib/gitlab';
 import { createRepoClient } from '@/lib/repo-sync/client';
-import type { RepoProviderId, RepoConnection, CommitResult } from '@/lib/repo-sync/types';
+import type {
+  RepoProviderId,
+  RepoConnection,
+  RepoTreeEntry,
+  CommitResult,
+} from '@/lib/repo-sync/types';
 import { useRepoSyncStore } from '@/stores';
 import { RepoBrowser } from './RepoBrowser';
 import { CommitPanel } from './CommitPanel';
@@ -89,6 +106,12 @@ export function RepoSyncModal({
   const [selectedRepo, setSelectedRepo] = useState<string | null>(null);
   const [loadingRepos, setLoadingRepos] = useState(false);
   const [repoError, setRepoError] = useState<string | null>(null);
+
+  // Locale file auto-detection
+  const [localeFiles, setLocaleFiles] = useState<RepoTreeEntry[]>([]);
+  const [scanningFiles, setScanningFiles] = useState(false);
+  const [scanError, setScanError] = useState<string | null>(null);
+  const [showBrowser, setShowBrowser] = useState(false);
 
   // File loading
   const [loadingFile, setLoadingFile] = useState(false);
@@ -149,6 +172,106 @@ export function RepoSyncModal({
       setLoadingRepos(false);
     }
   }, [provider, handleSaveToken]);
+
+  /** Auto-scan a repo for locale files on the default branch */
+  const handleScanLocaleFiles = useCallback(
+    async (repoFullName: string) => {
+      const entry = repos.find((r) => r.fullName === repoFullName);
+      if (!entry) return;
+
+      setScanningFiles(true);
+      setScanError(null);
+      setLocaleFiles([]);
+      setShowBrowser(false);
+
+      try {
+        const client = createRepoClient(provider);
+        const files = await client.searchLocaleFiles(entry.owner, entry.name, entry.defaultBranch);
+
+        // Filter out common non-locale JSON files (package.json, tsconfig, etc.)
+        const filtered = files.filter((f) => {
+          const name = f.name.toLowerCase();
+          if (!name.endsWith('.json')) return true;
+          // Skip common config/meta JSON files
+          const skip = [
+            'package.json',
+            'package-lock.json',
+            'tsconfig',
+            'jsconfig',
+            '.eslintrc',
+            '.prettierrc',
+            'composer.json',
+            'manifest.json',
+            'renovate.json',
+            '.babelrc',
+          ];
+          return !skip.some((s) => name.includes(s));
+        });
+
+        setLocaleFiles(filtered);
+      } catch (err) {
+        setScanError(err instanceof Error ? err.message : String(err));
+      } finally {
+        setScanningFiles(false);
+      }
+    },
+    [repos, provider],
+  );
+
+  const handleRepoSelected = useCallback(
+    (repoFullName: string | null) => {
+      setSelectedRepo(repoFullName);
+      setLocaleFiles([]);
+      setScanError(null);
+      setShowBrowser(false);
+      if (repoFullName) {
+        void handleScanLocaleFiles(repoFullName);
+      }
+    },
+    [handleScanLocaleFiles],
+  );
+
+  /** Handle clicking a locale file from the auto-detected list */
+  const handleLocaleFileClick = useCallback(
+    async (path: string) => {
+      if (!selectedRepo) return;
+      const entry = repos.find((r) => r.fullName === selectedRepo);
+      if (!entry) return;
+
+      setLoadingFile(true);
+      setFileError(null);
+
+      try {
+        const client = createRepoClient(provider);
+        const fileContent = await client.getFileContent(
+          entry.owner,
+          entry.name,
+          entry.defaultBranch,
+          path,
+        );
+
+        const conn: RepoConnection = {
+          provider,
+          owner: entry.owner,
+          repo: entry.name,
+          branch: entry.defaultBranch,
+          filePath: path,
+          baseSha: fileContent.sha,
+          baseContent: fileContent.content,
+          defaultBranch: entry.defaultBranch,
+        };
+
+        setConnection(conn);
+        onFileLoaded(fileContent.content, path.split('/').pop() ?? path);
+        onClose();
+      } catch (err) {
+        setFileError(err instanceof Error ? err.message : String(err));
+      } finally {
+        setLoadingFile(false);
+      }
+    },
+    [selectedRepo, repos, provider, setConnection, onFileLoaded, onClose],
+  );
 
   const handleFileSelect = useCallback(
     async (branch: string, path: string, defaultBranch: string) => {
@@ -371,35 +494,140 @@ export function RepoSyncModal({
                   label={t('Repository')}
                   data={repoOptions}
                   value={selectedRepo}
-                  onChange={setSelectedRepo}
+                  onChange={handleRepoSelected}
                   searchable
                   placeholder={t('Select a repository')}
                   nothingFoundMessage={t('No repositories found')}
                 />
 
-                {fileError && (
+                {(fileError || scanError) && (
                   <Alert icon={<AlertCircle size={16} />} color="red" variant="light">
-                    {fileError}
+                    {fileError || scanError}
                   </Alert>
                 )}
 
-                {loadingFile && (
+                {(loadingFile || scanningFiles) && (
                   <Stack align="center" py="md">
                     <Loader size="sm" />
                     <Text size="sm" c="dimmed">
-                      {t('Loading file...')}
+                      {scanningFiles ? t('Scanning for locale files...') : t('Loading file...')}
                     </Text>
                   </Stack>
                 )}
 
-                {selectedRepo && selectedRepoEntry && client && !loadingFile && (
-                  <RepoBrowser
-                    client={client}
-                    owner={selectedRepoEntry.owner}
-                    repo={selectedRepoEntry.name}
-                    onFileSelect={handleFileSelect}
-                  />
-                )}
+                {/* Auto-detected locale files */}
+                {selectedRepo &&
+                  !scanningFiles &&
+                  !loadingFile &&
+                  localeFiles.length > 0 &&
+                  !showBrowser && (
+                    <Stack gap="xs">
+                      <Group justify="space-between">
+                        <Text size="sm" fw={500}>
+                          <Search
+                            size={14}
+                            style={{
+                              display: 'inline',
+                              verticalAlign: 'middle',
+                              marginRight: 4,
+                            }}
+                          />
+                          {t('{{count}} locale files found', { count: localeFiles.length })}
+                        </Text>
+                        <Button
+                          variant="subtle"
+                          size="xs"
+                          leftSection={<FolderOpen size={12} />}
+                          onClick={() => setShowBrowser(true)}
+                        >
+                          {t('Browse all files')}
+                        </Button>
+                      </Group>
+                      <Paper withBorder style={{ maxHeight: 350, overflow: 'auto' }}>
+                        <Stack gap={0}>
+                          {localeFiles.map((file) => (
+                            <UnstyledButton
+                              key={file.path}
+                              onClick={() => void handleLocaleFileClick(file.path)}
+                              p="xs"
+                              style={{
+                                borderBottom: '1px solid var(--mantine-color-default-border)',
+                              }}
+                            >
+                              <Group gap="xs" justify="space-between">
+                                <Group gap="xs">
+                                  <FileText
+                                    size={16}
+                                    style={{ color: 'var(--mantine-color-blue-6)' }}
+                                  />
+                                  <Stack gap={0}>
+                                    <Text size="sm" fw={500}>
+                                      {file.name}
+                                    </Text>
+                                    <Text size="xs" c="dimmed">
+                                      {file.path}
+                                    </Text>
+                                  </Stack>
+                                </Group>
+                                <Badge size="xs" variant="light" color="blue">
+                                  {file.name.split('.').pop()}
+                                </Badge>
+                              </Group>
+                            </UnstyledButton>
+                          ))}
+                        </Stack>
+                      </Paper>
+                    </Stack>
+                  )}
+
+                {/* No locale files found */}
+                {selectedRepo &&
+                  !scanningFiles &&
+                  !loadingFile &&
+                  localeFiles.length === 0 &&
+                  !scanError &&
+                  !showBrowser && (
+                    <Stack align="center" gap="sm" py="md">
+                      <Text size="sm" c="dimmed">
+                        {t('No locale files detected automatically')}
+                      </Text>
+                      <Button
+                        variant="light"
+                        size="sm"
+                        leftSection={<FolderOpen size={14} />}
+                        onClick={() => setShowBrowser(true)}
+                      >
+                        {t('Browse files manually')}
+                      </Button>
+                    </Stack>
+                  )}
+
+                {/* Manual file browser fallback */}
+                {selectedRepo &&
+                  selectedRepoEntry &&
+                  client &&
+                  !loadingFile &&
+                  !scanningFiles &&
+                  showBrowser && (
+                    <Stack gap="xs">
+                      <Group justify="space-between">
+                        <Text size="sm" fw={500}>
+                          {t('File browser')}
+                        </Text>
+                        {localeFiles.length > 0 && (
+                          <Button variant="subtle" size="xs" onClick={() => setShowBrowser(false)}>
+                            {t('Back to detected files')}
+                          </Button>
+                        )}
+                      </Group>
+                      <RepoBrowser
+                        client={client}
+                        owner={selectedRepoEntry.owner}
+                        repo={selectedRepoEntry.name}
+                        onFileSelect={handleFileSelect}
+                      />
+                    </Stack>
+                  )}
               </>
             )}
           </Stack>
