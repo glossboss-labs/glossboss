@@ -317,13 +317,19 @@ describe('editor details and mobile layout', () => {
     expect(screen.queryByTestId('editor-table-desktop')).not.toBeInTheDocument();
   });
 
-  it('keeps the shared table layout in review mode and shows review bulk actions', () => {
+  it('keeps the shared table layout in review mode and shows review bulk actions in the toolbar', () => {
     useEditorStore
       .getState()
       .loadFile(makeFile([makeEntry('a', { msgstr: 'Reviewed translation' }), makeEntry('b')]));
-    useEditorStore.getState().setSelectedEntries(['a']);
+    useEditorStore.getState().setReviewStatus('a', 'approved');
+    useEditorStore.getState().setSelectedEntries(['a', 'b']);
 
-    renderWithMantine(<EditorTable mode="review" />);
+    renderWithMantine(
+      <>
+        <TranslateToolbar glossary={null} mode="review" />
+        <EditorTable mode="review" />
+      </>,
+    );
 
     expect(screen.getByTestId('editor-table-desktop')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /^approve selected$/i })).toBeInTheDocument();
@@ -385,8 +391,7 @@ describe('editor details and mobile layout', () => {
       useEditorStore.getState().setReviewStatus('a', 'approved');
     });
 
-    expect(screen.getByText('Approved 1')).toBeInTheDocument();
-    expect(screen.getByText('Draft 0')).toBeInTheDocument();
+    expect(screen.getByText('Ready for export')).toBeInTheDocument();
   });
 
   it('does not open inline editing for approved locked strings', async () => {
