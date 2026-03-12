@@ -128,8 +128,8 @@ describe('bulk action toolbar', () => {
     expect(
       screen.queryByRole('button', { name: /auto translate selected/i }),
     ).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /approve selected/i })).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /unapprove selected/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /clear fuzzy selected/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /mark fuzzy selected/i })).not.toBeInTheDocument();
   });
 
   it('hides glossary check when glossary is not loaded', () => {
@@ -143,14 +143,14 @@ describe('bulk action toolbar', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('shows unapprove for selected non-fuzzy rows and hides approve', () => {
+  it('shows mark fuzzy for selected non-fuzzy rows and hides clear fuzzy', () => {
     useEditorStore.getState().loadFile(makeFile([makeEntry('a', { msgstr: 'Done' })]));
     useEditorStore.getState().setSelectedEntries(['a']);
 
     renderWithMantine(<TranslateToolbar glossary={null} />);
 
-    expect(screen.getByRole('button', { name: /^unapprove selected$/i })).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /^approve selected$/i })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /mark fuzzy selected/i })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /clear fuzzy selected/i })).not.toBeInTheDocument();
   });
 
   it('uses EN source language for bulk translation when glossary is enabled and source is auto', async () => {
@@ -315,6 +315,18 @@ describe('editor details and mobile layout', () => {
 
     expect(screen.getByTestId('mobile-entry-card-list')).toBeInTheDocument();
     expect(screen.queryByTestId('editor-table-desktop')).not.toBeInTheDocument();
+  });
+
+  it('renders a dedicated review queue when review mode is active', () => {
+    useEditorStore
+      .getState()
+      .loadFile(makeFile([makeEntry('a', { msgstr: 'Reviewed translation' }), makeEntry('b')]));
+
+    renderWithMantine(<EditorTable mode="review" />);
+
+    expect(screen.getByTestId('review-queue-table')).toBeInTheDocument();
+    expect(screen.queryByTestId('editor-table-desktop')).not.toBeInTheDocument();
+    expect(screen.getByText('Review Inspector')).toBeInTheDocument();
   });
 
   it('uses the native textarea text color for translation editing on mobile', async () => {

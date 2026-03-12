@@ -40,7 +40,6 @@ import {
   Anchor,
   ActionIcon,
   SegmentedControl,
-  Menu,
   useMantineTheme,
 } from '@mantine/core';
 import { useLocalStorage, useMediaQuery } from '@mantine/hooks';
@@ -56,7 +55,6 @@ import {
   X,
   PanelRightOpen,
   PanelRightClose,
-  Check,
   AlertTriangle,
   ShieldAlert,
 } from 'lucide-react';
@@ -70,6 +68,7 @@ import type { POEntry } from '@/lib/po';
 import { parseReferences, buildTracUrl, type ParsedReference } from '@/lib/wp-source';
 import { getTranslationStatus, type TranslationStatus } from '@/types';
 import {
+  getReviewEntryState,
   isReviewLocked,
   type ReviewComment,
   type ReviewEntryState,
@@ -99,6 +98,7 @@ const INSPECTOR_OPEN_KEY = 'glossboss-inspector-open';
 const INSPECTOR_DEFAULT_WIDTH = 500;
 const INSPECTOR_MIN_WIDTH = 380;
 const INSPECTOR_MAX_WIDTH = 780;
+type WorkspaceMode = 'edit' | 'review';
 
 /** Check if an entry needs translation (untranslated or fuzzy) */
 function entryNeedsTranslation(entry: POEntry): boolean {
@@ -381,6 +381,26 @@ const REVIEW_STATUS_LABELS: Record<ReviewStatus, string> = {
   'needs-changes': msgid('Needs changes'),
 };
 
+function hasReviewTranslationChanges(reviewEntry: ReviewEntryState): boolean {
+  return reviewEntry.history.some((event) => event.type === 'translation-updated');
+}
+
+function getReviewQueueSourceText(entry: POEntry): string {
+  return entry.msgidPlural ? `${entry.msgid} / ${entry.msgidPlural}` : entry.msgid;
+}
+
+function getReviewQueueTranslationText(
+  entry: POEntry,
+  t: (key: string, vars?: Record<string, unknown>) => string,
+): string {
+  if (entry.msgidPlural) {
+    const forms = (entry.msgstrPlural ?? []).filter((form) => form.trim());
+    return forms.length > 0 ? forms.join(' / ') : t('No translation');
+  }
+
+  return entry.msgstr.trim() || t('No translation');
+}
+
 /** Flag badge colors */
 const FLAG_COLORS: Record<string, string> = {
   fuzzy: 'yellow',
@@ -656,6 +676,7 @@ function SignalsOverviewCell({
   glossaryAnalysis,
   qaReport,
   unresolvedCommentCount,
+  showReviewSignals = true,
 }: {
   isMT: boolean;
   usedGlossary: boolean;
@@ -663,13 +684,19 @@ function SignalsOverviewCell({
   glossaryAnalysis: GlossaryAnalysisResult | null;
   qaReport: QAEntryReport | null;
   unresolvedCommentCount: number;
+  showReviewSignals?: boolean;
 }) {
   const { t } = useTranslation();
   const hasGlossarySignals = (glossaryAnalysis?.terms.length ?? 0) > 0;
   const hasQaSignals = Boolean(qaReport && (qaReport.errorCount > 0 || qaReport.warningCount > 0));
   const providerLabel = provider === 'gemini' ? 'Gemini' : provider === 'azure' ? 'Azure' : 'DeepL';
 
-  if (!isMT && !hasGlossarySignals && !hasQaSignals && unresolvedCommentCount === 0) {
+  if (
+    !isMT &&
+    !hasGlossarySignals &&
+    !hasQaSignals &&
+    (!showReviewSignals || unresolvedCommentCount === 0)
+  ) {
     return (
       <Text size="xs" c="dimmed">
         —
@@ -708,7 +735,7 @@ function SignalsOverviewCell({
           {t('{{count}} QA warning(s)', { count: qaReport.warningCount })}
         </Badge>
       )}
-      {unresolvedCommentCount > 0 && (
+      {showReviewSignals && unresolvedCommentCount > 0 && (
         <Badge size="xs" variant="light" color="red" leftSection={<MessageSquare size={10} />}>
           {t('{{count}} unresolved comment(s)', { count: unresolvedCommentCount })}
         </Badge>
@@ -1142,6 +1169,8 @@ const StatusBadges = memo(function StatusBadges({
   reviewStatus,
   unresolvedCommentCount,
   isReviewEntryLocked,
+  showReviewStatus = true,
+  showReviewComments = true,
 }: {
   entry: POEntry;
   isModified: boolean;
@@ -1151,6 +1180,8 @@ const StatusBadges = memo(function StatusBadges({
   reviewStatus: ReviewStatus;
   unresolvedCommentCount: number;
   isReviewEntryLocked: boolean;
+  showReviewStatus?: boolean;
+  showReviewComments?: boolean;
 }) {
   const { t } = useTranslation();
   const status = getTranslationStatus(entry.msgstr, entry.flags, entry.msgstrPlural);
@@ -1170,14 +1201,16 @@ const StatusBadges = memo(function StatusBadges({
         {t(STATUS_LABELS[status])}
       </Badge>
 
-      <Badge
-        color={REVIEW_STATUS_COLORS[reviewStatus]}
-        size="xs"
-        variant="light"
-        style={{ flexShrink: 0 }}
-      >
-        {t(REVIEW_STATUS_LABELS[reviewStatus])}
-      </Badge>
+      {showReviewStatus && (
+        <Badge
+          color={REVIEW_STATUS_COLORS[reviewStatus]}
+          size="xs"
+          variant="light"
+          style={{ flexShrink: 0 }}
+        >
+          {t(REVIEW_STATUS_LABELS[reviewStatus])}
+        </Badge>
+      )}
 
       {isReviewEntryLocked && (
         <Badge size="xs" variant="light" color="gray" style={{ flexShrink: 0 }}>
@@ -1235,7 +1268,7 @@ const StatusBadges = memo(function StatusBadges({
         </Tooltip>
       )}
 
-      {unresolvedCommentCount > 0 && (
+      {showReviewComments && unresolvedCommentCount > 0 && (
         <Tooltip
           label={t('{{count}} unresolved review comment(s)', { count: unresolvedCommentCount })}
         >
@@ -1254,66 +1287,24 @@ const StatusBadges = memo(function StatusBadges({
   );
 });
 
-const ReviewStatusCell = memo(function ReviewStatusCell({ entry }: { entry: POEntry }) {
+const ReviewStatusBadge = memo(function ReviewStatusBadge({
+  status,
+  compact = false,
+}: {
+  status: ReviewStatus;
+  compact?: boolean;
+}) {
   const { t } = useTranslation();
-  const reviewStatus = useEditorStore(
-    (state) => state.reviewEntries.get(entry.id)?.status ?? 'draft',
-  );
-  const setReviewStatus = useEditorStore((state) => state.setReviewStatus);
-  const lockApprovedEntries = useEditorStore((state) => state.lockApprovedEntries);
-  const locked = isReviewLocked(reviewStatus, lockApprovedEntries);
-
-  const options: ReviewStatus[] = ['draft', 'in-review', 'approved', 'needs-changes'];
 
   return (
-    <Box
-      style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-      onClick={(event) => event.stopPropagation()}
+    <Badge
+      color={REVIEW_STATUS_COLORS[status]}
+      variant="light"
+      size={compact ? 'xs' : 'sm'}
+      style={{ flexShrink: 0 }}
     >
-      <Menu shadow="md" width={180} position="bottom-end" withinPortal>
-        <Menu.Target>
-          <Button
-            size="xs"
-            variant="light"
-            color={REVIEW_STATUS_COLORS[reviewStatus]}
-            styles={{
-              root: {
-                minWidth: 108,
-                justifyContent: 'center',
-                paddingInline: 8,
-              },
-              label: {
-                whiteSpace: 'nowrap',
-              },
-            }}
-          >
-            {t(REVIEW_STATUS_LABELS[reviewStatus])}
-          </Button>
-        </Menu.Target>
-
-        <Menu.Dropdown>
-          {options.map((status) => (
-            <Menu.Item
-              key={`${entry.id}-${status}`}
-              onClick={() => setReviewStatus(entry.id, status)}
-              color={REVIEW_STATUS_COLORS[status]}
-              rightSection={status === reviewStatus ? <Check size={14} /> : null}
-            >
-              {t(REVIEW_STATUS_LABELS[status])}
-            </Menu.Item>
-          ))}
-
-          {locked && (
-            <>
-              <Menu.Divider />
-              <Text size="xs" c="dimmed" px="sm" py={6}>
-                {t('Approved strings are locked until they are reopened.')}
-              </Text>
-            </>
-          )}
-        </Menu.Dropdown>
-      </Menu>
-    </Box>
+      {t(REVIEW_STATUS_LABELS[status])}
+    </Badge>
   );
 });
 
@@ -1636,19 +1627,41 @@ function ReviewHistoryPanel({ reviewEntry }: { reviewEntry: ReviewEntryState }) 
 
 function ReviewPanel({ entry, reviewEntry }: { entry: POEntry; reviewEntry: ReviewEntryState }) {
   const { t } = useTranslation();
-  const toggleFuzzy = useEditorStore((state) => state.toggleFuzzy);
+  const setReviewStatus = useEditorStore((state) => state.setReviewStatus);
+  const clearFuzzyBatch = useEditorStore((state) => state.clearFuzzyBatch);
+  const addFuzzyBatch = useEditorStore((state) => state.addFuzzyBatch);
   const lockApprovedEntries = useEditorStore((state) => state.lockApprovedEntries);
   const translationStatus = getTranslationStatus(entry.msgstr, entry.flags, entry.msgstrPlural);
   const locked = isReviewLocked(reviewEntry.status, lockApprovedEntries);
   const unresolvedCount = reviewEntry.comments.filter((comment) => !comment.resolvedAt).length;
+  const canApprove = reviewEntry.status !== 'approved';
+  const canUnapprove = reviewEntry.status === 'approved';
+  const canRequestChanges = reviewEntry.status !== 'needs-changes';
+
+  const handleApprove = useCallback(() => {
+    if (entry.flags.includes('fuzzy')) {
+      clearFuzzyBatch([entry.id]);
+    }
+    setReviewStatus(entry.id, 'approved');
+  }, [clearFuzzyBatch, entry.flags, entry.id, setReviewStatus]);
+
+  const handleUnapprove = useCallback(() => {
+    setReviewStatus(entry.id, 'in-review');
+  }, [entry.id, setReviewStatus]);
+
+  const handleRequestChanges = useCallback(() => {
+    setReviewStatus(entry.id, 'needs-changes');
+
+    if (translationStatus !== 'untranslated' && !entry.flags.includes('fuzzy')) {
+      addFuzzyBatch([entry.id]);
+    }
+  }, [addFuzzyBatch, entry.flags, entry.id, setReviewStatus, translationStatus]);
 
   return (
     <Stack gap="sm">
       <Group justify="space-between" align="center" wrap="wrap">
         <Group gap="xs" wrap="wrap">
-          <Badge color={REVIEW_STATUS_COLORS[reviewEntry.status]} variant="light" size="sm">
-            {t(REVIEW_STATUS_LABELS[reviewEntry.status])}
-          </Badge>
+          <ReviewStatusBadge status={reviewEntry.status} />
           {locked && (
             <Badge color="gray" variant="light" size="sm">
               {t('Locked')}
@@ -1660,14 +1673,34 @@ function ReviewPanel({ entry, reviewEntry }: { entry: POEntry; reviewEntry: Revi
             </Badge>
           )}
         </Group>
-        <ReviewStatusCell entry={entry} />
+        <Group gap="xs" wrap="wrap">
+          <Button
+            size="xs"
+            variant="light"
+            color="green"
+            onClick={handleApprove}
+            disabled={!canApprove}
+          >
+            {t('Approve')}
+          </Button>
+          <Button size="xs" variant="default" onClick={handleUnapprove} disabled={!canUnapprove}>
+            {t('Unapprove')}
+          </Button>
+          <Button
+            size="xs"
+            variant="light"
+            color="orange"
+            onClick={handleRequestChanges}
+            disabled={!canRequestChanges}
+          >
+            {t('Request changes')}
+          </Button>
+        </Group>
       </Group>
 
       {lockApprovedEntries && (
         <Text size="xs" c="dimmed">
-          {t(
-            'Approved strings stay read-only until you move them back to draft, in review, or needs changes.',
-          )}
+          {t('Approved strings stay read-only until they are unapproved.')}
         </Text>
       )}
 
@@ -1716,10 +1749,15 @@ function EntryDetailsPanel({
   isMT,
   isManualEdit,
   hasGlossaryTerms,
-  qaReport,
-  reviewEntry,
-  translationMemoryScope,
+  qaReport = null,
+  reviewEntry = {
+    status: 'draft',
+    comments: [],
+    history: [],
+  },
+  translationMemoryScope = null,
   onActivateReference,
+  mode = 'edit',
 }: {
   entry: POEntry;
   status: TranslationStatus;
@@ -1727,10 +1765,11 @@ function EntryDetailsPanel({
   isMT: boolean;
   isManualEdit: boolean;
   hasGlossaryTerms: boolean;
-  qaReport: QAEntryReport | null;
-  reviewEntry: ReviewEntryState;
-  translationMemoryScope: TranslationMemoryScope | null;
+  qaReport?: QAEntryReport | null;
+  reviewEntry?: ReviewEntryState;
+  translationMemoryScope?: TranslationMemoryScope | null;
   onActivateReference: (ref: ParsedReference) => void;
+  mode?: WorkspaceMode;
 }) {
   const { t } = useTranslation();
   const pluginSlug = useSourceStore((s) => getEffectiveSlug(s));
@@ -1808,14 +1847,18 @@ function EntryDetailsPanel({
         </Stack>
       </Group>
 
-      <Divider />
+      {mode === 'edit' && (
+        <>
+          <Divider />
 
-      <Stack gap={6}>
-        <Text size="xs" fw={600} c="dimmed">
-          {t('Translation memory')}
-        </Text>
-        <TranslationMemoryPanel entry={entry} scope={translationMemoryScope} />
-      </Stack>
+          <Stack gap={6}>
+            <Text size="xs" fw={600} c="dimmed">
+              {t('Translation memory')}
+            </Text>
+            <TranslationMemoryPanel entry={entry} scope={translationMemoryScope} />
+          </Stack>
+        </>
+      )}
 
       <Divider />
 
@@ -1885,14 +1928,18 @@ function EntryDetailsPanel({
         )}
       </Stack>
 
-      <Divider />
+      {mode === 'review' && (
+        <>
+          <Divider />
 
-      <Stack gap={6}>
-        <Text size="xs" fw={600} c="dimmed">
-          {t('Review')}
-        </Text>
-        <ReviewPanel entry={entry} reviewEntry={reviewEntry} />
-      </Stack>
+          <Stack gap={6}>
+            <Text size="xs" fw={600} c="dimmed">
+              {t('Review')}
+            </Text>
+            <ReviewPanel entry={entry} reviewEntry={reviewEntry} />
+          </Stack>
+        </>
+      )}
 
       <Divider />
 
@@ -2008,6 +2055,7 @@ function EntryDetailsPanel({
  */
 const EntryRow = memo(function EntryRow({
   entry,
+  mode,
   isChecked,
   visibleDataColumns,
   onToggleSelection,
@@ -2015,6 +2063,7 @@ const EntryRow = memo(function EntryRow({
   onKeyDown,
 }: {
   entry: POEntry;
+  mode: WorkspaceMode;
   isChecked: boolean;
   visibleDataColumns: DataColumnKey[];
   onToggleSelection: (checked: boolean) => void;
@@ -2115,6 +2164,8 @@ const EntryRow = memo(function EntryRow({
                 reviewStatus={reviewStatus}
                 unresolvedCommentCount={unresolvedCommentCount}
                 isReviewEntryLocked={isReviewEntryLocked}
+                showReviewStatus={mode === 'review'}
+                showReviewComments={mode === 'review'}
               />
             </Table.Td>
           );
@@ -2126,7 +2177,9 @@ const EntryRow = memo(function EntryRow({
               key={`${entry.id}-approve`}
               style={{ verticalAlign: 'middle', padding: '8px 4px', overflow: 'hidden' }}
             >
-              <ReviewStatusCell entry={entry} />
+              <Box style={{ display: 'flex', justifyContent: 'center' }}>
+                <ReviewStatusBadge status={reviewStatus} compact />
+              </Box>
             </Table.Td>
           );
         }
@@ -2166,6 +2219,7 @@ const EntryRow = memo(function EntryRow({
               glossaryAnalysis={glossaryAnalysis ?? null}
               qaReport={qaReport ?? null}
               unresolvedCommentCount={unresolvedCommentCount}
+              showReviewSignals={mode === 'review'}
             />
           </Table.Td>
         );
@@ -2176,20 +2230,24 @@ const EntryRow = memo(function EntryRow({
 
 const MobileEntryCard = memo(function MobileEntryCard({
   entry,
+  mode,
   isChecked,
   detailsExpanded,
   onToggleDetails,
   onToggleSelection,
   onKeyDown,
   onSelect,
+  translationMemoryScope,
 }: {
   entry: POEntry;
+  mode: WorkspaceMode;
   isChecked: boolean;
   detailsExpanded: boolean;
   onToggleDetails: () => void;
   onToggleSelection: (checked: boolean) => void;
   onKeyDown?: (e: KeyboardEvent<HTMLTextAreaElement>, fieldId: string) => void;
   onSelect?: (sourceText: string) => void;
+  translationMemoryScope?: TranslationMemoryScope | null;
 }) {
   const { t } = useTranslation();
   const {
@@ -2199,6 +2257,7 @@ const MobileEntryCard = memo(function MobileEntryCard({
     machineTranslatedIds,
     manualEditIds,
     getGlossaryAnalysis,
+    getQaReport,
   } = useEditorStore();
   const setActiveReference = useSourceStore((state) => state.setActiveReference);
   const reviewStatus = useEditorStore(
@@ -2217,6 +2276,7 @@ const MobileEntryCard = memo(function MobileEntryCard({
   const isMT = machineTranslatedIds.has(entry.id);
   const isManualEdit = manualEditIds.has(entry.id) && !isMT;
   const glossaryAnalysis = getGlossaryAnalysis(entry.id);
+  const qaReport = getQaReport(entry.id);
   const hasGlossaryTerms = (glossaryAnalysis?.matchedCount ?? 0) > 0;
   const status = getTranslationStatus(entry.msgstr, entry.flags, entry.msgstrPlural);
   const isUntranslated = status === 'untranslated';
@@ -2275,8 +2335,10 @@ const MobileEntryCard = memo(function MobileEntryCard({
             reviewStatus={reviewStatus}
             unresolvedCommentCount={unresolvedCommentCount}
             isReviewEntryLocked={isReviewEntryLocked}
+            showReviewStatus={mode === 'review'}
+            showReviewComments={mode === 'review'}
           />
-          <ReviewStatusCell entry={entry} />
+          {mode === 'review' && <ReviewStatusBadge status={reviewStatus} compact />}
         </Group>
 
         <UnstyledButton
@@ -2328,11 +2390,133 @@ const MobileEntryCard = memo(function MobileEntryCard({
           isMT={isMT}
           isManualEdit={isManualEdit}
           hasGlossaryTerms={hasGlossaryTerms}
+          qaReport={qaReport ?? null}
           reviewEntry={reviewEntry}
+          translationMemoryScope={translationMemoryScope}
           onActivateReference={handleActivateReference}
+          mode={mode}
         />
       </Collapse>
     </Paper>
+  );
+});
+
+const ReviewQueueRow = memo(function ReviewQueueRow({
+  entry,
+  isChecked,
+  onToggleSelection,
+  onSelect,
+}: {
+  entry: POEntry;
+  isChecked: boolean;
+  onToggleSelection: (checked: boolean) => void;
+  onSelect?: (sourceText: string) => void;
+}) {
+  const { t } = useTranslation();
+  const selectedEntryId = useEditorStore((state) => state.selectedEntryId);
+  const selectEntry = useEditorStore((state) => state.selectEntry);
+  const getQaReport = useEditorStore((state) => state.getQaReport);
+  const reviewEntryState = useEditorStore((state) => state.reviewEntries.get(entry.id));
+
+  const isSelected = selectedEntryId === entry.id;
+  const qaReport = getQaReport(entry.id);
+  const reviewEntry = reviewEntryState ?? getReviewEntryState(new Map(), entry.id);
+  const reviewStatus = reviewEntry.status;
+  const unresolvedCommentCount = reviewEntry.comments.filter(
+    (comment) => !comment.resolvedAt,
+  ).length;
+  const hasChangedTranslation = hasReviewTranslationChanges(reviewEntry);
+  const translationStatus = getTranslationStatus(entry.msgstr, entry.flags, entry.msgstrPlural);
+
+  const handleClick = useCallback(() => {
+    selectEntry(entry.id);
+    onSelect?.(entry.msgid);
+  }, [entry.id, entry.msgid, onSelect, selectEntry]);
+
+  return (
+    <Table.Tr
+      data-entry-id={entry.id}
+      onClick={handleClick}
+      style={{
+        cursor: 'pointer',
+        backgroundColor: isSelected ? 'var(--gb-highlight-row)' : undefined,
+      }}
+    >
+      <Table.Td style={{ width: 48, padding: '10px 8px', verticalAlign: 'top' }}>
+        <Checkbox
+          checked={isChecked}
+          onChange={(event) => onToggleSelection(event.currentTarget.checked)}
+          onClick={(event) => event.stopPropagation()}
+          aria-label={`Select entry ${entry.msgid}`}
+        />
+      </Table.Td>
+      <Table.Td style={{ padding: '10px 12px', verticalAlign: 'top' }}>
+        <Stack gap={4}>
+          <Text size="sm" fw={500} lineClamp={3}>
+            {getReviewQueueSourceText(entry)}
+          </Text>
+          {entry.msgctxt && (
+            <Text size="xs" c="dimmed" lineClamp={2}>
+              {entry.msgctxt}
+            </Text>
+          )}
+        </Stack>
+      </Table.Td>
+      <Table.Td style={{ padding: '10px 12px', verticalAlign: 'top' }}>
+        <Text
+          size="sm"
+          c={translationStatus === 'untranslated' ? 'dimmed' : undefined}
+          lineClamp={3}
+        >
+          {getReviewQueueTranslationText(entry, t)}
+        </Text>
+      </Table.Td>
+      <Table.Td style={{ padding: '10px 12px', verticalAlign: 'top', whiteSpace: 'nowrap' }}>
+        <ReviewStatusBadge status={reviewStatus} compact />
+      </Table.Td>
+      <Table.Td style={{ padding: '10px 12px', verticalAlign: 'top', whiteSpace: 'nowrap' }}>
+        {unresolvedCommentCount > 0 ? (
+          <Badge size="xs" variant="light" color="red">
+            {t('{{count}} open', { count: unresolvedCommentCount })}
+          </Badge>
+        ) : (
+          <Text size="xs" c="dimmed">
+            —
+          </Text>
+        )}
+      </Table.Td>
+      <Table.Td style={{ padding: '10px 12px', verticalAlign: 'top' }}>
+        <Group gap={6} wrap="wrap">
+          {hasChangedTranslation && (
+            <Badge size="xs" variant="light" color="violet">
+              {t('Changed')}
+            </Badge>
+          )}
+          {translationStatus === 'fuzzy' && (
+            <Badge size="xs" variant="light" color="yellow">
+              {t('Fuzzy')}
+            </Badge>
+          )}
+          {qaReport && qaReport.errorCount > 0 && (
+            <Badge size="xs" variant="light" color="red">
+              {t('{{count}} QA', { count: qaReport.errorCount })}
+            </Badge>
+          )}
+          {qaReport && qaReport.warningCount > 0 && (
+            <Badge size="xs" variant="light" color="orange">
+              {t('{{count}} warning(s)', { count: qaReport.warningCount })}
+            </Badge>
+          )}
+          {!hasChangedTranslation &&
+            translationStatus !== 'fuzzy' &&
+            (!qaReport || (qaReport.errorCount === 0 && qaReport.warningCount === 0)) && (
+              <Text size="xs" c="dimmed">
+                —
+              </Text>
+            )}
+        </Group>
+      </Table.Td>
+    </Table.Tr>
   );
 });
 
@@ -2348,6 +2532,7 @@ export interface EditorTableProps {
   onEntrySelect?: (sourceText: string) => void;
   speechEnabled?: boolean;
   translateEnabled?: boolean;
+  mode?: WorkspaceMode;
 }
 
 export function EditorTable({
@@ -2359,6 +2544,7 @@ export function EditorTable({
   onEntrySelect,
   speechEnabled = true,
   translateEnabled = true,
+  mode = 'edit',
 }: EditorTableProps) {
   const { t } = useTranslation();
   const theme = useMantineTheme();
@@ -2378,10 +2564,14 @@ export function EditorTable({
   const selectedEntryIds = useEditorStore((state) => state.selectedEntryIds);
   const setEntrySelection = useEditorStore((state) => state.setEntrySelection);
   const setSelectedEntries = useEditorStore((state) => state.setSelectedEntries);
+  const clearSelectedEntries = useEditorStore((state) => state.clearSelectedEntries);
   const getFilteredEntries = useEditorStore((state) => state.getFilteredEntries);
   const visibleColumns = useEditorStore((state) => state.visibleColumns);
   const columnOrder = useEditorStore((state) => state.columnOrder);
   const moveColumnToIndex = useEditorStore((state) => state.moveColumnToIndex);
+  const clearFuzzyBatch = useEditorStore((state) => state.clearFuzzyBatch);
+  const addFuzzyBatch = useEditorStore((state) => state.addFuzzyBatch);
+  const setReviewStatus = useEditorStore((state) => state.setReviewStatus);
   const sortField = useEditorStore((state) => state.sortField);
   const sortDirection = useEditorStore((state) => state.sortDirection);
   const activeReference = useSourceStore((state) => state.activeReference);
@@ -2442,9 +2632,11 @@ export function EditorTable({
     [safeWidths],
   );
   const visibleColumnKeys = useMemo(() => {
-    const dataColumns = columnOrder.filter((column) => visibleColumns.has(column));
+    const dataColumns = columnOrder.filter(
+      (column) => visibleColumns.has(column) && (mode === 'review' || column !== 'approve'),
+    );
     return ['select', ...dataColumns] as TableColumnKey[];
-  }, [columnOrder, visibleColumns]);
+  }, [columnOrder, mode, visibleColumns]);
   const visibleDataColumns = useMemo(
     () => visibleColumnKeys.filter((column): column is DataColumnKey => column !== 'select'),
     [visibleColumnKeys],
@@ -2645,6 +2837,60 @@ export function EditorTable({
     },
     [selectedEntryIds, filteredEntryIds, filteredEntryIdSet, setSelectedEntries],
   );
+
+  const selectedEntries = useMemo(
+    () => entries.filter((entry) => selectedEntryIds.has(entry.id)),
+    [entries, selectedEntryIds],
+  );
+  const selectedReviewApprovedCount = useMemo(
+    () => selectedEntries.filter((entry) => getReviewEntry(entry.id).status === 'approved').length,
+    [getReviewEntry, selectedEntries],
+  );
+  const selectedReviewPendingCount = selectedEntries.length - selectedReviewApprovedCount;
+
+  const handleApproveSelected = useCallback(() => {
+    if (selectedEntries.length === 0) return;
+
+    const fuzzyEntryIds = selectedEntries
+      .filter((entry) => entry.flags.includes('fuzzy'))
+      .map((entry) => entry.id);
+
+    if (fuzzyEntryIds.length > 0) {
+      clearFuzzyBatch(fuzzyEntryIds);
+    }
+
+    selectedEntries.forEach((entry) => {
+      setReviewStatus(entry.id, 'approved');
+    });
+  }, [clearFuzzyBatch, selectedEntries, setReviewStatus]);
+
+  const handleUnapproveSelected = useCallback(() => {
+    selectedEntries.forEach((entry) => {
+      if (getReviewEntry(entry.id).status === 'approved') {
+        setReviewStatus(entry.id, 'in-review');
+      }
+    });
+  }, [getReviewEntry, selectedEntries, setReviewStatus]);
+
+  const handleRequestChangesSelected = useCallback(() => {
+    if (selectedEntries.length === 0) return;
+
+    const fuzzyCandidateIds = selectedEntries
+      .filter(
+        (entry) =>
+          getTranslationStatus(entry.msgstr, entry.flags, entry.msgstrPlural) !== 'untranslated',
+      )
+      .filter((entry) => !entry.flags.includes('fuzzy'))
+      .map((entry) => entry.id);
+
+    if (fuzzyCandidateIds.length > 0) {
+      addFuzzyBatch(fuzzyCandidateIds);
+    }
+
+    selectedEntries.forEach((entry) => {
+      setReviewStatus(entry.id, 'needs-changes');
+    });
+  }, [addFuzzyBatch, selectedEntries, setReviewStatus]);
 
   const handleInspectorResizeStart = useCallback(
     (e: ReactPointerEvent<HTMLDivElement>) => {
@@ -2870,6 +3116,7 @@ export function EditorTable({
     : false;
   const selectedQaReport = selectedEntry ? (getQaReport(selectedEntry.id) ?? null) : null;
   const selectedReviewEntry = selectedEntry ? getReviewEntry(selectedEntry.id) : null;
+  const inspectorTitle = mode === 'review' ? t('Review Inspector') : t('String Inspector');
   const selectedInspectorLabel = (() => {
     if (!selectedEntry) return t('No selection');
 
@@ -2885,10 +3132,37 @@ export function EditorTable({
   return (
     <TranslateSettingsContext.Provider value={translateSettings}>
       {selectedEntryIds.size > 0 && (
-        <Group gap={6} mb={6}>
+        <Group justify="space-between" align="center" mb={6} wrap="wrap">
           <Text size="xs" c="dimmed">
             {t('{{count}} selected', { count: selectedEntryIds.size })}
           </Text>
+          {mode === 'review' && (
+            <Group gap="xs" wrap="wrap">
+              <Button size="xs" variant="light" color="green" onClick={handleApproveSelected}>
+                {t('Approve selected')}
+              </Button>
+              <Button
+                size="xs"
+                variant="default"
+                onClick={handleUnapproveSelected}
+                disabled={selectedReviewApprovedCount === 0}
+              >
+                {t('Unapprove selected')}
+              </Button>
+              <Button
+                size="xs"
+                variant="light"
+                color="orange"
+                onClick={handleRequestChangesSelected}
+                disabled={selectedReviewPendingCount === 0 && selectedReviewApprovedCount === 0}
+              >
+                {t('Request changes selected')}
+              </Button>
+              <Button size="xs" variant="subtle" color="gray" onClick={clearSelectedEntries}>
+                {t('Clear selection')}
+              </Button>
+            </Group>
+          )}
         </Group>
       )}
 
@@ -2898,12 +3172,14 @@ export function EditorTable({
             <MobileEntryCard
               key={entry.id}
               entry={entry}
+              mode={mode}
               isChecked={selectedEntryIds.has(entry.id)}
               detailsExpanded={expandedMobileEntryIds.has(entry.id)}
               onToggleDetails={() => toggleMobileDetails(entry.id)}
               onToggleSelection={(checked) => setEntrySelection(entry.id, checked)}
               onKeyDown={handleKeyDown}
               onSelect={onEntrySelect}
+              translationMemoryScope={translationMemoryScope}
             />
           ))}
         </Stack>
@@ -2924,108 +3200,149 @@ export function EditorTable({
           </Group>
           <Box style={{ display: 'flex', alignItems: 'flex-start' }}>
             <Box style={{ flex: 1, minWidth: 0 }}>
-              <Table
-                ref={tableRef}
-                striped
-                highlightOnHover
-                verticalSpacing="md"
-                style={{ tableLayout: 'fixed' }}
-                data-testid="editor-table-desktop"
-              >
-                <Table.Thead
-                  ref={theadRef}
-                  onPointerMove={handleHeaderPointerMove}
-                  onPointerUp={(e) => finishHeaderDrag(e.pointerId, true)}
-                  onPointerCancel={(e) => finishHeaderDrag(e.pointerId, false)}
-                  onLostPointerCapture={(e) => finishHeaderDrag(e.pointerId, false)}
-                  style={{
-                    position: 'sticky',
-                    top: 0,
-                    zIndex: 10,
-                    background: 'var(--gb-surface-2)',
-                    touchAction: 'none',
-                  }}
+              {mode === 'review' ? (
+                <Table
+                  striped
+                  highlightOnHover
+                  verticalSpacing="sm"
+                  style={{ tableLayout: 'fixed' }}
+                  data-testid="review-queue-table"
                 >
-                  <Table.Tr>
-                    {visibleColumnKeys.map((columnKey, i) => {
-                      const nextColumn = visibleColumnKeys[i + 1];
-                      const isDataColumn = columnKey !== 'select';
-                      const label =
-                        columnKey === 'select' ? (
-                          <Checkbox
-                            key="select-all-checkbox-input"
-                            checked={allFilteredSelected}
-                            indeterminate={someFilteredSelected}
-                            onChange={(e) => handleSelectAllFiltered(e.currentTarget.checked)}
-                            aria-label={t('Select all filtered entries')}
-                            data-testid="select-all-checkbox"
-                          />
-                        ) : (
-                          t(DATA_COLUMN_LABELS[columnKey])
-                        );
-
-                      const dropIndicator =
-                        isDataColumn && headerDropTarget?.column === columnKey
-                          ? headerDropTarget.position
-                          : undefined;
-
-                      return (
-                        <ResizableTh
-                          key={columnKey}
-                          widthPercent={columnPercentByKey[columnKey]}
-                          isLast={!nextColumn}
-                          onResize={
-                            nextColumn
-                              ? (delta) => handleColumnResize(columnKey, nextColumn, delta)
-                              : undefined
-                          }
-                          align={
-                            columnKey === 'select' || columnKey === 'approve' ? 'center' : 'left'
-                          }
-                          padding={
-                            columnKey === 'select' || columnKey === 'approve'
-                              ? '8px 4px'
-                              : undefined
-                          }
-                          dataColumnKey={isDataColumn ? columnKey : undefined}
-                          onCellPointerDown={
-                            isDataColumn ? handleHeaderPointerDown(columnKey) : undefined
-                          }
-                          isDragging={draggingHeaderColumn === columnKey}
-                          dropIndicatorPosition={dropIndicator}
-                        >
-                          {typeof label === 'string' ? (
-                            label
+                  <Table.Thead
+                    style={{
+                      position: 'sticky',
+                      top: 0,
+                      zIndex: 10,
+                      background: 'var(--gb-surface-2)',
+                    }}
+                  >
+                    <Table.Tr>
+                      <Table.Th style={{ width: 48 }}>
+                        <Checkbox
+                          checked={allFilteredSelected}
+                          indeterminate={someFilteredSelected}
+                          onChange={(event) => handleSelectAllFiltered(event.currentTarget.checked)}
+                          aria-label={t('Select all filtered entries')}
+                        />
+                      </Table.Th>
+                      <Table.Th>{t('Source')}</Table.Th>
+                      <Table.Th>{t('Translation')}</Table.Th>
+                      <Table.Th>{t('Review status')}</Table.Th>
+                      <Table.Th>{t('Comments')}</Table.Th>
+                      <Table.Th>{t('Signals')}</Table.Th>
+                    </Table.Tr>
+                  </Table.Thead>
+                  <Table.Tbody>
+                    {paginatedEntries.map((entry) => (
+                      <ReviewQueueRow
+                        key={entry.id}
+                        entry={entry}
+                        isChecked={selectedEntryIds.has(entry.id)}
+                        onToggleSelection={(checked) => setEntrySelection(entry.id, checked)}
+                        onSelect={onEntrySelect}
+                      />
+                    ))}
+                  </Table.Tbody>
+                </Table>
+              ) : (
+                <Table
+                  ref={tableRef}
+                  striped
+                  highlightOnHover
+                  verticalSpacing="md"
+                  style={{ tableLayout: 'fixed' }}
+                  data-testid="editor-table-desktop"
+                >
+                  <Table.Thead
+                    ref={theadRef}
+                    onPointerMove={handleHeaderPointerMove}
+                    onPointerUp={(e) => finishHeaderDrag(e.pointerId, true)}
+                    onPointerCancel={(e) => finishHeaderDrag(e.pointerId, false)}
+                    onLostPointerCapture={(e) => finishHeaderDrag(e.pointerId, false)}
+                    style={{
+                      position: 'sticky',
+                      top: 0,
+                      zIndex: 10,
+                      background: 'var(--gb-surface-2)',
+                      touchAction: 'none',
+                    }}
+                  >
+                    <Table.Tr>
+                      {visibleColumnKeys.map((columnKey, i) => {
+                        const nextColumn = visibleColumnKeys[i + 1];
+                        const isDataColumn = columnKey !== 'select';
+                        const label =
+                          columnKey === 'select' ? (
+                            <Checkbox
+                              key="select-all-checkbox-input"
+                              checked={allFilteredSelected}
+                              indeterminate={someFilteredSelected}
+                              onChange={(e) => handleSelectAllFiltered(e.currentTarget.checked)}
+                              aria-label={t('Select all filtered entries')}
+                              data-testid="select-all-checkbox"
+                            />
                           ) : (
-                            <Box
-                              style={{
-                                display: 'flex',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                              }}
-                            >
-                              {label}
-                            </Box>
-                          )}
-                        </ResizableTh>
-                      );
-                    })}
-                  </Table.Tr>
-                </Table.Thead>
-                <Table.Tbody>
-                  {paginatedEntries.map((entry) => (
-                    <EntryRow
-                      key={entry.id}
-                      entry={entry}
-                      isChecked={selectedEntryIds.has(entry.id)}
-                      visibleDataColumns={visibleDataColumns}
-                      onToggleSelection={(checked) => setEntrySelection(entry.id, checked)}
-                      onSelect={onEntrySelect}
-                      onKeyDown={handleKeyDown}
-                    />
-                  ))}
-                </Table.Tbody>
-              </Table>
+                            t(DATA_COLUMN_LABELS[columnKey])
+                          );
+
+                        const dropIndicator =
+                          isDataColumn && headerDropTarget?.column === columnKey
+                            ? headerDropTarget.position
+                            : undefined;
+
+                        return (
+                          <ResizableTh
+                            key={columnKey}
+                            widthPercent={columnPercentByKey[columnKey]}
+                            isLast={!nextColumn}
+                            onResize={
+                              nextColumn
+                                ? (delta) => handleColumnResize(columnKey, nextColumn, delta)
+                                : undefined
+                            }
+                            align={columnKey === 'select' ? 'center' : 'left'}
+                            padding={columnKey === 'select' ? '8px 4px' : undefined}
+                            dataColumnKey={isDataColumn ? columnKey : undefined}
+                            onCellPointerDown={
+                              isDataColumn ? handleHeaderPointerDown(columnKey) : undefined
+                            }
+                            isDragging={draggingHeaderColumn === columnKey}
+                            dropIndicatorPosition={dropIndicator}
+                          >
+                            {typeof label === 'string' ? (
+                              label
+                            ) : (
+                              <Box
+                                style={{
+                                  display: 'flex',
+                                  justifyContent: 'center',
+                                  alignItems: 'center',
+                                }}
+                              >
+                                {label}
+                              </Box>
+                            )}
+                          </ResizableTh>
+                        );
+                      })}
+                    </Table.Tr>
+                  </Table.Thead>
+                  <Table.Tbody>
+                    {paginatedEntries.map((entry) => (
+                      <EntryRow
+                        key={entry.id}
+                        entry={entry}
+                        mode={mode}
+                        isChecked={selectedEntryIds.has(entry.id)}
+                        visibleDataColumns={visibleDataColumns}
+                        onToggleSelection={(checked) => setEntrySelection(entry.id, checked)}
+                        onSelect={onEntrySelect}
+                        onKeyDown={handleKeyDown}
+                      />
+                    ))}
+                  </Table.Tbody>
+                </Table>
+              )}
             </Box>
 
             <Box
@@ -3089,7 +3406,7 @@ export function EditorTable({
                 <Stack gap="sm" pt={2} style={{ height: '100%', minHeight: 0 }}>
                   <Group justify="space-between" align="center">
                     <Text fw={600} size="sm">
-                      {t('String Inspector')}
+                      {inspectorTitle}
                     </Text>
                     <Tooltip
                       label={selectedInspectorLabel}
@@ -3137,6 +3454,19 @@ export function EditorTable({
                       <ScrollArea h="100%" type="auto" offsetScrollbars="y">
                         {selectedEntry && selectedStatus ? (
                           <Stack gap="sm">
+                            {mode === 'review' && (
+                              <>
+                                <Stack gap={6}>
+                                  <Text size="xs" fw={600} c="dimmed">
+                                    {t('Source')}
+                                  </Text>
+                                  <SourceCell entry={selectedEntry} />
+                                </Stack>
+
+                                <Divider />
+                              </>
+                            )}
+
                             <Stack gap={6}>
                               <Text size="xs" fw={600} c="dimmed">
                                 {t('Translation')}
@@ -3168,11 +3498,14 @@ export function EditorTable({
                               }
                               translationMemoryScope={translationMemoryScope}
                               onActivateReference={handleInspectorReference}
+                              mode={mode}
                             />
                           </Stack>
                         ) : (
                           <Text size="sm" c="dimmed">
-                            {t('Select a row to inspect context and metadata.')}
+                            {mode === 'review'
+                              ? t('Select a string to inspect review context and comments.')
+                              : t('Select a row to inspect context and metadata.')}
                           </Text>
                         )}
                       </ScrollArea>

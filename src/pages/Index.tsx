@@ -33,6 +33,7 @@ import {
   ActionIcon,
   Transition,
   Divider,
+  SegmentedControl,
   Modal,
   useMantineColorScheme,
   Menu,
@@ -116,12 +117,36 @@ import { CONTAINER_WIDTH_KEY, type ContainerWidth } from '@/lib/container-width'
 import { useSearchParams } from 'react-router';
 import { msgid, useTranslation } from '@/lib/app-language';
 import { createTranslationMemoryScope, isApprovedTranslationEntry } from '@/lib/translation-memory';
+import type { FilterType } from '@/stores/editor-store';
 const appIcon = '/icon.svg';
 
 const MotionDiv = motion.div;
 const DEV_BRANCH_CHIP_STORAGE_KEY = 'glossboss-dev-branch-chip-enabled';
 const SPEECH_ENABLED_KEY = 'glossboss-speech-enabled';
 const TRANSLATE_ENABLED_KEY = 'glossboss-translate-enabled';
+const WORKSPACE_MODE_KEY = 'glossboss-editor-workspace-mode';
+
+type WorkspaceMode = 'edit' | 'review';
+
+const EDIT_ONLY_FILTERS: FilterType[] = [
+  'untranslated',
+  'translated',
+  'fuzzy',
+  'modified',
+  'qa-error',
+  'qa-warning',
+  'machine-translated',
+  'manual-edit',
+];
+
+const REVIEW_ONLY_FILTERS: FilterType[] = [
+  'review-draft',
+  'review-in-review',
+  'review-approved',
+  'review-needs-changes',
+  'review-unresolved',
+  'review-changed',
+];
 
 /** Encoding info for display */
 interface EncodingInfo {
@@ -392,6 +417,11 @@ export default function Index() {
     defaultValue: true,
     getInitialValueInEffect: false,
   });
+  const [workspaceMode, setWorkspaceMode] = useLocalStorage<WorkspaceMode>({
+    key: WORKSPACE_MODE_KEY,
+    defaultValue: 'edit',
+    getInitialValueInEffect: false,
+  });
 
   // Repo sync state
   const [urlPromptOpen, setUrlPromptOpen] = useState(false);
@@ -454,6 +484,7 @@ export default function Index() {
     qaReports,
     setQaReports,
     mergeEntries,
+    setFilterState,
   } = useEditorStore();
   const upsertApprovedEntries = useTranslationMemoryStore((state) => state.upsertApprovedEntries);
 
@@ -654,6 +685,14 @@ export default function Index() {
   useEffect(() => {
     cleanupExpiredDrafts();
   }, []);
+
+  useEffect(() => {
+    const hiddenFilters = workspaceMode === 'edit' ? REVIEW_ONLY_FILTERS : EDIT_ONLY_FILTERS;
+
+    hiddenFilters.forEach((filterId) => {
+      setFilterState(filterId, null);
+    });
+  }, [setFilterState, workspaceMode]);
 
   /**
    * Handle language change from translate toolbar
@@ -2042,37 +2081,64 @@ export default function Index() {
                 <HeaderEditor encodingInfo={encodingInfo} />
                 <Paper p="md" withBorder>
                   <Stack gap="sm">
-                    <FilterToolbar />
-                    <Divider />
-                    <ReviewSummary />
-                    <Divider />
-                    <TranslateToolbar
-                      onLanguageChange={handleLanguageChange}
-                      deeplGlossaryId={glossaryEnforcementEnabled ? deeplGlossaryId : null}
-                      glossary={glossary}
-                      translateEnabled={translateEnabled}
-                    />
-                    {glossary && (
-                      <Group gap="xs">
-                        <Badge
-                          color="green"
-                          variant="light"
-                          size="sm"
-                          leftSection={<Check size={10} />}
-                        >
-                          {t('Glossary: {count} terms ({locale})', {
-                            count: glossary.entries.length,
-                            locale: glossary.targetLocale,
-                          })}
-                        </Badge>
-                        {glossarySyncStatus === 'ready' || deeplGlossaryId ? (
-                          <Badge color="blue" variant="light" size="sm">
-                            {t('{{provider}} ready', {
-                              provider: getTranslationProviderLabel(getActiveTranslationProvider()),
-                            })}
-                          </Badge>
-                        ) : null}
-                      </Group>
+                    <Group justify="space-between" align="center" wrap="wrap">
+                      <Text size="sm" fw={600}>
+                        {workspaceMode === 'edit' ? t('Edit workspace') : t('Review workspace')}
+                      </Text>
+                      <SegmentedControl
+                        size="xs"
+                        value={workspaceMode}
+                        onChange={(value) => setWorkspaceMode(value as WorkspaceMode)}
+                        data={[
+                          { label: t('Edit'), value: 'edit' },
+                          { label: t('Review'), value: 'review' },
+                        ]}
+                      />
+                    </Group>
+
+                    {workspaceMode === 'review' ? (
+                      <>
+                        <Divider />
+                        <ReviewSummary />
+                        <Divider />
+                        <FilterToolbar mode="review" />
+                      </>
+                    ) : (
+                      <>
+                        <Divider />
+                        <FilterToolbar mode="edit" />
+                        <Divider />
+                        <TranslateToolbar
+                          onLanguageChange={handleLanguageChange}
+                          deeplGlossaryId={glossaryEnforcementEnabled ? deeplGlossaryId : null}
+                          glossary={glossary}
+                          translateEnabled={translateEnabled}
+                        />
+                        {glossary && (
+                          <Group gap="xs">
+                            <Badge
+                              color="green"
+                              variant="light"
+                              size="sm"
+                              leftSection={<Check size={10} />}
+                            >
+                              {t('Glossary: {count} terms ({locale})', {
+                                count: glossary.entries.length,
+                                locale: glossary.targetLocale,
+                              })}
+                            </Badge>
+                            {glossarySyncStatus === 'ready' || deeplGlossaryId ? (
+                              <Badge color="blue" variant="light" size="sm">
+                                {t('{{provider}} ready', {
+                                  provider: getTranslationProviderLabel(
+                                    getActiveTranslationProvider(),
+                                  ),
+                                })}
+                              </Badge>
+                            ) : null}
+                          </Group>
+                        )}
+                      </>
                     )}
                   </Stack>
                 </Paper>
@@ -2091,6 +2157,7 @@ export default function Index() {
                   onEntrySelect={handleEntrySelect}
                   speechEnabled={speechEnabled}
                   translateEnabled={translateEnabled}
+                  mode={workspaceMode}
                 />
               </MotionDiv>
             ) : (

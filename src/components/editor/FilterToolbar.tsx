@@ -63,13 +63,16 @@ interface FilterConfig {
   color: string;
 }
 
-const FILTERS: FilterConfig[] = [
+const EDIT_FILTERS: FilterConfig[] = [
   { id: 'untranslated', label: msgid('Untranslated'), icon: FileQuestion, color: 'red' },
   { id: 'translated', label: msgid('Translated'), icon: CheckCircle, color: 'green' },
   { id: 'fuzzy', label: msgid('Fuzzy'), icon: AlertTriangle, color: 'yellow' },
   { id: 'modified', label: msgid('Modified'), icon: Pencil, color: 'orange' },
   { id: 'qa-error', label: msgid('QA errors'), icon: ShieldAlert, color: 'red' },
   { id: 'qa-warning', label: msgid('QA warnings'), icon: AlertTriangle, color: 'orange' },
+];
+
+const REVIEW_FILTERS: FilterConfig[] = [
   { id: 'review-draft', label: msgid('Review: draft'), icon: FileQuestion, color: 'gray' },
   { id: 'review-in-review', label: msgid('Review: in review'), icon: Edit3, color: 'blue' },
   { id: 'review-approved', label: msgid('Review: approved'), icon: CheckCircle, color: 'green' },
@@ -125,7 +128,7 @@ function getBadgeStyle(state: FilterState | null): {
   return { variant: 'light', style: base };
 }
 
-export function FilterToolbar() {
+export function FilterToolbar({ mode = 'edit' }: { mode?: 'edit' | 'review' }) {
   const { t } = useTranslation();
   const theme = useMantineTheme();
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
@@ -213,7 +216,9 @@ export function FilterToolbar() {
   }, [filterQuery]);
 
   const percentage = stats.total > 0 ? Math.round((stats.translated / stats.total) * 100) : 0;
-  const visibleColumnCount = visibleColumns.size;
+  const availableColumns = columnOrder.filter((column) => column !== 'approve');
+  const visibleColumnCount = availableColumns.filter((column) => visibleColumns.has(column)).length;
+  const visibleFilters = mode === 'review' ? REVIEW_FILTERS : EDIT_FILTERS;
 
   const handleClearSearch = useCallback(() => {
     setLocalQuery('');
@@ -378,7 +383,7 @@ export function FilterToolbar() {
       <Group gap="xs" justify="space-between" align="center" wrap="wrap">
         <Group gap="xs" wrap="nowrap" style={{ overflow: 'auto', minWidth: 0, flex: 1 }}>
           <AnimatePresence mode="popLayout">
-            {FILTERS.map((filter) => {
+            {visibleFilters.map((filter) => {
               const filterState = activeFilters.get(filter.id) ?? null;
               const count = getFilterCount(filter.id);
               const Icon = filter.icon;
@@ -429,7 +434,7 @@ export function FilterToolbar() {
 
           {/* MT count badge - clickable filter */}
           <AnimatePresence>
-            {stats.machineTranslated > 0 && (
+            {mode === 'edit' && stats.machineTranslated > 0 && (
               <MotionDiv variants={badgeVariants} initial="hidden" animate="visible" exit="exit">
                 {(() => {
                   const filterState = activeFilters.get('machine-translated') ?? null;
@@ -463,7 +468,7 @@ export function FilterToolbar() {
 
           {/* Manual edits badge - clickable filter */}
           <AnimatePresence>
-            {stats.manualEdits > 0 && (
+            {mode === 'edit' && stats.manualEdits > 0 && (
               <MotionDiv variants={badgeVariants} initial="hidden" animate="visible" exit="exit">
                 {(() => {
                   const filterState = activeFilters.get('manual-edit') ?? null;
@@ -504,110 +509,120 @@ export function FilterToolbar() {
             ...(isMobile && { width: '100%' }),
           }}
         >
-          <Menu position="bottom-end" shadow="sm" withArrow>
-            <Menu.Target>
-              <Button
-                size="xs"
-                variant="subtle"
-                leftSection={<Columns3 size={14} />}
-                aria-label={t('Choose visible columns')}
-                style={isMobile ? { flex: '1 1 100%' } : undefined}
-              >
-                {t('Columns')}
-              </Button>
-            </Menu.Target>
-            <Menu.Dropdown ref={menuDropdownRef}>
-              {columnOrder.map((column) => {
-                const isVisible = visibleColumns.has(column);
-                const disableToggleOff = isVisible && visibleColumnCount === 1;
-                const isDropTarget = dropTargetColumn === column && draggingColumn !== column;
-                return (
-                  <Menu.Item
-                    key={column}
-                    closeMenuOnClick={false}
-                    data-column={column}
-                    style={{
-                      backgroundColor: isDropTarget
-                        ? 'var(--mantine-color-blue-light)'
-                        : draggingColumn === column
-                          ? 'var(--mantine-color-gray-light)'
-                          : undefined,
-                      opacity: draggingColumn === column ? 0.3 : 1,
-                      transition: 'background-color 100ms ease, opacity 100ms ease',
-                    }}
-                  >
-                    <Group justify="space-between" wrap="nowrap">
-                      <Checkbox
-                        checked={isVisible}
-                        label={columnLabels[column]}
-                        onChange={() => toggleColumnVisibility(column)}
-                        disabled={disableToggleOff}
-                      />
+          {mode === 'edit' && (
+            <Menu position="bottom-end" shadow="sm" withArrow>
+              <Menu.Target>
+                <Button
+                  size="xs"
+                  variant="subtle"
+                  leftSection={<Columns3 size={14} />}
+                  aria-label={t('Choose visible columns')}
+                  style={isMobile ? { flex: '1 1 100%' } : undefined}
+                >
+                  {t('Columns')}
+                </Button>
+              </Menu.Target>
+              <Menu.Dropdown ref={menuDropdownRef}>
+                {availableColumns.map((column) => {
+                  const isVisible = visibleColumns.has(column);
+                  const disableToggleOff = isVisible && visibleColumnCount === 1;
+                  const isDropTarget = dropTargetColumn === column && draggingColumn !== column;
+                  return (
+                    <Menu.Item
+                      key={column}
+                      closeMenuOnClick={false}
+                      data-column={column}
+                      style={{
+                        backgroundColor: isDropTarget
+                          ? 'var(--mantine-color-blue-light)'
+                          : draggingColumn === column
+                            ? 'var(--mantine-color-gray-light)'
+                            : undefined,
+                        opacity: draggingColumn === column ? 0.3 : 1,
+                        transition: 'background-color 100ms ease, opacity 100ms ease',
+                      }}
+                    >
+                      <Group justify="space-between" wrap="nowrap">
+                        <Checkbox
+                          checked={isVisible}
+                          label={columnLabels[column]}
+                          onChange={() => toggleColumnVisibility(column)}
+                          disabled={disableToggleOff}
+                        />
 
-                      <Group gap={2} wrap="nowrap">
-                        <ActionIcon
-                          size="sm"
-                          variant="subtle"
-                          color="gray"
-                          aria-label={t('Drag {{columnLabel}}', {
-                            columnLabel: columnLabels[column],
-                          })}
-                          onPointerDown={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            dragPointerId.current = e.pointerId;
-                            e.currentTarget.setPointerCapture(e.pointerId);
-                            setDraggingColumn(column);
-                            setDropTargetColumn(null);
-                            const menuItem = e.currentTarget.closest(
-                              '[data-column]',
-                            ) as HTMLElement;
-                            if (menuItem) {
-                              dragGhost.show(menuItem, e.clientX, e.clientY, columnLabels[column]);
-                            }
-                          }}
-                          onPointerMove={(e) => {
-                            if (dragPointerId.current !== e.pointerId) return;
-                            dragGhost.move(e.clientX, e.clientY);
-                            if (!menuDropdownRef.current) return;
+                        <Group gap={2} wrap="nowrap">
+                          <ActionIcon
+                            size="sm"
+                            variant="subtle"
+                            color="gray"
+                            aria-label={t('Drag {{columnLabel}}', {
+                              columnLabel: columnLabels[column],
+                            })}
+                            onPointerDown={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              dragPointerId.current = e.pointerId;
+                              e.currentTarget.setPointerCapture(e.pointerId);
+                              setDraggingColumn(column);
+                              setDropTargetColumn(null);
+                              const menuItem = e.currentTarget.closest(
+                                '[data-column]',
+                              ) as HTMLElement;
+                              if (menuItem) {
+                                dragGhost.show(
+                                  menuItem,
+                                  e.clientX,
+                                  e.clientY,
+                                  columnLabels[column],
+                                );
+                              }
+                            }}
+                            onPointerMove={(e) => {
+                              if (dragPointerId.current !== e.pointerId) return;
+                              dragGhost.move(e.clientX, e.clientY);
+                              if (!menuDropdownRef.current) return;
 
-                            const items = menuDropdownRef.current.querySelectorAll('[data-column]');
-                            for (const item of items) {
-                              const rect = item.getBoundingClientRect();
-                              if (e.clientY >= rect.top && e.clientY <= rect.bottom) {
-                                const col = item.getAttribute('data-column') as TableColumn;
-                                if (col === column) {
-                                  setDropTargetColumn(null);
+                              const items =
+                                menuDropdownRef.current.querySelectorAll('[data-column]');
+                              for (const item of items) {
+                                const rect = item.getBoundingClientRect();
+                                if (e.clientY >= rect.top && e.clientY <= rect.bottom) {
+                                  const col = item.getAttribute('data-column') as TableColumn;
+                                  if (col === column) {
+                                    setDropTargetColumn(null);
+                                    return;
+                                  }
+
+                                  if (col) {
+                                    setDropTargetColumn(col);
+                                  }
                                   return;
                                 }
-
-                                if (col) {
-                                  setDropTargetColumn(col);
-                                }
-                                return;
                               }
+                              setDropTargetColumn(null);
+                            }}
+                            onPointerUp={(e) => {
+                              finishColumnDrag(e.pointerId, column, true);
+                            }}
+                            onPointerCancel={(e) => finishColumnDrag(e.pointerId, column, false)}
+                            onLostPointerCapture={(e) =>
+                              finishColumnDrag(e.pointerId, column, false)
                             }
-                            setDropTargetColumn(null);
-                          }}
-                          onPointerUp={(e) => {
-                            finishColumnDrag(e.pointerId, column, true);
-                          }}
-                          onPointerCancel={(e) => finishColumnDrag(e.pointerId, column, false)}
-                          onLostPointerCapture={(e) => finishColumnDrag(e.pointerId, column, false)}
-                          style={{
-                            cursor: draggingColumn === column ? 'grabbing' : 'grab',
-                            touchAction: 'none',
-                          }}
-                        >
-                          <GripVertical size={12} />
-                        </ActionIcon>
+                            style={{
+                              cursor: draggingColumn === column ? 'grabbing' : 'grab',
+                              touchAction: 'none',
+                            }}
+                          >
+                            <GripVertical size={12} />
+                          </ActionIcon>
+                        </Group>
                       </Group>
-                    </Group>
-                  </Menu.Item>
-                );
-              })}
-            </Menu.Dropdown>
-          </Menu>
+                    </Menu.Item>
+                  );
+                })}
+              </Menu.Dropdown>
+            </Menu>
+          )}
 
           <Select
             size="xs"

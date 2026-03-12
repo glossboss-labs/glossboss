@@ -620,21 +620,21 @@ export function TranslateToolbar({
     );
   }, [glossary, selectedEntries, setGlossaryAnalysisBatch, t]);
 
-  const handleApproveSelected = useCallback(() => {
+  const handleClearFuzzySelected = useCallback(() => {
     clearFuzzyBatch(Array.from(selectedEntryIds));
     setBulkActionMessage(
       selectedFuzzyCount > 0
-        ? t('Approved {{count}} row(s): fuzzy flag cleared.', { count: selectedFuzzyCount })
-        : t('No selected fuzzy rows to approve.'),
+        ? t('Cleared fuzzy on {{count}} row(s).', { count: selectedFuzzyCount })
+        : t('No selected fuzzy rows to clear.'),
     );
   }, [clearFuzzyBatch, selectedEntryIds, selectedFuzzyCount, t]);
 
-  const handleUnapproveSelected = useCallback(() => {
+  const handleMarkFuzzySelected = useCallback(() => {
     addFuzzyBatch(Array.from(selectedEntryIds));
     setBulkActionMessage(
       selectedNonFuzzyCount > 0
-        ? t('Unapproved {{count}} row(s): fuzzy flag added.', { count: selectedNonFuzzyCount })
-        : t('No selected rows available to unapprove.'),
+        ? t('Marked {{count}} row(s) as fuzzy.', { count: selectedNonFuzzyCount })
+        : t('No selected rows available to mark as fuzzy.'),
     );
   }, [addFuzzyBatch, selectedEntryIds, selectedNonFuzzyCount, t]);
 
@@ -976,23 +976,23 @@ export function TranslateToolbar({
             <AnimatePresence mode="popLayout">
               {selectedFuzzyCount > 0 && (
                 <MotionDiv
-                  key="approve-selected"
+                  key="clear-fuzzy-selected"
                   layout
                   variants={badgeVariants}
                   initial="hidden"
                   animate="visible"
                   exit="exit"
                 >
-                  <Tooltip label={t('Approve selected rows by clearing fuzzy flag')}>
+                  <Tooltip label={t('Clear fuzzy on selected rows')}>
                     <Button
                       size="xs"
                       variant="light"
                       color="green"
                       leftSection={<CheckCheck size={14} />}
-                      onClick={handleApproveSelected}
-                      aria-label={t('Approve selected')}
+                      onClick={handleClearFuzzySelected}
+                      aria-label={t('Clear fuzzy selected')}
                     >
-                      {t('Approve ({{count}})', { count: selectedFuzzyCount })}
+                      {t('Clear Fuzzy ({{count}})', { count: selectedFuzzyCount })}
                     </Button>
                   </Tooltip>
                 </MotionDiv>
@@ -1002,23 +1002,23 @@ export function TranslateToolbar({
             <AnimatePresence mode="popLayout">
               {selectedNonFuzzyCount > 0 && (
                 <MotionDiv
-                  key="unapprove-selected"
+                  key="mark-fuzzy-selected"
                   layout
                   variants={badgeVariants}
                   initial="hidden"
                   animate="visible"
                   exit="exit"
                 >
-                  <Tooltip label={t('Unapprove selected rows by adding fuzzy flag')}>
+                  <Tooltip label={t('Mark selected rows as fuzzy')}>
                     <Button
                       size="xs"
                       variant="light"
                       color="yellow"
                       leftSection={<RotateCcw size={14} />}
-                      onClick={handleUnapproveSelected}
-                      aria-label={t('Unapprove selected')}
+                      onClick={handleMarkFuzzySelected}
+                      aria-label={t('Mark fuzzy selected')}
                     >
-                      {t('Unapprove ({{count}})', { count: selectedNonFuzzyCount })}
+                      {t('Mark Fuzzy ({{count}})', { count: selectedNonFuzzyCount })}
                     </Button>
                   </Tooltip>
                 </MotionDiv>
