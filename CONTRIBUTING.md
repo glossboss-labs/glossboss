@@ -45,7 +45,10 @@ Examples:
 - Keep client-side environment variables under `VITE_*`.
 - Do not commit secrets or local `.env` files.
 - Add or update tests when behavior changes.
-- If you touch translation memory or QA, read the Translation Memory and QA Checks sections in `README.md` first. TM logic lives in `src/lib/translation-memory/`, QA logic in `src/lib/qa/`. To add a new QA rule, update `types.ts` (rule identifier and label) and `analyzer.ts` (check implementation).
+
+- If you touch translation memory or QA, review the existing implementations in `src/lib/translation-memory/` and `src/lib/qa/` first.
+- To add a new QA rule, update `types.ts` (rule identifier and label) and `analyzer.ts` (check implementation) in `src/lib/qa/`.
+- To add a new translation provider or repo sync provider, follow the existing pattern in `src/lib/`.
 
 ## Translating the app
 
@@ -65,18 +68,8 @@ used in the React app, and each `msgstr` contains the localized text for that la
 
 1. Edit the relevant `.po` file under `src/lib/app-language/locales/`.
 2. Keep placeholders such as `{count}` or `{format}` intact in the translated `msgstr`.
-3. Run the local checks before opening a pull request:
-
-```bash
-bun run lint
-bun run format:check
-bun run typecheck
-bun run test:coverage
-bun run build
-```
-
-4. In local dev, open Settings → Display and switch the interface language to verify the updated
-   strings in the UI.
+3. Verify in local dev via Settings → Display → Language.
+4. Run the check suite listed above before opening a PR.
 
 ### Renaming an English source string
 
