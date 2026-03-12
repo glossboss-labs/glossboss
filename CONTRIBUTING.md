@@ -49,6 +49,7 @@ Examples:
 - If you touch translation memory or QA, review the existing implementations in `src/lib/translation-memory/` and `src/lib/qa/` first.
 - To add a new QA rule, update `types.ts` (rule identifier and label) and `analyzer.ts` (check implementation) in `src/lib/qa/`.
 - To add a new translation provider or repo sync provider, follow the existing pattern in `src/lib/`.
+- To extend the review workflow, update types in `src/lib/review/`, wire actions in `src/stores/editor-store.ts`, and gate review-only UI behind the workspace `mode` prop.
 
 ## Translating the app
 

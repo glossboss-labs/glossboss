@@ -70,13 +70,32 @@ interface FilterConfig {
   color: string;
 }
 
-const FILTERS: FilterConfig[] = [
+const EDIT_FILTERS: FilterConfig[] = [
   { id: 'untranslated', label: msgid('Untranslated'), icon: FileQuestion, color: 'red' },
   { id: 'translated', label: msgid('Translated'), icon: CheckCircle, color: 'green' },
   { id: 'fuzzy', label: msgid('Fuzzy'), icon: AlertTriangle, color: 'yellow' },
   { id: 'modified', label: msgid('Modified'), icon: Pencil, color: 'orange' },
   { id: 'qa-error', label: msgid('QA errors'), icon: ShieldAlert, color: 'red' },
   { id: 'qa-warning', label: msgid('QA warnings'), icon: AlertTriangle, color: 'orange' },
+];
+
+const REVIEW_FILTERS: FilterConfig[] = [
+  { id: 'review-draft', label: msgid('Review: draft'), icon: FileQuestion, color: 'gray' },
+  { id: 'review-in-review', label: msgid('Review: in review'), icon: Edit3, color: 'blue' },
+  { id: 'review-approved', label: msgid('Review: approved'), icon: CheckCircle, color: 'green' },
+  {
+    id: 'review-needs-changes',
+    label: msgid('Review: needs changes'),
+    icon: AlertTriangle,
+    color: 'orange',
+  },
+  {
+    id: 'review-unresolved',
+    label: msgid('Unresolved comments'),
+    icon: Pencil,
+    color: 'red',
+  },
+  { id: 'review-changed', label: msgid('Changed strings'), icon: Pencil, color: 'violet' },
 ];
 
 /** Get tooltip text based on current filter state */
@@ -116,7 +135,7 @@ function getBadgeStyle(state: FilterState | null): {
   return { variant: 'light', style: base };
 }
 
-export function FilterToolbar() {
+export function FilterToolbar({ mode = 'edit' }: { mode?: 'edit' | 'review' }) {
   const { t } = useTranslation();
   const theme = useMantineTheme();
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
@@ -162,13 +181,19 @@ export function FilterToolbar() {
       dragPointerId.current = null;
 
       if (shouldCommit && dropTargetColumn && dropTargetColumn !== column) {
-        const fromIndex = columnOrder.indexOf(column);
-        const rawTargetIndex = columnOrder.indexOf(dropTargetColumn);
+        // Compute visible column list (excluding hidden 'approve') to get the
+        // visual drag direction, then map back to the full columnOrder index.
+        const visible = columnOrder.filter((c) => c !== 'approve');
+        const visibleFrom = visible.indexOf(column);
+        const visibleTarget = visible.indexOf(dropTargetColumn);
 
-        if (fromIndex !== -1 && rawTargetIndex !== -1) {
-          const adjustedTargetIndex =
-            rawTargetIndex > fromIndex ? rawTargetIndex - 1 : rawTargetIndex;
-          moveColumnToIndex(column, adjustedTargetIndex);
+        if (visibleFrom !== -1 && visibleTarget !== -1) {
+          const targetColumnInOrder = columnOrder.indexOf(dropTargetColumn);
+          if (targetColumnInOrder !== -1) {
+            const adjustedTargetIndex =
+              visibleTarget > visibleFrom ? targetColumnInOrder - 1 : targetColumnInOrder;
+            moveColumnToIndex(column, adjustedTargetIndex);
+          }
         }
       }
 
@@ -218,7 +243,9 @@ export function FilterToolbar() {
   }, [filterQuery]);
 
   const percentage = stats.total > 0 ? Math.round((stats.translated / stats.total) * 100) : 0;
-  const visibleColumnCount = visibleColumns.size;
+  const availableColumns = columnOrder.filter((column) => column !== 'approve');
+  const visibleColumnCount = availableColumns.filter((column) => visibleColumns.has(column)).length;
+  const visibleFilters = mode === 'review' ? REVIEW_FILTERS : EDIT_FILTERS;
 
   const handleClearSearch = useCallback(() => {
     setLocalQuery('');
@@ -239,6 +266,18 @@ export function FilterToolbar() {
         return stats.qaErrors;
       case 'qa-warning':
         return stats.qaWarnings;
+      case 'review-draft':
+        return stats.reviewDraft;
+      case 'review-in-review':
+        return stats.reviewInReview;
+      case 'review-approved':
+        return stats.reviewApproved;
+      case 'review-needs-changes':
+        return stats.reviewNeedsChanges;
+      case 'review-unresolved':
+        return stats.reviewUnresolved;
+      case 'review-changed':
+        return stats.reviewChanged;
       default:
         return 0;
     }
@@ -264,7 +303,7 @@ export function FilterToolbar() {
 
   const columnLabels: Record<TableColumn, string> = {
     status: t('Status'),
-    approve: t('Approve'),
+    approve: t('Review'),
     source: t('Source string'),
     translation: t('Translated string'),
     signals: t('Signals'),
@@ -379,7 +418,7 @@ export function FilterToolbar() {
       <Group gap="xs" justify="space-between" align="center" wrap="wrap">
         <Group gap="xs" wrap="nowrap" style={{ overflow: 'auto', minWidth: 0, flex: 1 }}>
           <AnimatePresence mode="popLayout">
-            {FILTERS.map((filter) => {
+            {visibleFilters.map((filter) => {
               const filterState = activeFilters.get(filter.id) ?? null;
               const count = getFilterCount(filter.id);
               const Icon = filter.icon;
@@ -430,7 +469,7 @@ export function FilterToolbar() {
 
           {/* MT count badge - clickable filter */}
           <AnimatePresence>
-            {stats.machineTranslated > 0 && (
+            {mode === 'edit' && stats.machineTranslated > 0 && (
               <MotionDiv variants={badgeVariants} initial="hidden" animate="visible" exit="exit">
                 {(() => {
                   const filterState = activeFilters.get('machine-translated') ?? null;
@@ -464,7 +503,7 @@ export function FilterToolbar() {
 
           {/* Manual edits badge - clickable filter */}
           <AnimatePresence>
-            {stats.manualEdits > 0 && (
+            {mode === 'edit' && stats.manualEdits > 0 && (
               <MotionDiv variants={badgeVariants} initial="hidden" animate="visible" exit="exit">
                 {(() => {
                   const filterState = activeFilters.get('manual-edit') ?? null;
@@ -518,7 +557,7 @@ export function FilterToolbar() {
               </Button>
             </Menu.Target>
             <Menu.Dropdown ref={menuDropdownRef}>
-              {columnOrder.map((column) => {
+              {availableColumns.map((column) => {
                 const isVisible = visibleColumns.has(column);
                 const disableToggleOff = isVisible && visibleColumnCount === 1;
                 const isDropTarget = dropTargetColumn === column && draggingColumn !== column;

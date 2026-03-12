@@ -11,8 +11,20 @@ import type { POFile, POEntry, POHeader } from '@/lib/po/types';
 import type { GlossaryAnalysisResult } from '@/lib/glossary/types';
 import { deriveProjectName } from '@/lib/translation-memory';
 import type { QAEntryReport } from '@/lib/qa';
+import {
+  createDefaultReviewEntryState,
+  getChangedReviewEntryCount,
+  getReviewEntryState,
+  hasUnresolvedReviewComments,
+  isReviewLocked,
+  type ReviewComment,
+  type ReviewEntryState,
+  type ReviewHistoryEvent,
+  type ReviewStatus,
+} from '@/lib/review';
 import { STORAGE_KEY } from '@/lib/storage';
 import type { TranslationGlossaryMode, TranslationProviderId } from '@/lib/translation/types';
+import { getTranslationStatus } from '@/types';
 
 /** Available filter types */
 export type FilterType =
@@ -24,7 +36,13 @@ export type FilterType =
   | 'qa-warning'
   | 'glossary-review'
   | 'manual-edit'
-  | 'machine-translated';
+  | 'machine-translated'
+  | 'review-draft'
+  | 'review-in-review'
+  | 'review-approved'
+  | 'review-needs-changes'
+  | 'review-unresolved'
+  | 'review-changed';
 
 /** Filter state: include (show only) or exclude (don't show) */
 export type FilterState = 'include' | 'exclude';
@@ -85,6 +103,15 @@ export interface EditorState {
 
   /** QA results per entry */
   qaReports: Map<string, QAEntryReport>;
+
+  /** Review workflow metadata keyed by entry ID */
+  reviewEntries: Map<string, ReviewEntryState>;
+
+  /** Display name used for review comments and history */
+  reviewerName: string;
+
+  /** Whether approved strings should be locked until reopened */
+  lockApprovedEntries: boolean;
 
   /** Currently selected entry ID */
   selectedEntryId: string | null;
@@ -239,6 +266,30 @@ export interface EditorActions {
   /** Clear all QA reports */
   clearQaReports: () => void;
 
+  /** Set the active reviewer display name */
+  setReviewerName: (name: string) => void;
+
+  /** Enable or disable automatic locking for approved strings */
+  setLockApprovedEntries: (enabled: boolean) => void;
+
+  /** Set review status for an entry */
+  setReviewStatus: (entryId: string, status: ReviewStatus) => void;
+
+  /** Add a review comment or reply to an entry */
+  addReviewComment: (entryId: string, message: string, parentId?: string) => void;
+
+  /** Resolve or reopen a review comment */
+  setReviewCommentResolved: (entryId: string, commentId: string, resolved: boolean) => void;
+
+  /** Replace review metadata, for example when restoring a draft */
+  restoreReviewEntries: (entries: Map<string, ReviewEntryState>) => void;
+
+  /** Get review metadata for an entry */
+  getReviewEntry: (entryId: string) => ReviewEntryState;
+
+  /** Check if an entry is locked by the review workflow */
+  isEntryReviewLocked: (entryId: string) => boolean;
+
   /** Get filtered entries based on current filters */
   getFilteredEntries: () => POEntry[];
 
@@ -266,6 +317,13 @@ export interface EditorActions {
     glossaryNeedsReview: number;
     qaErrors: number;
     qaWarnings: number;
+    reviewDraft: number;
+    reviewInReview: number;
+    reviewApproved: number;
+    reviewNeedsChanges: number;
+    reviewUnresolved: number;
+    reviewChanged: number;
+    readyToExport: boolean;
   };
 }
 
@@ -282,6 +340,9 @@ const initialState: EditorState = {
   machineTranslationMeta: new Map(),
   glossaryAnalysis: new Map(),
   qaReports: new Map(),
+  reviewEntries: new Map(),
+  reviewerName: '',
+  lockApprovedEntries: false,
   selectedEntryId: null,
   selectedEntryIds: new Set(),
   filterQuery: '',
@@ -295,6 +356,47 @@ const initialState: EditorState = {
   hasUnsavedChanges: false,
 };
 
+function createReviewHistoryEvent(
+  actor: string,
+  event: Omit<ReviewHistoryEvent, 'id' | 'actor' | 'createdAt'>,
+): ReviewHistoryEvent {
+  return {
+    id: crypto.randomUUID(),
+    actor,
+    createdAt: new Date().toISOString(),
+    ...event,
+  };
+}
+
+function getReviewActorName(reviewerName: string): string {
+  return reviewerName.trim();
+}
+
+function cloneReviewEntry(entry: ReviewEntryState | undefined): ReviewEntryState {
+  const source = entry ?? createDefaultReviewEntryState();
+  return {
+    status: source.status,
+    comments: [...source.comments],
+    history: [...source.history],
+  };
+}
+
+function commitReviewEntry(
+  reviewEntries: Map<string, ReviewEntryState>,
+  entryId: string,
+  entry: ReviewEntryState,
+): void {
+  const isDefault =
+    entry.status === 'draft' && entry.comments.length === 0 && entry.history.length === 0;
+
+  if (isDefault) {
+    reviewEntries.delete(entryId);
+    return;
+  }
+
+  reviewEntries.set(entryId, entry);
+}
+
 /**
  * Check if an entry matches a specific filter
  */
@@ -306,7 +408,10 @@ function entryMatchesFilter(
   qaReports: Map<string, QAEntryReport>,
   machineTranslatedIds: Set<string>,
   manualEditIds: Set<string>,
+  reviewEntries: Map<string, ReviewEntryState>,
 ): boolean {
+  const reviewEntry = reviewEntries.get(entry.id);
+
   switch (filter) {
     case 'untranslated': {
       // Check for plural entries
@@ -348,6 +453,18 @@ function entryMatchesFilter(
       return manualEditIds.has(entry.id) && !machineTranslatedIds.has(entry.id);
     case 'machine-translated':
       return machineTranslatedIds.has(entry.id);
+    case 'review-draft':
+      return getReviewEntryState(reviewEntries, entry.id).status === 'draft';
+    case 'review-in-review':
+      return getReviewEntryState(reviewEntries, entry.id).status === 'in-review';
+    case 'review-approved':
+      return getReviewEntryState(reviewEntries, entry.id).status === 'approved';
+    case 'review-needs-changes':
+      return getReviewEntryState(reviewEntries, entry.id).status === 'needs-changes';
+    case 'review-unresolved':
+      return hasUnresolvedReviewComments(reviewEntry);
+    case 'review-changed':
+      return reviewEntry?.history.some((event) => event.type === 'translation-updated') ?? false;
     default:
       return false;
   }
@@ -356,14 +473,26 @@ function entryMatchesFilter(
 /**
  * Check if an entry matches the search query
  */
-function entryMatchesSearch(entry: POEntry, query: string): boolean {
+function entryMatchesSearch(
+  entry: POEntry,
+  query: string,
+  reviewEntries: Map<string, ReviewEntryState>,
+): boolean {
   const lowerQuery = query.toLowerCase();
+  const reviewEntry = reviewEntries.get(entry.id);
+
   return (
     entry.msgid.toLowerCase().includes(lowerQuery) ||
     entry.msgstr.toLowerCase().includes(lowerQuery) ||
     (entry.msgctxt?.toLowerCase().includes(lowerQuery) ?? false) ||
     entry.translatorComments.some((c) => c.toLowerCase().includes(lowerQuery)) ||
-    entry.extractedComments.some((c) => c.toLowerCase().includes(lowerQuery))
+    entry.extractedComments.some((c) => c.toLowerCase().includes(lowerQuery)) ||
+    (reviewEntry?.comments.some(
+      (comment) =>
+        comment.message.toLowerCase().includes(lowerQuery) ||
+        comment.author.toLowerCase().includes(lowerQuery),
+    ) ??
+      false)
   );
 }
 
@@ -415,6 +544,7 @@ export const useEditorStore = create<EditorState & EditorActions>()(
           machineTranslationMeta: new Map(),
           glossaryAnalysis: new Map(),
           qaReports: new Map(),
+          reviewEntries: new Map(),
           selectedEntryId: file.entries[0]?.id ?? null,
           selectedEntryIds: new Set(),
           filterQuery: '',
@@ -437,6 +567,16 @@ export const useEditorStore = create<EditorState & EditorActions>()(
 
       updateEntry: (entryId: string, msgstr: string) => {
         set((state) => {
+          const existingEntry = state.entries.find((entry) => entry.id === entryId);
+          if (!existingEntry || existingEntry.msgstr === msgstr) {
+            return {};
+          }
+
+          const reviewEntry = getReviewEntryState(state.reviewEntries, entryId);
+          if (isReviewLocked(reviewEntry.status, state.lockApprovedEntries)) {
+            return {};
+          }
+
           const entries = state.entries.map((entry) =>
             entry.id === entryId ? { ...entry, msgstr, isDirty: true } : entry,
           );
@@ -444,9 +584,22 @@ export const useEditorStore = create<EditorState & EditorActions>()(
           const dirtyEntryIds = new Set(state.dirtyEntryIds);
           dirtyEntryIds.add(entryId);
 
+          const reviewEntries = new Map(state.reviewEntries);
+          const nextReviewEntry = cloneReviewEntry(state.reviewEntries.get(entryId));
+          nextReviewEntry.history.push(
+            createReviewHistoryEvent(getReviewActorName(state.reviewerName), {
+              type: 'translation-updated',
+              field: 'singular',
+              from: existingEntry.msgstr,
+              to: msgstr,
+            }),
+          );
+          commitReviewEntry(reviewEntries, entryId, nextReviewEntry);
+
           return {
             entries,
             dirtyEntryIds,
+            reviewEntries,
             hasUnsavedChanges: true,
           };
         });
@@ -454,6 +607,19 @@ export const useEditorStore = create<EditorState & EditorActions>()(
 
       updateEntryPlural: (entryId: string, msgstrPlural: string[]) => {
         set((state) => {
+          const existingEntry = state.entries.find((entry) => entry.id === entryId);
+          if (
+            !existingEntry ||
+            JSON.stringify(existingEntry.msgstrPlural ?? []) === JSON.stringify(msgstrPlural)
+          ) {
+            return {};
+          }
+
+          const reviewEntry = getReviewEntryState(state.reviewEntries, entryId);
+          if (isReviewLocked(reviewEntry.status, state.lockApprovedEntries)) {
+            return {};
+          }
+
           const entries = state.entries.map((entry) =>
             entry.id === entryId ? { ...entry, msgstrPlural, isDirty: true } : entry,
           );
@@ -461,9 +627,22 @@ export const useEditorStore = create<EditorState & EditorActions>()(
           const dirtyEntryIds = new Set(state.dirtyEntryIds);
           dirtyEntryIds.add(entryId);
 
+          const reviewEntries = new Map(state.reviewEntries);
+          const nextReviewEntry = cloneReviewEntry(state.reviewEntries.get(entryId));
+          nextReviewEntry.history.push(
+            createReviewHistoryEvent(getReviewActorName(state.reviewerName), {
+              type: 'translation-updated',
+              field: 'plural',
+              from: (existingEntry.msgstrPlural ?? []).join('\n'),
+              to: msgstrPlural.join('\n'),
+            }),
+          );
+          commitReviewEntry(reviewEntries, entryId, nextReviewEntry);
+
           return {
             entries,
             dirtyEntryIds,
+            reviewEntries,
             hasUnsavedChanges: true,
           };
         });
@@ -471,6 +650,11 @@ export const useEditorStore = create<EditorState & EditorActions>()(
 
       toggleFuzzy: (entryId: string) => {
         set((state) => {
+          const reviewEntry = getReviewEntryState(state.reviewEntries, entryId);
+          if (isReviewLocked(reviewEntry.status, state.lockApprovedEntries)) {
+            return {};
+          }
+
           const entries = state.entries.map((entry) => {
             if (entry.id !== entryId) return entry;
 
@@ -502,7 +686,12 @@ export const useEditorStore = create<EditorState & EditorActions>()(
           let changed = false;
 
           const entries = state.entries.map((entry) => {
-            if (!targetIds.has(entry.id) || !entry.flags.includes('fuzzy')) {
+            const reviewEntry = getReviewEntryState(state.reviewEntries, entry.id);
+            if (
+              !targetIds.has(entry.id) ||
+              !entry.flags.includes('fuzzy') ||
+              isReviewLocked(reviewEntry.status, state.lockApprovedEntries)
+            ) {
               return entry;
             }
 
@@ -537,7 +726,12 @@ export const useEditorStore = create<EditorState & EditorActions>()(
           let changed = false;
 
           const entries = state.entries.map((entry) => {
-            if (!targetIds.has(entry.id) || entry.flags.includes('fuzzy')) {
+            const reviewEntry = getReviewEntryState(state.reviewEntries, entry.id);
+            if (
+              !targetIds.has(entry.id) ||
+              entry.flags.includes('fuzzy') ||
+              isReviewLocked(reviewEntry.status, state.lockApprovedEntries)
+            ) {
               return entry;
             }
 
@@ -756,6 +950,7 @@ export const useEditorStore = create<EditorState & EditorActions>()(
           machineTranslationMeta: new Map(),
           glossaryAnalysis: new Map(),
           qaReports: new Map(),
+          reviewEntries: new Map(),
           selectedEntryId: mergedEntries[0]?.id ?? null,
           selectedEntryIds: new Set(),
           hasUnsavedChanges: true,
@@ -845,6 +1040,123 @@ export const useEditorStore = create<EditorState & EditorActions>()(
         set({ qaReports: new Map() });
       },
 
+      setReviewerName: (name: string) => {
+        set({ reviewerName: name.trim() });
+      },
+
+      setLockApprovedEntries: (enabled: boolean) => {
+        set({ lockApprovedEntries: enabled });
+      },
+
+      setReviewStatus: (entryId: string, status: ReviewStatus) => {
+        set((state) => {
+          const current = getReviewEntryState(state.reviewEntries, entryId);
+          if (current.status === status) {
+            return {};
+          }
+
+          const reviewEntries = new Map(state.reviewEntries);
+          const nextEntry = cloneReviewEntry(state.reviewEntries.get(entryId));
+          nextEntry.status = status;
+          nextEntry.history.push(
+            createReviewHistoryEvent(getReviewActorName(state.reviewerName), {
+              type: 'review-status-changed',
+              field: 'review-status',
+              from: current.status,
+              to: status,
+            }),
+          );
+          commitReviewEntry(reviewEntries, entryId, nextEntry);
+
+          return { reviewEntries, hasUnsavedChanges: true };
+        });
+      },
+
+      addReviewComment: (entryId: string, message: string, parentId?: string) => {
+        const trimmed = message.trim();
+        if (!trimmed) return;
+
+        set((state) => {
+          const reviewEntries = new Map(state.reviewEntries);
+          const nextEntry = cloneReviewEntry(state.reviewEntries.get(entryId));
+          const commentId = crypto.randomUUID();
+          const author = getReviewActorName(state.reviewerName);
+          const comment: ReviewComment = {
+            id: commentId,
+            parentId,
+            author,
+            message: trimmed,
+            createdAt: new Date().toISOString(),
+          };
+
+          nextEntry.comments.push(comment);
+          nextEntry.history.push(
+            createReviewHistoryEvent(author, {
+              type: 'comment-added',
+              field: parentId ? 'reply' : 'comment',
+              to: trimmed,
+              commentId,
+            }),
+          );
+          commitReviewEntry(reviewEntries, entryId, nextEntry);
+
+          return { reviewEntries, hasUnsavedChanges: true };
+        });
+      },
+
+      setReviewCommentResolved: (entryId: string, commentId: string, resolved: boolean) => {
+        set((state) => {
+          const current = state.reviewEntries.get(entryId);
+          if (!current) return {};
+
+          let changed = false;
+          const actor = getReviewActorName(state.reviewerName);
+          const nextEntry = cloneReviewEntry(current);
+          nextEntry.comments = nextEntry.comments.map((comment) => {
+            if (comment.id !== commentId) return comment;
+            const isResolved = Boolean(comment.resolvedAt);
+            if (isResolved === resolved) return comment;
+            changed = true;
+            return {
+              ...comment,
+              resolvedAt: resolved ? new Date().toISOString() : null,
+              resolvedBy: resolved ? actor : null,
+            };
+          });
+
+          if (!changed) return {};
+
+          nextEntry.history.push(
+            createReviewHistoryEvent(actor, {
+              type: resolved ? 'comment-resolved' : 'comment-reopened',
+              field: 'comment',
+              commentId,
+            }),
+          );
+
+          const reviewEntries = new Map(state.reviewEntries);
+          commitReviewEntry(reviewEntries, entryId, nextEntry);
+          return { reviewEntries, hasUnsavedChanges: true };
+        });
+      },
+
+      restoreReviewEntries: (entries: Map<string, ReviewEntryState>) => {
+        set((state) => ({
+          reviewEntries: new Map(entries),
+          hasUnsavedChanges: state.hasUnsavedChanges || entries.size > 0,
+        }));
+      },
+
+      getReviewEntry: (entryId: string) => {
+        return getReviewEntryState(get().reviewEntries, entryId);
+      },
+
+      isEntryReviewLocked: (entryId: string) => {
+        const state = get();
+        const status = getReviewEntryState(state.reviewEntries, entryId).status;
+        return isReviewLocked(status, state.lockApprovedEntries);
+      },
+
       getFilteredEntries: () => {
         const {
           entries,
@@ -855,6 +1167,7 @@ export const useEditorStore = create<EditorState & EditorActions>()(
           qaReports,
           machineTranslatedIds,
           manualEditIds,
+          reviewEntries,
           sortField,
           sortDirection,
         } = get();
@@ -886,6 +1199,7 @@ export const useEditorStore = create<EditorState & EditorActions>()(
                 qaReports,
                 machineTranslatedIds,
                 manualEditIds,
+                reviewEntries,
               ),
             ),
           );
@@ -904,6 +1218,7 @@ export const useEditorStore = create<EditorState & EditorActions>()(
                   qaReports,
                   machineTranslatedIds,
                   manualEditIds,
+                  reviewEntries,
                 ),
               ),
           );
@@ -911,7 +1226,9 @@ export const useEditorStore = create<EditorState & EditorActions>()(
 
         // Apply search filter (AND with status filters)
         if (filterQuery.trim()) {
-          filtered = filtered.filter((entry) => entryMatchesSearch(entry, filterQuery));
+          filtered = filtered.filter((entry) =>
+            entryMatchesSearch(entry, filterQuery, reviewEntries),
+          );
         }
 
         if (sortField !== 'default') {
@@ -950,6 +1267,7 @@ export const useEditorStore = create<EditorState & EditorActions>()(
           manualEditIds,
           glossaryAnalysis,
           qaReports,
+          reviewEntries,
         } = get();
         const total = entries.length;
 
@@ -989,6 +1307,32 @@ export const useEditorStore = create<EditorState & EditorActions>()(
         const qaWarnings = Array.from(qaReports.values()).filter(
           (report) => report.warningCount > 0,
         ).length;
+        const reviewDraft = entries.filter(
+          (entry) => getReviewEntryState(reviewEntries, entry.id).status === 'draft',
+        ).length;
+        const reviewInReview = entries.filter(
+          (entry) => getReviewEntryState(reviewEntries, entry.id).status === 'in-review',
+        ).length;
+        const reviewApproved = entries.filter(
+          (entry) => getReviewEntryState(reviewEntries, entry.id).status === 'approved',
+        ).length;
+        const reviewNeedsChanges = entries.filter(
+          (entry) => getReviewEntryState(reviewEntries, entry.id).status === 'needs-changes',
+        ).length;
+        const reviewUnresolved = Array.from(reviewEntries.values()).reduce(
+          (totalComments, entry) =>
+            totalComments + entry.comments.filter((comment) => !comment.resolvedAt).length,
+          0,
+        );
+        const reviewChanged = getChangedReviewEntryCount(reviewEntries);
+        const readyToExport =
+          total > 0 &&
+          reviewApproved === total &&
+          reviewUnresolved === 0 &&
+          entries.every(
+            (entry) =>
+              getTranslationStatus(entry.msgstr, entry.flags, entry.msgstrPlural) === 'translated',
+          );
 
         return {
           total,
@@ -1001,6 +1345,13 @@ export const useEditorStore = create<EditorState & EditorActions>()(
           glossaryNeedsReview,
           qaErrors,
           qaWarnings,
+          reviewDraft,
+          reviewInReview,
+          reviewApproved,
+          reviewNeedsChanges,
+          reviewUnresolved,
+          reviewChanged,
+          readyToExport,
         };
       },
 
@@ -1044,6 +1395,10 @@ export const useEditorStore = create<EditorState & EditorActions>()(
           state.machineTranslationMeta instanceof Map
             ? Array.from(state.machineTranslationMeta.entries())
             : [],
+        reviewEntries:
+          state.reviewEntries instanceof Map ? Array.from(state.reviewEntries.entries()) : [],
+        reviewerName: state.reviewerName,
+        lockApprovedEntries: state.lockApprovedEntries,
         lastSavedAt: state.lastSavedAt,
         hasUnsavedChanges: state.hasUnsavedChanges,
       }),
@@ -1144,6 +1499,28 @@ export const useEditorStore = create<EditorState & EditorActions>()(
         // Initialize glossaryAnalysis as empty Map (not persisted, recalculated on demand)
         state.glossaryAnalysis = new Map();
         state.qaReports = new Map();
+        state.reviewerName =
+          typeof state.reviewerName === 'string' ? state.reviewerName.trim() : '';
+        state.lockApprovedEntries = Boolean(state.lockApprovedEntries);
+
+        if (Array.isArray(state.reviewEntries) && state.reviewEntries.length > 0) {
+          try {
+            const entries = state.reviewEntries as unknown as [string, ReviewEntryState][];
+            const validEntries = entries.filter(
+              (entry) =>
+                Array.isArray(entry) &&
+                entry.length === 2 &&
+                typeof entry[0] === 'string' &&
+                entry[1] &&
+                typeof entry[1] === 'object',
+            );
+            state.reviewEntries = new Map(validEntries);
+          } catch {
+            state.reviewEntries = new Map();
+          }
+        } else {
+          state.reviewEntries = new Map();
+        }
 
         // Initialize selectedEntryIds as empty Set (not persisted)
         state.selectedEntryIds = new Set();
