@@ -509,120 +509,110 @@ export function FilterToolbar({ mode = 'edit' }: { mode?: 'edit' | 'review' }) {
             ...(isMobile && { width: '100%' }),
           }}
         >
-          {mode === 'edit' && (
-            <Menu position="bottom-end" shadow="sm" withArrow>
-              <Menu.Target>
-                <Button
-                  size="xs"
-                  variant="subtle"
-                  leftSection={<Columns3 size={14} />}
-                  aria-label={t('Choose visible columns')}
-                  style={isMobile ? { flex: '1 1 100%' } : undefined}
-                >
-                  {t('Columns')}
-                </Button>
-              </Menu.Target>
-              <Menu.Dropdown ref={menuDropdownRef}>
-                {availableColumns.map((column) => {
-                  const isVisible = visibleColumns.has(column);
-                  const disableToggleOff = isVisible && visibleColumnCount === 1;
-                  const isDropTarget = dropTargetColumn === column && draggingColumn !== column;
-                  return (
-                    <Menu.Item
-                      key={column}
-                      closeMenuOnClick={false}
-                      data-column={column}
-                      style={{
-                        backgroundColor: isDropTarget
-                          ? 'var(--mantine-color-blue-light)'
-                          : draggingColumn === column
-                            ? 'var(--mantine-color-gray-light)'
-                            : undefined,
-                        opacity: draggingColumn === column ? 0.3 : 1,
-                        transition: 'background-color 100ms ease, opacity 100ms ease',
-                      }}
-                    >
-                      <Group justify="space-between" wrap="nowrap">
-                        <Checkbox
-                          checked={isVisible}
-                          label={columnLabels[column]}
-                          onChange={() => toggleColumnVisibility(column)}
-                          disabled={disableToggleOff}
-                        />
+          <Menu position="bottom-end" shadow="sm" withArrow>
+            <Menu.Target>
+              <Button
+                size="xs"
+                variant="subtle"
+                leftSection={<Columns3 size={14} />}
+                aria-label={t('Choose visible columns')}
+                style={isMobile ? { flex: '1 1 100%' } : undefined}
+              >
+                {t('Columns')}
+              </Button>
+            </Menu.Target>
+            <Menu.Dropdown ref={menuDropdownRef}>
+              {availableColumns.map((column) => {
+                const isVisible = visibleColumns.has(column);
+                const disableToggleOff = isVisible && visibleColumnCount === 1;
+                const isDropTarget = dropTargetColumn === column && draggingColumn !== column;
+                return (
+                  <Menu.Item
+                    key={column}
+                    closeMenuOnClick={false}
+                    data-column={column}
+                    style={{
+                      backgroundColor: isDropTarget
+                        ? 'var(--mantine-color-blue-light)'
+                        : draggingColumn === column
+                          ? 'var(--mantine-color-gray-light)'
+                          : undefined,
+                      opacity: draggingColumn === column ? 0.3 : 1,
+                      transition: 'background-color 100ms ease, opacity 100ms ease',
+                    }}
+                  >
+                    <Group justify="space-between" wrap="nowrap">
+                      <Checkbox
+                        checked={isVisible}
+                        label={columnLabels[column]}
+                        onChange={() => toggleColumnVisibility(column)}
+                        disabled={disableToggleOff}
+                      />
 
-                        <Group gap={2} wrap="nowrap">
-                          <ActionIcon
-                            size="sm"
-                            variant="subtle"
-                            color="gray"
-                            aria-label={t('Drag {{columnLabel}}', {
-                              columnLabel: columnLabels[column],
-                            })}
-                            onPointerDown={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              dragPointerId.current = e.pointerId;
-                              e.currentTarget.setPointerCapture(e.pointerId);
-                              setDraggingColumn(column);
-                              setDropTargetColumn(null);
-                              const menuItem = e.currentTarget.closest(
-                                '[data-column]',
-                              ) as HTMLElement;
-                              if (menuItem) {
-                                dragGhost.show(
-                                  menuItem,
-                                  e.clientX,
-                                  e.clientY,
-                                  columnLabels[column],
-                                );
-                              }
-                            }}
-                            onPointerMove={(e) => {
-                              if (dragPointerId.current !== e.pointerId) return;
-                              dragGhost.move(e.clientX, e.clientY);
-                              if (!menuDropdownRef.current) return;
+                      <Group gap={2} wrap="nowrap">
+                        <ActionIcon
+                          size="sm"
+                          variant="subtle"
+                          color="gray"
+                          aria-label={t('Drag {{columnLabel}}', {
+                            columnLabel: columnLabels[column],
+                          })}
+                          onPointerDown={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            dragPointerId.current = e.pointerId;
+                            e.currentTarget.setPointerCapture(e.pointerId);
+                            setDraggingColumn(column);
+                            setDropTargetColumn(null);
+                            const menuItem = e.currentTarget.closest(
+                              '[data-column]',
+                            ) as HTMLElement;
+                            if (menuItem) {
+                              dragGhost.show(menuItem, e.clientX, e.clientY, columnLabels[column]);
+                            }
+                          }}
+                          onPointerMove={(e) => {
+                            if (dragPointerId.current !== e.pointerId) return;
+                            dragGhost.move(e.clientX, e.clientY);
+                            if (!menuDropdownRef.current) return;
 
-                              const items =
-                                menuDropdownRef.current.querySelectorAll('[data-column]');
-                              for (const item of items) {
-                                const rect = item.getBoundingClientRect();
-                                if (e.clientY >= rect.top && e.clientY <= rect.bottom) {
-                                  const col = item.getAttribute('data-column') as TableColumn;
-                                  if (col === column) {
-                                    setDropTargetColumn(null);
-                                    return;
-                                  }
-
-                                  if (col) {
-                                    setDropTargetColumn(col);
-                                  }
+                            const items = menuDropdownRef.current.querySelectorAll('[data-column]');
+                            for (const item of items) {
+                              const rect = item.getBoundingClientRect();
+                              if (e.clientY >= rect.top && e.clientY <= rect.bottom) {
+                                const col = item.getAttribute('data-column') as TableColumn;
+                                if (col === column) {
+                                  setDropTargetColumn(null);
                                   return;
                                 }
+
+                                if (col) {
+                                  setDropTargetColumn(col);
+                                }
+                                return;
                               }
-                              setDropTargetColumn(null);
-                            }}
-                            onPointerUp={(e) => {
-                              finishColumnDrag(e.pointerId, column, true);
-                            }}
-                            onPointerCancel={(e) => finishColumnDrag(e.pointerId, column, false)}
-                            onLostPointerCapture={(e) =>
-                              finishColumnDrag(e.pointerId, column, false)
                             }
-                            style={{
-                              cursor: draggingColumn === column ? 'grabbing' : 'grab',
-                              touchAction: 'none',
-                            }}
-                          >
-                            <GripVertical size={12} />
-                          </ActionIcon>
-                        </Group>
+                            setDropTargetColumn(null);
+                          }}
+                          onPointerUp={(e) => {
+                            finishColumnDrag(e.pointerId, column, true);
+                          }}
+                          onPointerCancel={(e) => finishColumnDrag(e.pointerId, column, false)}
+                          onLostPointerCapture={(e) => finishColumnDrag(e.pointerId, column, false)}
+                          style={{
+                            cursor: draggingColumn === column ? 'grabbing' : 'grab',
+                            touchAction: 'none',
+                          }}
+                        >
+                          <GripVertical size={12} />
+                        </ActionIcon>
                       </Group>
-                    </Menu.Item>
-                  );
-                })}
-              </Menu.Dropdown>
-            </Menu>
-          )}
+                    </Group>
+                  </Menu.Item>
+                );
+              })}
+            </Menu.Dropdown>
+          </Menu>
 
           <Select
             size="xs"

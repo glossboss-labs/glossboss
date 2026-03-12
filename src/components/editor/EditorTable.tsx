@@ -68,7 +68,6 @@ import type { POEntry } from '@/lib/po';
 import { parseReferences, buildTracUrl, type ParsedReference } from '@/lib/wp-source';
 import { getTranslationStatus, type TranslationStatus } from '@/types';
 import {
-  getReviewEntryState,
   isReviewLocked,
   type ReviewComment,
   type ReviewEntryState,
@@ -380,26 +379,6 @@ const REVIEW_STATUS_LABELS: Record<ReviewStatus, string> = {
   approved: msgid('Approved'),
   'needs-changes': msgid('Needs changes'),
 };
-
-function hasReviewTranslationChanges(reviewEntry: ReviewEntryState): boolean {
-  return reviewEntry.history.some((event) => event.type === 'translation-updated');
-}
-
-function getReviewQueueSourceText(entry: POEntry): string {
-  return entry.msgidPlural ? `${entry.msgid} / ${entry.msgidPlural}` : entry.msgid;
-}
-
-function getReviewQueueTranslationText(
-  entry: POEntry,
-  t: (key: string, vars?: Record<string, unknown>) => string,
-): string {
-  if (entry.msgidPlural) {
-    const forms = (entry.msgstrPlural ?? []).filter((form) => form.trim());
-    return forms.length > 0 ? forms.join(' / ') : t('No translation');
-  }
-
-  return entry.msgstr.trim() || t('No translation');
-}
 
 /** Flag badge colors */
 const FLAG_COLORS: Record<string, string> = {
@@ -1757,7 +1736,6 @@ function EntryDetailsPanel({
   },
   translationMemoryScope = null,
   onActivateReference,
-  mode = 'edit',
 }: {
   entry: POEntry;
   status: TranslationStatus;
@@ -1769,7 +1747,6 @@ function EntryDetailsPanel({
   reviewEntry?: ReviewEntryState;
   translationMemoryScope?: TranslationMemoryScope | null;
   onActivateReference: (ref: ParsedReference) => void;
-  mode?: WorkspaceMode;
 }) {
   const { t } = useTranslation();
   const pluginSlug = useSourceStore((s) => getEffectiveSlug(s));
@@ -1847,18 +1824,14 @@ function EntryDetailsPanel({
         </Stack>
       </Group>
 
-      {mode === 'edit' && (
-        <>
-          <Divider />
+      <Divider />
 
-          <Stack gap={6}>
-            <Text size="xs" fw={600} c="dimmed">
-              {t('Translation memory')}
-            </Text>
-            <TranslationMemoryPanel entry={entry} scope={translationMemoryScope} />
-          </Stack>
-        </>
-      )}
+      <Stack gap={6}>
+        <Text size="xs" fw={600} c="dimmed">
+          {t('Translation memory')}
+        </Text>
+        <TranslationMemoryPanel entry={entry} scope={translationMemoryScope} />
+      </Stack>
 
       <Divider />
 
@@ -2221,7 +2194,6 @@ const EntryRow = memo(function EntryRow({
 
 const MobileEntryCard = memo(function MobileEntryCard({
   entry,
-  mode,
   isChecked,
   detailsExpanded,
   onToggleDetails,
@@ -2231,7 +2203,6 @@ const MobileEntryCard = memo(function MobileEntryCard({
   translationMemoryScope,
 }: {
   entry: POEntry;
-  mode: WorkspaceMode;
   isChecked: boolean;
   detailsExpanded: boolean;
   onToggleDetails: () => void;
@@ -2383,129 +2354,9 @@ const MobileEntryCard = memo(function MobileEntryCard({
           reviewEntry={reviewEntry}
           translationMemoryScope={translationMemoryScope}
           onActivateReference={handleActivateReference}
-          mode={mode}
         />
       </Collapse>
     </Paper>
-  );
-});
-
-const ReviewQueueRow = memo(function ReviewQueueRow({
-  entry,
-  isChecked,
-  onToggleSelection,
-  onSelect,
-}: {
-  entry: POEntry;
-  isChecked: boolean;
-  onToggleSelection: (checked: boolean) => void;
-  onSelect?: (sourceText: string) => void;
-}) {
-  const { t } = useTranslation();
-  const selectedEntryId = useEditorStore((state) => state.selectedEntryId);
-  const selectEntry = useEditorStore((state) => state.selectEntry);
-  const getQaReport = useEditorStore((state) => state.getQaReport);
-  const reviewEntryState = useEditorStore((state) => state.reviewEntries.get(entry.id));
-
-  const isSelected = selectedEntryId === entry.id;
-  const qaReport = getQaReport(entry.id);
-  const reviewEntry = reviewEntryState ?? getReviewEntryState(new Map(), entry.id);
-  const reviewStatus = reviewEntry.status;
-  const unresolvedCommentCount = reviewEntry.comments.filter(
-    (comment) => !comment.resolvedAt,
-  ).length;
-  const hasChangedTranslation = hasReviewTranslationChanges(reviewEntry);
-  const translationStatus = getTranslationStatus(entry.msgstr, entry.flags, entry.msgstrPlural);
-
-  const handleClick = useCallback(() => {
-    selectEntry(entry.id);
-    onSelect?.(entry.msgid);
-  }, [entry.id, entry.msgid, onSelect, selectEntry]);
-
-  return (
-    <Table.Tr
-      data-entry-id={entry.id}
-      onClick={handleClick}
-      style={{
-        cursor: 'pointer',
-        backgroundColor: isSelected ? 'var(--gb-highlight-row)' : undefined,
-      }}
-    >
-      <Table.Td style={{ width: 48, padding: '10px 8px', verticalAlign: 'top' }}>
-        <Checkbox
-          checked={isChecked}
-          onChange={(event) => onToggleSelection(event.currentTarget.checked)}
-          onClick={(event) => event.stopPropagation()}
-          aria-label={`Select entry ${entry.msgid}`}
-        />
-      </Table.Td>
-      <Table.Td style={{ padding: '10px 12px', verticalAlign: 'top' }}>
-        <Stack gap={4}>
-          <Text size="sm" fw={500} lineClamp={3}>
-            {getReviewQueueSourceText(entry)}
-          </Text>
-          {entry.msgctxt && (
-            <Text size="xs" c="dimmed" lineClamp={2}>
-              {entry.msgctxt}
-            </Text>
-          )}
-        </Stack>
-      </Table.Td>
-      <Table.Td style={{ padding: '10px 12px', verticalAlign: 'top' }}>
-        <Text
-          size="sm"
-          c={translationStatus === 'untranslated' ? 'dimmed' : undefined}
-          lineClamp={3}
-        >
-          {getReviewQueueTranslationText(entry, t)}
-        </Text>
-      </Table.Td>
-      <Table.Td style={{ padding: '10px 12px', verticalAlign: 'top', whiteSpace: 'nowrap' }}>
-        <ReviewStatusBadge status={reviewStatus} compact />
-      </Table.Td>
-      <Table.Td style={{ padding: '10px 12px', verticalAlign: 'top', whiteSpace: 'nowrap' }}>
-        {unresolvedCommentCount > 0 ? (
-          <Badge size="xs" variant="light" color="red">
-            {t('{{count}} open', { count: unresolvedCommentCount })}
-          </Badge>
-        ) : (
-          <Text size="xs" c="dimmed">
-            —
-          </Text>
-        )}
-      </Table.Td>
-      <Table.Td style={{ padding: '10px 12px', verticalAlign: 'top' }}>
-        <Group gap={6} wrap="wrap">
-          {hasChangedTranslation && (
-            <Badge size="xs" variant="light" color="violet">
-              {t('Changed')}
-            </Badge>
-          )}
-          {translationStatus === 'fuzzy' && (
-            <Badge size="xs" variant="light" color="yellow">
-              {t('Fuzzy')}
-            </Badge>
-          )}
-          {qaReport && qaReport.errorCount > 0 && (
-            <Badge size="xs" variant="light" color="red">
-              {t('{{count}} QA', { count: qaReport.errorCount })}
-            </Badge>
-          )}
-          {qaReport && qaReport.warningCount > 0 && (
-            <Badge size="xs" variant="light" color="orange">
-              {t('{{count}} warning(s)', { count: qaReport.warningCount })}
-            </Badge>
-          )}
-          {!hasChangedTranslation &&
-            translationStatus !== 'fuzzy' &&
-            (!qaReport || (qaReport.errorCount === 0 && qaReport.warningCount === 0)) && (
-              <Text size="xs" c="dimmed">
-                —
-              </Text>
-            )}
-        </Group>
-      </Table.Td>
-    </Table.Tr>
   );
 });
 
@@ -2622,10 +2473,10 @@ export function EditorTable({
   );
   const visibleColumnKeys = useMemo(() => {
     const dataColumns = columnOrder.filter(
-      (column) => visibleColumns.has(column) && (mode === 'review' || column !== 'approve'),
+      (column) => visibleColumns.has(column) && column !== 'approve',
     );
     return ['select', ...dataColumns] as TableColumnKey[];
-  }, [columnOrder, mode, visibleColumns]);
+  }, [columnOrder, visibleColumns]);
   const visibleDataColumns = useMemo(
     () => visibleColumnKeys.filter((column): column is DataColumnKey => column !== 'select'),
     [visibleColumnKeys],
@@ -3105,7 +2956,6 @@ export function EditorTable({
     : false;
   const selectedQaReport = selectedEntry ? (getQaReport(selectedEntry.id) ?? null) : null;
   const selectedReviewEntry = selectedEntry ? getReviewEntry(selectedEntry.id) : null;
-  const inspectorTitle = mode === 'review' ? t('Review Inspector') : t('String Inspector');
   const selectedInspectorLabel = (() => {
     if (!selectedEntry) return t('No selection');
 
@@ -3161,7 +3011,6 @@ export function EditorTable({
             <MobileEntryCard
               key={entry.id}
               entry={entry}
-              mode={mode}
               isChecked={selectedEntryIds.has(entry.id)}
               detailsExpanded={expandedMobileEntryIds.has(entry.id)}
               onToggleDetails={() => toggleMobileDetails(entry.id)}
@@ -3189,148 +3038,102 @@ export function EditorTable({
           </Group>
           <Box style={{ display: 'flex', alignItems: 'flex-start' }}>
             <Box style={{ flex: 1, minWidth: 0 }}>
-              {mode === 'review' ? (
-                <Table
-                  striped
-                  highlightOnHover
-                  verticalSpacing="sm"
-                  style={{ tableLayout: 'fixed' }}
-                  data-testid="review-queue-table"
+              <Table
+                ref={tableRef}
+                striped
+                highlightOnHover
+                verticalSpacing="md"
+                style={{ tableLayout: 'fixed' }}
+                data-testid="editor-table-desktop"
+              >
+                <Table.Thead
+                  ref={theadRef}
+                  onPointerMove={handleHeaderPointerMove}
+                  onPointerUp={(e) => finishHeaderDrag(e.pointerId, true)}
+                  onPointerCancel={(e) => finishHeaderDrag(e.pointerId, false)}
+                  onLostPointerCapture={(e) => finishHeaderDrag(e.pointerId, false)}
+                  style={{
+                    position: 'sticky',
+                    top: 0,
+                    zIndex: 10,
+                    background: 'var(--gb-surface-2)',
+                    touchAction: 'none',
+                  }}
                 >
-                  <Table.Thead
-                    style={{
-                      position: 'sticky',
-                      top: 0,
-                      zIndex: 10,
-                      background: 'var(--gb-surface-2)',
-                    }}
-                  >
-                    <Table.Tr>
-                      <Table.Th style={{ width: 48 }}>
-                        <Checkbox
-                          checked={allFilteredSelected}
-                          indeterminate={someFilteredSelected}
-                          onChange={(event) => handleSelectAllFiltered(event.currentTarget.checked)}
-                          aria-label={t('Select all filtered entries')}
-                        />
-                      </Table.Th>
-                      <Table.Th>{t('Source')}</Table.Th>
-                      <Table.Th>{t('Translation')}</Table.Th>
-                      <Table.Th>{t('Review status')}</Table.Th>
-                      <Table.Th>{t('Comments')}</Table.Th>
-                      <Table.Th>{t('Signals')}</Table.Th>
-                    </Table.Tr>
-                  </Table.Thead>
-                  <Table.Tbody>
-                    {paginatedEntries.map((entry) => (
-                      <ReviewQueueRow
-                        key={entry.id}
-                        entry={entry}
-                        isChecked={selectedEntryIds.has(entry.id)}
-                        onToggleSelection={(checked) => setEntrySelection(entry.id, checked)}
-                        onSelect={onEntrySelect}
-                      />
-                    ))}
-                  </Table.Tbody>
-                </Table>
-              ) : (
-                <Table
-                  ref={tableRef}
-                  striped
-                  highlightOnHover
-                  verticalSpacing="md"
-                  style={{ tableLayout: 'fixed' }}
-                  data-testid="editor-table-desktop"
-                >
-                  <Table.Thead
-                    ref={theadRef}
-                    onPointerMove={handleHeaderPointerMove}
-                    onPointerUp={(e) => finishHeaderDrag(e.pointerId, true)}
-                    onPointerCancel={(e) => finishHeaderDrag(e.pointerId, false)}
-                    onLostPointerCapture={(e) => finishHeaderDrag(e.pointerId, false)}
-                    style={{
-                      position: 'sticky',
-                      top: 0,
-                      zIndex: 10,
-                      background: 'var(--gb-surface-2)',
-                      touchAction: 'none',
-                    }}
-                  >
-                    <Table.Tr>
-                      {visibleColumnKeys.map((columnKey, i) => {
-                        const nextColumn = visibleColumnKeys[i + 1];
-                        const isDataColumn = columnKey !== 'select';
-                        const label =
-                          columnKey === 'select' ? (
-                            <Checkbox
-                              key="select-all-checkbox-input"
-                              checked={allFilteredSelected}
-                              indeterminate={someFilteredSelected}
-                              onChange={(e) => handleSelectAllFiltered(e.currentTarget.checked)}
-                              aria-label={t('Select all filtered entries')}
-                              data-testid="select-all-checkbox"
-                            />
-                          ) : (
-                            t(DATA_COLUMN_LABELS[columnKey])
-                          );
-
-                        const dropIndicator =
-                          isDataColumn && headerDropTarget?.column === columnKey
-                            ? headerDropTarget.position
-                            : undefined;
-
-                        return (
-                          <ResizableTh
-                            key={columnKey}
-                            widthPercent={columnPercentByKey[columnKey]}
-                            isLast={!nextColumn}
-                            onResize={
-                              nextColumn
-                                ? (delta) => handleColumnResize(columnKey, nextColumn, delta)
-                                : undefined
-                            }
-                            align={columnKey === 'select' ? 'center' : 'left'}
-                            padding={columnKey === 'select' ? '8px 4px' : undefined}
-                            dataColumnKey={isDataColumn ? columnKey : undefined}
-                            onCellPointerDown={
-                              isDataColumn ? handleHeaderPointerDown(columnKey) : undefined
-                            }
-                            isDragging={draggingHeaderColumn === columnKey}
-                            dropIndicatorPosition={dropIndicator}
-                          >
-                            {typeof label === 'string' ? (
-                              label
-                            ) : (
-                              <Box
-                                style={{
-                                  display: 'flex',
-                                  justifyContent: 'center',
-                                  alignItems: 'center',
-                                }}
-                              >
-                                {label}
-                              </Box>
-                            )}
-                          </ResizableTh>
+                  <Table.Tr>
+                    {visibleColumnKeys.map((columnKey, i) => {
+                      const nextColumn = visibleColumnKeys[i + 1];
+                      const isDataColumn = columnKey !== 'select';
+                      const label =
+                        columnKey === 'select' ? (
+                          <Checkbox
+                            key="select-all-checkbox-input"
+                            checked={allFilteredSelected}
+                            indeterminate={someFilteredSelected}
+                            onChange={(e) => handleSelectAllFiltered(e.currentTarget.checked)}
+                            aria-label={t('Select all filtered entries')}
+                            data-testid="select-all-checkbox"
+                          />
+                        ) : (
+                          t(DATA_COLUMN_LABELS[columnKey])
                         );
-                      })}
-                    </Table.Tr>
-                  </Table.Thead>
-                  <Table.Tbody>
-                    {paginatedEntries.map((entry) => (
-                      <EntryRow
-                        key={entry.id}
-                        entry={entry}
-                        isChecked={selectedEntryIds.has(entry.id)}
-                        visibleDataColumns={visibleDataColumns}
-                        onToggleSelection={(checked) => setEntrySelection(entry.id, checked)}
-                        onSelect={onEntrySelect}
-                        onKeyDown={handleKeyDown}
-                      />
-                    ))}
-                  </Table.Tbody>
-                </Table>
-              )}
+
+                      const dropIndicator =
+                        isDataColumn && headerDropTarget?.column === columnKey
+                          ? headerDropTarget.position
+                          : undefined;
+
+                      return (
+                        <ResizableTh
+                          key={columnKey}
+                          widthPercent={columnPercentByKey[columnKey]}
+                          isLast={!nextColumn}
+                          onResize={
+                            nextColumn
+                              ? (delta) => handleColumnResize(columnKey, nextColumn, delta)
+                              : undefined
+                          }
+                          align={columnKey === 'select' ? 'center' : 'left'}
+                          padding={columnKey === 'select' ? '8px 4px' : undefined}
+                          dataColumnKey={isDataColumn ? columnKey : undefined}
+                          onCellPointerDown={
+                            isDataColumn ? handleHeaderPointerDown(columnKey) : undefined
+                          }
+                          isDragging={draggingHeaderColumn === columnKey}
+                          dropIndicatorPosition={dropIndicator}
+                        >
+                          {typeof label === 'string' ? (
+                            label
+                          ) : (
+                            <Box
+                              style={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                              }}
+                            >
+                              {label}
+                            </Box>
+                          )}
+                        </ResizableTh>
+                      );
+                    })}
+                  </Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
+                  {paginatedEntries.map((entry) => (
+                    <EntryRow
+                      key={entry.id}
+                      entry={entry}
+                      isChecked={selectedEntryIds.has(entry.id)}
+                      visibleDataColumns={visibleDataColumns}
+                      onToggleSelection={(checked) => setEntrySelection(entry.id, checked)}
+                      onSelect={onEntrySelect}
+                      onKeyDown={handleKeyDown}
+                    />
+                  ))}
+                </Table.Tbody>
+              </Table>
             </Box>
 
             <Box
@@ -3394,7 +3197,7 @@ export function EditorTable({
                 <Stack gap="sm" pt={2} style={{ height: '100%', minHeight: 0 }}>
                   <Group justify="space-between" align="center">
                     <Text fw={600} size="sm">
-                      {inspectorTitle}
+                      {t('String Inspector')}
                     </Text>
                     <Tooltip
                       label={selectedInspectorLabel}
@@ -3442,19 +3245,6 @@ export function EditorTable({
                       <ScrollArea h="100%" type="auto" offsetScrollbars="y">
                         {selectedEntry && selectedStatus ? (
                           <Stack gap="sm">
-                            {mode === 'review' && (
-                              <>
-                                <Stack gap={6}>
-                                  <Text size="xs" fw={600} c="dimmed">
-                                    {t('Source')}
-                                  </Text>
-                                  <SourceCell entry={selectedEntry} />
-                                </Stack>
-
-                                <Divider />
-                              </>
-                            )}
-
                             <Stack gap={6}>
                               <Text size="xs" fw={600} c="dimmed">
                                 {t('Translation')}
@@ -3486,14 +3276,11 @@ export function EditorTable({
                               }
                               translationMemoryScope={translationMemoryScope}
                               onActivateReference={handleInspectorReference}
-                              mode={mode}
                             />
                           </Stack>
                         ) : (
                           <Text size="sm" c="dimmed">
-                            {mode === 'review'
-                              ? t('Select a string to inspect review context and comments.')
-                              : t('Select a row to inspect context and metadata.')}
+                            {t('Select a row to inspect context and metadata.')}
                           </Text>
                         )}
                       </ScrollArea>

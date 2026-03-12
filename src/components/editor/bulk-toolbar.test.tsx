@@ -317,16 +317,19 @@ describe('editor details and mobile layout', () => {
     expect(screen.queryByTestId('editor-table-desktop')).not.toBeInTheDocument();
   });
 
-  it('renders a dedicated review queue when review mode is active', () => {
+  it('keeps the shared table layout in review mode and shows review bulk actions', () => {
     useEditorStore
       .getState()
       .loadFile(makeFile([makeEntry('a', { msgstr: 'Reviewed translation' }), makeEntry('b')]));
+    useEditorStore.getState().setSelectedEntries(['a']);
 
     renderWithMantine(<EditorTable mode="review" />);
 
-    expect(screen.getByTestId('review-queue-table')).toBeInTheDocument();
-    expect(screen.queryByTestId('editor-table-desktop')).not.toBeInTheDocument();
-    expect(screen.getByText('Review Inspector')).toBeInTheDocument();
+    expect(screen.getByTestId('editor-table-desktop')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^approve selected$/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^unapprove selected$/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^request changes selected$/i })).toBeInTheDocument();
+    expect(screen.getByText('String Inspector')).toBeInTheDocument();
   });
 
   it('uses the native textarea text color for translation editing on mobile', async () => {

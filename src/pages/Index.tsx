@@ -2103,18 +2103,14 @@ export default function Index() {
                       />
                     </Group>
 
+                    <Divider />
+                    <FilterToolbar mode={workspaceMode} />
+                    <Divider />
+
                     {workspaceMode === 'review' ? (
-                      <>
-                        <Divider />
-                        <ReviewSummary />
-                        <Divider />
-                        <FilterToolbar mode="review" />
-                      </>
+                      <ReviewSummary />
                     ) : (
                       <>
-                        <Divider />
-                        <FilterToolbar mode="edit" />
-                        <Divider />
                         <TranslateToolbar
                           onLanguageChange={handleLanguageChange}
                           deeplGlossaryId={glossaryEnforcementEnabled ? deeplGlossaryId : null}
