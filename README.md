@@ -19,8 +19,9 @@
 - **Translation memory** — reuse approved translations across files with exact and fuzzy matching, import / export as JSON or TMX
 - **QA checks** — catch broken placeholders, mismatched HTML tags, ICU variable drift, glossary conflicts, and more before export
 - **WordPress tooling** — load WordPress.org glossary data, sync it to DeepL glossaries, and inspect plugin source references through proxied SVN lookups
+- **Review workflow** — assign per-entry statuses (draft, in-review, approved, needs-changes), add threaded comments with resolution tracking, lock approved translations from further edits, and view change history
 - **Text-to-speech** — play strings with browser TTS or ElevenLabs BYO cloud voices
-- **Auto-save** local drafts in the browser
+- **Auto-save** local drafts in the browser, including review state
 
 ## Getting started
 

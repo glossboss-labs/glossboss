@@ -8,6 +8,7 @@ import { useEditorStore } from '@/stores/editor-store';
 import { useSourceStore } from '@/stores/source-store';
 import * as deepl from '@/lib/deepl';
 import { EditorTable } from './EditorTable';
+import { ReviewSummary } from './ReviewSummary';
 import { TranslateToolbar } from './TranslateToolbar';
 import { shouldAutoTranslateEntry } from './translate-utils';
 
@@ -127,8 +128,8 @@ describe('bulk action toolbar', () => {
     expect(
       screen.queryByRole('button', { name: /auto translate selected/i }),
     ).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /approve selected/i })).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /unapprove selected/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /clear fuzzy selected/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /mark fuzzy selected/i })).not.toBeInTheDocument();
   });
 
   it('hides glossary check when glossary is not loaded', () => {
@@ -142,14 +143,14 @@ describe('bulk action toolbar', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('shows unapprove for selected non-fuzzy rows and hides approve', () => {
+  it('shows mark fuzzy for selected non-fuzzy rows and hides clear fuzzy', () => {
     useEditorStore.getState().loadFile(makeFile([makeEntry('a', { msgstr: 'Done' })]));
     useEditorStore.getState().setSelectedEntries(['a']);
 
     renderWithMantine(<TranslateToolbar glossary={null} />);
 
-    expect(screen.getByRole('button', { name: /^unapprove selected$/i })).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /^approve selected$/i })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /mark fuzzy selected/i })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /clear fuzzy selected/i })).not.toBeInTheDocument();
   });
 
   it('uses EN source language for bulk translation when glossary is enabled and source is auto', async () => {
@@ -316,6 +317,21 @@ describe('editor details and mobile layout', () => {
     expect(screen.queryByTestId('editor-table-desktop')).not.toBeInTheDocument();
   });
 
+  it('keeps the shared table layout in review mode and shows review bulk actions', () => {
+    useEditorStore
+      .getState()
+      .loadFile(makeFile([makeEntry('a', { msgstr: 'Reviewed translation' }), makeEntry('b')]));
+    useEditorStore.getState().setSelectedEntries(['a']);
+
+    renderWithMantine(<EditorTable mode="review" />);
+
+    expect(screen.getByTestId('editor-table-desktop')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^approve selected$/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^unapprove selected$/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^request changes selected$/i })).toBeInTheDocument();
+    expect(screen.getByText('String Inspector')).toBeInTheDocument();
+  });
+
   it('uses the native textarea text color for translation editing on mobile', async () => {
     const user = userEvent.setup();
     setMatchMedia(true);
@@ -353,5 +369,40 @@ describe('editor details and mobile layout', () => {
     expect((textarea as HTMLTextAreaElement).style.color).toBe('transparent');
     expect((textarea as HTMLTextAreaElement).style.backgroundColor).toBe('transparent');
     expect(screen.getByTestId('highlighted-backdrop-a-singular')).toBeInTheDocument();
+  });
+
+  it('reflects review status updates in the review summary', () => {
+    useEditorStore.getState().loadFile(makeFile([makeEntry('a', { msgstr: 'Done' })]));
+
+    renderWithMantine(
+      <>
+        <ReviewSummary />
+        <EditorTable />
+      </>,
+    );
+
+    act(() => {
+      useEditorStore.getState().setReviewStatus('a', 'approved');
+    });
+
+    expect(screen.getByText('Approved 1')).toBeInTheDocument();
+    expect(screen.getByText('Draft 0')).toBeInTheDocument();
+  });
+
+  it('does not open inline editing for approved locked strings', async () => {
+    const user = userEvent.setup();
+    useEditorStore
+      .getState()
+      .loadFile(
+        makeFile([makeEntry('a', { msgid: 'Source message', msgstr: 'Locked translation' })]),
+      );
+    useEditorStore.getState().setReviewStatus('a', 'approved');
+    useEditorStore.getState().setLockApprovedEntries(true);
+
+    renderWithMantine(<EditorTable />);
+
+    await user.click(screen.getAllByText('Locked translation')[0]);
+
+    expect(screen.queryByDisplayValue('Locked translation')).not.toBeInTheDocument();
   });
 });

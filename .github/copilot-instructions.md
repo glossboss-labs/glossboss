@@ -1,5 +1,7 @@
 # GlossBoss
 
+This file is for **coding agents only** — it is not user-facing documentation. Do not confuse it with `README.md` or `CONTRIBUTING.md`, which are the user-facing docs.
+
 Only keep non-obvious, repo-specific failure modes here. If an agent can infer something from the repo, CI, or scripts, leave it out.
 
 `.github/copilot-instructions.md` is the source of truth. `AGENTS.md` symlinks here; keep `AGENT.md`, `CLAUDE.md`, `CODEX.md`, `CURSOR.md`, and `GEMINI.md` symlinked to `AGENTS.md`.
