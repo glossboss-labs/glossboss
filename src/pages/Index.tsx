@@ -1086,7 +1086,12 @@ export default function Index() {
     };
 
     loadFile(restoredFile);
-    restoreReviewEntries(new Map(draft.reviewEntries ?? []));
+    try {
+      restoreReviewEntries(new Map(draft.reviewEntries ?? []));
+    } catch {
+      debugLog('[Drafts] Failed to restore reviewEntries, using empty map');
+      restoreReviewEntries(new Map());
+    }
     setIsFromDraft(true);
     setPendingDraft(null);
 

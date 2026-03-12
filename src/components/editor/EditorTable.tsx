@@ -1435,7 +1435,7 @@ function ReviewCommentThread({
           <Group justify="space-between" align="flex-start" wrap="nowrap">
             <Stack gap={2}>
               <Text size="sm" fw={500}>
-                {comment.author}
+                {comment.author || t('Current editor')}
               </Text>
               <Text size="xs" c="dimmed">
                 {formatReviewTimestamp(comment.createdAt)}
@@ -1589,7 +1589,7 @@ function ReviewHistoryPanel({ reviewEntry }: { reviewEntry: ReviewEntryState }) 
               </Text>
             </Group>
             <Text size="xs" c="dimmed">
-              {t('By {{actor}}', { actor: event.actor })}
+              {t('By {{actor}}', { actor: event.actor || t('Current editor') })}
             </Text>
             {(event.type === 'translation-updated' || event.type === 'comment-added') &&
               event.to && (
@@ -1615,7 +1615,8 @@ function ReviewPanel({ entry, reviewEntry }: { entry: POEntry; reviewEntry: Revi
   const unresolvedCount = reviewEntry.comments.filter((comment) => !comment.resolvedAt).length;
   const canApprove = reviewEntry.status !== 'approved';
   const canUnapprove = reviewEntry.status === 'approved';
-  const canRequestChanges = reviewEntry.status !== 'needs-changes';
+  const canRequestChanges =
+    reviewEntry.status !== 'needs-changes' && reviewEntry.status !== 'approved';
 
   const handleApprove = useCallback(() => {
     if (entry.flags.includes('fuzzy')) {
@@ -1685,7 +1686,17 @@ function ReviewPanel({ entry, reviewEntry }: { entry: POEntry; reviewEntry: Revi
 
       {translationStatus !== 'untranslated' && (
         <Group>
-          <Button size="xs" variant="default" onClick={() => toggleFuzzy(entry.id)}>
+          <Button
+            size="xs"
+            variant="default"
+            onClick={() => {
+              if (translationStatus === 'fuzzy') {
+                clearFuzzyBatch([entry.id]);
+              } else {
+                addFuzzyBatch([entry.id]);
+              }
+            }}
+          >
             {translationStatus === 'fuzzy' ? t('Clear fuzzy flag') : t('Mark as fuzzy')}
           </Button>
         </Group>
@@ -1736,6 +1747,7 @@ function EntryDetailsPanel({
   },
   translationMemoryScope = null,
   onActivateReference,
+  mode = 'edit',
 }: {
   entry: POEntry;
   status: TranslationStatus;
@@ -1747,6 +1759,7 @@ function EntryDetailsPanel({
   reviewEntry?: ReviewEntryState;
   translationMemoryScope?: TranslationMemoryScope | null;
   onActivateReference: (ref: ParsedReference) => void;
+  mode?: WorkspaceMode;
 }) {
   const { t } = useTranslation();
   const pluginSlug = useSourceStore((s) => getEffectiveSlug(s));
@@ -1903,14 +1916,18 @@ function EntryDetailsPanel({
 
       <Divider />
 
-      <Stack gap={6}>
-        <Text size="xs" fw={600} c="dimmed">
-          {t('Review')}
-        </Text>
-        <ReviewPanel entry={entry} reviewEntry={reviewEntry} />
-      </Stack>
+      {mode === 'review' && (
+        <>
+          <Stack gap={6}>
+            <Text size="xs" fw={600} c="dimmed">
+              {t('Review')}
+            </Text>
+            <ReviewPanel entry={entry} reviewEntry={reviewEntry} />
+          </Stack>
 
-      <Divider />
+          <Divider />
+        </>
+      )}
 
       <Group align="flex-start" grow>
         <Stack gap={6}>
@@ -2038,6 +2055,7 @@ const EntryRow = memo(function EntryRow({
   onKeyDown?: (e: KeyboardEvent<HTMLTextAreaElement>, fieldId: string) => void;
 }) {
   /* Column widths are handled by table-layout: fixed + <col> widths from thead */
+  const { t } = useTranslation();
   const {
     selectedEntryId,
     selectEntry,
@@ -2111,7 +2129,7 @@ const EntryRow = memo(function EntryRow({
             checked={isChecked}
             onChange={(e) => onToggleSelection(e.currentTarget.checked)}
             onClick={(e) => e.stopPropagation()}
-            aria-label={`Select entry ${entry.msgid}`}
+            aria-label={t('Select entry {{entry}}', { entry: entry.msgid })}
           />
         </Box>
       </Table.Td>
@@ -2201,6 +2219,7 @@ const MobileEntryCard = memo(function MobileEntryCard({
   onKeyDown,
   onSelect,
   translationMemoryScope,
+  mode = 'edit',
 }: {
   entry: POEntry;
   isChecked: boolean;
@@ -2210,6 +2229,7 @@ const MobileEntryCard = memo(function MobileEntryCard({
   onKeyDown?: (e: KeyboardEvent<HTMLTextAreaElement>, fieldId: string) => void;
   onSelect?: (sourceText: string) => void;
   translationMemoryScope?: TranslationMemoryScope | null;
+  mode?: WorkspaceMode;
 }) {
   const { t } = useTranslation();
   const {
@@ -2285,7 +2305,7 @@ const MobileEntryCard = memo(function MobileEntryCard({
             checked={isChecked}
             onChange={(e) => onToggleSelection(e.currentTarget.checked)}
             onClick={(e) => e.stopPropagation()}
-            aria-label={`Select entry ${entry.msgid}`}
+            aria-label={t('Select entry {{entry}}', { entry: entry.msgid })}
             mt={2}
           />
           <StatusBadges
@@ -2298,7 +2318,6 @@ const MobileEntryCard = memo(function MobileEntryCard({
             unresolvedCommentCount={unresolvedCommentCount}
             isReviewEntryLocked={isReviewEntryLocked}
           />
-          <ReviewStatusBadge status={reviewStatus} compact />
         </Group>
 
         <UnstyledButton
@@ -2307,7 +2326,7 @@ const MobileEntryCard = memo(function MobileEntryCard({
             onToggleDetails();
           }}
           style={{ color: 'var(--mantine-color-dimmed)' }}
-          aria-label={`Toggle details for ${entry.msgid}`}
+          aria-label={t('Toggle details for {{entry}}', { entry: entry.msgid })}
         >
           <Group gap={4} wrap="nowrap">
             <Text size="xs" fw={500}>
@@ -2354,6 +2373,7 @@ const MobileEntryCard = memo(function MobileEntryCard({
           reviewEntry={reviewEntry}
           translationMemoryScope={translationMemoryScope}
           onActivateReference={handleActivateReference}
+          mode={mode}
         />
       </Collapse>
     </Paper>
@@ -2686,7 +2706,14 @@ export function EditorTable({
     () => selectedEntries.filter((entry) => getReviewEntry(entry.id).status === 'approved').length,
     [getReviewEntry, selectedEntries],
   );
-  const selectedReviewPendingCount = selectedEntries.length - selectedReviewApprovedCount;
+  const selectedRequestChangesEligibleCount = useMemo(
+    () =>
+      selectedEntries.filter((entry) => {
+        const status = getReviewEntry(entry.id).status;
+        return status !== 'needs-changes' && status !== 'approved';
+      }).length,
+    [getReviewEntry, selectedEntries],
+  );
 
   const handleApproveSelected = useCallback(() => {
     if (selectedEntries.length === 0) return;
@@ -2715,7 +2742,14 @@ export function EditorTable({
   const handleRequestChangesSelected = useCallback(() => {
     if (selectedEntries.length === 0) return;
 
-    const fuzzyCandidateIds = selectedEntries
+    const eligible = selectedEntries.filter((entry) => {
+      const status = getReviewEntry(entry.id).status;
+      return status !== 'needs-changes' && status !== 'approved';
+    });
+
+    if (eligible.length === 0) return;
+
+    const fuzzyCandidateIds = eligible
       .filter(
         (entry) =>
           getTranslationStatus(entry.msgstr, entry.flags, entry.msgstrPlural) !== 'untranslated',
@@ -2727,10 +2761,10 @@ export function EditorTable({
       addFuzzyBatch(fuzzyCandidateIds);
     }
 
-    selectedEntries.forEach((entry) => {
+    eligible.forEach((entry) => {
       setReviewStatus(entry.id, 'needs-changes');
     });
-  }, [addFuzzyBatch, selectedEntries, setReviewStatus]);
+  }, [addFuzzyBatch, getReviewEntry, selectedEntries, setReviewStatus]);
 
   const handleInspectorResizeStart = useCallback(
     (e: ReactPointerEvent<HTMLDivElement>) => {
@@ -2993,7 +3027,7 @@ export function EditorTable({
                 variant="light"
                 color="orange"
                 onClick={handleRequestChangesSelected}
-                disabled={selectedReviewPendingCount === 0 && selectedReviewApprovedCount === 0}
+                disabled={selectedRequestChangesEligibleCount === 0}
               >
                 {t('Request changes selected')}
               </Button>
@@ -3018,6 +3052,7 @@ export function EditorTable({
               onKeyDown={handleKeyDown}
               onSelect={onEntrySelect}
               translationMemoryScope={translationMemoryScope}
+              mode={mode}
             />
           ))}
         </Stack>
@@ -3276,6 +3311,7 @@ export function EditorTable({
                               }
                               translationMemoryScope={translationMemoryScope}
                               onActivateReference={handleInspectorReference}
+                              mode={mode}
                             />
                           </Stack>
                         ) : (

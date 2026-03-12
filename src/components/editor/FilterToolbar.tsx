@@ -170,13 +170,19 @@ export function FilterToolbar({ mode = 'edit' }: { mode?: 'edit' | 'review' }) {
       dragPointerId.current = null;
 
       if (shouldCommit && dropTargetColumn && dropTargetColumn !== column) {
-        const fromIndex = columnOrder.indexOf(column);
-        const rawTargetIndex = columnOrder.indexOf(dropTargetColumn);
+        // Compute visible column list (excluding hidden 'approve') to get the
+        // visual drag direction, then map back to the full columnOrder index.
+        const visible = columnOrder.filter((c) => c !== 'approve');
+        const visibleFrom = visible.indexOf(column);
+        const visibleTarget = visible.indexOf(dropTargetColumn);
 
-        if (fromIndex !== -1 && rawTargetIndex !== -1) {
-          const adjustedTargetIndex =
-            rawTargetIndex > fromIndex ? rawTargetIndex - 1 : rawTargetIndex;
-          moveColumnToIndex(column, adjustedTargetIndex);
+        if (visibleFrom !== -1 && visibleTarget !== -1) {
+          const targetColumnInOrder = columnOrder.indexOf(dropTargetColumn);
+          if (targetColumnInOrder !== -1) {
+            const adjustedTargetIndex =
+              visibleTarget > visibleFrom ? targetColumnInOrder - 1 : targetColumnInOrder;
+            moveColumnToIndex(column, adjustedTargetIndex);
+          }
         }
       }
 

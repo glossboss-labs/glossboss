@@ -12,7 +12,6 @@ import type { GlossaryAnalysisResult } from '@/lib/glossary/types';
 import { deriveProjectName } from '@/lib/translation-memory';
 import type { QAEntryReport } from '@/lib/qa';
 import {
-  DEFAULT_REVIEWER_NAME,
   createDefaultReviewEntryState,
   getChangedReviewEntryCount,
   getReviewEntryState,
@@ -342,7 +341,7 @@ const initialState: EditorState = {
   glossaryAnalysis: new Map(),
   qaReports: new Map(),
   reviewEntries: new Map(),
-  reviewerName: DEFAULT_REVIEWER_NAME,
+  reviewerName: '',
   lockApprovedEntries: false,
   selectedEntryId: null,
   selectedEntryIds: new Set(),
@@ -370,7 +369,7 @@ function createReviewHistoryEvent(
 }
 
 function getReviewActorName(reviewerName: string): string {
-  return reviewerName.trim() || DEFAULT_REVIEWER_NAME;
+  return reviewerName.trim();
 }
 
 function cloneReviewEntry(entry: ReviewEntryState | undefined): ReviewEntryState {
@@ -1042,7 +1041,7 @@ export const useEditorStore = create<EditorState & EditorActions>()(
       },
 
       setReviewerName: (name: string) => {
-        set({ reviewerName: name.trim() || DEFAULT_REVIEWER_NAME });
+        set({ reviewerName: name.trim() });
       },
 
       setLockApprovedEntries: (enabled: boolean) => {
@@ -1069,7 +1068,7 @@ export const useEditorStore = create<EditorState & EditorActions>()(
           );
           commitReviewEntry(reviewEntries, entryId, nextEntry);
 
-          return { reviewEntries };
+          return { reviewEntries, hasUnsavedChanges: true };
         });
       },
 
@@ -1101,7 +1100,7 @@ export const useEditorStore = create<EditorState & EditorActions>()(
           );
           commitReviewEntry(reviewEntries, entryId, nextEntry);
 
-          return { reviewEntries };
+          return { reviewEntries, hasUnsavedChanges: true };
         });
       },
 
@@ -1137,12 +1136,15 @@ export const useEditorStore = create<EditorState & EditorActions>()(
 
           const reviewEntries = new Map(state.reviewEntries);
           commitReviewEntry(reviewEntries, entryId, nextEntry);
-          return { reviewEntries };
+          return { reviewEntries, hasUnsavedChanges: true };
         });
       },
 
       restoreReviewEntries: (entries: Map<string, ReviewEntryState>) => {
-        set({ reviewEntries: new Map(entries) });
+        set((state) => ({
+          reviewEntries: new Map(entries),
+          hasUnsavedChanges: state.hasUnsavedChanges || entries.size > 0,
+        }));
       },
 
       getReviewEntry: (entryId: string) => {
@@ -1498,9 +1500,7 @@ export const useEditorStore = create<EditorState & EditorActions>()(
         state.glossaryAnalysis = new Map();
         state.qaReports = new Map();
         state.reviewerName =
-          typeof state.reviewerName === 'string' && state.reviewerName.trim()
-            ? state.reviewerName
-            : DEFAULT_REVIEWER_NAME;
+          typeof state.reviewerName === 'string' ? state.reviewerName.trim() : '';
         state.lockApprovedEntries = Boolean(state.lockApprovedEntries);
 
         if (Array.isArray(state.reviewEntries) && state.reviewEntries.length > 0) {
