@@ -43,27 +43,6 @@ When adding a new provider, add a module under `src/lib/<provider>/`, add the
 `TranslationProviderId` union member in `types.ts`, handle it in `client.ts`, add an edge function,
 and update the deploy workflow.
 
-## Repo Sync (GitHub / GitLab Integration)
-
-The editor can open locale files from GitHub and GitLab repositories and push changes back.
-
-- **Provider abstraction** lives in `src/lib/repo-sync/`. `types.ts` defines shared data structures
-  (`RepoClient`, `RepoConnection`, `RepoSyncSettings`), `client.ts` is a factory that dispatches to
-  the GitHub or GitLab implementation.
-- **Provider clients** live in `src/lib/github/` and `src/lib/gitlab/`. Each has `client.ts` (REST
-  API calls made directly from the browser — no edge function), `types.ts` (API response shapes),
-  and `settings.ts` (PAT storage with session/localStorage toggle).
-- **State** is managed by `src/stores/repo-sync-store.ts` — a Zustand store persisted to
-  `localStorage`. It tracks the active `RepoConnection`, sync settings (commit prefix, branch
-  template, PR defaults), and operation status. `baseContent` is stripped before persistence.
-- **UI** lives in `src/components/repo-sync/` — `RepoSyncModal.tsx` (tabbed Connect → Browse → Push
-  flow), `RepoBrowser.tsx` (recursive file tree with locale-file highlighting), and
-  `CommitPanel.tsx` (commit message, branch creation, PR/MR creation).
-
-When adding a new repo provider, implement the `RepoClient` interface, add a module under
-`src/lib/<provider>/`, extend the `RepoProviderId` union in `types.ts`, and handle it in the
-`createRepoClient()` factory.
-
 ## Frontend Design Policy
 
 - For any frontend design or UI generation work done by Codex or GPT-family models, load and follow the repo-local Uncodixfy skill at `.codex/skills/uncodixfy/SKILL.md`.

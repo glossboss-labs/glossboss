@@ -46,31 +46,9 @@ Examples:
 - Do not commit secrets or local `.env` files.
 - Add or update tests when behavior changes.
 
-### Translation memory and QA
-
-If you touch translation memory or QA, read the Translation Memory and QA Checks sections in
-`README.md` first. TM logic lives in `src/lib/translation-memory/`, QA logic in `src/lib/qa/`. To
-add a new QA rule, update `types.ts` (rule identifier and label) and `analyzer.ts` (check
-implementation).
-
-### Translation providers
-
-The app supports three translation backends — DeepL, Azure Translator, and Gemini. When adding a new
-provider, add a module under `src/lib/<provider>/` with `client.ts` and `settings.ts`, add the
-`TranslationProviderId` union member in `src/lib/translation/types.ts`, handle it in
-`src/lib/translation/client.ts`, add a Supabase Edge Function under `supabase/functions/`, and
-update `.github/workflows/supabase-functions.yml`.
-
-### Repo sync
-
-Repo sync connects the editor to GitHub and GitLab repositories. The shared interface lives in
-`src/lib/repo-sync/`, with provider clients in `src/lib/github/` and `src/lib/gitlab/`. State is
-managed by `src/stores/repo-sync-store.ts`. UI components are in `src/components/repo-sync/`.
-
-When adding a new repository provider, implement the `RepoClient` interface from
-`src/lib/repo-sync/client.ts`, add a provider module under `src/lib/<provider>/` with `client.ts`,
-`types.ts`, and `settings.ts`, add the `RepoProviderId` union member in
-`src/lib/repo-sync/types.ts`, and handle it in the `createRepoClient()` factory.
+- If you touch translation memory or QA, start with the TM and QA sections in `README.md`.
+- To add a new QA rule, update `types.ts` (rule identifier and label) and `analyzer.ts` (check implementation) in `src/lib/qa/`.
+- To add a new translation provider or repo sync provider, follow the existing pattern in `src/lib/`.
 
 ## Translating the app
 
@@ -90,18 +68,8 @@ used in the React app, and each `msgstr` contains the localized text for that la
 
 1. Edit the relevant `.po` file under `src/lib/app-language/locales/`.
 2. Keep placeholders such as `{count}` or `{format}` intact in the translated `msgstr`.
-3. Run the local checks before opening a pull request:
-
-```bash
-bun run lint
-bun run format:check
-bun run typecheck
-bun run test:coverage
-bun run build
-```
-
-4. In local dev, open Settings → Display and switch the interface language to verify the updated
-   strings in the UI.
+3. Verify in local dev via Settings → Display → Language.
+4. Run the check suite listed above before opening a PR.
 
 ### Renaming an English source string
 
