@@ -19,24 +19,6 @@ export function ReviewSummary() {
           <Badge color={stats.readyToExport ? 'green' : 'gray'} variant="light" size="sm">
             {stats.readyToExport ? t('Ready for export') : t('Review in progress')}
           </Badge>
-          <Badge color="gray" variant="light">
-            {t('Draft {{count}}', { count: stats.reviewDraft })}
-          </Badge>
-          <Badge color="blue" variant="light">
-            {t('In review {{count}}', { count: stats.reviewInReview })}
-          </Badge>
-          <Badge color="green" variant="light">
-            {t('Approved {{count}}', { count: stats.reviewApproved })}
-          </Badge>
-          <Badge color="orange" variant="light">
-            {t('Needs changes {{count}}', { count: stats.reviewNeedsChanges })}
-          </Badge>
-          <Badge color={stats.reviewUnresolved > 0 ? 'red' : 'gray'} variant="light">
-            {t('Unresolved comments {{count}}', { count: stats.reviewUnresolved })}
-          </Badge>
-          <Badge color={stats.reviewChanged > 0 ? 'violet' : 'gray'} variant="light">
-            {t('Changed strings {{count}}', { count: stats.reviewChanged })}
-          </Badge>
         </Group>
 
         <Group align="flex-end" gap="sm" wrap="wrap">

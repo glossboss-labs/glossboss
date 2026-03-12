@@ -123,17 +123,13 @@ msgstr "Approve selected"
 msgid "Approved"
 msgstr "Approved"
 
-#: src/components/editor/ReviewSummary.tsx:53
+#: src/components/editor/ReviewSummary.tsx:35
 msgid "Approved strings become read-only until they are reopened."
 msgstr "Approved strings become read-only until they are reopened."
 
 #: src/components/editor/EditorTable.tsx:1683
 msgid "Approved strings stay read-only until they are unapproved."
 msgstr "Approved strings stay read-only until they are unapproved."
-
-#: src/components/editor/ReviewSummary.tsx:29
-msgid "Approved {{count}}"
-msgstr "Approved {{count}}"
 
 #: src/components/editor/HeaderEditor.tsx:49
 #: src/components/editor/HeaderEditor.tsx:203
@@ -321,10 +317,6 @@ msgstr "Changed review status from {{from}} to {{to}}"
 #: src/components/editor/FilterToolbar.tsx:98
 msgid "Changed strings"
 msgstr "Changed strings"
-
-#: src/components/editor/ReviewSummary.tsx:38
-msgid "Changed strings {{count}}"
-msgstr "Changed strings {{count}}"
 
 #: src/components/repo-sync/CommitPanel.tsx:147
 msgid "Changes committed successfully"
@@ -603,7 +595,7 @@ msgstr "Croatian"
 
 #: src/components/editor/EditorTable.tsx:1438
 #: src/components/editor/EditorTable.tsx:1592
-#: src/components/editor/ReviewSummary.tsx:47
+#: src/components/editor/ReviewSummary.tsx:29
 #: src/lib/review/index.ts:50
 msgid "Current editor"
 msgstr "Current editor"
@@ -719,10 +711,6 @@ msgstr "Download format options"
 #: src/components/editor/EditorTable.tsx:377
 msgid "Draft"
 msgstr "Draft"
-
-#: src/components/editor/ReviewSummary.tsx:23
-msgid "Draft {{count}}"
-msgstr "Draft {{count}}"
 
 #: src/pages/Index.tsx:2160
 msgid ""
@@ -1335,10 +1323,6 @@ msgstr "Imported {{count}} translation memory entries."
 msgid "In review"
 msgstr "In review"
 
-#: src/components/editor/ReviewSummary.tsx:26
-msgid "In review {{count}}"
-msgstr "In review {{count}}"
-
 #: src/components/SettingsModal.tsx:2663
 msgid "Include credentials"
 msgstr "Include credentials"
@@ -1589,7 +1573,7 @@ msgstr "Loading source..."
 msgid "Loading..."
 msgstr "Loading..."
 
-#: src/components/editor/ReviewSummary.tsx:52
+#: src/components/editor/ReviewSummary.tsx:34
 msgid "Lock approved strings"
 msgstr "Lock approved strings"
 
@@ -1731,10 +1715,6 @@ msgstr "Navigation Settings"
 #: src/components/editor/EditorTable.tsx:380
 msgid "Needs changes"
 msgstr "Needs changes"
-
-#: src/components/editor/ReviewSummary.tsx:32
-msgid "Needs changes {{count}}"
-msgstr "Needs changes {{count}}"
 
 #: src/components/editor/GlossaryIndicator.tsx:31
 msgid "Needs review:"
@@ -2375,7 +2355,7 @@ msgstr "Review: in review"
 msgid "Review: needs changes"
 msgstr "Review: needs changes"
 
-#: src/components/editor/ReviewSummary.tsx:44
+#: src/components/editor/ReviewSummary.tsx:26
 msgid "Reviewer name"
 msgstr "Reviewer name"
 
@@ -3062,10 +3042,6 @@ msgstr "Unknown error"
 #: src/components/editor/FilterToolbar.tsx:94
 msgid "Unresolved comments"
 msgstr "Unresolved comments"
-
-#: src/components/editor/ReviewSummary.tsx:35
-msgid "Unresolved comments {{count}}"
-msgstr "Unresolved comments {{count}}"
 
 #: src/components/editor/HeaderEditor.tsx:596
 msgid "Unsaved changes"

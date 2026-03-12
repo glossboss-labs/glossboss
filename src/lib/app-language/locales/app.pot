@@ -123,16 +123,12 @@ msgstr ""
 msgid "Approved"
 msgstr ""
 
-#: src/components/editor/ReviewSummary.tsx:53
+#: src/components/editor/ReviewSummary.tsx:35
 msgid "Approved strings become read-only until they are reopened."
 msgstr ""
 
 #: src/components/editor/EditorTable.tsx:1683
 msgid "Approved strings stay read-only until they are unapproved."
-msgstr ""
-
-#: src/components/editor/ReviewSummary.tsx:29
-msgid "Approved {{count}}"
 msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:49
@@ -316,10 +312,6 @@ msgstr ""
 
 #: src/components/editor/FilterToolbar.tsx:98
 msgid "Changed strings"
-msgstr ""
-
-#: src/components/editor/ReviewSummary.tsx:38
-msgid "Changed strings {{count}}"
 msgstr ""
 
 #: src/components/repo-sync/CommitPanel.tsx:147
@@ -589,7 +581,7 @@ msgstr ""
 
 #: src/components/editor/EditorTable.tsx:1438
 #: src/components/editor/EditorTable.tsx:1592
-#: src/components/editor/ReviewSummary.tsx:47
+#: src/components/editor/ReviewSummary.tsx:29
 #: src/lib/review/index.ts:50
 msgid "Current editor"
 msgstr ""
@@ -701,10 +693,6 @@ msgstr ""
 
 #: src/components/editor/EditorTable.tsx:377
 msgid "Draft"
-msgstr ""
-
-#: src/components/editor/ReviewSummary.tsx:23
-msgid "Draft {{count}}"
 msgstr ""
 
 #: src/pages/Index.tsx:2160
@@ -1291,10 +1279,6 @@ msgstr ""
 msgid "In review"
 msgstr ""
 
-#: src/components/editor/ReviewSummary.tsx:26
-msgid "In review {{count}}"
-msgstr ""
-
 #: src/components/SettingsModal.tsx:2663
 msgid "Include credentials"
 msgstr ""
@@ -1535,7 +1519,7 @@ msgstr ""
 msgid "Loading..."
 msgstr ""
 
-#: src/components/editor/ReviewSummary.tsx:52
+#: src/components/editor/ReviewSummary.tsx:34
 msgid "Lock approved strings"
 msgstr ""
 
@@ -1674,10 +1658,6 @@ msgstr ""
 
 #: src/components/editor/EditorTable.tsx:380
 msgid "Needs changes"
-msgstr ""
-
-#: src/components/editor/ReviewSummary.tsx:32
-msgid "Needs changes {{count}}"
 msgstr ""
 
 #: src/components/editor/GlossaryIndicator.tsx:31
@@ -2316,7 +2296,7 @@ msgstr ""
 msgid "Review: needs changes"
 msgstr ""
 
-#: src/components/editor/ReviewSummary.tsx:44
+#: src/components/editor/ReviewSummary.tsx:26
 msgid "Reviewer name"
 msgstr ""
 
@@ -2992,10 +2972,6 @@ msgstr ""
 
 #: src/components/editor/FilterToolbar.tsx:94
 msgid "Unresolved comments"
-msgstr ""
-
-#: src/components/editor/ReviewSummary.tsx:35
-msgid "Unresolved comments {{count}}"
 msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:596

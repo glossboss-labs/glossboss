@@ -391,8 +391,7 @@ describe('editor details and mobile layout', () => {
       useEditorStore.getState().setReviewStatus('a', 'approved');
     });
 
-    expect(screen.getByText('Approved 1')).toBeInTheDocument();
-    expect(screen.getByText('Draft 0')).toBeInTheDocument();
+    expect(screen.getByText('Ready for export')).toBeInTheDocument();
   });
 
   it('does not open inline editing for approved locked strings', async () => {

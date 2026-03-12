@@ -186,8 +186,8 @@ export function TranslateToolbar({
     setGlossaryAnalysisBatch,
     getFilteredEntries,
     setReviewStatus,
-    getReviewEntry,
   } = useEditorStore();
+  const getReviewEntry = useEditorStore((state) => state.getReviewEntry);
 
   // Infer target language from PO header
   const inferredTarget = useMemo(() => {

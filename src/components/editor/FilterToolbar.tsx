@@ -416,7 +416,7 @@ export function FilterToolbar({ mode = 'edit' }: { mode?: 'edit' | 'review' }) {
 
       {/* Row 2: Filter chips */}
       <Group gap="xs" justify="space-between" align="center" wrap="wrap">
-        <Group gap="xs" wrap="nowrap" style={{ overflow: 'auto', minWidth: 0, flex: 1 }}>
+        <Group gap="xs" wrap="wrap" style={{ minWidth: 0, flex: 1 }}>
           <AnimatePresence mode="popLayout">
             {visibleFilters.map((filter) => {
               const filterState = activeFilters.get(filter.id) ?? null;
