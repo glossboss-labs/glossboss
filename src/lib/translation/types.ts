@@ -1,5 +1,6 @@
 import type { SourceLanguage, TargetLanguage } from '@/lib/deepl/types';
 import type { Glossary, GlossaryEntry } from '@/lib/glossary/types';
+import type { WordPressProjectType } from '@/lib/wp-source';
 
 export type TranslationProviderId = 'deepl' | 'azure' | 'gemini';
 export type TranslationGlossaryMode = 'native' | 'prompt' | 'none';
@@ -18,7 +19,8 @@ export interface ProviderTranslationRequest {
   glossaryEntries?: GlossaryEntry[];
   deeplGlossaryId?: string;
   references?: string[];
-  pluginSlug?: string | null;
+  projectSlug?: string | null;
+  projectType?: WordPressProjectType | null;
 }
 
 export interface ProviderTranslationMetadata {

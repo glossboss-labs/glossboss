@@ -29,6 +29,7 @@ import {
   TRANSLATION_PROVIDER_STORAGE_KEY,
   type TranslationProviderSettings,
 } from '@/lib/translation/settings';
+import { getEffectiveProjectType, getEffectiveSlug, useSourceStore } from '@/stores/source-store';
 
 interface TranslateButtonProps {
   /** Text to translate */
@@ -85,6 +86,8 @@ export function TranslateButton({
     },
   });
   const activeProvider = providerState.provider;
+  const projectSlug = useSourceStore((state) => getEffectiveSlug(state));
+  const projectType = useSourceStore((state) => getEffectiveProjectType(state));
   const providerLabel = getTranslationProviderLabel(activeProvider);
   const apiKeyConfigured = hasProviderCredentials(activeProvider);
   const isDisabled = disabled || !text.trim() || !apiKeyConfigured;
@@ -120,6 +123,8 @@ export function TranslateButton({
           glossary,
           deeplGlossaryId: activeProvider === 'deepl' ? glossaryId : undefined,
           references,
+          projectSlug,
+          projectType,
         });
         const translated = response.translations[0];
         if (!translated?.text) {
@@ -138,6 +143,8 @@ export function TranslateButton({
             glossary,
             deeplGlossaryId: undefined,
             references,
+            projectSlug,
+            projectType,
           });
           const fallbackTranslated = fallbackResponse.translations[0];
           if (!fallbackTranslated?.text) {
@@ -179,6 +186,8 @@ export function TranslateButton({
     isDisabled,
     hasExistingTranslation,
     activeProvider,
+    projectSlug,
+    projectType,
   ]);
 
   const handleConfirm = useCallback(() => {

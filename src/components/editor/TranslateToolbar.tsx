@@ -35,6 +35,7 @@ import {
 } from 'lucide-react';
 import { msgid, useTranslation } from '@/lib/app-language';
 import { useEditorStore } from '@/stores';
+import { getEffectiveProjectType, getEffectiveSlug, useSourceStore } from '@/stores/source-store';
 import {
   DEEPL_GLOSSARY_FALLBACK_EVENT,
   formatDeepLError,
@@ -219,6 +220,8 @@ export function TranslateToolbar({
     },
   });
   const activeProvider = providerState.provider;
+  const projectSlug = useSourceStore((state) => getEffectiveSlug(state));
+  const projectType = useSourceStore((state) => getEffectiveProjectType(state));
   const providerLabel = getTranslationProviderLabel(activeProvider);
 
   // Check if API key is configured
@@ -471,6 +474,8 @@ export function TranslateToolbar({
                 sourceLang: effectiveSourceLang,
                 glossary,
                 references: entry?.references,
+                projectSlug,
+                projectType,
               });
               const translated = translationResponse.translations[0];
               if (!translated?.text) {
@@ -519,6 +524,8 @@ export function TranslateToolbar({
                     sourceLang: effectiveSourceLang,
                     glossary,
                     deeplGlossaryId: activeProvider === 'deepl' ? activeGlossaryId : undefined,
+                    projectSlug,
+                    projectType,
                   },
                 );
               } catch (translationError) {
@@ -535,6 +542,8 @@ export function TranslateToolbar({
                     sourceLang: sourceLang ? (sourceLang as SourceLanguage) : undefined,
                     glossary,
                     deeplGlossaryId: undefined,
+                    projectSlug,
+                    projectType,
                   });
                 } else {
                   throw translationError;
@@ -593,6 +602,8 @@ export function TranslateToolbar({
       glossary,
       t,
       activeProvider,
+      projectSlug,
+      projectType,
     ],
   );
 

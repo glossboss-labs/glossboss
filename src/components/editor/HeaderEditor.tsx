@@ -454,51 +454,71 @@ function PluralFormsSelector({
 /**
  * Plugin slug input with validation
  */
-function PluginSlugInput() {
+function WordPressProjectInput() {
   const { t } = useTranslation();
-  const { pluginSlug, autoDetectedSlug, isSlugValid, setPluginSlug, validateCurrentSlug } =
-    useSourceStore();
+  const {
+    projectType,
+    projectSlug,
+    autoDetectedProjectType,
+    autoDetectedSlug,
+    isProjectValid,
+    setProjectType,
+    setProjectSlug,
+    validateCurrentProject,
+  } = useSourceStore();
   const [isValidating, setIsValidating] = useState(false);
 
-  const effectiveSlug = pluginSlug || autoDetectedSlug;
+  const effectiveType = projectType || autoDetectedProjectType || 'plugin';
+  const effectiveSlug = projectSlug || autoDetectedSlug;
 
   const handleVerify = useCallback(async () => {
     setIsValidating(true);
-    await validateCurrentSlug();
+    await validateCurrentProject();
     setIsValidating(false);
-  }, [validateCurrentSlug]);
+  }, [validateCurrentProject]);
 
   return (
     <Box>
       <Group gap={4} mb={4}>
         <Plug size={14} />
         <Text size="sm" fw={500}>
-          {t('Plugin Slug')}
+          {t('WordPress Project')}
         </Text>
       </Group>
       <Text size="xs" c="dimmed" mb={6}>
-        {t('WordPress.org plugin slug for source code links')}
+        {t('Choose the WordPress project type and slug used for source links.')}
       </Text>
-      <Group gap="xs" align="flex-start">
+      <Group gap="xs" align="flex-start" wrap="nowrap">
+        <Select
+          data={[
+            { value: 'plugin', label: t('Plugin') },
+            { value: 'theme', label: t('Theme') },
+          ]}
+          value={effectiveType}
+          onChange={(value) => setProjectType((value as 'plugin' | 'theme') || null)}
+          aria-label={t('WordPress project type')}
+          w={120}
+          allowDeselect={false}
+        />
         <TextInput
           placeholder={autoDetectedSlug || 'e.g. woocommerce'}
-          value={pluginSlug ?? ''}
-          onChange={(e) => setPluginSlug(e.currentTarget.value || null)}
-          aria-label={t('Plugin Slug')}
+          value={projectSlug ?? ''}
+          onChange={(e) => setProjectSlug(e.currentTarget.value || null)}
+          aria-label={t('WordPress project slug')}
           style={{ flex: 1 }}
           rightSection={
-            isSlugValid === true ? (
+            isProjectValid === true ? (
               <Check size={14} style={{ color: 'var(--mantine-color-green-text)' }} />
-            ) : isSlugValid === false ? (
+            ) : isProjectValid === false ? (
               <X size={14} style={{ color: 'var(--mantine-color-red-text)' }} />
             ) : null
           }
         />
-        <Tooltip label={t('Verify slug exists on WordPress.org')}>
+        <Tooltip label={t('Verify this project exists on WordPress.org')}>
           <UnstyledButton
             onClick={handleVerify}
             disabled={!effectiveSlug || isValidating}
-            aria-label={t('Verify plugin slug')}
+            aria-label={t('Verify WordPress project')}
             style={{
               padding: '7px 12px',
               borderRadius: 'var(--mantine-radius-default)',
@@ -510,14 +530,17 @@ function PluginSlugInput() {
           </UnstyledButton>
         </Tooltip>
       </Group>
-      {autoDetectedSlug && !pluginSlug && (
+      {autoDetectedSlug && !projectSlug && (
         <Text size="xs" c="dimmed" mt={4}>
-          {t('Auto-detected: {{slug}}', { slug: autoDetectedSlug })}
+          {t('Auto-detected: {{type}} / {{slug}}', {
+            type: effectiveType,
+            slug: autoDetectedSlug,
+          })}
         </Text>
       )}
-      {isSlugValid === false && (
+      {isProjectValid === false && (
         <Text size="xs" c="red" mt={4}>
-          {t('Plugin not found on WordPress.org')}
+          {t('Project not found on WordPress.org')}
         </Text>
       )}
     </Box>
@@ -682,7 +705,7 @@ export function HeaderEditor({ encodingInfo }: HeaderEditorProps) {
                 />
               );
             })}
-            <PluginSlugInput />
+            <WordPressProjectInput />
           </SimpleGrid>
 
           {/* Toggle for secondary fields */}

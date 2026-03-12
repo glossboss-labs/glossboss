@@ -1,28 +1,31 @@
 /**
- * Source Store
- *
- * Zustand store for WordPress plugin source code viewing.
- * Manages plugin slug, active references, and source content.
+ * WordPress project source store.
  */
 
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import type { ParsedReference } from '@/lib/wp-source/references';
+import type {
+  ParsedReference,
+  WordPressPluginTranslationTrack,
+  WordPressProjectType,
+} from '@/lib/wp-source/references';
 import type { DirectoryEntry } from '@/lib/wp-source/fetcher';
 import {
   fetchSourceFile,
   fetchDirectoryListing,
-  validateSlug,
+  validateWordPressProject,
   clearCache,
 } from '@/lib/wp-source/fetcher';
 
-/** Source store state */
 export interface SourceState {
-  pluginSlug: string | null;
+  projectType: WordPressProjectType | null;
+  projectSlug: string | null;
+  autoDetectedProjectType: WordPressProjectType | null;
   autoDetectedSlug: string | null;
-  /** Version from PO header (e.g. "8.4.2") — used to fetch the matching tag */
-  pluginVersion: string | null;
-  isSlugValid: boolean | null;
+  projectVersion: string | null;
+  selectedRelease: string | null;
+  pluginTranslationTrack: WordPressPluginTranslationTrack;
+  isProjectValid: boolean | null;
   activeReference: ParsedReference | null;
   sourceContent: string | null;
   isLoadingSource: boolean;
@@ -31,28 +34,43 @@ export interface SourceState {
   browsingPath: string;
   isLoadingDirectory: boolean;
   directoryError: string | null;
-  /** Resolved base path from SVN (e.g. "trunk" or "tags/8.4.2") */
   resolvedBasePath: string | null;
 }
 
-/** Source store actions */
 export interface SourceActions {
-  setPluginSlug: (slug: string | null) => void;
-  setAutoDetectedSlug: (slug: string | null, version?: string | null) => void;
+  setProjectType: (projectType: WordPressProjectType | null) => void;
+  setProjectSlug: (slug: string | null) => void;
+  setSelectedRelease: (release: string | null) => void;
+  setPluginTranslationTrack: (track: WordPressPluginTranslationTrack) => void;
+  setProjectContext: (
+    projectType: WordPressProjectType,
+    slug: string | null,
+    options?: { release?: string | null; track?: WordPressPluginTranslationTrack },
+  ) => void;
+  setAutoDetectedProject: (
+    projectType: WordPressProjectType | null,
+    slug: string | null,
+    version?: string | null,
+  ) => void;
   setActiveReference: (ref: ParsedReference | null) => void;
   fetchSource: (path: string) => Promise<void>;
   fetchDirectory: (path: string) => Promise<void>;
-  validateCurrentSlug: () => Promise<void>;
+  validateCurrentProject: () => Promise<void>;
   clearSource: () => void;
 }
 
 const STORAGE_KEY = 'glossboss-source-store';
+const STORAGE_VERSION = 2;
 
 const initialState: SourceState = {
-  pluginSlug: null,
+  projectType: null,
+  projectSlug: null,
+  autoDetectedProjectType: null,
   autoDetectedSlug: null,
-  pluginVersion: null,
-  isSlugValid: null,
+  projectVersion: null,
+  selectedRelease: null,
+  pluginTranslationTrack: 'stable',
+  isProjectValid: null,
   activeReference: null,
   sourceContent: null,
   isLoadingSource: false,
@@ -64,9 +82,29 @@ const initialState: SourceState = {
   resolvedBasePath: null,
 };
 
-/** Get the effective slug (manual override or auto-detected) */
+function resetProjectData(set: (value: Partial<SourceState>) => void) {
+  clearCache();
+  set({
+    sourceContent: null,
+    directoryTree: null,
+    browsingPath: '',
+    directoryError: null,
+    sourceError: null,
+    resolvedBasePath: null,
+    activeReference: null,
+  });
+}
+
 export function getEffectiveSlug(state: SourceState): string | null {
-  return state.pluginSlug || state.autoDetectedSlug;
+  return state.projectSlug || state.autoDetectedSlug;
+}
+
+export function getEffectiveProjectType(state: SourceState): WordPressProjectType | null {
+  return state.projectType || state.autoDetectedProjectType;
+}
+
+export function getEffectiveRelease(state: SourceState): string | null {
+  return state.selectedRelease ?? state.projectVersion;
 }
 
 export const useSourceStore = create<SourceState & SourceActions>()(
@@ -74,112 +112,149 @@ export const useSourceStore = create<SourceState & SourceActions>()(
     (set, get) => ({
       ...initialState,
 
-      setPluginSlug: (slug: string | null) => {
-        const prev = getEffectiveSlug(get());
-        set({ pluginSlug: slug, isSlugValid: null });
-
-        // Clear cache if effective slug changed
-        const next = slug || get().autoDetectedSlug;
-        if (prev !== next) {
-          clearCache();
-          set({
-            sourceContent: null,
-            directoryTree: null,
-            browsingPath: '',
-            directoryError: null,
-            resolvedBasePath: null,
-          });
+      setProjectType: (projectType) => {
+        const prevType = getEffectiveProjectType(get());
+        set({ projectType, isProjectValid: null });
+        const nextType = projectType || get().autoDetectedProjectType;
+        if (prevType !== nextType) {
+          resetProjectData(set);
         }
       },
 
-      setAutoDetectedSlug: (slug: string | null, version?: string | null) => {
+      setProjectSlug: (slug) => {
+        const prevSlug = getEffectiveSlug(get());
+        set({ projectSlug: slug, isProjectValid: null });
+        const nextSlug = slug || get().autoDetectedSlug;
+        if (prevSlug !== nextSlug) {
+          resetProjectData(set);
+        }
+      },
+
+      setSelectedRelease: (selectedRelease) => {
+        const prevRelease = getEffectiveRelease(get());
+        set({ selectedRelease });
+        const nextRelease = getEffectiveRelease(get());
+        if (prevRelease !== nextRelease) {
+          resetProjectData(set);
+        }
+      },
+
+      setPluginTranslationTrack: (pluginTranslationTrack) => {
+        set({ pluginTranslationTrack });
+      },
+
+      setProjectContext: (projectType, slug, options = {}) => {
+        const prevState = get();
+        const prevKey = `${getEffectiveProjectType(prevState) ?? 'none'}:${getEffectiveSlug(prevState) ?? ''}:${getEffectiveRelease(prevState) ?? ''}`;
+        set({
+          projectType,
+          projectSlug: slug,
+          selectedRelease: options.release ?? null,
+          pluginTranslationTrack: options.track ?? prevState.pluginTranslationTrack,
+          isProjectValid: null,
+        });
+        const nextState = get();
+        const nextKey = `${getEffectiveProjectType(nextState) ?? 'none'}:${getEffectiveSlug(nextState) ?? ''}:${getEffectiveRelease(nextState) ?? ''}`;
+        if (prevKey !== nextKey) {
+          resetProjectData(set);
+        }
+      },
+
+      setAutoDetectedProject: (projectType, slug, version = null) => {
         const prev = get();
-        const nextVersion = version ?? null;
-        const prevEffectiveSlug = getEffectiveSlug(prev);
-        const nextEffectiveSlug = prev.pluginSlug || slug;
-        const versionChanged = prev.pluginVersion !== nextVersion;
-        const effectiveSlugChanged = prevEffectiveSlug !== nextEffectiveSlug;
+        const prevKey = `${getEffectiveProjectType(prev) ?? 'none'}:${getEffectiveSlug(prev) ?? ''}:${getEffectiveRelease(prev) ?? ''}`;
 
-        set({ autoDetectedSlug: slug, pluginVersion: nextVersion, isSlugValid: null });
+        set({
+          autoDetectedProjectType: projectType,
+          autoDetectedSlug: slug,
+          projectVersion: version ?? null,
+          isProjectValid: null,
+        });
 
-        // Version and effective-slug changes can both invalidate cached source content.
-        if (versionChanged || effectiveSlugChanged) {
-          clearCache();
-          set({
-            sourceContent: null,
-            directoryTree: null,
-            browsingPath: '',
-            directoryError: null,
-            resolvedBasePath: null,
-          });
+        const next = get();
+        const nextKey = `${getEffectiveProjectType(next) ?? 'none'}:${getEffectiveSlug(next) ?? ''}:${getEffectiveRelease(next) ?? ''}`;
+        if (prevKey !== nextKey) {
+          resetProjectData(set);
         }
       },
 
-      setActiveReference: (ref: ParsedReference | null) => {
+      setActiveReference: (ref) => {
         set({ activeReference: ref, sourceContent: null, sourceError: null });
-
         if (ref) {
-          get().fetchSource(ref.path);
+          void get().fetchSource(ref.path);
         }
       },
 
-      fetchSource: async (path: string) => {
-        const slug = getEffectiveSlug(get());
-        if (!slug) return;
+      fetchSource: async (path) => {
+        const state = get();
+        const projectType = getEffectiveProjectType(state);
+        const slug = getEffectiveSlug(state);
+        if (!projectType || !slug) return;
 
         set({ isLoadingSource: true, sourceError: null });
 
         try {
-          const result = await fetchSourceFile(slug, path, get().pluginVersion);
+          const result = await fetchSourceFile(projectType, slug, path, getEffectiveRelease(get()));
           set({
             sourceContent: result.content,
             resolvedBasePath: result.basePath,
             isLoadingSource: false,
           });
-        } catch (err) {
+        } catch (error) {
           set({
             sourceContent: null,
             isLoadingSource: false,
-            sourceError: err instanceof Error ? err.message : 'Failed to fetch source',
+            sourceError: error instanceof Error ? error.message : 'Failed to fetch source',
           });
         }
       },
 
-      fetchDirectory: async (path: string) => {
-        const slug = getEffectiveSlug(get());
-        if (!slug) return;
+      fetchDirectory: async (path) => {
+        const state = get();
+        const projectType = getEffectiveProjectType(state);
+        const slug = getEffectiveSlug(state);
+        if (!projectType || !slug) return;
 
         set({ isLoadingDirectory: true, browsingPath: path, directoryError: null });
 
         try {
-          const result = await fetchDirectoryListing(slug, path, get().pluginVersion);
+          const result = await fetchDirectoryListing(
+            projectType,
+            slug,
+            path,
+            getEffectiveRelease(get()),
+          );
           set({
             directoryTree: result.entries,
             resolvedBasePath: result.basePath,
             isLoadingDirectory: false,
             directoryError: null,
           });
-        } catch (err) {
+        } catch (error) {
           set({
             directoryTree: null,
             isLoadingDirectory: false,
-            directoryError: err instanceof Error ? err.message : 'Failed to load directory listing',
+            directoryError:
+              error instanceof Error ? error.message : 'Failed to load directory listing',
           });
         }
       },
 
-      validateCurrentSlug: async () => {
-        const slug = getEffectiveSlug(get());
-        if (!slug) {
-          set({ isSlugValid: null });
+      validateCurrentProject: async () => {
+        const state = get();
+        const projectType = getEffectiveProjectType(state);
+        const slug = getEffectiveSlug(state);
+
+        if (!projectType || !slug) {
+          set({ isProjectValid: null });
           return;
         }
 
         try {
-          const valid = await validateSlug(slug);
-          set({ isSlugValid: valid });
+          const valid = await validateWordPressProject(projectType, slug);
+          set({ isProjectValid: valid });
         } catch {
-          set({ isSlugValid: false });
+          set({ isProjectValid: false });
         }
       },
 
@@ -190,10 +265,37 @@ export const useSourceStore = create<SourceState & SourceActions>()(
     }),
     {
       name: STORAGE_KEY,
+      version: STORAGE_VERSION,
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
-        pluginSlug: state.pluginSlug,
+        projectType: state.projectType,
+        projectSlug: state.projectSlug,
+        selectedRelease: state.selectedRelease,
+        pluginTranslationTrack: state.pluginTranslationTrack,
       }),
+      migrate: (persistedState: unknown, version) => {
+        if (!persistedState || typeof persistedState !== 'object') {
+          return persistedState as SourceState;
+        }
+
+        const state = persistedState as Record<string, unknown>;
+        if (version < 2) {
+          return {
+            projectType: state.projectType ?? (state.pluginSlug ? 'plugin' : null),
+            projectSlug:
+              typeof state.projectSlug === 'string'
+                ? state.projectSlug
+                : typeof state.pluginSlug === 'string'
+                  ? state.pluginSlug
+                  : null,
+            selectedRelease:
+              typeof state.selectedRelease === 'string' ? state.selectedRelease : null,
+            pluginTranslationTrack: state.pluginTranslationTrack === 'dev' ? 'dev' : 'stable',
+          };
+        }
+
+        return persistedState as SourceState;
+      },
     },
   ),
 );

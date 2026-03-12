@@ -14,7 +14,7 @@ import {
   UnstyledButton,
 } from '@mantine/core';
 import { ChevronRight, File, Folder } from 'lucide-react';
-import { getEffectiveSlug, useSourceStore } from '@/stores/source-store';
+import { getEffectiveProjectType, getEffectiveSlug, useSourceStore } from '@/stores/source-store';
 import { SourceCodeViewer } from './SourceCodeViewer';
 import { useTranslation } from '@/lib/app-language';
 
@@ -38,6 +38,7 @@ export function SourceBrowser({
     isLoadingSource,
   } = useSourceStore();
   const slug = useSourceStore((state) => getEffectiveSlug(state));
+  const projectType = useSourceStore((state) => getEffectiveProjectType(state));
   const { t } = useTranslation();
   const [viewingFile, setViewingFile] = useState<string | null>(null);
 
@@ -68,7 +69,7 @@ export function SourceBrowser({
   if (!slug) {
     return (
       <Text size="sm" c="dimmed" p="md" ta="center">
-        {t('Set a plugin slug to browse source files.')}
+        {t('Set a WordPress project slug to browse source files.')}
       </Text>
     );
   }
@@ -82,7 +83,7 @@ export function SourceBrowser({
       >
         <Breadcrumbs separator={<ChevronRight size={12} />}>
           <Anchor size="sm" onClick={() => handleNavigate('')}>
-            {slug}
+            {projectType === 'theme' ? t('Theme') : t('Plugin')} / {slug}
           </Anchor>
           {breadcrumbParts.map((part, i) => {
             const path = breadcrumbParts.slice(0, i + 1).join('/');

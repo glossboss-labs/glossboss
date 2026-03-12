@@ -1,11 +1,11 @@
 /**
- * WordPress Plugin Source Code References
- *
- * Utilities for parsing PO source references and building
- * URLs to plugins.trac.wordpress.org / plugins.svn.wordpress.org.
+ * WordPress.org project source reference helpers.
  */
 
 import type { POHeader } from '@/lib/po/types';
+
+export type WordPressProjectType = 'plugin' | 'theme';
+export type WordPressPluginTranslationTrack = 'stable' | 'dev';
 
 /** Parsed source reference */
 export interface ParsedReference {
@@ -19,9 +19,16 @@ export interface NormalizedSourcePath {
   basePath: string | null;
 }
 
-/**
- * Parse a single source reference string (e.g., "includes/class-foo.php:123")
- */
+export interface DetectedWordPressProject {
+  type: WordPressProjectType;
+  slug: string;
+  version: string | null;
+}
+
+function isVersionLike(value: string): boolean {
+  return /^[\d][\w.-]*$/.test(value);
+}
+
 export function parseReference(ref: string): ParsedReference {
   const trimmed = ref.trim();
   const colonIndex = trimmed.lastIndexOf(':');
@@ -30,7 +37,7 @@ export function parseReference(ref: string): ParsedReference {
     const possibleLine = trimmed.slice(colonIndex + 1);
     const lineNum = parseInt(possibleLine, 10);
 
-    if (!isNaN(lineNum) && lineNum > 0 && String(lineNum) === possibleLine) {
+    if (!Number.isNaN(lineNum) && lineNum > 0 && String(lineNum) === possibleLine) {
       return {
         path: trimmed.slice(0, colonIndex),
         line: lineNum,
@@ -41,10 +48,6 @@ export function parseReference(ref: string): ParsedReference {
   return { path: trimmed, line: null };
 }
 
-/**
- * Parse all references from a PO entry's references array.
- * Each reference string can contain multiple space-separated references.
- */
 export function parseReferences(references: string[]): ParsedReference[] {
   const parsed: ParsedReference[] = [];
 
@@ -60,14 +63,11 @@ export function parseReferences(references: string[]): ParsedReference[] {
   return parsed;
 }
 
-/**
- * Normalize a source path from PO references.
- * Supports references that may already include:
- * - plugin slug prefix
- * - "wp-content/plugins/<slug>/"
- * - "trunk/" or "tags/<version>/"
- */
-export function normalizeSourcePath(path: string, slug?: string | null): NormalizedSourcePath {
+export function normalizeSourcePath(
+  path: string,
+  slug?: string | null,
+  projectType: WordPressProjectType = 'plugin',
+): NormalizedSourcePath {
   let clean = path.replace(/\\/g, '/').trim();
   clean = clean.replace(/^\/+/, '').replace(/\/{2,}/g, '/');
 
@@ -76,7 +76,8 @@ export function normalizeSourcePath(path: string, slug?: string | null): Normali
   }
 
   if (slug) {
-    const wpPrefix = `wp-content/plugins/${slug}/`;
+    const wpPrefix =
+      projectType === 'theme' ? `wp-content/themes/${slug}/` : `wp-content/plugins/${slug}/`;
     if (clean.toLowerCase().startsWith(wpPrefix.toLowerCase())) {
       clean = clean.slice(wpPrefix.length);
     }
@@ -87,73 +88,47 @@ export function normalizeSourcePath(path: string, slug?: string | null): Normali
     }
   }
 
-  if (clean === 'trunk') {
-    return { path: '', basePath: 'trunk' };
-  }
+  if (projectType === 'plugin') {
+    if (clean === 'trunk') {
+      return { path: '', basePath: 'trunk' };
+    }
 
-  if (clean.startsWith('trunk/')) {
-    return { path: clean.slice('trunk/'.length), basePath: 'trunk' };
-  }
+    if (clean.startsWith('trunk/')) {
+      return { path: clean.slice('trunk/'.length), basePath: 'trunk' };
+    }
 
-  const tagMatch = clean.match(/^tags\/([^/]+)(?:\/(.*))?$/);
-  if (tagMatch) {
-    return {
-      path: tagMatch[2] ?? '',
-      basePath: `tags/${tagMatch[1]}`,
-    };
+    const tagMatch = clean.match(/^tags\/([^/]+)(?:\/(.*))?$/);
+    if (tagMatch) {
+      return {
+        path: tagMatch[2] ?? '',
+        basePath: `tags/${tagMatch[1]}`,
+      };
+    }
+  } else {
+    const [head, ...rest] = clean.split('/');
+    if (head && isVersionLike(head) && rest.length > 0) {
+      return {
+        path: rest.join('/'),
+        basePath: head,
+      };
+    }
   }
 
   return { path: clean, basePath: null };
 }
 
-/**
- * Detect plugin slug from PO header and/or filename.
- *
- * Tries two strategies:
- * 1. From `projectIdVersion` header: "Plugin Name 1.0" → "plugin-name"
- * 2. From filename: "plugin-name-nl_NL.po" → "plugin-name"
- */
-export interface DetectedPlugin {
-  slug: string;
-  version: string | null;
-}
-
-export function detectPluginSlug(header: POHeader, filename: string): DetectedPlugin | null {
-  // Strategy 1: From Project-Id-Version header
-  if (header.projectIdVersion) {
-    const slug = slugFromProjectId(header.projectIdVersion);
-    const version = extractVersion(header.projectIdVersion);
-    if (slug) return { slug, version };
-  }
-
-  // Strategy 2: From filename
-  const slug = slugFromFilename(filename);
-  if (slug) return { slug, version: null };
-
-  return null;
-}
-
-/**
- * Extract version number from Project-Id-Version header.
- * Pattern: "Plugin Name 1.0.2" → "1.0.2"
- */
 function extractVersion(projectIdVersion: string): string | null {
   const match = projectIdVersion.match(/[\s_-]+v?([\d][\d.]*(?:-[\w.]+)?)\s*$/);
   return match ? match[1] : null;
 }
 
-/**
- * Extract slug from Project-Id-Version header.
- * Pattern: "Plugin Name 1.0.2" → "plugin-name"
- * Also handles: "Plugin Name" (no version)
- */
-function slugFromProjectId(projectIdVersion: string): string | null {
-  // Remove version suffix (digits, dots, dashes at the end)
-  const withoutVersion = projectIdVersion.replace(/[\s_-]+v?[\d][\d.]*[-\w]*\s*$/, '').trim();
+function slugifyProjectName(value: string): string | null {
+  const withoutVersion = value.replace(/[\s_-]+v?[\d][\d.]*[-\w]*\s*$/, '').trim();
 
-  if (!withoutVersion) return null;
+  if (!withoutVersion) {
+    return null;
+  }
 
-  // Convert to slug: lowercase, replace spaces/underscores with hyphens
   const slug = withoutVersion
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
@@ -162,56 +137,112 @@ function slugFromProjectId(projectIdVersion: string): string | null {
   return slug || null;
 }
 
-/**
- * Extract slug from PO filename.
- * Pattern: "plugin-name-nl_NL.po" → "plugin-name"
- * Pattern: "plugin-name.po" → "plugin-name"
- */
 function slugFromFilename(filename: string): string | null {
-  // Remove path prefix and extension
   const base = filename.replace(/^.*[\\/]/, '').replace(/\.pot?$/i, '');
 
   if (!base) return null;
 
-  // Remove locale suffix (e.g., "-nl_NL", "-de_DE", "-fr")
-  const withoutLocale = base.replace(/-[a-z]{2}(_[A-Z]{2})?$/, '');
+  const withoutLocale = base.replace(/-[a-z]{2,3}(?:_[A-Z]{2})?$/, '');
 
   if (!withoutLocale) return null;
 
-  // Validate it looks like a slug
-  if (/^[a-z0-9]+(-[a-z0-9]+)*$/.test(withoutLocale)) {
-    return withoutLocale;
+  return /^[a-z0-9]+(-[a-z0-9]+)*$/.test(withoutLocale) ? withoutLocale : null;
+}
+
+function detectTypeFromHeader(header: POHeader): WordPressProjectType | null {
+  const candidates = [
+    header.reportMsgidBugsTo,
+    header.projectIdVersion,
+    header.xDomain,
+    header['x-domain'],
+  ].filter((value): value is string => typeof value === 'string' && value.trim().length > 0);
+
+  for (const candidate of candidates) {
+    const lower = candidate.toLowerCase();
+    if (lower.includes('/support/plugin/')) return 'plugin';
+    if (lower.includes('/support/theme/')) return 'theme';
+    if (lower.includes('wp-plugins')) return 'plugin';
+    if (lower.includes('wp-themes')) return 'theme';
   }
 
   return null;
 }
 
-/**
- * Build a URL to plugins.trac.wordpress.org for viewing source.
- * @param basePath - "trunk" or "tags/x.y.z" (defaults to "trunk")
- */
+function detectSlugFromHeader(header: POHeader): string | null {
+  const reportUrl = header.reportMsgidBugsTo ?? '';
+  const reportMatch = reportUrl.match(/\/support\/(plugin|theme)\/([a-z0-9-]+)\//i);
+  if (reportMatch) {
+    return reportMatch[2].toLowerCase();
+  }
+
+  const domain =
+    (typeof header.xDomain === 'string' && header.xDomain) ||
+    (typeof header['x-domain'] === 'string' ? header['x-domain'] : '');
+  if (domain && /^[a-z0-9]+(-[a-z0-9]+)*$/.test(domain)) {
+    return domain.toLowerCase();
+  }
+
+  return header.projectIdVersion ? slugifyProjectName(header.projectIdVersion) : null;
+}
+
+export function detectWordPressProject(
+  header: POHeader,
+  filename: string,
+): DetectedWordPressProject | null {
+  const type = detectTypeFromHeader(header) ?? 'plugin';
+  const slug = detectSlugFromHeader(header) ?? slugFromFilename(filename);
+  if (!slug) {
+    return null;
+  }
+
+  return {
+    type,
+    slug,
+    version: header.projectIdVersion ? extractVersion(header.projectIdVersion) : null,
+  };
+}
+
+export function detectPluginSlug(
+  header: POHeader,
+  filename: string,
+): DetectedWordPressProject | null {
+  return detectWordPressProject(header, filename);
+}
+
 export function buildTracUrl(
+  projectType: WordPressProjectType,
   slug: string,
   path: string,
   line?: number,
-  basePath: string = 'trunk',
+  basePath?: string | null,
 ): string {
-  const normalized = normalizeSourcePath(path, slug);
-  const effectiveBasePath = normalized.basePath ?? basePath;
+  const normalized = normalizeSourcePath(path, slug, projectType);
+  const effectiveBasePath =
+    normalized.basePath ?? basePath ?? (projectType === 'plugin' ? 'trunk' : '');
   const cleanPath = normalized.path.replace(/^\/+/, '');
-  const root = `https://plugins.trac.wordpress.org/browser/${slug}/${effectiveBasePath}`;
+  const rootBase =
+    projectType === 'theme'
+      ? `https://themes.trac.wordpress.org/browser/${slug}`
+      : `https://plugins.trac.wordpress.org/browser/${slug}`;
+  const root = effectiveBasePath ? `${rootBase}/${effectiveBasePath}` : rootBase;
   const url = cleanPath ? `${root}/${cleanPath}` : `${root}/`;
   return line ? `${url}#L${line}` : url;
 }
 
-/**
- * Build a URL to plugins.svn.wordpress.org for fetching raw files.
- * @param basePath - "trunk" or "tags/x.y.z" (defaults to "trunk")
- */
-export function buildSvnUrl(slug: string, path: string, basePath: string = 'trunk'): string {
-  const normalized = normalizeSourcePath(path, slug);
-  const effectiveBasePath = normalized.basePath ?? basePath;
+export function buildSvnUrl(
+  projectType: WordPressProjectType,
+  slug: string,
+  path: string,
+  basePath?: string | null,
+): string {
+  const normalized = normalizeSourcePath(path, slug, projectType);
+  const effectiveBasePath =
+    normalized.basePath ?? basePath ?? (projectType === 'plugin' ? 'trunk' : '');
   const cleanPath = normalized.path.replace(/^\/+/, '');
-  const root = `https://plugins.svn.wordpress.org/${slug}/${effectiveBasePath}`;
+  const rootBase =
+    projectType === 'theme'
+      ? `https://themes.svn.wordpress.org/${slug}`
+      : `https://plugins.svn.wordpress.org/${slug}`;
+  const root = effectiveBasePath ? `${rootBase}/${effectiveBasePath}` : rootBase;
   return cleanPath ? `${root}/${cleanPath}` : `${root}/`;
 }
