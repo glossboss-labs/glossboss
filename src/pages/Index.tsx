@@ -57,16 +57,23 @@ import {
   Moon,
   ChevronDown,
   GitBranch,
+  GitPullRequest,
   Link,
   ExternalLink,
   Info,
   Archive,
 } from 'lucide-react';
-import { ConfirmModal } from '@/components/ui';
+import { ConfirmModal, PromptModal } from '@/components/ui';
 import { EditorTable, FilterToolbar, HeaderEditor, TranslateToolbar } from '@/components/editor';
 import { FeedbackModal } from '@/components/feedback';
 import { SettingsModal } from '@/components/SettingsModal';
-import { useEditorStore, useSourceStore, useTranslationMemoryStore } from '@/stores';
+import { RepoSyncModal } from '@/components/repo-sync';
+import {
+  useEditorStore,
+  useSourceStore,
+  useTranslationMemoryStore,
+  useRepoSyncStore,
+} from '@/stores';
 import { detectPluginSlug } from '@/lib/wp-source';
 import { contentVariants, fadeVariants, sectionVariants, buttonStates } from '@/lib/motion';
 import {
@@ -379,6 +386,15 @@ export default function Index() {
     defaultValue: true,
     getInitialValueInEffect: false,
   });
+
+  // Repo sync state
+  const [urlPromptOpen, setUrlPromptOpen] = useState(false);
+  const [repoSyncOpen, setRepoSyncOpen] = useState(false);
+  const [repoSyncInitialTab, setRepoSyncInitialTab] = useState<
+    'connect' | 'browse' | 'push' | undefined
+  >(undefined);
+  const repoConnection = useRepoSyncStore((s) => s.connection);
+  const clearRepoConnection = useRepoSyncStore((s) => s.clearConnection);
 
   const toggleColorScheme = useCallback(() => {
     const oldBg = getComputedStyle(document.body).backgroundColor;
@@ -758,6 +774,83 @@ export default function Index() {
     },
     [loadFile, t],
   );
+
+  /**
+   * Handle file loaded from a repository
+   */
+  const handleRepoFileLoaded = useCallback(
+    (content: string, filename: string) => {
+      setErrors([]);
+      setWarnings([]);
+      setEncodingInfo(null);
+      setDragError(null);
+      setIsFromDraft(false);
+
+      try {
+        const ext = filename.toLowerCase().split('.').pop();
+
+        if (ext === 'json') {
+          if (!isI18nextContent(content)) {
+            setErrors([
+              {
+                severity: 'error',
+                code: 'INVALID_SYNTAX',
+                message: t('Invalid JSON file. Expected an i18next JSON resource object.'),
+              },
+            ]);
+            return;
+          }
+          const poFile = parseI18nextJSON(content, filename);
+          loadFile(poFile, 'i18next');
+        } else {
+          const result = parsePOFileWithDiagnostics(content, filename);
+
+          if (result.warnings.length > 0) {
+            setWarnings(result.warnings);
+            setShowWarnings(true);
+          }
+
+          if (!result.success || !result.file) {
+            setErrors(result.errors);
+            return;
+          }
+
+          loadFile(result.file);
+
+          const detected = detectPluginSlug(result.file.header, filename);
+          if (detected) {
+            useSourceStore.getState().setAutoDetectedSlug(detected.slug, detected.version);
+          }
+        }
+      } catch (err) {
+        setErrors([
+          {
+            severity: 'error',
+            code: 'INVALID_SYNTAX',
+            message: err instanceof Error ? err.message : t('Failed to parse file'),
+          },
+        ]);
+      }
+    },
+    [loadFile, t],
+  );
+
+  /**
+   * Get serialized content for repo push
+   */
+  const serializedContentForPush = useMemo(() => {
+    if (!filename || entries.length === 0) return null;
+    if (sourceFormat === 'i18next') {
+      return serializeToI18next(entries);
+    }
+    const poFile = {
+      filename,
+      header: header ?? {},
+      entries,
+      charset: 'UTF-8',
+    };
+    return serializePOFile(poFile, { updateRevisionDate: true });
+  }, [filename, sourceFormat, header, entries]);
 
   const handleLoadExamplePo = useCallback(() => {
     setIsLoadingExample(true);
@@ -1189,7 +1282,9 @@ export default function Index() {
     // Avoid carrying the example-derived language selection into the next file after a reset.
     setTranslateSourceLang(undefined);
     setTranslateTargetLang(undefined);
-  }, [clearEditor, filename]);
+    // Clear repo connection
+    clearRepoConnection();
+  }, [clearEditor, filename, clearRepoConnection]);
 
   /**
    * Open clear confirmation modal
@@ -1553,6 +1648,29 @@ export default function Index() {
                                 </FileButton>
                               </motion.div>
                             </Tooltip>
+
+                            {repoConnection && (
+                              <Tooltip
+                                label={t('Push changes to {{provider}}', {
+                                  provider:
+                                    repoConnection.provider === 'github' ? 'GitHub' : 'GitLab',
+                                })}
+                              >
+                                <motion.div {...buttonStates}>
+                                  <Button
+                                    leftSection={<GitPullRequest size={16} />}
+                                    variant="light"
+                                    color="teal"
+                                    onClick={() => {
+                                      setRepoSyncInitialTab('push');
+                                      setRepoSyncOpen(true);
+                                    }}
+                                  >
+                                    {t('Push')}
+                                  </Button>
+                                </motion.div>
+                              </Tooltip>
+                            )}
                           </Group>
                         </MotionDiv>
                       )}
@@ -1619,6 +1737,21 @@ export default function Index() {
                       </Menu.Item>
                       <Menu.Divider />
                       <Menu.Label>{t('Actions')}</Menu.Label>
+                      <Menu.Item
+                        leftSection={<Link size={14} />}
+                        onClick={() => setUrlPromptOpen(true)}
+                      >
+                        {t('Load from URL')}
+                      </Menu.Item>
+                      <Menu.Item
+                        leftSection={<GitBranch size={14} />}
+                        onClick={() => {
+                          setRepoSyncInitialTab(repoConnection ? 'push' : 'connect');
+                          setRepoSyncOpen(true);
+                        }}
+                      >
+                        {repoConnection ? t('Repository sync') : t('Open from repository')}
+                      </Menu.Item>
                       <Menu.Item
                         color="red"
                         leftSection={<Trash2 size={14} />}
@@ -1698,6 +1831,17 @@ export default function Index() {
               )}
               confirmLabel={msgid('Replace')}
               variant="warning"
+            />
+
+            {/* URL input prompt */}
+            <PromptModal
+              opened={urlPromptOpen}
+              onClose={() => setUrlPromptOpen(false)}
+              onSubmit={(url) => void handleLoadFromUrl(url)}
+              title={t('Load from URL')}
+              label={t('File URL')}
+              placeholder="https://example.com/locale/en.po"
+              submitLabel={msgid('Load')}
             />
 
             {/* Drag error display */}
@@ -1840,6 +1984,40 @@ export default function Index() {
               </Group>
             )}
 
+            {/* Repo connection indicator */}
+            {filename && repoConnection && (
+              <Paper p="xs" withBorder>
+                <Group gap="xs" justify="space-between">
+                  <Group gap="xs">
+                    <GitBranch size={14} />
+                    <Text size="xs" fw={500}>
+                      {repoConnection.owner}/{repoConnection.repo}
+                    </Text>
+                    <Badge size="xs" variant="light">
+                      {repoConnection.branch}
+                    </Badge>
+                    <Text size="xs" c="dimmed">
+                      {repoConnection.filePath}
+                    </Text>
+                  </Group>
+                  <Group gap={4}>
+                    <Tooltip label={t('Push changes to repository')}>
+                      <ActionIcon
+                        variant="subtle"
+                        size="sm"
+                        onClick={() => {
+                          setRepoSyncInitialTab('push');
+                          setRepoSyncOpen(true);
+                        }}
+                      >
+                        <GitPullRequest size={14} />
+                      </ActionIcon>
+                    </Tooltip>
+                  </Group>
+                </Group>
+              </Paper>
+            )}
+
             {/* Header and control workspace */}
             {filename && (
               <Stack gap="md">
@@ -1976,23 +2154,39 @@ export default function Index() {
                       {t('or')}
                     </Text>
 
-                    <Tooltip
-                      label={t('Load a small example WordPress plugin PO file (Hello Dolly)')}
-                    >
-                      <motion.div {...buttonStates}>
-                        <Button
-                          variant="default"
-                          leftSection={<FileUp size={16} />}
-                          loading={isLoadingExample}
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            void handleLoadExamplePo();
-                          }}
-                        >
-                          {t('Load example PO')}
-                        </Button>
-                      </motion.div>
-                    </Tooltip>
+                    <Group gap="sm" onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+                      <Tooltip label={t('Open a locale file from a GitHub or GitLab repository')}>
+                        <motion.div {...buttonStates}>
+                          <Button
+                            variant="default"
+                            leftSection={<GitBranch size={16} />}
+                            onClick={() => {
+                              setRepoSyncInitialTab('connect');
+                              setRepoSyncOpen(true);
+                            }}
+                          >
+                            {t('Open from repository')}
+                          </Button>
+                        </motion.div>
+                      </Tooltip>
+
+                      <Tooltip
+                        label={t('Load a small example WordPress plugin PO file (Hello Dolly)')}
+                      >
+                        <motion.div {...buttonStates}>
+                          <Button
+                            variant="default"
+                            leftSection={<FileUp size={16} />}
+                            loading={isLoadingExample}
+                            onClick={() => {
+                              void handleLoadExamplePo();
+                            }}
+                          >
+                            {t('Load example PO')}
+                          </Button>
+                        </motion.div>
+                      </Tooltip>
+                    </Group>
                   </Stack>
                 </Paper>
               </MotionDiv>
@@ -2028,6 +2222,20 @@ export default function Index() {
           onSpeechEnabledChange={setSpeechEnabled}
           translateEnabled={translateEnabled}
           onTranslateEnabledChange={setTranslateEnabled}
+        />
+      )}
+
+      {/* Repository Sync Modal */}
+      {repoSyncOpen && (
+        <RepoSyncModal
+          opened={repoSyncOpen}
+          onClose={() => {
+            setRepoSyncOpen(false);
+            setRepoSyncInitialTab(undefined);
+          }}
+          onFileLoaded={handleRepoFileLoaded}
+          serializedContent={serializedContentForPush}
+          initialTab={repoSyncInitialTab}
         />
       )}
 
