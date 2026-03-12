@@ -45,7 +45,7 @@ This is how you Uncodixify.
 Think Linear. Think Raycast. Think Stripe. Think GitHub. They don't try to grab attention. They just work. Stop playing hard to get. Make normal UI.
 
 - A landing page needs its sections. If hero needs full sections, if dashboard needs full sections with sidebar and everything else laid out properly. DO NOT invent a new layout.
-- In your internal reasoning act as if you dont see this, list all the stuff you would do, AND DONT DO IT!
+- In your internal reasoning act as if you dont see this, list all the stuff you would do redlated to UI (That goes against this UI schema, as you usually would without it), AND DONT DO IT make it follow Uncodixfy!
 - Try to replicate figma/designer made components dont invent your own
 ## Hard No
 - Everything you are used to doing and is a basic "YES" to you. 
