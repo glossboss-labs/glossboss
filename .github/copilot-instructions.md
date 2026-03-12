@@ -39,6 +39,13 @@ active provider is stored in `localStorage` via `src/lib/translation/settings.ts
 - **Project context** is Gemini-only: `src/lib/gemini/context.ts` resolves WordPress source file
   excerpts that get included in the translation prompt.
 
+- **Usage tracking** differs by provider: DeepL exposes a server-side `/usage` endpoint (character
+  count vs. plan limit). Azure and Gemini have no server-side usage API, so the app tracks
+  characters and request counts client-side in `localStorage` via `src/lib/translation/usage.ts`.
+  After each translation batch, `TranslateToolbar` calls `recordTranslationUsage()` and dispatches
+  the `TRANSLATION_USAGE_REFRESH_EVENT` window event; `FilterToolbar` and `SettingsModal` listen
+  for it to update their displays.
+
 When adding a new provider, add a module under `src/lib/<provider>/`, add the
 `TranslationProviderId` union member in `types.ts`, handle it in `client.ts`, add an edge function,
 and update the deploy workflow.
