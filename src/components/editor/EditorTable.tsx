@@ -3009,33 +3009,31 @@ export function EditorTable({
           <Text size="xs" c="dimmed">
             {t('{{count}} selected', { count: selectedEntryIds.size })}
           </Text>
-          {mode === 'review' && (
-            <Group gap="xs" wrap="wrap">
-              <Button size="xs" variant="light" color="green" onClick={handleApproveSelected}>
-                {t('Approve selected')}
-              </Button>
-              <Button
-                size="xs"
-                variant="default"
-                onClick={handleUnapproveSelected}
-                disabled={selectedReviewApprovedCount === 0}
-              >
-                {t('Unapprove selected')}
-              </Button>
-              <Button
-                size="xs"
-                variant="light"
-                color="orange"
-                onClick={handleRequestChangesSelected}
-                disabled={selectedRequestChangesEligibleCount === 0}
-              >
-                {t('Request changes selected')}
-              </Button>
-              <Button size="xs" variant="subtle" color="gray" onClick={clearSelectedEntries}>
-                {t('Clear selection')}
-              </Button>
-            </Group>
-          )}
+          <Group gap="xs" wrap="wrap">
+            <Button size="xs" variant="light" color="green" onClick={handleApproveSelected}>
+              {t('Approve selected')}
+            </Button>
+            <Button
+              size="xs"
+              variant="default"
+              onClick={handleUnapproveSelected}
+              disabled={selectedReviewApprovedCount === 0}
+            >
+              {t('Unapprove selected')}
+            </Button>
+            <Button
+              size="xs"
+              variant="light"
+              color="orange"
+              onClick={handleRequestChangesSelected}
+              disabled={selectedRequestChangesEligibleCount === 0}
+            >
+              {t('Request changes selected')}
+            </Button>
+            <Button size="xs" variant="subtle" color="gray" onClick={clearSelectedEntries}>
+              {t('Clear selection')}
+            </Button>
+          </Group>
         </Group>
       )}
 
