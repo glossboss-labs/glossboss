@@ -50,6 +50,13 @@ import {
 import { getDeepLClient, hasUserApiKey } from '@/lib/deepl';
 import { msgid, useTranslation } from '@/lib/app-language';
 import type { UsageStats } from '@/lib/deepl/types';
+import {
+  getActiveTranslationProvider,
+  getTranslationProviderLabel,
+  getTranslationUsage,
+  hasActiveProviderCredentials,
+  TRANSLATION_USAGE_REFRESH_EVENT,
+} from '@/lib/translation';
 import { badgeVariants, contentVariants, interactiveSpring } from '@/lib/motion';
 import { useDragGhost } from '@/hooks/use-drag-ghost';
 
@@ -153,9 +160,13 @@ export function FilterToolbar({ mode = 'edit' }: { mode?: 'edit' | 'review' }) {
   const filteredCount = getFilteredEntries().length;
   const hasActiveFilters = activeFilters.size > 0 || filterQuery.trim().length > 0;
 
-  // DeepL usage stats
-  const [usage, setUsage] = useState<UsageStats | null>(null);
-  const apiKeyConfigured = hasUserApiKey();
+  // DeepL usage stats (server-side)
+  const [deeplUsage, setDeeplUsage] = useState<UsageStats | null>(null);
+  const deeplKeyConfigured = hasUserApiKey();
+  // Local session usage for all providers
+  const [localCharCount, setLocalCharCount] = useState(0);
+  const activeProvider = getActiveTranslationProvider();
+  const providerConfigured = hasActiveProviderCredentials();
 
   // Pointer-based column reordering state for menu items
   const [draggingColumn, setDraggingColumn] = useState<TableColumn | null>(null);
@@ -194,17 +205,27 @@ export function FilterToolbar({ mode = 'edit' }: { mode?: 'edit' | 'review' }) {
   );
 
   useEffect(() => {
-    if (!apiKeyConfigured) return;
-    const fetchUsage = () => {
+    if (!deeplKeyConfigured) return;
+    const fetchDeeplUsage = () => {
       getDeepLClient()
         .getUsage()
-        .then(setUsage)
+        .then(setDeeplUsage)
         .catch(() => {});
     };
-    fetchUsage();
-    window.addEventListener('deepl-usage-refresh', fetchUsage);
-    return () => window.removeEventListener('deepl-usage-refresh', fetchUsage);
-  }, [apiKeyConfigured]);
+    fetchDeeplUsage();
+    window.addEventListener(TRANSLATION_USAGE_REFRESH_EVENT, fetchDeeplUsage);
+    return () => window.removeEventListener(TRANSLATION_USAGE_REFRESH_EVENT, fetchDeeplUsage);
+  }, [deeplKeyConfigured]);
+
+  useEffect(() => {
+    if (!providerConfigured) return;
+    const refreshLocalUsage = () => {
+      setLocalCharCount(getTranslationUsage(activeProvider).characterCount);
+    };
+    refreshLocalUsage();
+    window.addEventListener(TRANSLATION_USAGE_REFRESH_EVENT, refreshLocalUsage);
+    return () => window.removeEventListener(TRANSLATION_USAGE_REFRESH_EVENT, refreshLocalUsage);
+  }, [activeProvider, providerConfigured]);
 
   // Debounced search
   const [localQuery, setLocalQuery] = useState(filterQuery);
@@ -377,11 +398,19 @@ export function FilterToolbar({ mode = 'edit' }: { mode?: 'edit' | 'review' }) {
         </Group>
       </Group>
 
-      {/* DeepL usage */}
-      {usage && (
+      {/* Translation provider usage */}
+      {activeProvider === 'deepl' && deeplUsage && (
         <Text size="xs" c="dimmed" ta="right">
-          {t('DeepL usage:')} {usage.characterCount.toLocaleString()} /{' '}
-          {usage.characterLimit.toLocaleString()}
+          {t('DeepL usage:')} {deeplUsage.characterCount.toLocaleString()} /{' '}
+          {deeplUsage.characterLimit.toLocaleString()}
+        </Text>
+      )}
+      {activeProvider !== 'deepl' && providerConfigured && localCharCount > 0 && (
+        <Text size="xs" c="dimmed" ta="right">
+          {t('{{provider}} session usage: {{count}} characters', {
+            provider: getTranslationProviderLabel(activeProvider),
+            count: localCharCount.toLocaleString(),
+          })}
         </Text>
       )}
 
