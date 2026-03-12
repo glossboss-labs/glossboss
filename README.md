@@ -1,101 +1,142 @@
-# GlossBoss
+<p align="center">
+  <strong>GlossBoss</strong><br />
+  A browser-based translation editor for gettext <code>.po</code> / <code>.pot</code> files and i18next JSON resources.
+</p>
 
-GlossBoss is a browser-based translation editor for gettext `.po` / `.pot` files and i18next JSON resources. It combines local draft recovery, DeepL-powered machine translation, and WordPress glossary/source tooling in a single React app.
+<p align="center">
+  <a href="https://github.com/lammersbjorn/glossboss/actions/workflows/ci.yml"><img src="https://github.com/lammersbjorn/glossboss/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
+  <a href="https://github.com/lammersbjorn/glossboss/actions/workflows/cloudflare-pages.yml"><img src="https://github.com/lammersbjorn/glossboss/actions/workflows/cloudflare-pages.yml/badge.svg" alt="Deploy" /></a>
+  <a href="https://github.com/lammersbjorn/glossboss/blob/main/LICENSE"><img src="https://img.shields.io/github/license/lammersbjorn/glossboss" alt="License" /></a>
+</p>
 
-The project is open source under `AGPL-3.0-only`.
-It is maintained by Toine Rademacher and Bjorn Lammers.
+---
 
 ## Features
 
-- Edit gettext `.po` and `.pot` files in the browser
-- Import and export i18next JSON resources
-- Translate entries and batches through DeepL
-- Reuse approved translations across files with local translation memory (exact and fuzzy matching, JSON/TMX import and export)
-- Catch broken placeholders, mismatched tags, and inconsistencies before export with inline QA checks
-- Play strings with browser TTS or ElevenLabs BYO cloud voices
-- Load WordPress.org glossary data and sync it to DeepL glossaries
-- Inspect WordPress plugin source references through proxied SVN lookups
-- Auto-save local drafts in the browser
-- Submit product feedback through a protected backend flow
+- **Edit** gettext `.po` / `.pot` files and i18next JSON resources in the browser
+- **Translate** entries and batches through [DeepL](https://www.deepl.com/), [Azure Translator](https://azure.microsoft.com/en-us/products/ai-services/ai-translator), or [Gemini](https://ai.google.dev/) — switch providers at any time
+- **Repo sync** — open files directly from GitHub or GitLab, commit changes, and create pull / merge requests without leaving the editor
+- **Translation memory** — reuse approved translations across files with exact and fuzzy matching (75 %+ bigram similarity), import / export as JSON or TMX
+- **QA checks** — catch broken placeholders, mismatched HTML tags, ICU variable drift, glossary conflicts, and more before export
+- **WordPress tooling** — load WordPress.org glossary data, sync it to DeepL glossaries, and inspect plugin source references through proxied SVN lookups
+- **Text-to-speech** — play strings with browser TTS or ElevenLabs BYO cloud voices
+- **Auto-save** local drafts in the browser
+- **Feedback** — submit product feedback through a Turnstile-protected backend flow
 
-## Stack
+## Tech stack
 
-- React 19
-- TypeScript
-- Vite 7
-- Mantine 8
-- Zustand
-- Supabase Edge Functions
-- Cloudflare Pages
-- Bun
+| Layer     | Technology                                                                     |
+| --------- | ------------------------------------------------------------------------------ |
+| Framework | [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/) |
+| Build     | [Vite 7](https://vite.dev/) + [Bun](https://bun.sh/)                           |
+| UI        | [Mantine 8](https://mantine.dev/) + [Tailwind CSS 4](https://tailwindcss.com/) |
+| State     | [Zustand](https://zustand.docs.pmnd.rs/)                                       |
+| Backend   | [Supabase Edge Functions](https://supabase.com/docs/guides/functions)          |
+| Hosting   | [Cloudflare Pages](https://pages.cloudflare.com/)                              |
+| Testing   | [Vitest](https://vitest.dev/) + [Playwright](https://playwright.dev/)          |
 
-## Local setup
+## Getting started
+
+### Prerequisites
+
+- [Bun](https://bun.sh/) v1.3+
+- A Supabase project (for edge function proxying)
+- A Cloudflare Turnstile site key (for feedback protection)
+
+### Setup
 
 ```bash
 bun install --frozen-lockfile
-cp .env.example .env
+cp .env.example .env          # then fill in the values below
 bun run dev
 ```
 
-Client-side environment variables:
+#### Environment variables
 
 ```bash
 VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your-anon-key
 VITE_TURNSTILE_SITE_KEY=your-cloudflare-turnstile-site-key
 
-# Local development only
+# Local development only — falls back to bypass automatically when omitted
 # VITE_FEEDBACK_BYPASS_TURNSTILE=true
 ```
 
 ## Scripts
 
-```bash
-bun run dev
-bun run lint
-bun run format
-bun run format:check
-bun run typecheck
-bun run test
-bun run test:coverage
-bun run build
-bun run preview
-bun run i18n:extract
-bun run i18n:add-lang <code>
-bun run i18n:sync-en
+| Command                      | Description                                      |
+| ---------------------------- | ------------------------------------------------ |
+| `bun run dev`                | Start Vite dev server                            |
+| `bun run build`              | Type-check and production build                  |
+| `bun run preview`            | Preview production build locally                 |
+| `bun run lint`               | ESLint                                           |
+| `bun run format`             | Prettier (write)                                 |
+| `bun run format:check`       | Prettier (check only)                            |
+| `bun run typecheck`          | TypeScript `--noEmit`                            |
+| `bun run test`               | Vitest (single run)                              |
+| `bun run test:watch`         | Vitest (watch mode)                              |
+| `bun run test:coverage`      | Vitest with coverage                             |
+| `bun run test:e2e`           | Playwright end-to-end tests                      |
+| `bun run i18n:extract`       | Regenerate `app.pot` and merge into `app.*.po`   |
+| `bun run i18n:add-lang <cc>` | Scaffold a new app language catalog              |
+| `bun run i18n:sync-en`       | Rename an English source string across all files |
+
+## Architecture
+
+```text
+src/
+  components/          UI components (editor, settings, repo-sync, feedback)
+  lib/
+    app-language/      i18n system — PO catalogs, extraction, language switching
+    deepl/             DeepL provider — client, settings, glossary CRUD
+    azure/             Azure Translator provider — client, settings
+    gemini/            Gemini provider — client, settings, project context
+    translation/       Provider abstraction — dispatcher, shared types
+    translation-memory/  TM store — exact + fuzzy matching, JSON/TMX import/export
+    qa/                QA engine — analyzer, rule definitions
+    repo-sync/         Repo sync types and provider dispatcher
+    github/            GitHub REST API client and token storage
+    gitlab/            GitLab REST API client and token storage
+  pages/               Route-level page components
+  stores/              Zustand stores (editor, settings, repo-sync, TM)
+supabase/
+  functions/
+    deepl-translate/   DeepL proxy
+    azure-translate/   Azure Translator proxy
+    gemini-translate/  Gemini proxy
+    tts-elevenlabs/    ElevenLabs TTS proxy
+    wp-glossary/       WordPress.org glossary proxy
+    wp-source/         WordPress SVN source proxy
+    feedback-issue/    Feedback → GitHub Issues
+    _shared/           Validation helpers shared across functions
+public/                Static assets
 ```
 
-## Translating GlossBoss
+### Translation providers
 
-GlossBoss ships with an app UI translation system backed by gettext `.po` catalogs in
-`src/lib/app-language/locales/`.
+The app supports three translation backends — **DeepL** (default), **Azure Translator**, and **Gemini**. The active provider is stored in `localStorage` and can be switched at any time in Settings.
 
-- `app.en.po` is the source catalog and required fallback language for the app UI.
-- Edit an existing catalog such as `app.en.po` or `app.nl.po` to improve current translations.
-- Add a new `app.<language>.po` catalog when introducing another UI language; it is discovered
-  automatically.
-- When you add a new `t('...')` UI string in code, run `bun run i18n:extract` to update the
-  `app.pot` template and merge into all `app.*.po` catalogs automatically. CI fails if PO/POT
-  files are out of date.
+Each provider has a client-side module (`src/lib/<provider>/`) with `client.ts` (edge function caller) and `settings.ts` (credential storage), plus a matching Supabase Edge Function that proxies API calls and keeps server-managed secrets private.
 
-For the full contributor workflow, see `CONTRIBUTING.md`. The deployed app also includes a
-translation guide at `/translate/`.
+Glossary support varies by provider: DeepL uses server-managed glossaries (CRUD API), Gemini uses prompt-based glossary injection with post-generation validation, and Azure has no glossary support.
 
-## Translation Memory
+### Repo sync
 
-GlossBoss stores your approved (translated, non-fuzzy) entries in a local memory bank scoped by
-project and target language. When you select a row in the editor, the inspector panel suggests
-matching translations from memory — exact matches appear first, then fuzzy matches scored at 75% or
-above using bigram similarity.
+Repo sync lets users open locale files directly from **GitHub** or **GitLab** repositories and push translations back — with optional branch creation and pull / merge request support.
 
-Manage memory in **Settings → Backup**: export as JSON (lossless backup) or TMX (for other CAT
-tools like memoQ, Trados, OmegaT), import `.json`/`.tmx`/`.xml` files to merge into the current
-project, or clear the current project memory.
+- **Provider abstraction** — `src/lib/repo-sync/` defines the shared `RepoClient` interface and a `createRepoClient()` factory that dispatches to the GitHub or GitLab implementation.
+- **Provider clients** — `src/lib/github/` and `src/lib/gitlab/` call their respective REST APIs directly from the browser (no edge function needed — both support CORS with PAT auth).
+- **Token storage** — follows the same session/localStorage pattern as translation providers; tokens default to session-only and can optionally be persisted.
+- **State** — `src/stores/repo-sync-store.ts` is a Zustand store persisted to `localStorage`, tracking the active connection, sync settings (commit prefix, branch template, PR defaults), and operation status. Sensitive content (file baselines) is stripped before persistence.
+- **UI** — `src/components/repo-sync/` contains a tabbed modal (Connect → Browse → Push), a recursive file tree browser with locale-file highlighting, and a commit panel supporting conventional commits, branch creation, and PR / MR creation.
 
-## QA Checks
+### Translation memory
 
-QA checks run automatically as you edit and flag issues that could break output or cause
-inconsistencies:
+Approved (translated, non-fuzzy) entries are stored locally per project and target language. The inspector panel shows matching translations — exact matches first, then fuzzy matches scored at 75 %+ using bigram similarity. Memory can be exported as JSON or TMX and imported from `.json` / `.tmx` / `.xml` files.
+
+### QA checks
+
+QA checks run automatically as you edit:
 
 | Rule                        | Severity | What it catches                                                 |
 | --------------------------- | -------- | --------------------------------------------------------------- |
@@ -107,21 +148,18 @@ inconsistencies:
 | Whitespace drift            | Warning  | Leading/trailing spaces or newlines differ                      |
 | Punctuation drift           | Warning  | Terminal punctuation (`.` `!` `?` `…` `:` `;`) differs          |
 
-Issues appear as badges in the signals column, as details in the inspector panel, and as a summary
-modal before export. Export is never blocked — you can always export anyway after reviewing.
+Issues appear as badges in the signals column, as details in the inspector panel, and as a summary modal before export. Export is never blocked.
 
-## Deployment model
+## Deployment
 
-### Frontend
+### Frontend — Cloudflare Pages
 
-The frontend is built with Vite and deployed to Cloudflare Pages.
+GitHub Actions in `.github/workflows/cloudflare-pages.yml` deploy the Vite build:
 
-GitHub Actions in `.github/workflows/cloudflare-pages.yml` deploy:
+- `main` → production
+- Pull requests into `main` → preview branches
 
-- `main` pushes to production
-- pull requests into `main` to preview branches
-
-Required GitHub repository secrets for the frontend build:
+**Required GitHub repository secrets:**
 
 - `CLOUDFLARE_ACCOUNT_ID`
 - `CLOUDFLARE_API_TOKEN`
@@ -129,112 +167,87 @@ Required GitHub repository secrets for the frontend build:
 - `VITE_SUPABASE_ANON_KEY`
 - `VITE_TURNSTILE_SITE_KEY`
 
-### Backend
+### Backend — Supabase Edge Functions
 
-Supabase Edge Functions proxy external services and keep server-managed secrets out of the browser.
+Edge functions proxy external services and keep server-managed secrets out of the browser. GitHub Actions in `.github/workflows/supabase-functions.yml` automatically deploy when files under `supabase/functions/` change on `main`.
 
-`VITE_SUPABASE_ANON_KEY` supports both legacy JWT anon keys and newer `sb_publishable_*` keys.
+**Functions:** `deepl-translate`, `azure-translate`, `gemini-translate`, `tts-elevenlabs`, `wp-glossary`, `wp-source`, `feedback-issue`
 
-Functions:
-
-- `deepl-translate`
-- `azure-translate`
-- `gemini-translate`
-- `tts-elevenlabs`
-- `wp-glossary`
-- `wp-source`
-- `feedback-issue`
-
-Deploy them with the Supabase CLI:
+**Manual deploy:**
 
 ```bash
 bunx supabase link --project-ref <your-project-ref>
 bunx supabase functions deploy deepl-translate --no-verify-jwt
-bunx supabase functions deploy azure-translate --no-verify-jwt
-bunx supabase functions deploy gemini-translate --no-verify-jwt
-bunx supabase functions deploy tts-elevenlabs --no-verify-jwt
-bunx supabase functions deploy wp-glossary --no-verify-jwt
-bunx supabase functions deploy wp-source --no-verify-jwt
-bunx supabase functions deploy feedback-issue --no-verify-jwt
+# repeat for each function
 ```
 
-GitHub Actions in `.github/workflows/supabase-functions.yml` automatically deploy the Edge
-Functions on pushes to `main` when files under `supabase/functions/` change. This is the path used
-for merged changes landing on `main`.
+<details>
+<summary><strong>Supabase secrets reference</strong></summary>
 
-Required Supabase secrets / environment variables:
+**Required:**
 
-- `ALLOWED_ORIGINS`
-- `TURNSTILE_SECRET`
-- `GITHUB_TOKEN`
+| Secret             | Purpose                                      |
+| ------------------ | -------------------------------------------- |
+| `ALLOWED_ORIGINS`  | Comma-separated list of allowed CORS origins |
+| `TURNSTILE_SECRET` | Cloudflare Turnstile server secret           |
+| `GITHUB_TOKEN`     | Fine-grained PAT for feedback issue creation |
 
-Optional Supabase secrets:
+**Optional (enable translation providers):**
 
-- `DEEPL_KEY`
-- `AZURE_TRANSLATOR_KEY`
-- `AZURE_TRANSLATOR_REGION`
-- `AZURE_TRANSLATOR_ENDPOINT`
-- `GEMINI_API_KEY`
-- `GITHUB_OWNER`
-- `GITHUB_REPO`
-- `ALLOW_TURNSTILE_BYPASS`
+| Secret                      | Purpose                   |
+| --------------------------- | ------------------------- |
+| `DEEPL_KEY`                 | Server-side DeepL API key |
+| `AZURE_TRANSLATOR_KEY`      | Azure Translator key      |
+| `AZURE_TRANSLATOR_REGION`   | Azure region              |
+| `AZURE_TRANSLATOR_ENDPOINT` | Azure endpoint URL        |
+| `GEMINI_API_KEY`            | Google Gemini API key     |
 
-Required GitHub repository secrets for the Supabase deployment workflow:
+**Optional (feedback):**
 
-- `SUPABASE_ACCESS_TOKEN`
-- `SUPABASE_PROJECT_REF`
+| Secret                   | Purpose                           |
+| ------------------------ | --------------------------------- |
+| `GITHUB_OWNER`           | Target GitHub org/user for issues |
+| `GITHUB_REPO`            | Target GitHub repo for issues     |
+| `ALLOW_TURNSTILE_BYPASS` | Allow dev bypass tokens           |
 
-Example:
+**GitHub repository secrets for CI deploy:**
 
-```bash
-bunx supabase secrets set ALLOWED_ORIGINS=https://glossboss.example,https://preview.glossboss.example
-bunx supabase secrets set TURNSTILE_SECRET=your-turnstile-secret
-bunx supabase secrets set GITHUB_TOKEN=your-fine-grained-token
-bunx supabase secrets set DEEPL_KEY=your-server-side-deepl-key
-bunx supabase secrets set AZURE_TRANSLATOR_KEY=your-server-side-azure-key
-bunx supabase secrets set AZURE_TRANSLATOR_REGION=your-azure-region
-bunx supabase secrets set GEMINI_API_KEY=your-server-side-gemini-key
-```
+| Secret                  | Purpose                       |
+| ----------------------- | ----------------------------- |
+| `SUPABASE_ACCESS_TOKEN` | Supabase management API token |
+| `SUPABASE_PROJECT_REF`  | Supabase project reference    |
 
-## Security notes
+</details>
+
+## Translating GlossBoss
+
+GlossBoss uses gettext `.po` files for its own interface text. Catalogs live in `src/lib/app-language/locales/`.
+
+- `app.en.po` is the source catalog and required fallback.
+- Run `bun run i18n:extract` after adding or changing `t()` / `msgid()` calls — CI fails if PO/POT files are out of date.
+- Run `bun run i18n:add-lang <code>` to scaffold a new language.
+- Run `bun run i18n:sync-en` to rename an English source string across all files.
+
+See `CONTRIBUTING.md` for the full contributor workflow. The deployed app also includes a translation guide at `/translate/`.
+
+## Security and privacy
 
 - Edge functions reject requests from origins not listed in `ALLOWED_ORIGINS`.
 - `feedback-issue` uses Cloudflare Turnstile plus best-effort in-memory rate limiting.
-- Translation provider API keys (DeepL, Azure Translator, Gemini) can be stored locally in the
-  browser if the user chooses to save them. For shared or untrusted machines, saved keys should be
-  removed after use.
-- Azure Translator endpoint URLs are validated against a known domain allowlist to prevent SSRF.
-- Gemini API keys are sent via the `x-goog-api-key` header rather than URL query parameters to
-  avoid accidental exposure in server logs and referrer headers.
+- Translation provider API keys can optionally be stored in the browser. On shared machines, saved keys should be removed after use.
+- Repo sync tokens default to session-only storage and are never sent to GlossBoss servers — they go directly to the GitHub / GitLab API from the browser.
+- Azure Translator endpoint URLs are validated against a domain allowlist to prevent SSRF.
+- Gemini API keys are sent via the `x-goog-api-key` header rather than URL query parameters.
+- Drafts and settings are stored in browser local storage. Optional feedback submissions can create GitHub issues and may include a contact email.
 
 If you find a security issue, please follow `SECURITY.md` instead of opening a public issue.
 
-## Privacy
+See also `/privacy/` and `NOTICE.md`.
 
-The app stores drafts and some settings in browser local storage. Optional feedback submissions can create GitHub issues and may include a contact email if the user provides one.
+## Contributing
 
-In local Vite dev mode, the frontend automatically falls back to a bypass token (`dev-bypass`) when `VITE_TURNSTILE_SITE_KEY` is not set.
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) for setup, commit conventions, i18n workflow, and project expectations.
 
-Set `VITE_FEEDBACK_BYPASS_TURNSTILE=true` in your local `.env` if you want to force bypass even when a site key is present.
+## License
 
-See `/privacy/` and `NOTICE.md`.
-
-## Project structure
-
-```text
-src/
-  components/
-  lib/
-  pages/
-  stores/
-supabase/
-  functions/
-public/
-```
-
-## Open source
-
-- Maintainers: Toine Rademacher and Bjorn Lammers
-- License: `LICENSE`
-- Contributing guide: `CONTRIBUTING.md`
-- Security policy: `SECURITY.md`
+[AGPL-3.0-only](LICENSE) — maintained by Toine Rademacher and Bjorn Lammers.

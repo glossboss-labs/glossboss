@@ -45,7 +45,32 @@ Examples:
 - Keep client-side environment variables under `VITE_*`.
 - Do not commit secrets or local `.env` files.
 - Add or update tests when behavior changes.
-- If you touch translation memory or QA, read the Translation Memory and QA Checks sections in `README.md` first. TM logic lives in `src/lib/translation-memory/`, QA logic in `src/lib/qa/`. To add a new QA rule, update `types.ts` (rule identifier and label) and `analyzer.ts` (check implementation).
+
+### Translation memory and QA
+
+If you touch translation memory or QA, read the Translation Memory and QA Checks sections in
+`README.md` first. TM logic lives in `src/lib/translation-memory/`, QA logic in `src/lib/qa/`. To
+add a new QA rule, update `types.ts` (rule identifier and label) and `analyzer.ts` (check
+implementation).
+
+### Translation providers
+
+The app supports three translation backends — DeepL, Azure Translator, and Gemini. When adding a new
+provider, add a module under `src/lib/<provider>/` with `client.ts` and `settings.ts`, add the
+`TranslationProviderId` union member in `src/lib/translation/types.ts`, handle it in
+`src/lib/translation/client.ts`, add a Supabase Edge Function under `supabase/functions/`, and
+update `.github/workflows/supabase-functions.yml`.
+
+### Repo sync
+
+Repo sync connects the editor to GitHub and GitLab repositories. The shared interface lives in
+`src/lib/repo-sync/`, with provider clients in `src/lib/github/` and `src/lib/gitlab/`. State is
+managed by `src/stores/repo-sync-store.ts`. UI components are in `src/components/repo-sync/`.
+
+When adding a new repository provider, implement the `RepoClient` interface from
+`src/lib/repo-sync/client.ts`, add a provider module under `src/lib/<provider>/` with `client.ts`,
+`types.ts`, and `settings.ts`, add the `RepoProviderId` union member in
+`src/lib/repo-sync/types.ts`, and handle it in the `createRepoClient()` factory.
 
 ## Translating the app
 
