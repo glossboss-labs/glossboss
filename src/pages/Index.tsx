@@ -484,7 +484,6 @@ export default function Index() {
     qaReports,
     setQaReports,
     mergeEntries,
-    setFilterState,
   } = useEditorStore();
   const upsertApprovedEntries = useTranslationMemoryStore((state) => state.upsertApprovedEntries);
 
@@ -688,11 +687,19 @@ export default function Index() {
 
   useEffect(() => {
     const hiddenFilters = workspaceMode === 'edit' ? REVIEW_ONLY_FILTERS : EDIT_ONLY_FILTERS;
+    useEditorStore.setState((state) => {
+      const nextFilters = new Map(state.activeFilters);
+      let didChange = false;
 
-    hiddenFilters.forEach((filterId) => {
-      setFilterState(filterId, null);
+      hiddenFilters.forEach((filterId) => {
+        if (nextFilters.delete(filterId)) {
+          didChange = true;
+        }
+      });
+
+      return didChange ? { activeFilters: nextFilters } : state;
     });
-  }, [setFilterState, workspaceMode]);
+  }, [workspaceMode]);
 
   /**
    * Handle language change from translate toolbar
@@ -2107,6 +2114,8 @@ export default function Index() {
                       <>
                         <Divider />
                         <FilterToolbar mode="edit" />
+                        <Divider />
+                        <ReviewSummary />
                         <Divider />
                         <TranslateToolbar
                           onLanguageChange={handleLanguageChange}

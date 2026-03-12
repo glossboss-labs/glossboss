@@ -1928,18 +1928,14 @@ function EntryDetailsPanel({
         )}
       </Stack>
 
-      {mode === 'review' && (
-        <>
-          <Divider />
+      <Divider />
 
-          <Stack gap={6}>
-            <Text size="xs" fw={600} c="dimmed">
-              {t('Review')}
-            </Text>
-            <ReviewPanel entry={entry} reviewEntry={reviewEntry} />
-          </Stack>
-        </>
-      )}
+      <Stack gap={6}>
+        <Text size="xs" fw={600} c="dimmed">
+          {t('Review')}
+        </Text>
+        <ReviewPanel entry={entry} reviewEntry={reviewEntry} />
+      </Stack>
 
       <Divider />
 
@@ -2055,7 +2051,6 @@ function EntryDetailsPanel({
  */
 const EntryRow = memo(function EntryRow({
   entry,
-  mode,
   isChecked,
   visibleDataColumns,
   onToggleSelection,
@@ -2063,7 +2058,6 @@ const EntryRow = memo(function EntryRow({
   onKeyDown,
 }: {
   entry: POEntry;
-  mode: WorkspaceMode;
   isChecked: boolean;
   visibleDataColumns: DataColumnKey[];
   onToggleSelection: (checked: boolean) => void;
@@ -2164,8 +2158,6 @@ const EntryRow = memo(function EntryRow({
                 reviewStatus={reviewStatus}
                 unresolvedCommentCount={unresolvedCommentCount}
                 isReviewEntryLocked={isReviewEntryLocked}
-                showReviewStatus={mode === 'review'}
-                showReviewComments={mode === 'review'}
               />
             </Table.Td>
           );
@@ -2219,7 +2211,6 @@ const EntryRow = memo(function EntryRow({
               glossaryAnalysis={glossaryAnalysis ?? null}
               qaReport={qaReport ?? null}
               unresolvedCommentCount={unresolvedCommentCount}
-              showReviewSignals={mode === 'review'}
             />
           </Table.Td>
         );
@@ -2335,10 +2326,8 @@ const MobileEntryCard = memo(function MobileEntryCard({
             reviewStatus={reviewStatus}
             unresolvedCommentCount={unresolvedCommentCount}
             isReviewEntryLocked={isReviewEntryLocked}
-            showReviewStatus={mode === 'review'}
-            showReviewComments={mode === 'review'}
           />
-          {mode === 'review' && <ReviewStatusBadge status={reviewStatus} compact />}
+          <ReviewStatusBadge status={reviewStatus} compact />
         </Group>
 
         <UnstyledButton
@@ -3332,7 +3321,6 @@ export function EditorTable({
                       <EntryRow
                         key={entry.id}
                         entry={entry}
-                        mode={mode}
                         isChecked={selectedEntryIds.has(entry.id)}
                         visibleDataColumns={visibleDataColumns}
                         onToggleSelection={(checked) => setEntrySelection(entry.id, checked)}
