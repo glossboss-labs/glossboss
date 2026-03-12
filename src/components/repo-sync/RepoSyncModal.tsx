@@ -97,11 +97,21 @@ export function RepoSyncModal({
   const syncSettings = useRepoSyncStore((s) => s.syncSettings);
   const setSyncSettings = useRepoSyncStore((s) => s.setSyncSettings);
 
-  const [activeTab, setActiveTab] = useState<string | null>(initialTab ?? 'connect');
+  // Derive the best default tab from current state
+  const defaultTab = (): ModalTab => {
+    if (initialTab) return initialTab;
+    if (connection && serializedContent) return 'push';
+    if (hasGitHubToken() || hasGitLabToken()) return 'browse';
+    return 'connect';
+  };
+
+  const [activeTab, setActiveTab] = useState<string | null>(defaultTab);
   const [showSettings, setShowSettings] = useState(false);
 
-  // Provider selection
-  const [provider, setProvider] = useState<RepoProviderId>('github');
+  // Provider selection — restore from active connection
+  const [provider, setProvider] = useState<RepoProviderId>(
+    () => connection?.provider ?? (hasGitLabToken() && !hasGitHubToken() ? 'gitlab' : 'github'),
+  );
 
   // Token inputs
   const [ghToken, setGhToken] = useState(() => getGitHubSettings().token);
@@ -129,7 +139,7 @@ export function RepoSyncModal({
   const hasToken = provider === 'github' ? hasGitHubToken() : hasGitLabToken();
   const autoLoadedRef = useRef(false);
 
-  // Refresh token state and auto-load repos when modal opens
+  // Refresh token state and set the right tab/provider when modal opens
   useEffect(() => {
     if (opened) {
       setGhToken(getGitHubSettings().token);
@@ -137,13 +147,18 @@ export function RepoSyncModal({
       setGlInstanceUrl(getGitLabSettings().instanceUrl);
       setGhPersist(isGitHubPersistEnabled());
       setGlPersist(isGitLabPersistEnabled());
-      if (initialTab) setActiveTab(initialTab);
+      // Restore provider from connection
+      if (connection?.provider) {
+        setProvider(connection.provider);
+      }
+      setActiveTab(defaultTab());
     } else {
       autoLoadedRef.current = false;
     }
-  }, [opened, initialTab]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [opened]);
 
-  // Auto-load repos when modal opens with a saved token
+  // Auto-load repos when the Browse tab needs them
   useEffect(() => {
     if (!opened || autoLoadedRef.current || loadingRepos) return;
     const tokenAvailable = provider === 'github' ? hasGitHubToken() : hasGitLabToken();
@@ -180,7 +195,6 @@ export function RepoSyncModal({
     handleSaveToken();
     setLoadingRepos(true);
     setRepoError(null);
-    setRepos([]);
 
     try {
       const client = createRepoClient(provider);
@@ -188,19 +202,31 @@ export function RepoSyncModal({
       setRepos(result);
       if (result.length > 0) {
         setActiveTab('browse');
+        // Pre-select repo from active connection
+        if (connection) {
+          const connRepo = `${connection.owner}/${connection.repo}`;
+          if (result.some((r) => r.fullName === connRepo)) {
+            setSelectedRepo(connRepo);
+          }
+        }
       }
     } catch (err) {
       setRepoError(err instanceof Error ? err.message : String(err));
     } finally {
       setLoadingRepos(false);
     }
-  }, [provider, handleSaveToken]);
+  }, [provider, handleSaveToken, connection]);
 
   /** Auto-scan a repo for locale files on the default branch */
   const handleScanLocaleFiles = useCallback(
     async (repoFullName: string) => {
       const entry = repos.find((r) => r.fullName === repoFullName);
-      if (!entry) return;
+      // Fall back to connection metadata if repos haven't loaded yet
+      const [owner, repoName] = repoFullName.split('/');
+      const scanOwner = entry?.owner ?? owner;
+      const scanRepo = entry?.name ?? repoName;
+      const scanBranch = entry?.defaultBranch ?? connection?.defaultBranch ?? 'main';
+      if (!scanOwner || !scanRepo) return;
 
       setScanningFiles(true);
       setScanError(null);
@@ -209,7 +235,7 @@ export function RepoSyncModal({
 
       try {
         const client = createRepoClient(provider);
-        const files = await client.searchLocaleFiles(entry.owner, entry.name, entry.defaultBranch);
+        const files = await client.searchLocaleFiles(scanOwner, scanRepo, scanBranch);
 
         // Filter out common non-locale JSON files (package.json, tsconfig, etc.)
         const filtered = files.filter((f) => {
@@ -238,7 +264,7 @@ export function RepoSyncModal({
         setScanningFiles(false);
       }
     },
-    [repos, provider],
+    [repos, provider, connection],
   );
 
   const handleRepoSelected = useCallback(
@@ -259,29 +285,29 @@ export function RepoSyncModal({
     async (path: string) => {
       if (!selectedRepo) return;
       const entry = repos.find((r) => r.fullName === selectedRepo);
-      if (!entry) return;
+      // Fall back to connection metadata
+      const [ownerFb, repoFb] = selectedRepo.split('/');
+      const owner = entry?.owner ?? ownerFb;
+      const repoName = entry?.name ?? repoFb;
+      const branch = entry?.defaultBranch ?? connection?.defaultBranch ?? 'main';
+      if (!owner || !repoName) return;
 
       setLoadingFile(true);
       setFileError(null);
 
       try {
         const client = createRepoClient(provider);
-        const fileContent = await client.getFileContent(
-          entry.owner,
-          entry.name,
-          entry.defaultBranch,
-          path,
-        );
+        const fileContent = await client.getFileContent(owner, repoName, branch, path);
 
         const conn: RepoConnection = {
           provider,
-          owner: entry.owner,
-          repo: entry.name,
-          branch: entry.defaultBranch,
+          owner,
+          repo: repoName,
+          branch,
           filePath: path,
           baseSha: fileContent.sha,
           baseContent: fileContent.content,
-          defaultBranch: entry.defaultBranch,
+          defaultBranch: branch,
         };
 
         setConnection(conn);
@@ -293,7 +319,7 @@ export function RepoSyncModal({
         setLoadingFile(false);
       }
     },
-    [selectedRepo, repos, provider, setConnection, onFileLoaded, onClose],
+    [selectedRepo, repos, provider, connection, setConnection, onFileLoaded, onClose],
   );
 
   const handleFileSelect = useCallback(
@@ -514,7 +540,49 @@ export function RepoSyncModal({
         {/* Browse tab */}
         <Tabs.Panel value="browse" pt="md">
           <Stack gap="md">
-            {repos.length === 0 && !loadingRepos ? (
+            {/* Active connection summary */}
+            {connection && (
+              <Paper p="sm" withBorder>
+                <Group justify="space-between" align="flex-start">
+                  <Stack gap={4}>
+                    <Group gap="xs">
+                      <Badge size="sm" variant="dot" color="green">
+                        {t('Connected')}
+                      </Badge>
+                      <Text size="sm" fw={500}>
+                        {connection.owner}/{connection.repo}
+                      </Text>
+                    </Group>
+                    <Group gap="xs">
+                      <GitBranch size={12} />
+                      <Text size="xs" c="dimmed">
+                        {connection.branch}
+                      </Text>
+                      <Text size="xs" c="dimmed">
+                        &middot;
+                      </Text>
+                      <Text size="xs" c="dimmed">
+                        {connection.filePath}
+                      </Text>
+                    </Group>
+                  </Stack>
+                  <Button
+                    variant="subtle"
+                    size="xs"
+                    color="dimmed"
+                    onClick={() => {
+                      // Allow browsing for a different file
+                      setSelectedRepo(`${connection.owner}/${connection.repo}`);
+                      void handleScanLocaleFiles(`${connection.owner}/${connection.repo}`);
+                    }}
+                  >
+                    {t('Change file')}
+                  </Button>
+                </Group>
+              </Paper>
+            )}
+
+            {repos.length === 0 && !loadingRepos && !connection ? (
               <Stack align="center" py="xl">
                 <Text size="sm" c="dimmed">
                   {t('Connect to a provider first to browse repositories')}
