@@ -63,7 +63,7 @@ import {
   Info,
   Archive,
 } from 'lucide-react';
-import { ConfirmModal } from '@/components/ui';
+import { ConfirmModal, PromptModal } from '@/components/ui';
 import { EditorTable, FilterToolbar, HeaderEditor, TranslateToolbar } from '@/components/editor';
 import { FeedbackModal } from '@/components/feedback';
 import { SettingsModal } from '@/components/SettingsModal';
@@ -388,6 +388,7 @@ export default function Index() {
   });
 
   // Repo sync state
+  const [urlPromptOpen, setUrlPromptOpen] = useState(false);
   const [repoSyncOpen, setRepoSyncOpen] = useState(false);
   const [repoSyncInitialTab, setRepoSyncInitialTab] = useState<
     'connect' | 'browse' | 'push' | undefined
@@ -1738,12 +1739,7 @@ export default function Index() {
                       <Menu.Label>{t('Actions')}</Menu.Label>
                       <Menu.Item
                         leftSection={<Link size={14} />}
-                        onClick={() => {
-                          const url = window.prompt(t('Enter a .po file URL'));
-                          if (url?.trim()) {
-                            void handleLoadFromUrl(url.trim());
-                          }
-                        }}
+                        onClick={() => setUrlPromptOpen(true)}
                       >
                         {t('Load from URL')}
                       </Menu.Item>
@@ -1835,6 +1831,17 @@ export default function Index() {
               )}
               confirmLabel={msgid('Replace')}
               variant="warning"
+            />
+
+            {/* URL input prompt */}
+            <PromptModal
+              opened={urlPromptOpen}
+              onClose={() => setUrlPromptOpen(false)}
+              onSubmit={(url) => void handleLoadFromUrl(url)}
+              title={t('Load from URL')}
+              label={t('File URL')}
+              placeholder="https://example.com/locale/en.po"
+              submitLabel={msgid('Load')}
             />
 
             {/* Drag error display */}
