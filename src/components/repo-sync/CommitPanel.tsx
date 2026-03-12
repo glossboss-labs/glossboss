@@ -24,6 +24,7 @@ import { GitBranch, GitPullRequest, AlertCircle, Check, ExternalLink } from 'luc
 import type { RepoClient } from '@/lib/repo-sync/client';
 import type { RepoConnection, CommitResult, PullRequestResult } from '@/lib/repo-sync/types';
 import { useTranslation } from '@/lib/app-language';
+import { useRepoSyncStore } from '@/stores';
 
 interface CommitPanelProps {
   client: RepoClient;
@@ -41,25 +42,22 @@ export function CommitPanel({
   onPrSuccess,
 }: CommitPanelProps) {
   const { t } = useTranslation();
-  const [commitMessage, setCommitMessage] = useState(
-    `Update translations for ${connection.filePath.split('/').pop()}`,
-  );
+  const syncSettings = useRepoSyncStore((s) => s.syncSettings);
+
+  const filename = connection.filePath.split('/').pop() ?? 'translations';
+  const fileStem = filename.replace(/\.[^.]+$/, '');
+  const prefix = syncSettings.commitPrefix ? `${syncSettings.commitPrefix} ` : '';
+
+  const [commitMessage, setCommitMessage] = useState(`${prefix}update ${filename} translations`);
   const [createNewBranch, setCreateNewBranch] = useState(
-    connection.branch === connection.defaultBranch,
+    syncSettings.createNewBranch || connection.branch === connection.defaultBranch,
   );
   const [newBranchName, setNewBranchName] = useState(
-    `glossboss/update-${
-      connection.filePath
-        .split('/')
-        .pop()
-        ?.replace(/\.[^.]+$/, '') ?? 'translations'
-    }`,
+    syncSettings.branchTemplate.replace('{{file}}', fileStem),
   );
-  const [createPr, setCreatePr] = useState(true);
-  const [prTitle, setPrTitle] = useState(
-    `Update translations: ${connection.filePath.split('/').pop()}`,
-  );
-  const [prBody, setPrBody] = useState('Translations updated via GlossBoss.');
+  const [createPr, setCreatePr] = useState(syncSettings.createPr);
+  const [prTitle, setPrTitle] = useState(`${prefix}update ${filename} translations`);
+  const [prBody, setPrBody] = useState(syncSettings.prBody);
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);

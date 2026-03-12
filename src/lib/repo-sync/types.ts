@@ -111,6 +111,28 @@ export interface RepoListEntry {
   updatedAt: string;
 }
 
+/** Persisted push/commit settings for repo sync */
+export interface RepoSyncSettings {
+  /** Conventional commit prefix, e.g. "fix(i18n):" */
+  commitPrefix: string;
+  /** Branch name template — {{file}} is replaced with the filename without extension */
+  branchTemplate: string;
+  /** Whether to create a new branch by default */
+  createNewBranch: boolean;
+  /** Whether to create a PR by default */
+  createPr: boolean;
+  /** Default PR body */
+  prBody: string;
+}
+
+export const DEFAULT_SYNC_SETTINGS: RepoSyncSettings = {
+  commitPrefix: 'fix(i18n):',
+  branchTemplate: 'glossboss/update-{{file}}',
+  createNewBranch: true,
+  createPr: true,
+  prBody: 'Translations updated via GlossBoss.',
+};
+
 /** Locale file extensions we can open */
 export const LOCALE_FILE_EXTENSIONS = ['.po', '.pot', '.json'] as const;
 

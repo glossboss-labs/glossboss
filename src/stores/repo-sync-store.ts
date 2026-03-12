@@ -7,7 +7,8 @@
 
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import type { RepoConnection, RepoProviderId } from '@/lib/repo-sync/types';
+import type { RepoConnection, RepoProviderId, RepoSyncSettings } from '@/lib/repo-sync/types';
+import { DEFAULT_SYNC_SETTINGS } from '@/lib/repo-sync/types';
 
 /** Sync operation status */
 export type RepoSyncStatus = 'idle' | 'loading' | 'saving' | 'error';
@@ -15,6 +16,9 @@ export type RepoSyncStatus = 'idle' | 'loading' | 'saving' | 'error';
 export interface RepoSyncState {
   /** Active repository connection (null when working with local file) */
   connection: RepoConnection | null;
+
+  /** Persisted push/commit settings */
+  syncSettings: RepoSyncSettings;
 
   /** Current sync status */
   status: RepoSyncStatus;
@@ -45,6 +49,9 @@ export interface RepoSyncActions {
   /** Set error */
   setError: (error: string | null) => void;
 
+  /** Update sync settings */
+  setSyncSettings: (settings: Partial<RepoSyncSettings>) => void;
+
   /** Check if currently connected to a repository */
   isConnected: () => boolean;
 
@@ -63,6 +70,7 @@ export const useRepoSyncStore = create<RepoSyncState & RepoSyncActions>()(
   persist(
     (set, get) => ({
       connection: null,
+      syncSettings: { ...DEFAULT_SYNC_SETTINGS },
       status: 'idle',
       error: null,
 
@@ -103,6 +111,12 @@ export const useRepoSyncStore = create<RepoSyncState & RepoSyncActions>()(
         set({ error, status: error ? 'error' : 'idle' });
       },
 
+      setSyncSettings: (settings) => {
+        set((state) => ({
+          syncSettings: { ...state.syncSettings, ...settings },
+        }));
+      },
+
       isConnected: () => {
         return get().connection !== null;
       },
@@ -118,6 +132,7 @@ export const useRepoSyncStore = create<RepoSyncState & RepoSyncActions>()(
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         connection: state.connection ? { ...state.connection, baseContent: undefined } : null,
+        syncSettings: state.syncSettings,
       }),
     },
   ),

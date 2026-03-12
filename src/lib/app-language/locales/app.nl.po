@@ -164,6 +164,10 @@ msgstr "Automatisch gedetecteerd: {{slug}}"
 msgid "Auto-saved {age}"
 msgstr "Automatisch opgeslagen {age}"
 
+#: src/components/repo-sync/RepoSyncModal.tsx:693
+msgid "Automatically open a PR after committing"
+msgstr ""
+
 #: src/components/editor/HeaderEditor.tsx:53
 msgid "Azerbaijani"
 msgstr "Azerbeidzjaans"
@@ -184,7 +188,7 @@ msgstr ""
 msgid "Azure translation failed"
 msgstr ""
 
-#: src/components/repo-sync/RepoSyncModal.tsx:632
+#: src/components/repo-sync/RepoSyncModal.tsx:718
 msgid "Back to detected files"
 msgstr ""
 
@@ -213,7 +217,7 @@ msgstr "Bengaals"
 msgid "Bosnian"
 msgstr "Bosnisch"
 
-#: src/components/repo-sync/CommitPanel.tsx:220
+#: src/components/repo-sync/CommitPanel.tsx:218
 msgid "Branch name"
 msgstr ""
 
@@ -221,20 +225,24 @@ msgstr ""
 msgid "Branch status badge"
 msgstr "Branch-statusbadge"
 
-#: src/components/repo-sync/CommitPanel.tsx:190
+#: src/components/repo-sync/RepoSyncModal.tsx:671
+msgid "Branch template"
+msgstr ""
+
+#: src/components/repo-sync/CommitPanel.tsx:188
 msgid "Branch:"
 msgstr ""
 
 #: src/components/editor/EditorTable.tsx:2666
-#: src/components/repo-sync/RepoSyncModal.tsx:360
+#: src/components/repo-sync/RepoSyncModal.tsx:382
 msgid "Browse"
 msgstr "Bladeren"
 
-#: src/components/repo-sync/RepoSyncModal.tsx:556
+#: src/components/repo-sync/RepoSyncModal.tsx:578
 msgid "Browse all files"
 msgstr ""
 
-#: src/components/repo-sync/RepoSyncModal.tsx:613
+#: src/components/repo-sync/RepoSyncModal.tsx:635
 msgid "Browse files manually"
 msgstr ""
 
@@ -271,7 +279,7 @@ msgstr "Bewerking annuleren"
 msgid "Catalan"
 msgstr "Catalaans"
 
-#: src/components/repo-sync/CommitPanel.tsx:149
+#: src/components/repo-sync/CommitPanel.tsx:147
 msgid "Changes committed successfully"
 msgstr ""
 
@@ -351,7 +359,7 @@ msgstr ""
 msgid "Clear search"
 msgstr "Zoekopdracht wissen"
 
-#: src/components/repo-sync/RepoSyncModal.tsx:485
+#: src/components/repo-sync/RepoSyncModal.tsx:507
 msgid "Clear token"
 msgstr ""
 
@@ -395,16 +403,20 @@ msgstr "Instellingen sluiten"
 msgid "Columns"
 msgstr "Kolommen"
 
-#: src/components/repo-sync/CommitPanel.tsx:274
+#: src/components/repo-sync/CommitPanel.tsx:272
 msgid "Commit & create PR"
 msgstr ""
 
-#: src/components/repo-sync/CommitPanel.tsx:275
+#: src/components/repo-sync/CommitPanel.tsx:273
 msgid "Commit changes"
 msgstr ""
 
-#: src/components/repo-sync/CommitPanel.tsx:200
+#: src/components/repo-sync/CommitPanel.tsx:198
 msgid "Commit message"
+msgstr ""
+
+#: src/components/repo-sync/RepoSyncModal.tsx:659
+msgid "Commit prefix"
 msgstr ""
 
 #: src/components/ui/SpeakButton.tsx:41
@@ -415,15 +427,15 @@ msgstr "Stel je ElevenLabs API-sleutel in in de instellingen."
 msgid "Confirm"
 msgstr "Bevestigen"
 
-#: src/components/repo-sync/RepoSyncModal.tsx:357
+#: src/components/repo-sync/RepoSyncModal.tsx:379
 msgid "Connect"
 msgstr ""
 
-#: src/components/repo-sync/RepoSyncModal.tsx:481
+#: src/components/repo-sync/RepoSyncModal.tsx:503
 msgid "Connect & list repositories"
 msgstr ""
 
-#: src/components/repo-sync/RepoSyncModal.tsx:498
+#: src/components/repo-sync/RepoSyncModal.tsx:520
 msgid "Connect to a provider first to browse repositories"
 msgstr ""
 
@@ -467,6 +479,10 @@ msgid ""
 "."
 msgstr "Bepaalt de toon van DeepL-vertalingen. Niet alle talen ondersteunen dit."
 
+#: src/components/repo-sync/RepoSyncModal.tsx:660
+msgid "Conventional commit prefix prepended to commit messages, e.g. fix(i18n):"
+msgstr ""
+
 #: src/pages/Index.tsx:957
 msgid ""
 "Could not fetch the file. The server may not allow cross-origin requests. Tr"
@@ -476,23 +492,25 @@ msgstr ""
 "origin-verzoeken toe. Probeer het bestand te downloaden en direct te uploade"
 "n."
 
-#: src/components/repo-sync/CommitPanel.tsx:212
+#: src/components/repo-sync/CommitPanel.tsx:210
 msgid "Create a feature branch for these changes"
 msgstr ""
 
-#: src/components/repo-sync/RepoSyncModal.tsx:440
+#: src/components/repo-sync/RepoSyncModal.tsx:462
 msgid "Create a token"
 msgstr ""
 
-#: src/components/repo-sync/RepoSyncModal.tsx:396
+#: src/components/repo-sync/RepoSyncModal.tsx:418
 msgid "Create a token with repo scope pre-selected"
 msgstr ""
 
-#: src/components/repo-sync/CommitPanel.tsx:208
+#: src/components/repo-sync/CommitPanel.tsx:206
+#: src/components/repo-sync/RepoSyncModal.tsx:683
 msgid "Create new branch"
 msgstr ""
 
-#: src/components/repo-sync/CommitPanel.tsx:234
+#: src/components/repo-sync/CommitPanel.tsx:232
+#: src/components/repo-sync/RepoSyncModal.tsx:692
 msgid "Create pull request"
 msgstr ""
 
@@ -895,7 +913,7 @@ msgstr "Feedback ingediend"
 msgid "Feedback verification is not configured."
 msgstr "Feedbackverificatie is niet ingesteld."
 
-#: src/components/repo-sync/RepoSyncModal.tsx:628
+#: src/components/repo-sync/RepoSyncModal.tsx:714
 msgid "File browser"
 msgstr ""
 
@@ -911,7 +929,7 @@ msgstr "Bestand gedownload"
 msgid "File order"
 msgstr "Bestandsvolgorde"
 
-#: src/components/repo-sync/CommitPanel.tsx:184
+#: src/components/repo-sync/CommitPanel.tsx:182
 msgid "File:"
 msgstr ""
 
@@ -1040,7 +1058,7 @@ msgstr "Duits (Zwitserland)"
 msgid "Get API key"
 msgstr ""
 
-#: src/components/repo-sync/RepoSyncModal.tsx:425
+#: src/components/repo-sync/RepoSyncModal.tsx:447
 msgid "GitLab instance URL"
 msgstr ""
 
@@ -1126,7 +1144,7 @@ msgstr ""
 msgid "Glossary: {count} terms ({locale})"
 msgstr "Glossary: {count} termen ({locale})"
 
-#: src/components/repo-sync/RepoSyncModal.tsx:501
+#: src/components/repo-sync/RepoSyncModal.tsx:523
 msgid "Go to Connect"
 msgstr ""
 
@@ -1436,7 +1454,7 @@ msgstr ""
 "Als je een nieuw bestand via een URL laadt, wordt het huidige bestand vervan"
 "gen. Alle onopgeslagen wijzigingen gaan verloren."
 
-#: src/components/repo-sync/RepoSyncModal.tsx:526
+#: src/components/repo-sync/RepoSyncModal.tsx:548
 msgid "Loading file..."
 msgstr ""
 
@@ -1616,7 +1634,7 @@ msgstr "Er zijn geen glossary-items gevonden in het geüploade bestand."
 msgid "No glossary terms in selected text"
 msgstr "Geen glossarytermen in de geselecteerde tekst"
 
-#: src/components/repo-sync/RepoSyncModal.tsx:605
+#: src/components/repo-sync/RepoSyncModal.tsx:627
 msgid "No locale files detected automatically"
 msgstr ""
 
@@ -1624,7 +1642,7 @@ msgstr ""
 msgid "No matching plural form"
 msgstr "Geen overeenkomstige meervoudsvorm"
 
-#: src/components/repo-sync/RepoSyncModal.tsx:513
+#: src/components/repo-sync/RepoSyncModal.tsx:535
 msgid "No repositories found"
 msgstr ""
 
@@ -1707,7 +1725,7 @@ msgstr "Sla inloggegevens alleen op op persoonlijke, vertrouwde apparaten."
 msgid "Only visible while running the app in development mode"
 msgstr "Alleen zichtbaar in de ontwikkelingsmodus."
 
-#: src/components/repo-sync/CommitPanel.tsx:235
+#: src/components/repo-sync/CommitPanel.tsx:233
 msgid "Open a PR targeting {{branch}}"
 msgstr ""
 
@@ -1746,11 +1764,11 @@ msgstr "URL van PO-bestand"
 msgid "POT Created"
 msgstr "POT aangemaakt"
 
-#: src/components/repo-sync/CommitPanel.tsx:250
+#: src/components/repo-sync/CommitPanel.tsx:248
 msgid "PR description"
 msgstr ""
 
-#: src/components/repo-sync/CommitPanel.tsx:245
+#: src/components/repo-sync/CommitPanel.tsx:243
 msgid "PR title"
 msgstr ""
 
@@ -1762,8 +1780,8 @@ msgstr "Plak de URL van een .po-bestand"
 msgid "Persian"
 msgstr "Perzisch"
 
-#: src/components/repo-sync/RepoSyncModal.tsx:387
-#: src/components/repo-sync/RepoSyncModal.tsx:431
+#: src/components/repo-sync/RepoSyncModal.tsx:409
+#: src/components/repo-sync/RepoSyncModal.tsx:453
 msgid "Personal access token"
 msgstr ""
 
@@ -1926,11 +1944,11 @@ msgid "Protect {{count}} manual edits from bulk translation"
 msgstr "{{count}} handmatige bewerkingen beschermen tegen bulkvertaling"
 
 #: src/components/SettingsModal.tsx:1802
-#: src/components/repo-sync/RepoSyncModal.tsx:373
+#: src/components/repo-sync/RepoSyncModal.tsx:395
 msgid "Provider"
 msgstr "Aanbieder"
 
-#: src/components/repo-sync/CommitPanel.tsx:159
+#: src/components/repo-sync/CommitPanel.tsx:157
 msgid "Pull request created: #{{number}}"
 msgstr ""
 
@@ -1942,7 +1960,7 @@ msgstr ""
 msgid "Punjabi"
 msgstr "Punjabi"
 
-#: src/components/repo-sync/RepoSyncModal.tsx:364
+#: src/components/repo-sync/RepoSyncModal.tsx:386
 #: src/pages/Index.tsx:1668
 msgid "Push"
 msgstr ""
@@ -1953,6 +1971,14 @@ msgstr ""
 
 #: src/pages/Index.tsx:1653
 msgid "Push changes to {{provider}}"
+msgstr ""
+
+#: src/components/repo-sync/RepoSyncModal.tsx:650
+msgid "Push settings"
+msgstr ""
+
+#: src/components/repo-sync/RepoSyncModal.tsx:684
+msgid "Push to a new branch instead of the default branch"
 msgstr ""
 
 #: src/components/editor/EditorTable.tsx:1423
@@ -2013,8 +2039,8 @@ msgstr "Laat los om je vertaalbestand te laden"
 msgid "Remember API key across sessions"
 msgstr "API-sleutel onthouden tussen sessies"
 
-#: src/components/repo-sync/RepoSyncModal.tsx:415
-#: src/components/repo-sync/RepoSyncModal.tsx:460
+#: src/components/repo-sync/RepoSyncModal.tsx:437
+#: src/components/repo-sync/RepoSyncModal.tsx:482
 msgid "Remember token"
 msgstr ""
 
@@ -2046,16 +2072,16 @@ msgstr "Bestaande vertaling vervangen?"
 msgid "Report Bugs To"
 msgstr "Bugs melden aan"
 
-#: src/components/repo-sync/RepoSyncModal.tsx:507
+#: src/components/repo-sync/RepoSyncModal.tsx:529
 msgid "Repository"
 msgstr ""
 
-#: src/components/repo-sync/RepoSyncModal.tsx:349
+#: src/components/repo-sync/RepoSyncModal.tsx:371
 #: src/pages/Index.tsx:1757
 msgid "Repository sync"
 msgstr ""
 
-#: src/components/repo-sync/CommitPanel.tsx:176
+#: src/components/repo-sync/CommitPanel.tsx:174
 msgid "Repository:"
 msgstr ""
 
@@ -2153,7 +2179,7 @@ msgstr "Huidig veld opslaan en naar volgend vertaalveld gaan"
 msgid "Save current field and move to the previous translation field"
 msgstr "Huidig veld opslaan en naar vorig vertaalveld gaan"
 
-#: src/components/repo-sync/RepoSyncModal.tsx:526
+#: src/components/repo-sync/RepoSyncModal.tsx:548
 msgid "Scanning for locale files..."
 msgstr ""
 
@@ -2175,7 +2201,7 @@ msgstr "Zoek termen..."
 msgid "Select a reference above to load source context."
 msgstr "Selecteer een referentie hierboven om de broncontext te laden."
 
-#: src/components/repo-sync/RepoSyncModal.tsx:512
+#: src/components/repo-sync/RepoSyncModal.tsx:534
 msgid "Select a repository"
 msgstr ""
 
@@ -2455,8 +2481,8 @@ msgstr "Stappen om te reproduceren"
 msgid "Stop playback"
 msgstr "Afspelen stoppen"
 
-#: src/components/repo-sync/RepoSyncModal.tsx:416
-#: src/components/repo-sync/RepoSyncModal.tsx:461
+#: src/components/repo-sync/RepoSyncModal.tsx:438
+#: src/components/repo-sync/RepoSyncModal.tsx:483
 msgid "Store in localStorage (persists across sessions)"
 msgstr ""
 
@@ -2609,7 +2635,7 @@ msgstr "Titel"
 msgid "To"
 msgstr "Naar"
 
-#: src/components/repo-sync/RepoSyncModal.tsx:662
+#: src/components/repo-sync/RepoSyncModal.tsx:748
 msgid "Token not configured. Go to Connect tab to set up authentication."
 msgstr ""
 
@@ -2809,7 +2835,7 @@ msgstr ""
 "houden als de bronteksten nog overeenkomen. Nieuwe teksten worden toegevoegd"
 " en verouderde teksten worden verwijderd."
 
-#: src/components/repo-sync/CommitPanel.tsx:203
+#: src/components/repo-sync/CommitPanel.tsx:201
 msgid "Update translations"
 msgstr ""
 
@@ -2907,7 +2933,7 @@ msgstr "Vietnamees"
 msgid "View All"
 msgstr "Alles bekijken"
 
-#: src/components/repo-sync/CommitPanel.tsx:152
+#: src/components/repo-sync/CommitPanel.tsx:150
 msgid "View commit"
 msgstr ""
 
@@ -3033,7 +3059,7 @@ msgstr ""
 "Je hebt onopgeslagen wijzigingen. Weet je zeker dat je de editor wilt wissen"
 "?"
 
-#: src/components/repo-sync/CommitPanel.tsx:211
+#: src/components/repo-sync/CommitPanel.tsx:209
 msgid "You're on the default branch — creating a new branch is recommended"
 msgstr ""
 
@@ -3047,13 +3073,13 @@ msgstr ""
 "ordt gewist als je het tabblad sluit. Zet 'API-sleutel onthouden' hieronder "
 "aan om deze tussen sessies te bewaren."
 
-#: src/components/repo-sync/RepoSyncModal.tsx:404
+#: src/components/repo-sync/RepoSyncModal.tsx:426
 msgid ""
 "Your token is sent directly to the GitHub API from your browser and is never"
 " stored on our servers."
 msgstr ""
 
-#: src/components/repo-sync/RepoSyncModal.tsx:449
+#: src/components/repo-sync/RepoSyncModal.tsx:471
 msgid ""
 "Your token is sent directly to the GitLab API from your browser and is never"
 " stored on our servers."
@@ -3120,7 +3146,7 @@ msgstr "overgeslagen"
 msgid "terms"
 msgstr "termen"
 
-#: src/components/repo-sync/RepoSyncModal.tsx:446
+#: src/components/repo-sync/RepoSyncModal.tsx:468
 msgid "with api scope"
 msgstr ""
 
@@ -3178,7 +3204,7 @@ msgstr "{{count}} uur geleden"
 msgid "{{count}} hours ago"
 msgstr "{{count}} uur geleden"
 
-#: src/components/repo-sync/RepoSyncModal.tsx:548
+#: src/components/repo-sync/RepoSyncModal.tsx:570
 msgid "{{count}} locale files found"
 msgstr ""
 
@@ -3244,6 +3270,10 @@ msgstr "{{count}} waarschuwing(en) tijdens verwerking"
 #: src/pages/Index.tsx:1418
 msgid "{{count}} with updated references"
 msgstr "{{count}} met bijgewerkte referenties"
+
+#: src/components/repo-sync/RepoSyncModal.tsx:672
+msgid "{{file}} is replaced with the filename without extension"
+msgstr ""
 
 #: src/components/editor/FilterToolbar.tsx:306
 msgid "{{filtered}} of {{total}}"

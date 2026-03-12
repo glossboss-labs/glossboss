@@ -5,7 +5,7 @@
  * browsing files, and pushing changes back.
  */
 
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import {
   Modal,
   Stack,
@@ -23,6 +23,7 @@ import {
   Badge,
   Paper,
   UnstyledButton,
+  Divider,
 } from '@mantine/core';
 import {
   GitBranch,
@@ -33,6 +34,9 @@ import {
   ExternalLink,
   FileText,
   Search,
+  Settings,
+  ChevronDown,
+  ChevronRight,
 } from 'lucide-react';
 import {
   getGitHubSettings,
@@ -58,6 +62,7 @@ import type {
   RepoListEntry,
   CommitResult,
 } from '@/lib/repo-sync/types';
+import { DEFAULT_SYNC_SETTINGS } from '@/lib/repo-sync/types';
 import { useRepoSyncStore } from '@/stores';
 import { RepoBrowser } from './RepoBrowser';
 import { CommitPanel } from './CommitPanel';
@@ -89,8 +94,11 @@ export function RepoSyncModal({
   const updateBaseSha = useRepoSyncStore((s) => s.updateBaseSha);
   const updateBaseContent = useRepoSyncStore((s) => s.updateBaseContent);
   const updateBranch = useRepoSyncStore((s) => s.updateBranch);
+  const syncSettings = useRepoSyncStore((s) => s.syncSettings);
+  const setSyncSettings = useRepoSyncStore((s) => s.setSyncSettings);
 
   const [activeTab, setActiveTab] = useState<string | null>(initialTab ?? 'connect');
+  const [showSettings, setShowSettings] = useState(false);
 
   // Provider selection
   const [provider, setProvider] = useState<RepoProviderId>('github');
@@ -119,8 +127,9 @@ export function RepoSyncModal({
   const [fileError, setFileError] = useState<string | null>(null);
 
   const hasToken = provider === 'github' ? hasGitHubToken() : hasGitLabToken();
+  const autoLoadedRef = useRef(false);
 
-  // Reset when modal opens
+  // Refresh token state and auto-load repos when modal opens
   useEffect(() => {
     if (opened) {
       setGhToken(getGitHubSettings().token);
@@ -129,8 +138,21 @@ export function RepoSyncModal({
       setGhPersist(isGitHubPersistEnabled());
       setGlPersist(isGitLabPersistEnabled());
       if (initialTab) setActiveTab(initialTab);
+    } else {
+      autoLoadedRef.current = false;
     }
   }, [opened, initialTab]);
+
+  // Auto-load repos when modal opens with a saved token
+  useEffect(() => {
+    if (!opened || autoLoadedRef.current || loadingRepos) return;
+    const tokenAvailable = provider === 'github' ? hasGitHubToken() : hasGitLabToken();
+    if (tokenAvailable && repos.length === 0) {
+      autoLoadedRef.current = true;
+      void handleLoadRepos();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [opened, provider]);
 
   const handleSaveToken = useCallback(() => {
     if (provider === 'github') {
@@ -614,6 +636,70 @@ export function RepoSyncModal({
                       </Button>
                     </Stack>
                   )}
+
+                {/* Sync settings — shown when a repo is selected */}
+                {selectedRepo && !scanningFiles && !loadingFile && (
+                  <>
+                    <Divider />
+                    <UnstyledButton
+                      onClick={() => setShowSettings((v) => !v)}
+                      style={{ display: 'flex', alignItems: 'center', gap: 6 }}
+                    >
+                      <Settings size={14} />
+                      <Text size="sm" fw={500}>
+                        {t('Push settings')}
+                      </Text>
+                      {showSettings ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                    </UnstyledButton>
+
+                    {showSettings && (
+                      <Paper p="sm" withBorder>
+                        <Stack gap="sm">
+                          <TextInput
+                            label={t('Commit prefix')}
+                            description={t(
+                              'Conventional commit prefix prepended to commit messages, e.g. fix(i18n):',
+                            )}
+                            value={syncSettings.commitPrefix}
+                            onChange={(e) =>
+                              setSyncSettings({ commitPrefix: e.currentTarget.value })
+                            }
+                            placeholder={DEFAULT_SYNC_SETTINGS.commitPrefix}
+                            size="sm"
+                          />
+                          <TextInput
+                            label={t('Branch template')}
+                            description={t(
+                              '{{file}} is replaced with the filename without extension',
+                            )}
+                            value={syncSettings.branchTemplate}
+                            onChange={(e) =>
+                              setSyncSettings({ branchTemplate: e.currentTarget.value })
+                            }
+                            placeholder={DEFAULT_SYNC_SETTINGS.branchTemplate}
+                            size="sm"
+                          />
+                          <Switch
+                            label={t('Create new branch')}
+                            description={t('Push to a new branch instead of the default branch')}
+                            checked={syncSettings.createNewBranch}
+                            onChange={(e) =>
+                              setSyncSettings({ createNewBranch: e.currentTarget.checked })
+                            }
+                            size="sm"
+                          />
+                          <Switch
+                            label={t('Create pull request')}
+                            description={t('Automatically open a PR after committing')}
+                            checked={syncSettings.createPr}
+                            onChange={(e) => setSyncSettings({ createPr: e.currentTarget.checked })}
+                            size="sm"
+                          />
+                        </Stack>
+                      </Paper>
+                    )}
+                  </>
+                )}
 
                 {/* Manual file browser fallback */}
                 {selectedRepo &&
