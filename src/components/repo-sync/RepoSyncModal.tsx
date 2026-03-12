@@ -55,6 +55,7 @@ import type {
   RepoProviderId,
   RepoConnection,
   RepoTreeEntry,
+  RepoListEntry,
   CommitResult,
 } from '@/lib/repo-sync/types';
 import { useRepoSyncStore } from '@/stores';
@@ -398,6 +399,12 @@ export function RepoSyncModal({
                           style={{ display: 'inline', verticalAlign: 'middle' }}
                         />
                       </Anchor>
+                      <br />
+                      <Text component="span" size="xs" c="dimmed">
+                        {t(
+                          'Your token is sent directly to the GitHub API from your browser and is never stored on our servers.',
+                        )}
+                      </Text>
                     </>
                   }
                   value={ghToken}
@@ -437,6 +444,12 @@ export function RepoSyncModal({
                         />
                       </Anchor>{' '}
                       {t('with api scope')}
+                      <br />
+                      <Text component="span" size="xs" c="dimmed">
+                        {t(
+                          'Your token is sent directly to the GitLab API from your browser and is never stored on our servers.',
+                        )}
+                      </Text>
                     </>
                   }
                   value={glToken}

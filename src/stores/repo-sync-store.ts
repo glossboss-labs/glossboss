@@ -117,7 +117,7 @@ export const useRepoSyncStore = create<RepoSyncState & RepoSyncActions>()(
       name: STORAGE_KEY,
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
-        connection: state.connection,
+        connection: state.connection ? { ...state.connection, baseContent: undefined } : null,
       }),
     },
   ),

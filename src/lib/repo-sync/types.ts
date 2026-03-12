@@ -48,8 +48,8 @@ export interface RepoConnection {
   filePath: string;
   /** SHA of the blob when file was loaded (used for conflict detection) */
   baseSha: string;
-  /** The original file content at load time (used for diff) */
-  baseContent: string;
+  /** The original file content at load time (used for diff). Stripped from localStorage on persist. */
+  baseContent?: string;
   /** Default branch name (for PR targets) */
   defaultBranch: string;
 }

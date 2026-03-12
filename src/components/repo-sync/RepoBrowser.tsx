@@ -39,6 +39,7 @@ export function RepoBrowser({ client, owner, repo, onFileSelect }: RepoBrowserPr
   const [defaultBranch, setDefaultBranch] = useState<string>('main');
   const [entries, setEntries] = useState<RepoTreeEntry[]>([]);
   const [currentPath, setCurrentPath] = useState('');
+  const [reloadKey, setReloadKey] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const cancelBranchesRef = useRef<(() => void) | null>(null);
@@ -119,7 +120,7 @@ export function RepoBrowser({ client, owner, repo, onFileSelect }: RepoBrowserPr
       cancelAnimationFrame(id);
       cancelTreeRef.current?.();
     };
-  }, [selectedBranch, currentPath, loadTree]);
+  }, [selectedBranch, currentPath, reloadKey, loadTree]);
 
   const handleEntryClick = useCallback(
     (entry: RepoTreeEntry) => {
@@ -167,9 +168,8 @@ export function RepoBrowser({ client, owner, repo, onFileSelect }: RepoBrowserPr
         <ActionIcon
           variant="subtle"
           onClick={() => {
-            // Force reload
             setEntries([]);
-            setCurrentPath(currentPath);
+            setReloadKey((k) => k + 1);
           }}
           aria-label={t('Refresh')}
         >

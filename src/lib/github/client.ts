@@ -81,18 +81,20 @@ export async function listBranches(
   page = 1,
   perPage = 100,
 ): Promise<RepoBranch[]> {
-  const branches = await request<GitHubBranch[]>(
-    `/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/branches?per_page=${perPage}&page=${page}`,
-  );
+  const ownerEnc = encodeURIComponent(owner);
+  const repoEnc = encodeURIComponent(repo);
 
-  // Fetch repo info to know the default branch
-  const repoInfo = await request<GitHubRepo>(
-    `/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}`,
-  );
+  // Fetch branches and default branch name in parallel
+  const [branches, defaultBranchName] = await Promise.all([
+    request<GitHubBranch[]>(
+      `/repos/${ownerEnc}/${repoEnc}/branches?per_page=${perPage}&page=${page}`,
+    ),
+    getDefaultBranch(owner, repo),
+  ]);
 
   return branches.map((b) => ({
     name: b.name,
-    isDefault: b.name === repoInfo.default_branch,
+    isDefault: b.name === defaultBranchName,
     sha: b.commit.sha,
   }));
 }

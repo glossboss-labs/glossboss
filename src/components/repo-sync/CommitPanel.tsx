@@ -93,13 +93,6 @@ export function CommitPanel({
         targetBranch = newBranchName;
       }
 
-      // Get current file SHA on the target branch for conflict detection
-      let currentSha = connection.baseSha;
-      if (createNewBranch) {
-        // New branch was just created from the same commit, SHA is the same
-        currentSha = connection.baseSha;
-      }
-
       // Commit the file
       const result = await client.commitFile({
         owner: connection.owner,
@@ -108,7 +101,7 @@ export function CommitPanel({
         filePath: connection.filePath,
         content: serializedContent,
         message: commitMessage,
-        sha: currentSha,
+        sha: connection.baseSha,
       });
 
       setCommitResult(result);
