@@ -55,6 +55,7 @@ import {
   getTranslationProviderLabel,
   getTranslationUsage,
   hasActiveProviderCredentials,
+  TRANSLATION_USAGE_REFRESH_EVENT,
 } from '@/lib/translation';
 import { badgeVariants, contentVariants, interactiveSpring } from '@/lib/motion';
 import { useDragGhost } from '@/hooks/use-drag-ghost';
@@ -187,8 +188,8 @@ export function FilterToolbar() {
         .catch(() => {});
     };
     fetchDeeplUsage();
-    window.addEventListener('translation-usage-refresh', fetchDeeplUsage);
-    return () => window.removeEventListener('translation-usage-refresh', fetchDeeplUsage);
+    window.addEventListener(TRANSLATION_USAGE_REFRESH_EVENT, fetchDeeplUsage);
+    return () => window.removeEventListener(TRANSLATION_USAGE_REFRESH_EVENT, fetchDeeplUsage);
   }, [deeplKeyConfigured]);
 
   useEffect(() => {
@@ -197,8 +198,8 @@ export function FilterToolbar() {
       setLocalCharCount(getTranslationUsage(activeProvider).characterCount);
     };
     refreshLocalUsage();
-    window.addEventListener('translation-usage-refresh', refreshLocalUsage);
-    return () => window.removeEventListener('translation-usage-refresh', refreshLocalUsage);
+    window.addEventListener(TRANSLATION_USAGE_REFRESH_EVENT, refreshLocalUsage);
+    return () => window.removeEventListener(TRANSLATION_USAGE_REFRESH_EVENT, refreshLocalUsage);
   }, [activeProvider, providerConfigured]);
 
   // Debounced search

@@ -68,6 +68,19 @@ describe('translation usage tracking', () => {
     expect(usage.characterCount).toBe(0);
   });
 
+  it('sanitizes negative and non-finite values from storage', () => {
+    window.localStorage.setItem(
+      'glossboss-translation-usage',
+      JSON.stringify({
+        azure: { characterCount: -100, translationCount: Infinity, periodStartedAt: NaN },
+      }),
+    );
+    const usage = getTranslationUsage('azure');
+    expect(usage.characterCount).toBe(0);
+    expect(usage.translationCount).toBe(0);
+    expect(usage.periodStartedAt).toBe(0);
+  });
+
   it('preserves periodStartedAt across recordings', () => {
     recordTranslationUsage('azure', 50);
     const first = getTranslationUsage('azure').periodStartedAt;

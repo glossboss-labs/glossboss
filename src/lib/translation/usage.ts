@@ -2,6 +2,9 @@ import type { TranslationProviderId } from './types';
 
 const STORAGE_KEY = 'glossboss-translation-usage';
 
+/** Event name dispatched after usage changes, consumed by FilterToolbar and others. */
+export const TRANSLATION_USAGE_REFRESH_EVENT = 'translation-usage-refresh';
+
 export interface TranslationUsageEntry {
   /** Total characters translated in the current tracking period */
   characterCount: number;
@@ -42,13 +45,17 @@ function saveStore(store: UsageStore): void {
   }
 }
 
+function safeNonNegative(value: unknown): number {
+  return typeof value === 'number' && Number.isFinite(value) && value >= 0 ? value : 0;
+}
+
 function parseEntry(raw: unknown): TranslationUsageEntry {
   if (typeof raw !== 'object' || raw === null) return { ...EMPTY_ENTRY };
   const entry = raw as Record<string, unknown>;
   return {
-    characterCount: typeof entry.characterCount === 'number' ? entry.characterCount : 0,
-    translationCount: typeof entry.translationCount === 'number' ? entry.translationCount : 0,
-    periodStartedAt: typeof entry.periodStartedAt === 'number' ? entry.periodStartedAt : 0,
+    characterCount: safeNonNegative(entry.characterCount),
+    translationCount: safeNonNegative(entry.translationCount),
+    periodStartedAt: safeNonNegative(entry.periodStartedAt),
   };
 }
 

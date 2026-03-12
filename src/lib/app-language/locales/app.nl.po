@@ -64,7 +64,7 @@ msgstr "Acties"
 msgid "Add your {{provider}} credentials in Settings to enable translation"
 msgstr ""
 
-#: src/components/editor/TranslateToolbar.tsx:704
+#: src/components/editor/TranslateToolbar.tsx:705
 msgid "Add your {{provider}} credentials in Settings to enable translations."
 msgstr ""
 
@@ -93,19 +93,19 @@ msgid "Apply glossary terms during translation"
 msgstr "Glossarytermen toepassen tijdens het vertalen"
 
 #: src/components/editor/EditorTable.tsx:120
-#: src/components/editor/FilterToolbar.tsx:266
+#: src/components/editor/FilterToolbar.tsx:267
 msgid "Approve"
 msgstr "Goedkeuren"
 
-#: src/components/editor/TranslateToolbar.tsx:991
+#: src/components/editor/TranslateToolbar.tsx:992
 msgid "Approve ({{count}})"
 msgstr "Goedkeuren ({{count}})"
 
-#: src/components/editor/TranslateToolbar.tsx:989
+#: src/components/editor/TranslateToolbar.tsx:990
 msgid "Approve selected"
 msgstr "Selectie goedkeuren"
 
-#: src/components/editor/TranslateToolbar.tsx:982
+#: src/components/editor/TranslateToolbar.tsx:983
 msgid "Approve selected rows by clearing fuzzy flag"
 msgstr "Geselecteerde rijen goedkeuren door de fuzzy-markering te verwijderen"
 
@@ -117,7 +117,7 @@ msgstr "Vertaling goedkeuren"
 msgid "Approve: clear fuzzy flag"
 msgstr "Goedkeuren: fuzzy-markering verwijderen"
 
-#: src/components/editor/TranslateToolbar.tsx:623
+#: src/components/editor/TranslateToolbar.tsx:624
 msgid "Approved {{count}} row(s): fuzzy flag cleared."
 msgstr "{{count}} rij(en) goedgekeurd: fuzzy-markering verwijderd."
 
@@ -138,21 +138,21 @@ msgstr "Arabisch (Saoedi-Arabië)"
 msgid "Armenian"
 msgstr "Armeens"
 
-#: src/components/editor/TranslateToolbar.tsx:937
+#: src/components/editor/TranslateToolbar.tsx:938
 msgid "Auto Translate ({{count}})"
 msgstr "Automatisch vertalen ({{count}})"
 
-#: src/components/editor/TranslateToolbar.tsx:935
+#: src/components/editor/TranslateToolbar.tsx:936
 msgid "Auto translate selected"
 msgstr "Selectie automatisch vertalen"
 
-#: src/components/editor/TranslateToolbar.tsx:927
+#: src/components/editor/TranslateToolbar.tsx:928
 msgid "Auto translate selected rows that are empty or fuzzy"
 msgstr "Geselecteerde rijen automatisch vertalen die leeg of fuzzy zijn"
 
-#: src/components/editor/TranslateToolbar.tsx:69
-#: src/components/editor/TranslateToolbar.tsx:729
-#: src/components/editor/TranslateToolbar.tsx:770
+#: src/components/editor/TranslateToolbar.tsx:70
+#: src/components/editor/TranslateToolbar.tsx:730
+#: src/components/editor/TranslateToolbar.tsx:771
 msgid "Auto-detect"
 msgstr "Automatisch detecteren"
 
@@ -255,13 +255,13 @@ msgid "Bug"
 msgstr "Bug"
 
 #: src/components/editor/HeaderEditor.tsx:58
-#: src/components/editor/TranslateToolbar.tsx:70
-#: src/components/editor/TranslateToolbar.tsx:102
+#: src/components/editor/TranslateToolbar.tsx:71
+#: src/components/editor/TranslateToolbar.tsx:103
 msgid "Bulgarian"
 msgstr "Bulgaars"
 
 #: src/components/SettingsModal.tsx:2628
-#: src/components/editor/TranslateToolbar.tsx:824
+#: src/components/editor/TranslateToolbar.tsx:825
 #: src/components/feedback/FeedbackModal.tsx:480
 #: src/components/ui/ConfirmModal.tsx:38
 #: src/components/ui/PromptModal.tsx:34
@@ -289,8 +289,8 @@ msgid "Changes committed successfully"
 msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:60
-#: src/components/editor/TranslateToolbar.tsx:98
-#: src/components/editor/TranslateToolbar.tsx:132
+#: src/components/editor/TranslateToolbar.tsx:99
+#: src/components/editor/TranslateToolbar.tsx:133
 msgid "Chinese"
 msgstr "Chinees"
 
@@ -310,7 +310,7 @@ msgstr "Chinees (Traditioneel)"
 msgid "Chinese, Japanese, Korean, Vietnamese, Thai, Indonesian"
 msgstr "Chinees, Japans, Koreaans, Vietnamees, Thais, Indonesisch"
 
-#: src/components/editor/FilterToolbar.tsx:513
+#: src/components/editor/FilterToolbar.tsx:514
 msgid "Choose visible columns"
 msgstr "Kies zichtbare kolommen"
 
@@ -332,7 +332,7 @@ msgstr "Kies welke taal je wilt dat GlossBoss gebruikt voor zijn interface."
 
 #: src/components/SettingsModal.tsx:2143
 #: src/components/editor/GlossaryPanel.tsx:360
-#: src/components/editor/TranslateToolbar.tsx:911
+#: src/components/editor/TranslateToolbar.tsx:912
 msgid "Clear"
 msgstr "Wissen"
 
@@ -352,7 +352,7 @@ msgstr "Editor wissen"
 msgid "Clear editor?"
 msgstr "Editor wissen?"
 
-#: src/components/editor/FilterToolbar.tsx:308
+#: src/components/editor/FilterToolbar.tsx:309
 msgid "Clear filters"
 msgstr "Filters wissen"
 
@@ -360,7 +360,7 @@ msgstr "Filters wissen"
 msgid "Clear memory"
 msgstr ""
 
-#: src/components/editor/FilterToolbar.tsx:288
+#: src/components/editor/FilterToolbar.tsx:289
 msgid "Clear search"
 msgstr "Zoekopdracht wissen"
 
@@ -376,7 +376,7 @@ msgstr ""
 msgid "Click to add translation"
 msgstr "Klik om een vertaling toe te voegen"
 
-#: src/components/editor/FilterToolbar.tsx:93
+#: src/components/editor/FilterToolbar.tsx:94
 msgid "Click to show only {{label}}"
 msgstr "Klik om alleen {{label}} te tonen"
 
@@ -404,7 +404,7 @@ msgstr "Glossaryweergave sluiten"
 msgid "Close settings"
 msgstr "Instellingen sluiten"
 
-#: src/components/editor/FilterToolbar.tsx:516
+#: src/components/editor/FilterToolbar.tsx:517
 msgid "Columns"
 msgstr "Kolommen"
 
@@ -448,7 +448,7 @@ msgstr ""
 msgid "Connected"
 msgstr ""
 
-#: src/components/editor/TranslateToolbar.tsx:663
+#: src/components/editor/TranslateToolbar.tsx:664
 msgid "Consider downloading a backup first."
 msgstr "Overweeg eerst een back-up te downloaden."
 
@@ -546,14 +546,14 @@ msgid "Custom value set — select to change"
 msgstr "Aangepaste waarde ingesteld — selecteer om te wijzigen"
 
 #: src/components/editor/HeaderEditor.tsx:65
-#: src/components/editor/TranslateToolbar.tsx:71
-#: src/components/editor/TranslateToolbar.tsx:103
+#: src/components/editor/TranslateToolbar.tsx:72
+#: src/components/editor/TranslateToolbar.tsx:104
 msgid "Czech"
 msgstr "Tsjechisch"
 
 #: src/components/editor/HeaderEditor.tsx:66
-#: src/components/editor/TranslateToolbar.tsx:72
-#: src/components/editor/TranslateToolbar.tsx:104
+#: src/components/editor/TranslateToolbar.tsx:73
+#: src/components/editor/TranslateToolbar.tsx:105
 msgid "Danish"
 msgstr "Deens"
 
@@ -573,7 +573,7 @@ msgstr ""
 " hem tussen sessies te bewaren — doe dit alleen op een persoonlijk, vertrouw"
 "d apparaat."
 
-#: src/components/editor/FilterToolbar.tsx:364
+#: src/components/editor/FilterToolbar.tsx:365
 msgid "DeepL usage:"
 msgstr "DeepL-gebruik:"
 
@@ -593,8 +593,8 @@ msgstr "Details"
 msgid "Detected via {{method}} with {{confidence}} confidence"
 msgstr "Gedetecteerd via {{method}} met {{confidence}} zekerheid"
 
-#: src/components/editor/TranslateToolbar.tsx:756
-#: src/components/editor/TranslateToolbar.tsx:801
+#: src/components/editor/TranslateToolbar.tsx:757
+#: src/components/editor/TranslateToolbar.tsx:802
 msgid "Detected: {{target}}"
 msgstr "Gedetecteerd: {{target}}"
 
@@ -650,7 +650,7 @@ msgstr ""
 "Sleep je vertaalbestand hierheen of klik om te bladeren. Je vertalingen word"
 "en lokaal in je browser opgeslagen."
 
-#: src/components/editor/FilterToolbar.tsx:552
+#: src/components/editor/FilterToolbar.tsx:553
 msgid "Drag {{columnLabel}}"
 msgstr "Sleep {{columnLabel}}"
 
@@ -659,8 +659,8 @@ msgid "Drop it like it's hot"
 msgstr "Gooi 'm erin!"
 
 #: src/components/editor/HeaderEditor.tsx:67
-#: src/components/editor/TranslateToolbar.tsx:88
-#: src/components/editor/TranslateToolbar.tsx:121
+#: src/components/editor/TranslateToolbar.tsx:89
+#: src/components/editor/TranslateToolbar.tsx:122
 msgid "Dutch"
 msgstr "Nederlands"
 
@@ -735,7 +735,7 @@ msgid "Endpoint"
 msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:70
-#: src/components/editor/TranslateToolbar.tsx:75
+#: src/components/editor/TranslateToolbar.tsx:76
 msgid "English"
 msgstr "Engels"
 
@@ -748,12 +748,12 @@ msgid "English (Canada)"
 msgstr "Engels (Canada)"
 
 #: src/components/editor/HeaderEditor.tsx:72
-#: src/components/editor/TranslateToolbar.tsx:107
+#: src/components/editor/TranslateToolbar.tsx:108
 msgid "English (UK)"
 msgstr "Engels (VK)"
 
 #: src/components/editor/HeaderEditor.tsx:71
-#: src/components/editor/TranslateToolbar.tsx:108
+#: src/components/editor/TranslateToolbar.tsx:109
 msgid "English (US)"
 msgstr "Engels (VS)"
 
@@ -801,8 +801,8 @@ msgid "Error: {{error}}. Click to retry."
 msgstr "Fout: {{error}}. Klik om opnieuw te proberen."
 
 #: src/components/editor/HeaderEditor.tsx:75
-#: src/components/editor/TranslateToolbar.tsx:77
-#: src/components/editor/TranslateToolbar.tsx:110
+#: src/components/editor/TranslateToolbar.tsx:78
+#: src/components/editor/TranslateToolbar.tsx:111
 msgid "Estonian"
 msgstr "Ests"
 
@@ -934,7 +934,7 @@ msgstr "Het bestand lijkt geen geldige WordPress-glossary CSV te zijn."
 msgid "File downloaded"
 msgstr "Bestand gedownload"
 
-#: src/components/editor/FilterToolbar.tsx:248
+#: src/components/editor/FilterToolbar.tsx:249
 msgid "File order"
 msgstr "Bestandsvolgorde"
 
@@ -943,8 +943,8 @@ msgid "File:"
 msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:76
-#: src/components/editor/TranslateToolbar.tsx:78
-#: src/components/editor/TranslateToolbar.tsx:111
+#: src/components/editor/TranslateToolbar.tsx:79
+#: src/components/editor/TranslateToolbar.tsx:112
 msgid "Finnish"
 msgstr "Fins"
 
@@ -977,8 +977,8 @@ msgid "Free: 500,000 chars/month • Pro: Pay per use"
 msgstr "Gratis: 500.000 tekens per maand • Pro: betaal per gebruik"
 
 #: src/components/editor/HeaderEditor.tsx:77
-#: src/components/editor/TranslateToolbar.tsx:79
-#: src/components/editor/TranslateToolbar.tsx:112
+#: src/components/editor/TranslateToolbar.tsx:80
+#: src/components/editor/TranslateToolbar.tsx:113
 msgid "French"
 msgstr "Frans"
 
@@ -1002,13 +1002,13 @@ msgstr "Frans (Zwitserland)"
 msgid "French, Portuguese (Brazil)"
 msgstr "Frans, Portugees (Brazilië)"
 
-#: src/components/editor/TranslateToolbar.tsx:723
-#: src/components/editor/TranslateToolbar.tsx:764
+#: src/components/editor/TranslateToolbar.tsx:724
+#: src/components/editor/TranslateToolbar.tsx:765
 msgid "From"
 msgstr "Van"
 
 #: src/components/editor/EditorTable.tsx:359
-#: src/components/editor/FilterToolbar.tsx:75
+#: src/components/editor/FilterToolbar.tsx:76
 msgid "Fuzzy"
 msgstr "Fuzzy"
 
@@ -1046,8 +1046,8 @@ msgid "Georgian"
 msgstr "Georgisch"
 
 #: src/components/editor/HeaderEditor.tsx:84
-#: src/components/editor/TranslateToolbar.tsx:73
-#: src/components/editor/TranslateToolbar.tsx:105
+#: src/components/editor/TranslateToolbar.tsx:74
+#: src/components/editor/TranslateToolbar.tsx:106
 msgid "German"
 msgstr "Duits"
 
@@ -1087,7 +1087,7 @@ msgstr "GlossBoss v{version}"
 msgid "Glossary"
 msgstr "Glossary"
 
-#: src/components/editor/TranslateToolbar.tsx:965
+#: src/components/editor/TranslateToolbar.tsx:966
 msgid "Glossary Check"
 msgstr "Glossary-controle"
 
@@ -1097,25 +1097,25 @@ msgid ""
 "cement"
 msgstr ""
 
-#: src/components/editor/TranslateToolbar.tsx:608
+#: src/components/editor/TranslateToolbar.tsx:609
 msgid "Glossary check complete: all selected rows match glossary terms."
 msgstr ""
 "Glossary-controle voltooid: alle geselecteerde rijen komen overeen metglossa"
 "rytermen."
 
-#: src/components/editor/TranslateToolbar.tsx:603
+#: src/components/editor/TranslateToolbar.tsx:604
 msgid "Glossary check complete: no glossary terms found in selected rows."
 msgstr ""
 "Glossary-controle voltooid: geen glossarytermen gevonden in de geselecteerde"
 " rijen."
 
-#: src/components/editor/TranslateToolbar.tsx:613
+#: src/components/editor/TranslateToolbar.tsx:614
 msgid "Glossary check complete: {{count}} selected row(s) need review."
 msgstr ""
 "Glossary-controle voltooid: {{count}} geselecteerde rij(en) moeten wordengec"
 "ontroleerd."
 
-#: src/components/editor/TranslateToolbar.tsx:963
+#: src/components/editor/TranslateToolbar.tsx:964
 msgid "Glossary check selected"
 msgstr "Glossary-controle op selectie"
 
@@ -1133,7 +1133,7 @@ msgstr ""
 msgid "Glossary match"
 msgstr "Glossary-overeenkomst"
 
-#: src/components/editor/TranslateToolbar.tsx:242
+#: src/components/editor/TranslateToolbar.tsx:243
 msgid ""
 "Glossary not found in DeepL. Continued bulk translation without glossary. Re"
 "-sync in Settings is recommended."
@@ -1141,7 +1141,7 @@ msgstr ""
 "Glossary niet gevonden in DeepL. Bulkvertaling zonder glossary voortgezet. O"
 "pnieuw synchroniseren in Instellingen wordt aanbevolen."
 
-#: src/components/editor/TranslateToolbar.tsx:245
+#: src/components/editor/TranslateToolbar.tsx:246
 msgid ""
 "Glossary not found in DeepL. This translation was done without glossary. Re-"
 "sync in Settings is recommended."
@@ -1158,8 +1158,8 @@ msgid "Go to Connect"
 msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:88
-#: src/components/editor/TranslateToolbar.tsx:74
-#: src/components/editor/TranslateToolbar.tsx:106
+#: src/components/editor/TranslateToolbar.tsx:75
+#: src/components/editor/TranslateToolbar.tsx:107
 msgid "Greek"
 msgstr "Grieks"
 
@@ -1187,7 +1187,7 @@ msgstr "Info verbergen"
 msgid "Hide technical fields"
 msgstr "Technische velden verbergen"
 
-#: src/components/editor/FilterToolbar.tsx:91
+#: src/components/editor/FilterToolbar.tsx:92
 msgid "Hiding {{label}} • Click to clear filter"
 msgstr "{{label}} verborgen • Klik om filter te wissen"
 
@@ -1200,8 +1200,8 @@ msgid "How plurals work in this language"
 msgstr "Hoe meervoud werkt in deze taal"
 
 #: src/components/editor/HeaderEditor.tsx:92
-#: src/components/editor/TranslateToolbar.tsx:80
-#: src/components/editor/TranslateToolbar.tsx:113
+#: src/components/editor/TranslateToolbar.tsx:81
+#: src/components/editor/TranslateToolbar.tsx:114
 msgid "Hungarian"
 msgstr "Hongaars"
 
@@ -1248,8 +1248,8 @@ msgid ""
 msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:94
-#: src/components/editor/TranslateToolbar.tsx:81
-#: src/components/editor/TranslateToolbar.tsx:114
+#: src/components/editor/TranslateToolbar.tsx:82
+#: src/components/editor/TranslateToolbar.tsx:115
 msgid "Indonesian"
 msgstr "Indonesisch"
 
@@ -1284,8 +1284,8 @@ msgid "Irish"
 msgstr "Iers"
 
 #: src/components/editor/HeaderEditor.tsx:96
-#: src/components/editor/TranslateToolbar.tsx:82
-#: src/components/editor/TranslateToolbar.tsx:115
+#: src/components/editor/TranslateToolbar.tsx:83
+#: src/components/editor/TranslateToolbar.tsx:116
 msgid "Italian"
 msgstr "Italiaans"
 
@@ -1298,8 +1298,8 @@ msgid "Italian (Switzerland)"
 msgstr "Italiaans (Zwitserland)"
 
 #: src/components/editor/HeaderEditor.tsx:99
-#: src/components/editor/TranslateToolbar.tsx:83
-#: src/components/editor/TranslateToolbar.tsx:116
+#: src/components/editor/TranslateToolbar.tsx:84
+#: src/components/editor/TranslateToolbar.tsx:117
 msgid "Japanese"
 msgstr "Japans"
 
@@ -1335,8 +1335,8 @@ msgid "Keyboard shortcuts available when editing translations."
 msgstr "Sneltoetsen die je kunt gebruiken tijdens het bewerken van vertalingen."
 
 #: src/components/editor/HeaderEditor.tsx:102
-#: src/components/editor/TranslateToolbar.tsx:84
-#: src/components/editor/TranslateToolbar.tsx:117
+#: src/components/editor/TranslateToolbar.tsx:85
+#: src/components/editor/TranslateToolbar.tsx:118
 msgid "Korean"
 msgstr "Koreaans"
 
@@ -1364,8 +1364,8 @@ msgstr "Laatst bijgewerkt"
 
 #: src/components/editor/HeaderEditor.tsx:103
 #: src/components/editor/HeaderEditor.tsx:179
-#: src/components/editor/TranslateToolbar.tsx:86
-#: src/components/editor/TranslateToolbar.tsx:119
+#: src/components/editor/TranslateToolbar.tsx:87
+#: src/components/editor/TranslateToolbar.tsx:120
 msgid "Latvian"
 msgstr "Lets"
 
@@ -1396,8 +1396,8 @@ msgid "List steps someone else can follow"
 msgstr "Maak een lijst met stappen die iemand anders kan volgen"
 
 #: src/components/editor/HeaderEditor.tsx:104
-#: src/components/editor/TranslateToolbar.tsx:85
-#: src/components/editor/TranslateToolbar.tsx:118
+#: src/components/editor/TranslateToolbar.tsx:86
+#: src/components/editor/TranslateToolbar.tsx:119
 msgid "Lithuanian"
 msgstr "Litouws"
 
@@ -1491,7 +1491,7 @@ msgstr "AV + Glossary"
 msgid "Macedonian"
 msgstr "Macedonisch"
 
-#: src/components/editor/TranslateToolbar.tsx:685
+#: src/components/editor/TranslateToolbar.tsx:686
 msgid "Machine Translation"
 msgstr "Automatische vertaling"
 
@@ -1500,7 +1500,7 @@ msgstr "Automatische vertaling"
 #: src/components/editor/EditorTable.tsx:1073
 #: src/components/editor/EditorTable.tsx:1155
 #: src/components/editor/EditorTable.tsx:1366
-#: src/components/editor/FilterToolbar.tsx:438
+#: src/components/editor/FilterToolbar.tsx:439
 msgid "Machine translated"
 msgstr "Automatisch vertaald"
 
@@ -1542,7 +1542,7 @@ msgstr "Handmatig"
 msgid "Manual edit"
 msgstr "Handmatige bewerking"
 
-#: src/components/editor/FilterToolbar.tsx:472
+#: src/components/editor/FilterToolbar.tsx:473
 msgid "Manual edits"
 msgstr "Handmatige bewerkingen"
 
@@ -1564,7 +1564,7 @@ msgstr ""
 
 #: src/components/editor/EditorTable.tsx:1127
 #: src/components/editor/EditorTable.tsx:1356
-#: src/components/editor/FilterToolbar.tsx:76
+#: src/components/editor/FilterToolbar.tsx:77
 msgid "Modified"
 msgstr "Gewijzigd"
 
@@ -1657,11 +1657,11 @@ msgstr "Geen overeenkomstige meervoudsvorm"
 msgid "No repositories found"
 msgstr ""
 
-#: src/components/editor/TranslateToolbar.tsx:624
+#: src/components/editor/TranslateToolbar.tsx:625
 msgid "No selected fuzzy rows to approve."
 msgstr "Geen geselecteerde fuzzy-rijen om goed te keuren."
 
-#: src/components/editor/TranslateToolbar.tsx:633
+#: src/components/editor/TranslateToolbar.tsx:634
 msgid "No selected rows available to unapprove."
 msgstr "Geen geselecteerde rijen beschikbaar om af te keuren."
 
@@ -1695,8 +1695,8 @@ msgid "None"
 msgstr "Geen"
 
 #: src/components/editor/HeaderEditor.tsx:114
-#: src/components/editor/TranslateToolbar.tsx:87
-#: src/components/editor/TranslateToolbar.tsx:120
+#: src/components/editor/TranslateToolbar.tsx:88
+#: src/components/editor/TranslateToolbar.tsx:121
 msgid "Norwegian"
 msgstr "Noors"
 
@@ -1889,23 +1889,23 @@ msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:116
 #: src/components/editor/HeaderEditor.tsx:184
-#: src/components/editor/TranslateToolbar.tsx:89
-#: src/components/editor/TranslateToolbar.tsx:122
+#: src/components/editor/TranslateToolbar.tsx:90
+#: src/components/editor/TranslateToolbar.tsx:123
 msgid "Polish"
 msgstr "Pools"
 
 #: src/components/editor/HeaderEditor.tsx:117
-#: src/components/editor/TranslateToolbar.tsx:90
+#: src/components/editor/TranslateToolbar.tsx:91
 msgid "Portuguese"
 msgstr "Portugees"
 
 #: src/components/editor/HeaderEditor.tsx:118
-#: src/components/editor/TranslateToolbar.tsx:123
+#: src/components/editor/TranslateToolbar.tsx:124
 msgid "Portuguese (Brazil)"
 msgstr "Portugees (Brazilië)"
 
 #: src/components/editor/HeaderEditor.tsx:119
-#: src/components/editor/TranslateToolbar.tsx:124
+#: src/components/editor/TranslateToolbar.tsx:125
 msgid "Portuguese (Portugal)"
 msgstr "Portugees (Portugal)"
 
@@ -1954,7 +1954,7 @@ msgstr "Projectnaam en versie"
 msgid "Proposed solution"
 msgstr "Voorgestelde oplossing"
 
-#: src/components/editor/TranslateToolbar.tsx:1039
+#: src/components/editor/TranslateToolbar.tsx:1040
 msgid "Protect {{count}} manual edits from bulk translation"
 msgstr "{{count}} handmatige bewerkingen beschermen tegen bulkvertaling"
 
@@ -2000,7 +2000,7 @@ msgstr ""
 msgid "QA checks"
 msgstr ""
 
-#: src/components/editor/FilterToolbar.tsx:77
+#: src/components/editor/FilterToolbar.tsx:78
 msgid "QA errors"
 msgstr ""
 
@@ -2008,7 +2008,7 @@ msgstr ""
 msgid "QA summary before export"
 msgstr ""
 
-#: src/components/editor/FilterToolbar.tsx:78
+#: src/components/editor/FilterToolbar.tsx:79
 msgid "QA warnings"
 msgstr ""
 
@@ -2017,7 +2017,7 @@ msgstr ""
 msgid "Quickstart guide"
 msgstr ""
 
-#: src/components/editor/TranslateToolbar.tsx:956
+#: src/components/editor/TranslateToolbar.tsx:957
 msgid "Re-run glossary analysis on selected rows"
 msgstr "Glossary-analyse opnieuw uitvoeren op geselecteerde rijen"
 
@@ -2119,20 +2119,20 @@ msgstr "Concept herstellen"
 msgid "Resync"
 msgstr "Opnieuw synchroniseren"
 
-#: src/components/editor/TranslateToolbar.tsx:665
-#: src/components/editor/TranslateToolbar.tsx:857
+#: src/components/editor/TranslateToolbar.tsx:666
+#: src/components/editor/TranslateToolbar.tsx:858
 msgid "Retranslate All"
 msgstr "Alles opnieuw vertalen"
 
-#: src/components/editor/TranslateToolbar.tsx:844
+#: src/components/editor/TranslateToolbar.tsx:845
 msgid "Retranslate all entries"
 msgstr "Alle items opnieuw vertalen"
 
-#: src/components/editor/TranslateToolbar.tsx:651
+#: src/components/editor/TranslateToolbar.tsx:652
 msgid "Retranslate all entries?"
 msgstr "Alle items opnieuw vertalen?"
 
-#: src/components/editor/TranslateToolbar.tsx:1063
+#: src/components/editor/TranslateToolbar.tsx:1064
 msgid "Retranslating"
 msgstr "Opnieuw aan het vertalen"
 
@@ -2152,8 +2152,8 @@ msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:121
 #: src/components/editor/HeaderEditor.tsx:175
-#: src/components/editor/TranslateToolbar.tsx:91
-#: src/components/editor/TranslateToolbar.tsx:125
+#: src/components/editor/TranslateToolbar.tsx:92
+#: src/components/editor/TranslateToolbar.tsx:126
 msgid "Romanian"
 msgstr "Roemeens"
 
@@ -2162,8 +2162,8 @@ msgid "Rows per page"
 msgstr "Rijen per pagina"
 
 #: src/components/editor/HeaderEditor.tsx:122
-#: src/components/editor/TranslateToolbar.tsx:92
-#: src/components/editor/TranslateToolbar.tsx:126
+#: src/components/editor/TranslateToolbar.tsx:93
+#: src/components/editor/TranslateToolbar.tsx:127
 msgid "Russian"
 msgstr "Russisch"
 
@@ -2202,8 +2202,8 @@ msgstr ""
 msgid "Search or type language code..."
 msgstr "Zoek of typ een taalcode..."
 
-#: src/components/editor/FilterToolbar.tsx:278
 #: src/components/editor/FilterToolbar.tsx:279
+#: src/components/editor/FilterToolbar.tsx:280
 msgid "Search source, translation, context..."
 msgstr "Zoek in bron, vertaling, context..."
 
@@ -2224,7 +2224,7 @@ msgstr ""
 msgid "Select a row to inspect context and metadata."
 msgstr "Selecteer een rij om context en metadata te bekijken."
 
-#: src/components/editor/TranslateToolbar.tsx:896
+#: src/components/editor/TranslateToolbar.tsx:897
 msgid "Select all filtered"
 msgstr "Alle gefilterde selecteren"
 
@@ -2248,8 +2248,8 @@ msgstr "Selecteer of typ een taalcode..."
 msgid "Select plural form for your language..."
 msgstr "Selecteer de meervoudsvorm voor je taal..."
 
-#: src/components/editor/TranslateToolbar.tsx:746
-#: src/components/editor/TranslateToolbar.tsx:790
+#: src/components/editor/TranslateToolbar.tsx:747
+#: src/components/editor/TranslateToolbar.tsx:791
 msgid "Select target..."
 msgstr "Selecteer doel..."
 
@@ -2370,7 +2370,7 @@ msgstr ""
 "Toon de huidige git-branch in een kleine zwevende badge rechtsonder op de si"
 "te."
 
-#: src/components/editor/FilterToolbar.tsx:88
+#: src/components/editor/FilterToolbar.tsx:89
 msgid "Showing only {{label}} • Click to exclude"
 msgstr "Alleen {{label}} getoond • Klik om uit te sluiten"
 
@@ -2384,7 +2384,7 @@ msgstr "{{start}}–{{end}} van {{total}} items"
 
 #: src/components/editor/EditorTable.tsx:123
 #: src/components/editor/EditorTable.tsx:1873
-#: src/components/editor/FilterToolbar.tsx:269
+#: src/components/editor/FilterToolbar.tsx:270
 msgid "Signals"
 msgstr "Signalen"
 
@@ -2401,19 +2401,19 @@ msgid "Skip translated entries"
 msgstr "Vertaalde items overslaan"
 
 #: src/components/editor/HeaderEditor.tsx:125
-#: src/components/editor/TranslateToolbar.tsx:93
-#: src/components/editor/TranslateToolbar.tsx:127
+#: src/components/editor/TranslateToolbar.tsx:94
+#: src/components/editor/TranslateToolbar.tsx:128
 msgid "Slovak"
 msgstr "Slowaaks"
 
 #: src/components/editor/HeaderEditor.tsx:126
 #: src/components/editor/HeaderEditor.tsx:193
-#: src/components/editor/TranslateToolbar.tsx:94
-#: src/components/editor/TranslateToolbar.tsx:128
+#: src/components/editor/TranslateToolbar.tsx:95
+#: src/components/editor/TranslateToolbar.tsx:129
 msgid "Slovenian"
 msgstr "Sloveens"
 
-#: src/components/editor/FilterToolbar.tsx:620
+#: src/components/editor/FilterToolbar.tsx:621
 msgid "Sort entries"
 msgstr "Items sorteren"
 
@@ -2422,16 +2422,16 @@ msgstr "Items sorteren"
 msgid "Source"
 msgstr "Bron"
 
-#: src/components/editor/FilterToolbar.tsx:249
+#: src/components/editor/FilterToolbar.tsx:250
 msgid "Source A-Z"
 msgstr "Bron A-Z"
 
-#: src/components/editor/FilterToolbar.tsx:250
+#: src/components/editor/FilterToolbar.tsx:251
 msgid "Source Z-A"
 msgstr "Bron Z-A"
 
-#: src/components/editor/TranslateToolbar.tsx:734
-#: src/components/editor/TranslateToolbar.tsx:776
+#: src/components/editor/TranslateToolbar.tsx:735
+#: src/components/editor/TranslateToolbar.tsx:777
 msgid "Source language"
 msgstr "Brontaal"
 
@@ -2440,7 +2440,7 @@ msgid "Source preview"
 msgstr "Bronvoorbeeld"
 
 #: src/components/editor/EditorTable.tsx:121
-#: src/components/editor/FilterToolbar.tsx:267
+#: src/components/editor/FilterToolbar.tsx:268
 msgid "Source string"
 msgstr "Brontekst"
 
@@ -2450,8 +2450,8 @@ msgid "Source voice"
 msgstr "Bronstem"
 
 #: src/components/editor/HeaderEditor.tsx:127
-#: src/components/editor/TranslateToolbar.tsx:76
-#: src/components/editor/TranslateToolbar.tsx:109
+#: src/components/editor/TranslateToolbar.tsx:77
+#: src/components/editor/TranslateToolbar.tsx:110
 msgid "Spanish"
 msgstr "Spaans"
 
@@ -2480,15 +2480,15 @@ msgid "Speech synthesis is not available in this browser."
 msgstr "Spraaksynthese is niet beschikbaar in deze browser."
 
 #: src/components/editor/EditorTable.tsx:119
-#: src/components/editor/FilterToolbar.tsx:265
+#: src/components/editor/FilterToolbar.tsx:266
 msgid "Status"
 msgstr "Status"
 
-#: src/components/editor/FilterToolbar.tsx:254
+#: src/components/editor/FilterToolbar.tsx:255
 msgid "Status: translated first"
 msgstr "Status: vertaald eerst"
 
-#: src/components/editor/FilterToolbar.tsx:253
+#: src/components/editor/FilterToolbar.tsx:254
 msgid "Status: untranslated first"
 msgstr "Status: onvertaald eerst"
 
@@ -2522,7 +2522,7 @@ msgstr ""
 "Inzendingen kunnen een GitHub-issue aanmaken en kunnen je optionele e-mailad"
 "res bevatten voor follow-up. Zie"
 
-#: src/components/editor/TranslateToolbar.tsx:1113
+#: src/components/editor/TranslateToolbar.tsx:1114
 msgid "Successfully translated {{count}} entries"
 msgstr "{{count}} items succesvol vertaald"
 
@@ -2531,8 +2531,8 @@ msgid "Swahili"
 msgstr "Swahili"
 
 #: src/components/editor/HeaderEditor.tsx:132
-#: src/components/editor/TranslateToolbar.tsx:95
-#: src/components/editor/TranslateToolbar.tsx:129
+#: src/components/editor/TranslateToolbar.tsx:96
+#: src/components/editor/TranslateToolbar.tsx:130
 msgid "Swedish"
 msgstr "Zweeds"
 
@@ -2558,8 +2558,8 @@ msgstr ""
 msgid "Tamil"
 msgstr "Tamil"
 
-#: src/components/editor/TranslateToolbar.tsx:751
-#: src/components/editor/TranslateToolbar.tsx:796
+#: src/components/editor/TranslateToolbar.tsx:752
+#: src/components/editor/TranslateToolbar.tsx:797
 msgid "Target language"
 msgstr "Doeltaal"
 
@@ -2629,7 +2629,7 @@ msgstr ""
 msgid "This will overwrite your current translation with the {{provider}} result."
 msgstr ""
 
-#: src/components/editor/TranslateToolbar.tsx:652
+#: src/components/editor/TranslateToolbar.tsx:653
 msgid ""
 "This will overwrite {{count}} existing translations with new machine transla"
 "tions."
@@ -2650,8 +2650,8 @@ msgstr "Drie vormen"
 msgid "Title"
 msgstr "Titel"
 
-#: src/components/editor/TranslateToolbar.tsx:740
-#: src/components/editor/TranslateToolbar.tsx:784
+#: src/components/editor/TranslateToolbar.tsx:741
+#: src/components/editor/TranslateToolbar.tsx:785
 msgid "To"
 msgstr "Naar"
 
@@ -2676,22 +2676,22 @@ msgstr ""
 msgid "Translate with {{provider}} + Glossary"
 msgstr ""
 
-#: src/components/editor/TranslateToolbar.tsx:868
+#: src/components/editor/TranslateToolbar.tsx:869
 msgid "Translate {{count}} untranslated"
 msgstr "{{count}} onvertaalde vertalen"
 
 #: src/components/editor/EditorTable.tsx:357
-#: src/components/editor/FilterToolbar.tsx:74
+#: src/components/editor/FilterToolbar.tsx:75
 msgid "Translated"
 msgstr "Vertaald"
 
 #: src/components/editor/EditorTable.tsx:122
-#: src/components/editor/FilterToolbar.tsx:268
+#: src/components/editor/FilterToolbar.tsx:269
 msgid "Translated string"
 msgstr "Vertaalde tekst"
 
 #: src/components/editor/TranslateButton.tsx:209
-#: src/components/editor/TranslateToolbar.tsx:1063
+#: src/components/editor/TranslateToolbar.tsx:1064
 msgid "Translating"
 msgstr "Aan het vertalen"
 
@@ -2706,11 +2706,11 @@ msgstr "Bezig met vertalen..."
 msgid "Translation"
 msgstr "Vertaling"
 
-#: src/components/editor/FilterToolbar.tsx:251
+#: src/components/editor/FilterToolbar.tsx:252
 msgid "Translation A-Z"
 msgstr "Vertaling A-Z"
 
-#: src/components/editor/FilterToolbar.tsx:252
+#: src/components/editor/FilterToolbar.tsx:253
 msgid "Translation Z-A"
 msgstr "Vertaling Z-A"
 
@@ -2731,7 +2731,7 @@ msgstr ""
 msgid "Translation memory exported as TMX."
 msgstr ""
 
-#: src/components/editor/TranslateToolbar.tsx:1075
+#: src/components/editor/TranslateToolbar.tsx:1076
 msgid "Translation progress"
 msgstr "Vertaalvoortgang"
 
@@ -2761,8 +2761,8 @@ msgid "Try adjusting your search or clearing some filters."
 msgstr "Pas je zoekopdracht aan of wis een paar filters."
 
 #: src/components/editor/HeaderEditor.tsx:136
-#: src/components/editor/TranslateToolbar.tsx:96
-#: src/components/editor/TranslateToolbar.tsx:130
+#: src/components/editor/TranslateToolbar.tsx:97
+#: src/components/editor/TranslateToolbar.tsx:131
 msgid "Turkish"
 msgstr "Turks"
 
@@ -2789,8 +2789,8 @@ msgid "Type a custom locale code"
 msgstr "Typ een aangepaste taalcode"
 
 #: src/components/editor/HeaderEditor.tsx:137
-#: src/components/editor/TranslateToolbar.tsx:97
-#: src/components/editor/TranslateToolbar.tsx:131
+#: src/components/editor/TranslateToolbar.tsx:98
+#: src/components/editor/TranslateToolbar.tsx:132
 msgid "Ukrainian"
 msgstr "Oekraïens"
 
@@ -2802,15 +2802,15 @@ msgstr "Kan het geselecteerde instellingenbestand niet importeren."
 msgid "Unable to read the selected settings file."
 msgstr "Kan het geselecteerde instellingenbestand niet lezen."
 
-#: src/components/editor/TranslateToolbar.tsx:1017
+#: src/components/editor/TranslateToolbar.tsx:1018
 msgid "Unapprove ({{count}})"
 msgstr "Afkeuren ({{count}})"
 
-#: src/components/editor/TranslateToolbar.tsx:1015
+#: src/components/editor/TranslateToolbar.tsx:1016
 msgid "Unapprove selected"
 msgstr "Selectie afkeuren"
 
-#: src/components/editor/TranslateToolbar.tsx:1008
+#: src/components/editor/TranslateToolbar.tsx:1009
 msgid "Unapprove selected rows by adding fuzzy flag"
 msgstr "Geselecteerde rijen afkeuren door de fuzzy-markering toe te voegen"
 
@@ -2818,7 +2818,7 @@ msgstr "Geselecteerde rijen afkeuren door de fuzzy-markering toe te voegen"
 msgid "Unapprove: mark as fuzzy"
 msgstr "Afkeuren: markeren als fuzzy"
 
-#: src/components/editor/TranslateToolbar.tsx:632
+#: src/components/editor/TranslateToolbar.tsx:633
 msgid "Unapproved {{count}} row(s): fuzzy flag added."
 msgstr "{{count}} rij(en) afgekeurd: fuzzy-markering toegevoegd."
 
@@ -2837,7 +2837,7 @@ msgid "Unsaved draft found"
 msgstr "Onopgeslagen concept gevonden"
 
 #: src/components/editor/EditorTable.tsx:358
-#: src/components/editor/FilterToolbar.tsx:73
+#: src/components/editor/FilterToolbar.tsx:74
 msgid "Untranslated"
 msgstr "Onvertaald"
 
@@ -3146,7 +3146,7 @@ msgstr "of"
 msgid "or upload manually"
 msgstr "of handmatig uploaden"
 
-#: src/components/editor/TranslateToolbar.tsx:842
+#: src/components/editor/TranslateToolbar.tsx:843
 msgid "overwritten"
 msgstr "overschreven"
 
@@ -3158,7 +3158,7 @@ msgstr "meervoud"
 msgid "singular"
 msgstr "enkelvoud"
 
-#: src/components/editor/TranslateToolbar.tsx:842
+#: src/components/editor/TranslateToolbar.tsx:843
 msgid "skipped"
 msgstr "overgeslagen"
 
@@ -3174,11 +3174,11 @@ msgstr ""
 msgid "{count} modified entries will be restored."
 msgstr "{count} gewijzigde items worden hersteld."
 
-#: src/components/editor/FilterToolbar.tsx:455
+#: src/components/editor/FilterToolbar.tsx:456
 msgid "{{count}} MT"
 msgstr "{{count}} MT"
 
-#: src/components/editor/FilterToolbar.tsx:489
+#: src/components/editor/FilterToolbar.tsx:490
 msgid "{{count}} Manual"
 msgstr "{{count}} handmatig"
 
@@ -3212,7 +3212,7 @@ msgstr "{{count}} items"
 msgid "{{count}} error issue(s)"
 msgstr ""
 
-#: src/components/editor/TranslateToolbar.tsx:1064
+#: src/components/editor/TranslateToolbar.tsx:1065
 msgid "{{count}} failed"
 msgstr "{{count}} mislukt"
 
@@ -3228,11 +3228,11 @@ msgstr "{{count}} uur geleden"
 msgid "{{count}} locale files found"
 msgstr ""
 
-#: src/components/editor/TranslateToolbar.tsx:840
+#: src/components/editor/TranslateToolbar.tsx:841
 msgid "{{count}} manual edits will be {{action}}"
 msgstr "{{count}} handmatige bewerkingen worden {{action}}"
 
-#: src/components/editor/TranslateToolbar.tsx:658
+#: src/components/editor/TranslateToolbar.tsx:659
 msgid "{{count}} manually edited entries will be skipped."
 msgstr "{{count}} handmatig bewerkte items worden overgeslagen."
 
@@ -3250,11 +3250,11 @@ msgid "{{count}} ref(s)"
 msgstr "{{count}} ref(s)"
 
 #: src/components/editor/EditorTable.tsx:2444
-#: src/components/editor/TranslateToolbar.tsx:693
+#: src/components/editor/TranslateToolbar.tsx:694
 msgid "{{count}} selected"
 msgstr "{{count}} geselecteerd"
 
-#: src/components/editor/FilterToolbar.tsx:312
+#: src/components/editor/FilterToolbar.tsx:313
 msgid "{{count}} shown"
 msgstr "{{count}} getoond"
 
@@ -3271,11 +3271,11 @@ msgstr "{{count}} termen"
 msgid "{{count}} total issues"
 msgstr ""
 
-#: src/components/editor/TranslateToolbar.tsx:543
+#: src/components/editor/TranslateToolbar.tsx:544
 msgid "{{count}} translations failed"
 msgstr "{{count}} vertalingen mislukt"
 
-#: src/components/editor/TranslateToolbar.tsx:694
+#: src/components/editor/TranslateToolbar.tsx:695
 msgid "{{count}} untranslated"
 msgstr "{{count}} onvertaald"
 
@@ -3295,11 +3295,11 @@ msgstr "{{count}} met bijgewerkte referenties"
 msgid "{{file}} is replaced with the filename without extension"
 msgstr ""
 
-#: src/components/editor/FilterToolbar.tsx:326
+#: src/components/editor/FilterToolbar.tsx:327
 msgid "{{filtered}} of {{total}}"
 msgstr "{{filtered}} van {{total}}"
 
-#: src/components/editor/FilterToolbar.tsx:341
+#: src/components/editor/FilterToolbar.tsx:342
 msgid "{{percentage}}% translated"
 msgstr "{{percentage}}% vertaald"
 
@@ -3314,7 +3314,7 @@ msgstr ""
 msgid "{{provider}} ready ({{count}} terms)"
 msgstr ""
 
-#: src/components/editor/FilterToolbar.tsx:370
+#: src/components/editor/FilterToolbar.tsx:371
 msgid "{{provider}} session usage: {{count}} characters"
 msgstr ""
 
@@ -3335,6 +3335,6 @@ msgstr ""
 msgid "{{score}}% match"
 msgstr ""
 
-#: src/components/editor/TranslateToolbar.tsx:660
+#: src/components/editor/TranslateToolbar.tsx:661
 msgid "⚠️ {{count}} manually edited entries will be overwritten!"
 msgstr "⚠️ {{count}} handmatig bewerkte items worden overschreven!"

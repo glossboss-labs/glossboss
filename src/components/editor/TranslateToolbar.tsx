@@ -50,6 +50,7 @@ import {
   getTranslationProviderLabel,
   hasProviderCredentials,
   recordTranslationUsage,
+  TRANSLATION_USAGE_REFRESH_EVENT,
   translateWithProvider,
   type TranslationProviderId,
 } from '@/lib/translation';
@@ -462,7 +463,7 @@ export function TranslateToolbar({
 
             batchCountRef.current++;
             if (batchCountRef.current % 2 === 0) {
-              window.dispatchEvent(new Event('translation-usage-refresh'));
+              window.dispatchEvent(new Event(TRANSLATION_USAGE_REFRESH_EVENT));
             }
           }
         } else {
@@ -534,7 +535,7 @@ export function TranslateToolbar({
 
             batchCountRef.current++;
             if (batchCountRef.current % 2 === 0) {
-              window.dispatchEvent(new Event('translation-usage-refresh'));
+              window.dispatchEvent(new Event(TRANSLATION_USAGE_REFRESH_EVENT));
             }
           }
         }
@@ -548,7 +549,7 @@ export function TranslateToolbar({
         setIsTranslating(false);
         setIsRetranslateMode(false);
         cancelRef.current = false;
-        window.dispatchEvent(new Event('translation-usage-refresh'));
+        window.dispatchEvent(new Event(TRANSLATION_USAGE_REFRESH_EVENT));
       }
     },
     [
