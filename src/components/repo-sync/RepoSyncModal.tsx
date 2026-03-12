@@ -264,18 +264,17 @@ export function RepoSyncModal({
                   description={
                     <>
                       <Anchor
-                        href="https://github.com/settings/personal-access-tokens/new"
+                        href="https://github.com/settings/tokens/new?description=GlossBoss&scopes=repo"
                         target="_blank"
                         rel="noopener noreferrer"
                         size="xs"
                       >
-                        {t('Create a fine-grained PAT')}{' '}
+                        {t('Create a token with repo scope pre-selected')}{' '}
                         <ExternalLink
                           size={10}
                           style={{ display: 'inline', verticalAlign: 'middle' }}
                         />
-                      </Anchor>{' '}
-                      {t('with Contents and Pull requests read/write permissions')}
+                      </Anchor>
                     </>
                   }
                   value={ghToken}
