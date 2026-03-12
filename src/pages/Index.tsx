@@ -2072,7 +2072,7 @@ export default function Index() {
                     </Group>
 
                     <Divider />
-                    <FilterToolbar />
+                    <FilterToolbar mode={workspaceMode} />
                     <Divider />
 
                     <TranslateToolbar
@@ -2080,8 +2080,9 @@ export default function Index() {
                       deeplGlossaryId={glossaryEnforcementEnabled ? deeplGlossaryId : null}
                       glossary={glossary}
                       translateEnabled={translateEnabled}
+                      mode={workspaceMode}
                     />
-                    {glossary && (
+                    {workspaceMode === 'edit' && glossary && (
                       <Group gap="xs">
                         <Badge
                           color="green"

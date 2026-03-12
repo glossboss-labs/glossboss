@@ -98,8 +98,6 @@ const REVIEW_FILTERS: FilterConfig[] = [
   { id: 'review-changed', label: msgid('Changed strings'), icon: Pencil, color: 'violet' },
 ];
 
-const ALL_FILTERS: FilterConfig[] = [...TRANSLATION_FILTERS, ...REVIEW_FILTERS];
-
 /** Get tooltip text based on current filter state */
 function getTooltipText(
   label: string,
@@ -137,7 +135,7 @@ function getBadgeStyle(state: FilterState | null): {
   return { variant: 'light', style: base };
 }
 
-export function FilterToolbar() {
+export function FilterToolbar({ mode = 'edit' }: { mode?: 'edit' | 'review' }) {
   const { t } = useTranslation();
   const theme = useMantineTheme();
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
@@ -247,7 +245,7 @@ export function FilterToolbar() {
   const percentage = stats.total > 0 ? Math.round((stats.translated / stats.total) * 100) : 0;
   const availableColumns = columnOrder.filter((column) => column !== 'approve');
   const visibleColumnCount = availableColumns.filter((column) => visibleColumns.has(column)).length;
-  const visibleFilters = ALL_FILTERS;
+  const visibleFilters = mode === 'review' ? REVIEW_FILTERS : TRANSLATION_FILTERS;
 
   const handleClearSearch = useCallback(() => {
     setLocalQuery('');

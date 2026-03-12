@@ -326,7 +326,7 @@ describe('editor details and mobile layout', () => {
 
     renderWithMantine(
       <>
-        <TranslateToolbar glossary={null} />
+        <TranslateToolbar glossary={null} mode="review" />
         <EditorTable mode="review" />
       </>,
     );

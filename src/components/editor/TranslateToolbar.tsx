@@ -155,6 +155,7 @@ interface TranslateToolbarProps {
   deeplGlossaryId?: string | null;
   glossary?: Glossary | null;
   translateEnabled?: boolean;
+  mode?: 'edit' | 'review';
 }
 
 export function TranslateToolbar({
@@ -162,6 +163,7 @@ export function TranslateToolbar({
   deeplGlossaryId,
   glossary = null,
   translateEnabled = true,
+  mode = 'edit',
 }: TranslateToolbarProps) {
   const { t } = useTranslation();
   const theme = useMantineTheme();
@@ -738,57 +740,117 @@ export function TranslateToolbar({
       />
 
       <Stack gap="sm">
-        <AnimatePresence>
-          {glossaryFallbackNotice && (
-            <MotionDiv variants={contentVariants} initial="hidden" animate="visible" exit="exit">
-              <Alert color="yellow" withCloseButton onClose={() => setGlossaryFallbackNotice(null)}>
-                <Text size="xs">{glossaryFallbackNotice}</Text>
-              </Alert>
-            </MotionDiv>
-          )}
-        </AnimatePresence>
+        {mode === 'edit' && (
+          <>
+            <AnimatePresence>
+              {glossaryFallbackNotice && (
+                <MotionDiv
+                  variants={contentVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                >
+                  <Alert
+                    color="yellow"
+                    withCloseButton
+                    onClose={() => setGlossaryFallbackNotice(null)}
+                  >
+                    <Text size="xs">{glossaryFallbackNotice}</Text>
+                  </Alert>
+                </MotionDiv>
+              )}
+            </AnimatePresence>
 
-        <Group justify="space-between" align="center" wrap="wrap">
-          <Group gap="xs">
-            <WandSparkles size={14} />
-            <Text size="sm" fw={600}>
-              {t('Machine Translation')}
-            </Text>
-            <Badge size="xs" variant="light" color="gray">
-              {providerLabel}
-            </Badge>
-          </Group>
-          <Text size="xs" c="dimmed">
-            {selectedEntryIds.size > 0
-              ? t('{{count}} selected', { count: selectedEntryIds.size })
-              : t('{{count}} untranslated', { count: untranslatedEntries.length })}
-          </Text>
-        </Group>
-
-        {/* API Key Warning */}
-        <AnimatePresence>
-          {!hasApiKey && (
-            <MotionDiv variants={contentVariants} initial="hidden" animate="visible" exit="exit">
-              <Alert color="yellow" icon={<Key size={16} />}>
-                <Text size="sm">
-                  {t('Add your {{provider}} credentials in Settings to enable translations.', {
-                    provider: providerLabel,
-                  })}
+            <Group justify="space-between" align="center" wrap="wrap">
+              <Group gap="xs">
+                <WandSparkles size={14} />
+                <Text size="sm" fw={600}>
+                  {t('Machine Translation')}
                 </Text>
-              </Alert>
-            </MotionDiv>
-          )}
-        </AnimatePresence>
+                <Badge size="xs" variant="light" color="gray">
+                  {providerLabel}
+                </Badge>
+              </Group>
+              <Text size="xs" c="dimmed">
+                {selectedEntryIds.size > 0
+                  ? t('{{count}} selected', { count: selectedEntryIds.size })
+                  : t('{{count}} untranslated', { count: untranslatedEntries.length })}
+              </Text>
+            </Group>
 
-        <Group
-          justify="space-between"
-          align={isMobile ? 'stretch' : 'center'}
-          wrap="wrap"
-          style={isMobile ? { flexDirection: 'column' } : undefined}
-        >
-          {isMobile ? (
-            <Stack gap="xs" w="100%">
-              <Group gap="xs" align="center" wrap="nowrap">
+            {/* API Key Warning */}
+            <AnimatePresence>
+              {!hasApiKey && (
+                <MotionDiv
+                  variants={contentVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                >
+                  <Alert color="yellow" icon={<Key size={16} />}>
+                    <Text size="sm">
+                      {t('Add your {{provider}} credentials in Settings to enable translations.', {
+                        provider: providerLabel,
+                      })}
+                    </Text>
+                  </Alert>
+                </MotionDiv>
+              )}
+            </AnimatePresence>
+          </>
+        )}
+
+        {mode === 'edit' && (
+          <Group
+            justify="space-between"
+            align={isMobile ? 'stretch' : 'center'}
+            wrap="wrap"
+            style={isMobile ? { flexDirection: 'column' } : undefined}
+          >
+            {isMobile ? (
+              <Stack gap="xs" w="100%">
+                <Group gap="xs" align="center" wrap="nowrap">
+                  <Text size="xs" c="dimmed" fw={500}>
+                    {t('From')}
+                  </Text>
+                  <Select
+                    data={SOURCE_LANGUAGES.map((opt) => ({ ...opt, label: t(opt.label) }))}
+                    value={sourceLang}
+                    onChange={handleSourceChange}
+                    placeholder={t('Auto-detect')}
+                    searchable
+                    clearable
+                    size="xs"
+                    disabled={!hasApiKey}
+                    aria-label={t('Source language')}
+                    style={{ flex: 1, minWidth: 0 }}
+                  />
+                </Group>
+                <Group gap="xs" align="center" wrap="nowrap">
+                  <Text size="xs" c="dimmed" fw={500}>
+                    {t('To')}
+                  </Text>
+                  <Select
+                    data={TARGET_LANGUAGES.map((opt) => ({ ...opt, label: t(opt.label) }))}
+                    value={targetLang}
+                    onChange={handleTargetChange}
+                    placeholder={t('Select target...')}
+                    searchable
+                    required
+                    size="xs"
+                    disabled={!hasApiKey}
+                    aria-label={t('Target language')}
+                    style={{ flex: 1, minWidth: 0 }}
+                  />
+                  {inferredTarget && (
+                    <Badge size="xs" variant="light" color="gray" style={{ flexShrink: 0 }}>
+                      {t('Detected: {{target}}', { target: inferredTarget })}
+                    </Badge>
+                  )}
+                </Group>
+              </Stack>
+            ) : (
+              <Group gap="xs" align="center">
                 <Text size="xs" c="dimmed" fw={500}>
                   {t('From')}
                 </Text>
@@ -799,13 +861,16 @@ export function TranslateToolbar({
                   placeholder={t('Auto-detect')}
                   searchable
                   clearable
+                  w={160}
                   size="xs"
                   disabled={!hasApiKey}
                   aria-label={t('Source language')}
-                  style={{ flex: 1, minWidth: 0 }}
                 />
-              </Group>
-              <Group gap="xs" align="center" wrap="nowrap">
+
+                <Text c="dimmed" size="sm" aria-hidden="true">
+                  →
+                </Text>
+
                 <Text size="xs" c="dimmed" fw={500}>
                   {t('To')}
                 </Text>
@@ -816,136 +881,93 @@ export function TranslateToolbar({
                   placeholder={t('Select target...')}
                   searchable
                   required
+                  w={170}
                   size="xs"
                   disabled={!hasApiKey}
                   aria-label={t('Target language')}
-                  style={{ flex: 1, minWidth: 0 }}
                 />
+
                 {inferredTarget && (
-                  <Badge size="xs" variant="light" color="gray" style={{ flexShrink: 0 }}>
+                  <Badge size="xs" variant="light" color="gray">
                     {t('Detected: {{target}}', { target: inferredTarget })}
                   </Badge>
                 )}
               </Group>
-            </Stack>
-          ) : (
-            <Group gap="xs" align="center">
-              <Text size="xs" c="dimmed" fw={500}>
-                {t('From')}
-              </Text>
-              <Select
-                data={SOURCE_LANGUAGES.map((opt) => ({ ...opt, label: t(opt.label) }))}
-                value={sourceLang}
-                onChange={handleSourceChange}
-                placeholder={t('Auto-detect')}
-                searchable
-                clearable
-                w={160}
-                size="xs"
-                disabled={!hasApiKey}
-                aria-label={t('Source language')}
-              />
+            )}
 
-              <Text c="dimmed" size="sm" aria-hidden="true">
-                →
-              </Text>
-
-              <Text size="xs" c="dimmed" fw={500}>
-                {t('To')}
-              </Text>
-              <Select
-                data={TARGET_LANGUAGES.map((opt) => ({ ...opt, label: t(opt.label) }))}
-                value={targetLang}
-                onChange={handleTargetChange}
-                placeholder={t('Select target...')}
-                searchable
-                required
-                w={170}
-                size="xs"
-                disabled={!hasApiKey}
-                aria-label={t('Target language')}
-              />
-
-              {inferredTarget && (
-                <Badge size="xs" variant="light" color="gray">
-                  {t('Detected: {{target}}', { target: inferredTarget })}
-                </Badge>
-              )}
-            </Group>
-          )}
-
-          <Group gap="sm" wrap="wrap">
-            <AnimatePresence mode="wait">
-              {isTranslating ? (
-                <MotionDiv
-                  key="cancel"
-                  variants={contentVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                >
-                  <motion.div {...buttonStates}>
-                    <Button
-                      leftSection={<Square size={16} />}
-                      onClick={handleCancel}
-                      variant="light"
-                      color="red"
-                    >
-                      {t('Cancel')}
-                    </Button>
-                  </motion.div>
-                </MotionDiv>
-              ) : (
-                <MotionDiv
-                  key="actions"
-                  variants={contentVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                >
-                  <Group gap="sm">
-                    <Tooltip
-                      label={
-                        manualEditCount > 0
-                          ? t('{{count}} manual edits will be {{action}}', {
-                              count: manualEditCount,
-                              action: skipManualEdits ? t('skipped') : t('overwritten'),
-                            })
-                          : t('Retranslate all entries')
-                      }
-                    >
-                      <motion.div {...buttonStates}>
-                        <Button
-                          leftSection={<RefreshCw size={16} />}
-                          onClick={() => setConfirmRetranslateOpen(true)}
-                          disabled={
-                            !targetLang || allTranslatableEntries.length === 0 || !hasApiKey
-                          }
-                          variant="subtle"
-                          color="orange"
-                        >
-                          {t('Retranslate All')}
-                        </Button>
-                      </motion.div>
-                    </Tooltip>
+            <Group gap="sm" wrap="wrap">
+              <AnimatePresence mode="wait">
+                {isTranslating ? (
+                  <MotionDiv
+                    key="cancel"
+                    variants={contentVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                  >
                     <motion.div {...buttonStates}>
                       <Button
-                        leftSection={<Zap size={16} />}
-                        onClick={handleBulkTranslate}
-                        disabled={!targetLang || untranslatedEntries.length === 0 || !hasApiKey}
+                        leftSection={<Square size={16} />}
+                        onClick={handleCancel}
                         variant="light"
+                        color="red"
                       >
-                        {t('Translate {{count}} untranslated', {
-                          count: untranslatedEntries.length,
-                        })}
+                        {t('Cancel')}
                       </Button>
                     </motion.div>
-                  </Group>
-                </MotionDiv>
-              )}
-            </AnimatePresence>
+                  </MotionDiv>
+                ) : (
+                  <MotionDiv
+                    key="actions"
+                    variants={contentVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                  >
+                    <Group gap="sm">
+                      <Tooltip
+                        label={
+                          manualEditCount > 0
+                            ? t('{{count}} manual edits will be {{action}}', {
+                                count: manualEditCount,
+                                action: skipManualEdits ? t('skipped') : t('overwritten'),
+                              })
+                            : t('Retranslate all entries')
+                        }
+                      >
+                        <motion.div {...buttonStates}>
+                          <Button
+                            leftSection={<RefreshCw size={16} />}
+                            onClick={() => setConfirmRetranslateOpen(true)}
+                            disabled={
+                              !targetLang || allTranslatableEntries.length === 0 || !hasApiKey
+                            }
+                            variant="subtle"
+                            color="orange"
+                          >
+                            {t('Retranslate All')}
+                          </Button>
+                        </motion.div>
+                      </Tooltip>
+                      <motion.div {...buttonStates}>
+                        <Button
+                          leftSection={<Zap size={16} />}
+                          onClick={handleBulkTranslate}
+                          disabled={!targetLang || untranslatedEntries.length === 0 || !hasApiKey}
+                          variant="light"
+                        >
+                          {t('Translate {{count}} untranslated', {
+                            count: untranslatedEntries.length,
+                          })}
+                        </Button>
+                      </motion.div>
+                    </Group>
+                  </MotionDiv>
+                )}
+              </AnimatePresence>
+            </Group>
           </Group>
-        </Group>
+        )}
 
         {/* Bulk selection + selected-row actions */}
         {!isTranslating && (
@@ -984,263 +1006,303 @@ export function TranslateToolbar({
               )}
             </AnimatePresence>
 
-            <AnimatePresence mode="popLayout">
-              {selectedAutoTranslateEntries.length > 0 && (
-                <MotionDiv
-                  key="auto-translate-selected"
-                  layout
-                  variants={badgeVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                >
-                  <Tooltip label={t('Auto translate selected rows that are empty or fuzzy')}>
-                    <Button
-                      size="xs"
-                      variant="light"
-                      color="blue"
-                      leftSection={<Zap size={14} />}
-                      disabled={!hasApiKey || !targetLang}
-                      onClick={handleSelectedAutoTranslate}
-                      aria-label={t('Auto translate selected')}
+            {/* Edit-mode bulk actions */}
+            {mode === 'edit' && (
+              <>
+                <AnimatePresence mode="popLayout">
+                  {selectedAutoTranslateEntries.length > 0 && (
+                    <MotionDiv
+                      key="auto-translate-selected"
+                      layout
+                      variants={badgeVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
                     >
-                      {t('Auto Translate ({{count}})', {
-                        count: selectedAutoTranslateEntries.length,
-                      })}
-                    </Button>
-                  </Tooltip>
-                </MotionDiv>
-              )}
-            </AnimatePresence>
+                      <Tooltip label={t('Auto translate selected rows that are empty or fuzzy')}>
+                        <Button
+                          size="xs"
+                          variant="light"
+                          color="blue"
+                          leftSection={<Zap size={14} />}
+                          disabled={!hasApiKey || !targetLang}
+                          onClick={handleSelectedAutoTranslate}
+                          aria-label={t('Auto translate selected')}
+                        >
+                          {t('Auto Translate ({{count}})', {
+                            count: selectedAutoTranslateEntries.length,
+                          })}
+                        </Button>
+                      </Tooltip>
+                    </MotionDiv>
+                  )}
+                </AnimatePresence>
 
-            <AnimatePresence mode="popLayout">
-              {selectedEntryIds.size > 0 && glossary && (
-                <MotionDiv
-                  key="glossary-check-selected"
-                  layout
-                  variants={badgeVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                >
-                  <Tooltip label={t('Re-run glossary analysis on selected rows')}>
-                    <Button
-                      size="xs"
-                      variant="light"
-                      color="violet"
-                      leftSection={<BookCheck size={14} />}
-                      onClick={handleGlossaryCheckSelected}
-                      aria-label={t('Glossary check selected')}
+                <AnimatePresence mode="popLayout">
+                  {selectedEntryIds.size > 0 && glossary && (
+                    <MotionDiv
+                      key="glossary-check-selected"
+                      layout
+                      variants={badgeVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
                     >
-                      {t('Glossary Check')}
-                    </Button>
-                  </Tooltip>
-                </MotionDiv>
-              )}
-            </AnimatePresence>
+                      <Tooltip label={t('Re-run glossary analysis on selected rows')}>
+                        <Button
+                          size="xs"
+                          variant="light"
+                          color="violet"
+                          leftSection={<BookCheck size={14} />}
+                          onClick={handleGlossaryCheckSelected}
+                          aria-label={t('Glossary check selected')}
+                        >
+                          {t('Glossary Check')}
+                        </Button>
+                      </Tooltip>
+                    </MotionDiv>
+                  )}
+                </AnimatePresence>
 
-            <AnimatePresence mode="popLayout">
-              {selectedFuzzyCount > 0 && (
-                <MotionDiv
-                  key="clear-fuzzy-selected"
-                  layout
-                  variants={badgeVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                >
-                  <Tooltip label={t('Clear fuzzy on selected rows')}>
-                    <Button
-                      size="xs"
-                      variant="light"
-                      color="green"
-                      leftSection={<CheckCheck size={14} />}
-                      onClick={handleClearFuzzySelected}
-                      aria-label={t('Clear fuzzy selected')}
+                <AnimatePresence mode="popLayout">
+                  {selectedFuzzyCount > 0 && (
+                    <MotionDiv
+                      key="clear-fuzzy-selected"
+                      layout
+                      variants={badgeVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
                     >
-                      {t('Clear Fuzzy ({{count}})', { count: selectedFuzzyCount })}
-                    </Button>
-                  </Tooltip>
-                </MotionDiv>
-              )}
-            </AnimatePresence>
+                      <Tooltip label={t('Clear fuzzy on selected rows')}>
+                        <Button
+                          size="xs"
+                          variant="light"
+                          color="green"
+                          leftSection={<CheckCheck size={14} />}
+                          onClick={handleClearFuzzySelected}
+                          aria-label={t('Clear fuzzy selected')}
+                        >
+                          {t('Clear Fuzzy ({{count}})', { count: selectedFuzzyCount })}
+                        </Button>
+                      </Tooltip>
+                    </MotionDiv>
+                  )}
+                </AnimatePresence>
 
-            <AnimatePresence mode="popLayout">
-              {selectedNonFuzzyCount > 0 && (
-                <MotionDiv
-                  key="mark-fuzzy-selected"
-                  layout
-                  variants={badgeVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                >
-                  <Tooltip label={t('Mark selected rows as fuzzy')}>
-                    <Button
-                      size="xs"
-                      variant="light"
-                      color="yellow"
-                      leftSection={<RotateCcw size={14} />}
-                      onClick={handleMarkFuzzySelected}
-                      aria-label={t('Mark fuzzy selected')}
+                <AnimatePresence mode="popLayout">
+                  {selectedNonFuzzyCount > 0 && (
+                    <MotionDiv
+                      key="mark-fuzzy-selected"
+                      layout
+                      variants={badgeVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
                     >
-                      {t('Mark Fuzzy ({{count}})', { count: selectedNonFuzzyCount })}
-                    </Button>
-                  </Tooltip>
-                </MotionDiv>
-              )}
-            </AnimatePresence>
+                      <Tooltip label={t('Mark selected rows as fuzzy')}>
+                        <Button
+                          size="xs"
+                          variant="light"
+                          color="yellow"
+                          leftSection={<RotateCcw size={14} />}
+                          onClick={handleMarkFuzzySelected}
+                          aria-label={t('Mark fuzzy selected')}
+                        >
+                          {t('Mark Fuzzy ({{count}})', { count: selectedNonFuzzyCount })}
+                        </Button>
+                      </Tooltip>
+                    </MotionDiv>
+                  )}
+                </AnimatePresence>
+              </>
+            )}
 
-            <AnimatePresence mode="popLayout">
-              {selectedEntryIds.size > 0 && (
-                <MotionDiv
-                  key="approve-selected"
-                  layout
-                  variants={badgeVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                >
-                  <Button size="xs" variant="light" color="green" onClick={handleApproveSelected}>
-                    {t('Approve selected')}
-                  </Button>
-                </MotionDiv>
-              )}
-            </AnimatePresence>
+            {/* Review-mode bulk actions */}
+            {mode === 'review' && (
+              <>
+                <AnimatePresence mode="popLayout">
+                  {selectedEntryIds.size > 0 && (
+                    <MotionDiv
+                      key="approve-selected"
+                      layout
+                      variants={badgeVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                    >
+                      <Button
+                        size="xs"
+                        variant="light"
+                        color="green"
+                        onClick={handleApproveSelected}
+                      >
+                        {t('Approve selected')}
+                      </Button>
+                    </MotionDiv>
+                  )}
+                </AnimatePresence>
 
-            <AnimatePresence mode="popLayout">
-              {selectedReviewApprovedCount > 0 && (
-                <MotionDiv
-                  key="unapprove-selected"
-                  layout
-                  variants={badgeVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                >
-                  <Button size="xs" variant="default" onClick={handleUnapproveSelected}>
-                    {t('Unapprove selected')}
-                  </Button>
-                </MotionDiv>
-              )}
-            </AnimatePresence>
+                <AnimatePresence mode="popLayout">
+                  {selectedReviewApprovedCount > 0 && (
+                    <MotionDiv
+                      key="unapprove-selected"
+                      layout
+                      variants={badgeVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                    >
+                      <Button size="xs" variant="default" onClick={handleUnapproveSelected}>
+                        {t('Unapprove selected')}
+                      </Button>
+                    </MotionDiv>
+                  )}
+                </AnimatePresence>
 
-            <AnimatePresence mode="popLayout">
-              {selectedRequestChangesEligibleCount > 0 && (
-                <MotionDiv
-                  key="request-changes-selected"
-                  layout
-                  variants={badgeVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                >
-                  <Button
-                    size="xs"
-                    variant="light"
-                    color="orange"
-                    onClick={handleRequestChangesSelected}
-                  >
-                    {t('Request changes selected')}
-                  </Button>
-                </MotionDiv>
-              )}
-            </AnimatePresence>
+                <AnimatePresence mode="popLayout">
+                  {selectedRequestChangesEligibleCount > 0 && (
+                    <MotionDiv
+                      key="request-changes-selected"
+                      layout
+                      variants={badgeVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                    >
+                      <Button
+                        size="xs"
+                        variant="light"
+                        color="orange"
+                        onClick={handleRequestChangesSelected}
+                      >
+                        {t('Request changes selected')}
+                      </Button>
+                    </MotionDiv>
+                  )}
+                </AnimatePresence>
+              </>
+            )}
           </Group>
         )}
 
-        {/* Skip manual edits option */}
-        <AnimatePresence>
-          {manualEditCount > 0 && !isTranslating && (
-            <MotionDiv variants={contentVariants} initial="hidden" animate="visible" exit="exit">
-              <Group gap="xs">
-                <Checkbox
-                  size="xs"
-                  checked={skipManualEdits}
-                  onChange={(e) => setSkipManualEdits(e.currentTarget.checked)}
-                  label={
-                    <Group gap={4}>
-                      <ShieldAlert size={14} aria-hidden="true" />
-                      <Text size="xs">
-                        {t('Protect {{count}} manual edits from bulk translation', {
-                          count: manualEditCount,
-                        })}
-                      </Text>
-                    </Group>
-                  }
-                />
-              </Group>
-            </MotionDiv>
-          )}
-        </AnimatePresence>
+        {/* Skip manual edits option — edit mode only */}
+        {mode === 'edit' && (
+          <>
+            <AnimatePresence>
+              {manualEditCount > 0 && !isTranslating && (
+                <MotionDiv
+                  variants={contentVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                >
+                  <Group gap="xs">
+                    <Checkbox
+                      size="xs"
+                      checked={skipManualEdits}
+                      onChange={(e) => setSkipManualEdits(e.currentTarget.checked)}
+                      label={
+                        <Group gap={4}>
+                          <ShieldAlert size={14} aria-hidden="true" />
+                          <Text size="xs">
+                            {t('Protect {{count}} manual edits from bulk translation', {
+                              count: manualEditCount,
+                            })}
+                          </Text>
+                        </Group>
+                      }
+                    />
+                  </Group>
+                </MotionDiv>
+              )}
+            </AnimatePresence>
 
-        {/* Progress bar during bulk translation */}
-        <AnimatePresence>
-          {isTranslating && (
-            <MotionStack
-              gap="xs"
-              variants={contentVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-            >
-              <Group justify="space-between">
-                <Text size="sm" c="dimmed">
-                  {isRetranslateMode ? t('Retranslating') : t('Translating')}... {translateCount}
-                  {failedCount > 0 ? ` (${t('{{count}} failed', { count: failedCount })})` : ''}
-                </Text>
-                <Text size="sm" fw={500}>
-                  {progress}%
-                </Text>
-              </Group>
-              <Progress
-                value={progress}
-                size="sm"
-                animated
-                color={failedCount > 0 ? 'orange' : 'blue'}
-                aria-label={t('Translation progress')}
-              />
-            </MotionStack>
-          )}
-        </AnimatePresence>
+            {/* Progress bar during bulk translation */}
+            <AnimatePresence>
+              {isTranslating && (
+                <MotionStack
+                  gap="xs"
+                  variants={contentVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                >
+                  <Group justify="space-between">
+                    <Text size="sm" c="dimmed">
+                      {isRetranslateMode ? t('Retranslating') : t('Translating')}...{' '}
+                      {translateCount}
+                      {failedCount > 0 ? ` (${t('{{count}} failed', { count: failedCount })})` : ''}
+                    </Text>
+                    <Text size="sm" fw={500}>
+                      {progress}%
+                    </Text>
+                  </Group>
+                  <Progress
+                    value={progress}
+                    size="sm"
+                    animated
+                    color={failedCount > 0 ? 'orange' : 'blue'}
+                    aria-label={t('Translation progress')}
+                  />
+                </MotionStack>
+              )}
+            </AnimatePresence>
 
-        {/* Error display */}
-        <AnimatePresence>
-          {error && !isTranslating && (
-            <MotionDiv variants={contentVariants} initial="hidden" animate="visible" exit="exit">
-              <Alert
-                color="red"
-                icon={<AlertCircle size={16} />}
-                withCloseButton
-                onClose={() => setError(null)}
-              >
-                {error}
-              </Alert>
-            </MotionDiv>
-          )}
-        </AnimatePresence>
+            {/* Error display */}
+            <AnimatePresence>
+              {error && !isTranslating && (
+                <MotionDiv
+                  variants={contentVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                >
+                  <Alert
+                    color="red"
+                    icon={<AlertCircle size={16} />}
+                    withCloseButton
+                    onClose={() => setError(null)}
+                  >
+                    {error}
+                  </Alert>
+                </MotionDiv>
+              )}
+            </AnimatePresence>
 
-        {/* Bulk action feedback */}
-        <AnimatePresence>
-          {bulkActionMessage && !isTranslating && (
-            <MotionDiv variants={contentVariants} initial="hidden" animate="visible" exit="exit">
-              <Alert color="blue" withCloseButton onClose={() => setBulkActionMessage(null)}>
-                {bulkActionMessage}
-              </Alert>
-            </MotionDiv>
-          )}
-        </AnimatePresence>
+            {/* Bulk action feedback */}
+            <AnimatePresence>
+              {bulkActionMessage && !isTranslating && (
+                <MotionDiv
+                  variants={contentVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                >
+                  <Alert color="blue" withCloseButton onClose={() => setBulkActionMessage(null)}>
+                    {bulkActionMessage}
+                  </Alert>
+                </MotionDiv>
+              )}
+            </AnimatePresence>
 
-        {/* Success message */}
-        <AnimatePresence>
-          {!isTranslating && translateCount > 0 && !error && (
-            <MotionDiv variants={contentVariants} initial="hidden" animate="visible" exit="exit">
-              <Alert color="green" withCloseButton onClose={() => setTranslateCount(0)}>
-                {t('Successfully translated {{count}} entries', { count: translateCount })}
-              </Alert>
-            </MotionDiv>
-          )}
-        </AnimatePresence>
+            {/* Success message */}
+            <AnimatePresence>
+              {!isTranslating && translateCount > 0 && !error && (
+                <MotionDiv
+                  variants={contentVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                >
+                  <Alert color="green" withCloseButton onClose={() => setTranslateCount(0)}>
+                    {t('Successfully translated {{count}} entries', { count: translateCount })}
+                  </Alert>
+                </MotionDiv>
+              )}
+            </AnimatePresence>
+          </>
+        )}
       </Stack>
     </>
   );
