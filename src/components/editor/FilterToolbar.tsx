@@ -70,7 +70,7 @@ interface FilterConfig {
   color: string;
 }
 
-const EDIT_FILTERS: FilterConfig[] = [
+const TRANSLATION_FILTERS: FilterConfig[] = [
   { id: 'untranslated', label: msgid('Untranslated'), icon: FileQuestion, color: 'red' },
   { id: 'translated', label: msgid('Translated'), icon: CheckCircle, color: 'green' },
   { id: 'fuzzy', label: msgid('Fuzzy'), icon: AlertTriangle, color: 'yellow' },
@@ -245,7 +245,7 @@ export function FilterToolbar({ mode = 'edit' }: { mode?: 'edit' | 'review' }) {
   const percentage = stats.total > 0 ? Math.round((stats.translated / stats.total) * 100) : 0;
   const availableColumns = columnOrder.filter((column) => column !== 'approve');
   const visibleColumnCount = availableColumns.filter((column) => visibleColumns.has(column)).length;
-  const visibleFilters = mode === 'review' ? REVIEW_FILTERS : EDIT_FILTERS;
+  const visibleFilters = mode === 'review' ? REVIEW_FILTERS : TRANSLATION_FILTERS;
 
   const handleClearSearch = useCallback(() => {
     setLocalQuery('');
@@ -416,7 +416,7 @@ export function FilterToolbar({ mode = 'edit' }: { mode?: 'edit' | 'review' }) {
 
       {/* Row 2: Filter chips */}
       <Group gap="xs" justify="space-between" align="center" wrap="wrap">
-        <Group gap="xs" wrap="nowrap" style={{ overflow: 'auto', minWidth: 0, flex: 1 }}>
+        <Group gap="xs" wrap="wrap" style={{ minWidth: 0, flex: 1 }}>
           <AnimatePresence mode="popLayout">
             {visibleFilters.map((filter) => {
               const filterState = activeFilters.get(filter.id) ?? null;
@@ -469,7 +469,7 @@ export function FilterToolbar({ mode = 'edit' }: { mode?: 'edit' | 'review' }) {
 
           {/* MT count badge - clickable filter */}
           <AnimatePresence>
-            {mode === 'edit' && stats.machineTranslated > 0 && (
+            {stats.machineTranslated > 0 && (
               <MotionDiv variants={badgeVariants} initial="hidden" animate="visible" exit="exit">
                 {(() => {
                   const filterState = activeFilters.get('machine-translated') ?? null;
@@ -503,7 +503,7 @@ export function FilterToolbar({ mode = 'edit' }: { mode?: 'edit' | 'review' }) {
 
           {/* Manual edits badge - clickable filter */}
           <AnimatePresence>
-            {mode === 'edit' && stats.manualEdits > 0 && (
+            {stats.manualEdits > 0 && (
               <MotionDiv variants={badgeVariants} initial="hidden" animate="visible" exit="exit">
                 {(() => {
                   const filterState = activeFilters.get('manual-edit') ?? null;
