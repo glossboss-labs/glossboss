@@ -19,8 +19,9 @@ import {
   Alert,
   Switch,
   Loader,
+  Anchor,
 } from '@mantine/core';
-import { GitBranch, Key, FolderOpen, Upload, AlertCircle } from 'lucide-react';
+import { GitBranch, Key, FolderOpen, Upload, AlertCircle, ExternalLink } from 'lucide-react';
 import {
   getGitHubSettings,
   saveGitHubSettings,
@@ -260,9 +261,23 @@ export function RepoSyncModal({
               <Stack gap="sm">
                 <PasswordInput
                   label={t('Personal access token')}
-                  description={t(
-                    'Create a fine-grained PAT with Contents and Pull requests permissions',
-                  )}
+                  description={
+                    <>
+                      <Anchor
+                        href="https://github.com/settings/personal-access-tokens/new"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        size="xs"
+                      >
+                        {t('Create a fine-grained PAT')}{' '}
+                        <ExternalLink
+                          size={10}
+                          style={{ display: 'inline', verticalAlign: 'middle' }}
+                        />
+                      </Anchor>{' '}
+                      {t('with Contents and Pull requests read/write permissions')}
+                    </>
+                  }
                   value={ghToken}
                   onChange={(e) => setGhToken(e.currentTarget.value)}
                   placeholder="github_pat_..."
@@ -285,7 +300,23 @@ export function RepoSyncModal({
                 />
                 <PasswordInput
                   label={t('Personal access token')}
-                  description={t('Create a token with api scope')}
+                  description={
+                    <>
+                      <Anchor
+                        href={`${glInstanceUrl.replace(/\/+$/, '')}/-/user_settings/personal_access_tokens?name=GlossBoss&scopes=api`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        size="xs"
+                      >
+                        {t('Create a token')}{' '}
+                        <ExternalLink
+                          size={10}
+                          style={{ display: 'inline', verticalAlign: 'middle' }}
+                        />
+                      </Anchor>{' '}
+                      {t('with api scope')}
+                    </>
+                  }
                   value={glToken}
                   onChange={(e) => setGlToken(e.currentTarget.value)}
                   placeholder="glpat-..."

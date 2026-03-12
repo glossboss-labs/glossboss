@@ -1737,6 +1737,17 @@ export default function Index() {
                       <Menu.Divider />
                       <Menu.Label>{t('Actions')}</Menu.Label>
                       <Menu.Item
+                        leftSection={<Link size={14} />}
+                        onClick={() => {
+                          const url = window.prompt(t('Enter a .po file URL'));
+                          if (url?.trim()) {
+                            void handleLoadFromUrl(url.trim());
+                          }
+                        }}
+                      >
+                        {t('Load from URL')}
+                      </Menu.Item>
+                      <Menu.Item
                         leftSection={<GitBranch size={14} />}
                         onClick={() => {
                           setRepoSyncInitialTab(repoConnection ? 'push' : 'connect');
