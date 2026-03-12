@@ -130,6 +130,7 @@ import {
 import {
   getTranslationProviderSettings,
   getTranslationProviderLabel,
+  getTranslationUsage,
   saveActiveTranslationProvider,
   TRANSLATION_PROVIDER_CAPABILITIES,
   type TranslationProviderId,
@@ -608,9 +609,14 @@ export function SettingsModal({
         endpoint: azureEndpoint,
       });
       await getAzureClient().testKey();
+      const sessionUsage = getTranslationUsage('azure');
       setAzureTestResult({
         success: true,
         message: t('API key is valid!'),
+        usage:
+          sessionUsage.characterCount > 0
+            ? { used: sessionUsage.characterCount, limit: 0 }
+            : undefined,
       });
       setAzureSaved(true);
     } catch (error) {
@@ -663,9 +669,14 @@ export function SettingsModal({
         useProjectContext: geminiUseProjectContext,
       });
       await getGeminiClient().testKey();
+      const sessionUsage = getTranslationUsage('gemini');
       setGeminiTestResult({
         success: true,
         message: t('API key is valid!'),
+        usage:
+          sessionUsage.characterCount > 0
+            ? { used: sessionUsage.characterCount, limit: 0 }
+            : undefined,
       });
       setGeminiSaved(true);
     } catch (error) {
@@ -1636,7 +1647,16 @@ export function SettingsModal({
                         azureTestResult.success ? <Check size={16} /> : <AlertCircle size={16} />
                       }
                     >
-                      <Text size="sm">{azureTestResult.message}</Text>
+                      <Stack gap="xs">
+                        <Text size="sm">{azureTestResult.message}</Text>
+                        {azureTestResult.usage && (
+                          <Text size="xs" c="dimmed">
+                            {t('Session usage: {{count}} characters', {
+                              count: azureTestResult.usage.used.toLocaleString(),
+                            })}
+                          </Text>
+                        )}
+                      </Stack>
                     </Alert>
                   )}
                 </>
@@ -1771,7 +1791,16 @@ export function SettingsModal({
                         geminiTestResult.success ? <Check size={16} /> : <AlertCircle size={16} />
                       }
                     >
-                      <Text size="sm">{geminiTestResult.message}</Text>
+                      <Stack gap="xs">
+                        <Text size="sm">{geminiTestResult.message}</Text>
+                        {geminiTestResult.usage && (
+                          <Text size="xs" c="dimmed">
+                            {t('Session usage: {{count}} characters', {
+                              count: geminiTestResult.usage.used.toLocaleString(),
+                            })}
+                          </Text>
+                        )}
+                      </Stack>
                     </Alert>
                   )}
                 </>
