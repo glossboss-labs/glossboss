@@ -367,7 +367,7 @@ export function FilterToolbar() {
       )}
       {activeProvider !== 'deepl' && providerConfigured && localCharCount > 0 && (
         <Text size="xs" c="dimmed" ta="right">
-          {t('{provider} session usage: {count} characters', {
+          {t('{{provider}} session usage: {{count}} characters', {
             provider: getTranslationProviderLabel(activeProvider),
             count: localCharCount.toLocaleString(),
           })}

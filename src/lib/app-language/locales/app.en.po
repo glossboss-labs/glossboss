@@ -2291,8 +2291,8 @@ msgstr "Serbian (Latin)"
 
 #: src/components/SettingsModal.tsx:1654
 #: src/components/SettingsModal.tsx:1798
-msgid "Session usage: {count} characters"
-msgstr "Session usage: {count} characters"
+msgid "Session usage: {{count}} characters"
+msgstr "Session usage: {{count}} characters"
 
 #: src/components/editor/EditorTable.tsx:1556
 msgid "Set a plugin slug in Settings to enable source preview."
@@ -3197,10 +3197,6 @@ msgstr "with api scope"
 msgid "{count} modified entries will be restored."
 msgstr "{count} modified entries will be restored."
 
-#: src/components/editor/FilterToolbar.tsx:370
-msgid "{provider} session usage: {count} characters"
-msgstr "{provider} session usage: {count} characters"
-
 #: src/components/editor/FilterToolbar.tsx:455
 msgid "{{count}} MT"
 msgstr "{{count}} MT"
@@ -3340,6 +3336,10 @@ msgstr "{{provider}} ready"
 #: src/components/editor/GlossaryPanel.tsx:255
 msgid "{{provider}} ready ({{count}} terms)"
 msgstr "{{provider}} ready ({{count}} terms)"
+
+#: src/components/editor/FilterToolbar.tsx:370
+msgid "{{provider}} session usage: {{count}} characters"
+msgstr "{{provider}} session usage: {{count}} characters"
 
 #: src/components/SettingsModal.tsx:2261
 msgid "{{provider}} will enforce glossary terms in machine translations"

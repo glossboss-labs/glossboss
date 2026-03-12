@@ -2275,7 +2275,7 @@ msgstr "Servisch (Latijn)"
 
 #: src/components/SettingsModal.tsx:1654
 #: src/components/SettingsModal.tsx:1798
-msgid "Session usage: {count} characters"
+msgid "Session usage: {{count}} characters"
 msgstr ""
 
 #: src/components/editor/EditorTable.tsx:1556
@@ -3174,10 +3174,6 @@ msgstr ""
 msgid "{count} modified entries will be restored."
 msgstr "{count} gewijzigde items worden hersteld."
 
-#: src/components/editor/FilterToolbar.tsx:370
-msgid "{provider} session usage: {count} characters"
-msgstr ""
-
 #: src/components/editor/FilterToolbar.tsx:455
 msgid "{{count}} MT"
 msgstr "{{count}} MT"
@@ -3316,6 +3312,10 @@ msgstr ""
 #: src/components/SettingsModal.tsx:2217
 #: src/components/editor/GlossaryPanel.tsx:255
 msgid "{{provider}} ready ({{count}} terms)"
+msgstr ""
+
+#: src/components/editor/FilterToolbar.tsx:370
+msgid "{{provider}} session usage: {{count}} characters"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:2261

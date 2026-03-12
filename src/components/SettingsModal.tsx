@@ -1651,7 +1651,7 @@ export function SettingsModal({
                         <Text size="sm">{azureTestResult.message}</Text>
                         {azureTestResult.usage && (
                           <Text size="xs" c="dimmed">
-                            {t('Session usage: {count} characters', {
+                            {t('Session usage: {{count}} characters', {
                               count: azureTestResult.usage.used.toLocaleString(),
                             })}
                           </Text>
@@ -1795,7 +1795,7 @@ export function SettingsModal({
                         <Text size="sm">{geminiTestResult.message}</Text>
                         {geminiTestResult.usage && (
                           <Text size="xs" c="dimmed">
-                            {t('Session usage: {count} characters', {
+                            {t('Session usage: {{count}} characters', {
                               count: geminiTestResult.usage.used.toLocaleString(),
                             })}
                           </Text>
