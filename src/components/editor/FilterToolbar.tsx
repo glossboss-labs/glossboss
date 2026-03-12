@@ -70,6 +70,22 @@ const FILTERS: FilterConfig[] = [
   { id: 'modified', label: msgid('Modified'), icon: Pencil, color: 'orange' },
   { id: 'qa-error', label: msgid('QA errors'), icon: ShieldAlert, color: 'red' },
   { id: 'qa-warning', label: msgid('QA warnings'), icon: AlertTriangle, color: 'orange' },
+  { id: 'review-draft', label: msgid('Review: draft'), icon: FileQuestion, color: 'gray' },
+  { id: 'review-in-review', label: msgid('Review: in review'), icon: Edit3, color: 'blue' },
+  { id: 'review-approved', label: msgid('Review: approved'), icon: CheckCircle, color: 'green' },
+  {
+    id: 'review-needs-changes',
+    label: msgid('Review: needs changes'),
+    icon: AlertTriangle,
+    color: 'orange',
+  },
+  {
+    id: 'review-unresolved',
+    label: msgid('Unresolved comments'),
+    icon: Pencil,
+    color: 'red',
+  },
+  { id: 'review-changed', label: msgid('Changed strings'), icon: Pencil, color: 'violet' },
 ];
 
 /** Get tooltip text based on current filter state */
@@ -218,6 +234,18 @@ export function FilterToolbar() {
         return stats.qaErrors;
       case 'qa-warning':
         return stats.qaWarnings;
+      case 'review-draft':
+        return stats.reviewDraft;
+      case 'review-in-review':
+        return stats.reviewInReview;
+      case 'review-approved':
+        return stats.reviewApproved;
+      case 'review-needs-changes':
+        return stats.reviewNeedsChanges;
+      case 'review-unresolved':
+        return stats.reviewUnresolved;
+      case 'review-changed':
+        return stats.reviewChanged;
       default:
         return 0;
     }
@@ -243,7 +271,7 @@ export function FilterToolbar() {
 
   const columnLabels: Record<TableColumn, string> = {
     status: t('Status'),
-    approve: t('Approve'),
+    approve: t('Review'),
     source: t('Source string'),
     translation: t('Translated string'),
     signals: t('Signals'),

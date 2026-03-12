@@ -52,6 +52,7 @@ import {
   translateWithProvider,
   type TranslationProviderId,
 } from '@/lib/translation';
+import { getReviewEntryState, isReviewLocked } from '@/lib/review';
 import {
   TRANSLATION_PROVIDER_STORAGE_KEY,
   type TranslationProviderSettings,
@@ -170,6 +171,8 @@ export function TranslateToolbar({
     markAsMachineTranslated,
     manualEditIds,
     machineTranslatedIds,
+    reviewEntries,
+    lockApprovedEntries,
     selectedEntryIds,
     setSelectedEntries,
     clearSelectedEntries,
@@ -253,18 +256,25 @@ export function TranslateToolbar({
   }, [t]);
 
   // Find untranslated entries
+  const allTranslatableEntries = useMemo(
+    () =>
+      entries.filter(
+        (entry) =>
+          entry.msgid.trim() &&
+          !isReviewLocked(getReviewEntryState(reviewEntries, entry.id).status, lockApprovedEntries),
+      ),
+    [entries, lockApprovedEntries, reviewEntries],
+  );
+
   const untranslatedEntries = useMemo(
     () =>
-      entries.filter((e) => {
+      allTranslatableEntries.filter((e) => {
         if (!e.msgid.trim()) return false;
         if (e.flags.includes('fuzzy')) return false;
         return shouldAutoTranslateEntry(e);
       }),
-    [entries],
+    [allTranslatableEntries],
   );
-
-  // All translatable entries (for retranslate all)
-  const allTranslatableEntries = useMemo(() => entries.filter((e) => e.msgid.trim()), [entries]);
 
   // Currently filtered entries (across all pages)
   const filteredEntries = getFilteredEntries();

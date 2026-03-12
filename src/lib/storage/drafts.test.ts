@@ -72,8 +72,35 @@ describe('drafts', () => {
       const loaded = loadDraft('a.po');
       expect(loaded).not.toBeNull();
       expect(loaded!.filename).toBe('a.po');
-      expect(loaded!.version).toBe(1);
+      expect(loaded!.version).toBe(2);
       expect(loaded!.savedAt).toBeGreaterThan(0);
+    });
+
+    it('preserves review workflow metadata in drafts', () => {
+      saveDraft({
+        ...makeDraft({ filename: 'review.po' }),
+        reviewEntries: [
+          [
+            'hello',
+            {
+              status: 'approved',
+              comments: [
+                {
+                  id: 'comment-1',
+                  author: 'Bjorn',
+                  message: 'Looks good.',
+                  createdAt: new Date().toISOString(),
+                },
+              ],
+              history: [],
+            },
+          ],
+        ],
+      });
+
+      const loaded = loadDraft('review.po');
+      expect(loaded?.reviewEntries?.[0]?.[0]).toBe('hello');
+      expect(loaded?.reviewEntries?.[0]?.[1].status).toBe('approved');
     });
 
     it('returns null for an expired draft', () => {

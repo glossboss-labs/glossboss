@@ -6,6 +6,7 @@
  */
 
 import type { POEntry, POHeader } from '@/lib/po/types';
+import type { ReviewEntryState } from '@/lib/review';
 import { debugError, debugLog, debugWarn } from '@/lib/debug';
 
 /** Storage key prefix for drafts */
@@ -33,6 +34,9 @@ export interface DraftData {
 
   /** IDs of entries that were machine translated */
   machineTranslatedIds: string[];
+
+  /** Review workflow metadata keyed by entry ID */
+  reviewEntries?: Array<[string, ReviewEntryState]>;
 
   /** When the draft was last saved */
   savedAt: number;
@@ -142,7 +146,7 @@ export function saveDraft(data: Omit<DraftData, 'savedAt' | 'version'>): boolean
   const draft: DraftData = {
     ...data,
     savedAt: Date.now(),
-    version: 1,
+    version: 2,
   };
 
   try {

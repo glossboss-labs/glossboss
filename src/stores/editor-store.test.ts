@@ -277,4 +277,90 @@ describe('editor-store selection and approve actions', () => {
         .map((entry) => entry.id),
     ).toEqual(['a', 'b', 'c', 'd', 'e']);
   });
+
+  it('tracks review summary counts, unresolved comments, and changed entries', () => {
+    const entries = [
+      makeEntry('approved', { msgstr: 'Ready to ship' }),
+      makeEntry('changes', { msgstr: 'Needs work' }),
+      makeEntry('draft', { msgstr: '' }),
+    ];
+    const state = useEditorStore.getState();
+    state.loadFile(makeFile(entries));
+    state.setReviewerName('Bjorn');
+    state.updateEntry('approved', 'Ready to ship now');
+    state.setReviewStatus('approved', 'approved');
+    state.setReviewStatus('changes', 'needs-changes');
+    state.addReviewComment('changes', 'Please adjust the product tone.');
+
+    const stats = useEditorStore.getState().getStats();
+    expect(stats.reviewApproved).toBe(1);
+    expect(stats.reviewNeedsChanges).toBe(1);
+    expect(stats.reviewDraft).toBe(1);
+    expect(stats.reviewUnresolved).toBe(1);
+    expect(stats.reviewChanged).toBe(1);
+    expect(stats.readyToExport).toBe(false);
+  });
+
+  it('blocks edits for approved entries when lockApprovedEntries is enabled', () => {
+    const state = useEditorStore.getState();
+    state.loadFile(makeFile([makeEntry('locked', { msgstr: 'Approved copy' })]));
+    state.setReviewStatus('locked', 'approved');
+    state.setLockApprovedEntries(true);
+
+    state.updateEntry('locked', 'Changed copy');
+    state.toggleFuzzy('locked');
+
+    const lockedEntry = useEditorStore.getState().entries.find((entry) => entry.id === 'locked');
+    expect(lockedEntry?.msgstr).toBe('Approved copy');
+    expect(lockedEntry?.flags.includes('fuzzy')).toBe(false);
+
+    state.setReviewStatus('locked', 'in-review');
+    state.updateEntry('locked', 'Changed copy');
+
+    expect(useEditorStore.getState().entries.find((entry) => entry.id === 'locked')?.msgstr).toBe(
+      'Changed copy',
+    );
+  });
+
+  it('filters entries by review status, unresolved comments, and changed strings', () => {
+    const state = useEditorStore.getState();
+    state.loadFile(
+      makeFile([
+        makeEntry('draft'),
+        makeEntry('review', { msgstr: 'Review me' }),
+        makeEntry('approved', { msgstr: 'Approved text' }),
+      ]),
+    );
+
+    state.setReviewStatus('review', 'needs-changes');
+    state.addReviewComment('review', 'Please revise this string.');
+    state.updateEntry('approved', 'Approved text updated');
+    state.setReviewStatus('approved', 'approved');
+
+    state.setFilterState('review-needs-changes', 'include');
+    expect(
+      useEditorStore
+        .getState()
+        .getFilteredEntries()
+        .map((entry) => entry.id),
+    ).toEqual(['review']);
+
+    state.clearFilters();
+    state.setFilterState('review-unresolved', 'include');
+    expect(
+      useEditorStore
+        .getState()
+        .getFilteredEntries()
+        .map((entry) => entry.id),
+    ).toEqual(['review']);
+
+    state.clearFilters();
+    state.setFilterState('review-changed', 'include');
+    expect(
+      useEditorStore
+        .getState()
+        .getFilteredEntries()
+        .map((entry) => entry.id),
+    ).toEqual(['approved']);
+  });
 });

@@ -64,7 +64,13 @@ import {
   Archive,
 } from 'lucide-react';
 import { ConfirmModal, PromptModal } from '@/components/ui';
-import { EditorTable, FilterToolbar, HeaderEditor, TranslateToolbar } from '@/components/editor';
+import {
+  EditorTable,
+  FilterToolbar,
+  HeaderEditor,
+  ReviewSummary,
+  TranslateToolbar,
+} from '@/components/editor';
 import { FeedbackModal } from '@/components/feedback';
 import { SettingsModal } from '@/components/SettingsModal';
 import { RepoSyncModal } from '@/components/repo-sync';
@@ -437,8 +443,10 @@ export default function Index() {
     entries,
     dirtyEntryIds,
     machineTranslatedIds,
+    reviewEntries,
     hasUnsavedChanges,
     loadFile,
+    restoreReviewEntries,
     clearEditor,
     markAsSaved,
     setGlossaryAnalysisBatch,
@@ -616,6 +624,7 @@ export default function Index() {
         entries,
         dirtyEntryIds: Array.from(dirtyEntryIds),
         machineTranslatedIds: Array.from(machineTranslatedIds),
+        reviewEntries: Array.from(reviewEntries.entries()),
       });
 
       if (saved) {
@@ -629,7 +638,15 @@ export default function Index() {
         clearTimeout(autoSaveTimerRef.current);
       }
     };
-  }, [filename, header, entries, dirtyEntryIds, machineTranslatedIds, hasUnsavedChanges]);
+  }, [
+    filename,
+    header,
+    entries,
+    dirtyEntryIds,
+    machineTranslatedIds,
+    reviewEntries,
+    hasUnsavedChanges,
+  ]);
 
   /**
    * Cleanup expired drafts on mount
@@ -1023,11 +1040,12 @@ export default function Index() {
     };
 
     loadFile(restoredFile);
+    restoreReviewEntries(new Map(draft.reviewEntries ?? []));
     setIsFromDraft(true);
     setPendingDraft(null);
 
     debugLog('[Drafts] Restored from draft');
-  }, [loadFile, pendingDraft]);
+  }, [loadFile, pendingDraft, restoreReviewEntries]);
 
   const handleOpenSettings = useCallback((tab?: string) => {
     setSettingsInitialTab(typeof tab === 'string' ? tab : undefined);
@@ -2025,6 +2043,8 @@ export default function Index() {
                 <Paper p="md" withBorder>
                   <Stack gap="sm">
                     <FilterToolbar />
+                    <Divider />
+                    <ReviewSummary />
                     <Divider />
                     <TranslateToolbar
                       onLanguageChange={handleLanguageChange}

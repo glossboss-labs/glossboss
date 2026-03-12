@@ -8,6 +8,7 @@ import { useEditorStore } from '@/stores/editor-store';
 import { useSourceStore } from '@/stores/source-store';
 import * as deepl from '@/lib/deepl';
 import { EditorTable } from './EditorTable';
+import { ReviewSummary } from './ReviewSummary';
 import { TranslateToolbar } from './TranslateToolbar';
 import { shouldAutoTranslateEntry } from './translate-utils';
 
@@ -353,5 +354,40 @@ describe('editor details and mobile layout', () => {
     expect((textarea as HTMLTextAreaElement).style.color).toBe('transparent');
     expect((textarea as HTMLTextAreaElement).style.backgroundColor).toBe('transparent');
     expect(screen.getByTestId('highlighted-backdrop-a-singular')).toBeInTheDocument();
+  });
+
+  it('reflects review status updates in the review summary', () => {
+    useEditorStore.getState().loadFile(makeFile([makeEntry('a', { msgstr: 'Done' })]));
+
+    renderWithMantine(
+      <>
+        <ReviewSummary />
+        <EditorTable />
+      </>,
+    );
+
+    act(() => {
+      useEditorStore.getState().setReviewStatus('a', 'approved');
+    });
+
+    expect(screen.getByText('Approved 1')).toBeInTheDocument();
+    expect(screen.getByText('Draft 0')).toBeInTheDocument();
+  });
+
+  it('does not open inline editing for approved locked strings', async () => {
+    const user = userEvent.setup();
+    useEditorStore
+      .getState()
+      .loadFile(
+        makeFile([makeEntry('a', { msgid: 'Source message', msgstr: 'Locked translation' })]),
+      );
+    useEditorStore.getState().setReviewStatus('a', 'approved');
+    useEditorStore.getState().setLockApprovedEntries(true);
+
+    renderWithMantine(<EditorTable />);
+
+    await user.click(screen.getAllByText('Locked translation')[0]);
+
+    expect(screen.queryByDisplayValue('Locked translation')).not.toBeInTheDocument();
   });
 });

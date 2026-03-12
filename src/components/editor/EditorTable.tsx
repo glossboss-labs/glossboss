@@ -40,6 +40,7 @@ import {
   Anchor,
   ActionIcon,
   SegmentedControl,
+  Menu,
   useMantineTheme,
 } from '@mantine/core';
 import { useLocalStorage, useMediaQuery } from '@mantine/hooks';
@@ -68,6 +69,13 @@ import {
 import type { POEntry } from '@/lib/po';
 import { parseReferences, buildTracUrl, type ParsedReference } from '@/lib/wp-source';
 import { getTranslationStatus, type TranslationStatus } from '@/types';
+import {
+  isReviewLocked,
+  type ReviewComment,
+  type ReviewEntryState,
+  type ReviewHistoryEvent,
+  type ReviewStatus,
+} from '@/lib/review';
 import { TranslateButton } from './TranslateButton';
 import { GlossaryIndicator } from './GlossaryIndicator';
 import { SourceCodeViewer } from './SourceCodeViewer';
@@ -117,12 +125,12 @@ type TableColumnKey = (typeof COLUMN_KEYS)[number];
 type DataColumnKey = Exclude<TableColumnKey, 'select'>;
 const DATA_COLUMN_LABELS: Record<DataColumnKey, string> = {
   status: msgid('Status'),
-  approve: msgid('Approve'),
+  approve: msgid('Review'),
   source: msgid('Source string'),
   translation: msgid('Translated string'),
   signals: msgid('Signals'),
 };
-const DEFAULT_COLUMN_WIDTHS = [72, 210, 72, 310, 310, 220];
+const DEFAULT_COLUMN_WIDTHS = [72, 230, 128, 300, 300, 220];
 const MIN_COLUMN_WIDTH = 60; // minimum proportion
 
 /**
@@ -359,6 +367,20 @@ const STATUS_LABELS: Record<TranslationStatus, string> = {
   fuzzy: msgid('Fuzzy'),
 };
 
+const REVIEW_STATUS_COLORS: Record<ReviewStatus, string> = {
+  draft: 'gray',
+  'in-review': 'blue',
+  approved: 'green',
+  'needs-changes': 'orange',
+};
+
+const REVIEW_STATUS_LABELS: Record<ReviewStatus, string> = {
+  draft: msgid('Draft'),
+  'in-review': msgid('In review'),
+  approved: msgid('Approved'),
+  'needs-changes': msgid('Needs changes'),
+};
+
 /** Flag badge colors */
 const FLAG_COLORS: Record<string, string> = {
   fuzzy: 'yellow',
@@ -383,6 +405,7 @@ function EditableField({
   isPlural = false,
   pluralIndex,
   useNativeTextColor = false,
+  disabled = false,
 }: {
   value: string;
   placeholder?: string;
@@ -393,6 +416,7 @@ function EditableField({
   isPlural?: boolean;
   pluralIndex?: number;
   useNativeTextColor?: boolean;
+  disabled?: boolean;
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(value);
@@ -400,6 +424,7 @@ function EditableField({
   const isEmpty = !value || value.trim() === '';
 
   const handleClick = useCallback(() => {
+    if (disabled) return;
     setEditValue(value);
     setIsEditing(true);
     setTimeout(() => {
@@ -410,7 +435,7 @@ function EditableField({
         textarea.setSelectionRange(len, len);
       }
     }, 0);
-  }, [value]);
+  }, [disabled, value]);
 
   const handleBlur = useCallback(() => {
     setIsEditing(false);
@@ -528,15 +553,18 @@ function EditableField({
       data-entry-id={entryId}
       onClick={handleClick}
       style={{
-        cursor: 'text',
+        cursor: disabled ? 'not-allowed' : 'text',
         padding: '6px 8px',
         margin: '-6px -8px',
         borderRadius: 4,
         minHeight: 32,
+        opacity: disabled ? 0.72 : 1,
         transition: 'background-color 150ms ease',
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = 'var(--mantine-color-default-hover)';
+        if (!disabled) {
+          e.currentTarget.style.backgroundColor = 'var(--mantine-color-default-hover)';
+        }
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.backgroundColor = 'transparent';
@@ -627,19 +655,21 @@ function SignalsOverviewCell({
   provider,
   glossaryAnalysis,
   qaReport,
+  unresolvedCommentCount,
 }: {
   isMT: boolean;
   usedGlossary: boolean;
   provider?: string;
   glossaryAnalysis: GlossaryAnalysisResult | null;
   qaReport: QAEntryReport | null;
+  unresolvedCommentCount: number;
 }) {
   const { t } = useTranslation();
   const hasGlossarySignals = (glossaryAnalysis?.terms.length ?? 0) > 0;
   const hasQaSignals = Boolean(qaReport && (qaReport.errorCount > 0 || qaReport.warningCount > 0));
   const providerLabel = provider === 'gemini' ? 'Gemini' : provider === 'azure' ? 'Azure' : 'DeepL';
 
-  if (!isMT && !hasGlossarySignals && !hasQaSignals) {
+  if (!isMT && !hasGlossarySignals && !hasQaSignals && unresolvedCommentCount === 0) {
     return (
       <Text size="xs" c="dimmed">
         —
@@ -676,6 +706,11 @@ function SignalsOverviewCell({
       {qaReport && qaReport.warningCount > 0 && (
         <Badge size="xs" variant="light" color="orange" leftSection={<AlertTriangle size={10} />}>
           {t('{{count}} QA warning(s)', { count: qaReport.warningCount })}
+        </Badge>
+      )}
+      {unresolvedCommentCount > 0 && (
+        <Badge size="xs" variant="light" color="red" leftSection={<MessageSquare size={10} />}>
+          {t('{{count}} unresolved comment(s)', { count: unresolvedCommentCount })}
         </Badge>
       )}
     </Stack>
@@ -844,6 +879,10 @@ function TranslationCell({
   const markAsMachineTranslated = useEditorStore((state) => state.markAsMachineTranslated);
   const clearMachineTranslated = useEditorStore((state) => state.clearMachineTranslated);
   const getGlossaryAnalysis = useEditorStore((state) => state.getGlossaryAnalysis);
+  const reviewStatus = useEditorStore(
+    (state) => state.reviewEntries.get(entry.id)?.status ?? 'draft',
+  );
+  const lockApprovedEntries = useEditorStore((state) => state.lockApprovedEntries);
 
   // Use individual selectors for reactive state
   const isMT = useEditorStore((state) => state.machineTranslatedIds.has(entry.id));
@@ -862,6 +901,7 @@ function TranslationCell({
   const pluralForms = useMemo(() => entry.msgstrPlural ?? [], [entry.msgstrPlural]);
   const glossaryAnalysis = signalsColumnHidden ? getGlossaryAnalysis(entry.id) : null;
   const translationLang = toSpeakLanguageTag(translateSettings.targetLang);
+  const isLocked = isReviewLocked(reviewStatus, lockApprovedEntries);
 
   const handleSingularChange = useCallback(
     (value: string) => {
@@ -947,6 +987,7 @@ function TranslationCell({
                 pluralIndex={index}
                 placeholder={t('Plural form {{index}}', { index })}
                 useNativeTextColor={useNativeTextColor}
+                disabled={isLocked}
               />
             </Box>
             {translateSettings.translateEnabled &&
@@ -967,6 +1008,7 @@ function TranslationCell({
                   onTranslated={(text, meta) => handlePluralTranslated(index, text, meta)}
                   size={translateButtonSize}
                   display={translateButtonDisplay}
+                  disabled={isLocked}
                 />
               )}
             {translateSettings.speechEnabled && (
@@ -1020,6 +1062,7 @@ function TranslationCell({
             entryId={entry.id}
             fieldId={`${entry.id}-singular`}
             useNativeTextColor={useNativeTextColor}
+            disabled={isLocked}
           />
         </Box>
         {translateSettings.translateEnabled &&
@@ -1040,6 +1083,7 @@ function TranslationCell({
               onTranslated={handleTranslated}
               size={translateButtonSize}
               display={translateButtonDisplay}
+              disabled={isLocked}
             />
           )}
         {translateSettings.speechEnabled && (
@@ -1054,6 +1098,11 @@ function TranslationCell({
 
       {signalsColumnHidden && (
         <>
+          {isLocked && (
+            <Badge size="xs" variant="light" color="gray">
+              {t('Locked')}
+            </Badge>
+          )}
           {isMT && (
             <Tooltip
               label={
@@ -1090,12 +1139,18 @@ const StatusBadges = memo(function StatusBadges({
   isManualEdit,
   hasGlossaryTerms,
   isMT,
+  reviewStatus,
+  unresolvedCommentCount,
+  isReviewEntryLocked,
 }: {
   entry: POEntry;
   isModified: boolean;
   isManualEdit: boolean;
   hasGlossaryTerms: boolean;
   isMT?: boolean;
+  reviewStatus: ReviewStatus;
+  unresolvedCommentCount: number;
+  isReviewEntryLocked: boolean;
 }) {
   const { t } = useTranslation();
   const status = getTranslationStatus(entry.msgstr, entry.flags, entry.msgstrPlural);
@@ -1114,6 +1169,21 @@ const StatusBadges = memo(function StatusBadges({
       <Badge color={STATUS_COLORS[status]} size="sm" variant="filled" style={{ flexShrink: 0 }}>
         {t(STATUS_LABELS[status])}
       </Badge>
+
+      <Badge
+        color={REVIEW_STATUS_COLORS[reviewStatus]}
+        size="xs"
+        variant="light"
+        style={{ flexShrink: 0 }}
+      >
+        {t(REVIEW_STATUS_LABELS[reviewStatus])}
+      </Badge>
+
+      {isReviewEntryLocked && (
+        <Badge size="xs" variant="light" color="gray" style={{ flexShrink: 0 }}>
+          {t('Locked')}
+        </Badge>
+      )}
 
       {isModified && (
         <Tooltip label={t('Modified this session')}>
@@ -1164,40 +1234,85 @@ const StatusBadges = memo(function StatusBadges({
           </Badge>
         </Tooltip>
       )}
+
+      {unresolvedCommentCount > 0 && (
+        <Tooltip
+          label={t('{{count}} unresolved review comment(s)', { count: unresolvedCommentCount })}
+        >
+          <Badge
+            size="xs"
+            variant="light"
+            color="red"
+            leftSection={<MessageSquare size={10} />}
+            style={{ flexShrink: 0 }}
+          >
+            {t('{{count}} comments', { count: unresolvedCommentCount })}
+          </Badge>
+        </Tooltip>
+      )}
     </Group>
   );
 });
 
-/**
- * Approve/unapprove toggle for fuzzy entries
- */
-const ApproveCell = memo(function ApproveCell({ entry }: { entry: POEntry }) {
+const ReviewStatusCell = memo(function ReviewStatusCell({ entry }: { entry: POEntry }) {
   const { t } = useTranslation();
-  const toggleFuzzy = useEditorStore((state) => state.toggleFuzzy);
-  const status = getTranslationStatus(entry.msgstr, entry.flags, entry.msgstrPlural);
-  const isFuzzy = status === 'fuzzy';
-  const isUntranslated = status === 'untranslated';
+  const reviewStatus = useEditorStore(
+    (state) => state.reviewEntries.get(entry.id)?.status ?? 'draft',
+  );
+  const setReviewStatus = useEditorStore((state) => state.setReviewStatus);
+  const lockApprovedEntries = useEditorStore((state) => state.lockApprovedEntries);
+  const locked = isReviewLocked(reviewStatus, lockApprovedEntries);
+
+  const options: ReviewStatus[] = ['draft', 'in-review', 'approved', 'needs-changes'];
 
   return (
-    <Box style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-      <Tooltip
-        label={isFuzzy ? t('Approve: clear fuzzy flag') : t('Unapprove: mark as fuzzy')}
-        disabled={isUntranslated}
-      >
-        <ActionIcon
-          variant={isFuzzy ? 'light' : 'subtle'}
-          color={isFuzzy ? 'yellow' : 'green'}
-          size="sm"
-          disabled={isUntranslated}
-          onClick={(e) => {
-            e.stopPropagation();
-            toggleFuzzy(entry.id);
-          }}
-          aria-label={isFuzzy ? t('Approve translation') : t('Mark as fuzzy')}
-        >
-          {isFuzzy ? <AlertTriangle size={14} /> : <Check size={14} />}
-        </ActionIcon>
-      </Tooltip>
+    <Box
+      style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+      onClick={(event) => event.stopPropagation()}
+    >
+      <Menu shadow="md" width={180} position="bottom-end" withinPortal>
+        <Menu.Target>
+          <Button
+            size="xs"
+            variant="light"
+            color={REVIEW_STATUS_COLORS[reviewStatus]}
+            styles={{
+              root: {
+                minWidth: 108,
+                justifyContent: 'center',
+                paddingInline: 8,
+              },
+              label: {
+                whiteSpace: 'nowrap',
+              },
+            }}
+          >
+            {t(REVIEW_STATUS_LABELS[reviewStatus])}
+          </Button>
+        </Menu.Target>
+
+        <Menu.Dropdown>
+          {options.map((status) => (
+            <Menu.Item
+              key={`${entry.id}-${status}`}
+              onClick={() => setReviewStatus(entry.id, status)}
+              color={REVIEW_STATUS_COLORS[status]}
+              rightSection={status === reviewStatus ? <Check size={14} /> : null}
+            >
+              {t(REVIEW_STATUS_LABELS[status])}
+            </Menu.Item>
+          ))}
+
+          {locked && (
+            <>
+              <Menu.Divider />
+              <Text size="xs" c="dimmed" px="sm" py={6}>
+                {t('Approved strings are locked until they are reopened.')}
+              </Text>
+            </>
+          )}
+        </Menu.Dropdown>
+      </Menu>
     </Box>
   );
 });
@@ -1298,6 +1413,291 @@ function isSameReference(a: ParsedReference | null, b: ParsedReference): boolean
   return Boolean(a && a.path === b.path && a.line === b.line);
 }
 
+function formatReviewTimestamp(value: string): string {
+  return new Intl.DateTimeFormat(undefined, {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  }).format(new Date(value));
+}
+
+function describeReviewHistoryEvent(
+  event: ReviewHistoryEvent,
+  t: (key: string, vars?: Record<string, unknown>) => string,
+): string {
+  switch (event.type) {
+    case 'translation-updated':
+      return event.field === 'plural' ? t('Updated plural translation') : t('Updated translation');
+    case 'review-status-changed':
+      return t('Changed review status from {{from}} to {{to}}', {
+        from: event.from ? t(REVIEW_STATUS_LABELS[event.from as ReviewStatus]) : t('Unknown'),
+        to: event.to ? t(REVIEW_STATUS_LABELS[event.to as ReviewStatus]) : t('Unknown'),
+      });
+    case 'comment-added':
+      return event.field === 'reply' ? t('Added reply') : t('Added comment');
+    case 'comment-resolved':
+      return t('Resolved comment');
+    case 'comment-reopened':
+      return t('Reopened comment');
+    default:
+      return t('Updated review');
+  }
+}
+
+function ReviewCommentThread({
+  comment,
+  comments,
+  onReply,
+  onToggleResolved,
+}: {
+  comment: ReviewComment;
+  comments: ReviewComment[];
+  onReply: (commentId: string) => void;
+  onToggleResolved: (commentId: string, resolved: boolean) => void;
+}) {
+  const { t } = useTranslation();
+  const replies = comments.filter((candidate) => candidate.parentId === comment.id);
+  const resolved = Boolean(comment.resolvedAt);
+
+  return (
+    <Stack gap={6}>
+      <Paper withBorder p="sm" radius="md">
+        <Stack gap={6}>
+          <Group justify="space-between" align="flex-start" wrap="nowrap">
+            <Stack gap={2}>
+              <Text size="sm" fw={500}>
+                {comment.author}
+              </Text>
+              <Text size="xs" c="dimmed">
+                {formatReviewTimestamp(comment.createdAt)}
+              </Text>
+            </Stack>
+            <Group gap={6}>
+              <Button size="compact-xs" variant="subtle" onClick={() => onReply(comment.id)}>
+                {t('Reply')}
+              </Button>
+              <Button
+                size="compact-xs"
+                variant="subtle"
+                color={resolved ? 'gray' : 'green'}
+                onClick={() => onToggleResolved(comment.id, !resolved)}
+              >
+                {resolved ? t('Reopen') : t('Resolve')}
+              </Button>
+            </Group>
+          </Group>
+
+          <Text size="sm" style={{ whiteSpace: 'pre-wrap' }}>
+            {comment.message}
+          </Text>
+
+          {resolved && (
+            <Text size="xs" c="dimmed">
+              {t('Resolved by {{author}} on {{date}}', {
+                author: comment.resolvedBy || t('Unknown'),
+                date: comment.resolvedAt ? formatReviewTimestamp(comment.resolvedAt) : t('Unknown'),
+              })}
+            </Text>
+          )}
+        </Stack>
+      </Paper>
+
+      {replies.length > 0 && (
+        <Stack gap={6} pl="md">
+          {replies.map((reply) => (
+            <ReviewCommentThread
+              key={reply.id}
+              comment={reply}
+              comments={comments}
+              onReply={onReply}
+              onToggleResolved={onToggleResolved}
+            />
+          ))}
+        </Stack>
+      )}
+    </Stack>
+  );
+}
+
+function ReviewCommentsPanel({
+  entryId,
+  reviewEntry,
+}: {
+  entryId: string;
+  reviewEntry: ReviewEntryState;
+}) {
+  const { t } = useTranslation();
+  const addReviewComment = useEditorStore((state) => state.addReviewComment);
+  const setReviewCommentResolved = useEditorStore((state) => state.setReviewCommentResolved);
+  const [draftComment, setDraftComment] = useState('');
+  const [replyTo, setReplyTo] = useState<string | null>(null);
+
+  const rootComments = useMemo(
+    () => reviewEntry.comments.filter((comment) => !comment.parentId),
+    [reviewEntry.comments],
+  );
+
+  return (
+    <Stack gap={8}>
+      <Textarea
+        value={draftComment}
+        onChange={(event) => setDraftComment(event.currentTarget.value)}
+        placeholder={
+          replyTo ? t('Write a reply to this comment') : t('Add a review comment for this string')
+        }
+        minRows={2}
+        maxRows={6}
+      />
+
+      <Group gap="xs">
+        <Button
+          size="xs"
+          onClick={() => {
+            addReviewComment(entryId, draftComment, replyTo ?? undefined);
+            setDraftComment('');
+            setReplyTo(null);
+          }}
+          disabled={!draftComment.trim()}
+        >
+          {replyTo ? t('Add reply') : t('Add comment')}
+        </Button>
+        {replyTo && (
+          <Button size="xs" variant="default" onClick={() => setReplyTo(null)}>
+            {t('Cancel reply')}
+          </Button>
+        )}
+      </Group>
+
+      {rootComments.length === 0 ? (
+        <Text size="sm" c="dimmed">
+          {t('No review comments yet.')}
+        </Text>
+      ) : (
+        <Stack gap={8}>
+          {rootComments.map((comment) => (
+            <ReviewCommentThread
+              key={comment.id}
+              comment={comment}
+              comments={reviewEntry.comments}
+              onReply={setReplyTo}
+              onToggleResolved={(commentId, resolved) =>
+                setReviewCommentResolved(entryId, commentId, resolved)
+              }
+            />
+          ))}
+        </Stack>
+      )}
+    </Stack>
+  );
+}
+
+function ReviewHistoryPanel({ reviewEntry }: { reviewEntry: ReviewEntryState }) {
+  const { t } = useTranslation();
+  const history = useMemo(
+    () => [...reviewEntry.history].reverse().slice(0, 12),
+    [reviewEntry.history],
+  );
+
+  if (history.length === 0) {
+    return (
+      <Text size="sm" c="dimmed">
+        {t('No review history yet.')}
+      </Text>
+    );
+  }
+
+  return (
+    <Stack gap={6}>
+      {history.map((event) => (
+        <Paper key={event.id} withBorder p="sm" radius="md">
+          <Stack gap={4}>
+            <Group justify="space-between" align="flex-start" wrap="nowrap">
+              <Text size="sm" fw={500}>
+                {describeReviewHistoryEvent(event, t)}
+              </Text>
+              <Text size="xs" c="dimmed">
+                {formatReviewTimestamp(event.createdAt)}
+              </Text>
+            </Group>
+            <Text size="xs" c="dimmed">
+              {t('By {{actor}}', { actor: event.actor })}
+            </Text>
+            {(event.type === 'translation-updated' || event.type === 'comment-added') &&
+              event.to && (
+                <Text size="sm" c="dimmed" style={{ whiteSpace: 'pre-wrap' }}>
+                  {event.to}
+                </Text>
+              )}
+          </Stack>
+        </Paper>
+      ))}
+    </Stack>
+  );
+}
+
+function ReviewPanel({ entry, reviewEntry }: { entry: POEntry; reviewEntry: ReviewEntryState }) {
+  const { t } = useTranslation();
+  const toggleFuzzy = useEditorStore((state) => state.toggleFuzzy);
+  const lockApprovedEntries = useEditorStore((state) => state.lockApprovedEntries);
+  const translationStatus = getTranslationStatus(entry.msgstr, entry.flags, entry.msgstrPlural);
+  const locked = isReviewLocked(reviewEntry.status, lockApprovedEntries);
+  const unresolvedCount = reviewEntry.comments.filter((comment) => !comment.resolvedAt).length;
+
+  return (
+    <Stack gap="sm">
+      <Group justify="space-between" align="center" wrap="wrap">
+        <Group gap="xs" wrap="wrap">
+          <Badge color={REVIEW_STATUS_COLORS[reviewEntry.status]} variant="light" size="sm">
+            {t(REVIEW_STATUS_LABELS[reviewEntry.status])}
+          </Badge>
+          {locked && (
+            <Badge color="gray" variant="light" size="sm">
+              {t('Locked')}
+            </Badge>
+          )}
+          {unresolvedCount > 0 && (
+            <Badge color="red" variant="light" size="sm">
+              {t('{{count}} unresolved', { count: unresolvedCount })}
+            </Badge>
+          )}
+        </Group>
+        <ReviewStatusCell entry={entry} />
+      </Group>
+
+      {lockApprovedEntries && (
+        <Text size="xs" c="dimmed">
+          {t(
+            'Approved strings stay read-only until you move them back to draft, in review, or needs changes.',
+          )}
+        </Text>
+      )}
+
+      {translationStatus !== 'untranslated' && (
+        <Group>
+          <Button size="xs" variant="default" onClick={() => toggleFuzzy(entry.id)}>
+            {translationStatus === 'fuzzy' ? t('Clear fuzzy flag') : t('Mark as fuzzy')}
+          </Button>
+        </Group>
+      )}
+
+      <Stack gap={6}>
+        <Text size="xs" fw={600} c="dimmed">
+          {t('Comments')}
+        </Text>
+        <ReviewCommentsPanel entryId={entry.id} reviewEntry={reviewEntry} />
+      </Stack>
+
+      <Divider />
+
+      <Stack gap={6}>
+        <Text size="xs" fw={600} c="dimmed">
+          {t('Change history')}
+        </Text>
+        <ReviewHistoryPanel reviewEntry={reviewEntry} />
+      </Stack>
+    </Stack>
+  );
+}
+
 function pluralSummary(
   entry: POEntry,
   t: (key: string, vars?: Record<string, unknown>) => string,
@@ -1317,6 +1717,7 @@ function EntryDetailsPanel({
   isManualEdit,
   hasGlossaryTerms,
   qaReport,
+  reviewEntry,
   translationMemoryScope,
   onActivateReference,
 }: {
@@ -1327,6 +1728,7 @@ function EntryDetailsPanel({
   isManualEdit: boolean;
   hasGlossaryTerms: boolean;
   qaReport: QAEntryReport | null;
+  reviewEntry: ReviewEntryState;
   translationMemoryScope: TranslationMemoryScope | null;
   onActivateReference: (ref: ParsedReference) => void;
 }) {
@@ -1386,7 +1788,6 @@ function EntryDetailsPanel({
             {t('Line {{lineNumber}}', { lineNumber: entry.lineNumber })}
           </Badge>
         )}
-        <ApproveCell entry={entry} />
       </Group>
 
       <Group align="flex-start" grow>
@@ -1482,6 +1883,15 @@ function EntryDetailsPanel({
             })}
           </Stack>
         )}
+      </Stack>
+
+      <Divider />
+
+      <Stack gap={6}>
+        <Text size="xs" fw={600} c="dimmed">
+          {t('Review')}
+        </Text>
+        <ReviewPanel entry={entry} reviewEntry={reviewEntry} />
       </Stack>
 
       <Divider />
@@ -1622,6 +2032,15 @@ const EntryRow = memo(function EntryRow({
   } = useEditorStore();
   const getGlossaryAnalysis = useEditorStore((state) => state.getGlossaryAnalysis);
   const getQaReport = useEditorStore((state) => state.getQaReport);
+  const reviewStatus = useEditorStore(
+    (state) => state.reviewEntries.get(entry.id)?.status ?? 'draft',
+  );
+  const unresolvedCommentCount = useEditorStore(
+    (state) =>
+      state.reviewEntries.get(entry.id)?.comments.filter((comment) => !comment.resolvedAt).length ??
+      0,
+  );
+  const lockApprovedEntries = useEditorStore((state) => state.lockApprovedEntries);
 
   const isSelected = selectedEntryId === entry.id;
   const isModified = dirtyEntryIds.has(entry.id);
@@ -1634,6 +2053,7 @@ const EntryRow = memo(function EntryRow({
   const hasGlossaryTerms = (glossaryAnalysis?.matchedCount ?? 0) > 0;
   const status = getTranslationStatus(entry.msgstr, entry.flags, entry.msgstrPlural);
   const isUntranslated = status === 'untranslated';
+  const isReviewEntryLocked = isReviewLocked(reviewStatus, lockApprovedEntries);
 
   const rowRef = useRef<HTMLTableRowElement>(null);
   const handleClick = useCallback(() => {
@@ -1692,6 +2112,9 @@ const EntryRow = memo(function EntryRow({
                 isManualEdit={isManualEdit}
                 hasGlossaryTerms={hasGlossaryTerms}
                 isMT={isMT}
+                reviewStatus={reviewStatus}
+                unresolvedCommentCount={unresolvedCommentCount}
+                isReviewEntryLocked={isReviewEntryLocked}
               />
             </Table.Td>
           );
@@ -1703,7 +2126,7 @@ const EntryRow = memo(function EntryRow({
               key={`${entry.id}-approve`}
               style={{ verticalAlign: 'middle', padding: '8px 4px', overflow: 'hidden' }}
             >
-              <ApproveCell entry={entry} />
+              <ReviewStatusCell entry={entry} />
             </Table.Td>
           );
         }
@@ -1742,6 +2165,7 @@ const EntryRow = memo(function EntryRow({
               provider={mtProvider}
               glossaryAnalysis={glossaryAnalysis ?? null}
               qaReport={qaReport ?? null}
+              unresolvedCommentCount={unresolvedCommentCount}
             />
           </Table.Td>
         );
@@ -1777,6 +2201,16 @@ const MobileEntryCard = memo(function MobileEntryCard({
     getGlossaryAnalysis,
   } = useEditorStore();
   const setActiveReference = useSourceStore((state) => state.setActiveReference);
+  const reviewStatus = useEditorStore(
+    (state) => state.reviewEntries.get(entry.id)?.status ?? 'draft',
+  );
+  const unresolvedCommentCount = useEditorStore(
+    (state) =>
+      state.reviewEntries.get(entry.id)?.comments.filter((comment) => !comment.resolvedAt).length ??
+      0,
+  );
+  const reviewEntryState = useEditorStore((state) => state.reviewEntries.get(entry.id));
+  const lockApprovedEntries = useEditorStore((state) => state.lockApprovedEntries);
 
   const isSelected = selectedEntryId === entry.id;
   const isModified = dirtyEntryIds.has(entry.id);
@@ -1786,6 +2220,12 @@ const MobileEntryCard = memo(function MobileEntryCard({
   const hasGlossaryTerms = (glossaryAnalysis?.matchedCount ?? 0) > 0;
   const status = getTranslationStatus(entry.msgstr, entry.flags, entry.msgstrPlural);
   const isUntranslated = status === 'untranslated';
+  const reviewEntry = reviewEntryState ?? {
+    status: 'draft',
+    comments: [],
+    history: [],
+  };
+  const isReviewEntryLocked = isReviewLocked(reviewStatus, lockApprovedEntries);
 
   const handleSelect = useCallback(() => {
     selectEntry(entry.id);
@@ -1832,8 +2272,11 @@ const MobileEntryCard = memo(function MobileEntryCard({
             isManualEdit={isManualEdit}
             hasGlossaryTerms={hasGlossaryTerms}
             isMT={isMT}
+            reviewStatus={reviewStatus}
+            unresolvedCommentCount={unresolvedCommentCount}
+            isReviewEntryLocked={isReviewEntryLocked}
           />
-          <ApproveCell entry={entry} />
+          <ReviewStatusCell entry={entry} />
         </Group>
 
         <UnstyledButton
@@ -1885,6 +2328,7 @@ const MobileEntryCard = memo(function MobileEntryCard({
           isMT={isMT}
           isManualEdit={isManualEdit}
           hasGlossaryTerms={hasGlossaryTerms}
+          reviewEntry={reviewEntry}
           onActivateReference={handleActivateReference}
         />
       </Collapse>
@@ -1929,6 +2373,7 @@ export function EditorTable({
   const projectName = useEditorStore((state) => state.projectName);
   const getGlossaryAnalysis = useEditorStore((state) => state.getGlossaryAnalysis);
   const getQaReport = useEditorStore((state) => state.getQaReport);
+  const getReviewEntry = useEditorStore((state) => state.getReviewEntry);
   const selectEntry = useEditorStore((state) => state.selectEntry);
   const selectedEntryIds = useEditorStore((state) => state.selectedEntryIds);
   const setEntrySelection = useEditorStore((state) => state.setEntrySelection);
@@ -2424,6 +2869,7 @@ export function EditorTable({
     ? (getGlossaryAnalysis(selectedEntry.id)?.matchedCount ?? 0) > 0
     : false;
   const selectedQaReport = selectedEntry ? (getQaReport(selectedEntry.id) ?? null) : null;
+  const selectedReviewEntry = selectedEntry ? getReviewEntry(selectedEntry.id) : null;
   const selectedInspectorLabel = (() => {
     if (!selectedEntry) return t('No selection');
 
@@ -2713,6 +3159,13 @@ export function EditorTable({
                               isManualEdit={selectedIsManualEdit}
                               hasGlossaryTerms={selectedHasGlossaryTerms}
                               qaReport={selectedQaReport}
+                              reviewEntry={
+                                selectedReviewEntry ?? {
+                                  status: 'draft',
+                                  comments: [],
+                                  history: [],
+                                }
+                              }
                               translationMemoryScope={translationMemoryScope}
                               onActivateReference={handleInspectorReference}
                             />
