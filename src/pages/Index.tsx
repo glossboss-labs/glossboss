@@ -2115,8 +2115,6 @@ export default function Index() {
                         <Divider />
                         <FilterToolbar mode="edit" />
                         <Divider />
-                        <ReviewSummary />
-                        <Divider />
                         <TranslateToolbar
                           onLanguageChange={handleLanguageChange}
                           deeplGlossaryId={glossaryEnforcementEnabled ? deeplGlossaryId : null}
