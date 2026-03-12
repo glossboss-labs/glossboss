@@ -2075,6 +2075,7 @@ export default function Index() {
                     <FilterToolbar mode={workspaceMode} />
                     <Divider />
 
+                    {workspaceMode === 'review' && <ReviewSummary />}
                     <TranslateToolbar
                       onLanguageChange={handleLanguageChange}
                       deeplGlossaryId={glossaryEnforcementEnabled ? deeplGlossaryId : null}
@@ -2104,7 +2105,6 @@ export default function Index() {
                         ) : null}
                       </Group>
                     )}
-                    {workspaceMode === 'review' && <ReviewSummary />}
                   </Stack>
                 </Paper>
               </Stack>

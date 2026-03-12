@@ -10,35 +10,31 @@ export function ReviewSummary() {
   const stats = getStats();
 
   return (
-    <Stack gap="sm">
-      <Group justify="space-between" align="flex-start" wrap="wrap" gap="sm">
-        <Group gap="xs" wrap="wrap" align="center">
-          <Text size="sm" fw={600}>
-            {t('Review workflow')}
-          </Text>
-          <Badge color={stats.readyToExport ? 'green' : 'gray'} variant="light" size="sm">
-            {stats.readyToExport ? t('Ready for export') : t('Review in progress')}
-          </Badge>
-        </Group>
-
-        <Group align="flex-end" gap="sm" wrap="wrap">
-          <TextInput
-            label={t('Reviewer name')}
-            value={reviewerName}
-            onChange={(event) => setReviewerName(event.currentTarget.value)}
-            placeholder={t('Current editor')}
-            size="xs"
-            w={220}
-          />
-          <Switch
-            label={t('Lock approved strings')}
-            description={t('Approved strings become read-only until they are reopened.')}
-            checked={lockApprovedEntries}
-            onChange={(event) => setLockApprovedEntries(event.currentTarget.checked)}
-            size="sm"
-            styles={{ body: { alignItems: 'center' } }}
-          />
-        </Group>
+    <Stack gap="xs">
+      <Group gap="xs" align="center">
+        <Text size="sm" fw={600}>
+          {t('Review workflow')}
+        </Text>
+        <Badge color={stats.readyToExport ? 'green' : 'gray'} variant="light" size="sm">
+          {stats.readyToExport ? t('Ready for export') : t('Review in progress')}
+        </Badge>
+      </Group>
+      <Group gap="sm" align="flex-end" wrap="wrap">
+        <TextInput
+          value={reviewerName}
+          onChange={(event) => setReviewerName(event.currentTarget.value)}
+          placeholder={t('Current editor')}
+          size="xs"
+          w={180}
+          aria-label={t('Reviewer name')}
+        />
+        <Switch
+          label={t('Lock approved strings')}
+          checked={lockApprovedEntries}
+          onChange={(event) => setLockApprovedEntries(event.currentTarget.checked)}
+          size="xs"
+          styles={{ body: { alignItems: 'center' } }}
+        />
       </Group>
     </Stack>
   );

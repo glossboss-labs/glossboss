@@ -123,10 +123,6 @@ msgstr "Approve selected"
 msgid "Approved"
 msgstr "Approved"
 
-#: src/components/editor/ReviewSummary.tsx:35
-msgid "Approved strings become read-only until they are reopened."
-msgstr "Approved strings become read-only until they are reopened."
-
 #: src/components/editor/EditorTable.tsx:1683
 msgid "Approved strings stay read-only until they are unapproved."
 msgstr "Approved strings stay read-only until they are unapproved."
@@ -595,7 +591,7 @@ msgstr "Croatian"
 
 #: src/components/editor/EditorTable.tsx:1438
 #: src/components/editor/EditorTable.tsx:1592
-#: src/components/editor/ReviewSummary.tsx:29
+#: src/components/editor/ReviewSummary.tsx:26
 #: src/lib/review/index.ts:50
 msgid "Current editor"
 msgstr "Current editor"
@@ -1235,7 +1231,7 @@ msgstr ""
 "Glossary not found in DeepL. This translation was done without glossary. Re-"
 "sync in Settings is recommended."
 
-#: src/pages/Index.tsx:2093
+#: src/pages/Index.tsx:2094
 msgid "Glossary: {count} terms ({locale})"
 msgstr "Glossary: {count} terms ({locale})"
 
@@ -1573,7 +1569,7 @@ msgstr "Loading source..."
 msgid "Loading..."
 msgstr "Loading..."
 
-#: src/components/editor/ReviewSummary.tsx:34
+#: src/components/editor/ReviewSummary.tsx:32
 msgid "Lock approved strings"
 msgstr "Lock approved strings"
 
@@ -2161,7 +2157,7 @@ msgstr "Re-run glossary analysis on selected rows"
 msgid "Read the translation guide"
 msgstr "Read the translation guide"
 
-#: src/components/editor/ReviewSummary.tsx:20
+#: src/components/editor/ReviewSummary.tsx:19
 msgid "Ready for export"
 msgstr "Ready for export"
 
@@ -2323,7 +2319,7 @@ msgstr "Retry translation"
 msgid "Review"
 msgstr "Review"
 
-#: src/components/editor/ReviewSummary.tsx:20
+#: src/components/editor/ReviewSummary.tsx:19
 msgid "Review in progress"
 msgstr "Review in progress"
 
@@ -2331,7 +2327,7 @@ msgstr "Review in progress"
 msgid "Review issues"
 msgstr "Review issues"
 
-#: src/components/editor/ReviewSummary.tsx:17
+#: src/components/editor/ReviewSummary.tsx:16
 msgid "Review workflow"
 msgstr "Review workflow"
 
@@ -2355,7 +2351,7 @@ msgstr "Review: in review"
 msgid "Review: needs changes"
 msgstr "Review: needs changes"
 
-#: src/components/editor/ReviewSummary.tsx:26
+#: src/components/editor/ReviewSummary.tsx:29
 msgid "Reviewer name"
 msgstr "Reviewer name"
 
@@ -3558,7 +3554,7 @@ msgstr "{{percentage}}% translated"
 
 #: src/components/SettingsModal.tsx:2221
 #: src/components/editor/GlossaryPanel.tsx:259
-#: src/pages/Index.tsx:2100
+#: src/pages/Index.tsx:2101
 msgid "{{provider}} ready"
 msgstr "{{provider}} ready"
 

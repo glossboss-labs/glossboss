@@ -124,10 +124,6 @@ msgstr "Selectie goedkeuren"
 msgid "Approved"
 msgstr ""
 
-#: src/components/editor/ReviewSummary.tsx:35
-msgid "Approved strings become read-only until they are reopened."
-msgstr ""
-
 #: src/components/editor/EditorTable.tsx:1683
 msgid "Approved strings stay read-only until they are unapproved."
 msgstr ""
@@ -588,7 +584,7 @@ msgstr "Kroatisch"
 
 #: src/components/editor/EditorTable.tsx:1438
 #: src/components/editor/EditorTable.tsx:1592
-#: src/components/editor/ReviewSummary.tsx:29
+#: src/components/editor/ReviewSummary.tsx:26
 #: src/lib/review/index.ts:50
 msgid "Current editor"
 msgstr ""
@@ -1223,7 +1219,7 @@ msgstr ""
 "Glossary niet gevonden in DeepL. Deze vertaling is gedaan zonder glossary. O"
 "pnieuw synchroniseren in Instellingen wordt aanbevolen."
 
-#: src/pages/Index.tsx:2093
+#: src/pages/Index.tsx:2094
 msgid "Glossary: {count} terms ({locale})"
 msgstr "Glossary: {count} termen ({locale})"
 
@@ -1555,7 +1551,7 @@ msgstr "Bron laden..."
 msgid "Loading..."
 msgstr ""
 
-#: src/components/editor/ReviewSummary.tsx:34
+#: src/components/editor/ReviewSummary.tsx:32
 msgid "Lock approved strings"
 msgstr ""
 
@@ -2141,7 +2137,7 @@ msgstr "Glossary-analyse opnieuw uitvoeren op geselecteerde rijen"
 msgid "Read the translation guide"
 msgstr "Lees de vertaalhandleiding"
 
-#: src/components/editor/ReviewSummary.tsx:20
+#: src/components/editor/ReviewSummary.tsx:19
 msgid "Ready for export"
 msgstr ""
 
@@ -2305,7 +2301,7 @@ msgstr "Vertaling opnieuw proberen"
 msgid "Review"
 msgstr ""
 
-#: src/components/editor/ReviewSummary.tsx:20
+#: src/components/editor/ReviewSummary.tsx:19
 msgid "Review in progress"
 msgstr ""
 
@@ -2313,7 +2309,7 @@ msgstr ""
 msgid "Review issues"
 msgstr ""
 
-#: src/components/editor/ReviewSummary.tsx:17
+#: src/components/editor/ReviewSummary.tsx:16
 msgid "Review workflow"
 msgstr ""
 
@@ -2337,7 +2333,7 @@ msgstr ""
 msgid "Review: needs changes"
 msgstr ""
 
-#: src/components/editor/ReviewSummary.tsx:26
+#: src/components/editor/ReviewSummary.tsx:29
 msgid "Reviewer name"
 msgstr ""
 
@@ -3535,7 +3531,7 @@ msgstr "{{percentage}}% vertaald"
 
 #: src/components/SettingsModal.tsx:2221
 #: src/components/editor/GlossaryPanel.tsx:259
-#: src/pages/Index.tsx:2100
+#: src/pages/Index.tsx:2101
 msgid "{{provider}} ready"
 msgstr ""
 
