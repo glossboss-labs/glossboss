@@ -2424,14 +2424,10 @@ export function EditorTable({
   const selectedEntryIds = useEditorStore((state) => state.selectedEntryIds);
   const setEntrySelection = useEditorStore((state) => state.setEntrySelection);
   const setSelectedEntries = useEditorStore((state) => state.setSelectedEntries);
-  const clearSelectedEntries = useEditorStore((state) => state.clearSelectedEntries);
   const getFilteredEntries = useEditorStore((state) => state.getFilteredEntries);
   const visibleColumns = useEditorStore((state) => state.visibleColumns);
   const columnOrder = useEditorStore((state) => state.columnOrder);
   const moveColumnToIndex = useEditorStore((state) => state.moveColumnToIndex);
-  const clearFuzzyBatch = useEditorStore((state) => state.clearFuzzyBatch);
-  const addFuzzyBatch = useEditorStore((state) => state.addFuzzyBatch);
-  const setReviewStatus = useEditorStore((state) => state.setReviewStatus);
   const sortField = useEditorStore((state) => state.sortField);
   const sortDirection = useEditorStore((state) => state.sortDirection);
   const activeReference = useSourceStore((state) => state.activeReference);
@@ -2698,74 +2694,6 @@ export function EditorTable({
     [selectedEntryIds, filteredEntryIds, filteredEntryIdSet, setSelectedEntries],
   );
 
-  const selectedEntries = useMemo(
-    () => entries.filter((entry) => selectedEntryIds.has(entry.id)),
-    [entries, selectedEntryIds],
-  );
-  const selectedReviewApprovedCount = useMemo(
-    () => selectedEntries.filter((entry) => getReviewEntry(entry.id).status === 'approved').length,
-    [getReviewEntry, selectedEntries],
-  );
-  const selectedRequestChangesEligibleCount = useMemo(
-    () =>
-      selectedEntries.filter((entry) => {
-        const status = getReviewEntry(entry.id).status;
-        return status !== 'needs-changes' && status !== 'approved';
-      }).length,
-    [getReviewEntry, selectedEntries],
-  );
-
-  const handleApproveSelected = useCallback(() => {
-    if (selectedEntries.length === 0) return;
-
-    const fuzzyEntryIds = selectedEntries
-      .filter((entry) => entry.flags.includes('fuzzy'))
-      .map((entry) => entry.id);
-
-    if (fuzzyEntryIds.length > 0) {
-      clearFuzzyBatch(fuzzyEntryIds);
-    }
-
-    selectedEntries.forEach((entry) => {
-      setReviewStatus(entry.id, 'approved');
-    });
-  }, [clearFuzzyBatch, selectedEntries, setReviewStatus]);
-
-  const handleUnapproveSelected = useCallback(() => {
-    selectedEntries.forEach((entry) => {
-      if (getReviewEntry(entry.id).status === 'approved') {
-        setReviewStatus(entry.id, 'in-review');
-      }
-    });
-  }, [getReviewEntry, selectedEntries, setReviewStatus]);
-
-  const handleRequestChangesSelected = useCallback(() => {
-    if (selectedEntries.length === 0) return;
-
-    const eligible = selectedEntries.filter((entry) => {
-      const status = getReviewEntry(entry.id).status;
-      return status !== 'needs-changes' && status !== 'approved';
-    });
-
-    if (eligible.length === 0) return;
-
-    const fuzzyCandidateIds = eligible
-      .filter(
-        (entry) =>
-          getTranslationStatus(entry.msgstr, entry.flags, entry.msgstrPlural) !== 'untranslated',
-      )
-      .filter((entry) => !entry.flags.includes('fuzzy'))
-      .map((entry) => entry.id);
-
-    if (fuzzyCandidateIds.length > 0) {
-      addFuzzyBatch(fuzzyCandidateIds);
-    }
-
-    eligible.forEach((entry) => {
-      setReviewStatus(entry.id, 'needs-changes');
-    });
-  }, [addFuzzyBatch, getReviewEntry, selectedEntries, setReviewStatus]);
-
   const handleInspectorResizeStart = useCallback(
     (e: ReactPointerEvent<HTMLDivElement>) => {
       e.preventDefault();
@@ -3004,39 +2932,6 @@ export function EditorTable({
 
   return (
     <TranslateSettingsContext.Provider value={translateSettings}>
-      {selectedEntryIds.size > 0 && (
-        <Group justify="space-between" align="center" mb={6} wrap="wrap">
-          <Text size="xs" c="dimmed">
-            {t('{{count}} selected', { count: selectedEntryIds.size })}
-          </Text>
-          <Group gap="xs" wrap="wrap">
-            <Button size="xs" variant="light" color="green" onClick={handleApproveSelected}>
-              {t('Approve selected')}
-            </Button>
-            <Button
-              size="xs"
-              variant="default"
-              onClick={handleUnapproveSelected}
-              disabled={selectedReviewApprovedCount === 0}
-            >
-              {t('Unapprove selected')}
-            </Button>
-            <Button
-              size="xs"
-              variant="light"
-              color="orange"
-              onClick={handleRequestChangesSelected}
-              disabled={selectedRequestChangesEligibleCount === 0}
-            >
-              {t('Request changes selected')}
-            </Button>
-            <Button size="xs" variant="subtle" color="gray" onClick={clearSelectedEntries}>
-              {t('Clear selection')}
-            </Button>
-          </Group>
-        </Group>
-      )}
-
       {isMobile ? (
         <Stack gap="sm" data-testid="mobile-entry-card-list">
           {paginatedEntries.map((entry) => (

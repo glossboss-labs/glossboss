@@ -60,6 +60,7 @@ import {
   type TranslationProviderSettings,
 } from '@/lib/translation/settings';
 import { shouldAutoTranslateEntry } from './translate-utils';
+import { getTranslationStatus } from '@/types';
 
 const MotionDiv = motion.div;
 const MotionStack = motion.create(Stack);
@@ -182,6 +183,8 @@ export function TranslateToolbar({
     addFuzzyBatch,
     setGlossaryAnalysisBatch,
     getFilteredEntries,
+    setReviewStatus,
+    getReviewEntry,
   } = useEditorStore();
 
   // Infer target language from PO header
@@ -296,6 +299,19 @@ export function TranslateToolbar({
     [selectedEntries],
   );
   const selectedNonFuzzyCount = selectedEntries.length - selectedFuzzyCount;
+
+  const selectedReviewApprovedCount = useMemo(
+    () => selectedEntries.filter((entry) => getReviewEntry(entry.id).status === 'approved').length,
+    [getReviewEntry, selectedEntries],
+  );
+  const selectedRequestChangesEligibleCount = useMemo(
+    () =>
+      selectedEntries.filter((entry) => {
+        const status = getReviewEntry(entry.id).status;
+        return status !== 'needs-changes' && status !== 'approved';
+      }).length,
+    [getReviewEntry, selectedEntries],
+  );
 
   // Count of manual edits that would be overwritten
   const manualEditCount = useMemo(() => {
@@ -644,6 +660,49 @@ export function TranslateToolbar({
         : t('No selected rows available to mark as fuzzy.'),
     );
   }, [addFuzzyBatch, selectedEntryIds, selectedNonFuzzyCount, t]);
+
+  const handleApproveSelected = useCallback(() => {
+    if (selectedEntries.length === 0) return;
+    const fuzzyEntryIds = selectedEntries
+      .filter((entry) => entry.flags.includes('fuzzy'))
+      .map((entry) => entry.id);
+    if (fuzzyEntryIds.length > 0) {
+      clearFuzzyBatch(fuzzyEntryIds);
+    }
+    selectedEntries.forEach((entry) => {
+      setReviewStatus(entry.id, 'approved');
+    });
+  }, [clearFuzzyBatch, selectedEntries, setReviewStatus]);
+
+  const handleUnapproveSelected = useCallback(() => {
+    selectedEntries.forEach((entry) => {
+      if (getReviewEntry(entry.id).status === 'approved') {
+        setReviewStatus(entry.id, 'in-review');
+      }
+    });
+  }, [getReviewEntry, selectedEntries, setReviewStatus]);
+
+  const handleRequestChangesSelected = useCallback(() => {
+    if (selectedEntries.length === 0) return;
+    const eligible = selectedEntries.filter((entry) => {
+      const status = getReviewEntry(entry.id).status;
+      return status !== 'needs-changes' && status !== 'approved';
+    });
+    if (eligible.length === 0) return;
+    const fuzzyCandidateIds = eligible
+      .filter(
+        (entry) =>
+          getTranslationStatus(entry.msgstr, entry.flags, entry.msgstrPlural) !== 'untranslated',
+      )
+      .filter((entry) => !entry.flags.includes('fuzzy'))
+      .map((entry) => entry.id);
+    if (fuzzyCandidateIds.length > 0) {
+      addFuzzyBatch(fuzzyCandidateIds);
+    }
+    eligible.forEach((entry) => {
+      setReviewStatus(entry.id, 'needs-changes');
+    });
+  }, [addFuzzyBatch, getReviewEntry, selectedEntries, setReviewStatus]);
 
   if (!entries.length) return null;
 
@@ -1028,6 +1087,62 @@ export function TranslateToolbar({
                       {t('Mark Fuzzy ({{count}})', { count: selectedNonFuzzyCount })}
                     </Button>
                   </Tooltip>
+                </MotionDiv>
+              )}
+            </AnimatePresence>
+
+            <AnimatePresence mode="popLayout">
+              {selectedEntryIds.size > 0 && (
+                <MotionDiv
+                  key="approve-selected"
+                  layout
+                  variants={badgeVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                >
+                  <Button size="xs" variant="light" color="green" onClick={handleApproveSelected}>
+                    {t('Approve selected')}
+                  </Button>
+                </MotionDiv>
+              )}
+            </AnimatePresence>
+
+            <AnimatePresence mode="popLayout">
+              {selectedReviewApprovedCount > 0 && (
+                <MotionDiv
+                  key="unapprove-selected"
+                  layout
+                  variants={badgeVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                >
+                  <Button size="xs" variant="default" onClick={handleUnapproveSelected}>
+                    {t('Unapprove selected')}
+                  </Button>
+                </MotionDiv>
+              )}
+            </AnimatePresence>
+
+            <AnimatePresence mode="popLayout">
+              {selectedRequestChangesEligibleCount > 0 && (
+                <MotionDiv
+                  key="request-changes-selected"
+                  layout
+                  variants={badgeVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                >
+                  <Button
+                    size="xs"
+                    variant="light"
+                    color="orange"
+                    onClick={handleRequestChangesSelected}
+                  >
+                    {t('Request changes selected')}
+                  </Button>
                 </MotionDiv>
               )}
             </AnimatePresence>

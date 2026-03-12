@@ -127,7 +127,6 @@ const WORKSPACE_MODE_KEY = 'glossboss-editor-workspace-mode';
 
 type WorkspaceMode = 'edit' | 'review';
 
-
 /** Encoding info for display */
 interface EncodingInfo {
   encoding: SupportedEncoding;
@@ -2076,42 +2075,35 @@ export default function Index() {
                     <FilterToolbar />
                     <Divider />
 
-                    {workspaceMode === 'review' ? (
-                      <ReviewSummary />
-                    ) : (
-                      <>
-                        <TranslateToolbar
-                          onLanguageChange={handleLanguageChange}
-                          deeplGlossaryId={glossaryEnforcementEnabled ? deeplGlossaryId : null}
-                          glossary={glossary}
-                          translateEnabled={translateEnabled}
-                        />
-                        {glossary && (
-                          <Group gap="xs">
-                            <Badge
-                              color="green"
-                              variant="light"
-                              size="sm"
-                              leftSection={<Check size={10} />}
-                            >
-                              {t('Glossary: {count} terms ({locale})', {
-                                count: glossary.entries.length,
-                                locale: glossary.targetLocale,
-                              })}
-                            </Badge>
-                            {glossarySyncStatus === 'ready' || deeplGlossaryId ? (
-                              <Badge color="blue" variant="light" size="sm">
-                                {t('{{provider}} ready', {
-                                  provider: getTranslationProviderLabel(
-                                    getActiveTranslationProvider(),
-                                  ),
-                                })}
-                              </Badge>
-                            ) : null}
-                          </Group>
-                        )}
-                      </>
+                    <TranslateToolbar
+                      onLanguageChange={handleLanguageChange}
+                      deeplGlossaryId={glossaryEnforcementEnabled ? deeplGlossaryId : null}
+                      glossary={glossary}
+                      translateEnabled={translateEnabled}
+                    />
+                    {glossary && (
+                      <Group gap="xs">
+                        <Badge
+                          color="green"
+                          variant="light"
+                          size="sm"
+                          leftSection={<Check size={10} />}
+                        >
+                          {t('Glossary: {count} terms ({locale})', {
+                            count: glossary.entries.length,
+                            locale: glossary.targetLocale,
+                          })}
+                        </Badge>
+                        {glossarySyncStatus === 'ready' || deeplGlossaryId ? (
+                          <Badge color="blue" variant="light" size="sm">
+                            {t('{{provider}} ready', {
+                              provider: getTranslationProviderLabel(getActiveTranslationProvider()),
+                            })}
+                          </Badge>
+                        ) : null}
+                      </Group>
                     )}
+                    {workspaceMode === 'review' && <ReviewSummary />}
                   </Stack>
                 </Paper>
               </Stack>
