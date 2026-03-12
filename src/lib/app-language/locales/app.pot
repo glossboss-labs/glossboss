@@ -9,7 +9,7 @@ msgstr ""
 msgid "+{{count}} more"
 msgstr ""
 
-#: src/pages/Index.tsx:1770
+#: src/pages/Index.tsx:1896
 msgid "...and {{count}} more warnings"
 msgstr ""
 
@@ -55,7 +55,7 @@ msgstr ""
 msgid "Action"
 msgstr ""
 
-#: src/pages/Index.tsx:1621
+#: src/pages/Index.tsx:1738
 msgid "Actions"
 msgstr ""
 
@@ -159,7 +159,7 @@ msgstr ""
 msgid "Auto-detected: {{slug}}"
 msgstr ""
 
-#: src/pages/Index.tsx:1837
+#: src/pages/Index.tsx:1963
 msgid "Auto-saved {age}"
 msgstr ""
 
@@ -188,7 +188,7 @@ msgid "Back to listing"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:1311
-#: src/pages/Index.tsx:1529
+#: src/pages/Index.tsx:1623
 msgid "Backup"
 msgstr ""
 
@@ -208,11 +208,20 @@ msgstr ""
 msgid "Bosnian"
 msgstr ""
 
+#: src/components/repo-sync/CommitPanel.tsx:227
+msgid "Branch name"
+msgstr ""
+
 #: src/components/SettingsModal.tsx:2515
 msgid "Branch status badge"
 msgstr ""
 
+#: src/components/repo-sync/CommitPanel.tsx:197
+msgid "Branch:"
+msgstr ""
+
 #: src/components/editor/EditorTable.tsx:2666
+#: src/components/repo-sync/RepoSyncModal.tsx:235
 msgid "Browse"
 msgstr ""
 
@@ -247,6 +256,10 @@ msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:59
 msgid "Catalan"
+msgstr ""
+
+#: src/components/repo-sync/CommitPanel.tsx:156
+msgid "Changes committed successfully"
 msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:60
@@ -301,15 +314,15 @@ msgstr ""
 msgid "Clear active source reference"
 msgstr ""
 
-#: src/pages/Index.tsx:1683
+#: src/pages/Index.tsx:1809
 msgid "Clear anyway"
 msgstr ""
 
-#: src/pages/Index.tsx:1627
+#: src/pages/Index.tsx:1753
 msgid "Clear editor"
 msgstr ""
 
-#: src/pages/Index.tsx:1680
+#: src/pages/Index.tsx:1806
 msgid "Clear editor?"
 msgstr ""
 
@@ -325,6 +338,10 @@ msgstr ""
 msgid "Clear search"
 msgstr ""
 
+#: src/components/repo-sync/RepoSyncModal.tsx:319
+msgid "Clear token"
+msgstr ""
+
 #: src/components/SettingsModal.tsx:1118
 msgid "Cleared translation memory for this project."
 msgstr ""
@@ -337,7 +354,7 @@ msgstr ""
 msgid "Click to show only {{label}}"
 msgstr ""
 
-#: src/pages/Index.tsx:2043
+#: src/pages/Index.tsx:2233
 msgid "Close QA summary"
 msgstr ""
 
@@ -365,12 +382,36 @@ msgstr ""
 msgid "Columns"
 msgstr ""
 
+#: src/components/repo-sync/CommitPanel.tsx:281
+msgid "Commit & create PR"
+msgstr ""
+
+#: src/components/repo-sync/CommitPanel.tsx:282
+msgid "Commit changes"
+msgstr ""
+
+#: src/components/repo-sync/CommitPanel.tsx:207
+msgid "Commit message"
+msgstr ""
+
 #: src/components/ui/SpeakButton.tsx:41
 msgid "Configure your ElevenLabs API key in Settings."
 msgstr ""
 
 #: src/components/ui/ConfirmModal.tsx:37
 msgid "Confirm"
+msgstr ""
+
+#: src/components/repo-sync/RepoSyncModal.tsx:232
+msgid "Connect"
+msgstr ""
+
+#: src/components/repo-sync/RepoSyncModal.tsx:315
+msgid "Connect & list repositories"
+msgstr ""
+
+#: src/components/repo-sync/RepoSyncModal.tsx:332
+msgid "Connect to a provider first to browse repositories"
 msgstr ""
 
 #: src/components/editor/TranslateToolbar.tsx:657
@@ -410,10 +451,30 @@ msgid ""
 "."
 msgstr ""
 
-#: src/pages/Index.tsx:865
+#: src/pages/Index.tsx:957
 msgid ""
 "Could not fetch the file. The server may not allow cross-origin requests. Tr"
 "y downloading the file and uploading it directly."
+msgstr ""
+
+#: src/components/repo-sync/CommitPanel.tsx:219
+msgid "Create a feature branch for these changes"
+msgstr ""
+
+#: src/components/repo-sync/RepoSyncModal.tsx:263
+msgid "Create a fine-grained PAT with Contents and Pull requests permissions"
+msgstr ""
+
+#: src/components/repo-sync/RepoSyncModal.tsx:288
+msgid "Create a token with api scope"
+msgstr ""
+
+#: src/components/repo-sync/CommitPanel.tsx:215
+msgid "Create new branch"
+msgstr ""
+
+#: src/components/repo-sync/CommitPanel.tsx:241
+msgid "Create pull request"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:1528
@@ -448,8 +509,8 @@ msgstr ""
 msgid "Danish"
 msgstr ""
 
-#: src/pages/Index.tsx:148
-#: src/pages/Index.tsx:1612
+#: src/pages/Index.tsx:155
+#: src/pages/Index.tsx:1729
 msgid "Dark mode"
 msgstr ""
 
@@ -497,7 +558,7 @@ msgstr ""
 msgid "Directory listing is unavailable."
 msgstr ""
 
-#: src/pages/Index.tsx:1820
+#: src/pages/Index.tsx:1946
 msgid "Discard and use new file"
 msgstr ""
 
@@ -509,27 +570,27 @@ msgstr ""
 msgid "Display"
 msgstr ""
 
-#: src/pages/Index.tsx:1477
+#: src/pages/Index.tsx:1571
 msgid "Download"
 msgstr ""
 
-#: src/pages/Index.tsx:1467
+#: src/pages/Index.tsx:1561
 msgid "Download (unsaved changes)"
 msgstr ""
 
-#: src/pages/Index.tsx:1517
+#: src/pages/Index.tsx:1611
 msgid "Download as"
 msgstr ""
 
-#: src/pages/Index.tsx:1455
+#: src/pages/Index.tsx:1549
 msgid "Download as {format}"
 msgstr ""
 
-#: src/pages/Index.tsx:1506
+#: src/pages/Index.tsx:1600
 msgid "Download format options"
 msgstr ""
 
-#: src/pages/Index.tsx:1930
+#: src/pages/Index.tsx:2090
 msgid ""
 "Drag and drop your translation file here, or click to browse. Your translati"
 "ons will be saved locally in your browser."
@@ -539,7 +600,7 @@ msgstr ""
 msgid "Drag {{columnLabel}}"
 msgstr ""
 
-#: src/pages/Index.tsx:1253
+#: src/pages/Index.tsx:1347
 msgid "Drop it like it's hot"
 msgstr ""
 
@@ -561,11 +622,11 @@ msgstr ""
 msgid "Edit Header"
 msgstr ""
 
-#: src/pages/Index.tsx:1421
+#: src/pages/Index.tsx:1515
 msgid "Edit gettext translation files with DeepL integration"
 msgstr ""
 
-#: src/pages/Index.tsx:1832
+#: src/pages/Index.tsx:1958
 msgid "Editing draft"
 msgstr ""
 
@@ -604,7 +665,7 @@ msgstr ""
 msgid "Encoding"
 msgstr ""
 
-#: src/pages/Index.tsx:707
+#: src/pages/Index.tsx:722
 msgid ""
 "Encoding detected as {{encoding}} with {{confidence}} confidence. If charact"
 "ers appear incorrect, the file may use a different encoding."
@@ -700,7 +761,7 @@ msgstr ""
 msgid "Export TMX"
 msgstr ""
 
-#: src/pages/Index.tsx:2092
+#: src/pages/Index.tsx:2282
 msgid "Export anyway"
 msgstr ""
 
@@ -754,12 +815,13 @@ msgstr ""
 msgid "Failed to load glossary"
 msgstr ""
 
-#: src/pages/Index.tsx:1162
+#: src/pages/Index.tsx:1254
 msgid "Failed to parse POT file"
 msgstr ""
 
-#: src/pages/Index.tsx:754
-#: src/pages/Index.tsx:1728
+#: src/pages/Index.tsx:769
+#: src/pages/Index.tsx:829
+#: src/pages/Index.tsx:1854
 msgid "Failed to parse file"
 msgstr ""
 
@@ -771,7 +833,7 @@ msgstr ""
 msgid "Feature"
 msgstr ""
 
-#: src/pages/Index.tsx:1573
+#: src/pages/Index.tsx:1690
 msgid "Feedback"
 msgstr ""
 
@@ -779,7 +841,7 @@ msgstr ""
 msgid "Feedback could not be submitted at this time."
 msgstr ""
 
-#: src/pages/Index.tsx:1385
+#: src/pages/Index.tsx:1479
 msgid "Feedback failed"
 msgstr ""
 
@@ -787,7 +849,7 @@ msgstr ""
 msgid "Feedback is unavailable in this deployment."
 msgstr ""
 
-#: src/pages/Index.tsx:1342
+#: src/pages/Index.tsx:1436
 msgid "Feedback submitted"
 msgstr ""
 
@@ -799,12 +861,16 @@ msgstr ""
 msgid "File does not appear to be a valid WordPress glossary CSV."
 msgstr ""
 
-#: src/pages/Index.tsx:1275
+#: src/pages/Index.tsx:1369
 msgid "File downloaded"
 msgstr ""
 
 #: src/components/editor/FilterToolbar.tsx:228
 msgid "File order"
+msgstr ""
+
+#: src/components/repo-sync/CommitPanel.tsx:191
+msgid "File:"
 msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:76
@@ -932,13 +998,17 @@ msgstr ""
 msgid "Get API key"
 msgstr ""
 
-#: src/pages/Index.tsx:2048
+#: src/components/repo-sync/RepoSyncModal.tsx:281
+msgid "GitLab instance URL"
+msgstr ""
+
+#: src/pages/Index.tsx:2238
 msgid ""
 "GlossBoss found QA issues in the current file. You can review them now or ex"
 "port anyway."
 msgstr ""
 
-#: src/pages/Index.tsx:1631
+#: src/pages/Index.tsx:1757
 msgid "GlossBoss v{version}"
 msgstr ""
 
@@ -1000,8 +1070,12 @@ msgid ""
 "sync in Settings is recommended."
 msgstr ""
 
-#: src/pages/Index.tsx:1865
+#: src/pages/Index.tsx:2025
 msgid "Glossary: {count} terms ({locale})"
+msgstr ""
+
+#: src/components/repo-sync/RepoSyncModal.tsx:335
+msgid "Go to Connect"
 msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:88
@@ -1113,15 +1187,16 @@ msgstr ""
 msgid "Interface language"
 msgstr ""
 
-#: src/pages/Index.tsx:674
+#: src/pages/Index.tsx:689
+#: src/pages/Index.tsx:797
 msgid "Invalid JSON file. Expected an i18next JSON resource object."
 msgstr ""
 
-#: src/pages/Index.tsx:1026
+#: src/pages/Index.tsx:1118
 msgid "Invalid file type: .{{ext}}. Please drop a .po, .pot, or .json file."
 msgstr ""
 
-#: src/pages/Index.tsx:656
+#: src/pages/Index.tsx:671
 msgid "Invalid file type: .{{ext}}. Please upload a .po, .pot, or .json file."
 msgstr ""
 
@@ -1215,16 +1290,16 @@ msgstr ""
 msgid "Latvian"
 msgstr ""
 
-#: src/pages/Index.tsx:1649
+#: src/pages/Index.tsx:1775
 msgid "License"
 msgstr ""
 
-#: src/pages/Index.tsx:148
-#: src/pages/Index.tsx:1612
+#: src/pages/Index.tsx:155
+#: src/pages/Index.tsx:1729
 msgid "Light mode"
 msgstr ""
 
-#: src/pages/Index.tsx:1735
+#: src/pages/Index.tsx:1861
 msgid "Line {line}"
 msgstr ""
 
@@ -1233,7 +1308,7 @@ msgstr ""
 msgid "Line {{lineNumber}}"
 msgstr ""
 
-#: src/pages/Index.tsx:1762
+#: src/pages/Index.tsx:1888
 msgid "Line {{line}}"
 msgstr ""
 
@@ -1248,7 +1323,7 @@ msgid "Lithuanian"
 msgstr ""
 
 #: src/components/editor/GlossaryPanel.tsx:372
-#: src/pages/Index.tsx:1971
+#: src/pages/Index.tsx:2131
 msgid "Load"
 msgstr ""
 
@@ -1260,7 +1335,7 @@ msgstr ""
 msgid "Load a file with a target language before using translation memory."
 msgstr ""
 
-#: src/pages/Index.tsx:1980
+#: src/pages/Index.tsx:2156
 msgid "Load a small example WordPress plugin PO file (Hello Dolly)"
 msgstr ""
 
@@ -1280,7 +1355,7 @@ msgid ""
 "e."
 msgstr ""
 
-#: src/pages/Index.tsx:1992
+#: src/pages/Index.tsx:2167
 msgid "Load example PO"
 msgstr ""
 
@@ -1295,14 +1370,22 @@ msgstr ""
 msgid "Load voices by testing your key"
 msgstr ""
 
-#: src/pages/Index.tsx:1696
+#: src/pages/Index.tsx:1822
 msgid ""
 "Loading a new file from URL will replace the currently loaded file. Any unsa"
 "ved changes will be lost."
 msgstr ""
 
+#: src/components/repo-sync/RepoSyncModal.tsx:360
+msgid "Loading file..."
+msgstr ""
+
 #: src/components/editor/EditorTable.tsx:1570
 msgid "Loading source..."
+msgstr ""
+
+#: src/components/repo-sync/RepoBrowser.tsx:209
+msgid "Loading..."
 msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:257
@@ -1457,8 +1540,12 @@ msgstr ""
 msgid "No entries match the current filters."
 msgstr ""
 
-#: src/pages/Index.tsx:1012
+#: src/pages/Index.tsx:1104
 msgid "No file was dropped"
+msgstr ""
+
+#: src/components/repo-sync/RepoBrowser.tsx:234
+msgid "No files found"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:1224
@@ -1471,6 +1558,10 @@ msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:411
 msgid "No matching plural form"
+msgstr ""
+
+#: src/components/repo-sync/RepoSyncModal.tsx:347
+msgid "No repositories found"
 msgstr ""
 
 #: src/components/editor/TranslateToolbar.tsx:618
@@ -1552,25 +1643,38 @@ msgstr ""
 msgid "Only visible while running the app in development mode"
 msgstr ""
 
+#: src/components/repo-sync/CommitPanel.tsx:242
+msgid "Open a PR targeting {{branch}}"
+msgstr ""
+
+#: src/pages/Index.tsx:2140
+msgid "Open a locale file from a GitHub or GitLab repository"
+msgstr ""
+
+#: src/pages/Index.tsx:1746
+#: src/pages/Index.tsx:2150
+msgid "Open from repository"
+msgstr ""
+
 #: src/components/editor/EditorTable.tsx:1466
 #: src/components/editor/SourceCodeViewer.tsx:178
 #: src/components/editor/SourceCodeViewer.tsx:186
 msgid "Open in Trac"
 msgstr ""
 
-#: src/pages/Index.tsx:1367
+#: src/pages/Index.tsx:1461
 msgid "Open issue"
 msgstr ""
 
-#: src/pages/Index.tsx:1618
+#: src/pages/Index.tsx:1735
 msgid "Open settings"
 msgstr ""
 
-#: src/pages/Index.tsx:1519
+#: src/pages/Index.tsx:1613
 msgid "PO file (.po)"
 msgstr ""
 
-#: src/pages/Index.tsx:1954
+#: src/pages/Index.tsx:2114
 msgid "PO file URL"
 msgstr ""
 
@@ -1578,12 +1682,25 @@ msgstr ""
 msgid "POT Created"
 msgstr ""
 
-#: src/pages/Index.tsx:1953
+#: src/components/repo-sync/CommitPanel.tsx:257
+msgid "PR description"
+msgstr ""
+
+#: src/components/repo-sync/CommitPanel.tsx:252
+msgid "PR title"
+msgstr ""
+
+#: src/pages/Index.tsx:2113
 msgid "Paste a .po file URL"
 msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:115
 msgid "Persian"
+msgstr ""
+
+#: src/components/repo-sync/RepoSyncModal.tsx:262
+#: src/components/repo-sync/RepoSyncModal.tsx:287
+msgid "Personal access token"
 msgstr ""
 
 #: src/lib/qa/types.ts:40
@@ -1623,7 +1740,7 @@ msgstr ""
 msgid "Please complete all required feature fields."
 msgstr ""
 
-#: src/pages/Index.tsx:1017
+#: src/pages/Index.tsx:1109
 msgid "Please drop only one file at a time"
 msgstr ""
 
@@ -1708,7 +1825,7 @@ msgid "Previous field"
 msgstr ""
 
 #: src/components/feedback/FeedbackModal.tsx:417
-#: src/pages/Index.tsx:1667
+#: src/pages/Index.tsx:1793
 msgid "Privacy"
 msgstr ""
 
@@ -1742,7 +1859,12 @@ msgid "Protect {{count}} manual edits from bulk translation"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:1802
+#: src/components/repo-sync/RepoSyncModal.tsx:248
 msgid "Provider"
+msgstr ""
+
+#: src/components/repo-sync/CommitPanel.tsx:166
+msgid "Pull request created: #{{number}}"
 msgstr ""
 
 #: src/lib/qa/types.ts:46
@@ -1753,6 +1875,19 @@ msgstr ""
 msgid "Punjabi"
 msgstr ""
 
+#: src/components/repo-sync/RepoSyncModal.tsx:239
+#: src/pages/Index.tsx:1668
+msgid "Push"
+msgstr ""
+
+#: src/pages/Index.tsx:1986
+msgid "Push changes to repository"
+msgstr ""
+
+#: src/pages/Index.tsx:1653
+msgid "Push changes to {{provider}}"
+msgstr ""
+
 #: src/components/editor/EditorTable.tsx:1423
 msgid "QA checks"
 msgstr ""
@@ -1761,7 +1896,7 @@ msgstr ""
 msgid "QA errors"
 msgstr ""
 
-#: src/pages/Index.tsx:2040
+#: src/pages/Index.tsx:2230
 msgid "QA summary before export"
 msgstr ""
 
@@ -1786,6 +1921,10 @@ msgstr ""
 msgid "References"
 msgstr ""
 
+#: src/components/repo-sync/RepoBrowser.tsx:174
+msgid "Refresh"
+msgstr ""
+
 #: src/components/SettingsModal.tsx:2103
 #: src/components/editor/GlossaryPanel.tsx:338
 #: src/components/editor/GlossaryPanel.tsx:342
@@ -1796,7 +1935,7 @@ msgstr ""
 msgid "Region"
 msgstr ""
 
-#: src/pages/Index.tsx:1255
+#: src/pages/Index.tsx:1349
 msgid "Release to load your translation file"
 msgstr ""
 
@@ -1805,6 +1944,11 @@ msgstr ""
 #: src/components/SettingsModal.tsx:1691
 #: src/components/SettingsModal.tsx:1913
 msgid "Remember API key across sessions"
+msgstr ""
+
+#: src/components/repo-sync/RepoSyncModal.tsx:271
+#: src/components/repo-sync/RepoSyncModal.tsx:294
+msgid "Remember token"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:1475
@@ -1819,11 +1963,11 @@ msgid "Repeated-source consistency"
 msgstr ""
 
 #: src/components/editor/TranslateButton.tsx:310
-#: src/pages/Index.tsx:1699
+#: src/pages/Index.tsx:1825
 msgid "Replace"
 msgstr ""
 
-#: src/pages/Index.tsx:1695
+#: src/pages/Index.tsx:1821
 msgid "Replace current file?"
 msgstr ""
 
@@ -1835,7 +1979,20 @@ msgstr ""
 msgid "Report Bugs To"
 msgstr ""
 
-#: src/pages/Index.tsx:863
+#: src/components/repo-sync/RepoSyncModal.tsx:341
+msgid "Repository"
+msgstr ""
+
+#: src/components/repo-sync/RepoSyncModal.tsx:224
+#: src/pages/Index.tsx:1746
+msgid "Repository sync"
+msgstr ""
+
+#: src/components/repo-sync/CommitPanel.tsx:183
+msgid "Repository:"
+msgstr ""
+
+#: src/pages/Index.tsx:955
 msgid "Request timed out. Try downloading the file and uploading it directly."
 msgstr ""
 
@@ -1843,7 +2000,7 @@ msgstr ""
 msgid "Resize inspector"
 msgstr ""
 
-#: src/pages/Index.tsx:1811
+#: src/pages/Index.tsx:1937
 msgid "Restore draft"
 msgstr ""
 
@@ -1879,7 +2036,7 @@ msgstr ""
 msgid "Retry translation"
 msgstr ""
 
-#: src/pages/Index.tsx:2081
+#: src/pages/Index.tsx:2271
 msgid "Review issues"
 msgstr ""
 
@@ -1943,6 +2100,10 @@ msgstr ""
 msgid "Select a reference above to load source context."
 msgstr ""
 
+#: src/components/repo-sync/RepoSyncModal.tsx:346
+msgid "Select a repository"
+msgstr ""
+
 #: src/components/editor/EditorTable.tsx:2722
 msgid "Select a row to inspect context and metadata."
 msgstr ""
@@ -1953,6 +2114,10 @@ msgstr ""
 
 #: src/components/editor/EditorTable.tsx:2514
 msgid "Select all filtered entries"
+msgstr ""
+
+#: src/components/repo-sync/RepoBrowser.tsx:162
+msgid "Select branch"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:2085
@@ -2001,12 +2166,12 @@ msgid "Set a plugin slug to browse source files."
 msgstr ""
 
 #: src/components/SettingsModal.tsx:1269
-#: src/pages/Index.tsx:1616
+#: src/pages/Index.tsx:1733
 msgid "Settings"
 msgstr ""
 
-#: src/pages/Index.tsx:1584
-#: src/pages/Index.tsx:1589
+#: src/pages/Index.tsx:1701
+#: src/pages/Index.tsx:1706
 msgid "Settings and actions"
 msgstr ""
 
@@ -2043,8 +2208,8 @@ msgstr ""
 msgid "Share Feedback"
 msgstr ""
 
-#: src/pages/Index.tsx:1566
-#: src/pages/Index.tsx:1602
+#: src/pages/Index.tsx:1683
+#: src/pages/Index.tsx:1719
 msgid "Share feedback"
 msgstr ""
 
@@ -2130,7 +2295,7 @@ msgid "Sort entries"
 msgstr ""
 
 #: src/components/editor/EditorTable.tsx:1859
-#: src/pages/Index.tsx:1640
+#: src/pages/Index.tsx:1766
 msgid "Source"
 msgstr ""
 
@@ -2213,6 +2378,11 @@ msgstr ""
 msgid "Stop playback"
 msgstr ""
 
+#: src/components/repo-sync/RepoSyncModal.tsx:272
+#: src/components/repo-sync/RepoSyncModal.tsx:295
+msgid "Store in localStorage (persists across sessions)"
+msgstr ""
+
 #: src/components/editor/EditorTable.tsx:2646
 msgid "String Inspector"
 msgstr ""
@@ -2241,11 +2411,11 @@ msgstr ""
 msgid "Swedish"
 msgstr ""
 
-#: src/pages/Index.tsx:155
+#: src/pages/Index.tsx:162
 msgid "Switch to dark mode"
 msgstr ""
 
-#: src/pages/Index.tsx:155
+#: src/pages/Index.tsx:162
 msgid "Switch to light mode"
 msgstr ""
 
@@ -2306,11 +2476,11 @@ msgstr ""
 msgid "Thai"
 msgstr ""
 
-#: src/pages/Index.tsx:1354
+#: src/pages/Index.tsx:1448
 msgid "Thanks. Issue #{issueNumber} was created."
 msgstr ""
 
-#: src/pages/Index.tsx:888
+#: src/pages/Index.tsx:980
 msgid "The URL must start with https://"
 msgstr ""
 
@@ -2338,7 +2508,7 @@ msgid ""
 "tions."
 msgstr ""
 
-#: src/pages/Index.tsx:1682
+#: src/pages/Index.tsx:1808
 msgid "This will remove all your work on the current file."
 msgstr ""
 
@@ -2356,7 +2526,11 @@ msgstr ""
 msgid "To"
 msgstr ""
 
-#: src/pages/Index.tsx:1658
+#: src/components/repo-sync/RepoSyncModal.tsx:391
+msgid "Token not configured. Go to Connect tab to set up authentication."
+msgstr ""
+
+#: src/pages/Index.tsx:1784
 msgid "Translate"
 msgstr ""
 
@@ -2519,7 +2693,7 @@ msgstr ""
 
 #: src/components/SettingsModal.tsx:1185
 #: src/components/editor/GlossaryPanel.tsx:199
-#: src/pages/Index.tsx:870
+#: src/pages/Index.tsx:962
 msgid "Unknown error"
 msgstr ""
 
@@ -2527,7 +2701,7 @@ msgstr ""
 msgid "Unsaved changes"
 msgstr ""
 
-#: src/pages/Index.tsx:1785
+#: src/pages/Index.tsx:1911
 msgid "Unsaved draft found"
 msgstr ""
 
@@ -2536,28 +2710,32 @@ msgstr ""
 msgid "Untranslated"
 msgstr ""
 
-#: src/pages/Index.tsx:1550
+#: src/pages/Index.tsx:1644
 msgid "Update"
 msgstr ""
 
-#: src/pages/Index.tsx:1538
+#: src/pages/Index.tsx:1632
 msgid ""
 "Update this file using a .pot template. Existing translations are kept when "
 "source strings still match, new strings are added, and obsolete strings are "
 "removed."
 msgstr ""
 
-#: src/pages/Index.tsx:1305
+#: src/components/repo-sync/CommitPanel.tsx:210
+msgid "Update translations"
+msgstr ""
+
+#: src/pages/Index.tsx:1399
 msgid "Updated"
 msgstr ""
 
-#: src/pages/Index.tsx:1317
+#: src/pages/Index.tsx:1411
 msgid ""
 "Updated from {{filename}}: +{{added}} new, -{{removed}} removed, {{kept}} ke"
 "pt"
 msgstr ""
 
-#: src/pages/Index.tsx:1435
+#: src/pages/Index.tsx:1529
 msgid "Upload"
 msgstr ""
 
@@ -2569,11 +2747,11 @@ msgstr ""
 msgid "Upload a WordPress glossary CSV for the selected language"
 msgstr ""
 
-#: src/pages/Index.tsx:1928
+#: src/pages/Index.tsx:2088
 msgid "Upload a translation file to start"
 msgstr ""
 
-#: src/pages/Index.tsx:1714
+#: src/pages/Index.tsx:1840
 msgid "Upload failed"
 msgstr ""
 
@@ -2635,6 +2813,10 @@ msgstr ""
 #: src/components/SettingsModal.tsx:2170
 #: src/components/editor/GlossaryPanel.tsx:403
 msgid "View All"
+msgstr ""
+
+#: src/components/repo-sync/CommitPanel.tsx:159
+msgid "View commit"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:2325
@@ -2734,18 +2916,22 @@ msgstr ""
 msgid "WordPress.org plugin slug for source code links"
 msgstr ""
 
-#: src/pages/Index.tsx:1454
+#: src/pages/Index.tsx:1548
 msgid "You have unsaved changes"
 msgstr ""
 
-#: src/pages/Index.tsx:1793
+#: src/pages/Index.tsx:1919
 msgid ""
 "You have unsaved changes from {age}. Would you like to restore your previous"
 " work?"
 msgstr ""
 
-#: src/pages/Index.tsx:1681
+#: src/pages/Index.tsx:1807
 msgid "You have unsaved changes. Are you sure you want to clear the editor?"
+msgstr ""
+
+#: src/components/repo-sync/CommitPanel.tsx:218
+msgid "You're on the default branch — creating a new branch is recommended"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:1906
@@ -2764,6 +2950,10 @@ msgstr ""
 msgid "characters"
 msgstr ""
 
+#: src/components/repo-sync/RepoBrowser.tsx:150
+msgid "default"
+msgstr ""
+
 #: src/components/SettingsModal.tsx:1590
 msgid "e.g. westeurope"
 msgstr ""
@@ -2772,7 +2962,7 @@ msgstr ""
 msgid "for details."
 msgstr ""
 
-#: src/pages/Index.tsx:1522
+#: src/pages/Index.tsx:1616
 msgid "i18next JSON (.json)"
 msgstr ""
 
@@ -2784,7 +2974,7 @@ msgstr ""
 msgid "name@example.com"
 msgstr ""
 
-#: src/pages/Index.tsx:1976
+#: src/pages/Index.tsx:2136
 msgid "or"
 msgstr ""
 
@@ -2812,7 +3002,7 @@ msgstr ""
 msgid "terms"
 msgstr ""
 
-#: src/pages/Index.tsx:1801
+#: src/pages/Index.tsx:1927
 msgid "{count} modified entries will be restored."
 msgstr ""
 
@@ -2850,7 +3040,7 @@ msgstr ""
 msgid "{{count}} entries"
 msgstr ""
 
-#: src/pages/Index.tsx:2056
+#: src/pages/Index.tsx:2246
 msgid "{{count}} error issue(s)"
 msgstr ""
 
@@ -2905,7 +3095,7 @@ msgstr ""
 msgid "{{count}} terms"
 msgstr ""
 
-#: src/pages/Index.tsx:2062
+#: src/pages/Index.tsx:2252
 msgid "{{count}} total issues"
 msgstr ""
 
@@ -2917,15 +3107,15 @@ msgstr ""
 msgid "{{count}} untranslated"
 msgstr ""
 
-#: src/pages/Index.tsx:2059
+#: src/pages/Index.tsx:2249
 msgid "{{count}} warning issue(s)"
 msgstr ""
 
-#: src/pages/Index.tsx:1751
+#: src/pages/Index.tsx:1877
 msgid "{{count}} warning(s) during parsing"
 msgstr ""
 
-#: src/pages/Index.tsx:1324
+#: src/pages/Index.tsx:1418
 msgid "{{count}} with updated references"
 msgstr ""
 
@@ -2939,7 +3129,7 @@ msgstr ""
 
 #: src/components/SettingsModal.tsx:2192
 #: src/components/editor/GlossaryPanel.tsx:259
-#: src/pages/Index.tsx:1872
+#: src/pages/Index.tsx:2032
 msgid "{{provider}} ready"
 msgstr ""
 
