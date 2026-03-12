@@ -1,4 +1,5 @@
 import {
+  buildWordPressReleaseList,
   buildWordPressTranslationExportUrl,
   fetchWordPressProjectInfo,
   sortWordPressReleases,
@@ -11,6 +12,15 @@ describe('sortWordPressReleases', () => {
       '2.0',
       '1.10',
       '1.2.0',
+    ]);
+  });
+});
+
+describe('buildWordPressReleaseList', () => {
+  it('deduplicates release fallbacks and keeps descending order', () => {
+    expect(buildWordPressReleaseList(['1.7.2', null, '1.6', '1.7.2', undefined])).toEqual([
+      '1.7.2',
+      '1.6',
     ]);
   });
 });

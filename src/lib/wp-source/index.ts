@@ -31,6 +31,7 @@ export {
 } from './fetcher';
 
 export {
+  buildWordPressReleaseList,
   buildWordPressTranslationExportUrl,
   fetchWordPressProjectInfo,
   fetchWordPressTranslationFile,

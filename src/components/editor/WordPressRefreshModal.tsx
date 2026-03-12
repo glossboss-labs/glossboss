@@ -15,8 +15,10 @@ import { RefreshCw } from 'lucide-react';
 import type { POEntry } from '@/lib/po/types';
 import { parsePOFileWithDiagnostics } from '@/lib/po';
 import {
+  buildWordPressReleaseList,
   diffEntriesAgainstTemplate,
   fetchProjectReleases,
+  fetchWordPressProjectInfo,
   fetchUpstreamTemplate,
   fetchWordPressTranslationFile,
   type ReleaseDiffSummary,
@@ -76,9 +78,17 @@ export function WordPressRefreshModal({
     setError(null);
     let cancelled = false;
     setIsLoadingReleases(true);
-    void fetchProjectReleases(projectType, projectSlug)
-      .then((releases) => {
+    void Promise.allSettled([
+      fetchProjectReleases(projectType, projectSlug),
+      fetchWordPressProjectInfo(projectType, projectSlug),
+    ])
+      .then(([releasesResult, infoResult]) => {
         if (cancelled) return;
+        const releases = buildWordPressReleaseList([
+          ...(releasesResult.status === 'fulfilled' ? releasesResult.value : []),
+          currentRelease,
+          infoResult.status === 'fulfilled' ? infoResult.value?.latestVersion : null,
+        ]);
         setAvailableReleases(releases);
         setRelease((current) => current ?? currentRelease ?? releases[0] ?? null);
       })

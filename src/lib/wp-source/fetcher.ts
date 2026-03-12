@@ -5,7 +5,11 @@ import { debugInfo, debugWarn } from '@/lib/debug';
 import { getSupabaseAnonKey, getSupabaseFunctionBaseUrl } from '@/lib/cloud-backend';
 import { buildSupabaseFunctionHeaders } from '@/lib/supabase-function-headers';
 import { normalizeSourcePath, type WordPressProjectType } from '@/lib/wp-source/references';
-import { sortWordPressReleases, validateWordPressProjectSlug } from '@/lib/wp-source/project';
+import {
+  buildWordPressReleaseList,
+  sortWordPressReleases,
+  validateWordPressProjectSlug,
+} from '@/lib/wp-source/project';
 
 export interface DirectoryEntry {
   name: string;
@@ -179,7 +183,28 @@ export async function fetchProjectReleases(
   }
 
   const data = await response.json();
-  const releases = sortWordPressReleases(Array.isArray(data.releases) ? data.releases : []);
+  let releases = sortWordPressReleases(Array.isArray(data.releases) ? data.releases : []);
+
+  if (releases.length === 0) {
+    const fallbackPath = projectType === 'plugin' ? 'tags' : '';
+    const fallbackResponse = await fetchFromEdge({
+      projectType,
+      slug,
+      path: fallbackPath,
+      list: true,
+    });
+
+    if (fallbackResponse.ok) {
+      const fallbackData = await fallbackResponse.json();
+      const entries = Array.isArray(fallbackData.entries)
+        ? (fallbackData.entries as DirectoryEntry[])
+        : [];
+      releases = buildWordPressReleaseList(
+        entries.filter((entry) => entry?.isDir).map((entry) => entry.name),
+      );
+    }
+  }
+
   releasesCache.set(cacheKey, releases);
   return releases;
 }

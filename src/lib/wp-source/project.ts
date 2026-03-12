@@ -125,6 +125,18 @@ export async function fetchWordPressTranslationFile(
   return await response.text();
 }
 
+export function buildWordPressReleaseList(releases: Array<string | null | undefined>): string[] {
+  return sortWordPressReleases(
+    Array.from(
+      new Set(
+        releases
+          .map((release) => release?.trim())
+          .filter((release): release is string => Boolean(release)),
+      ),
+    ),
+  );
+}
+
 export function sortWordPressReleases(releases: string[]): string[] {
   return [...releases]
     .filter((release) => /^[\d]/.test(release))

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, Button, Group, Loader, Modal, Select, Stack, Text, TextInput } from '@mantine/core';
 import { Globe, Info } from 'lucide-react';
 import {
+  buildWordPressReleaseList,
   fetchProjectReleases,
   fetchWordPressProjectInfo,
   type WordPressPluginTranslationTrack,
@@ -67,12 +68,13 @@ export function WordPressProjectModal({
       setIsLoadingMeta(true);
       setError(null);
       try {
-        const [info, releases] = await Promise.all([
+        const [infoResult, releasesResult] = await Promise.allSettled([
           fetchWordPressProjectInfo(projectType, trimmedSlug),
           fetchProjectReleases(projectType, trimmedSlug),
         ]);
         if (cancelled) return;
 
+        const info = infoResult.status === 'fulfilled' ? infoResult.value : null;
         if (!info) {
           setProjectName(null);
           setAvailableReleases([]);
@@ -80,6 +82,11 @@ export function WordPressProjectModal({
           setError(t('Project not found on WordPress.org.'));
           return;
         }
+
+        const releases = buildWordPressReleaseList([
+          ...(releasesResult.status === 'fulfilled' ? releasesResult.value : []),
+          info.latestVersion,
+        ]);
 
         setProjectName(info.name);
         setAvailableReleases(releases);
