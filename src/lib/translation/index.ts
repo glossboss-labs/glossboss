@@ -22,3 +22,5 @@ export type {
   TranslationProviderCapabilities,
   TranslationProviderId,
 } from './types';
+export { getTranslationUsage, recordTranslationUsage, resetTranslationUsage } from './usage';
+export type { TranslationUsageEntry } from './usage';

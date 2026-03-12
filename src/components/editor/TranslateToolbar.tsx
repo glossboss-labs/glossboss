@@ -49,6 +49,7 @@ import type { Glossary, GlossaryAnalysisResult } from '@/lib/glossary/types';
 import {
   getTranslationProviderLabel,
   hasProviderCredentials,
+  recordTranslationUsage,
   translateWithProvider,
   type TranslationProviderId,
 } from '@/lib/translation';
@@ -446,6 +447,7 @@ export function TranslateToolbar({
               if (!translated?.text) {
                 failed += 1;
               } else {
+                recordTranslationUsage('gemini', job.text.length);
                 applyTranslationResult(job, translated);
                 completed += 1;
               }
@@ -457,6 +459,11 @@ export function TranslateToolbar({
             setProgress(Math.round(((completed + failed) / totalJobs) * 100));
             setTranslateCount(completed);
             setFailedCount(failed);
+
+            batchCountRef.current++;
+            if (batchCountRef.current % 2 === 0) {
+              window.dispatchEvent(new Event('translation-usage-refresh'));
+            }
           }
         } else {
           const batchSize = 10;
@@ -512,6 +519,7 @@ export function TranslateToolbar({
                   return;
                 }
 
+                recordTranslationUsage(activeProvider, job.text.length);
                 applyTranslationResult(job, translated);
                 completed += 1;
               });
@@ -525,8 +533,8 @@ export function TranslateToolbar({
             setFailedCount(failed);
 
             batchCountRef.current++;
-            if (activeProvider === 'deepl' && batchCountRef.current % 2 === 0) {
-              window.dispatchEvent(new Event('deepl-usage-refresh'));
+            if (batchCountRef.current % 2 === 0) {
+              window.dispatchEvent(new Event('translation-usage-refresh'));
             }
           }
         }
@@ -540,9 +548,7 @@ export function TranslateToolbar({
         setIsTranslating(false);
         setIsRetranslateMode(false);
         cancelRef.current = false;
-        if (activeProvider === 'deepl') {
-          window.dispatchEvent(new Event('deepl-usage-refresh'));
-        }
+        window.dispatchEvent(new Event('translation-usage-refresh'));
       }
     },
     [
