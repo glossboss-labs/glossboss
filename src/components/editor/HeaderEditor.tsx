@@ -7,7 +7,6 @@
 
 import { useState, useCallback, useMemo } from 'react';
 import {
-  ActionIcon,
   Paper,
   Group,
   Stack,
@@ -666,11 +665,14 @@ export function HeaderEditor({
         <Group gap="sm" wrap="wrap" justify="flex-end">
           {/* Repo push button takes priority over WordPress refresh */}
           {repoConnection && onPushToRepo ? (
-            <Tooltip label={t('Push changes to repository')}>
-              <ActionIcon variant="subtle" size="sm" onClick={onPushToRepo}>
-                <GitPullRequest size={14} />
-              </ActionIcon>
-            </Tooltip>
+            <Button
+              size="compact-sm"
+              variant="default"
+              leftSection={<GitPullRequest size={14} />}
+              onClick={onPushToRepo}
+            >
+              {t('Push')}
+            </Button>
           ) : (
             wordPressProject &&
             onRefreshWordPress && (
