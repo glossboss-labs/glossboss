@@ -1,20 +1,17 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
+  Autocomplete,
   Button,
-  Combobox,
   Group,
-  InputBase,
   Loader,
   Modal,
-  ScrollArea,
   Select,
   Skeleton,
   Stack,
   Text,
   TextInput,
 } from '@mantine/core';
-import { useCombobox } from '@mantine/core';
 import { motion, AnimatePresence } from 'motion/react';
 import { Globe, Info } from 'lucide-react';
 import {
@@ -82,12 +79,7 @@ export function WordPressProjectModal({
   const [isLoadingMeta, setIsLoadingMeta] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [slugSearch, setSlugSearch] = useState('');
   const skipMetaDebounceRef = useRef(false);
-
-  const combobox = useCombobox({
-    onDropdownClose: () => combobox.resetSelectedOption(),
-  });
 
   useEffect(() => {
     if (!opened) return;
@@ -232,6 +224,25 @@ export function WordPressProjectModal({
     () => availableReleases.map((release) => ({ value: release, label: release })),
     [availableReleases],
   );
+  const slugSuggestionOptions = useMemo(
+    () => slugSuggestions.map((suggestion) => suggestion.slug),
+    [slugSuggestions],
+  );
+
+  const handleSlugChange = useCallback(
+    (value: string) => {
+      setSlug(value);
+    },
+    [setSlug],
+  );
+
+  const handleSlugOptionSubmit = useCallback(
+    (value: string) => {
+      setSlug(value);
+      skipMetaDebounceRef.current = true;
+    },
+    [setSlug],
+  );
 
   const handleSubmit = useCallback(async () => {
     const trimmedSlug = normalizeSlug(slug);
@@ -263,14 +274,6 @@ export function WordPressProjectModal({
     }
   }, [locale, onClose, onOpenProject, projectType, selectedRelease, slug, t, track]);
 
-  const filteredSuggestions = useMemo(() => {
-    if (!slugSearch) return slugSuggestions;
-    const lower = slugSearch.toLowerCase();
-    return slugSuggestions.filter(
-      (s) => s.slug.includes(lower) || s.name.toLowerCase().includes(lower),
-    );
-  }, [slugSearch, slugSuggestions]);
-
   return (
     <Modal
       opened={opened}
@@ -300,79 +303,17 @@ export function WordPressProjectModal({
                 ]}
                 allowDeselect={false}
               />
-              <Combobox
-                store={combobox}
-                onOptionSubmit={(val) => {
-                  setSlug(val);
-                  setSlugSearch(val);
-                  skipMetaDebounceRef.current = true;
-                  combobox.closeDropdown();
-                }}
-              >
-                <Combobox.Target>
-                  <InputBase
-                    label={t('Slug')}
-                    description={t('Search by name or slug')}
-                    placeholder={projectType === 'theme' ? 'twentytwentyfive' : 'woocommerce'}
-                    rightSection={
-                      isLoadingSuggestions ? <Loader size="xs" /> : <Combobox.Chevron />
-                    }
-                    rightSectionPointerEvents="none"
-                    value={slugSearch}
-                    onClick={() => {
-                      if (slugSuggestions.length > 0) combobox.openDropdown();
-                    }}
-                    onFocus={() => {
-                      if (slugSuggestions.length > 0) combobox.openDropdown();
-                    }}
-                    onBlur={() => {
-                      combobox.closeDropdown();
-                      if (slugSearch && slugSearch !== slug) {
-                        setSlug(slugSearch);
-                      }
-                    }}
-                    onChange={(event) => {
-                      const value = event.currentTarget.value;
-                      setSlugSearch(value);
-                      setSlug(value);
-                      combobox.updateSelectedOptionIndex();
-                      if (value.trim().length >= 3) {
-                        combobox.openDropdown();
-                      }
-                    }}
-                  />
-                </Combobox.Target>
-
-                <Combobox.Dropdown>
-                  <Combobox.Options>
-                    <ScrollArea.Autosize mah={250}>
-                      {filteredSuggestions.length > 0 ? (
-                        filteredSuggestions.map((suggestion) => (
-                          <Combobox.Option value={suggestion.slug} key={suggestion.slug}>
-                            <Stack gap={2}>
-                              <Group gap="xs" justify="space-between">
-                                <Text size="sm" fw={500}>
-                                  {suggestion.name}
-                                </Text>
-                                {suggestion.latestVersion && (
-                                  <Text size="xs" c="dimmed">
-                                    {suggestion.latestVersion}
-                                  </Text>
-                                )}
-                              </Group>
-                              <Text size="xs" c="dimmed">
-                                {suggestion.slug}
-                              </Text>
-                            </Stack>
-                          </Combobox.Option>
-                        ))
-                      ) : (
-                        <Combobox.Empty>{t('No matching slugs')}</Combobox.Empty>
-                      )}
-                    </ScrollArea.Autosize>
-                  </Combobox.Options>
-                </Combobox.Dropdown>
-              </Combobox>
+              <Autocomplete
+                label={t('Slug')}
+                description={t('Search by name or slug')}
+                placeholder={projectType === 'theme' ? 'twentytwentyfive' : 'woocommerce'}
+                value={slug}
+                onChange={handleSlugChange}
+                onOptionSubmit={handleSlugOptionSubmit}
+                data={slugSuggestionOptions}
+                nothingFoundMessage={t('No matching slugs')}
+                rightSection={isLoadingSuggestions ? <Loader size="xs" /> : undefined}
+              />
             </Group>
 
             <Group grow align="flex-start">
