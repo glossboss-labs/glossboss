@@ -39,6 +39,8 @@ import {
   Loader2,
   Plug,
   RotateCcw,
+  GitBranch,
+  GitPullRequest,
 } from 'lucide-react';
 import { useEditorStore, useSourceStore } from '@/stores';
 import type { POHeader } from '@/lib/po/types';
@@ -272,6 +274,12 @@ interface HeaderEditorProps {
     release?: string | null;
   } | null;
   onRefreshWordPress?: () => void;
+  repoConnection?: {
+    owner: string;
+    repo: string;
+    branch: string;
+  } | null;
+  onPushToRepo?: () => void;
 }
 
 /**
@@ -563,6 +571,8 @@ export function HeaderEditor({
   encodingInfo,
   wordPressProject,
   onRefreshWordPress,
+  repoConnection,
+  onPushToRepo,
 }: HeaderEditorProps) {
   const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(false);
@@ -599,18 +609,32 @@ export function HeaderEditor({
               {header.language}
             </Badge>
           )}
-          {wordPressProject && (
-            <Badge color="gray" variant="light" size="sm">
-              {t('{{type}} / {{slug}}', {
-                type: wordPressProject.type === 'plugin' ? t('Plugin') : t('Theme'),
-                slug: wordPressProject.slug,
-              })}
-            </Badge>
-          )}
-          {wordPressProject?.release && (
-            <Badge color="blue" variant="light" size="sm">
-              {t('Release {{release}}', { release: wordPressProject.release })}
-            </Badge>
+          {/* Repo connection badges take priority over WordPress project badges */}
+          {repoConnection ? (
+            <>
+              <Badge color="gray" variant="light" size="sm" leftSection={<GitBranch size={12} />}>
+                {repoConnection.owner}/{repoConnection.repo}
+              </Badge>
+              <Badge variant="light" size="sm">
+                {repoConnection.branch}
+              </Badge>
+            </>
+          ) : (
+            <>
+              {wordPressProject && (
+                <Badge color="gray" variant="light" size="sm">
+                  {t('{{type}} / {{slug}}', {
+                    type: wordPressProject.type === 'plugin' ? t('Plugin') : t('Theme'),
+                    slug: wordPressProject.slug,
+                  })}
+                </Badge>
+              )}
+              {wordPressProject?.release && (
+                <Badge color="blue" variant="light" size="sm">
+                  {t('Release {{release}}', { release: wordPressProject.release })}
+                </Badge>
+              )}
+            </>
           )}
           {encodingInfo && (
             <Tooltip
@@ -638,15 +662,28 @@ export function HeaderEditor({
         </Group>
 
         <Group gap="sm" wrap="wrap" justify="flex-end">
-          {wordPressProject && onRefreshWordPress && (
+          {/* Repo push button takes priority over WordPress refresh */}
+          {repoConnection && onPushToRepo ? (
             <Button
               size="compact-sm"
               variant="default"
-              leftSection={<RotateCcw size={14} />}
-              onClick={onRefreshWordPress}
+              leftSection={<GitPullRequest size={14} />}
+              onClick={onPushToRepo}
             >
-              {t('Refresh')}
+              {t('Push')}
             </Button>
+          ) : (
+            wordPressProject &&
+            onRefreshWordPress && (
+              <Button
+                size="compact-sm"
+                variant="default"
+                leftSection={<RotateCcw size={14} />}
+                onClick={onRefreshWordPress}
+              >
+                {t('Refresh')}
+              </Button>
+            )
           )}
           {hasUnsavedChanges && (
             <Text size="sm" c="orange">
