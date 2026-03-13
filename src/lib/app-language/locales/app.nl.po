@@ -2160,7 +2160,7 @@ msgstr "Projectnaam en versie"
 msgid "Project not found on WordPress.org"
 msgstr ""
 
-#: src/components/editor/WordPressProjectModal.tsx:159
+#: src/components/editor/WordPressProjectModal.tsx:160
 msgid "Project not found on WordPress.org."
 msgstr ""
 
