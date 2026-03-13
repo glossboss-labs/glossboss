@@ -1908,13 +1908,14 @@ export default function Index() {
                       >
                         {repoConnection ? t('Repository sync') : t('Open from repository')}
                       </Menu.Item>
-                      <Menu.Item
-                        leftSection={<RotateCcw size={14} />}
-                        disabled={!currentProjectType || !currentProjectSlug || !filename}
-                        onClick={() => setWordpressRefreshOpen(true)}
-                      >
-                        {t('Refresh from WordPress.org')}
-                      </Menu.Item>
+                      {currentProjectType && currentProjectSlug && filename && (
+                        <Menu.Item
+                          leftSection={<RotateCcw size={14} />}
+                          onClick={() => setWordpressRefreshOpen(true)}
+                        >
+                          {t('Refresh from WordPress.org')}
+                        </Menu.Item>
+                      )}
                       <Menu.Item
                         color="red"
                         leftSection={<Trash2 size={14} />}
@@ -2201,6 +2202,34 @@ export default function Index() {
               </Paper>
             )}
 
+            {filename && currentProjectType && currentProjectSlug && (
+              <Paper p="xs" withBorder>
+                <Group gap="xs" justify="space-between" align="center" wrap="wrap">
+                  <Group gap="xs" wrap="wrap">
+                    <Badge color="gray" variant="light" size="sm">
+                      {t('{{type}} / {{slug}}', {
+                        type: currentProjectType,
+                        slug: currentProjectSlug,
+                      })}
+                    </Badge>
+                    {currentProjectRelease && (
+                      <Badge color="blue" variant="light" size="sm">
+                        {t('Release {{release}}', { release: currentProjectRelease })}
+                      </Badge>
+                    )}
+                  </Group>
+                  <Button
+                    size="compact-sm"
+                    variant="default"
+                    leftSection={<RotateCcw size={14} />}
+                    onClick={() => setWordpressRefreshOpen(true)}
+                  >
+                    {t('Refresh from WordPress.org')}
+                  </Button>
+                </Group>
+              </Paper>
+            )}
+
             {/* Header and control workspace */}
             {filename && (
               <Stack gap="md">
@@ -2234,29 +2263,6 @@ export default function Index() {
                       translateEnabled={translateEnabled}
                       mode={workspaceMode}
                     />
-                    {currentProjectType && currentProjectSlug && (
-                      <Group gap="xs" wrap="wrap">
-                        <Badge color="gray" variant="light" size="sm">
-                          {t('{{type}} / {{slug}}', {
-                            type: currentProjectType,
-                            slug: currentProjectSlug,
-                          })}
-                        </Badge>
-                        {currentProjectRelease && (
-                          <Badge color="blue" variant="light" size="sm">
-                            {t('Release {{release}}', { release: currentProjectRelease })}
-                          </Badge>
-                        )}
-                        <Button
-                          size="compact-sm"
-                          variant="default"
-                          leftSection={<RotateCcw size={14} />}
-                          onClick={() => setWordpressRefreshOpen(true)}
-                        >
-                          {t('Refresh from WordPress.org')}
-                        </Button>
-                      </Group>
-                    )}
                     {workspaceMode === 'edit' && glossary && (
                       <Group gap="xs">
                         <Badge
