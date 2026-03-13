@@ -280,7 +280,7 @@ export function WordPressProjectModal({
       onClose={onClose}
       title={t('Open from WordPress.org')}
       centered
-      size="md"
+      size="lg"
       closeButtonProps={{ 'aria-label': t('Close dialog') }}
     >
       <AnimatePresence mode="wait">
@@ -292,7 +292,7 @@ export function WordPressProjectModal({
             animate="visible"
             exit="exit"
           >
-            <Group grow align="flex-start">
+            <Group grow>
               <Select
                 label={t('Project type')}
                 value={projectType}
@@ -305,7 +305,6 @@ export function WordPressProjectModal({
               />
               <Autocomplete
                 label={t('Slug')}
-                description={t('Search by name or slug')}
                 placeholder={projectType === 'theme' ? 'twentytwentyfive' : 'woocommerce'}
                 value={slug}
                 onChange={handleSlugChange}
@@ -316,20 +315,13 @@ export function WordPressProjectModal({
               />
             </Group>
 
-            <Group grow align="flex-start">
+            <Group grow>
               {localeLoadError || availableLocales.length === 0 ? (
                 <TextInput
                   label={t('Locale')}
                   placeholder="nl"
                   value={locale}
                   onChange={(event) => setLocale(event.currentTarget.value)}
-                  description={
-                    localeLoadError
-                      ? t('Enter the locale manually.')
-                      : projectName
-                        ? t('No supported locales were found for this project.')
-                        : undefined
-                  }
                 />
               ) : (
                 <Select
@@ -342,7 +334,7 @@ export function WordPressProjectModal({
                   nothingFoundMessage={t('No locales found')}
                 />
               )}
-              {projectType === 'plugin' ? (
+              {projectType === 'plugin' && (
                 <Select
                   label={t('Translation track')}
                   value={track}
@@ -355,31 +347,22 @@ export function WordPressProjectModal({
                   ]}
                   allowDeselect={false}
                 />
-              ) : (
-                <Select
-                  label={t('Source release')}
-                  value={selectedRelease}
-                  onChange={setSelectedRelease}
-                  data={releaseOptions}
-                  placeholder={t('Select a release')}
-                  searchable
-                  nothingFoundMessage={t('No releases found')}
-                />
               )}
-            </Group>
-
-            {projectType === 'plugin' && (
               <Select
                 label={t('Source release')}
                 value={selectedRelease}
                 onChange={setSelectedRelease}
                 data={releaseOptions}
-                placeholder={track === 'dev' ? t('Trunk / development') : t('Select a release')}
-                disabled={track === 'dev'}
+                placeholder={
+                  track === 'dev' && projectType === 'plugin'
+                    ? t('Trunk / development')
+                    : t('Select a release')
+                }
+                disabled={projectType === 'plugin' && track === 'dev'}
                 searchable
                 nothingFoundMessage={t('No releases found')}
               />
-            )}
+            </Group>
 
             {isLoadingMeta && (
               <Stack gap="xs">

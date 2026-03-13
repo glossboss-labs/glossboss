@@ -1901,6 +1901,14 @@ export default function Index() {
                       >
                         {t('Open from WordPress.org')}
                       </Menu.Item>
+                      {currentProjectType && currentProjectSlug && filename && (
+                        <Menu.Item
+                          leftSection={<RotateCcw size={14} />}
+                          onClick={() => setWordpressRefreshOpen(true)}
+                        >
+                          {t('Refresh from WordPress.org')}
+                        </Menu.Item>
+                      )}
                       <Menu.Item
                         leftSection={<GitBranch size={14} />}
                         onClick={() => {
@@ -1910,14 +1918,6 @@ export default function Index() {
                       >
                         {repoConnection ? t('Repository sync') : t('Open from repository')}
                       </Menu.Item>
-                      {currentProjectType && currentProjectSlug && filename && (
-                        <Menu.Item
-                          leftSection={<RotateCcw size={14} />}
-                          onClick={() => setWordpressRefreshOpen(true)}
-                        >
-                          {t('Refresh from WordPress.org')}
-                        </Menu.Item>
-                      )}
                       <Menu.Item
                         color="red"
                         leftSection={<Trash2 size={14} />}
