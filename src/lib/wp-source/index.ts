@@ -24,12 +24,14 @@ export {
   fetchDirectoryListing,
   fetchProjectLocales,
   fetchProjectReleases,
+  searchWordPressProjects,
   clearCache,
   validateWordPressProject,
   type DirectoryEntry,
   type FetchSourceResult,
   type FetchDirResult,
   type WordPressProjectLocale,
+  type WordPressProjectSuggestion,
 } from './fetcher';
 
 export {

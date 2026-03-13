@@ -17,6 +17,11 @@ import {
   validateRequestOrigin,
 } from '../_shared/http.ts';
 import {
+  buildWordPressProjectSearchUrl,
+  parseWordPressProjectSearchResults,
+  type WordPressProjectSearchResult,
+} from './search.ts';
+import {
   buildWordPressTranslationExportUrl,
   parseProjectLocalesFromHtml,
   type WordPressPluginTranslationTrack,
@@ -35,12 +40,18 @@ const MAX_SLUG_LENGTH = 120;
 const MAX_PATH_LENGTH = 500;
 const MAX_VERSION_LENGTH = 64;
 const MAX_LOCALE_LENGTH = 32;
+const MAX_SEARCH_QUERY_LENGTH = 80;
 const MAX_LEGACY_RELEASE_CANDIDATES = 40;
+const SEARCH_CACHE_TTL_MS = 15 * 60 * 1000;
 
 const basePathCache = new Map<string, string>();
 const releasesCache = new Map<string, string[]>();
 const fileExistsCache = new Map<string, boolean>();
 const legacyPathCache = new Map<string, string | null>();
+const searchCache = new Map<
+  string,
+  { expiresAt: number; results: WordPressProjectSearchResult[] }
+>();
 
 function isObject(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === 'object' && !Array.isArray(value);
@@ -64,6 +75,15 @@ function isValidTrack(value: unknown): value is WordPressPluginTranslationTrack 
 
 function isValidLocale(locale: string): boolean {
   return locale.length <= MAX_LOCALE_LENGTH && /^[a-z]{2,3}(?:-[a-z0-9]{2,8})?$/i.test(locale);
+}
+
+function isValidSearchQuery(query: string): boolean {
+  const hasControlCharacters = Array.from(query).some((char) => {
+    const code = char.charCodeAt(0);
+    return (code >= 0 && code <= 31) || code === 127;
+  });
+
+  return query.length >= 3 && query.length <= MAX_SEARCH_QUERY_LENGTH && !hasControlCharacters;
 }
 
 function normalizeRequestPath(
@@ -236,6 +256,43 @@ async function getProjectLocales(
   return parseProjectLocalesFromHtml(await response.text(), projectType, slug, track);
 }
 
+async function searchProjects(
+  projectType: WordPressProjectType,
+  query: string,
+): Promise<WordPressProjectSearchResult[]> {
+  const normalizedQuery = query.trim().toLowerCase();
+  const cacheKey = `${projectType}:${normalizedQuery}`;
+  const cached = searchCache.get(cacheKey);
+  if (cached && cached.expiresAt > Date.now()) {
+    return cached.results;
+  }
+
+  const response = await fetchWithTimeout(
+    buildWordPressProjectSearchUrl(projectType, normalizedQuery),
+    FETCH_TIMEOUT_MS,
+    {
+      method: 'GET',
+      headers: FETCH_HEADERS,
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      sanitizeUpstreamError(
+        await response.text().catch(() => ''),
+        `WordPress.org returned HTTP ${response.status}.`,
+      ),
+    );
+  }
+
+  const results = parseWordPressProjectSearchResults(projectType, await response.json());
+  searchCache.set(cacheKey, {
+    expiresAt: Date.now() + SEARCH_CACHE_TTL_MS,
+    results,
+  });
+  return results;
+}
+
 async function fileExists(url: string): Promise<boolean> {
   const cached = fileExistsCache.get(url);
   if (cached !== undefined) return cached;
@@ -349,9 +406,29 @@ Deno.serve(async (req: Request) => {
     const releasesOnly = body.releases === true;
     const localesOnly = body.locales === true;
     const translationExportOnly = body.translationExport === true;
+    const searchOnly = body.search === true;
     const version = typeof body.version === 'string' ? body.version.trim() : '';
     const locale = typeof body.locale === 'string' ? body.locale.trim().toLowerCase() : '';
     const track = isValidTrack(body.track) ? body.track : 'stable';
+    const searchQuery = typeof body.searchQuery === 'string' ? body.searchQuery.trim() : '';
+
+    if (searchOnly) {
+      if (!isValidSearchQuery(searchQuery)) {
+        return jsonResponse(
+          req,
+          {
+            ok: false,
+            code: 'INVALID_PAYLOAD',
+            message: 'Provide at least three characters to search WordPress.org.',
+          },
+          { status: 400 },
+        );
+      }
+
+      return jsonResponse(req, {
+        results: await searchProjects(projectType, searchQuery),
+      });
+    }
 
     if (!isValidSlug(slug)) {
       return jsonResponse(

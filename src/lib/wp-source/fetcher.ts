@@ -21,13 +21,23 @@ export interface WordPressProjectLocale {
   label: string;
 }
 
+export interface WordPressProjectSuggestion {
+  value: string;
+  label: string;
+  slug: string;
+  name: string;
+  latestVersion: string | null;
+}
+
 const fileCache = new Map<string, string>();
 const dirCache = new Map<string, string>();
 const releasesCache = new Map<string, string[]>();
 const localesCache = new Map<string, WordPressProjectLocale[]>();
 const legacyVersionCache = new Map<string, string | null>();
+const searchCache = new Map<string, { expiresAt: number; results: WordPressProjectSuggestion[] }>();
 
 const FETCH_TIMEOUT_MS = 30000;
+const SEARCH_CACHE_TTL_MS = 30 * 60 * 1000;
 
 function getProjectCacheKey(
   projectType: WordPressProjectType,
@@ -246,6 +256,49 @@ export async function fetchProjectLocales(
   return locales;
 }
 
+export async function searchWordPressProjects(
+  projectType: WordPressProjectType,
+  query: string,
+): Promise<WordPressProjectSuggestion[]> {
+  const normalizedQuery = query.trim().toLowerCase();
+  if (normalizedQuery.length < 3) {
+    return [];
+  }
+
+  const cacheKey = `${projectType}:${normalizedQuery}`;
+  const cached = searchCache.get(cacheKey);
+  if (cached && cached.expiresAt > Date.now()) {
+    return cached.results;
+  }
+
+  const response = await fetchFromEdge({ projectType, search: true, searchQuery: normalizedQuery });
+  if (!response.ok) {
+    throw new Error(await readEdgeError(response));
+  }
+
+  const data = await response.json();
+  const results = Array.isArray(data.results)
+    ? (data.results as Array<{ slug?: unknown; name?: unknown; version?: unknown }>)
+        .filter(
+          (item): item is { slug: string; name: string; version?: string | null } =>
+            typeof item?.slug === 'string' && typeof item?.name === 'string',
+        )
+        .map((item) => ({
+          value: item.slug,
+          label: item.slug,
+          slug: item.slug,
+          name: item.name,
+          latestVersion: typeof item.version === 'string' ? item.version : null,
+        }))
+    : [];
+
+  searchCache.set(cacheKey, {
+    expiresAt: Date.now() + SEARCH_CACHE_TTL_MS,
+    results,
+  });
+  return results;
+}
+
 export async function fetchSourceFile(
   projectType: WordPressProjectType,
   slug: string,
@@ -357,6 +410,7 @@ export function clearCache(): void {
   releasesCache.clear();
   localesCache.clear();
   legacyVersionCache.clear();
+  searchCache.clear();
 }
 
 export async function validateWordPressProject(

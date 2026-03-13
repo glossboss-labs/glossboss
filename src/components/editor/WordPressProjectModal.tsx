@@ -1,15 +1,29 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Alert, Button, Group, Loader, Modal, Select, Stack, Text, TextInput } from '@mantine/core';
+import {
+  Alert,
+  Autocomplete,
+  Button,
+  Group,
+  Loader,
+  Modal,
+  Select,
+  Stack,
+  Text,
+  TextInput,
+} from '@mantine/core';
 import { Globe, Info } from 'lucide-react';
 import {
   buildWordPressReleaseList,
   fetchProjectLocales,
   fetchProjectReleases,
   fetchWordPressProjectInfo,
+  searchWordPressProjects,
   type WordPressPluginTranslationTrack,
   type WordPressProjectLocale,
+  type WordPressProjectSuggestion,
   type WordPressProjectType,
 } from '@/lib/wp-source';
+import { debugWarn } from '@/lib/debug';
 import { useTranslation } from '@/lib/app-language';
 
 export interface WordPressProjectOpenRequest {
@@ -31,6 +45,14 @@ function normalizeLocale(value?: string): string {
   return value?.trim().replaceAll('_', '-').toLowerCase() || '';
 }
 
+function normalizeSlug(value: string): string {
+  return value.trim().toLowerCase();
+}
+
+function isSlugLike(value: string): boolean {
+  return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value);
+}
+
 export function WordPressProjectModal({
   opened,
   onClose,
@@ -45,6 +67,8 @@ export function WordPressProjectModal({
   const [selectedRelease, setSelectedRelease] = useState<string | null>(null);
   const [availableReleases, setAvailableReleases] = useState<string[]>([]);
   const [availableLocales, setAvailableLocales] = useState<WordPressProjectLocale[]>([]);
+  const [slugSuggestions, setSlugSuggestions] = useState<WordPressProjectSuggestion[]>([]);
+  const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
   const [projectName, setProjectName] = useState<string | null>(null);
   const [isLoadingMeta, setIsLoadingMeta] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -57,8 +81,55 @@ export function WordPressProjectModal({
 
   useEffect(() => {
     if (!opened) return;
-    const trimmedSlug = slug.trim().toLowerCase();
-    if (!trimmedSlug) {
+    const trimmedQuery = slug.trim();
+    if (trimmedQuery.length < 3) {
+      setSlugSuggestions([]);
+      setIsLoadingSuggestions(false);
+      return;
+    }
+
+    let cancelled = false;
+    const timeoutId = window.setTimeout(async () => {
+      setIsLoadingSuggestions(true);
+      try {
+        const suggestions = await searchWordPressProjects(projectType, trimmedQuery);
+        if (!cancelled) {
+          setSlugSuggestions(suggestions);
+        }
+      } catch (searchError) {
+        if (!cancelled) {
+          setSlugSuggestions([]);
+          debugWarn('[WordPress] Slug search failed', searchError);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoadingSuggestions(false);
+        }
+      }
+    }, 350);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timeoutId);
+    };
+  }, [opened, projectType, slug]);
+
+  useEffect(() => {
+    if (!opened) return;
+    const trimmedSlug = normalizeSlug(slug);
+    if (!trimmedSlug || trimmedSlug.length < 3 || !isSlugLike(trimmedSlug)) {
+      setProjectName(null);
+      setAvailableReleases([]);
+      setAvailableLocales([]);
+      setSelectedRelease(null);
+      setError(null);
+      return;
+    }
+
+    const hasExactSuggestion = slugSuggestions.some(
+      (suggestion) => suggestion.slug === trimmedSlug,
+    );
+    if (isLoadingSuggestions || (slugSuggestions.length > 0 && !hasExactSuggestion)) {
       setProjectName(null);
       setAvailableReleases([]);
       setAvailableLocales([]);
@@ -86,7 +157,7 @@ export function WordPressProjectModal({
           setAvailableLocales([]);
           setSelectedRelease(null);
           setLocale('');
-          setError(t('Project not found on WordPress.org.'));
+          setError(slugSuggestions.length === 0 ? t('Project not found on WordPress.org.') : null);
           return;
         }
 
@@ -129,14 +200,18 @@ export function WordPressProjectModal({
       cancelled = true;
       window.clearTimeout(timeoutId);
     };
-  }, [initialLocale, opened, projectType, slug, t, track]);
+  }, [initialLocale, isLoadingSuggestions, opened, projectType, slug, slugSuggestions, t, track]);
 
   const releaseOptions = useMemo(
     () => availableReleases.map((release) => ({ value: release, label: release })),
     [availableReleases],
   );
+  const slugSuggestionOptions = useMemo(
+    () => slugSuggestions.map((suggestion) => suggestion.slug),
+    [slugSuggestions],
+  );
   const handleSubmit = useCallback(async () => {
-    const trimmedSlug = slug.trim().toLowerCase();
+    const trimmedSlug = normalizeSlug(slug);
     const trimmedLocale = locale.trim().toLowerCase();
     if (!trimmedSlug || !trimmedLocale) {
       setError(t('Choose a slug and locale before opening a project.'));
@@ -185,11 +260,14 @@ export function WordPressProjectModal({
             ]}
             allowDeselect={false}
           />
-          <TextInput
+          <Autocomplete
             label={t('Slug')}
             placeholder={projectType === 'theme' ? 'twentytwentyfive' : 'woocommerce'}
             value={slug}
-            onChange={(event) => setSlug(event.currentTarget.value)}
+            onChange={setSlug}
+            data={slugSuggestionOptions}
+            nothingFoundMessage={t('No matching slugs')}
+            rightSection={isLoadingSuggestions ? <Loader size="xs" /> : undefined}
           />
         </Group>
 
