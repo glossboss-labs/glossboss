@@ -240,6 +240,10 @@ export async function fetchProjectLocales(
   }
 
   const data = await response.json();
+  if (!Array.isArray(data.locales)) {
+    throw new Error('WordPress locale discovery is unavailable in this deployment.');
+  }
+
   const locales = Array.isArray(data.locales)
     ? (data.locales as Array<{ locale?: unknown; label?: unknown }>)
         .filter(

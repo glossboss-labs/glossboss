@@ -67,6 +67,7 @@ export function WordPressProjectModal({
   const [selectedRelease, setSelectedRelease] = useState<string | null>(null);
   const [availableReleases, setAvailableReleases] = useState<string[]>([]);
   const [availableLocales, setAvailableLocales] = useState<WordPressProjectLocale[]>([]);
+  const [localeLoadError, setLocaleLoadError] = useState<string | null>(null);
   const [slugSuggestions, setSlugSuggestions] = useState<WordPressProjectSuggestion[]>([]);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
   const [projectName, setProjectName] = useState<string | null>(null);
@@ -121,6 +122,7 @@ export function WordPressProjectModal({
       setProjectName(null);
       setAvailableReleases([]);
       setAvailableLocales([]);
+      setLocaleLoadError(null);
       setSelectedRelease(null);
       setError(null);
       return;
@@ -133,6 +135,7 @@ export function WordPressProjectModal({
       setProjectName(null);
       setAvailableReleases([]);
       setAvailableLocales([]);
+      setLocaleLoadError(null);
       setSelectedRelease(null);
       setError(null);
       return;
@@ -155,6 +158,7 @@ export function WordPressProjectModal({
           setProjectName(null);
           setAvailableReleases([]);
           setAvailableLocales([]);
+          setLocaleLoadError(null);
           setSelectedRelease(null);
           setLocale('');
           setError(slugSuggestions.length === 0 ? t('Project not found on WordPress.org.') : null);
@@ -169,9 +173,19 @@ export function WordPressProjectModal({
         setProjectName(info.name);
         setAvailableReleases(releases);
         const locales = localesResult.status === 'fulfilled' ? localesResult.value : [];
+        const localeError =
+          localesResult.status === 'rejected'
+            ? localesResult.reason instanceof Error
+              ? localesResult.reason.message
+              : t('Failed to load supported locales.')
+            : null;
         setAvailableLocales(locales);
+        setLocaleLoadError(localeError);
         setSelectedRelease((current) => current ?? info.latestVersion ?? releases[0] ?? null);
         setLocale((current) => {
+          if (localeError || locales.length === 0) {
+            return current || normalizeLocale(initialLocale);
+          }
           const availableValues = new Set(locales.map((item) => item.value));
           const initialValue = normalizeLocale(initialLocale);
           if (current && availableValues.has(current)) return current;
@@ -183,6 +197,7 @@ export function WordPressProjectModal({
           setProjectName(null);
           setAvailableReleases([]);
           setAvailableLocales([]);
+          setLocaleLoadError(null);
           setSelectedRelease(null);
           setLocale('');
           setError(
@@ -272,15 +287,31 @@ export function WordPressProjectModal({
         </Group>
 
         <Group grow align="flex-start">
-          <Select
-            label={t('Locale')}
-            placeholder={t('Select a locale')}
-            value={locale}
-            onChange={(value) => setLocale(value || '')}
-            data={availableLocales}
-            searchable
-            nothingFoundMessage={t('No locales found')}
-          />
+          {localeLoadError || availableLocales.length === 0 ? (
+            <TextInput
+              label={t('Locale')}
+              placeholder="nl"
+              value={locale}
+              onChange={(event) => setLocale(event.currentTarget.value)}
+              description={
+                localeLoadError
+                  ? t(
+                      'Supported locales could not be loaded in this deployment. Enter the locale manually.',
+                    )
+                  : t('No supported locales were found for this project.')
+              }
+            />
+          ) : (
+            <Select
+              label={t('Locale')}
+              placeholder={t('Select a locale')}
+              value={locale}
+              onChange={(value) => setLocale(value || '')}
+              data={availableLocales}
+              searchable
+              nothingFoundMessage={t('No locales found')}
+            />
+          )}
           {projectType === 'plugin' ? (
             <Select
               label={t('Translation track')}
