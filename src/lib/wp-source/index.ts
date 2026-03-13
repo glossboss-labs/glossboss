@@ -37,6 +37,7 @@ export {
 export {
   buildWordPressReleaseList,
   buildWordPressTranslationExportUrl,
+  compareVersions,
   fetchWordPressProjectInfo,
   fetchWordPressTranslationFile,
   sortWordPressReleases,

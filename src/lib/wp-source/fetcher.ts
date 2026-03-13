@@ -7,6 +7,7 @@ import { buildSupabaseFunctionHeaders } from '@/lib/supabase-function-headers';
 import { normalizeSourcePath, type WordPressProjectType } from '@/lib/wp-source/references';
 import {
   buildWordPressReleaseList,
+  compareVersions,
   sortWordPressReleases,
   validateWordPressProjectSlug,
 } from '@/lib/wp-source/project';
@@ -48,30 +49,6 @@ function getProjectCacheKey(
   const normalizedPath = path.replace(/^\/+/, '');
   const versionPart = version ?? 'auto';
   return `${projectType}:${slug}@${versionPart}/${normalizedPath}`;
-}
-
-function compareVersions(a: string, b: string): number {
-  const parse = (value: string) =>
-    value.split(/[.-]/).map((part) => (/^\d+$/.test(part) ? Number(part) : part.toLowerCase()));
-  const parsedA = parse(a);
-  const parsedB = parse(b);
-  const length = Math.max(parsedA.length, parsedB.length);
-
-  for (let index = 0; index < length; index += 1) {
-    const left = parsedA[index] ?? 0;
-    const right = parsedB[index] ?? 0;
-
-    if (typeof left === 'number' && typeof right === 'number') {
-      if (left !== right) return left - right;
-      continue;
-    }
-
-    const leftString = String(left);
-    const rightString = String(right);
-    if (leftString !== rightString) return leftString < rightString ? -1 : 1;
-  }
-
-  return 0;
 }
 
 async function readEdgeError(response: Response): Promise<string> {

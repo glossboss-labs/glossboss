@@ -1,16 +1,21 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
-  Autocomplete,
   Button,
+  Combobox,
   Group,
+  InputBase,
   Loader,
   Modal,
+  ScrollArea,
   Select,
+  Skeleton,
   Stack,
   Text,
   TextInput,
 } from '@mantine/core';
+import { useCombobox } from '@mantine/core';
+import { motion, AnimatePresence } from 'motion/react';
 import { Globe, Info } from 'lucide-react';
 import {
   buildWordPressReleaseList,
@@ -23,8 +28,11 @@ import {
   type WordPressProjectSuggestion,
   type WordPressProjectType,
 } from '@/lib/wp-source';
+import { contentVariants, buttonStates } from '@/lib/motion';
 import { debugWarn } from '@/lib/debug';
 import { useTranslation } from '@/lib/app-language';
+
+const MotionStack = motion.create(Stack);
 
 export interface WordPressProjectOpenRequest {
   projectType: WordPressProjectType;
@@ -74,12 +82,19 @@ export function WordPressProjectModal({
   const [isLoadingMeta, setIsLoadingMeta] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [slugSearch, setSlugSearch] = useState('');
+  const skipMetaDebounceRef = useRef(false);
+
+  const combobox = useCombobox({
+    onDropdownClose: () => combobox.resetSelectedOption(),
+  });
 
   useEffect(() => {
     if (!opened) return;
     setLocale((current) => current || normalizeLocale(initialLocale));
   }, [initialLocale, opened]);
 
+  // Search effect — fires after 250ms debounce
   useEffect(() => {
     if (!opened) return;
     const trimmedQuery = slug.trim();
@@ -107,7 +122,7 @@ export function WordPressProjectModal({
           setIsLoadingSuggestions(false);
         }
       }
-    }, 350);
+    }, 250);
 
     return () => {
       cancelled = true;
@@ -115,6 +130,7 @@ export function WordPressProjectModal({
     };
   }, [opened, projectType, slug]);
 
+  // Metadata effect — fires independently on slug-like input after 500ms debounce
   useEffect(() => {
     if (!opened) return;
     const trimmedSlug = normalizeSlug(slug);
@@ -128,103 +144,95 @@ export function WordPressProjectModal({
       return;
     }
 
-    const hasExactSuggestion = slugSuggestions.some(
-      (suggestion) => suggestion.slug === trimmedSlug,
-    );
-    if (isLoadingSuggestions || (slugSuggestions.length > 0 && !hasExactSuggestion)) {
-      setProjectName(null);
-      setAvailableReleases([]);
-      setAvailableLocales([]);
-      setLocaleLoadError(null);
-      setSelectedRelease(null);
-      setError(null);
-      return;
-    }
+    const shouldSkipDebounce = skipMetaDebounceRef.current;
+    skipMetaDebounceRef.current = false;
 
     let cancelled = false;
-    const timeoutId = window.setTimeout(async () => {
-      setIsLoadingMeta(true);
-      setError(null);
-      try {
-        const [infoResult, releasesResult, localesResult] = await Promise.allSettled([
-          fetchWordPressProjectInfo(projectType, trimmedSlug),
-          fetchProjectReleases(projectType, trimmedSlug),
-          fetchProjectLocales(projectType, trimmedSlug, track),
-        ]);
-        if (cancelled) return;
+    const timeoutId = window.setTimeout(
+      async () => {
+        setIsLoadingMeta(true);
+        setError(null);
+        try {
+          const [infoResult, releasesResult, localesResult] = await Promise.allSettled([
+            fetchWordPressProjectInfo(projectType, trimmedSlug),
+            fetchProjectReleases(projectType, trimmedSlug),
+            fetchProjectLocales(projectType, trimmedSlug, track),
+          ]);
+          if (cancelled) return;
 
-        const info = infoResult.status === 'fulfilled' ? infoResult.value : null;
-        if (!info) {
-          setProjectName(null);
-          setAvailableReleases([]);
-          setAvailableLocales([]);
-          setLocaleLoadError(null);
-          setSelectedRelease(null);
-          setLocale('');
-          setError(slugSuggestions.length === 0 ? t('Project not found on WordPress.org.') : null);
-          return;
-        }
-
-        const releases = buildWordPressReleaseList([
-          ...(releasesResult.status === 'fulfilled' ? releasesResult.value : []),
-          info.latestVersion,
-        ]);
-
-        setProjectName(info.name);
-        setAvailableReleases(releases);
-        const locales = localesResult.status === 'fulfilled' ? localesResult.value : [];
-        const localeError =
-          localesResult.status === 'rejected'
-            ? localesResult.reason instanceof Error
-              ? localesResult.reason.message
-              : t('Failed to load supported locales.')
-            : null;
-        setAvailableLocales(locales);
-        setLocaleLoadError(localeError);
-        setSelectedRelease((current) => current ?? info.latestVersion ?? releases[0] ?? null);
-        setLocale((current) => {
-          if (localeError || locales.length === 0) {
-            return current || normalizeLocale(initialLocale);
+          const info = infoResult.status === 'fulfilled' ? infoResult.value : null;
+          if (!info) {
+            setProjectName(null);
+            setAvailableReleases([]);
+            setAvailableLocales([]);
+            setLocaleLoadError(null);
+            setSelectedRelease(null);
+            setLocale('');
+            setError(t('Project not found on WordPress.org.'));
+            return;
           }
-          const availableValues = new Set(locales.map((item) => item.value));
-          const initialValue = normalizeLocale(initialLocale);
-          if (current && availableValues.has(current)) return current;
-          if (initialValue && availableValues.has(initialValue)) return initialValue;
-          return '';
-        });
-      } catch (metaError) {
-        if (!cancelled) {
-          setProjectName(null);
-          setAvailableReleases([]);
-          setAvailableLocales([]);
-          setLocaleLoadError(null);
-          setSelectedRelease(null);
-          setLocale('');
-          setError(
-            metaError instanceof Error ? metaError.message : t('Failed to load project metadata.'),
-          );
+
+          const releases = buildWordPressReleaseList([
+            ...(releasesResult.status === 'fulfilled' ? releasesResult.value : []),
+            info.latestVersion,
+          ]);
+
+          setProjectName(info.name);
+          setAvailableReleases(releases);
+          const locales = localesResult.status === 'fulfilled' ? localesResult.value : [];
+          const localeError =
+            localesResult.status === 'rejected'
+              ? localesResult.reason instanceof Error
+                ? localesResult.reason.message
+                : t('Failed to load supported locales.')
+              : null;
+          setAvailableLocales(locales);
+          setLocaleLoadError(localeError);
+          setSelectedRelease((current) => current ?? info.latestVersion ?? releases[0] ?? null);
+          setLocale((current) => {
+            if (localeError || locales.length === 0) {
+              return current || normalizeLocale(initialLocale);
+            }
+            const availableValues = new Set(locales.map((item) => item.value));
+            const initialValue = normalizeLocale(initialLocale);
+            if (current && availableValues.has(current)) return current;
+            if (initialValue && availableValues.has(initialValue)) return initialValue;
+            return '';
+          });
+        } catch (metaError) {
+          if (!cancelled) {
+            setProjectName(null);
+            setAvailableReleases([]);
+            setAvailableLocales([]);
+            setLocaleLoadError(null);
+            setSelectedRelease(null);
+            setLocale('');
+            setError(
+              metaError instanceof Error
+                ? metaError.message
+                : t('Failed to load project metadata.'),
+            );
+          }
+        } finally {
+          if (!cancelled) {
+            setIsLoadingMeta(false);
+          }
         }
-      } finally {
-        if (!cancelled) {
-          setIsLoadingMeta(false);
-        }
-      }
-    }, 250);
+      },
+      shouldSkipDebounce ? 0 : 500,
+    );
 
     return () => {
       cancelled = true;
       window.clearTimeout(timeoutId);
     };
-  }, [initialLocale, isLoadingSuggestions, opened, projectType, slug, slugSuggestions, t, track]);
+  }, [initialLocale, opened, projectType, slug, t, track]);
 
   const releaseOptions = useMemo(
     () => availableReleases.map((release) => ({ value: release, label: release })),
     [availableReleases],
   );
-  const slugSuggestionOptions = useMemo(
-    () => slugSuggestions.map((suggestion) => suggestion.slug),
-    [slugSuggestions],
-  );
+
   const handleSubmit = useCallback(async () => {
     const trimmedSlug = normalizeSlug(slug);
     const trimmedLocale = locale.trim().toLowerCase();
@@ -255,6 +263,14 @@ export function WordPressProjectModal({
     }
   }, [locale, onClose, onOpenProject, projectType, selectedRelease, slug, t, track]);
 
+  const filteredSuggestions = useMemo(() => {
+    if (!slugSearch) return slugSuggestions;
+    const lower = slugSearch.toLowerCase();
+    return slugSuggestions.filter(
+      (s) => s.slug.includes(lower) || s.name.toLowerCase().includes(lower),
+    );
+  }, [slugSearch, slugSuggestions]);
+
   return (
     <Modal
       opened={opened}
@@ -262,135 +278,206 @@ export function WordPressProjectModal({
       title={t('Open from WordPress.org')}
       centered
       size="md"
+      closeButtonProps={{ 'aria-label': t('Close dialog') }}
     >
-      <Stack gap="md">
-        <Group grow align="flex-start">
-          <Select
-            label={t('Project type')}
-            value={projectType}
-            onChange={(value) => setProjectType((value as WordPressProjectType) || 'plugin')}
-            data={[
-              { value: 'plugin', label: t('Plugin') },
-              { value: 'theme', label: t('Theme') },
-            ]}
-            allowDeselect={false}
-          />
-          <Autocomplete
-            label={t('Slug')}
-            placeholder={projectType === 'theme' ? 'twentytwentyfive' : 'woocommerce'}
-            value={slug}
-            onChange={setSlug}
-            data={slugSuggestionOptions}
-            nothingFoundMessage={t('No matching slugs')}
-            rightSection={isLoadingSuggestions ? <Loader size="xs" /> : undefined}
-          />
-        </Group>
+      <AnimatePresence mode="wait">
+        {opened && (
+          <MotionStack
+            gap="md"
+            variants={contentVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+          >
+            <Group grow align="flex-start">
+              <Select
+                label={t('Project type')}
+                value={projectType}
+                onChange={(value) => setProjectType((value as WordPressProjectType) || 'plugin')}
+                data={[
+                  { value: 'plugin', label: t('Plugin') },
+                  { value: 'theme', label: t('Theme') },
+                ]}
+                allowDeselect={false}
+              />
+              <Combobox
+                store={combobox}
+                onOptionSubmit={(val) => {
+                  setSlug(val);
+                  setSlugSearch(val);
+                  skipMetaDebounceRef.current = true;
+                  combobox.closeDropdown();
+                }}
+              >
+                <Combobox.Target>
+                  <InputBase
+                    label={t('Slug')}
+                    description={t('Search by name or slug')}
+                    placeholder={projectType === 'theme' ? 'twentytwentyfive' : 'woocommerce'}
+                    rightSection={
+                      isLoadingSuggestions ? <Loader size="xs" /> : <Combobox.Chevron />
+                    }
+                    rightSectionPointerEvents="none"
+                    value={slugSearch}
+                    onClick={() => {
+                      if (slugSuggestions.length > 0) combobox.openDropdown();
+                    }}
+                    onFocus={() => {
+                      if (slugSuggestions.length > 0) combobox.openDropdown();
+                    }}
+                    onBlur={() => {
+                      combobox.closeDropdown();
+                      if (slugSearch && slugSearch !== slug) {
+                        setSlug(slugSearch);
+                      }
+                    }}
+                    onChange={(event) => {
+                      const value = event.currentTarget.value;
+                      setSlugSearch(value);
+                      setSlug(value);
+                      combobox.updateSelectedOptionIndex();
+                      if (value.trim().length >= 3) {
+                        combobox.openDropdown();
+                      }
+                    }}
+                  />
+                </Combobox.Target>
 
-        <Group grow align="flex-start">
-          {localeLoadError || availableLocales.length === 0 ? (
-            <TextInput
-              label={t('Locale')}
-              placeholder="nl"
-              value={locale}
-              onChange={(event) => setLocale(event.currentTarget.value)}
-              description={
-                localeLoadError
-                  ? t(
-                      'Supported locales could not be loaded in this deployment. Enter the locale manually.',
-                    )
-                  : t('No supported locales were found for this project.')
-              }
-            />
-          ) : (
-            <Select
-              label={t('Locale')}
-              placeholder={t('Select a locale')}
-              value={locale}
-              onChange={(value) => setLocale(value || '')}
-              data={availableLocales}
-              searchable
-              nothingFoundMessage={t('No locales found')}
-            />
-          )}
-          {projectType === 'plugin' ? (
-            <Select
-              label={t('Translation track')}
-              value={track}
-              onChange={(value) => setTrack((value as WordPressPluginTranslationTrack) || 'stable')}
-              data={[
-                { value: 'stable', label: t('Stable') },
-                { value: 'dev', label: t('Development') },
-              ]}
-              allowDeselect={false}
-            />
-          ) : (
-            <TextInput
-              label={t('Release')}
-              value={selectedRelease ?? ''}
-              readOnly
-              placeholder={t('Latest')}
-            />
-          )}
-        </Group>
+                <Combobox.Dropdown>
+                  <Combobox.Options>
+                    <ScrollArea.Autosize mah={250}>
+                      {filteredSuggestions.length > 0 ? (
+                        filteredSuggestions.map((suggestion) => (
+                          <Combobox.Option value={suggestion.slug} key={suggestion.slug}>
+                            <Stack gap={2}>
+                              <Group gap="xs" justify="space-between">
+                                <Text size="sm" fw={500}>
+                                  {suggestion.name}
+                                </Text>
+                                {suggestion.latestVersion && (
+                                  <Text size="xs" c="dimmed">
+                                    {suggestion.latestVersion}
+                                  </Text>
+                                )}
+                              </Group>
+                              <Text size="xs" c="dimmed">
+                                {suggestion.slug}
+                              </Text>
+                            </Stack>
+                          </Combobox.Option>
+                        ))
+                      ) : (
+                        <Combobox.Empty>{t('No matching slugs')}</Combobox.Empty>
+                      )}
+                    </ScrollArea.Autosize>
+                  </Combobox.Options>
+                </Combobox.Dropdown>
+              </Combobox>
+            </Group>
 
-        <Select
-          label={t('Source release')}
-          value={selectedRelease}
-          onChange={setSelectedRelease}
-          data={releaseOptions}
-          placeholder={
-            track === 'dev' && projectType === 'plugin'
-              ? t('Trunk / development')
-              : t('Select a release')
-          }
-          disabled={projectType === 'plugin' && track === 'dev'}
-          searchable
-          nothingFoundMessage={t('No releases found')}
-        />
+            <Group grow align="flex-start">
+              {localeLoadError || availableLocales.length === 0 ? (
+                <TextInput
+                  label={t('Locale')}
+                  placeholder="nl"
+                  value={locale}
+                  onChange={(event) => setLocale(event.currentTarget.value)}
+                  description={
+                    localeLoadError
+                      ? t(
+                          'Supported locales could not be loaded in this deployment. Enter the locale manually.',
+                        )
+                      : t('No supported locales were found for this project.')
+                  }
+                />
+              ) : (
+                <Select
+                  label={t('Locale')}
+                  placeholder={t('Select a locale')}
+                  value={locale}
+                  onChange={(value) => setLocale(value || '')}
+                  data={availableLocales}
+                  searchable
+                  nothingFoundMessage={t('No locales found')}
+                />
+              )}
+              {projectType === 'plugin' ? (
+                <Select
+                  label={t('Translation track')}
+                  value={track}
+                  onChange={(value) =>
+                    setTrack((value as WordPressPluginTranslationTrack) || 'stable')
+                  }
+                  data={[
+                    { value: 'stable', label: t('Stable') },
+                    { value: 'dev', label: t('Development') },
+                  ]}
+                  allowDeselect={false}
+                />
+              ) : null}
+              <Select
+                label={t('Source release')}
+                value={selectedRelease}
+                onChange={setSelectedRelease}
+                data={releaseOptions}
+                placeholder={
+                  track === 'dev' && projectType === 'plugin'
+                    ? t('Trunk / development')
+                    : t('Select a release')
+                }
+                disabled={projectType === 'plugin' && track === 'dev'}
+                searchable
+                nothingFoundMessage={t('No releases found')}
+              />
+            </Group>
 
-        {isLoadingMeta && (
-          <Group gap="xs">
-            <Loader size="sm" />
-            <Text size="sm" c="dimmed">
-              {t('Loading project metadata...')}
-            </Text>
-          </Group>
+            {isLoadingMeta && (
+              <Stack gap="xs">
+                <Skeleton height={16} width="60%" />
+                <Skeleton height={12} width="80%" />
+              </Stack>
+            )}
+
+            {projectName && !isLoadingMeta && (
+              <Alert icon={<Info size={16} />} color="blue" variant="light">
+                <Stack gap={4}>
+                  <Text size="sm" fw={500}>
+                    {projectName}
+                  </Text>
+                  <Text size="xs" c="dimmed">
+                    {projectType === 'plugin' && track === 'dev'
+                      ? t(
+                          'The translation file will be loaded from the development track and source browsing will follow trunk.',
+                        )
+                      : t(
+                          'The translation file will be loaded from WordPress.org and source browsing will use the selected release.',
+                        )}
+                  </Text>
+                </Stack>
+              </Alert>
+            )}
+
+            {error && (
+              <Alert icon={<Globe size={16} />} color="red" variant="light">
+                {error}
+              </Alert>
+            )}
+
+            <Group justify="flex-end" gap="sm">
+              <motion.div {...buttonStates}>
+                <Button variant="default" onClick={onClose}>
+                  {t('Cancel')}
+                </Button>
+              </motion.div>
+              <motion.div {...buttonStates}>
+                <Button onClick={() => void handleSubmit()} loading={isSubmitting}>
+                  {t('Open project')}
+                </Button>
+              </motion.div>
+            </Group>
+          </MotionStack>
         )}
-
-        {projectName && (
-          <Alert icon={<Info size={16} />} color="blue" variant="light">
-            <Stack gap={4}>
-              <Text size="sm" fw={500}>
-                {projectName}
-              </Text>
-              <Text size="xs" c="dimmed">
-                {projectType === 'plugin' && track === 'dev'
-                  ? t(
-                      'The translation file will be loaded from the development track and source browsing will follow trunk.',
-                    )
-                  : t(
-                      'The translation file will be loaded from WordPress.org and source browsing will use the selected release.',
-                    )}
-              </Text>
-            </Stack>
-          </Alert>
-        )}
-
-        {error && (
-          <Alert icon={<Globe size={16} />} color="red" variant="light">
-            {error}
-          </Alert>
-        )}
-
-        <Group justify="flex-end">
-          <Button variant="default" onClick={onClose}>
-            {t('Cancel')}
-          </Button>
-          <Button onClick={() => void handleSubmit()} loading={isSubmitting}>
-            {t('Open project')}
-          </Button>
-        </Group>
-      </Stack>
+      </AnimatePresence>
     </Modal>
   );
 }

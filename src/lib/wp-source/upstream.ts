@@ -34,6 +34,8 @@ export async function fetchUpstreamTemplate(
     const preferredCandidates = [...candidates];
     const fallbackCandidates: string[] = [];
 
+    const i18nDirs: string[] = [];
+
     for (const entry of rootListing.entries) {
       if (!entry.isDir && isPotFile(entry.name)) {
         if (candidates.has(entry.name)) {
@@ -44,19 +46,24 @@ export async function fetchUpstreamTemplate(
       }
 
       if (entry.isDir && ['languages', 'lang', 'i18n', 'locale'].includes(entry.name)) {
-        try {
-          const nested = await fetchDirectoryListing(projectType, slug, entry.name, release);
-          for (const nestedEntry of nested.entries) {
-            if (nestedEntry.isDir || !isPotFile(nestedEntry.name)) continue;
-            const nestedPath = `${entry.name}/${nestedEntry.name}`;
-            if (candidates.has(nestedPath)) {
-              preferredCandidates.push(nestedPath);
-            } else {
-              fallbackCandidates.push(nestedPath);
-            }
-          }
-        } catch {
-          // Ignore directories that cannot be listed and continue scanning.
+        i18nDirs.push(entry.name);
+      }
+    }
+
+    const nestedResults = await Promise.allSettled(
+      i18nDirs.map((dir) => fetchDirectoryListing(projectType, slug, dir, release)),
+    );
+
+    for (let i = 0; i < i18nDirs.length; i += 1) {
+      const result = nestedResults[i];
+      if (result.status !== 'fulfilled') continue;
+      for (const nestedEntry of result.value.entries) {
+        if (nestedEntry.isDir || !isPotFile(nestedEntry.name)) continue;
+        const nestedPath = `${i18nDirs[i]}/${nestedEntry.name}`;
+        if (candidates.has(nestedPath)) {
+          preferredCandidates.push(nestedPath);
+        } else {
+          fallbackCandidates.push(nestedPath);
         }
       }
     }

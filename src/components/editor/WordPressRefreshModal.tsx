@@ -1,17 +1,20 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
   Badge,
   Button,
   Checkbox,
+  Divider,
   Group,
   Loader,
   Modal,
   Select,
   Stack,
   Text,
+  ThemeIcon,
 } from '@mantine/core';
-import { RefreshCw } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { Plug, RefreshCw } from 'lucide-react';
 import type { POEntry } from '@/lib/po/types';
 import { parsePOFileWithDiagnostics } from '@/lib/po';
 import {
@@ -25,7 +28,10 @@ import {
   type WordPressPluginTranslationTrack,
   type WordPressProjectType,
 } from '@/lib/wp-source';
+import { contentVariants, buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
+
+const MotionStack = motion.create(Stack);
 
 export interface WordPressRefreshApplyRequest {
   mergedEntries: POEntry[];
@@ -70,12 +76,14 @@ export function WordPressRefreshModal({
   const [diffPreview, setDiffPreview] = useState<ReturnType<
     typeof diffEntriesAgainstTemplate
   > | null>(null);
+  const autoPreviewDoneRef = useRef(false);
 
   useEffect(() => {
     if (!opened) return;
     setDiffPreview(null);
     setTemplatePath(null);
     setError(null);
+    autoPreviewDoneRef.current = false;
     let cancelled = false;
     setIsLoadingReleases(true);
     void Promise.allSettled([
@@ -157,6 +165,14 @@ export function WordPressRefreshModal({
     }
   }, [currentEntries, locale, projectSlug, projectType, release, t, track]);
 
+  // Auto-preview once releases load and a release is selected
+  useEffect(() => {
+    if (!opened || isLoadingReleases || autoPreviewDoneRef.current) return;
+    if (!release && !(projectType === 'plugin' && track === 'dev')) return;
+    autoPreviewDoneRef.current = true;
+    void handleCompare();
+  }, [opened, isLoadingReleases, release, projectType, track, handleCompare]);
+
   const handleApply = useCallback(async () => {
     if (!diffPreview) return;
 
@@ -181,6 +197,13 @@ export function WordPressRefreshModal({
     }
   }, [diffPreview, onApplyRefresh, onClose, projectType, refreshGlossary, release, t, track]);
 
+  const totalEntries = diffPreview
+    ? diffPreview.summary.added +
+      diffPreview.summary.changed +
+      diffPreview.summary.removed +
+      diffPreview.summary.unchanged
+    : 0;
+
   return (
     <Modal
       opened={opened}
@@ -188,100 +211,159 @@ export function WordPressRefreshModal({
       title={t('Refresh from WordPress.org')}
       centered
       size="md"
+      closeButtonProps={{ 'aria-label': t('Close dialog') }}
     >
-      <Stack gap="md">
-        <Group grow align="flex-start">
-          {projectType === 'plugin' && (
-            <Select
-              label={t('Track')}
-              value={track}
-              onChange={(value) => setTrack((value as WordPressPluginTranslationTrack) || 'stable')}
-              data={[
-                { value: 'stable', label: t('Stable') },
-                { value: 'dev', label: t('Development') },
-              ]}
-              allowDeselect={false}
-            />
-          )}
-          <Select
-            label={t('Release')}
-            value={release}
-            onChange={setRelease}
-            data={releaseOptions}
-            placeholder={
-              projectType === 'plugin' && track === 'dev'
-                ? t('Trunk / development')
-                : t('Select a release')
-            }
-            disabled={projectType === 'plugin' && track === 'dev'}
-            searchable
-            nothingFoundMessage={t('No releases found')}
-          />
-        </Group>
-
-        <Checkbox
-          checked={refreshGlossary}
-          onChange={(event) => setRefreshGlossary(event.currentTarget.checked)}
-          label={t('Refresh glossary after applying this update')}
-        />
-
-        {isLoadingReleases && (
-          <Group gap="xs">
-            <Loader size="sm" />
-            <Text size="sm" c="dimmed">
-              {t('Loading releases...')}
-            </Text>
-          </Group>
-        )}
-
-        {error && (
-          <Alert color="red" variant="light">
-            {error}
-          </Alert>
-        )}
-
-        {diffPreview && (
-          <Alert color="blue" variant="light" icon={<RefreshCw size={16} />}>
-            <Stack gap="sm">
-              <Group gap="xs" wrap="wrap">
-                <Badge color="green" variant="light">
-                  {t('{{count}} added', { count: diffPreview.summary.added })}
-                </Badge>
-                <Badge color="violet" variant="light">
-                  {t('{{count}} changed', { count: diffPreview.summary.changed })}
-                </Badge>
-                <Badge color="orange" variant="light">
-                  {t('{{count}} removed', { count: diffPreview.summary.removed })}
-                </Badge>
-              </Group>
-              {templatePath && (
-                <Text size="xs" c="dimmed">
-                  {t('Template path: {{path}}', { path: templatePath })}
+      <AnimatePresence mode="wait">
+        {opened && (
+          <MotionStack
+            gap="md"
+            variants={contentVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+          >
+            <Group gap="sm" align="flex-start">
+              <ThemeIcon color="blue" variant="light" size="lg" radius="xl" aria-hidden="true">
+                <Plug size={18} />
+              </ThemeIcon>
+              <Stack gap={2} style={{ flex: 1 }}>
+                <Text size="sm" fw={500}>
+                  {t('{{type}} / {{slug}}', { type: projectType, slug: projectSlug })}
                 </Text>
-              )}
-              <Text size="sm">
-                {t(
-                  'Applying this refresh will merge the upstream template into your current file and focus the resulting upstream delta entries.',
+                {currentRelease && (
+                  <Text size="xs" c="dimmed">
+                    {t('Current release: {{release}}', { release: currentRelease })}
+                  </Text>
                 )}
-              </Text>
-            </Stack>
-          </Alert>
-        )}
+              </Stack>
+            </Group>
 
-        <Group justify="space-between">
-          <Button variant="default" onClick={onClose}>
-            {t('Cancel')}
-          </Button>
-          <Group gap="xs">
-            <Button variant="default" onClick={() => void handleCompare()} loading={isComparing}>
-              {t('Preview diff')}
-            </Button>
-            <Button onClick={() => void handleApply()} loading={isApplying} disabled={!diffPreview}>
-              {t('Apply refresh')}
-            </Button>
-          </Group>
-        </Group>
-      </Stack>
+            <Divider />
+
+            <Group grow align="flex-start">
+              {projectType === 'plugin' && (
+                <Select
+                  label={t('Track')}
+                  value={track}
+                  onChange={(value) =>
+                    setTrack((value as WordPressPluginTranslationTrack) || 'stable')
+                  }
+                  data={[
+                    { value: 'stable', label: t('Stable') },
+                    { value: 'dev', label: t('Development') },
+                  ]}
+                  allowDeselect={false}
+                />
+              )}
+              <Select
+                label={t('Release')}
+                value={release}
+                onChange={setRelease}
+                data={releaseOptions}
+                placeholder={
+                  projectType === 'plugin' && track === 'dev'
+                    ? t('Trunk / development')
+                    : t('Select a release')
+                }
+                disabled={projectType === 'plugin' && track === 'dev'}
+                searchable
+                nothingFoundMessage={t('No releases found')}
+              />
+            </Group>
+
+            <Checkbox
+              checked={refreshGlossary}
+              onChange={(event) => setRefreshGlossary(event.currentTarget.checked)}
+              label={t('Refresh glossary after applying this update')}
+            />
+
+            {isLoadingReleases && (
+              <Group gap="xs">
+                <Loader size="sm" />
+                <Text size="sm" c="dimmed">
+                  {t('Loading releases...')}
+                </Text>
+              </Group>
+            )}
+
+            {error && (
+              <Alert color="red" variant="light">
+                {error}
+              </Alert>
+            )}
+
+            <AnimatePresence mode="wait">
+              {diffPreview && (
+                <motion.div
+                  key="diff-preview"
+                  variants={contentVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                >
+                  <Alert color="blue" variant="light" icon={<RefreshCw size={16} />}>
+                    <Stack gap="sm">
+                      <Group gap="xs" wrap="wrap">
+                        <Badge color="green" variant="light">
+                          {t('{{count}} added', { count: diffPreview.summary.added })}
+                        </Badge>
+                        <Badge color="violet" variant="light">
+                          {t('{{count}} changed', { count: diffPreview.summary.changed })}
+                        </Badge>
+                        <Badge color="orange" variant="light">
+                          {t('{{count}} removed', { count: diffPreview.summary.removed })}
+                        </Badge>
+                        <Badge color="gray" variant="light">
+                          {t('{{count}} unchanged', { count: diffPreview.summary.unchanged })}
+                        </Badge>
+                      </Group>
+                      <Text size="xs" c="dimmed">
+                        {t('{{count}} total entries', { count: totalEntries })}
+                      </Text>
+                      {templatePath && (
+                        <Text size="xs" c="dimmed">
+                          {t('Template path: {{path}}', { path: templatePath })}
+                        </Text>
+                      )}
+                      <Text size="sm">
+                        {t(
+                          'Applying this refresh will merge the upstream template into your current file and focus the resulting upstream delta entries.',
+                        )}
+                      </Text>
+                    </Stack>
+                  </Alert>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <Group justify="flex-end" gap="sm">
+              <motion.div {...buttonStates}>
+                <Button variant="default" onClick={onClose}>
+                  {t('Cancel')}
+                </Button>
+              </motion.div>
+              <motion.div {...buttonStates}>
+                <Button
+                  variant="default"
+                  onClick={() => void handleCompare()}
+                  loading={isComparing}
+                >
+                  {diffPreview ? t('Refresh preview') : t('Preview diff')}
+                </Button>
+              </motion.div>
+              <motion.div {...buttonStates}>
+                <Button
+                  onClick={() => void handleApply()}
+                  loading={isApplying}
+                  disabled={!diffPreview}
+                >
+                  {t('Apply refresh')}
+                </Button>
+              </motion.div>
+            </Group>
+          </MotionStack>
+        )}
+      </AnimatePresence>
     </Modal>
   );
 }

@@ -641,7 +641,7 @@ export function HeaderEditor({
               leftSection={<RotateCcw size={14} />}
               onClick={onRefreshWordPress}
             >
-              {t('Refresh from WordPress.org')}
+              {t('Refresh')}
             </Button>
           )}
           {hasUnsavedChanges && (

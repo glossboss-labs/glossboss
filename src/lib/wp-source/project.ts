@@ -18,7 +18,7 @@ export interface FetchWordPressTranslationFileOptions {
   track?: WordPressPluginTranslationTrack;
 }
 
-function compareVersions(a: string, b: string): number {
+export function compareVersions(a: string, b: string): number {
   const parse = (value: string) =>
     value.split(/[.-]/).map((part) => (/^\d+$/.test(part) ? Number(part) : part.toLowerCase()));
 

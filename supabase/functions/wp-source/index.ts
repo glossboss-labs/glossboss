@@ -177,6 +177,7 @@ async function fetchFromSvn(url: string, init?: RequestInit): Promise<Response> 
   });
 }
 
+// Keep in sync with src/lib/wp-source/project.ts
 function compareVersions(a: string, b: string): number {
   const parse = (value: string) =>
     value.split(/[.-]/).map((part) => (/^\d+$/.test(part) ? Number(part) : part.toLowerCase()));
