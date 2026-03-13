@@ -729,6 +729,7 @@ export default function Index() {
       setPendingProject(null);
       setIsFromDraft(false);
       clearUpstreamDeltaEntries();
+      clearRepoConnection();
 
       const text = await fetchWordPressTranslationFile({ projectType, slug, locale, track });
       const wpFilename = `${slug}-${locale.replaceAll('-', '_')}.po`;
@@ -748,7 +749,7 @@ export default function Index() {
       applyDetectedWordPressProject(result.file.header, wpFilename);
       useSourceStore.getState().setProjectContext(projectType, slug, { release, track });
     },
-    [applyDetectedWordPressProject, clearUpstreamDeltaEntries, loadFile, t],
+    [applyDetectedWordPressProject, clearRepoConnection, clearUpstreamDeltaEntries, loadFile, t],
   );
 
   const handleOpenWordPressProject = useCallback(
@@ -824,6 +825,7 @@ export default function Index() {
       setDragError(null);
       setIsFromDraft(false);
       clearUpstreamDeltaEntries();
+      clearRepoConnection();
 
       // Validate file extension
       const ext = file.name.toLowerCase().split('.').pop();
@@ -931,7 +933,7 @@ export default function Index() {
         ]);
       }
     },
-    [applyDetectedWordPressProject, clearUpstreamDeltaEntries, loadFile, t],
+    [applyDetectedWordPressProject, clearRepoConnection, clearUpstreamDeltaEntries, loadFile, t],
   );
 
   /**
@@ -1018,6 +1020,7 @@ export default function Index() {
     setPendingDraft(null);
     setIsFromDraft(false);
     clearUpstreamDeltaEntries();
+    clearRepoConnection();
 
     try {
       const examplePo = getBundledExamplePo();
@@ -1039,7 +1042,7 @@ export default function Index() {
     } finally {
       setIsLoadingExample(false);
     }
-  }, [applyDetectedWordPressProject, clearUpstreamDeltaEntries, loadFile]);
+  }, [applyDetectedWordPressProject, clearRepoConnection, clearUpstreamDeltaEntries, loadFile]);
 
   const executeUrlLoad = useCallback(
     async (url: string) => {
@@ -1053,6 +1056,7 @@ export default function Index() {
       setIsFromDraft(false);
       setPendingUrl(null);
       clearUpstreamDeltaEntries();
+      clearRepoConnection();
 
       let timeout: ReturnType<typeof setTimeout> | undefined;
       try {
@@ -1118,7 +1122,7 @@ export default function Index() {
         setIsLoadingUrl(false);
       }
     },
-    [applyDetectedWordPressProject, clearUpstreamDeltaEntries, loadFile, t],
+    [applyDetectedWordPressProject, clearRepoConnection, clearUpstreamDeltaEntries, loadFile, t],
   );
 
   const handleLoadFromUrl = useCallback(
