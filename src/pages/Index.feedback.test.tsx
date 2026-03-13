@@ -82,7 +82,7 @@ describe('Index feedback and empty state actions', () => {
     expect(useEditorStore.getState().entries).toHaveLength(3);
     expect(useSourceStore.getState().autoDetectedSlug).toBe('hello-dolly');
     expect(useSourceStore.getState().projectVersion).toBe('1.7.2');
-    expect(await screen.findByText('Auto-detected: plugin / hello-dolly')).toBeInTheDocument();
+    expect(await screen.findByText('Auto-detected: Plugin / hello-dolly')).toBeInTheDocument();
     expect(await screen.findByText('Detected: NL')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /load example po/i })).not.toBeInTheDocument();
   }, 10000);

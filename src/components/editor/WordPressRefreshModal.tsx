@@ -89,6 +89,9 @@ export function WordPressRefreshModal({
     ])
       .then(([releasesResult, infoResult]) => {
         if (cancelled) return;
+        if (releasesResult.status === 'rejected' && infoResult.status === 'rejected') {
+          setError(t('Failed to load releases.'));
+        }
         const releases = buildWordPressReleaseList([
           ...(releasesResult.status === 'fulfilled' ? releasesResult.value : []),
           currentRelease,
@@ -96,11 +99,6 @@ export function WordPressRefreshModal({
         ]);
         setAvailableReleases(releases);
         setRelease((current) => current ?? currentRelease ?? releases[0] ?? null);
-      })
-      .catch((loadError) => {
-        if (!cancelled) {
-          setError(loadError instanceof Error ? loadError.message : t('Failed to load releases.'));
-        }
       })
       .finally(() => {
         if (!cancelled) {
@@ -234,9 +232,11 @@ export function WordPressRefreshModal({
                 <Select
                   label={t('Track')}
                   value={track}
-                  onChange={(value) =>
-                    setTrack((value as WordPressPluginTranslationTrack) || 'stable')
-                  }
+                  onChange={(value) => {
+                    setTrack((value as WordPressPluginTranslationTrack) || 'stable');
+                    setDiffPreview(null);
+                    setTemplatePath(null);
+                  }}
                   data={[
                     { value: 'stable', label: t('Stable') },
                     { value: 'dev', label: t('Development') },
@@ -247,7 +247,11 @@ export function WordPressRefreshModal({
               <Select
                 label={t('Release')}
                 value={release}
-                onChange={setRelease}
+                onChange={(value) => {
+                  setRelease(value);
+                  setDiffPreview(null);
+                  setTemplatePath(null);
+                }}
                 data={releaseOptions}
                 placeholder={
                   projectType === 'plugin' && track === 'dev'

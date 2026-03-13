@@ -43,6 +43,7 @@ const MAX_LOCALE_LENGTH = 32;
 const MAX_SEARCH_QUERY_LENGTH = 80;
 const MAX_LEGACY_RELEASE_CANDIDATES = 40;
 const SEARCH_CACHE_TTL_MS = 15 * 60 * 1000;
+const MAX_SEARCH_CACHE_SIZE = 100;
 
 const basePathCache = new Map<string, string>();
 const releasesCache = new Map<string, string[]>();
@@ -52,6 +53,13 @@ const searchCache = new Map<
   string,
   { expiresAt: number; results: WordPressProjectSearchResult[] }
 >();
+
+function pruneSearchCache() {
+  const now = Date.now();
+  for (const [key, entry] of searchCache) {
+    if (now > entry.expiresAt) searchCache.delete(key);
+  }
+}
 
 function isObject(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === 'object' && !Array.isArray(value);
@@ -74,7 +82,7 @@ function isValidTrack(value: unknown): value is WordPressPluginTranslationTrack 
 }
 
 function isValidLocale(locale: string): boolean {
-  return locale.length <= MAX_LOCALE_LENGTH && /^[a-z]{2,3}(?:-[a-z0-9]{2,8})?$/i.test(locale);
+  return locale.length <= MAX_LOCALE_LENGTH && /^[a-z]{2,3}(?:-[a-z0-9]{2,8})*$/i.test(locale);
 }
 
 function isValidSearchQuery(query: string): boolean {
@@ -287,6 +295,11 @@ async function searchProjects(
   }
 
   const results = parseWordPressProjectSearchResults(projectType, await response.json());
+  pruneSearchCache();
+  if (searchCache.size >= MAX_SEARCH_CACHE_SIZE) {
+    const oldestKey = searchCache.keys().next().value;
+    if (oldestKey !== undefined) searchCache.delete(oldestKey);
+  }
   searchCache.set(cacheKey, {
     expiresAt: Date.now() + SEARCH_CACHE_TTL_MS,
     results,
@@ -409,7 +422,8 @@ Deno.serve(async (req: Request) => {
     const translationExportOnly = body.translationExport === true;
     const searchOnly = body.search === true;
     const version = typeof body.version === 'string' ? body.version.trim() : '';
-    const locale = typeof body.locale === 'string' ? body.locale.trim().toLowerCase() : '';
+    const locale =
+      typeof body.locale === 'string' ? body.locale.trim().toLowerCase().replaceAll('_', '-') : '';
     const track = isValidTrack(body.track) ? body.track : 'stable';
     const searchQuery = typeof body.searchQuery === 'string' ? body.searchQuery.trim() : '';
 

@@ -69,6 +69,8 @@ export function WordPressProjectModal({
   const [slug, setSlug] = useState('');
   const [locale, setLocale] = useState(normalizeLocale(initialLocale));
   const [track, setTrack] = useState<WordPressPluginTranslationTrack>('stable');
+  const effectiveTrack: WordPressPluginTranslationTrack =
+    projectType === 'plugin' ? track : 'stable';
   const [selectedRelease, setSelectedRelease] = useState<string | null>(null);
   const [availableReleases, setAvailableReleases] = useState<string[]>([]);
   const [availableLocales, setAvailableLocales] = useState<WordPressProjectLocale[]>([]);
@@ -148,7 +150,7 @@ export function WordPressProjectModal({
           const [infoResult, releasesResult, localesResult] = await Promise.allSettled([
             fetchWordPressProjectInfo(projectType, trimmedSlug),
             fetchProjectReleases(projectType, trimmedSlug),
-            fetchProjectLocales(projectType, trimmedSlug, track),
+            fetchProjectLocales(projectType, trimmedSlug, effectiveTrack),
           ]);
           if (cancelled) return;
 
@@ -180,7 +182,11 @@ export function WordPressProjectModal({
               : null;
           setAvailableLocales(locales);
           setLocaleLoadError(localeError);
-          setSelectedRelease((current) => current ?? info.latestVersion ?? releases[0] ?? null);
+          setSelectedRelease((current) =>
+            current && releases.includes(current)
+              ? current
+              : (info.latestVersion ?? releases[0] ?? null),
+          );
           setLocale((current) => {
             if (localeError || locales.length === 0) {
               return current || normalizeLocale(initialLocale);
@@ -218,7 +224,7 @@ export function WordPressProjectModal({
       cancelled = true;
       window.clearTimeout(timeoutId);
     };
-  }, [initialLocale, opened, projectType, slug, t, track]);
+  }, [initialLocale, opened, projectType, slug, t, effectiveTrack]);
 
   const releaseOptions = useMemo(
     () => availableReleases.map((release) => ({ value: release, label: release })),
@@ -246,7 +252,7 @@ export function WordPressProjectModal({
 
   const handleSubmit = useCallback(async () => {
     const trimmedSlug = normalizeSlug(slug);
-    const trimmedLocale = locale.trim().toLowerCase();
+    const trimmedLocale = locale.trim().replaceAll('_', '-').toLowerCase();
     if (!trimmedSlug || !trimmedLocale) {
       setError(t('Choose a slug and locale before opening a project.'));
       return;
@@ -259,8 +265,8 @@ export function WordPressProjectModal({
         projectType,
         slug: trimmedSlug,
         locale: trimmedLocale,
-        track,
-        release: projectType === 'plugin' && track === 'dev' ? null : selectedRelease,
+        track: effectiveTrack,
+        release: effectiveTrack === 'dev' ? null : selectedRelease,
       });
       onClose();
     } catch (submitError) {
@@ -272,7 +278,7 @@ export function WordPressProjectModal({
     } finally {
       setIsSubmitting(false);
     }
-  }, [locale, onClose, onOpenProject, projectType, selectedRelease, slug, t, track]);
+  }, [locale, onClose, onOpenProject, projectType, selectedRelease, slug, t, effectiveTrack]);
 
   return (
     <Modal
@@ -354,11 +360,9 @@ export function WordPressProjectModal({
                 onChange={setSelectedRelease}
                 data={releaseOptions}
                 placeholder={
-                  track === 'dev' && projectType === 'plugin'
-                    ? t('Trunk / development')
-                    : t('Select a release')
+                  effectiveTrack === 'dev' ? t('Trunk / development') : t('Select a release')
                 }
-                disabled={projectType === 'plugin' && track === 'dev'}
+                disabled={effectiveTrack === 'dev'}
                 searchable
                 nothingFoundMessage={t('No releases found')}
               />
@@ -378,7 +382,7 @@ export function WordPressProjectModal({
                     {projectName}
                   </Text>
                   <Text size="xs" c="dimmed">
-                    {projectType === 'plugin' && track === 'dev'
+                    {effectiveTrack === 'dev'
                       ? t(
                           'The translation file will be loaded from the development track and source browsing will follow trunk.',
                         )

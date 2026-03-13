@@ -478,11 +478,15 @@ function WordPressProjectInput() {
 
   const effectiveType = projectType || autoDetectedProjectType || 'plugin';
   const effectiveSlug = projectSlug || autoDetectedSlug;
+  const localizedType = effectiveType === 'plugin' ? t('Plugin') : t('Theme');
 
   const handleVerify = useCallback(async () => {
     setIsValidating(true);
-    await validateCurrentProject();
-    setIsValidating(false);
+    try {
+      await validateCurrentProject();
+    } finally {
+      setIsValidating(false);
+    }
   }, [validateCurrentProject]);
 
   return (
@@ -541,7 +545,7 @@ function WordPressProjectInput() {
       {autoDetectedSlug && !projectSlug && (
         <Text size="xs" c="dimmed" mt={4}>
           {t('Auto-detected: {{type}} / {{slug}}', {
-            type: effectiveType,
+            type: localizedType,
             slug: autoDetectedSlug,
           })}
         </Text>
@@ -598,7 +602,7 @@ export function HeaderEditor({
           {wordPressProject && (
             <Badge color="gray" variant="light" size="sm">
               {t('{{type}} / {{slug}}', {
-                type: wordPressProject.type,
+                type: wordPressProject.type === 'plugin' ? t('Plugin') : t('Theme'),
                 slug: wordPressProject.slug,
               })}
             </Badge>

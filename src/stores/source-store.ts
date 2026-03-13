@@ -16,6 +16,7 @@ import {
   validateWordPressProject,
   clearCache,
 } from '@/lib/wp-source/fetcher';
+import { msgid } from '@/lib/app-language';
 
 export interface SourceState {
   projectType: WordPressProjectType | null;
@@ -104,6 +105,9 @@ export function getEffectiveProjectType(state: SourceState): WordPressProjectTyp
 }
 
 export function getEffectiveRelease(state: SourceState): string | null {
+  if (getEffectiveProjectType(state) === 'plugin' && state.pluginTranslationTrack === 'dev') {
+    return null;
+  }
   return state.selectedRelease ?? state.projectVersion;
 }
 
@@ -168,6 +172,7 @@ export const useSourceStore = create<SourceState & SourceActions>()(
           autoDetectedProjectType: projectType,
           autoDetectedSlug: slug,
           projectVersion: version ?? null,
+          selectedRelease: null,
           isProjectValid: null,
         });
 
@@ -204,7 +209,7 @@ export const useSourceStore = create<SourceState & SourceActions>()(
           set({
             sourceContent: null,
             isLoadingSource: false,
-            sourceError: error instanceof Error ? error.message : 'Failed to fetch source',
+            sourceError: error instanceof Error ? error.message : msgid('Failed to fetch source'),
           });
         }
       },
@@ -235,7 +240,7 @@ export const useSourceStore = create<SourceState & SourceActions>()(
             directoryTree: null,
             isLoadingDirectory: false,
             directoryError:
-              error instanceof Error ? error.message : 'Failed to load directory listing',
+              error instanceof Error ? error.message : msgid('Failed to load directory listing'),
           });
         }
       },

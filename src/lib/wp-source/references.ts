@@ -142,7 +142,7 @@ function slugFromFilename(filename: string): string | null {
 
   if (!base) return null;
 
-  const withoutLocale = base.replace(/-[a-z]{2,3}(?:_[A-Z]{2})?$/, '');
+  const withoutLocale = base.replace(/-[a-z]{2,3}(?:[_-][a-z0-9]{2,8})*$/i, '');
 
   if (!withoutLocale) return null;
 

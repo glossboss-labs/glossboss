@@ -73,6 +73,7 @@ import {
   ReviewSummary,
   TranslateToolbar,
   WordPressProjectModal,
+  type WordPressProjectOpenRequest,
   WordPressRefreshModal,
 } from '@/components/editor';
 import { FeedbackModal } from '@/components/feedback';
@@ -91,7 +92,6 @@ import {
   detectWordPressProject,
   fetchWordPressTranslationFile,
   type WordPressPluginTranslationTrack,
-  type WordPressProjectType,
 } from '@/lib/wp-source';
 import { contentVariants, fadeVariants, sectionVariants, buttonStates } from '@/lib/motion';
 import {
@@ -371,6 +371,7 @@ export default function Index() {
   const [isLoadingUrl, setIsLoadingUrl] = useState(false);
   const [urlInput, setUrlInput] = useState('');
   const [pendingUrl, setPendingUrl] = useState<string | null>(null);
+  const [pendingProject, setPendingProject] = useState<WordPressProjectOpenRequest | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const [translateSourceLang, setTranslateSourceLang] = useState<SourceLanguage | undefined>(
     undefined,
@@ -696,12 +697,15 @@ export default function Index() {
 
   const applyDetectedWordPressProject = useCallback(
     (fileHeader: typeof header, fileName: string) => {
-      if (!fileHeader) return;
-      const detected = detectWordPressProject(fileHeader, fileName);
+      const detected = fileHeader ? detectWordPressProject(fileHeader, fileName) : null;
+      useSourceStore
+        .getState()
+        .setAutoDetectedProject(
+          detected?.type ?? null,
+          detected?.slug ?? null,
+          detected?.version ?? null,
+        );
       if (detected) {
-        useSourceStore
-          .getState()
-          .setAutoDetectedProject(detected.type, detected.slug, detected.version);
         debugLog(
           '[Source] Auto-detected WordPress project:',
           detected.type,
@@ -713,32 +717,22 @@ export default function Index() {
     [],
   );
 
-  const handleOpenWordPressProject = useCallback(
-    async ({
-      projectType,
-      slug,
-      locale,
-      track,
-      release,
-    }: {
-      projectType: WordPressProjectType;
-      slug: string;
-      locale: string;
-      track: WordPressPluginTranslationTrack;
-      release: string | null;
-    }) => {
+  const executeWordPressProjectLoad = useCallback(
+    async (request: WordPressProjectOpenRequest) => {
+      const { projectType, slug, locale, track, release } = request;
       setErrors([]);
       setWarnings([]);
       setShowWarnings(false);
       setEncodingInfo(null);
       setDragError(null);
       setPendingDraft(null);
+      setPendingProject(null);
       setIsFromDraft(false);
       clearUpstreamDeltaEntries();
 
       const text = await fetchWordPressTranslationFile({ projectType, slug, locale, track });
-      const filename = `${slug}-${locale.replaceAll('-', '_')}.po`;
-      const result = parsePOFileWithDiagnostics(text, filename);
+      const wpFilename = `${slug}-${locale.replaceAll('-', '_')}.po`;
+      const result = parsePOFileWithDiagnostics(text, wpFilename);
 
       if (!result.success || !result.file) {
         setErrors(result.errors);
@@ -751,10 +745,21 @@ export default function Index() {
       }
 
       loadFile(result.file);
-      applyDetectedWordPressProject(result.file.header, filename);
+      applyDetectedWordPressProject(result.file.header, wpFilename);
       useSourceStore.getState().setProjectContext(projectType, slug, { release, track });
     },
     [applyDetectedWordPressProject, clearUpstreamDeltaEntries, loadFile, t],
+  );
+
+  const handleOpenWordPressProject = useCallback(
+    async (request: WordPressProjectOpenRequest) => {
+      if (filename) {
+        setPendingProject(request);
+        return;
+      }
+      await executeWordPressProjectLoad(request);
+    },
+    [executeWordPressProjectLoad, filename],
   );
 
   const handleApplyWordPressRefresh = useCallback(
@@ -1994,6 +1999,21 @@ export default function Index() {
               title={t('Replace current file?')}
               message={t(
                 'Loading a new file from URL will replace the currently loaded file. Any unsaved changes will be lost.',
+              )}
+              confirmLabel={msgid('Replace')}
+              variant="warning"
+            />
+
+            {/* Confirmation modal for WordPress project overwrite */}
+            <ConfirmModal
+              opened={pendingProject !== null}
+              onClose={() => setPendingProject(null)}
+              onConfirm={() => {
+                if (pendingProject) void executeWordPressProjectLoad(pendingProject);
+              }}
+              title={t('Replace current file?')}
+              message={t(
+                'Opening a WordPress project will replace the currently loaded file. Any unsaved changes will be lost.',
               )}
               confirmLabel={msgid('Replace')}
               variant="warning"

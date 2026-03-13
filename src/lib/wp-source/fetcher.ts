@@ -3,6 +3,7 @@
  */
 import { debugInfo, debugWarn } from '@/lib/debug';
 import { getSupabaseAnonKey, getSupabaseFunctionBaseUrl } from '@/lib/cloud-backend';
+import { msgid } from '@/lib/app-language';
 import { buildSupabaseFunctionHeaders } from '@/lib/supabase-function-headers';
 import { normalizeSourcePath, type WordPressProjectType } from '@/lib/wp-source/references';
 import {
@@ -218,7 +219,7 @@ export async function fetchProjectLocales(
 
   const data = await response.json();
   if (!Array.isArray(data.locales)) {
-    throw new Error('WordPress locale discovery is unavailable in this deployment.');
+    throw new Error(msgid('WordPress locale discovery is unavailable in this deployment.'));
   }
 
   const locales = Array.isArray(data.locales)
@@ -367,7 +368,8 @@ export async function fetchDirectoryListing(
   const cached = dirCache.get(cacheKey);
   if (cached !== undefined) return JSON.parse(cached);
 
-  const body: Record<string, unknown> = { projectType, slug, path: path || '', list: true };
+  const normalizedPath = path.replace(/^\/+/, '');
+  const body: Record<string, unknown> = { projectType, slug, path: normalizedPath, list: true };
   if (version) body.version = version;
   const response = await fetchFromEdge(body);
 

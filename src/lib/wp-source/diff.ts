@@ -82,10 +82,9 @@ export function diffEntriesAgainstTemplate(
 
   for (const entry of mergeResult.entries) {
     const key = entryKey(entry);
-    if (
-      !currentMap.has(key) ||
-      (currentMap.has(key) && metadataChanged(currentMap.get(key)!, upstreamMap.get(key)!))
-    ) {
+    const currentEntry = currentMap.get(key);
+    const upstreamEntry = upstreamMap.get(key);
+    if (!currentEntry || (upstreamEntry && metadataChanged(currentEntry, upstreamEntry))) {
       deltaEntryIds.add(entry.id);
     }
   }
