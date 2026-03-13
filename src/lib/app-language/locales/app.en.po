@@ -174,7 +174,7 @@ msgstr "Auto translate selected rows that are empty or fuzzy"
 msgid "Auto-detect"
 msgstr "Auto-detect"
 
-#: src/components/editor/HeaderEditor.tsx:556
+#: src/components/editor/HeaderEditor.tsx:555
 msgid "Auto-detected: {{type}} / {{slug}}"
 msgstr "Auto-detected: {{type}} / {{slug}}"
 
@@ -296,7 +296,7 @@ msgstr "By {{actor}}"
 msgid "Cancel"
 msgstr "Cancel"
 
-#: src/components/editor/HeaderEditor.tsx:450
+#: src/components/editor/HeaderEditor.tsx:449
 msgid "Cancel custom input"
 msgstr "Cancel custom input"
 
@@ -358,7 +358,7 @@ msgstr "Chinese, Japanese, Korean, Vietnamese, Thai, Indonesian"
 msgid "Choose a slug and locale before opening a project."
 msgstr "Choose a slug and locale before opening a project."
 
-#: src/components/editor/HeaderEditor.tsx:510
+#: src/components/editor/HeaderEditor.tsx:509
 msgid "Choose the WordPress project type and slug used for source links."
 msgstr "Choose the WordPress project type and slug used for source links."
 
@@ -456,7 +456,7 @@ msgstr "Click to add translation"
 msgid "Click to show only {{label}}"
 msgstr "Click to show only {{label}}"
 
-#: src/pages/Index.tsx:2509
+#: src/pages/Index.tsx:2508
 msgid "Close QA summary"
 msgstr "Close QA summary"
 
@@ -624,15 +624,15 @@ msgstr "Current editor"
 msgid "Current release: {{release}}"
 msgstr "Current release: {{release}}"
 
-#: src/components/editor/HeaderEditor.tsx:456
+#: src/components/editor/HeaderEditor.tsx:455
 msgid "Custom expression (select a preset above to replace)"
 msgstr "Custom expression (select a preset above to replace)"
 
-#: src/components/editor/HeaderEditor.tsx:439
+#: src/components/editor/HeaderEditor.tsx:438
 msgid "Custom plural expression"
 msgstr "Custom plural expression"
 
-#: src/components/editor/HeaderEditor.tsx:423
+#: src/components/editor/HeaderEditor.tsx:422
 msgid "Custom value set — select to change"
 msgstr "Custom value set — select to change"
 
@@ -679,7 +679,7 @@ msgstr "Description"
 msgid "Details"
 msgstr "Details"
 
-#: src/components/editor/HeaderEditor.tsx:642
+#: src/components/editor/HeaderEditor.tsx:641
 msgid "Detected via {{method}} with {{confidence}} confidence"
 msgstr "Detected via {{method}} with {{confidence}} confidence"
 
@@ -738,7 +738,7 @@ msgstr "Download format options"
 msgid "Draft"
 msgstr "Draft"
 
-#: src/pages/Index.tsx:2350
+#: src/pages/Index.tsx:2349
 msgid ""
 "Drag and drop your translation file here, or click to browse. Your translati"
 "ons will be saved locally in your browser."
@@ -768,12 +768,12 @@ msgstr "Dutch (Belgium)"
 msgid "Dutch (Netherlands)"
 msgstr "Dutch (Netherlands)"
 
-#: src/pages/Index.tsx:2258
+#: src/pages/Index.tsx:2257
 msgid "Edit"
 msgstr "Edit"
 
-#: src/components/editor/HeaderEditor.tsx:700
-#: src/components/editor/HeaderEditor.tsx:709
+#: src/components/editor/HeaderEditor.tsx:699
+#: src/components/editor/HeaderEditor.tsx:708
 msgid "Edit Header"
 msgstr "Edit Header"
 
@@ -781,7 +781,7 @@ msgstr "Edit Header"
 msgid "Edit gettext translation files with DeepL integration"
 msgstr "Edit gettext translation files with DeepL integration"
 
-#: src/pages/Index.tsx:2251
+#: src/pages/Index.tsx:2250
 msgid "Edit workspace"
 msgstr "Edit workspace"
 
@@ -865,7 +865,7 @@ msgstr "English (US)"
 msgid "English, Dutch, German, Swedish, Danish, Norwegian, etc."
 msgstr "English, Dutch, German, Swedish, Danish, Norwegian, etc."
 
-#: src/components/editor/HeaderEditor.tsx:463
+#: src/components/editor/HeaderEditor.tsx:462
 msgid "Enter custom expression"
 msgstr "Enter custom expression"
 
@@ -889,7 +889,7 @@ msgstr "Enter your ElevenLabs API key"
 msgid "Enter your Gemini API key"
 msgstr "Enter your Gemini API key"
 
-#: src/components/editor/HeaderEditor.tsx:778
+#: src/components/editor/HeaderEditor.tsx:777
 msgid "Enter {{field}}..."
 msgstr "Enter {{field}}..."
 
@@ -924,7 +924,7 @@ msgstr "Export JSON"
 msgid "Export TMX"
 msgstr "Export TMX"
 
-#: src/pages/Index.tsx:2558
+#: src/pages/Index.tsx:2557
 msgid "Export anyway"
 msgstr "Export anyway"
 
@@ -1220,7 +1220,7 @@ msgstr "Get API key"
 msgid "GitLab instance URL"
 msgstr "GitLab instance URL"
 
-#: src/pages/Index.tsx:2514
+#: src/pages/Index.tsx:2513
 msgid ""
 "GlossBoss found QA issues in the current file. You can review them now or ex"
 "port anyway."
@@ -1298,7 +1298,7 @@ msgstr ""
 "Glossary not found in DeepL. This translation was done without glossary. Re-"
 "sync in Settings is recommended."
 
-#: src/pages/Index.tsx:2284
+#: src/pages/Index.tsx:2283
 msgid "Glossary: {count} terms ({locale})"
 msgstr "Glossary: {count} terms ({locale})"
 
@@ -1324,8 +1324,8 @@ msgstr "HTML tag parity"
 msgid "Hebrew"
 msgstr "Hebrew"
 
-#: src/components/editor/HeaderEditor.tsx:700
-#: src/components/editor/HeaderEditor.tsx:709
+#: src/components/editor/HeaderEditor.tsx:699
+#: src/components/editor/HeaderEditor.tsx:708
 msgid "Hide Header"
 msgstr "Hide Header"
 
@@ -1333,7 +1333,7 @@ msgstr "Hide Header"
 msgid "Hide info"
 msgstr "Hide info"
 
-#: src/components/editor/HeaderEditor.tsx:795
+#: src/components/editor/HeaderEditor.tsx:794
 msgid "Hide technical fields"
 msgstr "Hide technical fields"
 
@@ -1506,7 +1506,7 @@ msgstr "Language"
 msgid "Language Team"
 msgstr "Language Team"
 
-#: src/components/editor/HeaderEditor.tsx:327
+#: src/components/editor/HeaderEditor.tsx:326
 msgid "Language code"
 msgstr "Language code"
 
@@ -1559,7 +1559,7 @@ msgstr "Lithuanian"
 
 #: src/components/editor/GlossaryPanel.tsx:372
 #: src/pages/Index.tsx:2046
-#: src/pages/Index.tsx:2391
+#: src/pages/Index.tsx:2390
 msgid "Load"
 msgstr "Load"
 
@@ -1571,7 +1571,7 @@ msgstr "Load Glossary"
 msgid "Load a file with a target language before using translation memory."
 msgstr "Load a file with a target language before using translation memory."
 
-#: src/pages/Index.tsx:2432
+#: src/pages/Index.tsx:2431
 msgid "Load a small example WordPress plugin PO file (Hello Dolly)"
 msgstr "Load a small example WordPress plugin PO file (Hello Dolly)"
 
@@ -1595,7 +1595,7 @@ msgstr ""
 "Load a translation file first so GlossBoss knows which target language to us"
 "e."
 
-#: src/pages/Index.tsx:2443
+#: src/pages/Index.tsx:2442
 msgid "Load example PO"
 msgstr "Load example PO"
 
@@ -1826,7 +1826,7 @@ msgstr "No QA issues for this string."
 msgid "No active project"
 msgstr "No active project"
 
-#: src/components/editor/HeaderEditor.tsx:842
+#: src/components/editor/HeaderEditor.tsx:841
 msgid "No additional metadata fields"
 msgstr "No additional metadata fields"
 
@@ -1862,7 +1862,7 @@ msgstr "No locale files detected automatically"
 msgid "No locales found"
 msgstr "No locales found"
 
-#: src/components/editor/HeaderEditor.tsx:428
+#: src/components/editor/HeaderEditor.tsx:427
 msgid "No matching plural form"
 msgstr "No matching plural form"
 
@@ -1974,18 +1974,18 @@ msgstr "Only visible while running the app in development mode"
 msgid "Open a PR targeting {{branch}}"
 msgstr "Open a PR targeting {{branch}}"
 
-#: src/pages/Index.tsx:2416
+#: src/pages/Index.tsx:2415
 msgid "Open a locale file from a GitHub or GitLab repository"
 msgstr "Open a locale file from a GitHub or GitLab repository"
 
 #: src/components/editor/WordPressProjectModal.tsx:291
 #: src/pages/Index.tsx:1911
-#: src/pages/Index.tsx:2411
+#: src/pages/Index.tsx:2410
 msgid "Open from WordPress.org"
 msgstr "Open from WordPress.org"
 
 #: src/pages/Index.tsx:1928
-#: src/pages/Index.tsx:2426
+#: src/pages/Index.tsx:2425
 msgid "Open from repository"
 msgstr "Open from repository"
 
@@ -2007,7 +2007,7 @@ msgstr "Open project"
 msgid "Open settings"
 msgstr "Open settings"
 
-#: src/pages/Index.tsx:2401
+#: src/pages/Index.tsx:2400
 msgid "Open the latest WordPress.org translation export by project slug"
 msgstr "Open the latest WordPress.org translation export by project slug"
 
@@ -2023,7 +2023,7 @@ msgstr ""
 msgid "PO file (.po)"
 msgstr "PO file (.po)"
 
-#: src/pages/Index.tsx:2374
+#: src/pages/Index.tsx:2373
 msgid "PO file URL"
 msgstr "PO file URL"
 
@@ -2039,7 +2039,7 @@ msgstr "PR description"
 msgid "PR title"
 msgstr "PR title"
 
-#: src/pages/Index.tsx:2373
+#: src/pages/Index.tsx:2372
 msgid "Paste a .po file URL"
 msgstr "Paste a .po file URL"
 
@@ -2110,9 +2110,9 @@ msgstr "Please enter an API key and region"
 msgid "Please provide a valid email address or leave it empty."
 msgstr "Please provide a valid email address or leave it empty."
 
-#: src/components/editor/HeaderEditor.tsx:490
-#: src/components/editor/HeaderEditor.tsx:515
-#: src/components/editor/HeaderEditor.tsx:628
+#: src/components/editor/HeaderEditor.tsx:489
+#: src/components/editor/HeaderEditor.tsx:514
+#: src/components/editor/HeaderEditor.tsx:627
 #: src/components/editor/SourceBrowser.tsx:86
 #: src/components/editor/WordPressProjectModal.tsx:311
 msgid "Plugin"
@@ -2126,7 +2126,7 @@ msgstr "Plural Forms"
 msgid "Plural entry: {{completed}}/{{total}} forms translated"
 msgstr "Plural entry: {{completed}}/{{total}} forms translated"
 
-#: src/components/editor/HeaderEditor.tsx:429
+#: src/components/editor/HeaderEditor.tsx:428
 msgid "Plural form preset"
 msgstr "Plural form preset"
 
@@ -2205,7 +2205,7 @@ msgstr "Project name"
 msgid "Project name and version"
 msgstr "Project name and version"
 
-#: src/components/editor/HeaderEditor.tsx:564
+#: src/components/editor/HeaderEditor.tsx:563
 msgid "Project not found on WordPress.org"
 msgstr "Project not found on WordPress.org"
 
@@ -2242,7 +2242,7 @@ msgstr "Punctuation drift"
 msgid "Punjabi"
 msgstr "Punjabi"
 
-#: src/components/editor/HeaderEditor.tsx:674
+#: src/components/editor/HeaderEditor.tsx:673
 #: src/components/repo-sync/RepoSyncModal.tsx:412
 #: src/pages/Index.tsx:1830
 msgid "Push"
@@ -2268,7 +2268,7 @@ msgstr "QA checks"
 msgid "QA errors"
 msgstr "QA errors"
 
-#: src/pages/Index.tsx:2506
+#: src/pages/Index.tsx:2505
 msgid "QA summary before export"
 msgstr "QA summary before export"
 
@@ -2297,7 +2297,7 @@ msgstr "Ready for export"
 msgid "References"
 msgstr "References"
 
-#: src/components/editor/HeaderEditor.tsx:685
+#: src/components/editor/HeaderEditor.tsx:684
 #: src/components/repo-sync/RepoBrowser.tsx:174
 msgid "Refresh"
 msgstr "Refresh"
@@ -2326,7 +2326,7 @@ msgstr "Release"
 msgid "Release to load your translation file"
 msgstr "Release to load your translation file"
 
-#: src/components/editor/HeaderEditor.tsx:635
+#: src/components/editor/HeaderEditor.tsx:634
 msgid "Release {{release}}"
 msgstr "Release {{release}}"
 
@@ -2464,7 +2464,7 @@ msgstr "Retry translation"
 #: src/components/editor/EditorTable.tsx:128
 #: src/components/editor/EditorTable.tsx:1931
 #: src/components/editor/FilterToolbar.tsx:311
-#: src/pages/Index.tsx:2259
+#: src/pages/Index.tsx:2258
 msgid "Review"
 msgstr "Review"
 
@@ -2472,7 +2472,7 @@ msgstr "Review"
 msgid "Review in progress"
 msgstr "Review in progress"
 
-#: src/pages/Index.tsx:2547
+#: src/pages/Index.tsx:2546
 msgid "Review issues"
 msgstr "Review issues"
 
@@ -2480,7 +2480,7 @@ msgstr "Review issues"
 msgid "Review workflow"
 msgstr "Review workflow"
 
-#: src/pages/Index.tsx:2251
+#: src/pages/Index.tsx:2250
 msgid "Review workspace"
 msgstr "Review workspace"
 
@@ -2550,7 +2550,7 @@ msgstr "Save current field and move to the previous translation field"
 msgid "Scanning for locale files..."
 msgstr "Scanning for locale files..."
 
-#: src/components/editor/HeaderEditor.tsx:337
+#: src/components/editor/HeaderEditor.tsx:336
 msgid "Search or type language code..."
 msgstr "Search or type language code..."
 
@@ -2610,7 +2610,7 @@ msgstr "Select locale"
 msgid "Select or type locale..."
 msgstr "Select or type locale..."
 
-#: src/components/editor/HeaderEditor.tsx:424
+#: src/components/editor/HeaderEditor.tsx:423
 msgid "Select plural form for your language..."
 msgstr "Select plural form for your language..."
 
@@ -2726,7 +2726,7 @@ msgstr "Show branch badge"
 msgid "Show context only"
 msgstr "Show context only"
 
-#: src/components/editor/HeaderEditor.tsx:795
+#: src/components/editor/HeaderEditor.tsx:794
 msgid "Show technical fields"
 msgstr "Show technical fields"
 
@@ -3014,9 +3014,9 @@ msgstr ""
 "The translation file will be loaded from the development track and source br"
 "owsing will follow trunk."
 
-#: src/components/editor/HeaderEditor.tsx:490
-#: src/components/editor/HeaderEditor.tsx:516
-#: src/components/editor/HeaderEditor.tsx:628
+#: src/components/editor/HeaderEditor.tsx:489
+#: src/components/editor/HeaderEditor.tsx:515
+#: src/components/editor/HeaderEditor.tsx:627
 #: src/components/editor/SourceBrowser.tsx:86
 #: src/components/editor/WordPressProjectModal.tsx:312
 msgid "Theme"
@@ -3255,7 +3255,7 @@ msgstr "Unknown error"
 msgid "Unresolved comments"
 msgstr "Unresolved comments"
 
-#: src/components/editor/HeaderEditor.tsx:691
+#: src/components/editor/HeaderEditor.tsx:690
 msgid "Unsaved changes"
 msgstr "Unsaved changes"
 
@@ -3322,7 +3322,7 @@ msgstr "Upload CSV"
 msgid "Upload a WordPress glossary CSV for the selected language"
 msgstr "Upload a WordPress glossary CSV for the selected language"
 
-#: src/pages/Index.tsx:2348
+#: src/pages/Index.tsx:2347
 msgid "Upload a translation file to start"
 msgstr "Upload a translation file to start"
 
@@ -3350,7 +3350,7 @@ msgstr ""
 msgid "Usage loaded from the last successful check."
 msgstr "Usage loaded from the last successful check."
 
-#: src/components/editor/HeaderEditor.tsx:365
+#: src/components/editor/HeaderEditor.tsx:364
 msgid "Use \"{{code}}\" as custom code"
 msgstr "Use \"{{code}}\" as custom code"
 
@@ -3379,11 +3379,11 @@ msgstr "Uzbek"
 msgid "Verification is still loading. Please try again in a moment."
 msgstr "Verification is still loading. Please try again in a moment."
 
-#: src/components/editor/HeaderEditor.tsx:542
+#: src/components/editor/HeaderEditor.tsx:541
 msgid "Verify WordPress project"
 msgstr "Verify WordPress project"
 
-#: src/components/editor/HeaderEditor.tsx:538
+#: src/components/editor/HeaderEditor.tsx:537
 msgid "Verify this project exists on WordPress.org"
 msgstr "Verify this project exists on WordPress.org"
 
@@ -3497,7 +3497,7 @@ msgstr "Whitespace drift"
 msgid "WordPress Glossary"
 msgstr "WordPress Glossary"
 
-#: src/components/editor/HeaderEditor.tsx:506
+#: src/components/editor/HeaderEditor.tsx:505
 msgid "WordPress Project"
 msgstr "WordPress Project"
 
@@ -3509,11 +3509,11 @@ msgstr "WordPress glossary loading is unavailable in this deployment."
 msgid "WordPress locale discovery is unavailable in this deployment."
 msgstr "WordPress locale discovery is unavailable in this deployment."
 
-#: src/components/editor/HeaderEditor.tsx:528
+#: src/components/editor/HeaderEditor.tsx:527
 msgid "WordPress project slug"
 msgstr "WordPress project slug"
 
-#: src/components/editor/HeaderEditor.tsx:520
+#: src/components/editor/HeaderEditor.tsx:519
 msgid "WordPress project type"
 msgstr "WordPress project type"
 
@@ -3600,7 +3600,7 @@ msgstr "default"
 msgid "e.g. westeurope"
 msgstr "e.g. westeurope"
 
-#: src/components/editor/HeaderEditor.tsx:525
+#: src/components/editor/HeaderEditor.tsx:524
 msgid "e.g. woocommerce"
 msgstr "e.g. woocommerce"
 
@@ -3620,7 +3620,7 @@ msgstr "just now"
 msgid "name@example.com"
 msgstr "name@example.com"
 
-#: src/pages/Index.tsx:2396
+#: src/pages/Index.tsx:2395
 msgid "or"
 msgstr "or"
 
@@ -3698,11 +3698,11 @@ msgstr "{{count}} day ago"
 msgid "{{count}} days ago"
 msgstr "{{count}} days ago"
 
-#: src/components/editor/HeaderEditor.tsx:695
+#: src/components/editor/HeaderEditor.tsx:694
 msgid "{{count}} entries"
 msgstr "{{count}} entries"
 
-#: src/pages/Index.tsx:2522
+#: src/pages/Index.tsx:2521
 msgid "{{count}} error issue(s)"
 msgstr "{{count}} error issue(s)"
 
@@ -3768,7 +3768,7 @@ msgstr "{{count}} terms"
 msgid "{{count}} total entries"
 msgstr "{{count}} total entries"
 
-#: src/pages/Index.tsx:2528
+#: src/pages/Index.tsx:2527
 msgid "{{count}} total issues"
 msgstr "{{count}} total issues"
 
@@ -3796,7 +3796,7 @@ msgstr "{{count}} unresolved review comment(s)"
 msgid "{{count}} untranslated"
 msgstr "{{count}} untranslated"
 
-#: src/pages/Index.tsx:2525
+#: src/pages/Index.tsx:2524
 msgid "{{count}} warning issue(s)"
 msgstr "{{count}} warning issue(s)"
 
@@ -3822,7 +3822,7 @@ msgstr "{{percentage}}% translated"
 
 #: src/components/SettingsModal.tsx:2221
 #: src/components/editor/GlossaryPanel.tsx:259
-#: src/pages/Index.tsx:2291
+#: src/pages/Index.tsx:2290
 msgid "{{provider}} ready"
 msgstr "{{provider}} ready"
 
@@ -3852,7 +3852,7 @@ msgstr "{{provider}} will include glossary terms in the translation prompt"
 msgid "{{score}}% match"
 msgstr "{{score}}% match"
 
-#: src/components/editor/HeaderEditor.tsx:627
+#: src/components/editor/HeaderEditor.tsx:626
 #: src/components/editor/WordPressRefreshModal.tsx:218
 msgid "{{type}} / {{slug}}"
 msgstr "{{type}} / {{slug}}"
