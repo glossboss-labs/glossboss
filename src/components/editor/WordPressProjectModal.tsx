@@ -1,25 +1,16 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import {
-  Alert,
-  Autocomplete,
-  Button,
-  Group,
-  Loader,
-  Modal,
-  Select,
-  Stack,
-  Text,
-  TextInput,
-} from '@mantine/core';
+import { Alert, Button, Group, Loader, Modal, Select, Stack, Text, TextInput } from '@mantine/core';
 import { Globe, Info } from 'lucide-react';
 import {
   buildWordPressReleaseList,
+  fetchProjectLocales,
   fetchProjectReleases,
   fetchWordPressProjectInfo,
   type WordPressPluginTranslationTrack,
+  type WordPressProjectLocale,
   type WordPressProjectType,
 } from '@/lib/wp-source';
-import { msgid, useTranslation } from '@/lib/app-language';
+import { useTranslation } from '@/lib/app-language';
 
 export interface WordPressProjectOpenRequest {
   projectType: WordPressProjectType;
@@ -40,40 +31,6 @@ function normalizeLocale(value?: string): string {
   return value?.trim().replaceAll('_', '-').toLowerCase() || '';
 }
 
-const WORDPRESS_LOCALE_OPTIONS = [
-  { value: 'bg', label: msgid('Bulgarian') },
-  { value: 'cs', label: msgid('Czech') },
-  { value: 'da', label: msgid('Danish') },
-  { value: 'de', label: msgid('German') },
-  { value: 'el', label: msgid('Greek') },
-  { value: 'en-gb', label: msgid('English (UK)') },
-  { value: 'en-us', label: msgid('English (US)') },
-  { value: 'es', label: msgid('Spanish') },
-  { value: 'et', label: msgid('Estonian') },
-  { value: 'fi', label: msgid('Finnish') },
-  { value: 'fr', label: msgid('French') },
-  { value: 'hu', label: msgid('Hungarian') },
-  { value: 'id', label: msgid('Indonesian') },
-  { value: 'it', label: msgid('Italian') },
-  { value: 'ja', label: msgid('Japanese') },
-  { value: 'ko', label: msgid('Korean') },
-  { value: 'lt', label: msgid('Lithuanian') },
-  { value: 'lv', label: msgid('Latvian') },
-  { value: 'nb', label: msgid('Norwegian') },
-  { value: 'nl', label: msgid('Dutch') },
-  { value: 'pl', label: msgid('Polish') },
-  { value: 'pt-br', label: msgid('Portuguese (Brazil)') },
-  { value: 'pt-pt', label: msgid('Portuguese (Portugal)') },
-  { value: 'ro', label: msgid('Romanian') },
-  { value: 'ru', label: msgid('Russian') },
-  { value: 'sk', label: msgid('Slovak') },
-  { value: 'sl', label: msgid('Slovenian') },
-  { value: 'sv', label: msgid('Swedish') },
-  { value: 'tr', label: msgid('Turkish') },
-  { value: 'uk', label: msgid('Ukrainian') },
-  { value: 'zh', label: msgid('Chinese') },
-];
-
 export function WordPressProjectModal({
   opened,
   onClose,
@@ -87,6 +44,7 @@ export function WordPressProjectModal({
   const [track, setTrack] = useState<WordPressPluginTranslationTrack>('stable');
   const [selectedRelease, setSelectedRelease] = useState<string | null>(null);
   const [availableReleases, setAvailableReleases] = useState<string[]>([]);
+  const [availableLocales, setAvailableLocales] = useState<WordPressProjectLocale[]>([]);
   const [projectName, setProjectName] = useState<string | null>(null);
   const [isLoadingMeta, setIsLoadingMeta] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -103,6 +61,7 @@ export function WordPressProjectModal({
     if (!trimmedSlug) {
       setProjectName(null);
       setAvailableReleases([]);
+      setAvailableLocales([]);
       setSelectedRelease(null);
       setError(null);
       return;
@@ -113,9 +72,10 @@ export function WordPressProjectModal({
       setIsLoadingMeta(true);
       setError(null);
       try {
-        const [infoResult, releasesResult] = await Promise.allSettled([
+        const [infoResult, releasesResult, localesResult] = await Promise.allSettled([
           fetchWordPressProjectInfo(projectType, trimmedSlug),
           fetchProjectReleases(projectType, trimmedSlug),
+          fetchProjectLocales(projectType, trimmedSlug, track),
         ]);
         if (cancelled) return;
 
@@ -123,7 +83,9 @@ export function WordPressProjectModal({
         if (!info) {
           setProjectName(null);
           setAvailableReleases([]);
+          setAvailableLocales([]);
           setSelectedRelease(null);
+          setLocale('');
           setError(t('Project not found on WordPress.org.'));
           return;
         }
@@ -135,12 +97,23 @@ export function WordPressProjectModal({
 
         setProjectName(info.name);
         setAvailableReleases(releases);
+        const locales = localesResult.status === 'fulfilled' ? localesResult.value : [];
+        setAvailableLocales(locales);
         setSelectedRelease((current) => current ?? info.latestVersion ?? releases[0] ?? null);
+        setLocale((current) => {
+          const availableValues = new Set(locales.map((item) => item.value));
+          const initialValue = normalizeLocale(initialLocale);
+          if (current && availableValues.has(current)) return current;
+          if (initialValue && availableValues.has(initialValue)) return initialValue;
+          return '';
+        });
       } catch (metaError) {
         if (!cancelled) {
           setProjectName(null);
           setAvailableReleases([]);
+          setAvailableLocales([]);
           setSelectedRelease(null);
+          setLocale('');
           setError(
             metaError instanceof Error ? metaError.message : t('Failed to load project metadata.'),
           );
@@ -156,27 +129,12 @@ export function WordPressProjectModal({
       cancelled = true;
       window.clearTimeout(timeoutId);
     };
-  }, [opened, projectType, slug, t]);
+  }, [initialLocale, opened, projectType, slug, t, track]);
 
   const releaseOptions = useMemo(
     () => availableReleases.map((release) => ({ value: release, label: release })),
     [availableReleases],
   );
-  const localeOptions = useMemo(() => {
-    const values = new Map(
-      WORDPRESS_LOCALE_OPTIONS.map((option) => [
-        option.value,
-        `${t(option.label)} (${option.value})`,
-      ]),
-    );
-
-    if (locale && !values.has(locale)) {
-      values.set(locale, locale);
-    }
-
-    return Array.from(values.entries()).map(([value, label]) => ({ value, label }));
-  }, [locale, t]);
-
   const handleSubmit = useCallback(async () => {
     const trimmedSlug = slug.trim().toLowerCase();
     const trimmedLocale = locale.trim().toLowerCase();
@@ -236,12 +194,14 @@ export function WordPressProjectModal({
         </Group>
 
         <Group grow align="flex-start">
-          <Autocomplete
+          <Select
             label={t('Locale')}
-            placeholder="nl / en-gb / pt-br"
+            placeholder={t('Select a locale')}
             value={locale}
-            onChange={(value) => setLocale(value)}
-            data={localeOptions}
+            onChange={(value) => setLocale(value || '')}
+            data={availableLocales}
+            searchable
+            nothingFoundMessage={t('No locales found')}
           />
           {projectType === 'plugin' ? (
             <Select

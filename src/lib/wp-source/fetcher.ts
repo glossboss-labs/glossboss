@@ -16,9 +16,15 @@ export interface DirectoryEntry {
   isDir: boolean;
 }
 
+export interface WordPressProjectLocale {
+  value: string;
+  label: string;
+}
+
 const fileCache = new Map<string, string>();
 const dirCache = new Map<string, string>();
 const releasesCache = new Map<string, string[]>();
+const localesCache = new Map<string, WordPressProjectLocale[]>();
 const legacyVersionCache = new Map<string, string | null>();
 
 const FETCH_TIMEOUT_MS = 30000;
@@ -209,6 +215,37 @@ export async function fetchProjectReleases(
   return releases;
 }
 
+export async function fetchProjectLocales(
+  projectType: WordPressProjectType,
+  slug: string,
+  track: 'stable' | 'dev' = 'stable',
+): Promise<WordPressProjectLocale[]> {
+  const cacheKey = `${projectType}:${slug}:${track}`;
+  const cached = localesCache.get(cacheKey);
+  if (cached) return cached;
+
+  const response = await fetchFromEdge({ projectType, slug, locales: true, track });
+  if (!response.ok) {
+    throw new Error(await readEdgeError(response));
+  }
+
+  const data = await response.json();
+  const locales = Array.isArray(data.locales)
+    ? (data.locales as Array<{ locale?: unknown; label?: unknown }>)
+        .filter(
+          (item): item is { locale: string; label: string } =>
+            typeof item?.locale === 'string' && typeof item?.label === 'string',
+        )
+        .map((item) => ({
+          value: item.locale,
+          label: `${item.label} (${item.locale})`,
+        }))
+    : [];
+
+  localesCache.set(cacheKey, locales);
+  return locales;
+}
+
 export async function fetchSourceFile(
   projectType: WordPressProjectType,
   slug: string,
@@ -318,6 +355,7 @@ export function clearCache(): void {
   fileCache.clear();
   dirCache.clear();
   releasesCache.clear();
+  localesCache.clear();
   legacyVersionCache.clear();
 }
 

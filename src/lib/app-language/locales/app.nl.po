@@ -274,7 +274,6 @@ msgstr "Bug"
 #: src/components/editor/HeaderEditor.tsx:58
 #: src/components/editor/TranslateToolbar.tsx:74
 #: src/components/editor/TranslateToolbar.tsx:106
-#: src/components/editor/WordPressProjectModal.tsx:44
 msgid "Bulgarian"
 msgstr "Bulgaars"
 
@@ -284,7 +283,7 @@ msgstr ""
 
 #: src/components/SettingsModal.tsx:2628
 #: src/components/editor/TranslateToolbar.tsx:926
-#: src/components/editor/WordPressProjectModal.tsx:318
+#: src/components/editor/WordPressProjectModal.tsx:288
 #: src/components/editor/WordPressRefreshModal.tsx:273
 #: src/components/feedback/FeedbackModal.tsx:480
 #: src/components/ui/ConfirmModal.tsx:38
@@ -331,7 +330,6 @@ msgstr ""
 #: src/components/editor/HeaderEditor.tsx:60
 #: src/components/editor/TranslateToolbar.tsx:102
 #: src/components/editor/TranslateToolbar.tsx:136
-#: src/components/editor/WordPressProjectModal.tsx:74
 msgid "Chinese"
 msgstr "Chinees"
 
@@ -351,7 +349,7 @@ msgstr "Chinees (Traditioneel)"
 msgid "Chinese, Japanese, Korean, Vietnamese, Thai, Indonesian"
 msgstr "Chinees, Japans, Koreaans, Vietnamees, Thais, Indonesisch"
 
-#: src/components/editor/WordPressProjectModal.tsx:184
+#: src/components/editor/WordPressProjectModal.tsx:152
 msgid "Choose a slug and locale before opening a project."
 msgstr ""
 
@@ -628,14 +626,12 @@ msgstr "Aangepaste waarde ingesteld — selecteer om te wijzigen"
 #: src/components/editor/HeaderEditor.tsx:65
 #: src/components/editor/TranslateToolbar.tsx:75
 #: src/components/editor/TranslateToolbar.tsx:107
-#: src/components/editor/WordPressProjectModal.tsx:45
 msgid "Czech"
 msgstr "Tsjechisch"
 
 #: src/components/editor/HeaderEditor.tsx:66
 #: src/components/editor/TranslateToolbar.tsx:76
 #: src/components/editor/TranslateToolbar.tsx:108
-#: src/components/editor/WordPressProjectModal.tsx:46
 msgid "Danish"
 msgstr "Deens"
 
@@ -681,7 +677,7 @@ msgid "Detected: {{target}}"
 msgstr "Gedetecteerd: {{target}}"
 
 #: src/components/SettingsModal.tsx:1326
-#: src/components/editor/WordPressProjectModal.tsx:253
+#: src/components/editor/WordPressProjectModal.tsx:223
 #: src/components/editor/WordPressRefreshModal.tsx:201
 msgid "Development"
 msgstr "Ontwikkeling"
@@ -749,7 +745,6 @@ msgstr "Gooi 'm erin!"
 #: src/components/editor/HeaderEditor.tsx:67
 #: src/components/editor/TranslateToolbar.tsx:92
 #: src/components/editor/TranslateToolbar.tsx:125
-#: src/components/editor/WordPressProjectModal.tsx:63
 msgid "Dutch"
 msgstr "Nederlands"
 
@@ -846,13 +841,11 @@ msgstr "Engels (Canada)"
 
 #: src/components/editor/HeaderEditor.tsx:72
 #: src/components/editor/TranslateToolbar.tsx:111
-#: src/components/editor/WordPressProjectModal.tsx:49
 msgid "English (UK)"
 msgstr "Engels (VK)"
 
 #: src/components/editor/HeaderEditor.tsx:71
 #: src/components/editor/TranslateToolbar.tsx:112
-#: src/components/editor/WordPressProjectModal.tsx:50
 msgid "English (US)"
 msgstr "Engels (VS)"
 
@@ -902,7 +895,6 @@ msgstr "Fout: {{error}}. Klik om opnieuw te proberen."
 #: src/components/editor/HeaderEditor.tsx:75
 #: src/components/editor/TranslateToolbar.tsx:81
 #: src/components/editor/TranslateToolbar.tsx:114
-#: src/components/editor/WordPressProjectModal.tsx:52
 msgid "Estonian"
 msgstr "Ests"
 
@@ -984,7 +976,7 @@ msgstr "Bestand laden mislukt."
 msgid "Failed to load glossary"
 msgstr "Kan de glossary niet laden"
 
-#: src/components/editor/WordPressProjectModal.tsx:145
+#: src/components/editor/WordPressProjectModal.tsx:128
 msgid "Failed to load project metadata."
 msgstr ""
 
@@ -992,7 +984,7 @@ msgstr ""
 msgid "Failed to load releases."
 msgstr ""
 
-#: src/components/editor/WordPressProjectModal.tsx:203
+#: src/components/editor/WordPressProjectModal.tsx:171
 msgid "Failed to open the WordPress project."
 msgstr ""
 
@@ -1065,7 +1057,6 @@ msgstr ""
 #: src/components/editor/HeaderEditor.tsx:76
 #: src/components/editor/TranslateToolbar.tsx:82
 #: src/components/editor/TranslateToolbar.tsx:115
-#: src/components/editor/WordPressProjectModal.tsx:53
 msgid "Finnish"
 msgstr "Fins"
 
@@ -1100,7 +1091,6 @@ msgstr "Gratis: 500.000 tekens per maand • Pro: betaal per gebruik"
 #: src/components/editor/HeaderEditor.tsx:77
 #: src/components/editor/TranslateToolbar.tsx:83
 #: src/components/editor/TranslateToolbar.tsx:116
-#: src/components/editor/WordPressProjectModal.tsx:54
 msgid "French"
 msgstr "Frans"
 
@@ -1170,7 +1160,6 @@ msgstr "Georgisch"
 #: src/components/editor/HeaderEditor.tsx:84
 #: src/components/editor/TranslateToolbar.tsx:77
 #: src/components/editor/TranslateToolbar.tsx:109
-#: src/components/editor/WordPressProjectModal.tsx:47
 msgid "German"
 msgstr "Duits"
 
@@ -1283,7 +1272,6 @@ msgstr ""
 #: src/components/editor/HeaderEditor.tsx:88
 #: src/components/editor/TranslateToolbar.tsx:78
 #: src/components/editor/TranslateToolbar.tsx:110
-#: src/components/editor/WordPressProjectModal.tsx:48
 msgid "Greek"
 msgstr "Grieks"
 
@@ -1326,7 +1314,6 @@ msgstr "Hoe meervoud werkt in deze taal"
 #: src/components/editor/HeaderEditor.tsx:92
 #: src/components/editor/TranslateToolbar.tsx:84
 #: src/components/editor/TranslateToolbar.tsx:117
-#: src/components/editor/WordPressProjectModal.tsx:55
 msgid "Hungarian"
 msgstr "Hongaars"
 
@@ -1379,7 +1366,6 @@ msgstr ""
 #: src/components/editor/HeaderEditor.tsx:94
 #: src/components/editor/TranslateToolbar.tsx:85
 #: src/components/editor/TranslateToolbar.tsx:118
-#: src/components/editor/WordPressProjectModal.tsx:56
 msgid "Indonesian"
 msgstr "Indonesisch"
 
@@ -1416,7 +1402,6 @@ msgstr "Iers"
 #: src/components/editor/HeaderEditor.tsx:96
 #: src/components/editor/TranslateToolbar.tsx:86
 #: src/components/editor/TranslateToolbar.tsx:119
-#: src/components/editor/WordPressProjectModal.tsx:57
 msgid "Italian"
 msgstr "Italiaans"
 
@@ -1431,7 +1416,6 @@ msgstr "Italiaans (Zwitserland)"
 #: src/components/editor/HeaderEditor.tsx:99
 #: src/components/editor/TranslateToolbar.tsx:87
 #: src/components/editor/TranslateToolbar.tsx:120
-#: src/components/editor/WordPressProjectModal.tsx:58
 msgid "Japanese"
 msgstr "Japans"
 
@@ -1469,7 +1453,6 @@ msgstr "Sneltoetsen die je kunt gebruiken tijdens het bewerken van vertalingen."
 #: src/components/editor/HeaderEditor.tsx:102
 #: src/components/editor/TranslateToolbar.tsx:88
 #: src/components/editor/TranslateToolbar.tsx:121
-#: src/components/editor/WordPressProjectModal.tsx:59
 msgid "Korean"
 msgstr "Koreaans"
 
@@ -1495,7 +1478,7 @@ msgstr "Laatste vertaler"
 msgid "Last Updated"
 msgstr "Laatst bijgewerkt"
 
-#: src/components/editor/WordPressProjectModal.tsx:262
+#: src/components/editor/WordPressProjectModal.tsx:232
 msgid "Latest"
 msgstr ""
 
@@ -1503,7 +1486,6 @@ msgstr ""
 #: src/components/editor/HeaderEditor.tsx:179
 #: src/components/editor/TranslateToolbar.tsx:90
 #: src/components/editor/TranslateToolbar.tsx:123
-#: src/components/editor/WordPressProjectModal.tsx:61
 msgid "Latvian"
 msgstr "Lets"
 
@@ -1536,7 +1518,6 @@ msgstr "Maak een lijst met stappen die iemand anders kan volgen"
 #: src/components/editor/HeaderEditor.tsx:104
 #: src/components/editor/TranslateToolbar.tsx:89
 #: src/components/editor/TranslateToolbar.tsx:122
-#: src/components/editor/WordPressProjectModal.tsx:60
 msgid "Lithuanian"
 msgstr "Litouws"
 
@@ -1608,7 +1589,7 @@ msgstr ""
 msgid "Loading file..."
 msgstr ""
 
-#: src/components/editor/WordPressProjectModal.tsx:286
+#: src/components/editor/WordPressProjectModal.tsx:256
 msgid "Loading project metadata..."
 msgstr ""
 
@@ -1624,7 +1605,7 @@ msgstr "Bron laden..."
 msgid "Loading..."
 msgstr ""
 
-#: src/components/editor/WordPressProjectModal.tsx:240
+#: src/components/editor/WordPressProjectModal.tsx:208
 msgid "Locale"
 msgstr ""
 
@@ -1838,11 +1819,15 @@ msgstr "Geen glossarytermen in de geselecteerde tekst"
 msgid "No locale files detected automatically"
 msgstr ""
 
+#: src/components/editor/WordPressProjectModal.tsx:214
+msgid "No locales found"
+msgstr ""
+
 #: src/components/editor/HeaderEditor.tsx:411
 msgid "No matching plural form"
 msgstr "Geen overeenkomstige meervoudsvorm"
 
-#: src/components/editor/WordPressProjectModal.tsx:279
+#: src/components/editor/WordPressProjectModal.tsx:249
 #: src/components/editor/WordPressRefreshModal.tsx:218
 msgid "No releases found"
 msgstr ""
@@ -1899,7 +1884,6 @@ msgstr "Geen"
 #: src/components/editor/HeaderEditor.tsx:114
 #: src/components/editor/TranslateToolbar.tsx:91
 #: src/components/editor/TranslateToolbar.tsx:124
-#: src/components/editor/WordPressProjectModal.tsx:62
 msgid "Norwegian"
 msgstr "Noors"
 
@@ -1951,7 +1935,7 @@ msgstr ""
 msgid "Open a locale file from a GitHub or GitLab repository"
 msgstr ""
 
-#: src/components/editor/WordPressProjectModal.tsx:214
+#: src/components/editor/WordPressProjectModal.tsx:182
 #: src/pages/Index.tsx:1900
 #: src/pages/Index.tsx:2395
 msgid "Open from WordPress.org"
@@ -1972,7 +1956,7 @@ msgstr "Openen in Trac"
 msgid "Open issue"
 msgstr "Issue openen"
 
-#: src/components/editor/WordPressProjectModal.tsx:321
+#: src/components/editor/WordPressProjectModal.tsx:291
 msgid "Open project"
 msgstr ""
 
@@ -2077,7 +2061,7 @@ msgstr "Geef een geldig e-mailadres op of laat het veld leeg."
 
 #: src/components/editor/HeaderEditor.tsx:494
 #: src/components/editor/SourceBrowser.tsx:86
-#: src/components/editor/WordPressProjectModal.tsx:225
+#: src/components/editor/WordPressProjectModal.tsx:193
 msgid "Plugin"
 msgstr ""
 
@@ -2105,7 +2089,6 @@ msgstr ""
 #: src/components/editor/HeaderEditor.tsx:184
 #: src/components/editor/TranslateToolbar.tsx:93
 #: src/components/editor/TranslateToolbar.tsx:126
-#: src/components/editor/WordPressProjectModal.tsx:64
 msgid "Polish"
 msgstr "Pools"
 
@@ -2116,13 +2099,11 @@ msgstr "Portugees"
 
 #: src/components/editor/HeaderEditor.tsx:118
 #: src/components/editor/TranslateToolbar.tsx:127
-#: src/components/editor/WordPressProjectModal.tsx:65
 msgid "Portuguese (Brazil)"
 msgstr "Portugees (Brazilië)"
 
 #: src/components/editor/HeaderEditor.tsx:119
 #: src/components/editor/TranslateToolbar.tsx:128
-#: src/components/editor/WordPressProjectModal.tsx:66
 msgid "Portuguese (Portugal)"
 msgstr "Portugees (Portugal)"
 
@@ -2175,11 +2156,11 @@ msgstr "Projectnaam en versie"
 msgid "Project not found on WordPress.org"
 msgstr ""
 
-#: src/components/editor/WordPressProjectModal.tsx:127
+#: src/components/editor/WordPressProjectModal.tsx:99
 msgid "Project not found on WordPress.org."
 msgstr ""
 
-#: src/components/editor/WordPressProjectModal.tsx:221
+#: src/components/editor/WordPressProjectModal.tsx:189
 msgid "Project type"
 msgstr ""
 
@@ -2287,7 +2268,7 @@ msgstr ""
 msgid "Region"
 msgstr ""
 
-#: src/components/editor/WordPressProjectModal.tsx:259
+#: src/components/editor/WordPressProjectModal.tsx:229
 #: src/components/editor/WordPressRefreshModal.tsx:207
 msgid "Release"
 msgstr ""
@@ -2478,7 +2459,6 @@ msgstr ""
 #: src/components/editor/HeaderEditor.tsx:175
 #: src/components/editor/TranslateToolbar.tsx:95
 #: src/components/editor/TranslateToolbar.tsx:129
-#: src/components/editor/WordPressProjectModal.tsx:67
 msgid "Romanian"
 msgstr "Roemeens"
 
@@ -2489,7 +2469,6 @@ msgstr "Rijen per pagina"
 #: src/components/editor/HeaderEditor.tsx:122
 #: src/components/editor/TranslateToolbar.tsx:96
 #: src/components/editor/TranslateToolbar.tsx:130
-#: src/components/editor/WordPressProjectModal.tsx:68
 msgid "Russian"
 msgstr "Russisch"
 
@@ -2538,11 +2517,15 @@ msgstr "Zoek in bron, vertaling, context..."
 msgid "Search terms..."
 msgstr "Zoek termen..."
 
+#: src/components/editor/WordPressProjectModal.tsx:209
+msgid "Select a locale"
+msgstr ""
+
 #: src/components/editor/EditorTable.tsx:2013
 msgid "Select a reference above to load source context."
 msgstr "Selecteer een referentie hierboven om de broncontext te laden."
 
-#: src/components/editor/WordPressProjectModal.tsx:275
+#: src/components/editor/WordPressProjectModal.tsx:245
 #: src/components/editor/WordPressRefreshModal.tsx:214
 msgid "Select a release"
 msgstr ""
@@ -2739,7 +2722,6 @@ msgstr "Vertaalde items overslaan"
 #: src/components/editor/HeaderEditor.tsx:125
 #: src/components/editor/TranslateToolbar.tsx:97
 #: src/components/editor/TranslateToolbar.tsx:131
-#: src/components/editor/WordPressProjectModal.tsx:69
 msgid "Slovak"
 msgstr "Slowaaks"
 
@@ -2747,11 +2729,10 @@ msgstr "Slowaaks"
 #: src/components/editor/HeaderEditor.tsx:193
 #: src/components/editor/TranslateToolbar.tsx:98
 #: src/components/editor/TranslateToolbar.tsx:132
-#: src/components/editor/WordPressProjectModal.tsx:70
 msgid "Slovenian"
 msgstr "Sloveens"
 
-#: src/components/editor/WordPressProjectModal.tsx:231
+#: src/components/editor/WordPressProjectModal.tsx:199
 msgid "Slug"
 msgstr ""
 
@@ -2781,7 +2762,7 @@ msgstr "Brontaal"
 msgid "Source preview"
 msgstr "Bronvoorbeeld"
 
-#: src/components/editor/WordPressProjectModal.tsx:268
+#: src/components/editor/WordPressProjectModal.tsx:238
 msgid "Source release"
 msgstr ""
 
@@ -2798,7 +2779,6 @@ msgstr "Bronstem"
 #: src/components/editor/HeaderEditor.tsx:127
 #: src/components/editor/TranslateToolbar.tsx:80
 #: src/components/editor/TranslateToolbar.tsx:113
-#: src/components/editor/WordPressProjectModal.tsx:51
 msgid "Spanish"
 msgstr "Spaans"
 
@@ -2826,7 +2806,7 @@ msgstr "Spraak is niet beschikbaar in deze installatie."
 msgid "Speech synthesis is not available in this browser."
 msgstr "Spraaksynthese is niet beschikbaar in deze browser."
 
-#: src/components/editor/WordPressProjectModal.tsx:252
+#: src/components/editor/WordPressProjectModal.tsx:222
 #: src/components/editor/WordPressRefreshModal.tsx:200
 msgid "Stable"
 msgstr ""
@@ -2885,7 +2865,6 @@ msgstr "Swahili"
 #: src/components/editor/HeaderEditor.tsx:132
 #: src/components/editor/TranslateToolbar.tsx:99
 #: src/components/editor/TranslateToolbar.tsx:133
-#: src/components/editor/WordPressProjectModal.tsx:71
 msgid "Swedish"
 msgstr "Zweeds"
 
@@ -2970,13 +2949,13 @@ msgstr "De URL moet beginnen met https://"
 msgid "The WordPress.org translation export could not be parsed."
 msgstr ""
 
-#: src/components/editor/WordPressProjectModal.tsx:302
+#: src/components/editor/WordPressProjectModal.tsx:272
 msgid ""
 "The translation file will be loaded from WordPress.org and source browsing w"
 "ill use the selected release."
 msgstr ""
 
-#: src/components/editor/WordPressProjectModal.tsx:299
+#: src/components/editor/WordPressProjectModal.tsx:269
 msgid ""
 "The translation file will be loaded from the development track and source br"
 "owsing will follow trunk."
@@ -2984,7 +2963,7 @@ msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:495
 #: src/components/editor/SourceBrowser.tsx:86
-#: src/components/editor/WordPressProjectModal.tsx:226
+#: src/components/editor/WordPressProjectModal.tsx:194
 msgid "Theme"
 msgstr ""
 
@@ -3130,7 +3109,7 @@ msgstr ""
 msgid "Translation team contact"
 msgstr "Contact vertaalteam"
 
-#: src/components/editor/WordPressProjectModal.tsx:248
+#: src/components/editor/WordPressProjectModal.tsx:218
 msgid "Translation track"
 msgstr ""
 
@@ -3147,7 +3126,7 @@ msgstr "Vertalingen zonder glossary-afdwinging"
 msgid "Translator comments"
 msgstr "Vertalersopmerkingen"
 
-#: src/components/editor/WordPressProjectModal.tsx:274
+#: src/components/editor/WordPressProjectModal.tsx:244
 #: src/components/editor/WordPressRefreshModal.tsx:213
 msgid "Trunk / development"
 msgstr ""
@@ -3159,7 +3138,6 @@ msgstr "Pas je zoekopdracht aan of wis een paar filters."
 #: src/components/editor/HeaderEditor.tsx:136
 #: src/components/editor/TranslateToolbar.tsx:100
 #: src/components/editor/TranslateToolbar.tsx:134
-#: src/components/editor/WordPressProjectModal.tsx:72
 msgid "Turkish"
 msgstr "Turks"
 
@@ -3188,7 +3166,6 @@ msgstr "Typ een aangepaste taalcode"
 #: src/components/editor/HeaderEditor.tsx:137
 #: src/components/editor/TranslateToolbar.tsx:101
 #: src/components/editor/TranslateToolbar.tsx:135
-#: src/components/editor/WordPressProjectModal.tsx:73
 msgid "Ukrainian"
 msgstr "Oekraïens"
 
@@ -3482,7 +3459,7 @@ msgstr ""
 msgid "WordPress source browsing is unavailable in this deployment."
 msgstr "WordPress-broncode bekijken is niet beschikbaar in deze installatie."
 
-#: src/lib/wp-source/project.ts:121
+#: src/lib/wp-source/project.ts:136
 msgid "WordPress.org did not return a translation export for the selected project."
 msgstr ""
 

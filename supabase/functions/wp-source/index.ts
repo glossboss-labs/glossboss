@@ -16,6 +16,11 @@ import {
   sanitizeUpstreamError,
   validateRequestOrigin,
 } from '../_shared/http.ts';
+import {
+  buildWordPressTranslationExportUrl,
+  parseProjectLocalesFromHtml,
+  type WordPressPluginTranslationTrack,
+} from './translate.ts';
 
 type WordPressProjectType = 'plugin' | 'theme';
 
@@ -29,6 +34,7 @@ const FETCH_TIMEOUT_MS = 8000;
 const MAX_SLUG_LENGTH = 120;
 const MAX_PATH_LENGTH = 500;
 const MAX_VERSION_LENGTH = 64;
+const MAX_LOCALE_LENGTH = 32;
 const MAX_LEGACY_RELEASE_CANDIDATES = 40;
 
 const basePathCache = new Map<string, string>();
@@ -50,6 +56,14 @@ function isValidSlug(slug: string): boolean {
 
 function isValidVersion(version: string): boolean {
   return version.length <= MAX_VERSION_LENGTH && /^[\d][\w.-]*$/.test(version);
+}
+
+function isValidTrack(value: unknown): value is WordPressPluginTranslationTrack {
+  return value === 'stable' || value === 'dev';
+}
+
+function isValidLocale(locale: string): boolean {
+  return locale.length <= MAX_LOCALE_LENGTH && /^[a-z]{2,3}(?:-[a-z0-9]{2,8})?$/i.test(locale);
 }
 
 function normalizeRequestPath(
@@ -190,6 +204,38 @@ async function getProjectReleases(
   return releases;
 }
 
+async function getProjectLocales(
+  projectType: WordPressProjectType,
+  slug: string,
+  track: WordPressPluginTranslationTrack,
+): Promise<{ locale: string; label: string }[]> {
+  const url =
+    projectType === 'plugin'
+      ? `https://translate.wordpress.org/projects/wp-plugins/${slug}/${track}/`
+      : `https://translate.wordpress.org/projects/wp-themes/${slug}/`;
+
+  const response = await fetchWithTimeout(url, FETCH_TIMEOUT_MS, {
+    method: 'GET',
+    headers: {
+      Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+      'User-Agent': 'GlossBoss/1.0 (WordPress Translation Editor)',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      response.status === 404
+        ? `Project locales were not found for "${slug}".`
+        : sanitizeUpstreamError(
+            await response.text().catch(() => ''),
+            `WordPress.org returned HTTP ${response.status}.`,
+          ),
+    );
+  }
+
+  return parseProjectLocalesFromHtml(await response.text(), projectType, slug, track);
+}
+
 async function fileExists(url: string): Promise<boolean> {
   const cached = fileExistsCache.get(url);
   if (cached !== undefined) return cached;
@@ -301,7 +347,11 @@ Deno.serve(async (req: Request) => {
     const rawPath = typeof body.path === 'string' ? body.path : '';
     const list = body.list === true;
     const releasesOnly = body.releases === true;
+    const localesOnly = body.locales === true;
+    const translationExportOnly = body.translationExport === true;
     const version = typeof body.version === 'string' ? body.version.trim() : '';
+    const locale = typeof body.locale === 'string' ? body.locale.trim().toLowerCase() : '';
+    const track = isValidTrack(body.track) ? body.track : 'stable';
 
     if (!isValidSlug(slug)) {
       return jsonResponse(
@@ -327,9 +377,59 @@ Deno.serve(async (req: Request) => {
       );
     }
 
+    if (translationExportOnly) {
+      if (!isValidLocale(locale)) {
+        return jsonResponse(
+          req,
+          { ok: false, code: 'INVALID_PAYLOAD', message: 'Provide a valid WordPress locale.' },
+          { status: 400 },
+        );
+      }
+
+      const response = await fetchWithTimeout(
+        buildWordPressTranslationExportUrl(projectType, slug, locale, track),
+        FETCH_TIMEOUT_MS,
+        {
+          method: 'GET',
+          headers: {
+            Accept: 'text/plain, text/x-gettext-translation, */*',
+            'User-Agent': 'GlossBoss/1.0 (WordPress Translation Editor)',
+          },
+        },
+      );
+
+      if (!response.ok) {
+        const message =
+          response.status === 404
+            ? `WordPress.org did not return a translation export for locale "${locale}".`
+            : sanitizeUpstreamError(
+                await response.text().catch(() => ''),
+                `WordPress.org returned HTTP ${response.status}.`,
+              );
+
+        return jsonResponse(
+          req,
+          { ok: false, code: 'UPSTREAM_ERROR', message },
+          { status: response.status },
+        );
+      }
+
+      return jsonResponse(req, {
+        content: await response.text(),
+        locale,
+        track,
+      });
+    }
+
     if (releasesOnly) {
       return jsonResponse(req, {
         releases: await getProjectReleases(projectType, slug),
+      });
+    }
+
+    if (localesOnly) {
+      return jsonResponse(req, {
+        locales: await getProjectLocales(projectType, slug, track),
       });
     }
 
