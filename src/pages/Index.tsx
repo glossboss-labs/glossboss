@@ -1906,7 +1906,7 @@ export default function Index() {
                       >
                         {t('Open from WordPress.org')}
                       </Menu.Item>
-                      {currentProjectType && currentProjectSlug && filename && (
+                      {currentProjectType && currentProjectSlug && filename && !repoConnection && (
                         <Menu.Item
                           leftSection={<RotateCcw size={14} />}
                           onClick={() => setWordpressRefreshOpen(true)}
