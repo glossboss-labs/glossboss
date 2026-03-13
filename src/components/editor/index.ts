@@ -15,3 +15,5 @@ export { TranslateButton } from './TranslateButton';
 export { TranslateToolbar } from './TranslateToolbar';
 export { GlossaryPanel } from './GlossaryPanel';
 export { GlossaryIndicator, GlossaryTermHighlight } from './GlossaryIndicator';
+export { WordPressProjectModal, type WordPressProjectOpenRequest } from './WordPressProjectModal';
+export { WordPressRefreshModal } from './WordPressRefreshModal';

@@ -38,6 +38,7 @@ import {
   Columns3,
   ArrowUpDown,
   GripVertical,
+  RefreshCw,
 } from 'lucide-react';
 import {
   useEditorStore,
@@ -77,6 +78,7 @@ const TRANSLATION_FILTERS: FilterConfig[] = [
   { id: 'modified', label: msgid('Modified'), icon: Pencil, color: 'orange' },
   { id: 'qa-error', label: msgid('QA errors'), icon: ShieldAlert, color: 'red' },
   { id: 'qa-warning', label: msgid('QA warnings'), icon: AlertTriangle, color: 'orange' },
+  { id: 'upstream-delta', label: msgid('Upstream delta'), icon: RefreshCw, color: 'violet' },
 ];
 
 const REVIEW_FILTERS: FilterConfig[] = [
@@ -146,6 +148,7 @@ export function FilterToolbar({ mode = 'edit' }: { mode?: 'edit' | 'review' }) {
     columnOrder,
     sortField,
     sortDirection,
+    upstreamDeltaEntryIds,
     setFilterQuery,
     toggleFilter,
     clearFilters,
@@ -266,6 +269,8 @@ export function FilterToolbar({ mode = 'edit' }: { mode?: 'edit' | 'review' }) {
         return stats.qaErrors;
       case 'qa-warning':
         return stats.qaWarnings;
+      case 'upstream-delta':
+        return upstreamDeltaEntryIds.size;
       case 'review-draft':
         return stats.reviewDraft;
       case 'review-in-review':

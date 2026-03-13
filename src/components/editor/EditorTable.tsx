@@ -62,6 +62,7 @@ import {
   useEditorStore,
   useSourceStore,
   useTranslationMemoryStore,
+  getEffectiveProjectType,
   getEffectiveSlug,
 } from '@/stores';
 import type { POEntry } from '@/lib/po';
@@ -1289,7 +1290,7 @@ const ReviewStatusBadge = memo(function ReviewStatusBadge({
 
 /**
  * Meta column with flags, references, and comments.
- * When a plugin slug is set, references become clickable links.
+ * When a WordPress project is set, references become clickable links.
  */
 function MetaCell({
   entry,
@@ -1302,7 +1303,7 @@ function MetaCell({
   const hasReferences = entry.references.length > 0;
   const hasComments = entry.translatorComments.length > 0;
   const flags = entry.flags.filter((f) => f !== 'fuzzy');
-  const pluginSlug = useSourceStore((s) => getEffectiveSlug(s));
+  const projectSlug = useSourceStore((state) => getEffectiveSlug(state));
   const setActiveReference = useSourceStore((s) => s.setActiveReference);
 
   const parsedRefs = useMemo(
@@ -1322,7 +1323,7 @@ function MetaCell({
         </Group>
       )}
 
-      {hasReferences && pluginSlug && (
+      {hasReferences && projectSlug && (
         <Tooltip
           label={parsedRefs.map((r) => `${r.path}${r.line ? `:${r.line}` : ''}`).join('\n')}
           multiline
@@ -1348,7 +1349,7 @@ function MetaCell({
         </Tooltip>
       )}
 
-      {hasReferences && !pluginSlug && (
+      {hasReferences && !projectSlug && (
         <Tooltip label={entry.references.join('\n')} multiline maw={300}>
           <Group gap={4} style={{ cursor: 'help' }}>
             <FileCode size={12} opacity={0.5} />
@@ -1762,8 +1763,9 @@ function EntryDetailsPanel({
   mode?: WorkspaceMode;
 }) {
   const { t } = useTranslation();
-  const pluginSlug = useSourceStore((s) => getEffectiveSlug(s));
-  const basePath = useSourceStore((s) => s.resolvedBasePath) ?? 'trunk';
+  const projectType = useSourceStore((state) => getEffectiveProjectType(state));
+  const projectSlug = useSourceStore((state) => getEffectiveSlug(state));
+  const basePath = useSourceStore((state) => state.resolvedBasePath);
   const activeReference = useSourceStore((s) => s.activeReference);
   const sourceContent = useSourceStore((s) => s.sourceContent);
   const sourceError = useSourceStore((s) => s.sourceError);
@@ -1892,11 +1894,17 @@ function EntryDetailsPanel({
                     </Group>
                   </Anchor>
 
-                  {pluginSlug && (
+                  {projectSlug && projectType && (
                     <Tooltip label={t('Open in Trac')}>
                       <ActionIcon
                         component="a"
-                        href={buildTracUrl(pluginSlug, ref.path, ref.line ?? undefined, basePath)}
+                        href={buildTracUrl(
+                          projectType,
+                          projectSlug,
+                          ref.path,
+                          ref.line ?? undefined,
+                          basePath,
+                        )}
                         target="_blank"
                         rel="noopener noreferrer"
                         variant="subtle"
@@ -1994,19 +2002,19 @@ function EntryDetailsPanel({
           {t('Source preview')}
         </Text>
 
-        {!pluginSlug && (
+        {!projectSlug && (
           <Text size="sm" c="dimmed">
-            {t('Set a plugin slug in Settings to enable source preview.')}
+            {t('Set a WordPress project in Settings to enable source preview.')}
           </Text>
         )}
 
-        {pluginSlug && parsedRefs.length > 0 && !entryActiveReference && (
+        {projectSlug && parsedRefs.length > 0 && !entryActiveReference && (
           <Text size="sm" c="dimmed">
             {t('Select a reference above to load source context.')}
           </Text>
         )}
 
-        {pluginSlug && entryActiveReference && isLoadingSource && (
+        {projectSlug && entryActiveReference && isLoadingSource && (
           <Group gap="xs">
             <Loader size="sm" />
             <Text size="sm" c="dimmed">
@@ -2015,13 +2023,13 @@ function EntryDetailsPanel({
           </Group>
         )}
 
-        {pluginSlug && entryActiveReference && sourceError && !isLoadingSource && (
+        {projectSlug && entryActiveReference && sourceError && !isLoadingSource && (
           <Text size="sm" c="red">
             {sourceError}
           </Text>
         )}
 
-        {pluginSlug && entryActiveReference && sourceContent && !isLoadingSource && (
+        {projectSlug && entryActiveReference && sourceContent && !isLoadingSource && (
           <Paper withBorder radius="md" style={{ overflow: 'hidden' }}>
             <SourceCodeViewer
               content={sourceContent}

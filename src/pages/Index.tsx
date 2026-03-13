@@ -63,6 +63,7 @@ import {
   ExternalLink,
   Info,
   Archive,
+  Globe,
 } from 'lucide-react';
 import { ConfirmModal, PromptModal } from '@/components/ui';
 import {
@@ -71,17 +72,27 @@ import {
   HeaderEditor,
   ReviewSummary,
   TranslateToolbar,
+  WordPressProjectModal,
+  type WordPressProjectOpenRequest,
+  WordPressRefreshModal,
 } from '@/components/editor';
 import { FeedbackModal } from '@/components/feedback';
 import { SettingsModal } from '@/components/SettingsModal';
 import { RepoSyncModal } from '@/components/repo-sync';
 import {
+  getEffectiveProjectType,
+  getEffectiveRelease,
+  getEffectiveSlug,
   useEditorStore,
   useSourceStore,
   useTranslationMemoryStore,
   useRepoSyncStore,
 } from '@/stores';
-import { detectPluginSlug } from '@/lib/wp-source';
+import {
+  detectWordPressProject,
+  fetchWordPressTranslationFile,
+  type WordPressPluginTranslationTrack,
+} from '@/lib/wp-source';
 import { contentVariants, fadeVariants, sectionVariants, buttonStates } from '@/lib/motion';
 import {
   parsePOFileWithDiagnostics,
@@ -97,6 +108,7 @@ import type { TargetLanguage, SourceLanguage } from '@/lib/deepl/types';
 import type { FeedbackIssueSuccess } from '@/lib/feedback';
 import type { Glossary } from '@/lib/glossary/types';
 import { batchAnalyzeTranslations, syncGlossaryToDeepL } from '@/lib/glossary';
+import { fetchWPGlossary } from '@/lib/glossary/wp-fetcher';
 import { QA_RULE_LABELS, analyzeQaForEntries, summarizeQaReports } from '@/lib/qa';
 import {
   getActiveTranslationProvider,
@@ -359,6 +371,7 @@ export default function Index() {
   const [isLoadingUrl, setIsLoadingUrl] = useState(false);
   const [urlInput, setUrlInput] = useState('');
   const [pendingUrl, setPendingUrl] = useState<string | null>(null);
+  const [pendingProject, setPendingProject] = useState<WordPressProjectOpenRequest | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const [translateSourceLang, setTranslateSourceLang] = useState<SourceLanguage | undefined>(
     undefined,
@@ -404,12 +417,17 @@ export default function Index() {
 
   // Repo sync state
   const [urlPromptOpen, setUrlPromptOpen] = useState(false);
+  const [wordpressProjectOpen, setWordpressProjectOpen] = useState(false);
+  const [wordpressRefreshOpen, setWordpressRefreshOpen] = useState(false);
   const [repoSyncOpen, setRepoSyncOpen] = useState(false);
   const [repoSyncInitialTab, setRepoSyncInitialTab] = useState<
     'connect' | 'browse' | 'push' | undefined
   >(undefined);
   const repoConnection = useRepoSyncStore((s) => s.connection);
   const clearRepoConnection = useRepoSyncStore((s) => s.clearConnection);
+  const currentProjectType = useSourceStore((state) => getEffectiveProjectType(state));
+  const currentProjectSlug = useSourceStore((state) => getEffectiveSlug(state));
+  const currentProjectRelease = useSourceStore((state) => getEffectiveRelease(state));
 
   const toggleColorScheme = useCallback(() => {
     const oldBg = getComputedStyle(document.body).backgroundColor;
@@ -460,8 +478,10 @@ export default function Index() {
     markAsSaved,
     setGlossaryAnalysisBatch,
     clearGlossaryAnalysis,
+    clearUpstreamDeltaEntries,
     qaReports,
     setQaReports,
+    setUpstreamDeltaEntries,
     mergeEntries,
   } = useEditorStore();
   const upsertApprovedEntries = useTranslationMemoryStore((state) => state.upsertApprovedEntries);
@@ -675,6 +695,122 @@ export default function Index() {
     [],
   );
 
+  const applyDetectedWordPressProject = useCallback(
+    (fileHeader: typeof header, fileName: string) => {
+      const detected = fileHeader ? detectWordPressProject(fileHeader, fileName) : null;
+      useSourceStore
+        .getState()
+        .setAutoDetectedProject(
+          detected?.type ?? null,
+          detected?.slug ?? null,
+          detected?.version ?? null,
+        );
+      if (detected) {
+        debugLog(
+          '[Source] Auto-detected WordPress project:',
+          detected.type,
+          detected.slug,
+          detected.version,
+        );
+      }
+    },
+    [],
+  );
+
+  const executeWordPressProjectLoad = useCallback(
+    async (request: WordPressProjectOpenRequest) => {
+      const { projectType, slug, locale, track, release } = request;
+      setErrors([]);
+      setWarnings([]);
+      setShowWarnings(false);
+      setEncodingInfo(null);
+      setDragError(null);
+      setPendingDraft(null);
+      setPendingProject(null);
+      setIsFromDraft(false);
+      clearUpstreamDeltaEntries();
+
+      const text = await fetchWordPressTranslationFile({ projectType, slug, locale, track });
+      const wpFilename = `${slug}-${locale.replaceAll('-', '_')}.po`;
+      const result = parsePOFileWithDiagnostics(text, wpFilename);
+
+      if (!result.success || !result.file) {
+        setErrors(result.errors);
+        throw new Error(t('The WordPress.org translation export could not be parsed.'));
+      }
+
+      if (result.warnings.length > 0) {
+        setWarnings(result.warnings);
+        setShowWarnings(true);
+      }
+
+      loadFile(result.file);
+      applyDetectedWordPressProject(result.file.header, wpFilename);
+      useSourceStore.getState().setProjectContext(projectType, slug, { release, track });
+    },
+    [applyDetectedWordPressProject, clearUpstreamDeltaEntries, loadFile, t],
+  );
+
+  const handleOpenWordPressProject = useCallback(
+    async (request: WordPressProjectOpenRequest) => {
+      if (filename) {
+        setPendingProject(request);
+        return;
+      }
+      await executeWordPressProjectLoad(request);
+    },
+    [executeWordPressProjectLoad, filename],
+  );
+
+  const handleApplyWordPressRefresh = useCallback(
+    async ({
+      mergedEntries,
+      deltaEntryIds,
+      release,
+      track,
+      summary,
+      refreshGlossary,
+    }: {
+      mergedEntries: typeof entries;
+      deltaEntryIds: string[];
+      release: string | null;
+      track: WordPressPluginTranslationTrack;
+      summary: { added: number; removed: number; changed: number; metaUpdated: number };
+      refreshGlossary: boolean;
+    }) => {
+      mergeEntries(mergedEntries);
+      setUpstreamDeltaEntries(deltaEntryIds);
+      if (deltaEntryIds.length > 0) {
+        useEditorStore.getState().setFilterState('upstream-delta', 'include');
+      }
+      useSourceStore.getState().setSelectedRelease(release);
+      useSourceStore.getState().setPluginTranslationTrack(track);
+      setWorkspaceMode('edit');
+      setMergeSuccess({
+        potFilename: t('WordPress.org refresh'),
+        kept: mergedEntries.length - summary.added,
+        added: summary.added,
+        removed: summary.removed,
+        updatedMeta: summary.metaUpdated,
+      });
+
+      if (refreshGlossary && glossaryLocale) {
+        const result = await fetchWPGlossary(glossaryLocale, true);
+        if (result.glossary) {
+          await handleGlossaryLoaded(result.glossary);
+        }
+      }
+    },
+    [
+      glossaryLocale,
+      handleGlossaryLoaded,
+      mergeEntries,
+      setUpstreamDeltaEntries,
+      setWorkspaceMode,
+      t,
+    ],
+  );
+
   /**
    * Handle file upload with encoding detection
    */
@@ -687,6 +823,7 @@ export default function Index() {
       setEncodingInfo(null);
       setDragError(null);
       setIsFromDraft(false);
+      clearUpstreamDeltaEntries();
 
       // Validate file extension
       const ext = file.name.toLowerCase().split('.').pop();
@@ -778,12 +915,8 @@ export default function Index() {
             loadFile(result.file);
           }
 
-          // Auto-detect plugin slug for source code links
-          const detected = detectPluginSlug(result.file.header, file.name);
-          if (detected) {
-            useSourceStore.getState().setAutoDetectedSlug(detected.slug, detected.version);
-            debugLog('[Source] Auto-detected plugin:', detected.slug, detected.version);
-          }
+          // Auto-detect the WordPress project for source code links
+          applyDetectedWordPressProject(result.file.header, file.name);
 
           // Log stats for debugging
           debugLog('[PO Parser] Stats:', result.stats);
@@ -798,7 +931,7 @@ export default function Index() {
         ]);
       }
     },
-    [loadFile, t],
+    [applyDetectedWordPressProject, clearUpstreamDeltaEntries, loadFile, t],
   );
 
   /**
@@ -843,10 +976,7 @@ export default function Index() {
 
           loadFile(result.file);
 
-          const detected = detectPluginSlug(result.file.header, filename);
-          if (detected) {
-            useSourceStore.getState().setAutoDetectedSlug(detected.slug, detected.version);
-          }
+          applyDetectedWordPressProject(result.file.header, filename);
         }
       } catch (err) {
         setErrors([
@@ -858,7 +988,7 @@ export default function Index() {
         ]);
       }
     },
-    [loadFile, t],
+    [applyDetectedWordPressProject, loadFile, t],
   );
 
   /**
@@ -887,6 +1017,7 @@ export default function Index() {
     setDragError(null);
     setPendingDraft(null);
     setIsFromDraft(false);
+    clearUpstreamDeltaEntries();
 
     try {
       const examplePo = getBundledExamplePo();
@@ -904,15 +1035,11 @@ export default function Index() {
 
       loadFile(result.file);
 
-      const detected = detectPluginSlug(result.file.header, result.file.filename);
-      if (detected) {
-        useSourceStore.getState().setAutoDetectedSlug(detected.slug, detected.version);
-        debugLog('[Source] Auto-detected plugin from example:', detected.slug, detected.version);
-      }
+      applyDetectedWordPressProject(result.file.header, result.file.filename);
     } finally {
       setIsLoadingExample(false);
     }
-  }, [loadFile]);
+  }, [applyDetectedWordPressProject, clearUpstreamDeltaEntries, loadFile]);
 
   const executeUrlLoad = useCallback(
     async (url: string) => {
@@ -925,6 +1052,7 @@ export default function Index() {
       setPendingDraft(null);
       setIsFromDraft(false);
       setPendingUrl(null);
+      clearUpstreamDeltaEntries();
 
       let timeout: ReturnType<typeof setTimeout> | undefined;
       try {
@@ -968,11 +1096,7 @@ export default function Index() {
 
           loadFile(result.file);
 
-          const detected = detectPluginSlug(result.file.header, name);
-          if (detected) {
-            useSourceStore.getState().setAutoDetectedSlug(detected.slug, detected.version);
-            debugLog('[URL] Auto-detected plugin:', detected.slug, detected.version);
-          }
+          applyDetectedWordPressProject(result.file.header, name);
         }
 
         setUrlInput('');
@@ -994,7 +1118,7 @@ export default function Index() {
         setIsLoadingUrl(false);
       }
     },
-    [loadFile, t],
+    [applyDetectedWordPressProject, clearUpstreamDeltaEntries, loadFile, t],
   );
 
   const handleLoadFromUrl = useCallback(
@@ -1302,6 +1426,7 @@ export default function Index() {
     }
 
     clearEditor();
+    clearUpstreamDeltaEntries();
     useSourceStore.getState().clearSource();
     setErrors([]);
     setWarnings([]);
@@ -1316,7 +1441,7 @@ export default function Index() {
     setTranslateTargetLang(undefined);
     // Clear repo connection
     clearRepoConnection();
-  }, [clearEditor, filename, clearRepoConnection]);
+  }, [clearEditor, clearUpstreamDeltaEntries, filename, clearRepoConnection]);
 
   /**
    * Open clear confirmation modal
@@ -1776,6 +1901,20 @@ export default function Index() {
                         {t('Load from URL')}
                       </Menu.Item>
                       <Menu.Item
+                        leftSection={<Globe size={14} />}
+                        onClick={() => setWordpressProjectOpen(true)}
+                      >
+                        {t('Open from WordPress.org')}
+                      </Menu.Item>
+                      {currentProjectType && currentProjectSlug && filename && (
+                        <Menu.Item
+                          leftSection={<RotateCcw size={14} />}
+                          onClick={() => setWordpressRefreshOpen(true)}
+                        >
+                          {t('Refresh from WordPress.org')}
+                        </Menu.Item>
+                      )}
+                      <Menu.Item
                         leftSection={<GitBranch size={14} />}
                         onClick={() => {
                           setRepoSyncInitialTab(repoConnection ? 'push' : 'connect');
@@ -1865,6 +2004,33 @@ export default function Index() {
               variant="warning"
             />
 
+            {/* Confirmation modal for WordPress project overwrite */}
+            <ConfirmModal
+              opened={pendingProject !== null}
+              onClose={() => setPendingProject(null)}
+              onConfirm={() => {
+                if (!pendingProject) return;
+                void executeWordPressProjectLoad(pendingProject).catch((error) => {
+                  setErrors([
+                    {
+                      severity: 'error',
+                      code: 'INVALID_SYNTAX',
+                      message:
+                        error instanceof Error
+                          ? error.message
+                          : t('Failed to open the WordPress.org project.'),
+                    },
+                  ]);
+                });
+              }}
+              title={t('Replace current file?')}
+              message={t(
+                'Opening a WordPress project will replace the currently loaded file. Any unsaved changes will be lost.',
+              )}
+              confirmLabel={msgid('Replace')}
+              variant="warning"
+            />
+
             {/* URL input prompt */}
             <PromptModal
               opened={urlPromptOpen}
@@ -1875,6 +2041,26 @@ export default function Index() {
               placeholder="https://example.com/locale/en.po"
               submitLabel={msgid('Load')}
             />
+
+            <WordPressProjectModal
+              opened={wordpressProjectOpen}
+              onClose={() => setWordpressProjectOpen(false)}
+              initialLocale={glossaryLocale}
+              onOpenProject={handleOpenWordPressProject}
+            />
+
+            {currentProjectType && currentProjectSlug && (
+              <WordPressRefreshModal
+                opened={wordpressRefreshOpen}
+                onClose={() => setWordpressRefreshOpen(false)}
+                projectType={currentProjectType}
+                projectSlug={currentProjectSlug}
+                currentEntries={entries}
+                currentRelease={currentProjectRelease}
+                locale={glossaryLocale}
+                onApplyRefresh={handleApplyWordPressRefresh}
+              />
+            )}
 
             {/* Drag error display */}
             <AnimatePresence>
@@ -2053,7 +2239,23 @@ export default function Index() {
             {/* Header and control workspace */}
             {filename && (
               <Stack gap="md">
-                <HeaderEditor encodingInfo={encodingInfo} />
+                <HeaderEditor
+                  encodingInfo={encodingInfo}
+                  wordPressProject={
+                    currentProjectType && currentProjectSlug
+                      ? {
+                          type: currentProjectType,
+                          slug: currentProjectSlug,
+                          release: currentProjectRelease,
+                        }
+                      : null
+                  }
+                  onRefreshWordPress={
+                    currentProjectType && currentProjectSlug
+                      ? () => setWordpressRefreshOpen(true)
+                      : undefined
+                  }
+                />
                 <Paper p="md" withBorder>
                   <Stack gap="sm">
                     <Group justify="space-between" align="center" wrap="wrap">
@@ -2207,6 +2409,22 @@ export default function Index() {
                     </Text>
 
                     <Group gap="sm" onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+                      <Tooltip
+                        label={t(
+                          'Open the latest WordPress.org translation export by project slug',
+                        )}
+                      >
+                        <motion.div {...buttonStates}>
+                          <Button
+                            variant="default"
+                            leftSection={<Globe size={16} />}
+                            onClick={() => setWordpressProjectOpen(true)}
+                          >
+                            {t('Open from WordPress.org')}
+                          </Button>
+                        </motion.div>
+                      </Tooltip>
+
                       <Tooltip label={t('Open a locale file from a GitHub or GitLab repository')}>
                         <motion.div {...buttonStates}>
                           <Button
