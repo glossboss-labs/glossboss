@@ -1,4 +1,9 @@
-import { buildSvnUrl, buildTracUrl, normalizeSourcePath } from './references';
+import {
+  buildSvnUrl,
+  buildTracUrl,
+  detectWordPressProject,
+  normalizeSourcePath,
+} from './references';
 
 describe('normalizeSourcePath', () => {
   it('extracts explicit tag base paths', () => {
@@ -25,6 +30,7 @@ describe('buildTracUrl', () => {
   it('does not duplicate embedded tag prefixes', () => {
     expect(
       buildTracUrl(
+        'plugin',
         'admin-site-enhancements',
         'tags/8.4.2/classes/class-admin-columns-manager.php',
         245,
@@ -40,6 +46,7 @@ describe('buildSvnUrl', () => {
   it('prefers explicit trunk paths from references', () => {
     expect(
       buildSvnUrl(
+        'plugin',
         'admin-site-enhancements',
         'admin-site-enhancements/trunk/includes/admin/file.php',
         'tags/8.4.2',
@@ -47,5 +54,29 @@ describe('buildSvnUrl', () => {
     ).toBe(
       'https://plugins.svn.wordpress.org/admin-site-enhancements/trunk/includes/admin/file.php',
     );
+  });
+
+  it('builds theme SVN URLs with version base paths', () => {
+    expect(buildSvnUrl('theme', 'twentytwentyfive', 'patterns/footer.php', '1.4')).toBe(
+      'https://themes.svn.wordpress.org/twentytwentyfive/1.4/patterns/footer.php',
+    );
+  });
+});
+
+describe('detectWordPressProject', () => {
+  it('detects theme projects from support URLs', () => {
+    expect(
+      detectWordPressProject(
+        {
+          reportMsgidBugsTo: 'https://wordpress.org/support/theme/twentytwentyfive/',
+          projectIdVersion: 'Twenty Twenty-Five 1.4',
+        },
+        'twentytwentyfive-nl_NL.po',
+      ),
+    ).toEqual({
+      type: 'theme',
+      slug: 'twentytwentyfive',
+      version: '1.4',
+    });
   });
 });

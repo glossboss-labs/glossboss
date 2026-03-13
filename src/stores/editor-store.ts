@@ -42,7 +42,8 @@ export type FilterType =
   | 'review-approved'
   | 'review-needs-changes'
   | 'review-unresolved'
-  | 'review-changed';
+  | 'review-changed'
+  | 'upstream-delta';
 
 /** Filter state: include (show only) or exclude (don't show) */
 export type FilterState = 'include' | 'exclude';
@@ -103,6 +104,9 @@ export interface EditorState {
 
   /** QA results per entry */
   qaReports: Map<string, QAEntryReport>;
+
+  /** Entries changed by the last upstream refresh diff */
+  upstreamDeltaEntryIds: Set<string>;
 
   /** Review workflow metadata keyed by entry ID */
   reviewEntries: Map<string, ReviewEntryState>;
@@ -257,6 +261,12 @@ export interface EditorActions {
   /** Clear all glossary analysis (e.g., when glossary changes) */
   clearGlossaryAnalysis: () => void;
 
+  /** Mark the entries changed by the last upstream refresh */
+  setUpstreamDeltaEntries: (entryIds: string[]) => void;
+
+  /** Clear the upstream refresh delta marker */
+  clearUpstreamDeltaEntries: () => void;
+
   /** Set QA reports for multiple entries at once */
   setQaReports: (reports: Map<string, QAEntryReport>) => void;
 
@@ -340,6 +350,7 @@ const initialState: EditorState = {
   machineTranslationMeta: new Map(),
   glossaryAnalysis: new Map(),
   qaReports: new Map(),
+  upstreamDeltaEntryIds: new Set(),
   reviewEntries: new Map(),
   reviewerName: '',
   lockApprovedEntries: false,
@@ -406,6 +417,7 @@ function entryMatchesFilter(
   dirtyEntryIds: Set<string>,
   glossaryAnalysis: Map<string, GlossaryAnalysisResult>,
   qaReports: Map<string, QAEntryReport>,
+  upstreamDeltaEntryIds: Set<string>,
   machineTranslatedIds: Set<string>,
   manualEditIds: Set<string>,
   reviewEntries: Map<string, ReviewEntryState>,
@@ -465,6 +477,8 @@ function entryMatchesFilter(
       return hasUnresolvedReviewComments(reviewEntry);
     case 'review-changed':
       return reviewEntry?.history.some((event) => event.type === 'translation-updated') ?? false;
+    case 'upstream-delta':
+      return upstreamDeltaEntryIds.has(entry.id);
     default:
       return false;
   }
@@ -544,6 +558,7 @@ export const useEditorStore = create<EditorState & EditorActions>()(
           machineTranslationMeta: new Map(),
           glossaryAnalysis: new Map(),
           qaReports: new Map(),
+          upstreamDeltaEntryIds: new Set(),
           reviewEntries: new Map(),
           selectedEntryId: file.entries[0]?.id ?? null,
           selectedEntryIds: new Set(),
@@ -950,6 +965,7 @@ export const useEditorStore = create<EditorState & EditorActions>()(
           machineTranslationMeta: new Map(),
           glossaryAnalysis: new Map(),
           qaReports: new Map(),
+          upstreamDeltaEntryIds: new Set(),
           reviewEntries: new Map(),
           selectedEntryId: mergedEntries[0]?.id ?? null,
           selectedEntryIds: new Set(),
@@ -1026,6 +1042,14 @@ export const useEditorStore = create<EditorState & EditorActions>()(
 
       clearGlossaryAnalysis: () => {
         set({ glossaryAnalysis: new Map() });
+      },
+
+      setUpstreamDeltaEntries: (entryIds: string[]) => {
+        set({ upstreamDeltaEntryIds: new Set(entryIds) });
+      },
+
+      clearUpstreamDeltaEntries: () => {
+        set({ upstreamDeltaEntryIds: new Set() });
       },
 
       setQaReports: (reports: Map<string, QAEntryReport>) => {
@@ -1165,6 +1189,7 @@ export const useEditorStore = create<EditorState & EditorActions>()(
           dirtyEntryIds,
           glossaryAnalysis,
           qaReports,
+          upstreamDeltaEntryIds,
           machineTranslatedIds,
           manualEditIds,
           reviewEntries,
@@ -1197,6 +1222,7 @@ export const useEditorStore = create<EditorState & EditorActions>()(
                 dirtyEntryIds,
                 glossaryAnalysis,
                 qaReports,
+                upstreamDeltaEntryIds,
                 machineTranslatedIds,
                 manualEditIds,
                 reviewEntries,
@@ -1216,6 +1242,7 @@ export const useEditorStore = create<EditorState & EditorActions>()(
                   dirtyEntryIds,
                   glossaryAnalysis,
                   qaReports,
+                  upstreamDeltaEntryIds,
                   machineTranslatedIds,
                   manualEditIds,
                   reviewEntries,

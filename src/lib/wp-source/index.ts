@@ -9,19 +9,47 @@ export {
   parseReferences,
   normalizeSourcePath,
   detectPluginSlug,
+  detectWordPressProject,
   buildTracUrl,
   buildSvnUrl,
+  type WordPressProjectType,
+  type WordPressPluginTranslationTrack,
   type ParsedReference,
   type NormalizedSourcePath,
-  type DetectedPlugin,
+  type DetectedWordPressProject,
 } from './references';
 
 export {
   fetchSourceFile,
   fetchDirectoryListing,
+  fetchProjectLocales,
+  fetchProjectReleases,
+  searchWordPressProjects,
   clearCache,
-  validateSlug,
+  validateWordPressProject,
   type DirectoryEntry,
   type FetchSourceResult,
   type FetchDirResult,
+  type WordPressProjectLocale,
+  type WordPressProjectSuggestion,
 } from './fetcher';
+
+export {
+  buildWordPressReleaseList,
+  buildWordPressTranslationExportUrl,
+  compareVersions,
+  fetchWordPressProjectInfo,
+  fetchWordPressTranslationFile,
+  sortWordPressReleases,
+  validateWordPressProjectSlug,
+  type WordPressProjectInfo,
+} from './project';
+
+export { fetchUpstreamTemplate, type UpstreamTemplate } from './upstream';
+
+export {
+  diffEntriesAgainstTemplate,
+  type ReleaseDeltaKind,
+  type ReleaseDiffResult,
+  type ReleaseDiffSummary,
+} from './diff';

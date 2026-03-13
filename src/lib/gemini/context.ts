@@ -1,7 +1,13 @@
 import { fetchSourceFile } from '@/lib/wp-source/fetcher';
 import { parseReferences } from '@/lib/wp-source/references';
-import { getEffectiveSlug, useSourceStore } from '@/stores/source-store';
+import {
+  getEffectiveProjectType,
+  getEffectiveRelease,
+  getEffectiveSlug,
+  useSourceStore,
+} from '@/stores/source-store';
 import type { TranslationContextExcerpt } from '@/lib/translation/types';
+import type { WordPressProjectType } from '@/lib/wp-source';
 
 const MAX_CONTEXT_FILES = 2;
 const EXCERPT_RADIUS = 12;
@@ -29,15 +35,17 @@ function buildExcerpt(content: string, line: number | null): string {
 
 export async function resolveGeminiContextExcerpts(
   references: string[] | undefined,
-  pluginSlug?: string | null,
+  projectSlug?: string | null,
+  projectType?: WordPressProjectType | null,
 ): Promise<TranslationContextExcerpt[]> {
   if (!references?.length) {
     return [];
   }
 
   const sourceState = useSourceStore.getState();
-  const effectiveSlug = pluginSlug ?? getEffectiveSlug(sourceState);
-  if (!effectiveSlug) {
+  const effectiveSlug = projectSlug ?? getEffectiveSlug(sourceState);
+  const effectiveProjectType = projectType ?? getEffectiveProjectType(sourceState);
+  if (!effectiveSlug || !effectiveProjectType) {
     return [];
   }
 
@@ -54,9 +62,10 @@ export async function resolveGeminiContextExcerpts(
     uniqueReferences.map(async (reference) => {
       try {
         const result = await fetchSourceFile(
+          effectiveProjectType,
           effectiveSlug,
           reference.path,
-          sourceState.pluginVersion,
+          getEffectiveRelease(sourceState),
         );
         const content = buildExcerpt(result.content, reference.line);
         if (!content) {

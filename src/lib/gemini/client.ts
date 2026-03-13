@@ -30,7 +30,11 @@ export function createGeminiClient(functionUrl: string = getDefaultFunctionUrl()
         : []);
     const contextExcerpts =
       settings.useProjectContext && request.references?.length
-        ? await resolveGeminiContextExcerpts(request.references, request.pluginSlug)
+        ? await resolveGeminiContextExcerpts(
+            request.references,
+            request.projectSlug,
+            request.projectType,
+          )
         : [];
 
     const response = await fetch(functionUrl, {
@@ -43,7 +47,7 @@ export function createGeminiClient(functionUrl: string = getDefaultFunctionUrl()
         userApiKey: settings.apiKey,
         modelId: settings.modelId,
         glossaryEntries,
-        projectSlug: request.pluginSlug,
+        projectSlug: request.projectSlug,
         contextExcerpts,
       }),
     });

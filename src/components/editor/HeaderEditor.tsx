@@ -12,6 +12,7 @@ import {
   Stack,
   Text,
   Badge,
+  Button,
   TextInput,
   Select,
   Collapse,
@@ -37,6 +38,7 @@ import {
   X,
   Loader2,
   Plug,
+  RotateCcw,
 } from 'lucide-react';
 import { useEditorStore, useSourceStore } from '@/stores';
 import type { POHeader } from '@/lib/po/types';
@@ -264,6 +266,12 @@ interface HeaderEditorProps {
     confidence: string;
     method: string;
   } | null;
+  wordPressProject?: {
+    type: string;
+    slug: string;
+    release?: string | null;
+  } | null;
+  onRefreshWordPress?: () => void;
 }
 
 /**
@@ -454,51 +462,75 @@ function PluralFormsSelector({
 /**
  * Plugin slug input with validation
  */
-function PluginSlugInput() {
+function WordPressProjectInput() {
   const { t } = useTranslation();
-  const { pluginSlug, autoDetectedSlug, isSlugValid, setPluginSlug, validateCurrentSlug } =
-    useSourceStore();
+  const {
+    projectType,
+    projectSlug,
+    autoDetectedProjectType,
+    autoDetectedSlug,
+    isProjectValid,
+    setProjectType,
+    setProjectSlug,
+    validateCurrentProject,
+  } = useSourceStore();
   const [isValidating, setIsValidating] = useState(false);
 
-  const effectiveSlug = pluginSlug || autoDetectedSlug;
+  const effectiveType = projectType || autoDetectedProjectType || 'plugin';
+  const effectiveSlug = projectSlug || autoDetectedSlug;
+  const localizedType = effectiveType === 'plugin' ? t('Plugin') : t('Theme');
 
   const handleVerify = useCallback(async () => {
     setIsValidating(true);
-    await validateCurrentSlug();
-    setIsValidating(false);
-  }, [validateCurrentSlug]);
+    try {
+      await validateCurrentProject();
+    } finally {
+      setIsValidating(false);
+    }
+  }, [validateCurrentProject]);
 
   return (
     <Box>
       <Group gap={4} mb={4}>
         <Plug size={14} />
         <Text size="sm" fw={500}>
-          {t('Plugin Slug')}
+          {t('WordPress Project')}
         </Text>
       </Group>
       <Text size="xs" c="dimmed" mb={6}>
-        {t('WordPress.org plugin slug for source code links')}
+        {t('Choose the WordPress project type and slug used for source links.')}
       </Text>
-      <Group gap="xs" align="flex-start">
+      <Group gap="xs" align="flex-start" wrap="nowrap">
+        <Select
+          data={[
+            { value: 'plugin', label: t('Plugin') },
+            { value: 'theme', label: t('Theme') },
+          ]}
+          value={effectiveType}
+          onChange={(value) => setProjectType((value as 'plugin' | 'theme') || null)}
+          aria-label={t('WordPress project type')}
+          w={120}
+          allowDeselect={false}
+        />
         <TextInput
-          placeholder={autoDetectedSlug || 'e.g. woocommerce'}
-          value={pluginSlug ?? ''}
-          onChange={(e) => setPluginSlug(e.currentTarget.value || null)}
-          aria-label={t('Plugin Slug')}
+          placeholder={autoDetectedSlug || t('e.g. woocommerce')}
+          value={projectSlug ?? ''}
+          onChange={(e) => setProjectSlug(e.currentTarget.value || null)}
+          aria-label={t('WordPress project slug')}
           style={{ flex: 1 }}
           rightSection={
-            isSlugValid === true ? (
+            isProjectValid === true ? (
               <Check size={14} style={{ color: 'var(--mantine-color-green-text)' }} />
-            ) : isSlugValid === false ? (
+            ) : isProjectValid === false ? (
               <X size={14} style={{ color: 'var(--mantine-color-red-text)' }} />
             ) : null
           }
         />
-        <Tooltip label={t('Verify slug exists on WordPress.org')}>
+        <Tooltip label={t('Verify this project exists on WordPress.org')}>
           <UnstyledButton
             onClick={handleVerify}
             disabled={!effectiveSlug || isValidating}
-            aria-label={t('Verify plugin slug')}
+            aria-label={t('Verify WordPress project')}
             style={{
               padding: '7px 12px',
               borderRadius: 'var(--mantine-radius-default)',
@@ -510,21 +542,28 @@ function PluginSlugInput() {
           </UnstyledButton>
         </Tooltip>
       </Group>
-      {autoDetectedSlug && !pluginSlug && (
+      {autoDetectedSlug && !projectSlug && (
         <Text size="xs" c="dimmed" mt={4}>
-          {t('Auto-detected: {{slug}}', { slug: autoDetectedSlug })}
+          {t('Auto-detected: {{type}} / {{slug}}', {
+            type: localizedType,
+            slug: autoDetectedSlug,
+          })}
         </Text>
       )}
-      {isSlugValid === false && (
+      {isProjectValid === false && (
         <Text size="xs" c="red" mt={4}>
-          {t('Plugin not found on WordPress.org')}
+          {t('Project not found on WordPress.org')}
         </Text>
       )}
     </Box>
   );
 }
 
-export function HeaderEditor({ encodingInfo }: HeaderEditorProps) {
+export function HeaderEditor({
+  encodingInfo,
+  wordPressProject,
+  onRefreshWordPress,
+}: HeaderEditorProps) {
   const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(false);
   const [showAllFields, setShowAllFields] = useState(false);
@@ -552,66 +591,88 @@ export function HeaderEditor({ encodingInfo }: HeaderEditorProps) {
   return (
     <Paper p="md" withBorder radius="md">
       {/* Summary row - always visible */}
-      <UnstyledButton
-        onClick={() => setIsExpanded(!isExpanded)}
-        style={{ width: '100%' }}
-        aria-expanded={isExpanded}
-      >
-        <Group justify="space-between" align="center">
-          <Group gap="sm">
-            <Text fw={500}>{filename}</Text>
-            {header.language && (
-              <Badge variant="light" size="sm" leftSection={<Globe size={12} />}>
-                {header.language}
-              </Badge>
-            )}
-            {encodingInfo && (
-              <Tooltip
-                label={t('Detected via {{method}} with {{confidence}} confidence', {
-                  method: encodingInfo.method,
-                  confidence: encodingInfo.confidence,
-                })}
-              >
-                <Badge
-                  variant="outline"
-                  size="sm"
-                  leftSection={<FileText size={12} />}
-                  color={
-                    encodingInfo.confidence === 'certain'
-                      ? 'green'
-                      : encodingInfo.confidence === 'high'
-                        ? 'blue'
-                        : 'yellow'
-                  }
-                >
-                  {encodingInfo.encoding.toUpperCase()}
-                </Badge>
-              </Tooltip>
-            )}
-          </Group>
-
-          <Group gap="md">
-            {hasUnsavedChanges && (
-              <Text size="sm" c="orange">
-                {t('Unsaved changes')}
-              </Text>
-            )}
-            <Group gap="xs">
-              <Text size="sm" c="dimmed">
-                {t('{{count}} entries', { count: entries.length })}
-              </Text>
+      <Group justify="space-between" align="center" wrap="wrap" gap="md">
+        <Group gap="sm" wrap="wrap" style={{ flex: 1, minWidth: 0 }}>
+          <Text fw={500}>{filename}</Text>
+          {header.language && (
+            <Badge variant="light" size="sm" leftSection={<Globe size={12} />}>
+              {header.language}
+            </Badge>
+          )}
+          {wordPressProject && (
+            <Badge color="gray" variant="light" size="sm">
+              {t('{{type}} / {{slug}}', {
+                type: wordPressProject.type === 'plugin' ? t('Plugin') : t('Theme'),
+                slug: wordPressProject.slug,
+              })}
+            </Badge>
+          )}
+          {wordPressProject?.release && (
+            <Badge color="blue" variant="light" size="sm">
+              {t('Release {{release}}', { release: wordPressProject.release })}
+            </Badge>
+          )}
+          {encodingInfo && (
+            <Tooltip
+              label={t('Detected via {{method}} with {{confidence}} confidence', {
+                method: encodingInfo.method,
+                confidence: encodingInfo.confidence,
+              })}
+            >
               <Badge
-                variant="light"
-                color="gray"
+                variant="outline"
                 size="sm"
-                rightSection={isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                leftSection={<FileText size={12} />}
+                color={
+                  encodingInfo.confidence === 'certain'
+                    ? 'green'
+                    : encodingInfo.confidence === 'high'
+                      ? 'blue'
+                      : 'yellow'
+                }
               >
-                {isExpanded ? t('Hide Header') : t('Edit Header')}
+                {encodingInfo.encoding.toUpperCase()}
               </Badge>
-            </Group>
-          </Group>
+            </Tooltip>
+          )}
         </Group>
-      </UnstyledButton>
+
+        <Group gap="sm" wrap="wrap" justify="flex-end">
+          {wordPressProject && onRefreshWordPress && (
+            <Button
+              size="compact-sm"
+              variant="default"
+              leftSection={<RotateCcw size={14} />}
+              onClick={onRefreshWordPress}
+            >
+              {t('Refresh')}
+            </Button>
+          )}
+          {hasUnsavedChanges && (
+            <Text size="sm" c="orange">
+              {t('Unsaved changes')}
+            </Text>
+          )}
+          <Text size="sm" c="dimmed">
+            {t('{{count}} entries', { count: entries.length })}
+          </Text>
+          <UnstyledButton
+            onClick={() => setIsExpanded(!isExpanded)}
+            aria-expanded={isExpanded}
+            aria-label={isExpanded ? t('Hide Header') : t('Edit Header')}
+          >
+            <Badge
+              component="span"
+              variant="light"
+              color="gray"
+              size="sm"
+              rightSection={isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+            >
+              {isExpanded ? t('Hide Header') : t('Edit Header')}
+            </Badge>
+          </UnstyledButton>
+        </Group>
+      </Group>
 
       {/* Expandable editor panel */}
       <Collapse in={isExpanded}>
@@ -682,7 +743,7 @@ export function HeaderEditor({ encodingInfo }: HeaderEditorProps) {
                 />
               );
             })}
-            <PluginSlugInput />
+            <WordPressProjectInput />
           </SimpleGrid>
 
           {/* Toggle for secondary fields */}

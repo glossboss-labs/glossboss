@@ -14,7 +14,7 @@ import {
   UnstyledButton,
 } from '@mantine/core';
 import { ExternalLink, File } from 'lucide-react';
-import { getEffectiveSlug, useSourceStore } from '@/stores/source-store';
+import { getEffectiveProjectType, getEffectiveSlug, useSourceStore } from '@/stores/source-store';
 import { buildTracUrl } from '@/lib/wp-source/references';
 import { useTranslation } from '@/lib/app-language';
 
@@ -160,8 +160,9 @@ export function SourceCodeViewer({
   }, [targetLine, content]);
 
   const { t } = useTranslation();
-  const slug = useSourceStore((s) => getEffectiveSlug(s));
-  const basePath = useSourceStore((s) => s.resolvedBasePath) ?? 'trunk';
+  const projectType = useSourceStore((state) => getEffectiveProjectType(state));
+  const slug = useSourceStore((state) => getEffectiveSlug(state));
+  const basePath = useSourceStore((state) => state.resolvedBasePath);
 
   return (
     <Stack gap={0}>
@@ -174,11 +175,11 @@ export function SourceCodeViewer({
         <Text size="sm" fw={500} style={{ fontFamily: 'monospace' }}>
           {filePath}
         </Text>
-        {slug && (
+        {slug && projectType && (
           <Tooltip label={t('Open in Trac')}>
             <ActionIcon
               component="a"
-              href={buildTracUrl(slug, filePath, targetLine ?? undefined, basePath)}
+              href={buildTracUrl(projectType, slug, filePath, targetLine ?? undefined, basePath)}
               target="_blank"
               rel="noopener noreferrer"
               variant="subtle"

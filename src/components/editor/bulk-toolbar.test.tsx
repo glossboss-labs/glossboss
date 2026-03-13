@@ -288,7 +288,7 @@ describe('editor details and mobile layout', () => {
 
   it('activates source reference from the inspector reference link', async () => {
     const user = userEvent.setup();
-    useSourceStore.getState().setPluginSlug('demo-plugin');
+    useSourceStore.getState().setProjectContext('plugin', 'demo-plugin');
 
     const entries = [
       makeEntry('a', {
