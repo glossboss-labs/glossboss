@@ -325,10 +325,10 @@ export function WordPressProjectModal({
                   onChange={(event) => setLocale(event.currentTarget.value)}
                   description={
                     localeLoadError
-                      ? t(
-                          'Supported locales could not be loaded in this deployment. Enter the locale manually.',
-                        )
-                      : t('No supported locales were found for this project.')
+                      ? t('Enter the locale manually.')
+                      : projectName
+                        ? t('No supported locales were found for this project.')
+                        : undefined
                   }
                 />
               ) : (
@@ -355,22 +355,31 @@ export function WordPressProjectModal({
                   ]}
                   allowDeselect={false}
                 />
-              ) : null}
+              ) : (
+                <Select
+                  label={t('Source release')}
+                  value={selectedRelease}
+                  onChange={setSelectedRelease}
+                  data={releaseOptions}
+                  placeholder={t('Select a release')}
+                  searchable
+                  nothingFoundMessage={t('No releases found')}
+                />
+              )}
+            </Group>
+
+            {projectType === 'plugin' && (
               <Select
                 label={t('Source release')}
                 value={selectedRelease}
                 onChange={setSelectedRelease}
                 data={releaseOptions}
-                placeholder={
-                  track === 'dev' && projectType === 'plugin'
-                    ? t('Trunk / development')
-                    : t('Select a release')
-                }
-                disabled={projectType === 'plugin' && track === 'dev'}
+                placeholder={track === 'dev' ? t('Trunk / development') : t('Select a release')}
+                disabled={track === 'dev'}
                 searchable
                 nothingFoundMessage={t('No releases found')}
               />
-            </Group>
+            )}
 
             {isLoadingMeta && (
               <Stack gap="xs">

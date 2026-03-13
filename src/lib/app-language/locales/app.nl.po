@@ -283,7 +283,7 @@ msgstr ""
 
 #: src/components/SettingsModal.tsx:2628
 #: src/components/editor/TranslateToolbar.tsx:926
-#: src/components/editor/WordPressProjectModal.tsx:410
+#: src/components/editor/WordPressProjectModal.tsx:419
 #: src/components/editor/WordPressRefreshModal.tsx:331
 #: src/components/feedback/FeedbackModal.tsx:480
 #: src/components/ui/ConfirmModal.tsx:38
@@ -863,6 +863,10 @@ msgstr "Engels, Nederlands, Duits, Zweeds, Deens, Noors, enz."
 #: src/components/editor/HeaderEditor.tsx:454
 msgid "Enter custom expression"
 msgstr "Voer een aangepaste expressie in"
+
+#: src/components/editor/WordPressProjectModal.tsx:328
+msgid "Enter the locale manually."
+msgstr ""
 
 #: src/components/SettingsModal.tsx:1583
 msgid "Enter your Azure Translator API key"
@@ -1836,7 +1840,8 @@ msgstr "Geen overeenkomstige meervoudsvorm"
 msgid "No matching slugs"
 msgstr ""
 
-#: src/components/editor/WordPressProjectModal.tsx:371
+#: src/components/editor/WordPressProjectModal.tsx:366
+#: src/components/editor/WordPressProjectModal.tsx:380
 #: src/components/editor/WordPressRefreshModal.tsx:259
 msgid "No releases found"
 msgstr ""
@@ -1869,7 +1874,7 @@ msgstr "Geen selectie"
 msgid "No source references"
 msgstr "Geen bronverwijzingen"
 
-#: src/components/editor/WordPressProjectModal.tsx:331
+#: src/components/editor/WordPressProjectModal.tsx:330
 msgid "No supported locales were found for this project."
 msgstr ""
 
@@ -1969,7 +1974,7 @@ msgstr "Openen in Trac"
 msgid "Open issue"
 msgstr "Issue openen"
 
-#: src/components/editor/WordPressProjectModal.tsx:415
+#: src/components/editor/WordPressProjectModal.tsx:424
 msgid "Open project"
 msgstr ""
 
@@ -2541,7 +2546,8 @@ msgstr ""
 msgid "Select a reference above to load source context."
 msgstr "Selecteer een referentie hierboven om de broncontext te laden."
 
-#: src/components/editor/WordPressProjectModal.tsx:367
+#: src/components/editor/WordPressProjectModal.tsx:364
+#: src/components/editor/WordPressProjectModal.tsx:377
 #: src/components/editor/WordPressRefreshModal.tsx:255
 msgid "Select a release"
 msgstr ""
@@ -2779,6 +2785,7 @@ msgid "Source preview"
 msgstr "Bronvoorbeeld"
 
 #: src/components/editor/WordPressProjectModal.tsx:360
+#: src/components/editor/WordPressProjectModal.tsx:373
 msgid "Source release"
 msgstr ""
 
@@ -2874,12 +2881,6 @@ msgstr ""
 msgid "Successfully translated {{count}} entries"
 msgstr "{{count}} items succesvol vertaald"
 
-#: src/components/editor/WordPressProjectModal.tsx:328
-msgid ""
-"Supported locales could not be loaded in this deployment. Enter the locale m"
-"anually."
-msgstr ""
-
 #: src/components/editor/HeaderEditor.tsx:133
 msgid "Swahili"
 msgstr "Swahili"
@@ -2971,13 +2972,13 @@ msgstr "De URL moet beginnen met https://"
 msgid "The WordPress.org translation export could not be parsed."
 msgstr ""
 
-#: src/components/editor/WordPressProjectModal.tsx:393
+#: src/components/editor/WordPressProjectModal.tsx:402
 msgid ""
 "The translation file will be loaded from WordPress.org and source browsing w"
 "ill use the selected release."
 msgstr ""
 
-#: src/components/editor/WordPressProjectModal.tsx:390
+#: src/components/editor/WordPressProjectModal.tsx:399
 msgid ""
 "The translation file will be loaded from the development track and source br"
 "owsing will follow trunk."
@@ -3148,7 +3149,7 @@ msgstr "Vertalingen zonder glossary-afdwinging"
 msgid "Translator comments"
 msgstr "Vertalersopmerkingen"
 
-#: src/components/editor/WordPressProjectModal.tsx:366
+#: src/components/editor/WordPressProjectModal.tsx:377
 #: src/components/editor/WordPressRefreshModal.tsx:254
 msgid "Trunk / development"
 msgstr ""

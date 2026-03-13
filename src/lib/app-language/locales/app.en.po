@@ -288,7 +288,7 @@ msgstr "By {{actor}}"
 
 #: src/components/SettingsModal.tsx:2628
 #: src/components/editor/TranslateToolbar.tsx:926
-#: src/components/editor/WordPressProjectModal.tsx:410
+#: src/components/editor/WordPressProjectModal.tsx:419
 #: src/components/editor/WordPressRefreshModal.tsx:331
 #: src/components/feedback/FeedbackModal.tsx:480
 #: src/components/ui/ConfirmModal.tsx:38
@@ -868,6 +868,10 @@ msgstr "English, Dutch, German, Swedish, Danish, Norwegian, etc."
 #: src/components/editor/HeaderEditor.tsx:454
 msgid "Enter custom expression"
 msgstr "Enter custom expression"
+
+#: src/components/editor/WordPressProjectModal.tsx:328
+msgid "Enter the locale manually."
+msgstr "Enter the locale manually."
 
 #: src/components/SettingsModal.tsx:1583
 msgid "Enter your Azure Translator API key"
@@ -1858,7 +1862,8 @@ msgstr "No matching plural form"
 msgid "No matching slugs"
 msgstr "No matching slugs"
 
-#: src/components/editor/WordPressProjectModal.tsx:371
+#: src/components/editor/WordPressProjectModal.tsx:366
+#: src/components/editor/WordPressProjectModal.tsx:380
 #: src/components/editor/WordPressRefreshModal.tsx:259
 msgid "No releases found"
 msgstr "No releases found"
@@ -1891,7 +1896,7 @@ msgstr "No selection"
 msgid "No source references"
 msgstr "No source references"
 
-#: src/components/editor/WordPressProjectModal.tsx:331
+#: src/components/editor/WordPressProjectModal.tsx:330
 msgid "No supported locales were found for this project."
 msgstr "No supported locales were found for this project."
 
@@ -1991,7 +1996,7 @@ msgstr "Open in Trac"
 msgid "Open issue"
 msgstr "Open issue"
 
-#: src/components/editor/WordPressProjectModal.tsx:415
+#: src/components/editor/WordPressProjectModal.tsx:424
 msgid "Open project"
 msgstr "Open project"
 
@@ -2559,7 +2564,8 @@ msgstr "Select a locale"
 msgid "Select a reference above to load source context."
 msgstr "Select a reference above to load source context."
 
-#: src/components/editor/WordPressProjectModal.tsx:367
+#: src/components/editor/WordPressProjectModal.tsx:364
+#: src/components/editor/WordPressProjectModal.tsx:377
 #: src/components/editor/WordPressRefreshModal.tsx:255
 msgid "Select a release"
 msgstr "Select a release"
@@ -2799,6 +2805,7 @@ msgid "Source preview"
 msgstr "Source preview"
 
 #: src/components/editor/WordPressProjectModal.tsx:360
+#: src/components/editor/WordPressProjectModal.tsx:373
 msgid "Source release"
 msgstr "Source release"
 
@@ -2894,14 +2901,6 @@ msgstr ""
 msgid "Successfully translated {{count}} entries"
 msgstr "Successfully translated {{count}} entries"
 
-#: src/components/editor/WordPressProjectModal.tsx:328
-msgid ""
-"Supported locales could not be loaded in this deployment. Enter the locale m"
-"anually."
-msgstr ""
-"Supported locales could not be loaded in this deployment. Enter the locale m"
-"anually."
-
 #: src/components/editor/HeaderEditor.tsx:133
 msgid "Swahili"
 msgstr "Swahili"
@@ -2993,7 +2992,7 @@ msgstr "The URL must start with https://"
 msgid "The WordPress.org translation export could not be parsed."
 msgstr "The WordPress.org translation export could not be parsed."
 
-#: src/components/editor/WordPressProjectModal.tsx:393
+#: src/components/editor/WordPressProjectModal.tsx:402
 msgid ""
 "The translation file will be loaded from WordPress.org and source browsing w"
 "ill use the selected release."
@@ -3001,7 +3000,7 @@ msgstr ""
 "The translation file will be loaded from WordPress.org and source browsing w"
 "ill use the selected release."
 
-#: src/components/editor/WordPressProjectModal.tsx:390
+#: src/components/editor/WordPressProjectModal.tsx:399
 msgid ""
 "The translation file will be loaded from the development track and source br"
 "owsing will follow trunk."
@@ -3174,7 +3173,7 @@ msgstr "Translations without glossary enforcement"
 msgid "Translator comments"
 msgstr "Translator comments"
 
-#: src/components/editor/WordPressProjectModal.tsx:366
+#: src/components/editor/WordPressProjectModal.tsx:377
 #: src/components/editor/WordPressRefreshModal.tsx:254
 msgid "Trunk / development"
 msgstr "Trunk / development"
