@@ -12,6 +12,7 @@ import {
   Stack,
   Text,
   Badge,
+  Button,
   TextInput,
   Select,
   Collapse,
@@ -37,6 +38,7 @@ import {
   X,
   Loader2,
   Plug,
+  RotateCcw,
 } from 'lucide-react';
 import { useEditorStore, useSourceStore } from '@/stores';
 import type { POHeader } from '@/lib/po/types';
@@ -264,6 +266,12 @@ interface HeaderEditorProps {
     confidence: string;
     method: string;
   } | null;
+  wordPressProject?: {
+    type: string;
+    slug: string;
+    release?: string | null;
+  } | null;
+  onRefreshWordPress?: () => void;
 }
 
 /**
@@ -547,7 +555,11 @@ function WordPressProjectInput() {
   );
 }
 
-export function HeaderEditor({ encodingInfo }: HeaderEditorProps) {
+export function HeaderEditor({
+  encodingInfo,
+  wordPressProject,
+  onRefreshWordPress,
+}: HeaderEditorProps) {
   const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(false);
   const [showAllFields, setShowAllFields] = useState(false);
@@ -575,66 +587,88 @@ export function HeaderEditor({ encodingInfo }: HeaderEditorProps) {
   return (
     <Paper p="md" withBorder radius="md">
       {/* Summary row - always visible */}
-      <UnstyledButton
-        onClick={() => setIsExpanded(!isExpanded)}
-        style={{ width: '100%' }}
-        aria-expanded={isExpanded}
-      >
-        <Group justify="space-between" align="center">
-          <Group gap="sm">
-            <Text fw={500}>{filename}</Text>
-            {header.language && (
-              <Badge variant="light" size="sm" leftSection={<Globe size={12} />}>
-                {header.language}
-              </Badge>
-            )}
-            {encodingInfo && (
-              <Tooltip
-                label={t('Detected via {{method}} with {{confidence}} confidence', {
-                  method: encodingInfo.method,
-                  confidence: encodingInfo.confidence,
-                })}
-              >
-                <Badge
-                  variant="outline"
-                  size="sm"
-                  leftSection={<FileText size={12} />}
-                  color={
-                    encodingInfo.confidence === 'certain'
-                      ? 'green'
-                      : encodingInfo.confidence === 'high'
-                        ? 'blue'
-                        : 'yellow'
-                  }
-                >
-                  {encodingInfo.encoding.toUpperCase()}
-                </Badge>
-              </Tooltip>
-            )}
-          </Group>
-
-          <Group gap="md">
-            {hasUnsavedChanges && (
-              <Text size="sm" c="orange">
-                {t('Unsaved changes')}
-              </Text>
-            )}
-            <Group gap="xs">
-              <Text size="sm" c="dimmed">
-                {t('{{count}} entries', { count: entries.length })}
-              </Text>
+      <Group justify="space-between" align="center" wrap="wrap" gap="md">
+        <Group gap="sm" wrap="wrap" style={{ flex: 1, minWidth: 0 }}>
+          <Text fw={500}>{filename}</Text>
+          {header.language && (
+            <Badge variant="light" size="sm" leftSection={<Globe size={12} />}>
+              {header.language}
+            </Badge>
+          )}
+          {wordPressProject && (
+            <Badge color="gray" variant="light" size="sm">
+              {t('{{type}} / {{slug}}', {
+                type: wordPressProject.type,
+                slug: wordPressProject.slug,
+              })}
+            </Badge>
+          )}
+          {wordPressProject?.release && (
+            <Badge color="blue" variant="light" size="sm">
+              {t('Release {{release}}', { release: wordPressProject.release })}
+            </Badge>
+          )}
+          {encodingInfo && (
+            <Tooltip
+              label={t('Detected via {{method}} with {{confidence}} confidence', {
+                method: encodingInfo.method,
+                confidence: encodingInfo.confidence,
+              })}
+            >
               <Badge
-                variant="light"
-                color="gray"
+                variant="outline"
                 size="sm"
-                rightSection={isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                leftSection={<FileText size={12} />}
+                color={
+                  encodingInfo.confidence === 'certain'
+                    ? 'green'
+                    : encodingInfo.confidence === 'high'
+                      ? 'blue'
+                      : 'yellow'
+                }
               >
-                {isExpanded ? t('Hide Header') : t('Edit Header')}
+                {encodingInfo.encoding.toUpperCase()}
               </Badge>
-            </Group>
-          </Group>
+            </Tooltip>
+          )}
         </Group>
-      </UnstyledButton>
+
+        <Group gap="sm" wrap="wrap" justify="flex-end">
+          {wordPressProject && onRefreshWordPress && (
+            <Button
+              size="compact-sm"
+              variant="default"
+              leftSection={<RotateCcw size={14} />}
+              onClick={onRefreshWordPress}
+            >
+              {t('Refresh from WordPress.org')}
+            </Button>
+          )}
+          {hasUnsavedChanges && (
+            <Text size="sm" c="orange">
+              {t('Unsaved changes')}
+            </Text>
+          )}
+          <Text size="sm" c="dimmed">
+            {t('{{count}} entries', { count: entries.length })}
+          </Text>
+          <UnstyledButton
+            onClick={() => setIsExpanded(!isExpanded)}
+            aria-expanded={isExpanded}
+            aria-label={isExpanded ? t('Hide Header') : t('Edit Header')}
+          >
+            <Badge
+              component="span"
+              variant="light"
+              color="gray"
+              size="sm"
+              rightSection={isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+            >
+              {isExpanded ? t('Hide Header') : t('Edit Header')}
+            </Badge>
+          </UnstyledButton>
+        </Group>
+      </Group>
 
       {/* Expandable editor panel */}
       <Collapse in={isExpanded}>

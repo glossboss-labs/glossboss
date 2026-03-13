@@ -2202,38 +2202,26 @@ export default function Index() {
               </Paper>
             )}
 
-            {filename && currentProjectType && currentProjectSlug && (
-              <Paper p="xs" withBorder>
-                <Group gap="xs" justify="space-between" align="center" wrap="wrap">
-                  <Group gap="xs" wrap="wrap">
-                    <Badge color="gray" variant="light" size="sm">
-                      {t('{{type}} / {{slug}}', {
-                        type: currentProjectType,
-                        slug: currentProjectSlug,
-                      })}
-                    </Badge>
-                    {currentProjectRelease && (
-                      <Badge color="blue" variant="light" size="sm">
-                        {t('Release {{release}}', { release: currentProjectRelease })}
-                      </Badge>
-                    )}
-                  </Group>
-                  <Button
-                    size="compact-sm"
-                    variant="default"
-                    leftSection={<RotateCcw size={14} />}
-                    onClick={() => setWordpressRefreshOpen(true)}
-                  >
-                    {t('Refresh from WordPress.org')}
-                  </Button>
-                </Group>
-              </Paper>
-            )}
-
             {/* Header and control workspace */}
             {filename && (
               <Stack gap="md">
-                <HeaderEditor encodingInfo={encodingInfo} />
+                <HeaderEditor
+                  encodingInfo={encodingInfo}
+                  wordPressProject={
+                    currentProjectType && currentProjectSlug
+                      ? {
+                          type: currentProjectType,
+                          slug: currentProjectSlug,
+                          release: currentProjectRelease,
+                        }
+                      : null
+                  }
+                  onRefreshWordPress={
+                    currentProjectType && currentProjectSlug
+                      ? () => setWordpressRefreshOpen(true)
+                      : undefined
+                  }
+                />
                 <Paper p="md" withBorder>
                   <Stack gap="sm">
                     <Group justify="space-between" align="center" wrap="wrap">
