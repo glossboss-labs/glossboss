@@ -2202,40 +2202,6 @@ export default function Index() {
               </Group>
             )}
 
-            {/* Repo connection indicator */}
-            {filename && repoConnection && (
-              <Paper p="xs" withBorder>
-                <Group gap="xs" justify="space-between">
-                  <Group gap="xs">
-                    <GitBranch size={14} />
-                    <Text size="xs" fw={500}>
-                      {repoConnection.owner}/{repoConnection.repo}
-                    </Text>
-                    <Badge size="xs" variant="light">
-                      {repoConnection.branch}
-                    </Badge>
-                    <Text size="xs" c="dimmed">
-                      {repoConnection.filePath}
-                    </Text>
-                  </Group>
-                  <Group gap={4}>
-                    <Tooltip label={t('Push changes to repository')}>
-                      <ActionIcon
-                        variant="subtle"
-                        size="sm"
-                        onClick={() => {
-                          setRepoSyncInitialTab('push');
-                          setRepoSyncOpen(true);
-                        }}
-                      >
-                        <GitPullRequest size={14} />
-                      </ActionIcon>
-                    </Tooltip>
-                  </Group>
-                </Group>
-              </Paper>
-            )}
-
             {/* Header and control workspace */}
             {filename && (
               <Stack gap="md">
@@ -2253,6 +2219,24 @@ export default function Index() {
                   onRefreshWordPress={
                     currentProjectType && currentProjectSlug
                       ? () => setWordpressRefreshOpen(true)
+                      : undefined
+                  }
+                  repoConnection={
+                    repoConnection
+                      ? {
+                          owner: repoConnection.owner,
+                          repo: repoConnection.repo,
+                          branch: repoConnection.branch,
+                          filePath: repoConnection.filePath,
+                        }
+                      : null
+                  }
+                  onPushToRepo={
+                    repoConnection
+                      ? () => {
+                          setRepoSyncInitialTab('push');
+                          setRepoSyncOpen(true);
+                        }
                       : undefined
                   }
                 />
