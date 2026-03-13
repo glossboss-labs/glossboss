@@ -278,7 +278,6 @@ interface HeaderEditorProps {
     owner: string;
     repo: string;
     branch: string;
-    filePath: string;
   } | null;
   onPushToRepo?: () => void;
 }

@@ -2231,7 +2231,6 @@ export default function Index() {
                           owner: repoConnection.owner,
                           repo: repoConnection.repo,
                           branch: repoConnection.branch,
-                          filePath: repoConnection.filePath,
                         }
                       : null
                   }
