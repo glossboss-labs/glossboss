@@ -288,7 +288,7 @@ msgstr "By {{actor}}"
 
 #: src/components/SettingsModal.tsx:2628
 #: src/components/editor/TranslateToolbar.tsx:926
-#: src/components/editor/WordPressProjectModal.tsx:473
+#: src/components/editor/WordPressProjectModal.tsx:469
 #: src/components/editor/WordPressRefreshModal.tsx:342
 #: src/components/feedback/FeedbackModal.tsx:480
 #: src/components/ui/ConfirmModal.tsx:38
@@ -689,7 +689,7 @@ msgid "Detected: {{target}}"
 msgstr "Detected: {{target}}"
 
 #: src/components/SettingsModal.tsx:1326
-#: src/components/editor/WordPressProjectModal.tsx:417
+#: src/components/editor/WordPressProjectModal.tsx:413
 #: src/components/editor/WordPressRefreshModal.tsx:253
 msgid "Development"
 msgstr "Development"
@@ -1629,8 +1629,8 @@ msgstr "Loading source..."
 msgid "Loading..."
 msgstr "Loading..."
 
-#: src/components/editor/WordPressProjectModal.tsx:385
-#: src/components/editor/WordPressProjectModal.tsx:399
+#: src/components/editor/WordPressProjectModal.tsx:381
+#: src/components/editor/WordPressProjectModal.tsx:395
 msgid "Locale"
 msgstr "Locale"
 
@@ -1846,7 +1846,7 @@ msgstr "No glossary terms in selected text"
 msgid "No locale files detected automatically"
 msgstr "No locale files detected automatically"
 
-#: src/components/editor/WordPressProjectModal.tsx:405
+#: src/components/editor/WordPressProjectModal.tsx:401
 msgid "No locales found"
 msgstr "No locales found"
 
@@ -1854,11 +1854,11 @@ msgstr "No locales found"
 msgid "No matching plural form"
 msgstr "No matching plural form"
 
-#: src/components/editor/WordPressProjectModal.tsx:374
+#: src/components/editor/WordPressProjectModal.tsx:370
 msgid "No matching slugs"
 msgstr "No matching slugs"
 
-#: src/components/editor/WordPressProjectModal.tsx:434
+#: src/components/editor/WordPressProjectModal.tsx:430
 #: src/components/editor/WordPressRefreshModal.tsx:270
 msgid "No releases found"
 msgstr "No releases found"
@@ -1891,7 +1891,7 @@ msgstr "No selection"
 msgid "No source references"
 msgstr "No source references"
 
-#: src/components/editor/WordPressProjectModal.tsx:394
+#: src/components/editor/WordPressProjectModal.tsx:390
 msgid "No supported locales were found for this project."
 msgstr "No supported locales were found for this project."
 
@@ -1991,7 +1991,7 @@ msgstr "Open in Trac"
 msgid "Open issue"
 msgstr "Open issue"
 
-#: src/components/editor/WordPressProjectModal.tsx:478
+#: src/components/editor/WordPressProjectModal.tsx:474
 msgid "Open project"
 msgstr "Open project"
 
@@ -2555,7 +2555,7 @@ msgstr "Search source, translation, context..."
 msgid "Search terms..."
 msgstr "Search terms..."
 
-#: src/components/editor/WordPressProjectModal.tsx:400
+#: src/components/editor/WordPressProjectModal.tsx:396
 msgid "Select a locale"
 msgstr "Select a locale"
 
@@ -2563,7 +2563,7 @@ msgstr "Select a locale"
 msgid "Select a reference above to load source context."
 msgstr "Select a reference above to load source context."
 
-#: src/components/editor/WordPressProjectModal.tsx:430
+#: src/components/editor/WordPressProjectModal.tsx:426
 #: src/components/editor/WordPressRefreshModal.tsx:266
 msgid "Select a release"
 msgstr "Select a release"
@@ -2802,7 +2802,7 @@ msgstr "Source language"
 msgid "Source preview"
 msgstr "Source preview"
 
-#: src/components/editor/WordPressProjectModal.tsx:423
+#: src/components/editor/WordPressProjectModal.tsx:419
 msgid "Source release"
 msgstr "Source release"
 
@@ -2846,7 +2846,7 @@ msgstr "Speech is unavailable in this deployment."
 msgid "Speech synthesis is not available in this browser."
 msgstr "Speech synthesis is not available in this browser."
 
-#: src/components/editor/WordPressProjectModal.tsx:416
+#: src/components/editor/WordPressProjectModal.tsx:412
 #: src/components/editor/WordPressRefreshModal.tsx:252
 msgid "Stable"
 msgstr "Stable"
@@ -2898,7 +2898,7 @@ msgstr ""
 msgid "Successfully translated {{count}} entries"
 msgstr "Successfully translated {{count}} entries"
 
-#: src/components/editor/WordPressProjectModal.tsx:391
+#: src/components/editor/WordPressProjectModal.tsx:387
 msgid ""
 "Supported locales could not be loaded in this deployment. Enter the locale m"
 "anually."
@@ -2997,7 +2997,7 @@ msgstr "The URL must start with https://"
 msgid "The WordPress.org translation export could not be parsed."
 msgstr "The WordPress.org translation export could not be parsed."
 
-#: src/components/editor/WordPressProjectModal.tsx:456
+#: src/components/editor/WordPressProjectModal.tsx:452
 msgid ""
 "The translation file will be loaded from WordPress.org and source browsing w"
 "ill use the selected release."
@@ -3005,7 +3005,7 @@ msgstr ""
 "The translation file will be loaded from WordPress.org and source browsing w"
 "ill use the selected release."
 
-#: src/components/editor/WordPressProjectModal.tsx:453
+#: src/components/editor/WordPressProjectModal.tsx:449
 msgid ""
 "The translation file will be loaded from the development track and source br"
 "owsing will follow trunk."
@@ -3161,7 +3161,7 @@ msgstr "Translation provider"
 msgid "Translation team contact"
 msgstr "Translation team contact"
 
-#: src/components/editor/WordPressProjectModal.tsx:410
+#: src/components/editor/WordPressProjectModal.tsx:406
 msgid "Translation track"
 msgstr "Translation track"
 
@@ -3178,7 +3178,7 @@ msgstr "Translations without glossary enforcement"
 msgid "Translator comments"
 msgstr "Translator comments"
 
-#: src/components/editor/WordPressProjectModal.tsx:429
+#: src/components/editor/WordPressProjectModal.tsx:425
 #: src/components/editor/WordPressRefreshModal.tsx:265
 msgid "Trunk / development"
 msgstr "Trunk / development"
