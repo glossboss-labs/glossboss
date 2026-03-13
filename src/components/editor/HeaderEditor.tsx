@@ -513,7 +513,7 @@ function WordPressProjectInput() {
           allowDeselect={false}
         />
         <TextInput
-          placeholder={autoDetectedSlug || 'e.g. woocommerce'}
+          placeholder={autoDetectedSlug || t('e.g. woocommerce')}
           value={projectSlug ?? ''}
           onChange={(e) => setProjectSlug(e.currentTarget.value || null)}
           aria-label={t('WordPress project slug')}

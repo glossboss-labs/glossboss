@@ -126,9 +126,13 @@ export function WordPressProjectModal({
 
   // Metadata effect — fires independently on slug-like input after 500ms debounce
   useEffect(() => {
-    if (!opened) return;
+    if (!opened) {
+      setIsLoadingMeta(false);
+      return;
+    }
     const trimmedSlug = normalizeSlug(slug);
     if (!trimmedSlug || trimmedSlug.length < 3 || !isSlugLike(trimmedSlug)) {
+      setIsLoadingMeta(false);
       setProjectName(null);
       setAvailableReleases([]);
       setAvailableLocales([]);

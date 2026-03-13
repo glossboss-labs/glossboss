@@ -2009,7 +2009,19 @@ export default function Index() {
               opened={pendingProject !== null}
               onClose={() => setPendingProject(null)}
               onConfirm={() => {
-                if (pendingProject) void executeWordPressProjectLoad(pendingProject);
+                if (!pendingProject) return;
+                void executeWordPressProjectLoad(pendingProject).catch((error) => {
+                  setErrors([
+                    {
+                      severity: 'error',
+                      code: 'INVALID_SYNTAX',
+                      message:
+                        error instanceof Error
+                          ? error.message
+                          : t('Failed to open the WordPress.org project.'),
+                    },
+                  ]);
+                });
               }}
               title={t('Replace current file?')}
               message={t(
