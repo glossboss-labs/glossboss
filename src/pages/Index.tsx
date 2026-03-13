@@ -775,7 +775,9 @@ export default function Index() {
     }) => {
       mergeEntries(mergedEntries);
       setUpstreamDeltaEntries(deltaEntryIds);
-      useEditorStore.getState().setFilterState('upstream-delta', 'include');
+      if (deltaEntryIds.length > 0) {
+        useEditorStore.getState().setFilterState('upstream-delta', 'include');
+      }
       useSourceStore.getState().setSelectedRelease(release);
       useSourceStore.getState().setPluginTranslationTrack(track);
       setWorkspaceMode('edit');
