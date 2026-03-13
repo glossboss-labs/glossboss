@@ -8,16 +8,6 @@ export interface UpstreamTemplate {
   basePath: string | null;
 }
 
-function getPotCandidatePaths(slug: string): string[] {
-  return [
-    `${slug}.pot`,
-    `languages/${slug}.pot`,
-    `lang/${slug}.pot`,
-    `i18n/${slug}.pot`,
-    `locale/${slug}.pot`,
-  ];
-}
-
 function isPotFile(path: string): boolean {
   return /\.pot$/i.test(path);
 }
@@ -27,18 +17,17 @@ export async function fetchUpstreamTemplate(
   slug: string,
   release?: string | null,
 ): Promise<UpstreamTemplate | null> {
-  const candidates = new Set<string>(getPotCandidatePaths(slug));
+  const slugPot = `${slug}.pot`;
 
   try {
     const rootListing = await fetchDirectoryListing(projectType, slug, '', release);
-    const preferredCandidates = [...candidates];
+    const preferredCandidates: string[] = [];
     const fallbackCandidates: string[] = [];
-
     const i18nDirs: string[] = [];
 
     for (const entry of rootListing.entries) {
       if (!entry.isDir && isPotFile(entry.name)) {
-        if (candidates.has(entry.name)) {
+        if (entry.name === slugPot) {
           preferredCandidates.push(entry.name);
         } else {
           fallbackCandidates.push(entry.name);
@@ -60,7 +49,7 @@ export async function fetchUpstreamTemplate(
       for (const nestedEntry of result.value.entries) {
         if (nestedEntry.isDir || !isPotFile(nestedEntry.name)) continue;
         const nestedPath = `${i18nDirs[i]}/${nestedEntry.name}`;
-        if (candidates.has(nestedPath)) {
+        if (nestedEntry.name === slugPot) {
           preferredCandidates.push(nestedPath);
         } else {
           fallbackCandidates.push(nestedPath);
