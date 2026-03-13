@@ -9,7 +9,7 @@ msgstr ""
 msgid "+{{count}} more"
 msgstr ""
 
-#: src/pages/Index.tsx:2098
+#: src/pages/Index.tsx:2090
 msgid "...and {{count}} more warnings"
 msgstr ""
 
@@ -111,11 +111,11 @@ msgstr ""
 msgid "Apply glossary terms during translation"
 msgstr ""
 
-#: src/components/editor/WordPressRefreshModal.tsx:360
+#: src/components/editor/WordPressRefreshModal.tsx:349
 msgid "Apply refresh"
 msgstr ""
 
-#: src/components/editor/WordPressRefreshModal.tsx:329
+#: src/components/editor/WordPressRefreshModal.tsx:318
 msgid ""
 "Applying this refresh will merge the upstream template into your current fil"
 "e and focus the resulting upstream delta entries."
@@ -176,7 +176,7 @@ msgstr ""
 msgid "Auto-detected: {{type}} / {{slug}}"
 msgstr ""
 
-#: src/pages/Index.tsx:2165
+#: src/pages/Index.tsx:2157
 msgid "Auto-saved {age}"
 msgstr ""
 
@@ -283,7 +283,7 @@ msgstr ""
 #: src/components/SettingsModal.tsx:2628
 #: src/components/editor/TranslateToolbar.tsx:926
 #: src/components/editor/WordPressProjectModal.tsx:469
-#: src/components/editor/WordPressRefreshModal.tsx:342
+#: src/components/editor/WordPressRefreshModal.tsx:331
 #: src/components/feedback/FeedbackModal.tsx:480
 #: src/components/ui/ConfirmModal.tsx:38
 #: src/components/ui/PromptModal.tsx:34
@@ -390,15 +390,15 @@ msgstr ""
 msgid "Clear active source reference"
 msgstr ""
 
-#: src/pages/Index.tsx:1980
+#: src/pages/Index.tsx:1972
 msgid "Clear anyway"
 msgstr ""
 
-#: src/pages/Index.tsx:1924
+#: src/pages/Index.tsx:1916
 msgid "Clear editor"
 msgstr ""
 
-#: src/pages/Index.tsx:1977
+#: src/pages/Index.tsx:1969
 msgid "Clear editor?"
 msgstr ""
 
@@ -446,7 +446,7 @@ msgstr ""
 msgid "Click to show only {{label}}"
 msgstr ""
 
-#: src/pages/Index.tsx:2487
+#: src/pages/Index.tsx:2479
 msgid "Close QA summary"
 msgstr ""
 
@@ -455,7 +455,7 @@ msgid "Close credential prompt"
 msgstr ""
 
 #: src/components/editor/WordPressProjectModal.tsx:281
-#: src/components/editor/WordPressRefreshModal.tsx:214
+#: src/components/editor/WordPressRefreshModal.tsx:203
 #: src/components/ui/ConfirmModal.tsx:57
 msgid "Close dialog"
 msgstr ""
@@ -604,7 +604,7 @@ msgstr ""
 msgid "Current editor"
 msgstr ""
 
-#: src/components/editor/WordPressRefreshModal.tsx:235
+#: src/components/editor/WordPressRefreshModal.tsx:224
 msgid "Current release: {{release}}"
 msgstr ""
 
@@ -671,7 +671,7 @@ msgstr ""
 
 #: src/components/SettingsModal.tsx:1326
 #: src/components/editor/WordPressProjectModal.tsx:413
-#: src/components/editor/WordPressRefreshModal.tsx:253
+#: src/components/editor/WordPressRefreshModal.tsx:242
 msgid "Development"
 msgstr ""
 
@@ -683,7 +683,7 @@ msgstr ""
 msgid "Directory listing is unavailable."
 msgstr ""
 
-#: src/pages/Index.tsx:2148
+#: src/pages/Index.tsx:2140
 msgid "Discard and use new file"
 msgstr ""
 
@@ -719,7 +719,7 @@ msgstr ""
 msgid "Draft"
 msgstr ""
 
-#: src/pages/Index.tsx:2328
+#: src/pages/Index.tsx:2320
 msgid ""
 "Drag and drop your translation file here, or click to browse. Your translati"
 "ons will be saved locally in your browser."
@@ -747,7 +747,7 @@ msgstr ""
 msgid "Dutch (Netherlands)"
 msgstr ""
 
-#: src/pages/Index.tsx:2236
+#: src/pages/Index.tsx:2228
 msgid "Edit"
 msgstr ""
 
@@ -760,11 +760,11 @@ msgstr ""
 msgid "Edit gettext translation files with DeepL integration"
 msgstr ""
 
-#: src/pages/Index.tsx:2229
+#: src/pages/Index.tsx:2221
 msgid "Edit workspace"
 msgstr ""
 
-#: src/pages/Index.tsx:2160
+#: src/pages/Index.tsx:2152
 msgid "Editing draft"
 msgstr ""
 
@@ -899,7 +899,7 @@ msgstr ""
 msgid "Export TMX"
 msgstr ""
 
-#: src/pages/Index.tsx:2536
+#: src/pages/Index.tsx:2528
 msgid "Export anyway"
 msgstr ""
 
@@ -929,11 +929,11 @@ msgstr ""
 msgid "Extracted comments"
 msgstr ""
 
-#: src/components/editor/WordPressRefreshModal.tsx:193
+#: src/components/editor/WordPressRefreshModal.tsx:182
 msgid "Failed to apply the refresh."
 msgstr ""
 
-#: src/components/editor/WordPressRefreshModal.tsx:161
+#: src/components/editor/WordPressRefreshModal.tsx:158
 msgid "Failed to compare releases."
 msgstr ""
 
@@ -965,7 +965,7 @@ msgstr ""
 msgid "Failed to load project metadata."
 msgstr ""
 
-#: src/components/editor/WordPressRefreshModal.tsx:105
+#: src/components/editor/WordPressRefreshModal.tsx:102
 msgid "Failed to load releases."
 msgstr ""
 
@@ -983,7 +983,7 @@ msgstr ""
 
 #: src/pages/Index.tsx:922
 #: src/pages/Index.tsx:979
-#: src/pages/Index.tsx:2056
+#: src/pages/Index.tsx:2048
 msgid "Failed to parse file"
 msgstr ""
 
@@ -1019,7 +1019,7 @@ msgstr ""
 msgid "Feedback verification is not configured."
 msgstr ""
 
-#: src/pages/Index.tsx:2006
+#: src/pages/Index.tsx:1998
 msgid "File URL"
 msgstr ""
 
@@ -1172,13 +1172,13 @@ msgstr ""
 msgid "GitLab instance URL"
 msgstr ""
 
-#: src/pages/Index.tsx:2492
+#: src/pages/Index.tsx:2484
 msgid ""
 "GlossBoss found QA issues in the current file. You can review them now or ex"
 "port anyway."
 msgstr ""
 
-#: src/pages/Index.tsx:1928
+#: src/pages/Index.tsx:1920
 msgid "GlossBoss v{version}"
 msgstr ""
 
@@ -1240,7 +1240,7 @@ msgid ""
 "sync in Settings is recommended."
 msgstr ""
 
-#: src/pages/Index.tsx:2262
+#: src/pages/Index.tsx:2254
 msgid "Glossary: {count} terms ({locale})"
 msgstr ""
 
@@ -1465,7 +1465,7 @@ msgstr ""
 msgid "Latvian"
 msgstr ""
 
-#: src/pages/Index.tsx:1946
+#: src/pages/Index.tsx:1938
 msgid "License"
 msgstr ""
 
@@ -1474,7 +1474,7 @@ msgstr ""
 msgid "Light mode"
 msgstr ""
 
-#: src/pages/Index.tsx:2063
+#: src/pages/Index.tsx:2055
 msgid "Line {line}"
 msgstr ""
 
@@ -1483,7 +1483,7 @@ msgstr ""
 msgid "Line {{lineNumber}}"
 msgstr ""
 
-#: src/pages/Index.tsx:2090
+#: src/pages/Index.tsx:2082
 msgid "Line {{line}}"
 msgstr ""
 
@@ -1498,8 +1498,8 @@ msgid "Lithuanian"
 msgstr ""
 
 #: src/components/editor/GlossaryPanel.tsx:372
-#: src/pages/Index.tsx:2008
-#: src/pages/Index.tsx:2369
+#: src/pages/Index.tsx:2000
+#: src/pages/Index.tsx:2361
 msgid "Load"
 msgstr ""
 
@@ -1511,7 +1511,7 @@ msgstr ""
 msgid "Load a file with a target language before using translation memory."
 msgstr ""
 
-#: src/pages/Index.tsx:2410
+#: src/pages/Index.tsx:2402
 msgid "Load a small example WordPress plugin PO file (Hello Dolly)"
 msgstr ""
 
@@ -1531,12 +1531,12 @@ msgid ""
 "e."
 msgstr ""
 
-#: src/pages/Index.tsx:2421
+#: src/pages/Index.tsx:2413
 msgid "Load example PO"
 msgstr ""
 
 #: src/pages/Index.tsx:1894
-#: src/pages/Index.tsx:2005
+#: src/pages/Index.tsx:1997
 msgid "Load from URL"
 msgstr ""
 
@@ -1551,7 +1551,7 @@ msgstr ""
 msgid "Load voices by testing your key"
 msgstr ""
 
-#: src/pages/Index.tsx:1993
+#: src/pages/Index.tsx:1985
 msgid ""
 "Loading a new file from URL will replace the currently loaded file. Any unsa"
 "ved changes will be lost."
@@ -1561,7 +1561,7 @@ msgstr ""
 msgid "Loading file..."
 msgstr ""
 
-#: src/components/editor/WordPressRefreshModal.tsx:284
+#: src/components/editor/WordPressRefreshModal.tsx:273
 msgid "Loading releases..."
 msgstr ""
 
@@ -1723,7 +1723,7 @@ msgstr ""
 msgid "Needs review:"
 msgstr ""
 
-#: src/components/editor/WordPressRefreshModal.tsx:152
+#: src/components/editor/WordPressRefreshModal.tsx:149
 msgid "Neither a POT template nor a usable translation export was found."
 msgstr ""
 
@@ -1744,7 +1744,7 @@ msgstr ""
 msgid "Next field"
 msgstr ""
 
-#: src/components/editor/WordPressRefreshModal.tsx:141
+#: src/components/editor/WordPressRefreshModal.tsx:138
 msgid "No POT template was found for the selected release."
 msgstr ""
 
@@ -1801,7 +1801,7 @@ msgid "No matching slugs"
 msgstr ""
 
 #: src/components/editor/WordPressProjectModal.tsx:430
-#: src/components/editor/WordPressRefreshModal.tsx:270
+#: src/components/editor/WordPressRefreshModal.tsx:259
 msgid "No releases found"
 msgstr ""
 
@@ -1908,18 +1908,18 @@ msgstr ""
 msgid "Open a PR targeting {{branch}}"
 msgstr ""
 
-#: src/pages/Index.tsx:2394
+#: src/pages/Index.tsx:2386
 msgid "Open a locale file from a GitHub or GitLab repository"
 msgstr ""
 
 #: src/components/editor/WordPressProjectModal.tsx:278
 #: src/pages/Index.tsx:1900
-#: src/pages/Index.tsx:2389
+#: src/pages/Index.tsx:2381
 msgid "Open from WordPress.org"
 msgstr ""
 
 #: src/pages/Index.tsx:1909
-#: src/pages/Index.tsx:2404
+#: src/pages/Index.tsx:2396
 msgid "Open from repository"
 msgstr ""
 
@@ -1941,7 +1941,7 @@ msgstr ""
 msgid "Open settings"
 msgstr ""
 
-#: src/pages/Index.tsx:2379
+#: src/pages/Index.tsx:2371
 msgid "Open the latest WordPress.org translation export by project slug"
 msgstr ""
 
@@ -1949,7 +1949,7 @@ msgstr ""
 msgid "PO file (.po)"
 msgstr ""
 
-#: src/pages/Index.tsx:2352
+#: src/pages/Index.tsx:2344
 msgid "PO file URL"
 msgstr ""
 
@@ -1965,7 +1965,7 @@ msgstr ""
 msgid "PR title"
 msgstr ""
 
-#: src/pages/Index.tsx:2351
+#: src/pages/Index.tsx:2343
 msgid "Paste a .po file URL"
 msgstr ""
 
@@ -2085,7 +2085,7 @@ msgstr ""
 msgid "Preparing spam protection..."
 msgstr ""
 
-#: src/components/editor/WordPressRefreshModal.tsx:351
+#: src/components/editor/WordPressRefreshModal.tsx:340
 msgid "Preview diff"
 msgstr ""
 
@@ -2101,7 +2101,7 @@ msgid "Previous field"
 msgstr ""
 
 #: src/components/feedback/FeedbackModal.tsx:417
-#: src/pages/Index.tsx:1964
+#: src/pages/Index.tsx:1956
 msgid "Privacy"
 msgstr ""
 
@@ -2168,7 +2168,7 @@ msgstr ""
 msgid "Push"
 msgstr ""
 
-#: src/pages/Index.tsx:2188
+#: src/pages/Index.tsx:2180
 msgid "Push changes to repository"
 msgstr ""
 
@@ -2192,7 +2192,7 @@ msgstr ""
 msgid "QA errors"
 msgstr ""
 
-#: src/pages/Index.tsx:2484
+#: src/pages/Index.tsx:2476
 msgid "QA summary before export"
 msgstr ""
 
@@ -2229,24 +2229,19 @@ msgstr ""
 #: src/components/SettingsModal.tsx:2132
 #: src/components/editor/GlossaryPanel.tsx:338
 #: src/components/editor/GlossaryPanel.tsx:342
-#: src/components/editor/WordPressRefreshModal.tsx:211
-#: src/pages/Index.tsx:1916
+#: src/components/editor/WordPressRefreshModal.tsx:200
 msgid "Refresh from WordPress.org"
 msgstr ""
 
-#: src/components/editor/WordPressRefreshModal.tsx:277
+#: src/components/editor/WordPressRefreshModal.tsx:266
 msgid "Refresh glossary after applying this update"
-msgstr ""
-
-#: src/components/editor/WordPressRefreshModal.tsx:351
-msgid "Refresh preview"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:1600
 msgid "Region"
 msgstr ""
 
-#: src/components/editor/WordPressRefreshModal.tsx:259
+#: src/components/editor/WordPressRefreshModal.tsx:248
 msgid "Release"
 msgstr ""
 
@@ -2290,11 +2285,11 @@ msgid "Repeated-source consistency"
 msgstr ""
 
 #: src/components/editor/TranslateButton.tsx:319
-#: src/pages/Index.tsx:1996
+#: src/pages/Index.tsx:1988
 msgid "Replace"
 msgstr ""
 
-#: src/pages/Index.tsx:1992
+#: src/pages/Index.tsx:1984
 msgid "Replace current file?"
 msgstr ""
 
@@ -2351,7 +2346,7 @@ msgstr ""
 msgid "Resolved comment"
 msgstr ""
 
-#: src/pages/Index.tsx:2139
+#: src/pages/Index.tsx:2131
 msgid "Restore draft"
 msgstr ""
 
@@ -2390,7 +2385,7 @@ msgstr ""
 #: src/components/editor/EditorTable.tsx:128
 #: src/components/editor/EditorTable.tsx:1931
 #: src/components/editor/FilterToolbar.tsx:311
-#: src/pages/Index.tsx:2237
+#: src/pages/Index.tsx:2229
 msgid "Review"
 msgstr ""
 
@@ -2398,7 +2393,7 @@ msgstr ""
 msgid "Review in progress"
 msgstr ""
 
-#: src/pages/Index.tsx:2525
+#: src/pages/Index.tsx:2517
 msgid "Review issues"
 msgstr ""
 
@@ -2406,7 +2401,7 @@ msgstr ""
 msgid "Review workflow"
 msgstr ""
 
-#: src/pages/Index.tsx:2229
+#: src/pages/Index.tsx:2221
 msgid "Review workspace"
 msgstr ""
 
@@ -2503,7 +2498,7 @@ msgid "Select a reference above to load source context."
 msgstr ""
 
 #: src/components/editor/WordPressProjectModal.tsx:426
-#: src/components/editor/WordPressRefreshModal.tsx:266
+#: src/components/editor/WordPressRefreshModal.tsx:255
 msgid "Select a release"
 msgstr ""
 
@@ -2716,7 +2711,7 @@ msgid "Sort entries"
 msgstr ""
 
 #: src/components/editor/EditorTable.tsx:2351
-#: src/pages/Index.tsx:1937
+#: src/pages/Index.tsx:1929
 msgid "Source"
 msgstr ""
 
@@ -2782,7 +2777,7 @@ msgid "Speech synthesis is not available in this browser."
 msgstr ""
 
 #: src/components/editor/WordPressProjectModal.tsx:412
-#: src/components/editor/WordPressRefreshModal.tsx:252
+#: src/components/editor/WordPressRefreshModal.tsx:241
 msgid "Stable"
 msgstr ""
 
@@ -2886,7 +2881,7 @@ msgstr ""
 msgid "Telugu"
 msgstr ""
 
-#: src/components/editor/WordPressRefreshModal.tsx:325
+#: src/components/editor/WordPressRefreshModal.tsx:314
 msgid "Template path: {{path}}"
 msgstr ""
 
@@ -2970,7 +2965,7 @@ msgid ""
 "tions."
 msgstr ""
 
-#: src/pages/Index.tsx:1979
+#: src/pages/Index.tsx:1971
 msgid "This will remove all your work on the current file."
 msgstr ""
 
@@ -2996,11 +2991,11 @@ msgstr ""
 msgid "Token not configured. Go to Connect tab to set up authentication."
 msgstr ""
 
-#: src/components/editor/WordPressRefreshModal.tsx:246
+#: src/components/editor/WordPressRefreshModal.tsx:235
 msgid "Track"
 msgstr ""
 
-#: src/pages/Index.tsx:1955
+#: src/pages/Index.tsx:1947
 msgid "Translate"
 msgstr ""
 
@@ -3102,7 +3097,7 @@ msgid "Translator comments"
 msgstr ""
 
 #: src/components/editor/WordPressProjectModal.tsx:425
-#: src/components/editor/WordPressRefreshModal.tsx:265
+#: src/components/editor/WordPressRefreshModal.tsx:254
 msgid "Trunk / development"
 msgstr ""
 
@@ -3179,7 +3174,7 @@ msgstr ""
 msgid "Unsaved changes"
 msgstr ""
 
-#: src/pages/Index.tsx:2113
+#: src/pages/Index.tsx:2105
 msgid "Unsaved draft found"
 msgstr ""
 
@@ -3237,11 +3232,11 @@ msgstr ""
 msgid "Upload a WordPress glossary CSV for the selected language"
 msgstr ""
 
-#: src/pages/Index.tsx:2326
+#: src/pages/Index.tsx:2318
 msgid "Upload a translation file to start"
 msgstr ""
 
-#: src/pages/Index.tsx:2042
+#: src/pages/Index.tsx:2034
 msgid "Upload failed"
 msgstr ""
 
@@ -3426,7 +3421,7 @@ msgstr ""
 msgid "WordPress.org refresh"
 msgstr ""
 
-#: src/components/editor/WordPressRefreshModal.tsx:155
+#: src/components/editor/WordPressRefreshModal.tsx:152
 msgid "WordPress.org translation export"
 msgstr ""
 
@@ -3438,13 +3433,13 @@ msgstr ""
 msgid "You have unsaved changes"
 msgstr ""
 
-#: src/pages/Index.tsx:2121
+#: src/pages/Index.tsx:2113
 msgid ""
 "You have unsaved changes from {age}. Would you like to restore your previous"
 " work?"
 msgstr ""
 
-#: src/pages/Index.tsx:1978
+#: src/pages/Index.tsx:1970
 msgid "You have unsaved changes. Are you sure you want to clear the editor?"
 msgstr ""
 
@@ -3504,7 +3499,7 @@ msgstr ""
 msgid "name@example.com"
 msgstr ""
 
-#: src/pages/Index.tsx:2374
+#: src/pages/Index.tsx:2366
 msgid "or"
 msgstr ""
 
@@ -3536,7 +3531,7 @@ msgstr ""
 msgid "with api scope"
 msgstr ""
 
-#: src/pages/Index.tsx:2129
+#: src/pages/Index.tsx:2121
 msgid "{count} modified entries will be restored."
 msgstr ""
 
@@ -3558,11 +3553,11 @@ msgstr ""
 msgid "{{count}} QA warning(s)"
 msgstr ""
 
-#: src/components/editor/WordPressRefreshModal.tsx:308
+#: src/components/editor/WordPressRefreshModal.tsx:297
 msgid "{{count}} added"
 msgstr ""
 
-#: src/components/editor/WordPressRefreshModal.tsx:311
+#: src/components/editor/WordPressRefreshModal.tsx:300
 msgid "{{count}} changed"
 msgstr ""
 
@@ -3586,7 +3581,7 @@ msgstr ""
 msgid "{{count}} entries"
 msgstr ""
 
-#: src/pages/Index.tsx:2500
+#: src/pages/Index.tsx:2492
 msgid "{{count}} error issue(s)"
 msgstr ""
 
@@ -3627,7 +3622,7 @@ msgstr ""
 msgid "{{count}} ref(s)"
 msgstr ""
 
-#: src/components/editor/WordPressRefreshModal.tsx:314
+#: src/components/editor/WordPressRefreshModal.tsx:303
 msgid "{{count}} removed"
 msgstr ""
 
@@ -3648,11 +3643,11 @@ msgstr ""
 msgid "{{count}} terms"
 msgstr ""
 
-#: src/components/editor/WordPressRefreshModal.tsx:321
+#: src/components/editor/WordPressRefreshModal.tsx:310
 msgid "{{count}} total entries"
 msgstr ""
 
-#: src/pages/Index.tsx:2506
+#: src/pages/Index.tsx:2498
 msgid "{{count}} total issues"
 msgstr ""
 
@@ -3660,7 +3655,7 @@ msgstr ""
 msgid "{{count}} translations failed"
 msgstr ""
 
-#: src/components/editor/WordPressRefreshModal.tsx:317
+#: src/components/editor/WordPressRefreshModal.tsx:306
 msgid "{{count}} unchanged"
 msgstr ""
 
@@ -3680,11 +3675,11 @@ msgstr ""
 msgid "{{count}} untranslated"
 msgstr ""
 
-#: src/pages/Index.tsx:2503
+#: src/pages/Index.tsx:2495
 msgid "{{count}} warning issue(s)"
 msgstr ""
 
-#: src/pages/Index.tsx:2079
+#: src/pages/Index.tsx:2071
 msgid "{{count}} warning(s) during parsing"
 msgstr ""
 
@@ -3706,7 +3701,7 @@ msgstr ""
 
 #: src/components/SettingsModal.tsx:2221
 #: src/components/editor/GlossaryPanel.tsx:259
-#: src/pages/Index.tsx:2269
+#: src/pages/Index.tsx:2261
 msgid "{{provider}} ready"
 msgstr ""
 
@@ -3737,7 +3732,7 @@ msgid "{{score}}% match"
 msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:600
-#: src/components/editor/WordPressRefreshModal.tsx:231
+#: src/components/editor/WordPressRefreshModal.tsx:220
 msgid "{{type}} / {{slug}}"
 msgstr ""
 

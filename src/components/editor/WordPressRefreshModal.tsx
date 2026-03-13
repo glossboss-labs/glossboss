@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Alert,
   Badge,
@@ -76,14 +76,11 @@ export function WordPressRefreshModal({
   const [diffPreview, setDiffPreview] = useState<ReturnType<
     typeof diffEntriesAgainstTemplate
   > | null>(null);
-  const autoPreviewDoneRef = useRef(false);
-
   useEffect(() => {
     if (!opened) return;
     setDiffPreview(null);
     setTemplatePath(null);
     setError(null);
-    autoPreviewDoneRef.current = false;
     let cancelled = false;
     setIsLoadingReleases(true);
     void Promise.allSettled([
@@ -164,14 +161,6 @@ export function WordPressRefreshModal({
       setIsComparing(false);
     }
   }, [currentEntries, locale, projectSlug, projectType, release, t, track]);
-
-  // Auto-preview once releases load and a release is selected
-  useEffect(() => {
-    if (!opened || isLoadingReleases || autoPreviewDoneRef.current) return;
-    if (!release && !(projectType === 'plugin' && track === 'dev')) return;
-    autoPreviewDoneRef.current = true;
-    void handleCompare();
-  }, [opened, isLoadingReleases, release, projectType, track, handleCompare]);
 
   const handleApply = useCallback(async () => {
     if (!diffPreview) return;
@@ -348,7 +337,7 @@ export function WordPressRefreshModal({
                   onClick={() => void handleCompare()}
                   loading={isComparing}
                 >
-                  {diffPreview ? t('Refresh preview') : t('Preview diff')}
+                  {t('Preview diff')}
                 </Button>
               </motion.div>
               <motion.div {...buttonStates}>
