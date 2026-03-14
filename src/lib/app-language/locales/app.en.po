@@ -3508,7 +3508,7 @@ msgstr "WordPress Project"
 msgid "WordPress glossary loading is unavailable in this deployment."
 msgstr "WordPress glossary loading is unavailable in this deployment."
 
-#: src/lib/wp-source/fetcher.ts:239
+#: src/lib/wp-source/fetcher.ts:241
 msgid "WordPress locale discovery is unavailable in this deployment."
 msgstr "WordPress locale discovery is unavailable in this deployment."
 

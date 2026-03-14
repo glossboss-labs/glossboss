@@ -3412,7 +3412,7 @@ msgstr ""
 msgid "WordPress glossary loading is unavailable in this deployment."
 msgstr ""
 
-#: src/lib/wp-source/fetcher.ts:239
+#: src/lib/wp-source/fetcher.ts:241
 msgid "WordPress locale discovery is unavailable in this deployment."
 msgstr ""
 
