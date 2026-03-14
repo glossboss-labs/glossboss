@@ -114,7 +114,7 @@ msgstr "Afrikaans"
 msgid "Albanian"
 msgstr "Albanees"
 
-#: src/pages/ProjectEditor.tsx:336
+#: src/pages/ProjectEditor.tsx:333
 msgid "All changes saved"
 msgstr ""
 
@@ -227,12 +227,12 @@ msgstr ""
 msgid "Azure translation failed"
 msgstr ""
 
-#: src/components/projects/CreateProjectModal.tsx:423
+#: src/components/projects/CreateProjectModal.tsx:512
 msgid "Back"
 msgstr ""
 
 #: src/pages/ProjectDetail.tsx:224
-#: src/pages/ProjectEditor.tsx:319
+#: src/pages/ProjectEditor.tsx:316
 msgid "Back to dashboard"
 msgstr ""
 
@@ -283,12 +283,12 @@ msgstr ""
 
 #: src/components/editor/EditorTable.tsx:3156
 #: src/components/projects/AddLanguageModal.tsx:365
-#: src/components/projects/CreateProjectModal.tsx:328
+#: src/components/projects/CreateProjectModal.tsx:373
 #: src/components/repo-sync/RepoSyncModal.tsx:578
 msgid "Browse"
 msgstr "Bladeren"
 
-#: src/components/projects/CreateProjectModal.tsx:370
+#: src/components/projects/CreateProjectModal.tsx:415
 msgid "Browse a GitHub or GitLab repository"
 msgstr ""
 
@@ -396,7 +396,7 @@ msgstr ""
 msgid "Choose a slug and locale before opening a project."
 msgstr ""
 
-#: src/components/projects/CreateProjectModal.tsx:284
+#: src/components/projects/CreateProjectModal.tsx:329
 msgid "Choose a source to create your cloud project from."
 msgstr ""
 
@@ -548,7 +548,7 @@ msgstr ""
 msgid "Commit prefix"
 msgstr ""
 
-#: src/components/projects/CreateProjectModal.tsx:278
+#: src/components/projects/CreateProjectModal.tsx:323
 msgid "Configure"
 msgstr ""
 
@@ -646,6 +646,10 @@ msgstr ""
 "origin-verzoeken toe. Probeer het bestand te downloaden en direct te uploade"
 "n."
 
+#: src/components/projects/CreateProjectModal.tsx:445
+msgid "Create"
+msgstr ""
+
 #: src/pages/Dashboard.tsx:127
 msgid ""
 "Create a cloud project from a PO file, a WordPress.org export, or a reposito"
@@ -681,7 +685,7 @@ msgstr ""
 msgid "Create one"
 msgstr ""
 
-#: src/components/projects/CreateProjectModal.tsx:431
+#: src/components/projects/CreateProjectModal.tsx:520
 msgid "Create project"
 msgstr ""
 
@@ -817,7 +821,7 @@ msgid "Don't have an account?"
 msgstr ""
 
 #: src/components/editor/EditorHeader.tsx:206
-#: src/pages/ProjectEditor.tsx:384
+#: src/pages/ProjectEditor.tsx:381
 msgid "Download"
 msgstr "Downloaden"
 
@@ -826,7 +830,7 @@ msgid "Download (unsaved changes)"
 msgstr "Downloaden (niet-opgeslagen wijzigingen)"
 
 #: src/components/editor/EditorHeader.tsx:246
-#: src/pages/ProjectEditor.tsx:403
+#: src/pages/ProjectEditor.tsx:400
 msgid "Download as"
 msgstr "Downloaden als"
 
@@ -835,7 +839,7 @@ msgid "Download as {format}"
 msgstr "Downloaden als {format}"
 
 #: src/components/editor/EditorHeader.tsx:235
-#: src/pages/ProjectEditor.tsx:392
+#: src/pages/ProjectEditor.tsx:389
 msgid "Download format options"
 msgstr "Downloadformaatopties"
 
@@ -925,6 +929,10 @@ msgstr ""
 msgid "Empty directory"
 msgstr "Lege map"
 
+#: src/components/projects/CreateProjectModal.tsx:437
+msgid "Empty project"
+msgstr ""
+
 #: src/components/SettingsModal.tsx:1335
 msgid "Enable machine translation"
 msgstr ""
@@ -999,7 +1007,7 @@ msgid "Enter {{field}}..."
 msgstr "Voer {{field}} in..."
 
 #: src/components/editor/EditorTable.tsx:752
-#: src/pages/ProjectEditor.tsx:349
+#: src/pages/ProjectEditor.tsx:346
 msgid "Error"
 msgstr ""
 
@@ -1079,7 +1087,7 @@ msgstr ""
 msgid "Failed to connect"
 msgstr "Kan geen verbinding maken"
 
-#: src/components/projects/CreateProjectModal.tsx:258
+#: src/components/projects/CreateProjectModal.tsx:292
 msgid "Failed to create project"
 msgstr ""
 
@@ -1088,7 +1096,7 @@ msgid "Failed to delete language"
 msgstr ""
 
 #: src/components/projects/AddLanguageModal.tsx:148
-#: src/components/projects/CreateProjectModal.tsx:178
+#: src/components/projects/CreateProjectModal.tsx:182
 msgid "Failed to fetch WordPress file"
 msgstr ""
 
@@ -1142,7 +1150,7 @@ msgstr ""
 msgid "Failed to open the WordPress.org project."
 msgstr ""
 
-#: src/pages/ProjectEditor.tsx:290
+#: src/pages/ProjectEditor.tsx:287
 #: src/pages/index/useIndexPageController.ts:952
 msgid "Failed to parse POT file"
 msgstr "POT-bestand verwerken mislukt"
@@ -1150,9 +1158,9 @@ msgstr "POT-bestand verwerken mislukt"
 #: src/components/projects/AddLanguageModal.tsx:103
 #: src/components/projects/AddLanguageModal.tsx:138
 #: src/components/projects/AddLanguageModal.tsx:165
-#: src/components/projects/CreateProjectModal.tsx:129
-#: src/components/projects/CreateProjectModal.tsx:163
-#: src/components/projects/CreateProjectModal.tsx:196
+#: src/components/projects/CreateProjectModal.tsx:133
+#: src/components/projects/CreateProjectModal.tsx:167
+#: src/components/projects/CreateProjectModal.tsx:200
 #: src/pages/ProjectEditor.tsx:230
 #: src/pages/index/IndexPageBanners.tsx:82
 msgid "Failed to parse file"
@@ -1491,11 +1499,11 @@ msgstr ""
 msgid "Icelandic"
 msgstr "IJslands"
 
-#: src/components/projects/CreateProjectModal.tsx:277
+#: src/components/projects/CreateProjectModal.tsx:322
 msgid "Import"
 msgstr ""
 
-#: src/components/projects/CreateProjectModal.tsx:345
+#: src/components/projects/CreateProjectModal.tsx:390
 msgid "Import a translation export by project slug"
 msgstr ""
 
@@ -1962,8 +1970,10 @@ msgstr "Nepalees"
 msgid "New line"
 msgstr "Nieuwe regel"
 
-#: src/components/projects/CreateProjectModal.tsx:111
-#: src/components/projects/CreateProjectModal.tsx:273
+#: src/components/projects/CreateProjectModal.tsx:115
+#: src/components/projects/CreateProjectModal.tsx:218
+#: src/components/projects/CreateProjectModal.tsx:272
+#: src/components/projects/CreateProjectModal.tsx:318
 #: src/components/projects/SaveToCloudModal.tsx:48
 #: src/pages/Dashboard.tsx:95
 #: src/pages/Dashboard.tsx:133
@@ -2162,13 +2172,13 @@ msgstr ""
 #: src/components/editor/EditorHeader.tsx:397
 #: src/components/editor/EmptyState.tsx:141
 #: src/components/editor/WordPressProjectModal.tsx:291
-#: src/components/projects/CreateProjectModal.tsx:342
+#: src/components/projects/CreateProjectModal.tsx:387
 msgid "Open from WordPress.org"
 msgstr ""
 
 #: src/components/editor/EditorHeader.tsx:405
 #: src/components/editor/EmptyState.tsx:153
-#: src/components/projects/CreateProjectModal.tsx:367
+#: src/components/projects/CreateProjectModal.tsx:412
 msgid "Open from repository"
 msgstr ""
 
@@ -2206,7 +2216,7 @@ msgid ""
 msgstr ""
 
 #: src/components/editor/EditorHeader.tsx:248
-#: src/pages/ProjectEditor.tsx:405
+#: src/pages/ProjectEditor.tsx:402
 msgid "PO file (.po)"
 msgstr "PO-bestand (.po)"
 
@@ -2399,7 +2409,7 @@ msgstr "Project"
 
 #: src/components/SettingsModal.tsx:2416
 #: src/components/SettingsModal.tsx:2420
-#: src/components/projects/CreateProjectModal.tsx:396
+#: src/components/projects/CreateProjectModal.tsx:461
 #: src/components/projects/SaveToCloudModal.tsx:129
 msgid "Project name"
 msgstr ""
@@ -2411,7 +2421,7 @@ msgstr "Projectnaam en versie"
 #: src/pages/ProjectDetail.tsx:140
 #: src/pages/ProjectDetail.tsx:221
 #: src/pages/ProjectEditor.tsx:107
-#: src/pages/ProjectEditor.tsx:316
+#: src/pages/ProjectEditor.tsx:313
 msgid "Project not found"
 msgstr ""
 
@@ -2790,11 +2800,11 @@ msgstr ""
 msgid "Save to cloud"
 msgstr ""
 
-#: src/pages/ProjectEditor.tsx:340
+#: src/pages/ProjectEditor.tsx:337
 msgid "Saved"
 msgstr ""
 
-#: src/pages/ProjectEditor.tsx:331
+#: src/pages/ProjectEditor.tsx:328
 msgid "Saving…"
 msgstr ""
 
@@ -2826,8 +2836,8 @@ msgstr "Zoek termen..."
 
 #: src/components/projects/AddLanguageModal.tsx:399
 #: src/components/projects/AddLanguageModal.tsx:431
-#: src/components/projects/CreateProjectModal.tsx:355
-#: src/components/projects/CreateProjectModal.tsx:380
+#: src/components/projects/CreateProjectModal.tsx:400
+#: src/components/projects/CreateProjectModal.tsx:425
 msgid "Select"
 msgstr ""
 
@@ -2921,6 +2931,10 @@ msgstr ""
 
 #: src/components/editor/SourceBrowser.tsx:72
 msgid "Set a WordPress project slug to browse source files."
+msgstr ""
+
+#: src/components/projects/CreateProjectModal.tsx:440
+msgid "Set up a project and add languages later"
 msgstr ""
 
 #: src/components/AppHeader.tsx:190
@@ -3099,8 +3113,13 @@ msgstr "Bron A-Z"
 msgid "Source Z-A"
 msgstr "Bron Z-A"
 
+#: src/components/projects/CreateProjectModal.tsx:477
+msgid "Source format"
+msgstr ""
+
 #: src/components/editor/TranslateToolbar.tsx:836
 #: src/components/editor/TranslateToolbar.tsx:878
+#: src/components/projects/CreateProjectModal.tsx:486
 msgid "Source language"
 msgstr "Brontaal"
 
@@ -3232,7 +3251,7 @@ msgstr "Schakel naar donkere modus"
 msgid "Switch to light mode"
 msgstr "Schakel naar lichte modus"
 
-#: src/pages/ProjectEditor.tsx:345
+#: src/pages/ProjectEditor.tsx:342
 msgid "Sync error — retrying"
 msgstr ""
 
@@ -3246,7 +3265,7 @@ msgstr "Synchronisatie mislukt"
 msgid "Syncing glossary..."
 msgstr ""
 
-#: src/pages/ProjectEditor.tsx:327
+#: src/pages/ProjectEditor.tsx:324
 msgid "Syncing to cloud…"
 msgstr ""
 
@@ -3264,7 +3283,7 @@ msgid "Target language code"
 msgstr "Doeltaalcode"
 
 #: src/components/SettingsModal.tsx:2431
-#: src/components/projects/CreateProjectModal.tsx:412
+#: src/components/projects/CreateProjectModal.tsx:498
 #: src/components/projects/SaveToCloudModal.tsx:145
 msgid "Target: {{language}}"
 msgstr ""
@@ -3591,12 +3610,12 @@ msgid "Untranslated"
 msgstr "Onvertaald"
 
 #: src/components/editor/EditorHeader.tsx:275
-#: src/pages/ProjectEditor.tsx:429
+#: src/pages/ProjectEditor.tsx:426
 msgid "Update"
 msgstr "Bijwerken"
 
 #: src/components/editor/EditorHeader.tsx:267
-#: src/pages/ProjectEditor.tsx:417
+#: src/pages/ProjectEditor.tsx:414
 msgid ""
 "Update this file using a .pot template. Existing translations are kept when "
 "source strings still match, new strings are added, and obsolete strings are "
@@ -3635,7 +3654,7 @@ msgid "Updated translation"
 msgstr ""
 
 #: src/components/editor/EditorHeader.tsx:171
-#: src/pages/ProjectEditor.tsx:368
+#: src/pages/ProjectEditor.tsx:365
 msgid "Upload"
 msgstr "Uploaden"
 
@@ -3648,7 +3667,7 @@ msgid "Upload a WordPress glossary CSV for the selected language"
 msgstr "Upload een WordPress-glossary CSV voor de geselecteerde taal"
 
 #: src/components/projects/AddLanguageModal.tsx:355
-#: src/components/projects/CreateProjectModal.tsx:306
+#: src/components/projects/CreateProjectModal.tsx:351
 msgid "Upload a file"
 msgstr ""
 
@@ -3734,7 +3753,7 @@ msgstr "Alles bekijken"
 msgid "View commit"
 msgstr ""
 
-#: src/components/projects/CreateProjectModal.tsx:403
+#: src/components/projects/CreateProjectModal.tsx:468
 #: src/components/projects/SaveToCloudModal.tsx:136
 msgid "Visibility"
 msgstr ""
@@ -3964,7 +3983,7 @@ msgid "fuzzy"
 msgstr ""
 
 #: src/components/editor/EditorHeader.tsx:251
-#: src/pages/ProjectEditor.tsx:408
+#: src/pages/ProjectEditor.tsx:405
 msgid "i18next JSON (.json)"
 msgstr "i18next JSON (.json)"
 
@@ -4149,7 +4168,7 @@ msgid "{{count}} terms"
 msgstr "{{count}} termen"
 
 #: src/components/editor/WordPressRefreshModal.tsx:314
-#: src/components/projects/CreateProjectModal.tsx:415
+#: src/components/projects/CreateProjectModal.tsx:502
 #: src/components/projects/SaveToCloudModal.tsx:148
 msgid "{{count}} total entries"
 msgstr ""

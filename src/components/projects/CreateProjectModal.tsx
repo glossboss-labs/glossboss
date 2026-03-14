@@ -79,6 +79,8 @@ export function CreateProjectModal({ opened, onClose }: CreateProjectModalProps)
   // Step 2: project config
   const [projectName, setProjectName] = useState('');
   const [visibility, setVisibility] = useState<string>('private');
+  const [sourceFormat, setSourceFormat] = useState<string>('po');
+  const [sourceLanguage, setSourceLanguage] = useState('');
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
 
@@ -91,6 +93,8 @@ export function CreateProjectModal({ opened, onClose }: CreateProjectModalProps)
     setRepoModalOpen(false);
     setProjectName('');
     setVisibility('private');
+    setSourceFormat('po');
+    setSourceLanguage('');
     setCreating(false);
     setCreateError(null);
   }, []);
@@ -206,51 +210,81 @@ export function CreateProjectModal({ opened, onClose }: CreateProjectModalProps)
     [advanceWithFile, t],
   );
 
+  // ── Empty project (skip import) ──────────────────────────
+
+  const handleEmptyProject = useCallback(() => {
+    setImportedFile(null);
+    setImportError(null);
+    setProjectName(t('New project'));
+    setStep(1);
+  }, [t]);
+
   // ── Create project ────────────────────────────────────────
 
   const handleCreate = useCallback(async () => {
-    if (!importedFile || !user) return;
+    if (!user) return;
     setCreating(true);
     setCreateError(null);
 
     try {
-      const { file, format } = importedFile;
-      const header = file.header;
-      const locale = header.language ?? 'unknown';
+      if (importedFile) {
+        const { file, format } = importedFile;
+        const header = file.header;
+        const locale = header.language ?? 'unknown';
 
-      const { project } = await createProject(
-        {
+        const { project } = await createProject(
+          {
+            owner_id: user.id,
+            name: projectName.trim() || importedFile.originalFilename,
+            description: '',
+            visibility: visibility as 'private' | 'public' | 'unlisted',
+            source_language: header.language ?? null,
+            target_language: header.language ?? null,
+            source_format: format === 'i18next' ? 'i18next' : 'po',
+            source_filename: importedFile.originalFilename,
+            po_header: header as Record<string, string>,
+            wp_project_type: importedFile.wpProjectType ?? null,
+            wp_slug: importedFile.wpSlug ?? null,
+            wp_track: importedFile.wpTrack ?? null,
+          },
+          {
+            project_id: '', // will be set by store
+            locale,
+            source_filename: importedFile.originalFilename,
+            po_header: header as Record<string, string>,
+            wp_locale: importedFile.wpLocale ?? null,
+            repo_provider: null,
+            repo_owner: null,
+            repo_name: null,
+            repo_branch: null,
+            repo_file_path: null,
+            repo_default_branch: null,
+          },
+          file.entries,
+        );
+
+        handleClose();
+        void navigate(`/projects/${project.id}`);
+      } else {
+        // Empty project — no language or entries
+        const { project } = await createProject({
           owner_id: user.id,
-          name: projectName.trim() || importedFile.originalFilename,
+          name: projectName.trim() || t('New project'),
           description: '',
           visibility: visibility as 'private' | 'public' | 'unlisted',
-          source_language: header.language ?? null,
-          target_language: header.language ?? null,
-          source_format: format === 'i18next' ? 'i18next' : 'po',
-          source_filename: importedFile.originalFilename,
-          po_header: header as Record<string, string>,
-          wp_project_type: importedFile.wpProjectType ?? null,
-          wp_slug: importedFile.wpSlug ?? null,
-          wp_track: importedFile.wpTrack ?? null,
-        },
-        {
-          project_id: '', // will be set by store
-          locale,
-          source_filename: importedFile.originalFilename,
-          po_header: header as Record<string, string>,
-          wp_locale: importedFile.wpLocale ?? null,
-          repo_provider: null,
-          repo_owner: null,
-          repo_name: null,
-          repo_branch: null,
-          repo_file_path: null,
-          repo_default_branch: null,
-        },
-        file.entries,
-      );
+          source_language: sourceLanguage || null,
+          target_language: null,
+          source_format: sourceFormat as 'po' | 'i18next',
+          source_filename: null,
+          po_header: null,
+          wp_project_type: null,
+          wp_slug: null,
+          wp_track: null,
+        });
 
-      handleClose();
-      void navigate(`/projects/${project.id}`);
+        handleClose();
+        void navigate(`/projects/${project.id}`);
+      }
     } catch (err) {
       const message =
         err && typeof err === 'object' && 'message' in err
@@ -259,7 +293,18 @@ export function CreateProjectModal({ opened, onClose }: CreateProjectModalProps)
       setCreateError(message);
       setCreating(false);
     }
-  }, [createProject, handleClose, importedFile, navigate, projectName, t, user, visibility]);
+  }, [
+    createProject,
+    handleClose,
+    importedFile,
+    navigate,
+    projectName,
+    sourceFormat,
+    sourceLanguage,
+    t,
+    user,
+    visibility,
+  ]);
 
   // Derived
   const targetLanguage = importedFile?.file.header.language ?? null;
@@ -381,10 +426,30 @@ export function CreateProjectModal({ opened, onClose }: CreateProjectModalProps)
                 </Button>
               </Group>
             </Paper>
+
+            {/* Empty project */}
+            <Paper withBorder p="md">
+              <Group justify="space-between" align="center">
+                <Group gap="sm">
+                  <FolderPlus size={20} />
+                  <div>
+                    <Text size="sm" fw={500}>
+                      {t('Empty project')}
+                    </Text>
+                    <Text size="xs" c="dimmed">
+                      {t('Set up a project and add languages later')}
+                    </Text>
+                  </div>
+                </Group>
+                <Button size="sm" variant="default" onClick={handleEmptyProject}>
+                  {t('Create')}
+                </Button>
+              </Group>
+            </Paper>
           </Stack>
         )}
 
-        {step === 1 && importedFile && (
+        {step === 1 && (
           <Stack gap="md">
             {createError && (
               <Alert icon={<AlertCircle size={16} />} color="red" variant="light">
@@ -406,17 +471,39 @@ export function CreateProjectModal({ opened, onClose }: CreateProjectModalProps)
               onChange={(v) => setVisibility(v ?? 'private')}
             />
 
-            <Group gap="sm">
-              {targetLanguage && (
-                <Badge variant="light" color="blue">
-                  {t('Target: {{language}}', { language: targetLanguage })}
+            {!importedFile && (
+              <>
+                <Select
+                  label={t('Source format')}
+                  data={[
+                    { value: 'po', label: 'PO (gettext)' },
+                    { value: 'i18next', label: 'i18next JSON' },
+                  ]}
+                  value={sourceFormat}
+                  onChange={(v) => setSourceFormat(v ?? 'po')}
+                />
+                <TextInput
+                  label={t('Source language')}
+                  placeholder="en"
+                  value={sourceLanguage}
+                  onChange={(e) => setSourceLanguage(e.currentTarget.value)}
+                />
+              </>
+            )}
+
+            {importedFile && (
+              <Group gap="sm">
+                {targetLanguage && (
+                  <Badge variant="light" color="blue">
+                    {t('Target: {{language}}', { language: targetLanguage })}
+                  </Badge>
+                )}
+                <Badge variant="light">{t('{{count}} total entries', { count: entryCount })}</Badge>
+                <Badge variant="light" color="gray">
+                  {importedFile.originalFilename}
                 </Badge>
-              )}
-              <Badge variant="light">{t('{{count}} total entries', { count: entryCount })}</Badge>
-              <Badge variant="light" color="gray">
-                {importedFile.originalFilename}
-              </Badge>
-            </Group>
+              </Group>
+            )}
 
             <Group justify="space-between" mt="md">
               <Button variant="default" onClick={() => setStep(0)}>

@@ -33,9 +33,9 @@ export interface ProjectsActions {
   fetchProjects: () => Promise<void>;
   createProject: (
     insert: ProjectInsert,
-    languageInsert: ProjectLanguageInsert,
-    entries: POEntry[],
-  ) => Promise<{ project: ProjectRow; languageId: string }>;
+    languageInsert?: ProjectLanguageInsert,
+    entries?: POEntry[],
+  ) => Promise<{ project: ProjectRow; languageId: string | null }>;
   deleteProject: (id: string) => Promise<void>;
   addLanguage: (
     projectId: string,
@@ -65,26 +65,32 @@ export const useProjectsStore = create<ProjectsState & ProjectsActions>()((set, 
 
   createProject: async (
     insert: ProjectInsert,
-    languageInsert: ProjectLanguageInsert,
-    entries: POEntry[],
+    languageInsert?: ProjectLanguageInsert,
+    entries?: POEntry[],
   ) => {
     // Create project
     const project = await apiCreateProject(insert);
 
-    // Create first language
-    const language = await apiCreateProjectLanguage({
-      ...languageInsert,
-      project_id: project.id,
-    });
+    let languageId: string | null = null;
 
-    // Sync entries to the new language
-    await syncProjectEntries(language.id, project.id, entries, new Map(), new Map());
+    // Create first language + entries (if provided)
+    if (languageInsert) {
+      const language = await apiCreateProjectLanguage({
+        ...languageInsert,
+        project_id: project.id,
+      });
+      languageId = language.id;
+
+      if (entries && entries.length > 0) {
+        await syncProjectEntries(language.id, project.id, entries, new Map(), new Map());
+      }
+    }
 
     // Re-fetch to get stats updated by triggers
     const projects = await listProjects();
     set({ projects });
 
-    return { project, languageId: language.id };
+    return { project, languageId };
   },
 
   deleteProject: async (id: string) => {
