@@ -4,7 +4,7 @@
  */
 
 import { Link } from 'react-router';
-import { Menu, Avatar, ActionIcon, Tooltip, Group, Text } from '@mantine/core';
+import { Menu, Avatar, ActionIcon, Tooltip, UnstyledButton, Group, Text } from '@mantine/core';
 import { LogIn, LogOut, User } from 'lucide-react';
 import { motion } from 'motion/react';
 import { buttonStates } from '@/lib/motion';
