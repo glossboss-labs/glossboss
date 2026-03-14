@@ -8,6 +8,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import type { POFile, POEntry, POHeader } from '@/lib/po/types';
+import { getStorageAdapter } from '@/lib/cloud';
 import type { GlossaryAnalysisResult } from '@/lib/glossary/types';
 import { deriveProjectName } from '@/lib/translation-memory';
 import type { QAEntryReport } from '@/lib/qa';
@@ -1403,7 +1404,7 @@ export const useEditorStore = create<EditorState & EditorActions>()(
     }),
     {
       name: STORAGE_KEY,
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(() => getStorageAdapter()),
       partialize: (state) => ({
         projectName: state.projectName,
         filename: state.filename,

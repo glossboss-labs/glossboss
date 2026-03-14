@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom/vitest';
 import { beforeEach } from 'vitest';
+import { LocalStorageAdapter, setStorageAdapter } from '@/lib/cloud';
 
 function createStorageMock(): Storage {
   const data = new Map<string, string>();
@@ -125,6 +126,9 @@ const sessionStorageMock = createStorageMock();
 
 installStorageMock('localStorage', localStorageMock);
 installStorageMock('sessionStorage', sessionStorageMock);
+
+/** Initialize storage adapter before any store modules are evaluated */
+setStorageAdapter(new LocalStorageAdapter());
 
 (globalThis as { __APP_VERSION__?: string }).__APP_VERSION__ = 'test-version';
 (globalThis as { __GIT_BRANCH__?: string }).__GIT_BRANCH__ = 'test-branch';
