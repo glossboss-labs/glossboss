@@ -30,6 +30,7 @@ import {
   Upload,
   FileUp,
   ChevronDown,
+  Archive,
   Cloud,
   CloudOff,
   Check,
@@ -37,6 +38,7 @@ import {
 import { sectionVariants, fadeVariants, buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
 import { AppHeader } from '@/components/AppHeader';
+import { SettingsModal } from '@/components/SettingsModal';
 import { useEditorStore } from '@/stores/editor-store';
 import type { FileFormat } from '@/stores/editor-store';
 import { getProject, getProjectLanguage, getProjectEntries } from '@/lib/projects/api';
@@ -77,6 +79,7 @@ export default function ProjectEditor() {
   const [language, setLanguage] = useState<ProjectLanguageRow | null>(null);
   const [workspaceMode, setWorkspaceMode] = useState<WorkspaceMode>('edit');
   const [syncState, setSyncState] = useState<SyncState>('idle');
+  const [settingsTab, setSettingsTab] = useState<string | null>(null);
 
   const loadFile = useEditorStore((s) => s.loadFile);
   const filename = useEditorStore((s) => s.filename);
@@ -406,6 +409,13 @@ export default function ProjectEditor() {
                       <Menu.Item onClick={() => performDownload('i18next')}>
                         {t('i18next JSON (.json)')}
                       </Menu.Item>
+                      <Menu.Divider />
+                      <Menu.Item
+                        leftSection={<Archive size={14} />}
+                        onClick={() => setSettingsTab('transfer')}
+                      >
+                        {t('Backup')}
+                      </Menu.Item>
                     </Menu.Dropdown>
                   </Menu>
                 </Group>
@@ -495,6 +505,12 @@ export default function ProjectEditor() {
           />
         </Stack>
       </motion.div>
+
+      <SettingsModal
+        opened={settingsTab !== null}
+        onClose={() => setSettingsTab(null)}
+        initialTab={settingsTab ?? undefined}
+      />
     </Container>
   );
 }

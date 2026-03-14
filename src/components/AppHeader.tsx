@@ -2,8 +2,8 @@
  * AppHeader — shared header for project pages (Dashboard, ProjectDetail, ProjectEditor).
  *
  * Three-column layout: branding left, page actions center, controls right.
- * The optional `actions` slot lets individual pages inject page-specific buttons
- * (e.g. upload/download in ProjectEditor).
+ * Right-side controls mirror EditorHeader exactly: Feedback button, theme toggle,
+ * dashboard link, user menu, and settings gear with full menu.
  */
 
 import type { ReactNode } from 'react';
@@ -12,9 +12,11 @@ import { Link } from 'react-router';
 import {
   Group,
   Text,
+  Button,
   ActionIcon,
   Menu,
   Tooltip,
+  Divider,
   useMantineColorScheme,
   useComputedColorScheme,
   useMantineTheme,
@@ -30,6 +32,8 @@ import {
   ExternalLink,
   Info,
   Home,
+  GitBranch,
+  Trash2,
 } from 'lucide-react';
 import { sectionVariants, buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
@@ -43,6 +47,10 @@ const appIcon = '/icon.svg';
 interface AppHeaderProps {
   /** Extra buttons rendered in the center section */
   actions?: ReactNode;
+  /** Open repo sync modal (shows "Repository sync" in settings menu) */
+  onOpenRepoSync?: () => void;
+  /** Clear the editor and navigate away */
+  onClear?: () => void;
 }
 
 function ThemeToggle() {
@@ -68,12 +76,20 @@ function ThemeToggle() {
   );
 }
 
-export function AppHeader({ actions }: AppHeaderProps) {
+export function AppHeader({ actions, onOpenRepoSync, onClear }: AppHeaderProps) {
   const { t } = useTranslation();
   const theme = useMantineTheme();
+  const computedColorScheme = useComputedColorScheme('light');
+  const { toggleColorScheme } = useMantineColorScheme();
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [settingsTab, setSettingsTab] = useState<string | undefined>();
   const [feedbackOpen, setFeedbackOpen] = useState(false);
+
+  const handleOpenSettings = (tab?: string) => {
+    setSettingsTab(tab);
+    setSettingsOpen(true);
+  };
 
   return (
     <>
@@ -121,29 +137,31 @@ export function AppHeader({ actions }: AppHeaderProps) {
 
           {/* Center: page-specific actions */}
           {actions && (
-            <Group gap="xs" wrap="wrap" justify="center" style={{ flex: 1, rowGap: 6 }}>
+            <Group gap="sm" wrap="wrap" justify="center" style={{ flex: 1, rowGap: 8 }}>
               {actions}
             </Group>
           )}
 
-          {/* Right: controls */}
+          {/* Right: controls — mirrors EditorHeader */}
           <Group gap="sm" style={{ flex: '0 0 auto' }}>
+            {!isMobile && <Divider orientation="vertical" />}
+
             {!isMobile && (
-              <>
+              <Group gap="sm">
                 <Tooltip label={t('Share feedback')}>
                   <motion.div {...buttonStates}>
-                    <ActionIcon
+                    <Button
                       variant="subtle"
-                      size="lg"
+                      leftSection={<MessageSquare size={16} />}
                       onClick={() => setFeedbackOpen(true)}
-                      aria-label={t('Share feedback')}
                     >
-                      <MessageSquare size={18} />
-                    </ActionIcon>
+                      {t('Feedback')}
+                    </Button>
                   </motion.div>
                 </Tooltip>
+
                 <ThemeToggle />
-              </>
+              </Group>
             )}
 
             <Tooltip label={t('Projects')}>
@@ -181,14 +199,40 @@ export function AppHeader({ actions }: AppHeaderProps) {
                     {t('Share feedback')}
                   </Menu.Item>
                 )}
+                {isMobile && (
+                  <Menu.Item
+                    leftSection={
+                      computedColorScheme === 'dark' ? <Sun size={14} /> : <Moon size={14} />
+                    }
+                    onClick={toggleColorScheme}
+                  >
+                    {computedColorScheme === 'dark' ? t('Light mode') : t('Dark mode')}
+                  </Menu.Item>
+                )}
                 {isMobile && <Menu.Divider />}
                 <Menu.Label>{t('Settings')}</Menu.Label>
                 <Menu.Item
                   leftSection={<Settings size={14} />}
-                  onClick={() => setSettingsOpen(true)}
+                  onClick={() => handleOpenSettings()}
                 >
                   {t('Open settings')}
                 </Menu.Item>
+                {(onOpenRepoSync || onClear) && (
+                  <>
+                    <Menu.Divider />
+                    <Menu.Label>{t('Actions')}</Menu.Label>
+                    {onOpenRepoSync && (
+                      <Menu.Item leftSection={<GitBranch size={14} />} onClick={onOpenRepoSync}>
+                        {t('Repository sync')}
+                      </Menu.Item>
+                    )}
+                    {onClear && (
+                      <Menu.Item color="red" leftSection={<Trash2 size={14} />} onClick={onClear}>
+                        {t('Clear editor')}
+                      </Menu.Item>
+                    )}
+                  </>
+                )}
                 <Menu.Divider />
                 <Menu.Label>{t('GlossBoss v{version}', { version: __APP_VERSION__ })}</Menu.Label>
                 <Menu.Item
@@ -211,6 +255,15 @@ export function AppHeader({ actions }: AppHeaderProps) {
                 </Menu.Item>
                 <Menu.Item
                   component="a"
+                  href="/translate/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  leftSection={<ExternalLink size={14} />}
+                >
+                  {t('Translate')}
+                </Menu.Item>
+                <Menu.Item
+                  component="a"
                   href="/privacy/"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -224,7 +277,11 @@ export function AppHeader({ actions }: AppHeaderProps) {
         </Group>
       </MotionDiv>
 
-      <SettingsModal opened={settingsOpen} onClose={() => setSettingsOpen(false)} />
+      <SettingsModal
+        opened={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        initialTab={settingsTab}
+      />
       <FeedbackModal opened={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
     </>
   );
