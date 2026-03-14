@@ -54,7 +54,7 @@ jobs:
   deploy-staging:
     name: Deploy Migrations To Staging
     needs: validate-local
-    if: github.event_name != 'pull_request' && secrets.SUPABASE_ACCESS_TOKEN != '' && (secrets.SUPABASE_STAGING_PROJECT_REF != '' || secrets.SUPABASE_PROJECT_REF != '') && secrets.SUPABASE_STAGING_DB_PASSWORD != ''
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
@@ -66,33 +66,34 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Check staging deployment secrets
+        id: staging-secrets
+        run: |
+          if [ -z "$SUPABASE_ACCESS_TOKEN" ] || [ -z "$SUPABASE_STAGING_PROJECT_REF" ] || [ -z "$SUPABASE_STAGING_DB_PASSWORD" ]; then
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            {
+              echo "## Staging Deploy Skipped"
+              echo ""
+              echo "Configure \`SUPABASE_ACCESS_TOKEN\`, \`SUPABASE_STAGING_PROJECT_REF\` (or legacy \`SUPABASE_PROJECT_REF\`), and \`SUPABASE_STAGING_DB_PASSWORD\` to enable automatic staging migration pushes."
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          echo "ready=true" >> "$GITHUB_OUTPUT"
+
       - name: Setup Supabase CLI
+        if: steps.staging-secrets.outputs.ready == 'true'
         uses: supabase/setup-cli@v1
         with:
           version: 2.77.0
 
       - name: Link staging project
+        if: steps.staging-secrets.outputs.ready == 'true'
         run: supabase link --project-ref "$SUPABASE_STAGING_PROJECT_REF" --password "$SUPABASE_STAGING_DB_PASSWORD"
 
       - name: Push migrations to staging
+        if: steps.staging-secrets.outputs.ready == 'true'
         run: supabase db push --linked --include-all -p "$SUPABASE_STAGING_DB_PASSWORD"
-
-  staging-secrets-missing:
-    name: Staging Secrets Missing
-    needs: validate-local
-    if: github.event_name != 'pull_request' && !(secrets.SUPABASE_ACCESS_TOKEN != '' && (secrets.SUPABASE_STAGING_PROJECT_REF != '' || secrets.SUPABASE_PROJECT_REF != '') && secrets.SUPABASE_STAGING_DB_PASSWORD != '')
-    runs-on: ubuntu-latest
-    timeout-minutes: 2
-
-    steps:
-      - name: Summarize skipped staging deploy
-        run: |
-          echo "::warning::Skipping staging migration deploy because SUPABASE_ACCESS_TOKEN, SUPABASE_STAGING_PROJECT_REF (or SUPABASE_PROJECT_REF), and/or SUPABASE_STAGING_DB_PASSWORD are not configured."
-          {
-            echo "## Staging Deploy Skipped"
-            echo ""
-            echo "Configure \`SUPABASE_ACCESS_TOKEN\`, \`SUPABASE_STAGING_PROJECT_REF\` (or legacy \`SUPABASE_PROJECT_REF\`), and \`SUPABASE_STAGING_DB_PASSWORD\` to enable automatic staging migration pushes."
-          } >> "$GITHUB_STEP_SUMMARY"
 
   deploy-production:
     name: Deploy Migrations To Production
