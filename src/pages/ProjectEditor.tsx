@@ -361,7 +361,7 @@ export default function ProjectEditor() {
                 resetRef={fileResetRef}
               >
                 {(props) => (
-                  <Button size="compact-sm" leftSection={<Upload size={14} />} {...props}>
+                  <Button size="sm" leftSection={<Upload size={16} />} {...props}>
                     {t('Upload')}
                   </Button>
                 )}
@@ -373,9 +373,9 @@ export default function ProjectEditor() {
                 <Group gap={0}>
                   <motion.div {...buttonStates}>
                     <Button
-                      size="compact-sm"
+                      size="sm"
                       variant="light"
-                      leftSection={<Download size={14} />}
+                      leftSection={<Download size={16} />}
                       onClick={handleDownload}
                       style={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
                     >
@@ -385,9 +385,9 @@ export default function ProjectEditor() {
                   <Menu position="bottom-end" withinPortal>
                     <Menu.Target>
                       <Button
-                        size="compact-sm"
+                        size="sm"
                         variant="light"
-                        px={6}
+                        px={8}
                         aria-label={t('Download format options')}
                         style={{
                           borderTopLeftRadius: 0,
@@ -395,7 +395,7 @@ export default function ProjectEditor() {
                           borderLeft: '1px solid var(--mantine-color-default-border)',
                         }}
                       >
-                        <ChevronDown size={12} />
+                        <ChevronDown size={14} />
                       </Button>
                     </Menu.Target>
                     <Menu.Dropdown>
@@ -425,8 +425,8 @@ export default function ProjectEditor() {
                     >
                       {(props) => (
                         <Button
-                          size="compact-sm"
-                          leftSection={<FileUp size={14} />}
+                          size="sm"
+                          leftSection={<FileUp size={16} />}
                           variant="light"
                           {...props}
                         >

@@ -12,7 +12,6 @@ import { Link } from 'react-router';
 import {
   Group,
   Text,
-  Button,
   ActionIcon,
   Menu,
   Tooltip,
@@ -56,13 +55,13 @@ function ThemeToggle() {
       <motion.div {...buttonStates}>
         <ActionIcon
           variant="default"
-          size="md"
+          size="lg"
           onClick={toggleColorScheme}
           aria-label={
             computedColorScheme === 'dark' ? t('Switch to light mode') : t('Switch to dark mode')
           }
         >
-          {computedColorScheme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+          {computedColorScheme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
         </ActionIcon>
       </motion.div>
     </Tooltip>
@@ -128,44 +127,50 @@ export function AppHeader({ actions }: AppHeaderProps) {
           )}
 
           {/* Right: controls */}
-          <Group gap={6} style={{ flex: '0 0 auto' }}>
+          <Group gap="sm" style={{ flex: '0 0 auto' }}>
             {!isMobile && (
               <>
-                <motion.div {...buttonStates}>
-                  <Button
-                    variant="subtle"
-                    size="compact-sm"
-                    leftSection={<MessageSquare size={14} />}
-                    onClick={() => setFeedbackOpen(true)}
-                  >
-                    {t('Feedback')}
-                  </Button>
-                </motion.div>
+                <Tooltip label={t('Share feedback')}>
+                  <motion.div {...buttonStates}>
+                    <ActionIcon
+                      variant="subtle"
+                      size="lg"
+                      onClick={() => setFeedbackOpen(true)}
+                      aria-label={t('Share feedback')}
+                    >
+                      <MessageSquare size={18} />
+                    </ActionIcon>
+                  </motion.div>
+                </Tooltip>
                 <ThemeToggle />
               </>
             )}
 
-            <motion.div {...buttonStates}>
-              <Button
-                component={Link}
-                to="/dashboard"
-                variant="default"
-                size="compact-sm"
-                leftSection={<LayoutDashboard size={14} />}
-              >
-                {t('Projects')}
-              </Button>
-            </motion.div>
+            <Tooltip label={t('Projects')}>
+              <motion.div {...buttonStates}>
+                <ActionIcon
+                  component={Link}
+                  to="/dashboard"
+                  variant="default"
+                  size="lg"
+                  aria-label={t('Projects')}
+                >
+                  <LayoutDashboard size={18} />
+                </ActionIcon>
+              </motion.div>
+            </Tooltip>
 
             <UserMenu />
 
             <Menu position="bottom-end" withinPortal>
               <Menu.Target>
-                <motion.div {...buttonStates}>
-                  <ActionIcon variant="default" size="md" aria-label={t('Settings')}>
-                    <Settings size={16} />
-                  </ActionIcon>
-                </motion.div>
+                <Tooltip label={t('Settings and actions')}>
+                  <motion.div {...buttonStates}>
+                    <ActionIcon variant="default" size="lg" aria-label={t('Settings and actions')}>
+                      <Settings size={18} />
+                    </ActionIcon>
+                  </motion.div>
+                </Tooltip>
               </Menu.Target>
               <Menu.Dropdown>
                 {isMobile && (
