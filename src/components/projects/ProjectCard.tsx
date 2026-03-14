@@ -14,9 +14,13 @@ import {
   Menu,
   Tooltip,
 } from '@mantine/core';
+import { motion, AnimatePresence } from 'motion/react';
 import { MoreVertical, Trash2, Languages, Lock, Globe, EyeOff } from 'lucide-react';
+import { badgeVariants } from '@/lib/motion';
 import { useTranslation, msgid } from '@/lib/app-language';
 import type { ProjectWithLanguages } from '@/lib/projects/types';
+
+const MotionSpan = motion.span;
 
 interface ProjectCardProps {
   project: ProjectWithLanguages;
@@ -55,13 +59,14 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
         textDecoration: 'none',
         color: 'inherit',
         cursor: 'pointer',
-        transition: 'border-color 120ms ease, box-shadow 120ms ease',
+        transition: 'border-color 120ms ease, box-shadow 120ms ease, background-color 120ms ease',
       }}
       styles={{
         root: {
           '&:hover': {
             borderColor: 'var(--mantine-color-blue-5)',
             boxShadow: 'var(--gb-shadow-tooltip)',
+            backgroundColor: 'var(--gb-highlight-row)',
           },
         },
       }}
@@ -75,7 +80,7 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
             {languages.length > 0 && (
               <Group gap={4}>
                 <Languages size={12} style={{ opacity: 0.5 }} />
-                <Text size="xs" c="dimmed">
+                <Text size="xs" style={{ color: 'var(--gb-text-secondary)' }}>
                   {languages.length === 1
                     ? t('1 language')
                     : t('{{count}} languages', { count: languages.length })}
@@ -95,7 +100,9 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
 
         <Group gap={4} wrap="nowrap">
           <Tooltip label={t(VISIBILITY_LABEL[project.visibility] ?? 'Public')}>
-            <VisIcon size={14} style={{ opacity: 0.4 }} />
+            <span style={{ display: 'inline-flex' }}>
+              <VisIcon size={14} style={{ opacity: 0.4 }} />
+            </span>
           </Tooltip>
           <Menu position="bottom-end" withinPortal>
             <Menu.Target>
@@ -145,18 +152,38 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
             <Badge variant="light" size="xs" color="blue">
               {stats_translated} {t('translated')}
             </Badge>
-            {stats_fuzzy > 0 && (
-              <Badge variant="light" size="xs" color="yellow">
-                {stats_fuzzy} {t('fuzzy')}
-              </Badge>
-            )}
-            {stats_untranslated > 0 && (
-              <Badge variant="light" size="xs" color="gray">
-                {stats_untranslated} {t('untranslated')}
-              </Badge>
-            )}
+            <AnimatePresence>
+              {stats_fuzzy > 0 && (
+                <MotionSpan
+                  key="fuzzy"
+                  variants={badgeVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                >
+                  <Badge variant="light" size="xs" color="yellow">
+                    {stats_fuzzy} {t('fuzzy')}
+                  </Badge>
+                </MotionSpan>
+              )}
+            </AnimatePresence>
+            <AnimatePresence>
+              {stats_untranslated > 0 && (
+                <MotionSpan
+                  key="untranslated"
+                  variants={badgeVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                >
+                  <Badge variant="light" size="xs" color="gray">
+                    {stats_untranslated} {t('untranslated')}
+                  </Badge>
+                </MotionSpan>
+              )}
+            </AnimatePresence>
           </Group>
-          <Text size="xs" c="dimmed">
+          <Text size="xs" style={{ color: 'var(--gb-text-secondary)' }}>
             {timeAgo}
           </Text>
         </Group>

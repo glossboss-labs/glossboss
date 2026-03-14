@@ -25,7 +25,9 @@ import {
   TextInput,
   Select,
   Tooltip,
+  ThemeIcon,
 } from '@mantine/core';
+import { motion, AnimatePresence } from 'motion/react';
 import {
   ArrowLeft,
   AlertCircle,
@@ -39,11 +41,22 @@ import {
   Search,
   GitBranch,
 } from 'lucide-react';
+import {
+  sectionVariants,
+  contentVariants,
+  staggerContainerVariants,
+  badgeVariants,
+  buttonStates,
+  fadeVariants,
+} from '@/lib/motion';
 import { useTranslation, msgid } from '@/lib/app-language';
 import { getProject, getProjectLanguages } from '@/lib/projects/api';
 import type { ProjectRow, ProjectLanguageRow } from '@/lib/projects/types';
 import { useProjectsStore } from '@/stores/projects-store';
 import { AddLanguageModal } from '@/components/projects/AddLanguageModal';
+
+const MotionDiv = motion.div;
+const MotionSpan = motion.span;
 
 type LangSortOption = 'locale' | 'most-complete' | 'least-complete' | 'most-strings' | 'updated';
 
@@ -191,21 +204,25 @@ export default function ProjectDetail() {
 
   if (loading) {
     return (
-      <Center py={80}>
-        <Loader size="lg" />
-      </Center>
+      <MotionDiv variants={fadeVariants} initial="hidden" animate="visible">
+        <Center py={80}>
+          <Loader size="lg" />
+        </Center>
+      </MotionDiv>
     );
   }
 
   if (error || !project) {
     return (
       <Container size="lg" py="xl">
-        <Alert icon={<AlertCircle size={16} />} color="red" variant="light">
-          {error ?? t('Project not found')}
-        </Alert>
-        <Button component={Link} to="/dashboard" variant="light" mt="md">
-          {t('Back to dashboard')}
-        </Button>
+        <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
+          <Alert icon={<AlertCircle size={16} />} color="red" variant="light">
+            {error ?? t('Project not found')}
+          </Alert>
+          <Button component={Link} to="/dashboard" variant="light" mt="md">
+            {t('Back to dashboard')}
+          </Button>
+        </MotionDiv>
       </Container>
     );
   }
@@ -214,238 +231,312 @@ export default function ProjectDetail() {
 
   return (
     <Container size="lg" py="xl">
-      <Stack gap="lg">
-        {/* Header */}
-        <Group justify="space-between" align="flex-start">
-          <Group gap="md">
-            <Button
-              component={Link}
-              to="/dashboard"
-              variant="subtle"
-              leftSection={<ArrowLeft size={16} />}
-              size="compact-md"
-            >
-              {t('Projects')}
-            </Button>
-            <div>
-              <Title order={3}>{project.name}</Title>
-              <Group gap={6} mt={4}>
-                <Tooltip label={t(VISIBILITY_LABEL[project.visibility] ?? 'Public')}>
-                  <Badge variant="light" size="sm" color="gray" leftSection={<VisIcon size={10} />}>
-                    {t(VISIBILITY_LABEL[project.visibility] ?? 'Public')}
-                  </Badge>
-                </Tooltip>
-                <Badge variant="light" size="sm" color="gray">
-                  {project.source_format}
-                </Badge>
-                {project.source_language && (
-                  <Badge variant="light" size="sm" color="blue">
-                    {t('Source: {{lang}}', { lang: project.source_language })}
-                  </Badge>
-                )}
-                {project.wp_slug && (
-                  <Badge variant="light" size="sm" color="grape">
-                    {project.wp_project_type}: {project.wp_slug}
-                  </Badge>
-                )}
-                <Text size="xs" c="dimmed">
-                  {t('Created {{date}}', {
-                    date: new Date(project.created_at).toLocaleDateString(),
-                  })}
-                </Text>
-              </Group>
-            </div>
-          </Group>
-          <Button leftSection={<Plus size={16} />} onClick={() => setAddModalOpen(true)}>
-            {t('Add language')}
-          </Button>
-        </Group>
-
-        {/* Aggregate stats */}
-        {languages.length > 0 && (
-          <Paper withBorder p="md">
-            <Group justify="space-between" align="center" mb={8}>
-              <Text size="sm" c="dimmed">
-                {t('{{count}} languages', { count: languages.length })}
-                {' · '}
-                {t('{{strings}} total strings', { strings: aggTotal })}
-              </Text>
-              <Text size="sm" fw={600} c={aggPct === 100 ? 'teal' : undefined}>
-                {aggPct}% {t('complete')}
-              </Text>
-            </Group>
-            <Progress.Root size="md">
-              <Progress.Section value={aggPct} color="blue" />
-              <Progress.Section value={aggFuzzyPct} color="yellow" />
-            </Progress.Root>
-          </Paper>
-        )}
-
-        {/* Search and sort */}
-        {languages.length > 0 && (
-          <Group gap="sm">
-            <TextInput
-              placeholder={t('Search languages…')}
-              leftSection={<Search size={14} />}
-              value={search}
-              onChange={(e) => setSearch(e.currentTarget.value)}
-              style={{ flex: 1, maxWidth: 280 }}
-            />
-            <Select
-              data={sortOptions}
-              value={sort}
-              onChange={(v) => setSort((v as LangSortOption) || 'locale')}
-              w={180}
-              size="sm"
-              allowDeselect={false}
-            />
-          </Group>
-        )}
-
-        {languages.length === 0 && (
-          <Center py={40}>
-            <Stack align="center" gap="sm">
-              <Languages size={32} style={{ opacity: 0.3 }} />
-              <Text c="dimmed">{t('No languages yet')}</Text>
-            </Stack>
-          </Center>
-        )}
-
-        {languages.length > 0 && filtered.length === 0 && (
-          <Center py={40}>
-            <Text c="dimmed" size="sm">
-              {t('No languages match your search')}
-            </Text>
-          </Center>
-        )}
-
-        <Stack gap="sm">
-          {filtered.map((lang) => {
-            const pct =
-              lang.stats_total > 0
-                ? Math.round((lang.stats_translated / lang.stats_total) * 100)
-                : 0;
-            const fuzzyPct =
-              lang.stats_total > 0 ? Math.round((lang.stats_fuzzy / lang.stats_total) * 100) : 0;
-
-            return (
-              <Paper
-                key={lang.id}
-                component={Link}
-                to={`/projects/${project.id}/languages/${lang.id}`}
-                withBorder
-                p="md"
-                style={{
-                  textDecoration: 'none',
-                  color: 'inherit',
-                  cursor: 'pointer',
-                  transition: 'border-color 120ms ease',
-                }}
-                styles={{
-                  root: {
-                    '&:hover': {
-                      borderColor: 'var(--mantine-color-blue-5)',
-                    },
-                  },
-                }}
-              >
-                <Group justify="space-between" align="center" wrap="nowrap">
-                  <Stack gap={4} style={{ flex: 1, minWidth: 0 }}>
-                    <Group gap="sm">
-                      <Text fw={600} size="sm">
-                        {lang.locale}
-                      </Text>
-                      {lang.source_filename && (
-                        <Text size="xs" c="dimmed" truncate>
-                          {lang.source_filename}
-                        </Text>
-                      )}
-                      {lang.wp_locale && (
-                        <Badge variant="light" size="xs" color="grape">
-                          {lang.wp_locale}
-                        </Badge>
-                      )}
-                      {lang.repo_provider && lang.repo_owner && lang.repo_name && (
-                        <Tooltip
-                          label={`${lang.repo_owner}/${lang.repo_name}${lang.repo_branch ? ` @ ${lang.repo_branch}` : ''}`}
-                        >
-                          <Badge
-                            variant="light"
-                            size="xs"
-                            color="dark"
-                            leftSection={<GitBranch size={10} />}
-                          >
-                            {lang.repo_provider === 'github' ? 'GitHub' : 'GitLab'}
-                          </Badge>
-                        </Tooltip>
-                      )}
-                    </Group>
-                    <Group gap={8} align="center">
-                      <Progress.Root size="sm" style={{ flex: 1 }}>
-                        <Progress.Section value={pct} color="blue" />
-                        <Progress.Section value={fuzzyPct} color="yellow" />
-                      </Progress.Root>
-                      <Text
-                        size="sm"
-                        fw={600}
-                        c={pct === 100 ? 'teal' : undefined}
-                        style={{ minWidth: 36, textAlign: 'right' }}
-                      >
-                        {pct}%
-                      </Text>
-                    </Group>
-                    <Group gap={8} justify="space-between">
-                      <Group gap={8}>
-                        <Badge variant="light" size="xs" color="blue">
-                          {lang.stats_translated} {t('translated')}
-                        </Badge>
-                        {lang.stats_fuzzy > 0 && (
-                          <Badge variant="light" size="xs" color="yellow">
-                            {lang.stats_fuzzy} {t('fuzzy')}
-                          </Badge>
-                        )}
-                        {lang.stats_untranslated > 0 && (
-                          <Badge variant="light" size="xs" color="gray">
-                            {lang.stats_untranslated} {t('untranslated')}
-                          </Badge>
-                        )}
-                      </Group>
-                      <Text size="xs" c="dimmed">
-                        {formatRelative(lang.updated_at)}
-                      </Text>
-                    </Group>
-                  </Stack>
-
-                  <Menu position="bottom-end" withinPortal>
-                    <Menu.Target>
-                      <ActionIcon
-                        variant="subtle"
+      <MotionDiv variants={sectionVariants} initial="hidden" animate="visible">
+        <Stack gap="lg">
+          {/* Header */}
+          <Group justify="space-between" align="flex-start">
+            <Group gap="md">
+              <motion.div {...buttonStates}>
+                <Button
+                  component={Link}
+                  to="/dashboard"
+                  variant="subtle"
+                  leftSection={<ArrowLeft size={16} />}
+                  size="compact-md"
+                >
+                  {t('Projects')}
+                </Button>
+              </motion.div>
+              <div>
+                <Title order={3}>{project.name}</Title>
+                <MotionDiv
+                  variants={staggerContainerVariants}
+                  initial="hidden"
+                  animate="visible"
+                  style={{
+                    display: 'flex',
+                    gap: 6,
+                    marginTop: 4,
+                    flexWrap: 'wrap',
+                    alignItems: 'center',
+                  }}
+                >
+                  <MotionSpan variants={badgeVariants}>
+                    <Tooltip label={t(VISIBILITY_LABEL[project.visibility] ?? 'Public')}>
+                      <Badge
+                        variant="light"
                         size="sm"
                         color="gray"
-                        onClick={(e) => e.preventDefault()}
+                        leftSection={<VisIcon size={10} />}
                       >
-                        <MoreVertical size={14} />
-                      </ActionIcon>
-                    </Menu.Target>
-                    <Menu.Dropdown>
-                      <Menu.Item
-                        color="red"
-                        leftSection={<Trash2 size={14} />}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          void handleDeleteLanguage(lang.id);
-                        }}
-                      >
-                        {t('Delete')}
-                      </Menu.Item>
-                    </Menu.Dropdown>
-                  </Menu>
+                        {t(VISIBILITY_LABEL[project.visibility] ?? 'Public')}
+                      </Badge>
+                    </Tooltip>
+                  </MotionSpan>
+                  <MotionSpan variants={badgeVariants}>
+                    <Badge variant="light" size="sm" color="gray">
+                      {project.source_format}
+                    </Badge>
+                  </MotionSpan>
+                  {project.source_language && (
+                    <MotionSpan variants={badgeVariants}>
+                      <Badge variant="light" size="sm" color="blue">
+                        {t('Source: {{lang}}', { lang: project.source_language })}
+                      </Badge>
+                    </MotionSpan>
+                  )}
+                  {project.wp_slug && (
+                    <MotionSpan variants={badgeVariants}>
+                      <Badge variant="light" size="sm" color="grape">
+                        {project.wp_project_type}: {project.wp_slug}
+                      </Badge>
+                    </MotionSpan>
+                  )}
+                  <MotionSpan variants={badgeVariants}>
+                    <Text size="xs" style={{ color: 'var(--gb-text-tertiary)' }}>
+                      {t('Created {{date}}', {
+                        date: new Date(project.created_at).toLocaleDateString(),
+                      })}
+                    </Text>
+                  </MotionSpan>
+                </MotionDiv>
+              </div>
+            </Group>
+            <motion.div {...buttonStates}>
+              <Button leftSection={<Plus size={16} />} onClick={() => setAddModalOpen(true)}>
+                {t('Add language')}
+              </Button>
+            </motion.div>
+          </Group>
+
+          {/* Aggregate stats */}
+          {languages.length > 0 && (
+            <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
+              <Paper withBorder p="md">
+                <Group justify="space-between" align="center" mb={8}>
+                  <Text size="sm" style={{ color: 'var(--gb-text-secondary)' }}>
+                    {t('{{count}} languages', { count: languages.length })}
+                    {' · '}
+                    {t('{{strings}} total strings', { strings: aggTotal })}
+                  </Text>
+                  <Text size="sm" fw={600} c={aggPct === 100 ? 'teal' : undefined}>
+                    {aggPct}% {t('complete')}
+                  </Text>
                 </Group>
+                <Progress.Root size="md">
+                  <Progress.Section value={aggPct} color="blue" />
+                  <Progress.Section value={aggFuzzyPct} color="yellow" />
+                </Progress.Root>
               </Paper>
-            );
-          })}
+            </MotionDiv>
+          )}
+
+          {/* Search and sort */}
+          {languages.length > 0 && (
+            <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
+              <Group gap="sm">
+                <TextInput
+                  placeholder={t('Search languages…')}
+                  leftSection={<Search size={14} />}
+                  value={search}
+                  onChange={(e) => setSearch(e.currentTarget.value)}
+                  style={{ flex: 1, maxWidth: 280 }}
+                />
+                <Select
+                  data={sortOptions}
+                  value={sort}
+                  onChange={(v) => setSort((v as LangSortOption) || 'locale')}
+                  w={180}
+                  size="sm"
+                  allowDeselect={false}
+                />
+              </Group>
+            </MotionDiv>
+          )}
+
+          {languages.length === 0 && (
+            <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
+              <Center py={40}>
+                <Stack align="center" gap="sm">
+                  <ThemeIcon size="xl" variant="light" color="blue" radius="xl">
+                    <Languages size={20} />
+                  </ThemeIcon>
+                  <Text style={{ color: 'var(--gb-text-secondary)' }}>{t('No languages yet')}</Text>
+                </Stack>
+              </Center>
+            </MotionDiv>
+          )}
+
+          {languages.length > 0 && filtered.length === 0 && (
+            <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
+              <Center py={40}>
+                <Text size="sm" style={{ color: 'var(--gb-text-secondary)' }}>
+                  {t('No languages match your search')}
+                </Text>
+              </Center>
+            </MotionDiv>
+          )}
+
+          <MotionDiv variants={staggerContainerVariants} initial="hidden" animate="visible">
+            <Stack gap="sm">
+              {filtered.map((lang) => {
+                const pct =
+                  lang.stats_total > 0
+                    ? Math.round((lang.stats_translated / lang.stats_total) * 100)
+                    : 0;
+                const fuzzyPct =
+                  lang.stats_total > 0
+                    ? Math.round((lang.stats_fuzzy / lang.stats_total) * 100)
+                    : 0;
+
+                return (
+                  <MotionDiv key={lang.id} variants={contentVariants}>
+                    <Paper
+                      component={Link}
+                      to={`/projects/${project.id}/languages/${lang.id}`}
+                      withBorder
+                      p="md"
+                      style={{
+                        textDecoration: 'none',
+                        color: 'inherit',
+                        cursor: 'pointer',
+                        transition:
+                          'border-color 120ms ease, background-color 120ms ease, box-shadow 120ms ease',
+                      }}
+                      styles={{
+                        root: {
+                          '&:hover': {
+                            borderColor: 'var(--mantine-color-blue-5)',
+                            backgroundColor: 'var(--gb-highlight-row)',
+                            boxShadow: 'var(--gb-shadow-tooltip)',
+                          },
+                        },
+                      }}
+                    >
+                      <Group justify="space-between" align="center" wrap="nowrap">
+                        <Stack gap={4} style={{ flex: 1, minWidth: 0 }}>
+                          <Group gap="sm">
+                            <Text fw={600} size="sm">
+                              {lang.locale}
+                            </Text>
+                            {lang.source_filename && (
+                              <Text
+                                size="xs"
+                                truncate
+                                style={{ color: 'var(--gb-text-secondary)' }}
+                              >
+                                {lang.source_filename}
+                              </Text>
+                            )}
+                            {lang.wp_locale && (
+                              <Badge variant="light" size="xs" color="grape">
+                                {lang.wp_locale}
+                              </Badge>
+                            )}
+                            {lang.repo_provider && lang.repo_owner && lang.repo_name && (
+                              <Tooltip
+                                label={`${lang.repo_owner}/${lang.repo_name}${lang.repo_branch ? ` @ ${lang.repo_branch}` : ''}`}
+                              >
+                                <Badge
+                                  variant="light"
+                                  size="xs"
+                                  color="dark"
+                                  leftSection={<GitBranch size={10} />}
+                                >
+                                  {lang.repo_provider === 'github' ? 'GitHub' : 'GitLab'}
+                                </Badge>
+                              </Tooltip>
+                            )}
+                          </Group>
+                          <Group gap={8} align="center">
+                            <Progress.Root size="sm" style={{ flex: 1 }}>
+                              <Progress.Section value={pct} color="blue" />
+                              <Progress.Section value={fuzzyPct} color="yellow" />
+                            </Progress.Root>
+                            <Text
+                              size="sm"
+                              fw={600}
+                              c={pct === 100 ? 'teal' : undefined}
+                              style={{ minWidth: 36, textAlign: 'right' }}
+                            >
+                              {pct}%
+                            </Text>
+                          </Group>
+                          <Group gap={8} justify="space-between">
+                            <Group gap={8}>
+                              <Badge variant="light" size="xs" color="blue">
+                                {lang.stats_translated} {t('translated')}
+                              </Badge>
+                              <AnimatePresence>
+                                {lang.stats_fuzzy > 0 && (
+                                  <MotionSpan
+                                    key="fuzzy"
+                                    variants={badgeVariants}
+                                    initial="hidden"
+                                    animate="visible"
+                                    exit="exit"
+                                  >
+                                    <Badge variant="light" size="xs" color="yellow">
+                                      {lang.stats_fuzzy} {t('fuzzy')}
+                                    </Badge>
+                                  </MotionSpan>
+                                )}
+                              </AnimatePresence>
+                              <AnimatePresence>
+                                {lang.stats_untranslated > 0 && (
+                                  <MotionSpan
+                                    key="untranslated"
+                                    variants={badgeVariants}
+                                    initial="hidden"
+                                    animate="visible"
+                                    exit="exit"
+                                  >
+                                    <Badge variant="light" size="xs" color="gray">
+                                      {lang.stats_untranslated} {t('untranslated')}
+                                    </Badge>
+                                  </MotionSpan>
+                                )}
+                              </AnimatePresence>
+                            </Group>
+                            <Text size="xs" style={{ color: 'var(--gb-text-secondary)' }}>
+                              {formatRelative(lang.updated_at)}
+                            </Text>
+                          </Group>
+                        </Stack>
+
+                        <Menu position="bottom-end" withinPortal>
+                          <Menu.Target>
+                            <ActionIcon
+                              variant="subtle"
+                              size="sm"
+                              color="gray"
+                              onClick={(e) => e.preventDefault()}
+                            >
+                              <MoreVertical size={14} />
+                            </ActionIcon>
+                          </Menu.Target>
+                          <Menu.Dropdown>
+                            <Menu.Item
+                              color="red"
+                              leftSection={<Trash2 size={14} />}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                void handleDeleteLanguage(lang.id);
+                              }}
+                            >
+                              {t('Delete')}
+                            </Menu.Item>
+                          </Menu.Dropdown>
+                        </Menu>
+                      </Group>
+                    </Paper>
+                  </MotionDiv>
+                );
+              })}
+            </Stack>
+          </MotionDiv>
         </Stack>
-      </Stack>
+      </MotionDiv>
 
       <AddLanguageModal
         opened={addModalOpen}

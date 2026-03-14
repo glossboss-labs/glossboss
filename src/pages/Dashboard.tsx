@@ -15,13 +15,18 @@ import {
   Stack,
   TextInput,
   Select,
+  ThemeIcon,
 } from '@mantine/core';
+import { motion } from 'motion/react';
 import { Plus, AlertCircle, FolderOpen, Search } from 'lucide-react';
+import { sectionVariants, contentVariants, fadeVariants, buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
 import { useProjectsStore } from '@/stores/projects-store';
 import { ProjectGrid } from '@/components/projects/ProjectGrid';
 import { CreateProjectModal } from '@/components/projects/CreateProjectModal';
 import type { ProjectWithLanguages } from '@/lib/projects/types';
+
+const MotionDiv = motion.div;
 
 type SortOption = 'updated' | 'name' | 'most-strings' | 'least-complete';
 
@@ -80,81 +85,101 @@ export default function Dashboard() {
 
   return (
     <Container size="lg" py="xl">
-      <Group justify="space-between" mb="xl">
-        <Title order={2}>{t('Projects')}</Title>
-        <Button leftSection={<Plus size={16} />} onClick={() => setCreateModalOpen(true)}>
-          {t('New project')}
-        </Button>
-      </Group>
-
-      {loading && (
-        <Center py={80}>
-          <Loader size="lg" />
-        </Center>
-      )}
-
-      {error && (
-        <Alert icon={<AlertCircle size={16} />} color="red" variant="light" mb="md">
-          {error}
-        </Alert>
-      )}
-
-      {!loading && !error && projects.length === 0 && (
-        <Center py={80}>
-          <Stack align="center" gap="md">
-            <FolderOpen size={48} style={{ opacity: 0.3 }} />
-            <Text c="dimmed" size="lg">
-              {t('No projects yet')}
-            </Text>
-            <Text c="dimmed" size="sm" maw={360} ta="center">
-              {t('Create a cloud project from a PO file, a WordPress.org export, or a repository.')}
-            </Text>
-            <Button variant="light" onClick={() => setCreateModalOpen(true)}>
+      <MotionDiv variants={sectionVariants} initial="hidden" animate="visible">
+        <Group justify="space-between" mb="xl">
+          <Title order={2}>{t('Projects')}</Title>
+          <motion.div {...buttonStates}>
+            <Button leftSection={<Plus size={16} />} onClick={() => setCreateModalOpen(true)}>
               {t('New project')}
             </Button>
-          </Stack>
-        </Center>
-      )}
+          </motion.div>
+        </Group>
 
-      {!loading && projects.length > 0 && (
-        <>
-          <Text size="sm" c="dimmed" mb="sm">
-            {t('{{projects}} projects', { projects: projects.length })}
-            {' · '}
-            {t('{{languages}} languages', { languages: totalLanguages })}
-            {' · '}
-            {t('{{strings}} strings', { strings: totalStrings })}
-          </Text>
-
-          <Group mb="md" gap="sm">
-            <TextInput
-              placeholder={t('Search projects…')}
-              leftSection={<Search size={14} />}
-              value={search}
-              onChange={(e) => setSearch(e.currentTarget.value)}
-              style={{ flex: 1, maxWidth: 320 }}
-            />
-            <Select
-              data={sortOptions}
-              value={sort}
-              onChange={(v) => setSort((v as SortOption) || 'updated')}
-              w={180}
-              size="sm"
-              allowDeselect={false}
-            />
-          </Group>
-
-          {filtered.length === 0 ? (
-            <Center py={40}>
-              <Text c="dimmed" size="sm">
-                {t('No projects match your search')}
-              </Text>
+        {loading && (
+          <MotionDiv variants={fadeVariants} initial="hidden" animate="visible">
+            <Center py={80}>
+              <Loader size="lg" />
             </Center>
-          ) : (
-            <ProjectGrid projects={filtered} onDelete={deleteProject} />
-          )}
-        </>
-      )}
+          </MotionDiv>
+        )}
+
+        {error && (
+          <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
+            <Alert icon={<AlertCircle size={16} />} color="red" variant="light" mb="md">
+              {error}
+            </Alert>
+          </MotionDiv>
+        )}
+
+        {!loading && !error && projects.length === 0 && (
+          <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
+            <Center py={80}>
+              <Stack align="center" gap="md">
+                <ThemeIcon size="xl" variant="light" color="blue" radius="xl">
+                  <FolderOpen size={24} />
+                </ThemeIcon>
+                <Text size="lg" style={{ color: 'var(--gb-text-secondary)' }}>
+                  {t('No projects yet')}
+                </Text>
+                <Text size="sm" maw={360} ta="center" style={{ color: 'var(--gb-text-tertiary)' }}>
+                  {t(
+                    'Create a cloud project from a PO file, a WordPress.org export, or a repository.',
+                  )}
+                </Text>
+                <motion.div {...buttonStates}>
+                  <Button variant="light" onClick={() => setCreateModalOpen(true)}>
+                    {t('New project')}
+                  </Button>
+                </motion.div>
+              </Stack>
+            </Center>
+          </MotionDiv>
+        )}
+
+        {!loading && projects.length > 0 && (
+          <>
+            <Text size="sm" mb="sm" style={{ color: 'var(--gb-text-secondary)' }}>
+              {t('{{projects}} projects', { projects: projects.length })}
+              {' · '}
+              {t('{{languages}} languages', { languages: totalLanguages })}
+              {' · '}
+              {t('{{strings}} strings', { strings: totalStrings })}
+            </Text>
+
+            <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
+              <Group mb="md" gap="sm">
+                <TextInput
+                  placeholder={t('Search projects…')}
+                  leftSection={<Search size={14} />}
+                  value={search}
+                  onChange={(e) => setSearch(e.currentTarget.value)}
+                  style={{ flex: 1, maxWidth: 320 }}
+                />
+                <Select
+                  data={sortOptions}
+                  value={sort}
+                  onChange={(v) => setSort((v as SortOption) || 'updated')}
+                  w={180}
+                  size="sm"
+                  allowDeselect={false}
+                />
+              </Group>
+            </MotionDiv>
+
+            {filtered.length === 0 ? (
+              <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
+                <Center py={40}>
+                  <Text size="sm" style={{ color: 'var(--gb-text-secondary)' }}>
+                    {t('No projects match your search')}
+                  </Text>
+                </Center>
+              </MotionDiv>
+            ) : (
+              <ProjectGrid projects={filtered} onDelete={deleteProject} />
+            )}
+          </>
+        )}
+      </MotionDiv>
 
       <CreateProjectModal opened={createModalOpen} onClose={() => setCreateModalOpen(false)} />
     </Container>
