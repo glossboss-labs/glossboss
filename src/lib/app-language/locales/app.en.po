@@ -700,7 +700,7 @@ msgstr ""
 msgid "DeepL usage:"
 msgstr "DeepL usage:"
 
-#: src/components/projects/ProjectCard.tsx:80
+#: src/components/projects/ProjectCard.tsx:75
 msgid "Delete"
 msgstr "Delete"
 
@@ -2041,7 +2041,7 @@ msgstr "Open a PR targeting {{branch}}"
 msgid "Open a locale file from a GitHub or GitLab repository"
 msgstr "Open a locale file from a GitHub or GitLab repository"
 
-#: src/pages/Dashboard.tsx:53
+#: src/pages/Dashboard.tsx:55
 msgid "Open editor"
 msgstr "Open editor"
 
@@ -3710,7 +3710,7 @@ msgstr "e.g. woocommerce"
 msgid "for details."
 msgstr "for details."
 
-#: src/components/projects/ProjectCard.tsx:99
+#: src/components/projects/ProjectCard.tsx:94
 msgid "fuzzy"
 msgstr "fuzzy"
 

@@ -694,7 +694,7 @@ msgstr ""
 msgid "DeepL usage:"
 msgstr "DeepL-gebruik:"
 
-#: src/components/projects/ProjectCard.tsx:80
+#: src/components/projects/ProjectCard.tsx:75
 msgid "Delete"
 msgstr ""
 
@@ -2017,7 +2017,7 @@ msgstr ""
 msgid "Open a locale file from a GitHub or GitLab repository"
 msgstr ""
 
-#: src/pages/Dashboard.tsx:53
+#: src/pages/Dashboard.tsx:55
 msgid "Open editor"
 msgstr ""
 
@@ -3677,7 +3677,7 @@ msgstr ""
 msgid "for details."
 msgstr "voor details."
 
-#: src/components/projects/ProjectCard.tsx:99
+#: src/components/projects/ProjectCard.tsx:94
 msgid "fuzzy"
 msgstr ""
 
