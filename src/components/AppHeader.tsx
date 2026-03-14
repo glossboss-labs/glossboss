@@ -12,6 +12,7 @@ import { Link } from 'react-router';
 import {
   Group,
   Text,
+  Button,
   ActionIcon,
   Menu,
   Tooltip,
@@ -130,47 +131,41 @@ export function AppHeader({ actions }: AppHeaderProps) {
           <Group gap={6} style={{ flex: '0 0 auto' }}>
             {!isMobile && (
               <>
-                <Tooltip label={t('Share feedback')}>
-                  <motion.div {...buttonStates}>
-                    <ActionIcon
-                      variant="subtle"
-                      size="md"
-                      onClick={() => setFeedbackOpen(true)}
-                      aria-label={t('Share feedback')}
-                    >
-                      <MessageSquare size={16} />
-                    </ActionIcon>
-                  </motion.div>
-                </Tooltip>
+                <motion.div {...buttonStates}>
+                  <Button
+                    variant="subtle"
+                    size="compact-sm"
+                    leftSection={<MessageSquare size={14} />}
+                    onClick={() => setFeedbackOpen(true)}
+                  >
+                    {t('Feedback')}
+                  </Button>
+                </motion.div>
                 <ThemeToggle />
               </>
             )}
 
-            <Tooltip label={t('Projects')}>
-              <motion.div {...buttonStates}>
-                <ActionIcon
-                  component={Link}
-                  to="/dashboard"
-                  variant="default"
-                  size="md"
-                  aria-label={t('Projects')}
-                >
-                  <LayoutDashboard size={16} />
-                </ActionIcon>
-              </motion.div>
-            </Tooltip>
+            <motion.div {...buttonStates}>
+              <Button
+                component={Link}
+                to="/dashboard"
+                variant="default"
+                size="compact-sm"
+                leftSection={<LayoutDashboard size={14} />}
+              >
+                {t('Projects')}
+              </Button>
+            </motion.div>
 
             <UserMenu />
 
             <Menu position="bottom-end" withinPortal>
               <Menu.Target>
-                <Tooltip label={t('Settings and actions')}>
-                  <motion.div {...buttonStates}>
-                    <ActionIcon variant="default" size="md" aria-label={t('Settings and actions')}>
-                      <Settings size={16} />
-                    </ActionIcon>
-                  </motion.div>
-                </Tooltip>
+                <motion.div {...buttonStates}>
+                  <ActionIcon variant="default" size="md" aria-label={t('Settings')}>
+                    <Settings size={16} />
+                  </ActionIcon>
+                </motion.div>
               </Menu.Target>
               <Menu.Dropdown>
                 {isMobile && (
