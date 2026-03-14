@@ -53,6 +53,7 @@ import { useTranslation, msgid } from '@/lib/app-language';
 import { getProject, getProjectLanguages } from '@/lib/projects/api';
 import type { ProjectRow, ProjectLanguageRow } from '@/lib/projects/types';
 import { useProjectsStore } from '@/stores/projects-store';
+import { AppHeader } from '@/components/AppHeader';
 import { AddLanguageModal } from '@/components/projects/AddLanguageModal';
 
 const MotionDiv = motion.div;
@@ -231,6 +232,7 @@ export default function ProjectDetail() {
 
   return (
     <Container size="lg" py="xl">
+      <AppHeader />
       <MotionDiv variants={sectionVariants} initial="hidden" animate="visible">
         <Stack gap="lg">
           {/* Breadcrumb */}

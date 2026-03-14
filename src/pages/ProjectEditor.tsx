@@ -13,6 +13,7 @@ import { motion } from 'motion/react';
 import { ArrowLeft, AlertCircle, Download } from 'lucide-react';
 import { sectionVariants, fadeVariants, buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
+import { AppHeader } from '@/components/AppHeader';
 import { useEditorStore } from '@/stores/editor-store';
 import { getProject, getProjectLanguage, getProjectEntries } from '@/lib/projects/api';
 import {
@@ -202,55 +203,43 @@ export default function ProjectEditor() {
 
   return (
     <Container size="xl" py="xl">
+      <AppHeader
+        actions={
+          <motion.div {...buttonStates}>
+            <Button
+              variant="light"
+              leftSection={<Download size={16} />}
+              onClick={handleDownload}
+              disabled={!filename}
+            >
+              {t('Download')}
+            </Button>
+          </motion.div>
+        }
+      />
       <motion.div variants={sectionVariants} initial="hidden" animate="visible">
         <Stack gap="lg">
           {/* Breadcrumb */}
-          <Group justify="space-between" align="center">
-            <Group gap={6} align="center">
-              <Text
-                component={Link}
-                to="/dashboard"
-                size="sm"
-                style={{
-                  color: 'var(--gb-text-secondary)',
-                  textDecoration: 'none',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 4,
-                }}
-              >
-                <ArrowLeft size={14} />
-                {t('Projects')}
-              </Text>
-              <Text size="sm" style={{ color: 'var(--gb-text-tertiary)' }}>
-                /
-              </Text>
-              <Text
-                component={Link}
-                to={`/projects/${project.id}`}
-                size="sm"
-                style={{
-                  color: 'var(--gb-text-secondary)',
-                  textDecoration: 'none',
-                }}
-              >
-                {project.name}
-              </Text>
-            </Group>
-            <motion.div {...buttonStates}>
-              <Button
-                variant="light"
-                leftSection={<Download size={16} />}
-                onClick={handleDownload}
-                disabled={!filename}
-              >
-                {t('Download')}
-              </Button>
-            </motion.div>
+          <Group gap={6} align="center">
+            <Text
+              component={Link}
+              to={`/projects/${project.id}`}
+              size="sm"
+              style={{
+                color: 'var(--gb-text-secondary)',
+                textDecoration: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4,
+              }}
+            >
+              <ArrowLeft size={14} />
+              {project.name}
+            </Text>
           </Group>
 
           {/* Title */}
-          <div>
+          <div style={{ marginTop: -8 }}>
             <Title order={3}>
               {project.name} · {language.locale}
             </Title>

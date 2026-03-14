@@ -22,6 +22,7 @@ import { Plus, AlertCircle, FolderOpen, Search } from 'lucide-react';
 import { sectionVariants, contentVariants, fadeVariants, buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
 import { useProjectsStore } from '@/stores/projects-store';
+import { AppHeader } from '@/components/AppHeader';
 import { ProjectGrid } from '@/components/projects/ProjectGrid';
 import { CreateProjectModal } from '@/components/projects/CreateProjectModal';
 import type { ProjectWithLanguages } from '@/lib/projects/types';
@@ -85,6 +86,7 @@ export default function Dashboard() {
 
   return (
     <Container size="lg" py="xl">
+      <AppHeader />
       <MotionDiv variants={sectionVariants} initial="hidden" animate="visible">
         <Group justify="space-between" mb="xl">
           <Title order={2}>{t('Projects')}</Title>
