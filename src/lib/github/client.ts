@@ -14,7 +14,7 @@ import type {
   GitHubPullRequest,
   GitHubTree,
 } from './types';
-import { getGitHubSettings } from './settings';
+import { resolveGitHubToken } from './token';
 import type {
   RepoBranch,
   RepoTreeEntry,
@@ -30,9 +30,9 @@ import type {
 const API_BASE = 'https://api.github.com';
 
 function getToken(): string {
-  const { token } = getGitHubSettings();
-  if (!token.trim()) throw new Error('GitHub token not configured');
-  return token.trim();
+  const token = resolveGitHubToken();
+  if (!token) throw new Error('GitHub token not configured');
+  return token;
 }
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {

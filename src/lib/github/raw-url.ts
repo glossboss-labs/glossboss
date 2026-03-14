@@ -4,14 +4,10 @@
  * Detects raw.githubusercontent.com URLs and fetches their content
  * using the GitHub API with available authentication tokens.
  *
- * Token resolution order:
- * 1. GitHub OAuth provider_token from Supabase session
- * 2. GitHub PAT from repo sync settings
- * 3. Unauthenticated (works for public repos only)
+ * Token resolution is handled by the unified resolver in ./token.ts.
  */
 
-import { getGitHubSettings } from './settings';
-import { useAuthStore } from '@/stores/auth-store';
+import { resolveGitHubToken } from './token';
 
 const RAW_GITHUB_PATTERN =
   /^https:\/\/raw\.githubusercontent\.com\/([^/]+)\/([^/]+)\/([^/]+)\/(.+)$/;
@@ -33,26 +29,6 @@ export function parseGitHubRawUrl(url: string): GitHubRawUrl | null {
 /** Check if a URL is a raw.githubusercontent.com URL. */
 export function isGitHubRawUrl(url: string): boolean {
   return RAW_GITHUB_PATTERN.test(url);
-}
-
-/**
- * Resolve a GitHub token from available sources.
- * Returns the token or null if no token is available.
- */
-export function resolveGitHubToken(): string | null {
-  // 1. Check Supabase session for GitHub OAuth provider_token
-  const session = useAuthStore.getState().session;
-  if (session?.provider_token && session.user?.app_metadata?.provider === 'github') {
-    return session.provider_token;
-  }
-
-  // 2. Check repo sync settings for a manually entered PAT
-  const { token } = getGitHubSettings();
-  if (token.trim()) {
-    return token.trim();
-  }
-
-  return null;
 }
 
 /**

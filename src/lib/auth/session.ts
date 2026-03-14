@@ -50,7 +50,10 @@ export async function signInWithEmail(email: string, password: string): Promise<
 export async function signInWithGitHub(): Promise<{ error: AuthError | null }> {
   const { error } = await auth().signInWithOAuth({
     provider: 'github',
-    options: { redirectTo: `${window.location.origin}/auth/callback` },
+    options: {
+      redirectTo: `${window.location.origin}/auth/callback`,
+      scopes: 'repo',
+    },
   });
   return { error };
 }

@@ -14,6 +14,7 @@ import {
   signInWithGitHub,
   signOut as sessionSignOut,
 } from '@/lib/auth/session';
+import { setGitHubOAuthToken, clearGitHubOAuthToken } from '@/lib/github/token';
 
 export interface AuthState {
   /** Current session (null if signed out). */
@@ -53,15 +54,26 @@ export const useAuthStore = create<AuthState & AuthActions>()((set) => ({
     // Get initial session
     client.auth.getSession().then(({ data }) => {
       set({ session: data.session, user: data.session?.user ?? null, loading: false });
+      if (data.session?.provider_token && data.session.user?.app_metadata?.provider === 'github') {
+        setGitHubOAuthToken(data.session.provider_token);
+      }
     });
 
     // Listen to auth state changes.
-    // The session object includes provider_token from OAuth flows (e.g. GitHub),
-    // which is used by the GitHub raw URL resolver for private repo access.
+    // Capture the GitHub OAuth provider_token when signing in — Supabase only
+    // provides it on the initial SIGNED_IN event, not on session refresh.
     const {
       data: { subscription },
-    } = client.auth.onAuthStateChange((_event, session) => {
+    } = client.auth.onAuthStateChange((event, session) => {
       set({ session, user: session?.user ?? null, loading: false });
+
+      if (session?.provider_token && session.user?.app_metadata?.provider === 'github') {
+        setGitHubOAuthToken(session.provider_token);
+      }
+
+      if (event === 'SIGNED_OUT') {
+        clearGitHubOAuthToken();
+      }
     });
 
     return () => {
