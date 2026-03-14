@@ -7,21 +7,25 @@ You are resuming work on the GlossBoss SaaS platform. Follow this procedure exac
 Run these commands to understand where things stand:
 
 1. Fetch all open issues from the project board:
+
 ```
 gh project item-list 1 --owner glossboss-labs --format json
 ```
 
 2. Fetch the full body of each open issue to see checked/unchecked tasks:
+
 ```
 gh issue list --repo glossboss-labs/glossboss --state open --json number,title,body,labels --limit 50
 ```
 
 3. Check git log for recent work:
+
 ```
 git log --oneline -20
 ```
 
 4. Check if there are uncommitted changes:
+
 ```
 git status
 ```
@@ -44,6 +48,7 @@ Present this as a table and ask: "Should I continue with [next task], or do you 
 When given the go-ahead:
 
 1. **Before starting a task**: Update the GitHub issue to mark it as in-progress on the project board:
+
 ```
 gh project item-edit --project-id PVT_kwDOD_piyc4BRsgd --id <ITEM_ID> --field-id <STATUS_FIELD_ID> --single-select-option-id <IN_PROGRESS_ID>
 ```
@@ -51,6 +56,7 @@ gh project item-edit --project-id PVT_kwDOD_piyc4BRsgd --id <ITEM_ID> --field-id
 2. **While working**: Follow CLAUDE.md instructions strictly — run the full CI surface (`bun run lint`, `bun run format:check`, `bun run typecheck`, `bun run build`, `bun run test:coverage`) before considering any task complete. Run `bun run i18n:extract` if any translatable strings changed.
 
 3. **After completing a sub-task**: Update the GitHub issue body to check off completed items:
+
 ```
 gh issue edit <NUMBER> --repo glossboss-labs/glossboss --body "<updated body with checked boxes>"
 ```
