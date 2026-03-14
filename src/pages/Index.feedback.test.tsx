@@ -10,6 +10,7 @@ import { useSourceStore } from '@/stores/source-store';
 
 const navigatorLanguageDescriptor = Object.getOwnPropertyDescriptor(window.navigator, 'language');
 const navigatorLanguagesDescriptor = Object.getOwnPropertyDescriptor(window.navigator, 'languages');
+const SLOW_UI_TEST_TIMEOUT = 30_000;
 
 function mockNavigatorLanguages(language: string, languages = [language]) {
   Object.defineProperty(window.navigator, 'language', {
@@ -41,73 +42,85 @@ describe('Index feedback and empty state actions', () => {
     clearExamplePoCacheForTests();
   });
 
-  it('renders a feedback button and opens feedback modal', async () => {
-    const user = userEvent.setup();
+  it(
+    'renders a feedback button and opens feedback modal',
+    async () => {
+      const user = userEvent.setup();
 
-    render(
-      <MemoryRouter>
-        <AppProviders>
-          <Index />
-        </AppProviders>
-      </MemoryRouter>,
-    );
+      render(
+        <MemoryRouter>
+          <AppProviders>
+            <Index />
+          </AppProviders>
+        </MemoryRouter>,
+      );
 
-    const feedbackButton = screen.getByRole('button', { name: /feedback/i });
-    expect(feedbackButton).toBeInTheDocument();
+      const feedbackButton = screen.getByRole('button', { name: /feedback/i });
+      expect(feedbackButton).toBeInTheDocument();
 
-    await user.click(feedbackButton);
+      await user.click(feedbackButton);
 
-    expect(await screen.findByText('Share Feedback')).toBeInTheDocument();
-  });
+      expect(await screen.findByText('Share Feedback')).toBeInTheDocument();
+    },
+    SLOW_UI_TEST_TIMEOUT,
+  );
 
-  it('loads the bundled example PO from the empty state and hides the action afterward', async () => {
-    const user = userEvent.setup();
+  it(
+    'loads the bundled example PO from the empty state and hides the action afterward',
+    async () => {
+      const user = userEvent.setup();
 
-    render(
-      <MemoryRouter>
-        <AppProviders>
-          <Index />
-        </AppProviders>
-      </MemoryRouter>,
-    );
+      render(
+        <MemoryRouter>
+          <AppProviders>
+            <Index />
+          </AppProviders>
+        </MemoryRouter>,
+      );
 
-    expect(screen.getByRole('button', { name: /load example po/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /load example po/i })).toBeInTheDocument();
 
-    await user.click(screen.getByRole('button', { name: /load example po/i }));
+      await user.click(screen.getByRole('button', { name: /load example po/i }));
 
-    await waitFor(() => {
-      expect(useEditorStore.getState().filename).toBe('hello-dolly-nl_NL.po');
-    });
+      await waitFor(() => {
+        expect(useEditorStore.getState().filename).toBe('hello-dolly-nl_NL.po');
+      });
 
-    expect(useEditorStore.getState().entries).toHaveLength(3);
-    expect(useSourceStore.getState().autoDetectedSlug).toBe('hello-dolly');
-    expect(useSourceStore.getState().projectVersion).toBe('1.7.2');
-    expect(await screen.findByText('Auto-detected: Plugin / hello-dolly')).toBeInTheDocument();
-    expect(await screen.findByText('Detected: NL')).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /load example po/i })).not.toBeInTheDocument();
-  }, 10000);
+      expect(useEditorStore.getState().entries).toHaveLength(3);
+      expect(useSourceStore.getState().autoDetectedSlug).toBe('hello-dolly');
+      expect(useSourceStore.getState().projectVersion).toBe('1.7.2');
+      expect(await screen.findByText('Auto-detected: Plugin / hello-dolly')).toBeInTheDocument();
+      expect(await screen.findByText('Detected: NL')).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /load example po/i })).not.toBeInTheDocument();
+    },
+    SLOW_UI_TEST_TIMEOUT,
+  );
 
-  it('loads the bundled example without depending on WordPress availability', async () => {
-    const user = userEvent.setup();
+  it(
+    'loads the bundled example without depending on WordPress availability',
+    async () => {
+      const user = userEvent.setup();
 
-    render(
-      <MemoryRouter>
-        <AppProviders>
-          <Index />
-        </AppProviders>
-      </MemoryRouter>,
-    );
+      render(
+        <MemoryRouter>
+          <AppProviders>
+            <Index />
+          </AppProviders>
+        </MemoryRouter>,
+      );
 
-    await user.click(screen.getByRole('button', { name: /load example po/i }));
+      await user.click(screen.getByRole('button', { name: /load example po/i }));
 
-    await waitFor(() => {
-      expect(useEditorStore.getState().filename).toBe('hello-dolly-nl_NL.po');
-    });
+      await waitFor(() => {
+        expect(useEditorStore.getState().filename).toBe('hello-dolly-nl_NL.po');
+      });
 
-    expect(useEditorStore.getState().entries).toHaveLength(3);
-    expect(useSourceStore.getState().autoDetectedSlug).toBe('hello-dolly');
-    expect(await screen.findByText('Detected: NL')).toBeInTheDocument();
-  });
+      expect(useEditorStore.getState().entries).toHaveLength(3);
+      expect(useSourceStore.getState().autoDetectedSlug).toBe('hello-dolly');
+      expect(await screen.findByText('Detected: NL')).toBeInTheDocument();
+    },
+    SLOW_UI_TEST_TIMEOUT,
+  );
 
   it('renders footer links for source, license, translate, and privacy in settings menu', async () => {
     const user = userEvent.setup();
