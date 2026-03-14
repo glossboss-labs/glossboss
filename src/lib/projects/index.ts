@@ -11,6 +11,10 @@ export type {
   ProjectEntryRow,
   ProjectEntryInsert,
   ProjectMemberRow,
+  ProjectLanguageRow,
+  ProjectLanguageInsert,
+  ProjectLanguageUpdate,
+  ProjectWithLanguages,
 } from './types';
 
 export {
@@ -19,7 +23,14 @@ export {
   createProject,
   updateProject,
   deleteProject,
+  getProjectLanguages,
+  getProjectLanguage,
+  createProjectLanguage,
+  updateProjectLanguage,
+  deleteProjectLanguage,
+  cloneLanguageEntries,
   getProjectEntries,
+  getProjectEntryKeys,
   syncProjectEntries,
 } from './api';
 
@@ -27,8 +38,10 @@ export {
   dbEntryToPOEntry,
   dbEntryToMTMeta,
   dbEntryToReviewState,
+  dbLanguageToHeader,
   dbProjectToHeader,
   entryKey,
   poEntryToDbFields,
   editorStateToProjectUpdate,
+  editorStateToLanguageUpdate,
 } from './conversions';

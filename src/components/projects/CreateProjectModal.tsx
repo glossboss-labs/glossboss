@@ -36,6 +36,7 @@ import { RepoSyncModal } from '@/components/repo-sync/RepoSyncModal';
 import { useProjectsStore } from '@/stores/projects-store';
 import { useAuth } from '@/hooks/use-auth';
 import { useNavigate } from 'react-router';
+import type { WordPressProjectType } from '@/lib/wp-source/references';
 
 const VISIBILITY_OPTIONS = [
   { value: 'private', label: msgid('Private') },
@@ -52,6 +53,10 @@ interface ImportedFile {
   file: POFile;
   format: FileFormat;
   originalFilename: string;
+  wpProjectType?: WordPressProjectType;
+  wpSlug?: string;
+  wpTrack?: 'stable' | 'dev';
+  wpLocale?: string;
 }
 
 export function CreateProjectModal({ opened, onClose }: CreateProjectModalProps) {
@@ -164,6 +169,10 @@ export function CreateProjectModal({ opened, onClose }: CreateProjectModalProps)
           file: outcome.result.file,
           format: outcome.result.format,
           originalFilename: wpFilename,
+          wpProjectType: request.projectType,
+          wpSlug: request.slug,
+          wpTrack: request.track,
+          wpLocale: request.locale,
         });
       } catch (err) {
         setImportError(err instanceof Error ? err.message : t('Failed to fetch WordPress file'));
@@ -207,8 +216,9 @@ export function CreateProjectModal({ opened, onClose }: CreateProjectModalProps)
     try {
       const { file, format } = importedFile;
       const header = file.header;
+      const locale = header.language ?? 'unknown';
 
-      const project = await createProject(
+      const { project } = await createProject(
         {
           owner_id: user.id,
           name: projectName.trim() || importedFile.originalFilename,
@@ -219,6 +229,22 @@ export function CreateProjectModal({ opened, onClose }: CreateProjectModalProps)
           source_format: format === 'i18next' ? 'i18next' : 'po',
           source_filename: importedFile.originalFilename,
           po_header: header as Record<string, string>,
+          wp_project_type: importedFile.wpProjectType ?? null,
+          wp_slug: importedFile.wpSlug ?? null,
+          wp_track: importedFile.wpTrack ?? null,
+        },
+        {
+          project_id: '', // will be set by store
+          locale,
+          source_filename: importedFile.originalFilename,
+          po_header: header as Record<string, string>,
+          wp_locale: importedFile.wpLocale ?? null,
+          repo_provider: null,
+          repo_owner: null,
+          repo_name: null,
+          repo_branch: null,
+          repo_file_path: null,
+          repo_default_branch: null,
         },
         file.entries,
       );

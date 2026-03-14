@@ -2,7 +2,7 @@
  * SaveToCloudModal — save the current local editor state as a cloud project.
  *
  * Lightweight modal that collects project name and visibility,
- * then creates the project and redirects to /projects/:id.
+ * then creates the project + first language and redirects to /projects/:id.
  */
 
 import { useCallback, useState } from 'react';
@@ -56,7 +56,9 @@ export function SaveToCloudModal({ opened, onClose }: SaveToCloudModalProps) {
     setError(null);
 
     try {
-      const project = await createProject(
+      const locale = header?.language ?? 'unknown';
+
+      const { project } = await createProject(
         {
           owner_id: user.id,
           name: name.trim() || projectName || 'Untitled',
@@ -67,6 +69,22 @@ export function SaveToCloudModal({ opened, onClose }: SaveToCloudModalProps) {
           source_format: sourceFormat === 'i18next' ? 'i18next' : 'po',
           source_filename: filename,
           po_header: header as Record<string, string> | null,
+          wp_project_type: null,
+          wp_slug: null,
+          wp_track: null,
+        },
+        {
+          project_id: '', // will be set by store
+          locale,
+          source_filename: filename,
+          po_header: header as Record<string, string> | null,
+          wp_locale: null,
+          repo_provider: null,
+          repo_owner: null,
+          repo_name: null,
+          repo_branch: null,
+          repo_file_path: null,
+          repo_default_branch: null,
         },
         entries,
       );

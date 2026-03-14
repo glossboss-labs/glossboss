@@ -4,10 +4,10 @@
 
 import { SimpleGrid } from '@mantine/core';
 import { ProjectCard } from './ProjectCard';
-import type { ProjectRow } from '@/lib/projects/types';
+import type { ProjectWithLanguages } from '@/lib/projects/types';
 
 interface ProjectGridProps {
-  projects: ProjectRow[];
+  projects: ProjectWithLanguages[];
   onDelete: (id: string) => void;
 }
 

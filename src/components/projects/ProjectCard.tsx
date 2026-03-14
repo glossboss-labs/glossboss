@@ -6,10 +6,10 @@ import { Link } from 'react-router';
 import { Paper, Text, Group, Progress, Badge, Stack, ActionIcon, Menu } from '@mantine/core';
 import { MoreVertical, Trash2, Languages } from 'lucide-react';
 import { useTranslation } from '@/lib/app-language';
-import type { ProjectRow } from '@/lib/projects/types';
+import type { ProjectWithLanguages } from '@/lib/projects/types';
 
 interface ProjectCardProps {
-  project: ProjectRow;
+  project: ProjectWithLanguages;
   onDelete: (id: string) => void;
 }
 
@@ -20,6 +20,7 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
   const fuzzyPct = stats_total > 0 ? Math.round((stats_fuzzy / stats_total) * 100) : 0;
 
   const timeAgo = formatRelative(project.updated_at);
+  const languages = project.project_languages ?? [];
 
   return (
     <Paper
@@ -47,12 +48,16 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
           <Text fw={600} size="md" truncate>
             {project.name}
           </Text>
-          {project.target_language && (
+          {languages.length > 0 && (
             <Group gap={4}>
               <Languages size={12} style={{ opacity: 0.5 }} />
-              <Text size="xs" c="dimmed">
-                {project.target_language}
-              </Text>
+              <Group gap={4}>
+                {languages.map((lang) => (
+                  <Badge key={lang.id} variant="light" size="xs" color="blue">
+                    {lang.locale}
+                  </Badge>
+                ))}
+              </Group>
             </Group>
           )}
         </Stack>

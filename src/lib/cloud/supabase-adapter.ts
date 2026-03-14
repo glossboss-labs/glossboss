@@ -6,7 +6,7 @@
  * with debounced background sync to Supabase.
  *
  * Data flow:
- * - getItem: fetches project + entries from Supabase, caches in localStorage
+ * - getItem: fetches project + language + entries from Supabase, caches in localStorage
  * - setItem: writes to localStorage immediately, schedules debounced cloud sync
  * - removeItem: clears localStorage only (does not delete the project)
  */
@@ -16,14 +16,17 @@ import type { MachineTranslationMeta } from '@/stores/editor-store';
 import type { ReviewEntryState } from '@/lib/review';
 import {
   getProject,
+  getProjectLanguage,
   getProjectEntries,
   updateProject,
+  updateProjectLanguage,
   syncProjectEntries,
   dbEntryToPOEntry,
   dbEntryToMTMeta,
   dbEntryToReviewState,
-  dbProjectToHeader,
+  dbLanguageToHeader,
   editorStateToProjectUpdate,
+  editorStateToLanguageUpdate,
 } from '@/lib/projects';
 import type { StorageAdapter } from './adapter';
 
@@ -34,12 +37,14 @@ export class SupabaseStorageAdapter implements StorageAdapter {
   readonly type = 'supabase' as const;
 
   private projectId: string;
+  private languageId: string;
   private syncTimer: ReturnType<typeof setTimeout> | null = null;
   private isSyncing = false;
   private pendingValue: string | null = null;
 
-  constructor(projectId: string) {
+  constructor(projectId: string, languageId: string) {
     this.projectId = projectId;
+    this.languageId = languageId;
   }
 
   /**
@@ -47,12 +52,13 @@ export class SupabaseStorageAdapter implements StorageAdapter {
    * Returns a JSON string matching Zustand's persist format.
    */
   async getItem(name: string): Promise<string | null> {
-    const [project, entries] = await Promise.all([
+    const [project, language, entries] = await Promise.all([
       getProject(this.projectId),
-      getProjectEntries(this.projectId),
+      getProjectLanguage(this.languageId),
+      getProjectEntries(this.languageId),
     ]);
 
-    if (!project) return null;
+    if (!project || !language) return null;
 
     // Transform DB rows to editor state shape
     const poEntries: POEntry[] = entries.map((row, i) => dbEntryToPOEntry(row, i));
@@ -77,12 +83,12 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       }
     }
 
-    const header: POHeader | null = dbProjectToHeader(project);
+    const header: POHeader | null = dbLanguageToHeader(language);
 
     // Build state matching Zustand's partialize output
     const state = {
       projectName: project.name,
-      filename: project.source_filename,
+      filename: language.source_filename,
       sourceFormat: project.source_format,
       header,
       entries: poEntries,
@@ -176,14 +182,24 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       };
       const { state } = parsed;
 
-      // Sync project metadata
+      // Sync project metadata (project-level fields only)
       const projectUpdate = editorStateToProjectUpdate(state);
       await updateProject(this.projectId, projectUpdate);
+
+      // Sync language metadata
+      const languageUpdate = editorStateToLanguageUpdate(state);
+      await updateProjectLanguage(this.languageId, languageUpdate);
 
       // Sync entries
       const mtMetaMap = new Map(state.machineTranslationMeta ?? []);
       const reviewMap = new Map(state.reviewEntries ?? []);
-      await syncProjectEntries(this.projectId, state.entries, mtMetaMap, reviewMap);
+      await syncProjectEntries(
+        this.languageId,
+        this.projectId,
+        state.entries,
+        mtMetaMap,
+        reviewMap,
+      );
     } catch (err) {
       // Re-queue the value so the next setItem or flush retries
       if (!this.pendingValue) this.pendingValue = value;

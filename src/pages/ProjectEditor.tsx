@@ -1,36 +1,25 @@
 /**
- * ProjectEditor — cloud project editing page.
+ * ProjectEditor — cloud project editing page, scoped to a single language.
  *
- * Loads a project from Supabase via the SupabaseStorageAdapter,
+ * Loads a project language from Supabase via the SupabaseStorageAdapter,
  * then renders the EditorWorkspace for translation editing.
  * Changes are automatically synced back to the cloud.
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams, Link } from 'react-router';
-import {
-  Container,
-  Stack,
-  Group,
-  Title,
-  Text,
-  Button,
-  Center,
-  Loader,
-  Alert,
-  Badge,
-} from '@mantine/core';
+import { Container, Stack, Group, Title, Text, Button, Center, Loader, Alert } from '@mantine/core';
 import { ArrowLeft, AlertCircle, Download } from 'lucide-react';
 import { useTranslation } from '@/lib/app-language';
 import { useEditorStore } from '@/stores/editor-store';
-import { getProject, getProjectEntries } from '@/lib/projects/api';
+import { getProject, getProjectLanguage, getProjectEntries } from '@/lib/projects/api';
 import {
   dbEntryToPOEntry,
   dbEntryToMTMeta,
   dbEntryToReviewState,
-  dbProjectToHeader,
+  dbLanguageToHeader,
 } from '@/lib/projects/conversions';
-import type { ProjectRow } from '@/lib/projects/types';
+import type { ProjectRow, ProjectLanguageRow } from '@/lib/projects/types';
 import type { POFile } from '@/lib/po/types';
 import type { WorkspaceMode } from '@/components/editor/EditorWorkspace';
 import { EditorWorkspace } from '@/components/editor/EditorWorkspace';
@@ -41,15 +30,17 @@ import { serializePOFile } from '@/lib/po';
 import type { SourceLanguage, TargetLanguage } from '@/lib/deepl/types';
 import type { MachineTranslationMeta } from '@/stores/editor-store';
 import type { ReviewEntryState } from '@/lib/review';
+import type { WordPressProjectType } from '@/lib/wp-source/references';
 
 export default function ProjectEditor() {
-  const { id } = useParams<{ id: string }>();
+  const { id, languageId } = useParams<{ id: string; languageId: string }>();
   const { t } = useTranslation();
   const adapterRef = useRef<SupabaseStorageAdapter | null>(null);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [project, setProject] = useState<ProjectRow | null>(null);
+  const [language, setLanguage] = useState<ProjectLanguageRow | null>(null);
   const [workspaceMode, setWorkspaceMode] = useState<WorkspaceMode>('edit');
 
   const loadFile = useEditorStore((s) => s.loadFile);
@@ -58,15 +49,19 @@ export default function ProjectEditor() {
   const entries = useEditorStore((s) => s.entries);
   const restoreReviewEntries = useEditorStore((s) => s.restoreReviewEntries);
 
-  // Load project from Supabase
+  // Load project + language from Supabase
   useEffect(() => {
-    if (!id) return;
+    if (!id || !languageId) return;
 
     let cancelled = false;
 
     async function load() {
       try {
-        const [proj, dbEntries] = await Promise.all([getProject(id!), getProjectEntries(id!)]);
+        const [proj, lang, dbEntries] = await Promise.all([
+          getProject(id!),
+          getProjectLanguage(languageId!),
+          getProjectEntries(languageId!),
+        ]);
 
         if (cancelled) return;
 
@@ -76,20 +71,27 @@ export default function ProjectEditor() {
           return;
         }
 
+        if (!lang) {
+          setError(t('Language not found'));
+          setLoading(false);
+          return;
+        }
+
         setProject(proj);
+        setLanguage(lang);
 
         // Convert DB rows to editor state
         const poEntries = dbEntries.map((row, i) => dbEntryToPOEntry(row, i));
-        const poHeader = dbProjectToHeader(proj);
+        const poHeader = dbLanguageToHeader(lang);
         const poFile: POFile = {
-          filename: proj.source_filename ?? `${proj.name}.po`,
+          filename: lang.source_filename ?? `${proj.name}-${lang.locale}.po`,
           header: poHeader ?? {},
           entries: poEntries,
           charset: 'UTF-8',
         };
 
         // Switch to cloud adapter before loading data
-        const adapter = new SupabaseStorageAdapter(id!);
+        const adapter = new SupabaseStorageAdapter(id!, languageId!);
         adapterRef.current = adapter;
         setStorageAdapter(adapter);
 
@@ -145,7 +147,7 @@ export default function ProjectEditor() {
       }
       setStorageAdapter(new LocalStorageAdapter());
     };
-  }, [id, loadFile, restoreReviewEntries, t]);
+  }, [id, languageId, loadFile, restoreReviewEntries, t]);
 
   // Placeholder callbacks — wired up in a future iteration
   const noop = useCallback(() => {}, []);
@@ -181,7 +183,7 @@ export default function ProjectEditor() {
     );
   }
 
-  if (error || !project) {
+  if (error || !project || !language) {
     return (
       <Container size="lg" py="xl">
         <Alert icon={<AlertCircle size={16} />} color="red" variant="light">
@@ -202,23 +204,18 @@ export default function ProjectEditor() {
           <Group gap="md">
             <Button
               component={Link}
-              to="/dashboard"
+              to={`/projects/${project.id}`}
               variant="subtle"
               leftSection={<ArrowLeft size={16} />}
               size="compact-md"
             >
-              {t('Projects')}
+              {project.name}
             </Button>
             <div>
-              <Title order={3}>{project.name}</Title>
+              <Title order={3}>{language.locale}</Title>
               <Group gap="xs" mt={4}>
-                {project.target_language && (
-                  <Badge variant="light" size="sm" color="blue">
-                    {project.target_language}
-                  </Badge>
-                )}
                 <Text size="xs" c="dimmed">
-                  {project.source_filename}
+                  {language.source_filename}
                 </Text>
               </Group>
             </div>
@@ -239,8 +236,8 @@ export default function ProjectEditor() {
           workspaceMode={workspaceMode}
           onWorkspaceModeChange={setWorkspaceMode}
           encodingInfo={null}
-          currentProjectType={null}
-          currentProjectSlug={null}
+          currentProjectType={project.wp_project_type as WordPressProjectType | null}
+          currentProjectSlug={project.wp_slug ?? null}
           currentProjectRelease={null}
           onLanguageChange={handleLanguageChange}
           deeplGlossaryId={null}

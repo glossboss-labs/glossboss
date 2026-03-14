@@ -10,7 +10,7 @@ import { generateEntryId } from '@/lib/po';
 import type { ReviewComment, ReviewEntryState, ReviewHistoryEvent } from '@/lib/review';
 import type { MachineTranslationMeta } from '@/stores/editor-store';
 import type { TranslationGlossaryMode, TranslationProviderId } from '@/lib/translation/types';
-import type { ProjectEntryRow, ProjectRow } from './types';
+import type { ProjectEntryRow, ProjectLanguageRow, ProjectRow } from './types';
 
 // ── DB → Editor ──────────────────────────────────────────────
 
@@ -53,7 +53,14 @@ export function dbEntryToReviewState(row: ProjectEntryRow): ReviewEntryState {
   };
 }
 
-/** Derive the PO header from a project row. */
+/** Derive the PO header from a project language row. */
+export function dbLanguageToHeader(row: ProjectLanguageRow): POHeader | null {
+  return (row.po_header as POHeader) ?? null;
+}
+
+/**
+ * @deprecated Use dbLanguageToHeader instead. Kept for backward compat during migration.
+ */
 export function dbProjectToHeader(row: ProjectRow): POHeader | null {
   return (row.po_header as POHeader) ?? null;
 }
@@ -68,6 +75,7 @@ export function entryKey(msgctxt: string | null | undefined, msgid: string): str
 /** Build a project_entries insert/update payload from a POEntry. */
 export function poEntryToDbFields(
   entry: POEntry,
+  languageId: string,
   projectId: string,
   index: number,
   mtMeta: MachineTranslationMeta | undefined,
@@ -75,6 +83,7 @@ export function poEntryToDbFields(
 ): Omit<ProjectEntryRow, 'id' | 'created_at' | 'updated_at'> {
   return {
     project_id: projectId,
+    language_id: languageId,
     entry_index: index,
     msgctxt: entry.msgctxt ?? null,
     msgid: entry.msgid,
@@ -98,26 +107,27 @@ export function poEntryToDbFields(
   };
 }
 
-/** Build project metadata update from editor state fields. */
-export function editorStateToProjectUpdate(state: {
-  projectName: string;
-  sourceFormat: string;
-  header: POHeader | null;
-  filename: string | null;
-}): {
+/** Build project metadata update from editor state fields (project-level only). */
+export function editorStateToProjectUpdate(state: { projectName: string; sourceFormat: string }): {
   name: string;
   source_format: string;
-  source_filename: string | null;
-  po_header: Record<string, string> | null;
-  source_language: string | null;
-  target_language: string | null;
 } {
   return {
     name: state.projectName,
     source_format: state.sourceFormat,
+  };
+}
+
+/** Build language metadata update from editor state fields. */
+export function editorStateToLanguageUpdate(state: {
+  header: POHeader | null;
+  filename: string | null;
+}): {
+  source_filename: string | null;
+  po_header: Record<string, string> | null;
+} {
+  return {
     source_filename: state.filename,
     po_header: state.header as Record<string, string> | null,
-    source_language: state.header?.language ?? null,
-    target_language: state.header?.language ?? null,
   };
 }

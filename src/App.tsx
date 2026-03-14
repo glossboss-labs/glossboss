@@ -8,6 +8,7 @@
 import { Routes, Route } from 'react-router';
 import Index from '@/pages/Index';
 import Dashboard from '@/pages/Dashboard';
+import ProjectDetail from '@/pages/ProjectDetail';
 import ProjectEditor from '@/pages/ProjectEditor';
 import Login from '@/pages/auth/Login';
 import Signup from '@/pages/auth/Signup';
@@ -34,6 +35,14 @@ export default function App() {
       />
       <Route
         path="/projects/:id"
+        element={
+          <AuthGuard>
+            <ProjectDetail />
+          </AuthGuard>
+        }
+      />
+      <Route
+        path="/projects/:id/languages/:languageId"
         element={
           <AuthGuard>
             <ProjectEditor />

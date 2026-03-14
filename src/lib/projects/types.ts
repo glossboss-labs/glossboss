@@ -17,6 +17,9 @@ export interface ProjectRow {
   source_format: 'po' | 'i18next';
   source_filename: string | null;
   po_header: Record<string, string> | null;
+  wp_project_type: 'plugin' | 'theme' | null;
+  wp_slug: string | null;
+  wp_track: 'stable' | 'dev' | null;
   stats_total: number;
   stats_translated: number;
   stats_fuzzy: number;
@@ -49,6 +52,60 @@ export type ProjectUpdate = Partial<
     | 'source_format'
     | 'source_filename'
     | 'po_header'
+    | 'wp_project_type'
+    | 'wp_slug'
+    | 'wp_track'
+  >
+>;
+
+/** Row shape for the `project_languages` table */
+export interface ProjectLanguageRow {
+  id: string;
+  project_id: string;
+  locale: string;
+  source_filename: string | null;
+  po_header: Record<string, string> | null;
+  wp_locale: string | null;
+  repo_provider: 'github' | 'gitlab' | null;
+  repo_owner: string | null;
+  repo_name: string | null;
+  repo_branch: string | null;
+  repo_file_path: string | null;
+  repo_default_branch: string | null;
+  stats_total: number;
+  stats_translated: number;
+  stats_fuzzy: number;
+  stats_untranslated: number;
+  created_at: string;
+  updated_at: string;
+}
+
+/** Insert shape for `project_languages` */
+export type ProjectLanguageInsert = Omit<
+  ProjectLanguageRow,
+  | 'id'
+  | 'stats_total'
+  | 'stats_translated'
+  | 'stats_fuzzy'
+  | 'stats_untranslated'
+  | 'created_at'
+  | 'updated_at'
+>;
+
+/** Updatable fields on `project_languages` */
+export type ProjectLanguageUpdate = Partial<
+  Pick<
+    ProjectLanguageRow,
+    | 'locale'
+    | 'source_filename'
+    | 'po_header'
+    | 'wp_locale'
+    | 'repo_provider'
+    | 'repo_owner'
+    | 'repo_name'
+    | 'repo_branch'
+    | 'repo_file_path'
+    | 'repo_default_branch'
   >
 >;
 
@@ -56,6 +113,7 @@ export type ProjectUpdate = Partial<
 export interface ProjectEntryRow {
   id: string;
   project_id: string;
+  language_id: string;
   entry_index: number;
   msgctxt: string | null;
   msgid: string;
@@ -92,3 +150,8 @@ export interface ProjectMemberRow {
   created_at: string;
   updated_at: string;
 }
+
+/** Project with embedded languages from a join query */
+export type ProjectWithLanguages = ProjectRow & {
+  project_languages: ProjectLanguageRow[];
+};

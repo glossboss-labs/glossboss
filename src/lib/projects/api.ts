@@ -1,12 +1,21 @@
 /**
  * Projects API
  *
- * Supabase CRUD operations for projects and project entries.
+ * Supabase CRUD operations for projects, project languages, and project entries.
  * Used by the cloud storage adapter and project management UI.
  */
 
 import { getSupabaseClient } from '@/lib/supabase/client';
-import type { ProjectRow, ProjectInsert, ProjectUpdate, ProjectEntryRow } from './types';
+import type {
+  ProjectRow,
+  ProjectInsert,
+  ProjectUpdate,
+  ProjectEntryRow,
+  ProjectLanguageRow,
+  ProjectLanguageInsert,
+  ProjectLanguageUpdate,
+  ProjectWithLanguages,
+} from './types';
 import { entryKey, poEntryToDbFields } from './conversions';
 import type { POEntry } from '@/lib/po/types';
 import type { MachineTranslationMeta } from '@/stores/editor-store';
@@ -18,14 +27,14 @@ function supabase() {
 
 // ── Projects ─────────────────────────────────────────────────
 
-export async function listProjects(): Promise<ProjectRow[]> {
+export async function listProjects(): Promise<ProjectWithLanguages[]> {
   const { data, error } = await supabase()
     .from('projects')
-    .select('*')
+    .select('*, project_languages(*)')
     .order('updated_at', { ascending: false });
 
   if (error) throw error;
-  return data ?? [];
+  return (data ?? []) as ProjectWithLanguages[];
 }
 
 export async function getProject(id: string): Promise<ProjectRow | null> {
@@ -63,13 +72,86 @@ export async function deleteProject(id: string): Promise<void> {
   if (error) throw error;
 }
 
+// ── Project Languages ────────────────────────────────────────
+
+export async function getProjectLanguages(projectId: string): Promise<ProjectLanguageRow[]> {
+  const { data, error } = await supabase()
+    .from('project_languages')
+    .select('*')
+    .eq('project_id', projectId)
+    .order('created_at', { ascending: true });
+
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function getProjectLanguage(languageId: string): Promise<ProjectLanguageRow | null> {
+  const { data, error } = await supabase()
+    .from('project_languages')
+    .select('*')
+    .eq('id', languageId)
+    .single();
+
+  if (error) {
+    if (error.code === 'PGRST116') return null;
+    throw error;
+  }
+  return data;
+}
+
+export async function createProjectLanguage(
+  insert: ProjectLanguageInsert,
+): Promise<ProjectLanguageRow> {
+  const { data, error } = await supabase()
+    .from('project_languages')
+    .insert(insert)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function updateProjectLanguage(
+  id: string,
+  updates: ProjectLanguageUpdate,
+): Promise<ProjectLanguageRow> {
+  const { data, error } = await supabase()
+    .from('project_languages')
+    .update(updates)
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function deleteProjectLanguage(id: string): Promise<void> {
+  const { error } = await supabase().from('project_languages').delete().eq('id', id);
+
+  if (error) throw error;
+}
+
+export async function cloneLanguageEntries(
+  sourceLanguageId: string,
+  targetLanguageId: string,
+): Promise<void> {
+  const { error } = await supabase().rpc('clone_language_entries', {
+    p_source_language_id: sourceLanguageId,
+    p_target_language_id: targetLanguageId,
+  });
+
+  if (error) throw error;
+}
+
 // ── Project Entries ──────────────────────────────────────────
 
-export async function getProjectEntries(projectId: string): Promise<ProjectEntryRow[]> {
+export async function getProjectEntries(languageId: string): Promise<ProjectEntryRow[]> {
   const { data, error } = await supabase()
     .from('project_entries')
     .select('*')
-    .eq('project_id', projectId)
+    .eq('language_id', languageId)
     .order('entry_index', { ascending: true });
 
   if (error) throw error;
@@ -78,12 +160,12 @@ export async function getProjectEntries(projectId: string): Promise<ProjectEntry
 
 /** Lightweight fetch of just entry keys for diffing. */
 export async function getProjectEntryKeys(
-  projectId: string,
+  languageId: string,
 ): Promise<{ id: string; msgctxt: string | null; msgid: string }[]> {
   const { data, error } = await supabase()
     .from('project_entries')
     .select('id, msgctxt, msgid')
-    .eq('project_id', projectId);
+    .eq('language_id', languageId);
 
   if (error) throw error;
   return data ?? [];
@@ -96,13 +178,14 @@ export async function getProjectEntryKeys(
  * then upserts changed/new entries and deletes removed ones.
  */
 export async function syncProjectEntries(
+  languageId: string,
   projectId: string,
   entries: POEntry[],
   mtMeta: Map<string, MachineTranslationMeta>,
   reviewEntries: Map<string, ReviewEntryState>,
 ): Promise<void> {
   // 1. Fetch existing entry keys
-  const existing = await getProjectEntryKeys(projectId);
+  const existing = await getProjectEntryKeys(languageId);
   const existingByKey = new Map(existing.map((e) => [entryKey(e.msgctxt, e.msgid), e.id]));
 
   // 2. Build upsert payload
@@ -117,6 +200,7 @@ export async function syncProjectEntries(
     const dbId = existingByKey.get(key);
     const fields = poEntryToDbFields(
       entry,
+      languageId,
       projectId,
       i,
       mtMeta.get(entry.id),

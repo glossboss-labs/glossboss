@@ -6,25 +6,43 @@
  */
 
 import { create } from 'zustand';
-import type { ProjectRow, ProjectInsert } from '@/lib/projects/types';
+import type {
+  ProjectRow,
+  ProjectInsert,
+  ProjectLanguageInsert,
+  ProjectWithLanguages,
+} from '@/lib/projects/types';
 import {
   listProjects,
   createProject as apiCreateProject,
   deleteProject as apiDeleteProject,
+  createProjectLanguage as apiCreateProjectLanguage,
+  deleteProjectLanguage as apiDeleteProjectLanguage,
+  cloneLanguageEntries as apiCloneLanguageEntries,
   syncProjectEntries,
 } from '@/lib/projects/api';
 import type { POEntry } from '@/lib/po/types';
 
 export interface ProjectsState {
-  projects: ProjectRow[];
+  projects: ProjectWithLanguages[];
   loading: boolean;
   error: string | null;
 }
 
 export interface ProjectsActions {
   fetchProjects: () => Promise<void>;
-  createProject: (insert: ProjectInsert, entries: POEntry[]) => Promise<ProjectRow>;
+  createProject: (
+    insert: ProjectInsert,
+    languageInsert: ProjectLanguageInsert,
+    entries: POEntry[],
+  ) => Promise<{ project: ProjectRow; languageId: string }>;
   deleteProject: (id: string) => Promise<void>;
+  addLanguage: (
+    projectId: string,
+    languageInsert: ProjectLanguageInsert,
+    sourceLanguageId?: string,
+  ) => Promise<string>;
+  deleteLanguage: (languageId: string) => Promise<void>;
 }
 
 export const useProjectsStore = create<ProjectsState & ProjectsActions>()((set, get) => ({
@@ -45,17 +63,28 @@ export const useProjectsStore = create<ProjectsState & ProjectsActions>()((set, 
     }
   },
 
-  createProject: async (insert: ProjectInsert, entries: POEntry[]) => {
+  createProject: async (
+    insert: ProjectInsert,
+    languageInsert: ProjectLanguageInsert,
+    entries: POEntry[],
+  ) => {
+    // Create project
     const project = await apiCreateProject(insert);
 
-    // Sync entries to the new project
-    await syncProjectEntries(project.id, entries, new Map(), new Map());
+    // Create first language
+    const language = await apiCreateProjectLanguage({
+      ...languageInsert,
+      project_id: project.id,
+    });
+
+    // Sync entries to the new language
+    await syncProjectEntries(language.id, project.id, entries, new Map(), new Map());
 
     // Re-fetch to get stats updated by triggers
     const projects = await listProjects();
     set({ projects });
 
-    return project;
+    return { project, languageId: language.id };
   },
 
   deleteProject: async (id: string) => {
@@ -67,5 +96,34 @@ export const useProjectsStore = create<ProjectsState & ProjectsActions>()((set, 
         error: err instanceof Error ? err.message : 'Failed to delete project',
       });
     }
+  },
+
+  addLanguage: async (
+    projectId: string,
+    languageInsert: ProjectLanguageInsert,
+    sourceLanguageId?: string,
+  ) => {
+    const language = await apiCreateProjectLanguage({
+      ...languageInsert,
+      project_id: projectId,
+    });
+
+    if (sourceLanguageId) {
+      await apiCloneLanguageEntries(sourceLanguageId, language.id);
+    }
+
+    // Re-fetch to get updated stats
+    const projects = await listProjects();
+    set({ projects });
+
+    return language.id;
+  },
+
+  deleteLanguage: async (languageId: string) => {
+    await apiDeleteProjectLanguage(languageId);
+
+    // Re-fetch to get updated stats
+    const projects = await listProjects();
+    set({ projects });
   },
 }));
