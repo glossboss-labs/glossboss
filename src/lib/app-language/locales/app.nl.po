@@ -10,7 +10,7 @@ msgstr ""
 msgid "+{{count}} more"
 msgstr "+{{count}} meer"
 
-#: src/pages/index/IndexPageBanners.tsx:99
+#: src/pages/index/IndexPageBanners.tsx:121
 msgid "...and {{count}} more warnings"
 msgstr "...en nog {{count}} waarschuwingen"
 
@@ -56,7 +56,7 @@ msgstr "API-type"
 msgid "Action"
 msgstr "Actie"
 
-#: src/components/editor/EditorHeader.tsx:372
+#: src/components/editor/EditorHeader.tsx:345
 msgid "Actions"
 msgstr "Acties"
 
@@ -177,7 +177,7 @@ msgstr "Automatisch detecteren"
 msgid "Auto-detected: {{type}} / {{slug}}"
 msgstr ""
 
-#: src/pages/index/IndexPageBanners.tsx:160
+#: src/pages/index/IndexPageBanners.tsx:182
 msgid "Auto-saved {age}"
 msgstr "Automatisch opgeslagen {age}"
 
@@ -214,7 +214,7 @@ msgid "Back to listing"
 msgstr "Terug naar lijst"
 
 #: src/components/SettingsModal.tsx:1322
-#: src/components/editor/EditorHeader.tsx:260
+#: src/components/editor/EditorHeader.tsx:245
 msgid "Backup"
 msgstr "Back-up"
 
@@ -395,7 +395,7 @@ msgstr "Actieve bronverwijzing wissen"
 msgid "Clear anyway"
 msgstr "Toch wissen"
 
-#: src/components/editor/EditorHeader.tsx:395
+#: src/components/editor/EditorHeader.tsx:361
 msgid "Clear editor"
 msgstr "Editor wissen"
 
@@ -565,7 +565,7 @@ msgstr "Bepaalt de toon van DeepL-vertalingen. Niet alle talen ondersteunen dit.
 msgid "Conventional commit prefix prepended to commit messages, e.g. fix(i18n):"
 msgstr ""
 
-#: src/pages/index/useIndexPageController.ts:753
+#: src/pages/index/useIndexPageController.ts:744
 msgid ""
 "Could not fetch the file. The server may not allow cross-origin requests. Tr"
 "y downloading the file and uploading it directly."
@@ -642,7 +642,7 @@ msgid "Danish"
 msgstr "Deens"
 
 #: src/components/editor/EditorHeader.tsx:58
-#: src/components/editor/EditorHeader.tsx:363
+#: src/components/editor/EditorHeader.tsx:336
 msgid "Dark mode"
 msgstr "Donkere modus"
 
@@ -696,7 +696,7 @@ msgstr "Alleen ontwikkelingsmodus"
 msgid "Directory listing is unavailable."
 msgstr "Mappenlijst is niet beschikbaar."
 
-#: src/pages/index/IndexPageBanners.tsx:144
+#: src/pages/index/IndexPageBanners.tsx:166
 msgid "Discard and use new file"
 msgstr "Verwijderen en nieuw bestand gebruiken"
 
@@ -708,23 +708,23 @@ msgstr "Wijzigingen weggooien en huidig veld verlaten"
 msgid "Display"
 msgstr "Weergave"
 
-#: src/components/editor/EditorHeader.tsx:208
+#: src/components/editor/EditorHeader.tsx:193
 msgid "Download"
 msgstr "Downloaden"
 
-#: src/components/editor/EditorHeader.tsx:198
+#: src/components/editor/EditorHeader.tsx:184
 msgid "Download (unsaved changes)"
 msgstr "Downloaden (niet-opgeslagen wijzigingen)"
 
-#: src/components/editor/EditorHeader.tsx:248
+#: src/components/editor/EditorHeader.tsx:233
 msgid "Download as"
 msgstr "Downloaden als"
 
-#: src/components/editor/EditorHeader.tsx:186
+#: src/components/editor/EditorHeader.tsx:173
 msgid "Download as {format}"
 msgstr "Downloaden als {format}"
 
-#: src/components/editor/EditorHeader.tsx:237
+#: src/components/editor/EditorHeader.tsx:222
 msgid "Download format options"
 msgstr "Downloadformaatopties"
 
@@ -762,7 +762,7 @@ msgstr "Nederlands (België)"
 msgid "Dutch (Netherlands)"
 msgstr "Nederlands (Nederland)"
 
-#: src/components/editor/EditorWorkspace.tsx:121
+#: src/components/editor/EditorWorkspace.tsx:110
 msgid "Edit"
 msgstr ""
 
@@ -771,15 +771,15 @@ msgstr ""
 msgid "Edit Header"
 msgstr "Header bewerken"
 
-#: src/components/editor/EditorHeader.tsx:152
+#: src/components/editor/EditorHeader.tsx:148
 msgid "Edit gettext translation files with DeepL integration"
 msgstr "Bewerk gettext-vertaalbestanden met DeepL-integratie"
 
-#: src/components/editor/EditorWorkspace.tsx:114
+#: src/components/editor/EditorWorkspace.tsx:103
 msgid "Edit workspace"
 msgstr ""
 
-#: src/pages/index/IndexPageBanners.tsx:155
+#: src/pages/index/IndexPageBanners.tsx:177
 msgid "Editing draft"
 msgstr "Concept bewerken"
 
@@ -820,7 +820,7 @@ msgstr "Spraak-playback inschakelen"
 msgid "Encoding"
 msgstr "Tekencodering"
 
-#: src/pages/index/useIndexPageController.ts:550
+#: src/pages/index/useIndexPageController.ts:541
 msgid ""
 "Encoding detected as {{encoding}} with {{confidence}} confidence. If charact"
 "ers appear incorrect, the file may use a different encoding."
@@ -921,7 +921,7 @@ msgstr ""
 msgid "Export TMX"
 msgstr ""
 
-#: src/pages/index/IndexPageDialogs.tsx:313
+#: src/pages/index/IndexPageDialogs.tsx:315
 msgid "Export anyway"
 msgstr ""
 
@@ -1007,17 +1007,17 @@ msgstr ""
 msgid "Failed to open the WordPress project."
 msgstr ""
 
-#: src/pages/index/useIndexPageController.ts:1127
+#: src/pages/index/useIndexPageController.ts:1116
 msgid "Failed to open the WordPress.org project."
 msgstr ""
 
-#: src/pages/index/useIndexPageController.ts:1015
+#: src/pages/index/useIndexPageController.ts:1006
 msgid "Failed to parse POT file"
 msgstr "POT-bestand verwerken mislukt"
 
-#: src/pages/index/IndexPageBanners.tsx:63
-#: src/pages/index/useIndexPageController.ts:584
-#: src/pages/index/useIndexPageController.ts:637
+#: src/pages/index/IndexPageBanners.tsx:82
+#: src/pages/index/useIndexPageController.ts:575
+#: src/pages/index/useIndexPageController.ts:628
 msgid "Failed to parse file"
 msgstr "Kan het bestand niet verwerken"
 
@@ -1029,7 +1029,7 @@ msgstr "Het lukte niet om het bestand te lezen."
 msgid "Feature"
 msgstr "Functie"
 
-#: src/components/editor/EditorHeader.tsx:324
+#: src/components/editor/EditorHeader.tsx:304
 msgid "Feedback"
 msgstr "Feedback"
 
@@ -1212,7 +1212,7 @@ msgid ""
 "port anyway."
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:399
+#: src/components/editor/EditorHeader.tsx:364
 msgid "GlossBoss v{version}"
 msgstr "GlossBoss v{version}"
 
@@ -1284,7 +1284,7 @@ msgstr ""
 "Glossary niet gevonden in DeepL. Deze vertaling is gedaan zonder glossary. O"
 "pnieuw synchroniseren in Instellingen wordt aanbevolen."
 
-#: src/components/editor/EditorWorkspace.tsx:147
+#: src/components/editor/EditorWorkspace.tsx:131
 msgid "Glossary: {count} terms ({locale})"
 msgstr "Glossary: {count} termen ({locale})"
 
@@ -1406,16 +1406,16 @@ msgstr "Voeg een nieuwe regel toe in de vertaling"
 msgid "Interface language"
 msgstr "Interfacetaal"
 
-#: src/pages/index/useIndexPageController.ts:527
-#: src/pages/index/useIndexPageController.ts:609
+#: src/pages/index/useIndexPageController.ts:518
+#: src/pages/index/useIndexPageController.ts:600
 msgid "Invalid JSON file. Expected an i18next JSON resource object."
 msgstr "Ongeldig JSON-bestand. Verwacht een i18next JSON-resourceobject."
 
-#: src/pages/index/useIndexPageController.ts:895
+#: src/pages/index/useIndexPageController.ts:886
 msgid "Invalid file type: .{{ext}}. Please drop a .po, .pot, or .json file."
 msgstr "Ongeldig bestandstype: .{{ext}}. Sleep een .po-, .pot- of .json-bestand."
 
-#: src/pages/index/useIndexPageController.ts:510
+#: src/pages/index/useIndexPageController.ts:501
 msgid "Invalid file type: .{{ext}}. Please upload a .po, .pot, or .json file."
 msgstr "Ongeldig bestandstype: .{{ext}}. Upload een .po-, .pot- of .json-bestand."
 
@@ -1509,16 +1509,16 @@ msgstr "Laatst bijgewerkt"
 msgid "Latvian"
 msgstr "Lets"
 
-#: src/components/editor/EditorHeader.tsx:417
+#: src/components/editor/EditorHeader.tsx:381
 msgid "License"
 msgstr "Licentie"
 
 #: src/components/editor/EditorHeader.tsx:58
-#: src/components/editor/EditorHeader.tsx:363
+#: src/components/editor/EditorHeader.tsx:336
 msgid "Light mode"
 msgstr "Lichte modus"
 
-#: src/pages/index/IndexPageBanners.tsx:67
+#: src/pages/index/IndexPageBanners.tsx:89
 msgid "Line {line}"
 msgstr "Regel {line}"
 
@@ -1527,7 +1527,7 @@ msgstr "Regel {line}"
 msgid "Line {{lineNumber}}"
 msgstr "Regel {{lineNumber}}"
 
-#: src/pages/index/IndexPageBanners.tsx:92
+#: src/pages/index/IndexPageBanners.tsx:114
 msgid "Line {{line}}"
 msgstr "Regel {{line}}"
 
@@ -1541,7 +1541,7 @@ msgstr "Maak een lijst met stappen die iemand anders kan volgen"
 msgid "Lithuanian"
 msgstr "Litouws"
 
-#: src/components/editor/EmptyState.tsx:127
+#: src/components/editor/EmptyState.tsx:122
 #: src/components/editor/GlossaryPanel.tsx:372
 #: src/pages/index/IndexPageDialogs.tsx:209
 msgid "Load"
@@ -1555,7 +1555,7 @@ msgstr "Glossary laden"
 msgid "Load a file with a target language before using translation memory."
 msgstr ""
 
-#: src/components/editor/EmptyState.tsx:162
+#: src/components/editor/EmptyState.tsx:155
 msgid "Load a small example WordPress plugin PO file (Hello Dolly)"
 msgstr "Laad een klein voorbeeld WordPress-plug-in PO-bestand (Hello Dolly)"
 
@@ -1575,11 +1575,11 @@ msgid ""
 "e."
 msgstr ""
 
-#: src/components/editor/EmptyState.tsx:172
+#: src/components/editor/EmptyState.tsx:165
 msgid "Load example PO"
 msgstr "Voorbeeld-PO laden"
 
-#: src/components/editor/EditorHeader.tsx:374
+#: src/components/editor/EditorHeader.tsx:347
 #: src/pages/index/IndexPageDialogs.tsx:206
 msgid "Load from URL"
 msgstr ""
@@ -1816,7 +1816,7 @@ msgstr "Geen context"
 msgid "No entries match the current filters."
 msgstr "Geen items komen overeen met de huidige filters."
 
-#: src/pages/index/useIndexPageController.ts:881
+#: src/pages/index/useIndexPageController.ts:872
 msgid "No file was dropped"
 msgstr "Er is geen bestand gesleept"
 
@@ -1952,18 +1952,18 @@ msgstr "Alleen zichtbaar in de ontwikkelingsmodus."
 msgid "Open a PR targeting {{branch}}"
 msgstr ""
 
-#: src/components/editor/EmptyState.tsx:150
+#: src/components/editor/EmptyState.tsx:143
 msgid "Open a locale file from a GitHub or GitLab repository"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:377
-#: src/components/editor/EmptyState.tsx:145
+#: src/components/editor/EditorHeader.tsx:350
+#: src/components/editor/EmptyState.tsx:138
 #: src/components/editor/WordPressProjectModal.tsx:291
 msgid "Open from WordPress.org"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:388
-#: src/components/editor/EmptyState.tsx:157
+#: src/components/editor/EditorHeader.tsx:358
+#: src/components/editor/EmptyState.tsx:150
 msgid "Open from repository"
 msgstr ""
 
@@ -1981,11 +1981,11 @@ msgstr "Issue openen"
 msgid "Open project"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:369
+#: src/components/editor/EditorHeader.tsx:342
 msgid "Open settings"
 msgstr "Instellingen openen"
 
-#: src/components/editor/EmptyState.tsx:137
+#: src/components/editor/EmptyState.tsx:131
 msgid "Open the latest WordPress.org translation export by project slug"
 msgstr ""
 
@@ -1995,11 +1995,11 @@ msgid ""
 "ved changes will be lost."
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:250
+#: src/components/editor/EditorHeader.tsx:235
 msgid "PO file (.po)"
 msgstr "PO-bestand (.po)"
 
-#: src/components/editor/EmptyState.tsx:110
+#: src/components/editor/EmptyState.tsx:105
 msgid "PO file URL"
 msgstr "URL van PO-bestand"
 
@@ -2015,7 +2015,7 @@ msgstr ""
 msgid "PR title"
 msgstr ""
 
-#: src/components/editor/EmptyState.tsx:109
+#: src/components/editor/EmptyState.tsx:104
 msgid "Paste a .po file URL"
 msgstr "Plak de URL van een .po-bestand"
 
@@ -2068,7 +2068,7 @@ msgstr "Vul alle verplichte velden voor de bug in."
 msgid "Please complete all required feature fields."
 msgstr "Vul alle verplichte velden voor de functie in."
 
-#: src/pages/index/useIndexPageController.ts:886
+#: src/pages/index/useIndexPageController.ts:877
 msgid "Please drop only one file at a time"
 msgstr "Sleep slechts één bestand tegelijk"
 
@@ -2155,7 +2155,7 @@ msgstr "Stemvoorbeeld"
 msgid "Previous field"
 msgstr "Vorig veld"
 
-#: src/components/editor/EditorHeader.tsx:435
+#: src/components/editor/EditorHeader.tsx:399
 #: src/components/feedback/FeedbackModal.tsx:417
 msgid "Privacy"
 msgstr "Privacy"
@@ -2218,16 +2218,16 @@ msgstr ""
 msgid "Punjabi"
 msgstr "Punjabi"
 
-#: src/components/editor/EditorHeader.tsx:302
+#: src/components/editor/EditorHeader.tsx:282
 #: src/components/repo-sync/RepoSyncModal.tsx:412
 msgid "Push"
 msgstr ""
 
-#: src/pages/index/IndexPageBanners.tsx:181
+#: src/pages/index/IndexPageBanners.tsx:203
 msgid "Push changes to repository"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:290
+#: src/components/editor/EditorHeader.tsx:271
 msgid "Push changes to {{provider}}"
 msgstr ""
 
@@ -2282,7 +2282,7 @@ msgid "Refresh"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:2132
-#: src/components/editor/EditorHeader.tsx:384
+#: src/components/editor/EditorHeader.tsx:354
 #: src/components/editor/GlossaryPanel.tsx:338
 #: src/components/editor/GlossaryPanel.tsx:342
 #: src/components/editor/WordPressRefreshModal.tsx:198
@@ -2367,7 +2367,7 @@ msgstr "Bugs melden aan"
 msgid "Repository"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:388
+#: src/components/editor/EditorHeader.tsx:358
 #: src/components/repo-sync/RepoSyncModal.tsx:397
 msgid "Repository sync"
 msgstr ""
@@ -2384,7 +2384,7 @@ msgstr ""
 msgid "Request changes selected"
 msgstr ""
 
-#: src/pages/index/useIndexPageController.ts:751
+#: src/pages/index/useIndexPageController.ts:742
 msgid "Request timed out. Try downloading the file and uploading it directly."
 msgstr ""
 "De verbinding is verlopen. Probeer het bestand te downloaden en direct te up"
@@ -2406,7 +2406,7 @@ msgstr ""
 msgid "Resolved comment"
 msgstr ""
 
-#: src/pages/index/IndexPageBanners.tsx:135
+#: src/pages/index/IndexPageBanners.tsx:157
 msgid "Restore draft"
 msgstr "Concept herstellen"
 
@@ -2444,7 +2444,7 @@ msgstr "Vertaling opnieuw proberen"
 
 #: src/components/editor/EditorTable.tsx:128
 #: src/components/editor/EditorTable.tsx:1931
-#: src/components/editor/EditorWorkspace.tsx:122
+#: src/components/editor/EditorWorkspace.tsx:111
 #: src/components/editor/FilterToolbar.tsx:311
 msgid "Review"
 msgstr ""
@@ -2453,7 +2453,7 @@ msgstr ""
 msgid "Review in progress"
 msgstr ""
 
-#: src/pages/index/IndexPageDialogs.tsx:310
+#: src/pages/index/IndexPageDialogs.tsx:312
 msgid "Review issues"
 msgstr ""
 
@@ -2461,7 +2461,7 @@ msgstr ""
 msgid "Review workflow"
 msgstr ""
 
-#: src/components/editor/EditorWorkspace.tsx:114
+#: src/components/editor/EditorWorkspace.tsx:103
 msgid "Review workspace"
 msgstr ""
 
@@ -2636,12 +2636,12 @@ msgid "Set a WordPress project slug to browse source files."
 msgstr ""
 
 #: src/components/SettingsModal.tsx:1280
-#: src/components/editor/EditorHeader.tsx:367
+#: src/components/editor/EditorHeader.tsx:340
 msgid "Settings"
 msgstr "Instellingen"
 
-#: src/components/editor/EditorHeader.tsx:335
-#: src/components/editor/EditorHeader.tsx:340
+#: src/components/editor/EditorHeader.tsx:315
+#: src/components/editor/EditorHeader.tsx:317
 msgid "Settings and actions"
 msgstr "Instellingen en acties"
 
@@ -2678,8 +2678,8 @@ msgstr "Instellingen opgeslagen!"
 msgid "Share Feedback"
 msgstr "Feedback delen"
 
-#: src/components/editor/EditorHeader.tsx:317
-#: src/components/editor/EditorHeader.tsx:353
+#: src/components/editor/EditorHeader.tsx:297
+#: src/components/editor/EditorHeader.tsx:326
 msgid "Share feedback"
 msgstr "Feedback delen"
 
@@ -2770,7 +2770,7 @@ msgstr ""
 msgid "Sort entries"
 msgstr "Items sorteren"
 
-#: src/components/editor/EditorHeader.tsx:408
+#: src/components/editor/EditorHeader.tsx:372
 #: src/components/editor/EditorTable.tsx:2351
 msgid "Source"
 msgstr "Bron"
@@ -2971,11 +2971,11 @@ msgstr "Thais"
 msgid "Thanks. Issue #{issueNumber} was created."
 msgstr "Bedankt. Issue #{issueNumber} is aangemaakt."
 
-#: src/pages/index/useIndexPageController.ts:776
+#: src/pages/index/useIndexPageController.ts:767
 msgid "The URL must start with https://"
 msgstr "De URL moet beginnen met https://"
 
-#: src/pages/index/useIndexPageController.ts:418
+#: src/pages/index/useIndexPageController.ts:409
 msgid "The WordPress.org translation export could not be parsed."
 msgstr ""
 
@@ -3057,7 +3057,7 @@ msgstr ""
 msgid "Track"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:426
+#: src/components/editor/EditorHeader.tsx:390
 msgid "Translate"
 msgstr "Vertalen"
 
@@ -3226,7 +3226,7 @@ msgstr ""
 
 #: src/components/SettingsModal.tsx:1196
 #: src/components/editor/GlossaryPanel.tsx:199
-#: src/pages/index/useIndexPageController.ts:758
+#: src/pages/index/useIndexPageController.ts:749
 msgid "Unknown error"
 msgstr "Onbekende fout"
 
@@ -3238,7 +3238,7 @@ msgstr ""
 msgid "Unsaved changes"
 msgstr "Onopgeslagen wijzigingen"
 
-#: src/pages/index/IndexPageBanners.tsx:113
+#: src/pages/index/IndexPageBanners.tsx:135
 msgid "Unsaved draft found"
 msgstr "Onopgeslagen concept gevonden"
 
@@ -3247,11 +3247,11 @@ msgstr "Onopgeslagen concept gevonden"
 msgid "Untranslated"
 msgstr "Onvertaald"
 
-#: src/components/editor/EditorHeader.tsx:281
+#: src/components/editor/EditorHeader.tsx:262
 msgid "Update"
 msgstr "Bijwerken"
 
-#: src/components/editor/EditorHeader.tsx:269
+#: src/components/editor/EditorHeader.tsx:254
 msgid ""
 "Update this file using a .pot template. Existing translations are kept when "
 "source strings still match, new strings are added, and obsolete strings are "
@@ -3289,7 +3289,7 @@ msgstr ""
 msgid "Updated translation"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:166
+#: src/components/editor/EditorHeader.tsx:158
 msgid "Upload"
 msgstr "Uploaden"
 
@@ -3305,7 +3305,7 @@ msgstr "Upload een WordPress-glossary CSV voor de geselecteerde taal"
 msgid "Upload a translation file to start"
 msgstr "Upload een vertaalbestand om te beginnen"
 
-#: src/pages/index/IndexPageBanners.tsx:55
+#: src/pages/index/IndexPageBanners.tsx:69
 msgid "Upload failed"
 msgstr "Uploaden mislukt"
 
@@ -3499,7 +3499,7 @@ msgstr "WordPress-broncode bekijken is niet beschikbaar in deze installatie."
 msgid "WordPress.org did not return a translation export for the selected project."
 msgstr ""
 
-#: src/pages/index/useIndexPageController.ts:469
+#: src/pages/index/useIndexPageController.ts:460
 msgid "WordPress.org refresh"
 msgstr ""
 
@@ -3511,11 +3511,11 @@ msgstr ""
 msgid "Write a reply to this comment"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:185
+#: src/components/editor/EditorHeader.tsx:172
 msgid "You have unsaved changes"
 msgstr "Je hebt onopgeslagen wijzigingen"
 
-#: src/pages/index/IndexPageBanners.tsx:121
+#: src/pages/index/IndexPageBanners.tsx:143
 msgid ""
 "You have unsaved changes from {age}. Would you like to restore your previous"
 " work?"
@@ -3580,7 +3580,7 @@ msgstr ""
 msgid "for details."
 msgstr "voor details."
 
-#: src/components/editor/EditorHeader.tsx:253
+#: src/components/editor/EditorHeader.tsx:238
 msgid "i18next JSON (.json)"
 msgstr "i18next JSON (.json)"
 
@@ -3592,7 +3592,7 @@ msgstr "zojuist"
 msgid "name@example.com"
 msgstr "naam@voorbeeld.nl"
 
-#: src/components/editor/EmptyState.tsx:132
+#: src/components/editor/EmptyState.tsx:127
 msgid "or"
 msgstr "of"
 
@@ -3624,7 +3624,7 @@ msgstr "termen"
 msgid "with api scope"
 msgstr ""
 
-#: src/pages/index/IndexPageBanners.tsx:129
+#: src/pages/index/IndexPageBanners.tsx:151
 msgid "{count} modified entries will be restored."
 msgstr "{count} gewijzigde items worden hersteld."
 
@@ -3674,7 +3674,7 @@ msgstr "{{count}} dagen geleden"
 msgid "{{count}} entries"
 msgstr "{{count}} items"
 
-#: src/pages/index/IndexPageDialogs.tsx:285
+#: src/pages/index/IndexPageDialogs.tsx:287
 msgid "{{count}} error issue(s)"
 msgstr ""
 
@@ -3740,7 +3740,7 @@ msgstr "{{count}} termen"
 msgid "{{count}} total entries"
 msgstr ""
 
-#: src/pages/index/IndexPageDialogs.tsx:291
+#: src/pages/index/IndexPageDialogs.tsx:293
 msgid "{{count}} total issues"
 msgstr ""
 
@@ -3768,11 +3768,11 @@ msgstr ""
 msgid "{{count}} untranslated"
 msgstr "{{count}} onvertaald"
 
-#: src/pages/index/IndexPageDialogs.tsx:288
+#: src/pages/index/IndexPageDialogs.tsx:290
 msgid "{{count}} warning issue(s)"
 msgstr ""
 
-#: src/pages/index/IndexPageBanners.tsx:82
+#: src/pages/index/IndexPageBanners.tsx:104
 msgid "{{count}} warning(s) during parsing"
 msgstr "{{count}} waarschuwing(en) tijdens verwerking"
 
@@ -3793,7 +3793,7 @@ msgid "{{percentage}}% translated"
 msgstr "{{percentage}}% vertaald"
 
 #: src/components/SettingsModal.tsx:2221
-#: src/components/editor/EditorWorkspace.tsx:154
+#: src/components/editor/EditorWorkspace.tsx:138
 #: src/components/editor/GlossaryPanel.tsx:259
 msgid "{{provider}} ready"
 msgstr ""
