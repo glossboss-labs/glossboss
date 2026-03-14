@@ -47,7 +47,33 @@ export async function signInWithEmail(email: string, password: string): Promise<
 /*  OAuth                                                              */
 /* ------------------------------------------------------------------ */
 
+const RETURN_PATH_KEY = 'glossboss-oauth-return-path';
+
+/** Save the current path so the OAuth callback can redirect back to it. */
+export function saveReturnPath(): void {
+  try {
+    const path = window.location.pathname + window.location.search;
+    if (path !== '/auth/callback') {
+      sessionStorage.setItem(RETURN_PATH_KEY, path);
+    }
+  } catch {
+    // sessionStorage unavailable
+  }
+}
+
+/** Consume the saved return path (reads and deletes). Falls back to '/'. */
+export function consumeReturnPath(): string {
+  try {
+    const path = sessionStorage.getItem(RETURN_PATH_KEY);
+    sessionStorage.removeItem(RETURN_PATH_KEY);
+    return path ?? '/';
+  } catch {
+    return '/';
+  }
+}
+
 export async function signInWithGitHub(): Promise<{ error: AuthError | null }> {
+  saveReturnPath();
   const { error } = await auth().signInWithOAuth({
     provider: 'github',
     options: {
