@@ -4,8 +4,8 @@
  */
 
 import { Link } from 'react-router';
-import { Menu, Avatar, UnstyledButton, Group, Text, Anchor } from '@mantine/core';
-import { LogOut, User } from 'lucide-react';
+import { Menu, Avatar, ActionIcon, Tooltip, Group, Text } from '@mantine/core';
+import { LogIn, LogOut, User } from 'lucide-react';
 import { motion } from 'motion/react';
 import { buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
@@ -21,9 +21,19 @@ export function UserMenu() {
 
   if (!isAuthenticated) {
     return (
-      <Anchor component={Link} to="/login" size="sm">
-        {t('Sign in')}
-      </Anchor>
+      <Tooltip label={t('Sign in')}>
+        <motion.div {...buttonStates}>
+          <ActionIcon
+            variant="default"
+            size="lg"
+            component={Link}
+            to="/login"
+            aria-label={t('Sign in')}
+          >
+            <LogIn size={18} />
+          </ActionIcon>
+        </motion.div>
+      </Tooltip>
     );
   }
 
@@ -42,7 +52,7 @@ export function UserMenu() {
         <motion.div {...buttonStates}>
           <UnstyledButton>
             <Group gap={8}>
-              <Avatar src={avatarUrl} size={28} radius="xl" color="blue">
+              <Avatar src={avatarUrl} size={28} radius="sm" color="blue">
                 {initials}
               </Avatar>
             </Group>

@@ -112,7 +112,7 @@ export default function Signup() {
                   value={password}
                   onChange={(e) => setPassword(e.currentTarget.value)}
                   autoComplete="new-password"
-                  description={t('Minimum 6 characters')}
+                  description={t('Minimum 8 characters, with uppercase, lowercase, and a digit')}
                 />
 
                 <Button type="submit" fullWidth loading={submitting}>

@@ -1773,7 +1773,7 @@ msgid "Marked {{count}} row(s) as fuzzy."
 msgstr ""
 
 #: src/pages/auth/Signup.tsx:115
-msgid "Minimum 6 characters"
+msgid "Minimum 8 characters, with uppercase, lowercase, and a digit"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:1743
@@ -2779,7 +2779,8 @@ msgstr "{{shown}} van {{total}} termen getoond"
 msgid "Showing {{start}}–{{end}} of {{total}} entries"
 msgstr "{{start}}–{{end}} van {{total}} items"
 
-#: src/components/auth/UserMenu.tsx:25
+#: src/components/auth/UserMenu.tsx:24
+#: src/components/auth/UserMenu.tsx:26
 #: src/pages/auth/Login.tsx:115
 #: src/pages/auth/Signup.tsx:68
 msgid "Sign in"
@@ -2789,7 +2790,7 @@ msgstr ""
 msgid "Sign in to GlossBoss"
 msgstr ""
 
-#: src/components/auth/UserMenu.tsx:66
+#: src/components/auth/UserMenu.tsx:70
 msgid "Sign out"
 msgstr ""
 
