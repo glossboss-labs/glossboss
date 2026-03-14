@@ -47,6 +47,16 @@ export class SupabaseStorageAdapter implements StorageAdapter {
     this.languageId = languageId;
   }
 
+  /** Whether a cloud sync is currently in progress. */
+  get syncing(): boolean {
+    return this.isSyncing;
+  }
+
+  /** Whether there are pending changes waiting to sync. */
+  get pending(): boolean {
+    return this.pendingValue !== null || this.syncTimer !== null;
+  }
+
   /**
    * Load project state from Supabase.
    * Returns a JSON string matching Zustand's persist format.

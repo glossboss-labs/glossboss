@@ -8,13 +8,37 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams, Link } from 'react-router';
-import { Container, Stack, Group, Title, Text, Button, Center, Loader, Alert } from '@mantine/core';
+import {
+  Container,
+  Stack,
+  Group,
+  Title,
+  Text,
+  Button,
+  Center,
+  Loader,
+  Alert,
+  Menu,
+  FileButton,
+  Tooltip,
+} from '@mantine/core';
 import { motion } from 'motion/react';
-import { ArrowLeft, AlertCircle, Download } from 'lucide-react';
+import {
+  ArrowLeft,
+  AlertCircle,
+  Download,
+  Upload,
+  FileUp,
+  ChevronDown,
+  Cloud,
+  CloudOff,
+  Check,
+} from 'lucide-react';
 import { sectionVariants, fadeVariants, buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
 import { AppHeader } from '@/components/AppHeader';
 import { useEditorStore } from '@/stores/editor-store';
+import type { FileFormat } from '@/stores/editor-store';
 import { getProject, getProjectLanguage, getProjectEntries } from '@/lib/projects/api';
 import {
   dbEntryToPOEntry,
@@ -30,26 +54,37 @@ import { SupabaseStorageAdapter } from '@/lib/cloud/supabase-adapter';
 import { LocalStorageAdapter } from '@/lib/cloud/local-adapter';
 import { setStorageAdapter } from '@/lib/cloud/adapter';
 import { serializePOFile } from '@/lib/po';
+import { serializeToI18next } from '@/lib/i18next';
+import { parseUploadedFile } from '@/lib/po/parse-file';
+import { mergePotIntoPo } from '@/lib/po/merge';
 import type { SourceLanguage, TargetLanguage } from '@/lib/deepl/types';
 import type { MachineTranslationMeta } from '@/stores/editor-store';
 import type { ReviewEntryState } from '@/lib/review';
 import type { WordPressProjectType } from '@/lib/wp-source/references';
 
+type SyncState = 'idle' | 'saving' | 'saved' | 'error';
+
 export default function ProjectEditor() {
   const { id, languageId } = useParams<{ id: string; languageId: string }>();
   const { t } = useTranslation();
   const adapterRef = useRef<SupabaseStorageAdapter | null>(null);
+  const fileResetRef = useRef<(() => void) | null>(null);
+  const potResetRef = useRef<(() => void) | null>(null);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [project, setProject] = useState<ProjectRow | null>(null);
   const [language, setLanguage] = useState<ProjectLanguageRow | null>(null);
   const [workspaceMode, setWorkspaceMode] = useState<WorkspaceMode>('edit');
+  const [syncState, setSyncState] = useState<SyncState>('idle');
 
   const loadFile = useEditorStore((s) => s.loadFile);
   const filename = useEditorStore((s) => s.filename);
+  const sourceFormat = useEditorStore((s) => s.sourceFormat);
   const header = useEditorStore((s) => s.header);
   const entries = useEditorStore((s) => s.entries);
+  const mergeEntries = useEditorStore((s) => s.mergeEntries);
+  const hasUnsavedChanges = useEditorStore((s) => s.hasUnsavedChanges);
   const restoreReviewEntries = useEditorStore((s) => s.restoreReviewEntries);
 
   // Load project + language from Supabase
@@ -152,6 +187,30 @@ export default function ProjectEditor() {
     };
   }, [id, languageId, loadFile, restoreReviewEntries, t]);
 
+  // Poll adapter sync state
+  useEffect(() => {
+    const savedTimer = { current: null as ReturnType<typeof setTimeout> | null };
+
+    const interval = setInterval(() => {
+      const adapter = adapterRef.current;
+      if (!adapter) return;
+
+      if (adapter.syncing) {
+        setSyncState('saving');
+      } else if (adapter.pending || hasUnsavedChanges) {
+        setSyncState('saving');
+      } else if (syncState === 'saving') {
+        setSyncState('saved');
+        savedTimer.current = setTimeout(() => setSyncState('idle'), 2000);
+      }
+    }, 500);
+
+    return () => {
+      clearInterval(interval);
+      if (savedTimer.current) clearTimeout(savedTimer.current);
+    };
+  }, [hasUnsavedChanges, syncState]);
+
   // Placeholder callbacks — wired up in a future iteration
   const noop = useCallback(() => {}, []);
   const handleLanguageChange = noop as unknown as (
@@ -160,23 +219,82 @@ export default function ProjectEditor() {
   ) => void;
   const handleEntrySelect = noop as unknown as (sourceText: string) => void;
 
-  const handleDownload = useCallback(() => {
-    if (!filename || !entries.length) return;
+  // ── File operations ────────────────────────────────────────
 
-    const content = serializePOFile(
-      { filename, header: header ?? {}, entries, charset: 'UTF-8' },
-      { updateRevisionDate: true },
-    );
-    const blob = new Blob([content], { type: 'text/x-gettext-translation;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement('a');
-    anchor.href = url;
-    anchor.download = filename;
-    document.body.appendChild(anchor);
-    anchor.click();
-    document.body.removeChild(anchor);
-    URL.revokeObjectURL(url);
-  }, [entries, filename, header]);
+  const handleFileUpload = useCallback(
+    async (file: File | null) => {
+      if (!file) return;
+
+      const outcome = await parseUploadedFile(file);
+      if (!outcome.ok) {
+        setError(outcome.errors[0]?.message ?? t('Failed to parse file'));
+        return;
+      }
+
+      loadFile(outcome.result.file, outcome.result.format === 'i18next' ? 'i18next' : undefined);
+    },
+    [loadFile, t],
+  );
+
+  const performDownload = useCallback(
+    (format: FileFormat) => {
+      if (!filename || !entries.length) return;
+
+      let content: string;
+      let downloadFilename: string;
+      let mimeType: string;
+
+      if (format === 'i18next') {
+        content = serializeToI18next(entries);
+        downloadFilename = filename.replace(/\.(po|pot|json)$/i, '.json');
+        if (!downloadFilename.endsWith('.json')) downloadFilename += '.json';
+        mimeType = 'application/json;charset=utf-8';
+      } else {
+        content = serializePOFile(
+          { filename, header: header ?? {}, entries, charset: 'UTF-8' },
+          { updateRevisionDate: true },
+        );
+        downloadFilename = filename.replace(/\.json$/i, '.po');
+        if (!downloadFilename.endsWith('.po') && !downloadFilename.endsWith('.pot')) {
+          downloadFilename += '.po';
+        }
+        mimeType = 'text/x-gettext-translation;charset=utf-8';
+      }
+
+      const blob = new Blob([content], { type: mimeType });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = downloadFilename;
+      document.body.appendChild(anchor);
+      anchor.click();
+      document.body.removeChild(anchor);
+      URL.revokeObjectURL(url);
+    },
+    [entries, filename, header],
+  );
+
+  const handleDownload = useCallback(() => {
+    performDownload(sourceFormat);
+  }, [performDownload, sourceFormat]);
+
+  const handlePotUpload = useCallback(
+    async (file: File | null) => {
+      if (!file || entries.length === 0) return;
+
+      const outcome = await parseUploadedFile(file);
+      if (!outcome.ok) {
+        setError(outcome.errors[0]?.message ?? t('Failed to parse POT file'));
+        return;
+      }
+
+      const mergeResult = mergePotIntoPo(entries, outcome.result.file.entries);
+      mergeEntries(mergeResult.entries);
+    },
+    [entries, mergeEntries, t],
+  );
+
+  // ── Render ─────────────────────────────────────────────────
 
   if (loading) {
     return (
@@ -201,20 +319,121 @@ export default function ProjectEditor() {
     );
   }
 
+  const syncIndicator =
+    syncState === 'saving' ? (
+      <Tooltip label={t('Syncing to cloud…')}>
+        <Group gap={4} style={{ color: 'var(--mantine-color-blue-5)' }}>
+          <Cloud size={14} className="icon-spin" />
+          <Text size="xs" fw={500}>
+            {t('Saving…')}
+          </Text>
+        </Group>
+      </Tooltip>
+    ) : syncState === 'saved' ? (
+      <Tooltip label={t('All changes saved')}>
+        <Group gap={4} style={{ color: 'var(--mantine-color-teal-6)' }}>
+          <Check size={14} />
+          <Text size="xs" fw={500}>
+            {t('Saved')}
+          </Text>
+        </Group>
+      </Tooltip>
+    ) : syncState === 'error' ? (
+      <Tooltip label={t('Sync error — retrying')}>
+        <Group gap={4} style={{ color: 'var(--mantine-color-red-6)' }}>
+          <CloudOff size={14} />
+          <Text size="xs" fw={500}>
+            {t('Error')}
+          </Text>
+        </Group>
+      </Tooltip>
+    ) : null;
+
   return (
     <Container size="xl" py="xl">
       <AppHeader
         actions={
-          <motion.div {...buttonStates}>
-            <Button
-              variant="light"
-              leftSection={<Download size={16} />}
-              onClick={handleDownload}
-              disabled={!filename}
-            >
-              {t('Download')}
-            </Button>
-          </motion.div>
+          <>
+            <motion.div {...buttonStates}>
+              <FileButton
+                onChange={(f) => void handleFileUpload(f)}
+                accept=".po,.pot,.json"
+                resetRef={fileResetRef}
+              >
+                {(props) => (
+                  <Button leftSection={<Upload size={16} />} {...props}>
+                    {t('Upload')}
+                  </Button>
+                )}
+              </FileButton>
+            </motion.div>
+
+            {filename && (
+              <>
+                <Group gap={0}>
+                  <motion.div {...buttonStates}>
+                    <Button
+                      variant="light"
+                      leftSection={<Download size={16} />}
+                      onClick={handleDownload}
+                      style={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
+                    >
+                      {t('Download')}
+                    </Button>
+                  </motion.div>
+                  <Menu position="bottom-end" withinPortal>
+                    <Menu.Target>
+                      <Button
+                        variant="light"
+                        px={8}
+                        aria-label={t('Download format options')}
+                        style={{
+                          borderTopLeftRadius: 0,
+                          borderBottomLeftRadius: 0,
+                          borderLeft: '1px solid var(--mantine-color-default-border)',
+                        }}
+                      >
+                        <ChevronDown size={14} />
+                      </Button>
+                    </Menu.Target>
+                    <Menu.Dropdown>
+                      <Menu.Label>{t('Download as')}</Menu.Label>
+                      <Menu.Item onClick={() => performDownload('po')}>
+                        {t('PO file (.po)')}
+                      </Menu.Item>
+                      <Menu.Item onClick={() => performDownload('i18next')}>
+                        {t('i18next JSON (.json)')}
+                      </Menu.Item>
+                    </Menu.Dropdown>
+                  </Menu>
+                </Group>
+
+                <Tooltip
+                  multiline
+                  w={340}
+                  label={t(
+                    'Update this file using a .pot template. Existing translations are kept when source strings still match, new strings are added, and obsolete strings are removed.',
+                  )}
+                >
+                  <motion.div {...buttonStates}>
+                    <FileButton
+                      onChange={(f) => void handlePotUpload(f)}
+                      accept=".pot"
+                      resetRef={potResetRef}
+                    >
+                      {(props) => (
+                        <Button leftSection={<FileUp size={16} />} variant="light" {...props}>
+                          {t('Update')}
+                        </Button>
+                      )}
+                    </FileButton>
+                  </motion.div>
+                </Tooltip>
+              </>
+            )}
+
+            {syncIndicator}
+          </>
         }
       />
       <motion.div variants={sectionVariants} initial="hidden" animate="visible">
