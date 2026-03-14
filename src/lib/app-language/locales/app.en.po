@@ -2802,7 +2802,7 @@ msgid "Showing {{start}}–{{end}} of {{total}} entries"
 msgstr "Showing {{start}}–{{end}} of {{total}} entries"
 
 #: src/components/auth/UserMenu.tsx:24
-#: src/components/auth/UserMenu.tsx:26
+#: src/components/auth/UserMenu.tsx:31
 #: src/pages/auth/Login.tsx:115
 #: src/pages/auth/Signup.tsx:68
 msgid "Sign in"
@@ -2812,7 +2812,7 @@ msgstr "Sign in"
 msgid "Sign in to GlossBoss"
 msgstr "Sign in to GlossBoss"
 
-#: src/components/auth/UserMenu.tsx:70
+#: src/components/auth/UserMenu.tsx:76
 msgid "Sign out"
 msgstr "Sign out"
 
