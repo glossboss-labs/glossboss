@@ -232,7 +232,7 @@ msgstr ""
 msgid "Azure translation failed"
 msgstr "Azure translation failed"
 
-#: src/components/projects/CreateProjectModal.tsx:512
+#: src/components/projects/CreateProjectModal.tsx:510
 msgid "Back"
 msgstr "Back"
 
@@ -696,7 +696,7 @@ msgstr "Create new branch"
 msgid "Create one"
 msgstr "Create one"
 
-#: src/components/projects/CreateProjectModal.tsx:520
+#: src/components/projects/CreateProjectModal.tsx:518
 msgid "Create project"
 msgstr "Create project"
 
@@ -829,7 +829,7 @@ msgid "Don't have an account?"
 msgstr "Don't have an account?"
 
 #: src/components/editor/EditorHeader.tsx:206
-#: src/pages/ProjectEditor.tsx:381
+#: src/pages/ProjectEditor.tsx:382
 msgid "Download"
 msgstr "Download"
 
@@ -838,7 +838,7 @@ msgid "Download (unsaved changes)"
 msgstr "Download (unsaved changes)"
 
 #: src/components/editor/EditorHeader.tsx:246
-#: src/pages/ProjectEditor.tsx:400
+#: src/pages/ProjectEditor.tsx:402
 msgid "Download as"
 msgstr "Download as"
 
@@ -847,7 +847,7 @@ msgid "Download as {format}"
 msgstr "Download as {format}"
 
 #: src/components/editor/EditorHeader.tsx:235
-#: src/pages/ProjectEditor.tsx:389
+#: src/pages/ProjectEditor.tsx:391
 msgid "Download format options"
 msgstr "Download format options"
 
@@ -906,7 +906,7 @@ msgstr "Edit workspace"
 msgid "Editing draft"
 msgstr "Editing draft"
 
-#: src/components/AppHeader.tsx:121
+#: src/components/AppHeader.tsx:118
 msgid "Editor"
 msgstr "Editor"
 
@@ -1190,6 +1190,7 @@ msgstr "Failed to save project"
 msgid "Feature"
 msgstr "Feature"
 
+#: src/components/AppHeader.tsx:141
 #: src/components/editor/EditorHeader.tsx:333
 msgid "Feedback"
 msgstr "Feedback"
@@ -1380,7 +1381,7 @@ msgstr ""
 "GlossBoss found QA issues in the current file. You can review them now or ex"
 "port anyway."
 
-#: src/components/AppHeader.tsx:198
+#: src/components/AppHeader.tsx:188
 #: src/components/editor/EditorHeader.tsx:411
 msgid "GlossBoss v{version}"
 msgstr "GlossBoss v{version}"
@@ -1691,7 +1692,7 @@ msgstr "Latvian"
 msgid "Least complete"
 msgstr "Least complete"
 
-#: src/components/AppHeader.tsx:215
+#: src/components/AppHeader.tsx:205
 #: src/components/editor/EditorHeader.tsx:428
 msgid "License"
 msgstr "License"
@@ -2217,7 +2218,7 @@ msgstr "Open in Trac"
 msgid "Open issue"
 msgstr "Open issue"
 
-#: src/components/AppHeader.tsx:107
+#: src/components/AppHeader.tsx:104
 msgid "Open local editor"
 msgstr "Open local editor"
 
@@ -2225,7 +2226,7 @@ msgstr "Open local editor"
 msgid "Open project"
 msgstr "Open project"
 
-#: src/components/AppHeader.tsx:195
+#: src/components/AppHeader.tsx:185
 #: src/components/editor/EditorHeader.tsx:389
 msgid "Open settings"
 msgstr "Open settings"
@@ -2243,7 +2244,7 @@ msgstr ""
 "ved changes will be lost."
 
 #: src/components/editor/EditorHeader.tsx:248
-#: src/pages/ProjectEditor.tsx:402
+#: src/pages/ProjectEditor.tsx:404
 msgid "PO file (.po)"
 msgstr "PO file (.po)"
 
@@ -2409,7 +2410,7 @@ msgstr "Preview voice"
 msgid "Previous field"
 msgstr "Previous field"
 
-#: src/components/AppHeader.tsx:224
+#: src/components/AppHeader.tsx:214
 #: src/components/editor/EditorHeader.tsx:446
 #: src/components/feedback/FeedbackModal.tsx:417
 msgid "Privacy"
@@ -2464,8 +2465,7 @@ msgstr "Project not found on WordPress.org."
 msgid "Project type"
 msgstr "Project type"
 
-#: src/components/AppHeader.tsx:154
-#: src/components/AppHeader.tsx:161
+#: src/components/AppHeader.tsx:156
 #: src/components/editor/EditorHeader.tsx:343
 #: src/components/editor/EditorHeader.tsx:350
 #: src/pages/Dashboard.tsx:92
@@ -2960,14 +2960,13 @@ msgstr "Set a WordPress project slug to browse source files."
 msgid "Set up a project and add languages later"
 msgstr "Set up a project and add languages later"
 
-#: src/components/AppHeader.tsx:190
+#: src/components/AppHeader.tsx:165
+#: src/components/AppHeader.tsx:180
 #: src/components/SettingsModal.tsx:1280
 #: src/components/editor/EditorHeader.tsx:387
 msgid "Settings"
 msgstr "Settings"
 
-#: src/components/AppHeader.tsx:172
-#: src/components/AppHeader.tsx:174
 #: src/components/editor/EditorHeader.tsx:362
 #: src/components/editor/EditorHeader.tsx:364
 msgid "Settings and actions"
@@ -3008,9 +3007,7 @@ msgstr "Settings saved!"
 msgid "Share Feedback"
 msgstr "Share Feedback"
 
-#: src/components/AppHeader.tsx:137
-#: src/components/AppHeader.tsx:143
-#: src/components/AppHeader.tsx:186
+#: src/components/AppHeader.tsx:176
 #: src/components/editor/EditorHeader.tsx:326
 #: src/components/editor/EditorHeader.tsx:373
 msgid "Share feedback"
@@ -3123,7 +3120,7 @@ msgstr "Slug"
 msgid "Sort entries"
 msgstr "Sort entries"
 
-#: src/components/AppHeader.tsx:206
+#: src/components/AppHeader.tsx:196
 #: src/components/editor/EditorHeader.tsx:419
 #: src/components/editor/EditorTable.tsx:2351
 #: src/components/projects/AddLanguageModal.tsx:302
@@ -3637,12 +3634,12 @@ msgid "Untranslated"
 msgstr "Untranslated"
 
 #: src/components/editor/EditorHeader.tsx:275
-#: src/pages/ProjectEditor.tsx:426
+#: src/pages/ProjectEditor.tsx:433
 msgid "Update"
 msgstr "Update"
 
 #: src/components/editor/EditorHeader.tsx:267
-#: src/pages/ProjectEditor.tsx:414
+#: src/pages/ProjectEditor.tsx:416
 msgid ""
 "Update this file using a .pot template. Existing translations are kept when "
 "source strings still match, new strings are added, and obsolete strings are "
@@ -4019,7 +4016,7 @@ msgid "fuzzy"
 msgstr "fuzzy"
 
 #: src/components/editor/EditorHeader.tsx:251
-#: src/pages/ProjectEditor.tsx:405
+#: src/pages/ProjectEditor.tsx:407
 msgid "i18next JSON (.json)"
 msgstr "i18next JSON (.json)"
 
@@ -4204,7 +4201,7 @@ msgid "{{count}} terms"
 msgstr "{{count}} terms"
 
 #: src/components/editor/WordPressRefreshModal.tsx:314
-#: src/components/projects/CreateProjectModal.tsx:502
+#: src/components/projects/CreateProjectModal.tsx:501
 #: src/components/projects/SaveToCloudModal.tsx:148
 msgid "{{count}} total entries"
 msgstr "{{count}} total entries"
