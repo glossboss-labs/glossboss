@@ -3,9 +3,19 @@
  */
 
 import { Link } from 'react-router';
-import { Paper, Text, Group, Progress, Badge, Stack, ActionIcon, Menu } from '@mantine/core';
-import { MoreVertical, Trash2, Languages } from 'lucide-react';
-import { useTranslation } from '@/lib/app-language';
+import {
+  Paper,
+  Text,
+  Group,
+  Progress,
+  Badge,
+  Stack,
+  ActionIcon,
+  Menu,
+  Tooltip,
+} from '@mantine/core';
+import { MoreVertical, Trash2, Languages, Lock, Globe, EyeOff } from 'lucide-react';
+import { useTranslation, msgid } from '@/lib/app-language';
 import type { ProjectWithLanguages } from '@/lib/projects/types';
 
 interface ProjectCardProps {
@@ -13,14 +23,27 @@ interface ProjectCardProps {
   onDelete: (id: string) => void;
 }
 
+const VISIBILITY_ICON = {
+  private: Lock,
+  public: Globe,
+  unlisted: EyeOff,
+} as const;
+
+const VISIBILITY_LABEL: Record<string, string> = {
+  private: msgid('Private'),
+  public: msgid('Public'),
+  unlisted: msgid('Unlisted'),
+};
+
 export function ProjectCard({ project, onDelete }: ProjectCardProps) {
   const { t } = useTranslation();
-  const { stats_total, stats_translated, stats_fuzzy } = project;
+  const { stats_total, stats_translated, stats_fuzzy, stats_untranslated } = project;
   const pct = stats_total > 0 ? Math.round((stats_translated / stats_total) * 100) : 0;
   const fuzzyPct = stats_total > 0 ? Math.round((stats_fuzzy / stats_total) * 100) : 0;
 
   const timeAgo = formatRelative(project.updated_at);
   const languages = project.project_languages ?? [];
+  const VisIcon = VISIBILITY_ICON[project.visibility] ?? Globe;
 
   return (
     <Paper
@@ -48,55 +71,88 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
           <Text fw={600} size="md" truncate>
             {project.name}
           </Text>
-          {languages.length > 0 && (
-            <Group gap={4}>
-              <Languages size={12} style={{ opacity: 0.5 }} />
+          <Group gap={6}>
+            {languages.length > 0 && (
               <Group gap={4}>
-                {languages.map((lang) => (
-                  <Badge key={lang.id} variant="light" size="xs" color="blue">
-                    {lang.locale}
-                  </Badge>
-                ))}
+                <Languages size={12} style={{ opacity: 0.5 }} />
+                <Text size="xs" c="dimmed">
+                  {languages.length === 1
+                    ? t('1 language')
+                    : t('{{count}} languages', { count: languages.length })}
+                </Text>
               </Group>
-            </Group>
-          )}
+            )}
+            <Badge variant="light" size="xs" color="gray">
+              {project.source_format}
+            </Badge>
+            {project.wp_slug && (
+              <Badge variant="light" size="xs" color="grape">
+                WP
+              </Badge>
+            )}
+          </Group>
         </Stack>
 
-        <Menu position="bottom-end" withinPortal>
-          <Menu.Target>
-            <ActionIcon variant="subtle" size="sm" color="gray" onClick={(e) => e.preventDefault()}>
-              <MoreVertical size={14} />
-            </ActionIcon>
-          </Menu.Target>
-          <Menu.Dropdown>
-            <Menu.Item
-              color="red"
-              leftSection={<Trash2 size={14} />}
-              onClick={(e) => {
-                e.preventDefault();
-                onDelete(project.id);
-              }}
-            >
-              {t('Delete')}
-            </Menu.Item>
-          </Menu.Dropdown>
-        </Menu>
+        <Group gap={4} wrap="nowrap">
+          <Tooltip label={t(VISIBILITY_LABEL[project.visibility] ?? 'Public')}>
+            <VisIcon size={14} style={{ opacity: 0.4 }} />
+          </Tooltip>
+          <Menu position="bottom-end" withinPortal>
+            <Menu.Target>
+              <ActionIcon
+                variant="subtle"
+                size="sm"
+                color="gray"
+                onClick={(e) => e.preventDefault()}
+              >
+                <MoreVertical size={14} />
+              </ActionIcon>
+            </Menu.Target>
+            <Menu.Dropdown>
+              <Menu.Item
+                color="red"
+                leftSection={<Trash2 size={14} />}
+                onClick={(e) => {
+                  e.preventDefault();
+                  onDelete(project.id);
+                }}
+              >
+                {t('Delete')}
+              </Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
+        </Group>
       </Group>
 
       <Stack gap={6} mt="md">
-        <Progress.Root size="sm">
-          <Progress.Section value={pct} color="blue" />
-          <Progress.Section value={fuzzyPct} color="yellow" />
-        </Progress.Root>
+        <Group gap={8} align="center">
+          <Progress.Root size="sm" style={{ flex: 1 }}>
+            <Progress.Section value={pct} color="blue" />
+            <Progress.Section value={fuzzyPct} color="yellow" />
+          </Progress.Root>
+          <Text
+            size="sm"
+            fw={600}
+            c={pct === 100 ? 'teal' : undefined}
+            style={{ minWidth: 36, textAlign: 'right' }}
+          >
+            {pct}%
+          </Text>
+        </Group>
 
         <Group justify="space-between">
           <Group gap={8}>
             <Badge variant="light" size="xs" color="blue">
-              {stats_translated}/{stats_total}
+              {stats_translated} {t('translated')}
             </Badge>
             {stats_fuzzy > 0 && (
               <Badge variant="light" size="xs" color="yellow">
                 {stats_fuzzy} {t('fuzzy')}
+              </Badge>
+            )}
+            {stats_untranslated > 0 && (
+              <Badge variant="light" size="xs" color="gray">
+                {stats_untranslated} {t('untranslated')}
               </Badge>
             )}
           </Group>
