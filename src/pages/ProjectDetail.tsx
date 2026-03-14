@@ -233,81 +233,61 @@ export default function ProjectDetail() {
     <Container size="lg" py="xl">
       <MotionDiv variants={sectionVariants} initial="hidden" animate="visible">
         <Stack gap="lg">
-          {/* Header */}
-          <Group justify="space-between" align="flex-start">
-            <Group gap="md">
-              <motion.div {...buttonStates}>
-                <Button
-                  component={Link}
-                  to="/dashboard"
-                  variant="subtle"
-                  leftSection={<ArrowLeft size={16} />}
-                  size="compact-md"
-                >
-                  {t('Projects')}
-                </Button>
-              </motion.div>
-              <div>
-                <Title order={3}>{project.name}</Title>
-                <MotionDiv
-                  variants={staggerContainerVariants}
-                  initial="hidden"
-                  animate="visible"
-                  style={{
-                    display: 'flex',
-                    gap: 6,
-                    marginTop: 4,
-                    flexWrap: 'wrap',
-                    alignItems: 'center',
-                  }}
-                >
-                  <MotionSpan variants={badgeVariants}>
-                    <Tooltip label={t(VISIBILITY_LABEL[project.visibility] ?? 'Public')}>
-                      <Badge
-                        variant="light"
-                        size="sm"
-                        color="gray"
-                        leftSection={<VisIcon size={10} />}
-                      >
-                        {t(VISIBILITY_LABEL[project.visibility] ?? 'Public')}
-                      </Badge>
-                    </Tooltip>
-                  </MotionSpan>
-                  <MotionSpan variants={badgeVariants}>
-                    <Badge variant="light" size="sm" color="gray">
-                      {project.source_format}
-                    </Badge>
-                  </MotionSpan>
-                  {project.source_language && (
-                    <MotionSpan variants={badgeVariants}>
-                      <Badge variant="light" size="sm" color="blue">
-                        {t('Source: {{lang}}', { lang: project.source_language })}
-                      </Badge>
-                    </MotionSpan>
-                  )}
-                  {project.wp_slug && (
-                    <MotionSpan variants={badgeVariants}>
-                      <Badge variant="light" size="sm" color="grape">
-                        {project.wp_project_type}: {project.wp_slug}
-                      </Badge>
-                    </MotionSpan>
-                  )}
-                  <MotionSpan variants={badgeVariants}>
-                    <Text size="xs" style={{ color: 'var(--gb-text-tertiary)' }}>
-                      {t('Created {{date}}', {
-                        date: new Date(project.created_at).toLocaleDateString(),
-                      })}
-                    </Text>
-                  </MotionSpan>
-                </MotionDiv>
-              </div>
-            </Group>
+          {/* Breadcrumb */}
+          <Group justify="space-between" align="center">
+            <Text
+              component={Link}
+              to="/dashboard"
+              size="sm"
+              style={{
+                color: 'var(--gb-text-secondary)',
+                textDecoration: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4,
+              }}
+            >
+              <ArrowLeft size={14} />
+              {t('Projects')}
+            </Text>
             <motion.div {...buttonStates}>
               <Button leftSection={<Plus size={16} />} onClick={() => setAddModalOpen(true)}>
                 {t('Add language')}
               </Button>
             </motion.div>
           </Group>
+
+          {/* Title + metadata */}
+          <div>
+            <Title order={3}>{project.name}</Title>
+            <Group gap={6} mt={4} align="center">
+              <VisIcon size={12} style={{ color: 'var(--gb-text-tertiary)' }} />
+              <Text size="xs" style={{ color: 'var(--gb-text-tertiary)' }}>
+                {t(VISIBILITY_LABEL[project.visibility] ?? 'Public')}
+                {' · '}
+                {project.source_format}
+                {project.source_language && (
+                  <>
+                    {' · '}
+                    {t('Source: {{lang}}', { lang: project.source_language })}
+                  </>
+                )}
+                {project.wp_slug && (
+                  <>
+                    {' · '}
+                    {project.wp_project_type}: {project.wp_slug}
+                  </>
+                )}
+                {' · '}
+                {t('Created {{date}}', {
+                  date: new Date(project.created_at).toLocaleDateString(undefined, {
+                    month: 'short',
+                    day: 'numeric',
+                  }),
+                })}
+              </Text>
+            </Group>
+          </div>
 
           {/* Aggregate stats */}
           {languages.length > 0 && (

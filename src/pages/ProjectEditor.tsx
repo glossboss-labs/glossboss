@@ -9,7 +9,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams, Link } from 'react-router';
 import { Container, Stack, Group, Title, Text, Button, Center, Loader, Alert } from '@mantine/core';
+import { motion } from 'motion/react';
 import { ArrowLeft, AlertCircle, Download } from 'lucide-react';
+import { sectionVariants, fadeVariants, buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
 import { useEditorStore } from '@/stores/editor-store';
 import { getProject, getProjectLanguage, getProjectEntries } from '@/lib/projects/api';
@@ -177,9 +179,11 @@ export default function ProjectEditor() {
 
   if (loading) {
     return (
-      <Center py={80}>
-        <Loader size="lg" />
-      </Center>
+      <motion.div variants={fadeVariants} initial="hidden" animate="visible">
+        <Center py={80}>
+          <Loader size="lg" />
+        </Center>
+      </motion.div>
     );
   }
 
@@ -198,57 +202,84 @@ export default function ProjectEditor() {
 
   return (
     <Container size="xl" py="xl">
-      <Stack gap="lg">
-        {/* Project header */}
-        <Group justify="space-between" align="flex-start">
-          <Group gap="md">
-            <Button
-              component={Link}
-              to={`/projects/${project.id}`}
-              variant="subtle"
-              leftSection={<ArrowLeft size={16} />}
-              size="compact-md"
-            >
-              {project.name}
-            </Button>
-            <div>
-              <Title order={3}>{language.locale}</Title>
-              <Group gap="xs" mt={4}>
-                <Text size="xs" c="dimmed">
-                  {language.source_filename}
-                </Text>
-              </Group>
-            </div>
+      <motion.div variants={sectionVariants} initial="hidden" animate="visible">
+        <Stack gap="lg">
+          {/* Breadcrumb */}
+          <Group justify="space-between" align="center">
+            <Group gap={6} align="center">
+              <Text
+                component={Link}
+                to="/dashboard"
+                size="sm"
+                style={{
+                  color: 'var(--gb-text-secondary)',
+                  textDecoration: 'none',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 4,
+                }}
+              >
+                <ArrowLeft size={14} />
+                {t('Projects')}
+              </Text>
+              <Text size="sm" style={{ color: 'var(--gb-text-tertiary)' }}>
+                /
+              </Text>
+              <Text
+                component={Link}
+                to={`/projects/${project.id}`}
+                size="sm"
+                style={{
+                  color: 'var(--gb-text-secondary)',
+                  textDecoration: 'none',
+                }}
+              >
+                {project.name}
+              </Text>
+            </Group>
+            <motion.div {...buttonStates}>
+              <Button
+                variant="light"
+                leftSection={<Download size={16} />}
+                onClick={handleDownload}
+                disabled={!filename}
+              >
+                {t('Download')}
+              </Button>
+            </motion.div>
           </Group>
 
-          <Button
-            variant="light"
-            leftSection={<Download size={16} />}
-            onClick={handleDownload}
-            disabled={!filename}
-          >
-            {t('Download')}
-          </Button>
-        </Group>
+          {/* Title */}
+          <div>
+            <Title order={3}>
+              {project.name} · {language.locale}
+            </Title>
+            {language.source_filename && (
+              <Text size="xs" mt={4} style={{ color: 'var(--gb-text-tertiary)' }}>
+                {language.source_filename}
+              </Text>
+            )}
+          </div>
 
-        {/* Editor workspace */}
-        <EditorWorkspace
-          workspaceMode={workspaceMode}
-          onWorkspaceModeChange={setWorkspaceMode}
-          encodingInfo={null}
-          currentProjectType={project.wp_project_type as WordPressProjectType | null}
-          currentProjectSlug={project.wp_slug ?? null}
-          currentProjectRelease={null}
-          onLanguageChange={handleLanguageChange}
-          deeplGlossaryId={null}
-          glossary={null}
-          glossaryEnforcementEnabled={false}
-          translateEnabled={false}
-          glossarySyncStatus={null}
-          speechEnabled={false}
-          onEntrySelect={handleEntrySelect}
-        />
-      </Stack>
+          {/* Editor workspace */}
+          <EditorWorkspace
+            workspaceMode={workspaceMode}
+            onWorkspaceModeChange={setWorkspaceMode}
+            encodingInfo={null}
+            currentProjectType={project.wp_project_type as WordPressProjectType | null}
+            currentProjectSlug={project.wp_slug ?? null}
+            currentProjectRelease={null}
+            onLanguageChange={handleLanguageChange}
+            deeplGlossaryId={null}
+            glossary={null}
+            glossaryEnforcementEnabled={false}
+            translateEnabled={false}
+            glossarySyncStatus={null}
+            speechEnabled={false}
+            onEntrySelect={handleEntrySelect}
+          />
+        </Stack>
+      </motion.div>
     </Container>
   );
 }

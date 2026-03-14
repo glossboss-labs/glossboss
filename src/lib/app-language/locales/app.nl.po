@@ -78,7 +78,7 @@ msgstr ""
 
 #: src/components/projects/AddLanguageModal.tsx:271
 #: src/components/projects/AddLanguageModal.tsx:451
-#: src/pages/ProjectDetail.tsx:307
+#: src/pages/ProjectDetail.tsx:255
 msgid "Add language"
 msgstr ""
 
@@ -228,7 +228,7 @@ msgid "Back"
 msgstr ""
 
 #: src/pages/ProjectDetail.tsx:223
-#: src/pages/ProjectEditor.tsx:193
+#: src/pages/ProjectEditor.tsx:197
 msgid "Back to dashboard"
 msgstr ""
 
@@ -690,7 +690,7 @@ msgstr ""
 msgid "Create resource"
 msgstr ""
 
-#: src/pages/ProjectDetail.tsx:297
+#: src/pages/ProjectDetail.tsx:282
 msgid "Created {{date}}"
 msgstr ""
 
@@ -756,7 +756,7 @@ msgid "DeepL usage:"
 msgstr "DeepL-gebruik:"
 
 #: src/components/projects/ProjectCard.tsx:127
-#: src/pages/ProjectDetail.tsx:527
+#: src/pages/ProjectDetail.tsx:507
 msgid "Delete"
 msgstr ""
 
@@ -812,7 +812,7 @@ msgid "Don't have an account?"
 msgstr ""
 
 #: src/components/editor/EditorHeader.tsx:206
-#: src/pages/ProjectEditor.tsx:230
+#: src/pages/ProjectEditor.tsx:247
 msgid "Download"
 msgstr "Downloaden"
 
@@ -1106,7 +1106,7 @@ msgid "Failed to load glossary"
 msgstr "Kan de glossary niet laden"
 
 #: src/pages/ProjectDetail.tsx:148
-#: src/pages/ProjectEditor.tsx:133
+#: src/pages/ProjectEditor.tsx:135
 msgid "Failed to load project"
 msgstr ""
 
@@ -1620,7 +1620,7 @@ msgstr "Vertaalteam"
 msgid "Language code"
 msgstr "Taalcode"
 
-#: src/pages/ProjectEditor.tsx:75
+#: src/pages/ProjectEditor.tsx:77
 msgid "Language not found"
 msgstr ""
 
@@ -2002,11 +2002,11 @@ msgstr "Er zijn geen glossary-items gevonden in het geüploade bestand."
 msgid "No glossary terms in selected text"
 msgstr "Geen glossarytermen in de geselecteerde tekst"
 
-#: src/pages/ProjectDetail.tsx:374
+#: src/pages/ProjectDetail.tsx:354
 msgid "No languages match your search"
 msgstr ""
 
-#: src/pages/ProjectDetail.tsx:364
+#: src/pages/ProjectDetail.tsx:344
 msgid "No languages yet"
 msgstr ""
 
@@ -2386,8 +2386,8 @@ msgstr "Projectnaam en versie"
 
 #: src/pages/ProjectDetail.tsx:139
 #: src/pages/ProjectDetail.tsx:220
-#: src/pages/ProjectEditor.tsx:69
-#: src/pages/ProjectEditor.tsx:190
+#: src/pages/ProjectEditor.tsx:71
+#: src/pages/ProjectEditor.tsx:194
 msgid "Project not found"
 msgstr ""
 
@@ -2406,7 +2406,8 @@ msgstr ""
 #: src/components/editor/EditorHeader.tsx:343
 #: src/components/editor/EditorHeader.tsx:350
 #: src/pages/Dashboard.tsx:90
-#: src/pages/ProjectDetail.tsx:247
+#: src/pages/ProjectDetail.tsx:251
+#: src/pages/ProjectEditor.tsx:223
 msgid "Projects"
 msgstr ""
 
@@ -2768,7 +2769,7 @@ msgstr ""
 msgid "Scanning for locale files..."
 msgstr ""
 
-#: src/pages/ProjectDetail.tsx:339
+#: src/pages/ProjectDetail.tsx:319
 msgid "Search languages…"
 msgstr ""
 
@@ -3081,7 +3082,7 @@ msgstr "Brontekst"
 msgid "Source voice"
 msgstr "Bronstem"
 
-#: src/pages/ProjectDetail.tsx:284
+#: src/pages/ProjectDetail.tsx:272
 msgid "Source: {{lang}}"
 msgstr ""
 
@@ -3884,7 +3885,7 @@ msgstr "gecacht"
 msgid "characters"
 msgstr "tekens"
 
-#: src/pages/ProjectDetail.tsx:323
+#: src/pages/ProjectDetail.tsx:303
 msgid "complete"
 msgstr ""
 
@@ -3905,7 +3906,7 @@ msgid "for details."
 msgstr "voor details."
 
 #: src/components/projects/ProjectCard.tsx:165
-#: src/pages/ProjectDetail.tsx:480
+#: src/pages/ProjectDetail.tsx:460
 msgid "fuzzy"
 msgstr ""
 
@@ -3963,12 +3964,12 @@ msgid "to save projects to the cloud and collaborate with your team."
 msgstr ""
 
 #: src/components/projects/ProjectCard.tsx:153
-#: src/pages/ProjectDetail.tsx:468
+#: src/pages/ProjectDetail.tsx:448
 msgid "translated"
 msgstr ""
 
 #: src/components/projects/ProjectCard.tsx:180
-#: src/pages/ProjectDetail.tsx:495
+#: src/pages/ProjectDetail.tsx:475
 msgid "untranslated"
 msgstr ""
 
@@ -4043,7 +4044,7 @@ msgid "{{count}} hours ago"
 msgstr "{{count}} uur geleden"
 
 #: src/components/projects/ProjectCard.tsx:86
-#: src/pages/ProjectDetail.tsx:318
+#: src/pages/ProjectDetail.tsx:298
 msgid "{{count}} languages"
 msgstr ""
 
@@ -4195,7 +4196,7 @@ msgstr ""
 msgid "{{strings}} strings"
 msgstr ""
 
-#: src/pages/ProjectDetail.tsx:320
+#: src/pages/ProjectDetail.tsx:300
 msgid "{{strings}} total strings"
 msgstr ""
 
