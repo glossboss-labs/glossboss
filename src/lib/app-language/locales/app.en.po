@@ -206,7 +206,7 @@ msgstr ""
 "Azure credentials are kept in this browser tab by default. Enable \"Remember"
 " API key\" only on a personal, trusted device."
 
-#: src/lib/azure/client.ts:54
+#: src/lib/azure/client.ts:49
 msgid "Azure translation failed"
 msgstr "Azure translation failed"
 
@@ -1050,7 +1050,7 @@ msgstr "Feedback could not be submitted at this time."
 msgid "Feedback failed"
 msgstr "Feedback failed"
 
-#: src/lib/cloud-backend.ts:16
+#: src/lib/supabase/client.ts:13
 msgid "Feedback is unavailable in this deployment."
 msgstr "Feedback is unavailable in this deployment."
 
@@ -1182,7 +1182,7 @@ msgstr ""
 " the current WordPress slug when available. Get a free API key from Google A"
 "I Studio."
 
-#: src/lib/gemini/client.ts:58
+#: src/lib/gemini/client.ts:53
 msgid "Gemini translation failed"
 msgstr "Gemini translation failed"
 
@@ -2850,7 +2850,7 @@ msgstr "Spanish (Spain)"
 msgid "Speech"
 msgstr "Speech"
 
-#: src/lib/cloud-backend.ts:17
+#: src/lib/supabase/client.ts:14
 msgid "Speech is unavailable in this deployment."
 msgstr "Speech is unavailable in this deployment."
 
@@ -3138,7 +3138,7 @@ msgstr "Translation A-Z"
 msgid "Translation Z-A"
 msgstr "Translation Z-A"
 
-#: src/lib/cloud-backend.ts:18
+#: src/lib/supabase/client.ts:15
 msgid "Translation is unavailable in this deployment."
 msgstr "Translation is unavailable in this deployment."
 
@@ -3504,11 +3504,11 @@ msgstr "WordPress Glossary"
 msgid "WordPress Project"
 msgstr "WordPress Project"
 
-#: src/lib/cloud-backend.ts:19
+#: src/lib/supabase/client.ts:16
 msgid "WordPress glossary loading is unavailable in this deployment."
 msgstr "WordPress glossary loading is unavailable in this deployment."
 
-#: src/lib/wp-source/fetcher.ts:222
+#: src/lib/wp-source/fetcher.ts:239
 msgid "WordPress locale discovery is unavailable in this deployment."
 msgstr "WordPress locale discovery is unavailable in this deployment."
 
@@ -3520,11 +3520,11 @@ msgstr "WordPress project slug"
 msgid "WordPress project type"
 msgstr "WordPress project type"
 
-#: src/lib/cloud-backend.ts:22
+#: src/lib/supabase/client.ts:19
 msgid "WordPress source browsing is unavailable in this deployment."
 msgstr "WordPress source browsing is unavailable in this deployment."
 
-#: src/lib/wp-source/project.ts:139
+#: src/lib/wp-source/project.ts:135
 msgid "WordPress.org did not return a translation export for the selected project."
 msgstr "WordPress.org did not return a translation export for the selected project."
 

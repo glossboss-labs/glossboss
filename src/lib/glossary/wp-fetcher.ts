@@ -9,8 +9,7 @@
 
 import type { Glossary } from './types';
 import { parseGlossaryCSV, isValidGlossaryCSV } from './csv-parser';
-import { getSupabaseAnonKey, getSupabaseFunctionBaseUrl } from '@/lib/cloud-backend';
-import { buildSupabaseFunctionHeaders } from '@/lib/supabase-function-headers';
+import { invokeSupabaseFunction, readSupabaseFunctionError } from '@/lib/supabase/client';
 
 /** Cache key prefix for localStorage */
 const CACHE_KEY_PREFIX = 'glossboss-wp-glossary-';
@@ -47,13 +46,6 @@ export function buildGlossaryURL(locale: string): string {
 }
 
 /**
- * Get the edge function URL
- */
-function getEdgeFunctionUrl(): string {
-  return `${getSupabaseFunctionBaseUrl('WordPress glossary loading')}/wp-glossary`;
-}
-
-/**
  * Fetch glossary from WordPress.org via edge function proxy
  *
  * @param locale - Language code (e.g., 'nl', 'de', 'fr')
@@ -77,33 +69,33 @@ export async function fetchWPGlossary(locale: string, forceRefresh = false): Pro
 
   // Fetch via edge function
   try {
-    const functionUrl = getEdgeFunctionUrl();
-    const anonKey = getSupabaseAnonKey();
-
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
 
-    const headers = buildSupabaseFunctionHeaders(anonKey);
-
-    const response = await fetch(functionUrl, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({ locale: normalizedLocale }),
+    const { data, error, response } = await invokeSupabaseFunction<{
+      ok?: boolean;
+      csv?: string;
+      error?: string;
+      message?: string;
+    }>('wp-glossary', {
+      featureLabel: 'WordPress glossary loading',
       signal: controller.signal,
+      body: { locale: normalizedLocale },
     });
 
     clearTimeout(timeoutId);
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
+    if (error) {
+      const errorData = await readSupabaseFunctionError(response);
       return {
         glossary: null,
         fromCache: false,
-        error: errorData.message || errorData.error || `HTTP ${response.status}`,
+        error:
+          (typeof errorData.message === 'string' && errorData.message) ||
+          (typeof errorData.error === 'string' && errorData.error) ||
+          `HTTP ${response?.status ?? 'unknown'}`,
       };
     }
-
-    const data = await response.json();
 
     if (data.ok === false || data.error) {
       return {

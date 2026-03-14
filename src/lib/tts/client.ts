@@ -1,5 +1,4 @@
-import { getSupabaseAnonKey, getSupabaseFunctionBaseUrl } from '@/lib/cloud-backend';
-import { buildSupabaseFunctionHeaders } from '@/lib/supabase-function-headers';
+import { invokeSupabaseFunction, readSupabaseFunctionError } from '@/lib/supabase/client';
 import { getTtsSettings, saveTtsUsage } from './settings';
 import type { TtsUsageStats, TtsVoiceSummary } from './types';
 
@@ -9,10 +8,6 @@ export interface ElevenLabsClientConfig {
 }
 
 const DEFAULT_TIMEOUT_MS = 30000;
-
-function getDefaultFunctionUrl(): string {
-  return `${getSupabaseFunctionBaseUrl('Speech')}/tts-elevenlabs`;
-}
 
 async function parseError(response: Response): Promise<Error> {
   try {
@@ -24,9 +19,7 @@ async function parseError(response: Response): Promise<Error> {
 }
 
 export function createElevenLabsClient(config: ElevenLabsClientConfig = {}) {
-  const functionUrl = config.functionUrl ?? getDefaultFunctionUrl();
   const timeout = config.timeout ?? DEFAULT_TIMEOUT_MS;
-  const anonKey = getSupabaseAnonKey();
 
   async function request<T>(action: string, params: Record<string, unknown> = {}): Promise<T> {
     const controller = new AbortController();
@@ -34,22 +27,35 @@ export function createElevenLabsClient(config: ElevenLabsClientConfig = {}) {
 
     try {
       const settings = getTtsSettings();
-      const response = await fetch(functionUrl, {
-        method: 'POST',
-        headers: buildSupabaseFunctionHeaders(anonKey),
+      const { data, error, response } = await invokeSupabaseFunction<T>('tts-elevenlabs', {
+        featureLabel: 'Speech',
+        signal: controller.signal,
         body: JSON.stringify({
           action,
           apiKey: settings.apiKey,
           ...params,
         }),
-        signal: controller.signal,
       });
 
-      if (!response.ok) {
-        throw await parseError(response);
+      if (error) {
+        if (controller.signal.aborted) {
+          throw new Error('Request timed out');
+        }
+
+        throw await parseError(
+          new Response(JSON.stringify(await readSupabaseFunctionError(response)), {
+            status: response?.status ?? 500,
+            headers: { 'Content-Type': 'application/json' },
+          }),
+        );
       }
 
-      return (await response.json()) as T;
+      return data as T;
+    } catch (error) {
+      if (error instanceof Error && error.message === 'Request timed out') {
+        throw new Error('Request timed out', { cause: error });
+      }
+      throw error;
     } finally {
       clearTimeout(timeoutId);
     }

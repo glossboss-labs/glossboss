@@ -201,7 +201,7 @@ msgid ""
 " API key\" only on a personal, trusted device."
 msgstr ""
 
-#: src/lib/azure/client.ts:54
+#: src/lib/azure/client.ts:49
 msgid "Azure translation failed"
 msgstr ""
 
@@ -1041,7 +1041,7 @@ msgstr "Je kunt nu even geen feedback geven."
 msgid "Feedback failed"
 msgstr "Feedback mislukt"
 
-#: src/lib/cloud-backend.ts:16
+#: src/lib/supabase/client.ts:13
 msgid "Feedback is unavailable in this deployment."
 msgstr "Feedback is niet beschikbaar in deze installatie."
 
@@ -1168,7 +1168,7 @@ msgid ""
 "I Studio."
 msgstr ""
 
-#: src/lib/gemini/client.ts:58
+#: src/lib/gemini/client.ts:53
 msgid "Gemini translation failed"
 msgstr ""
 
@@ -2828,7 +2828,7 @@ msgstr "Spaans (Spanje)"
 msgid "Speech"
 msgstr "Spraak"
 
-#: src/lib/cloud-backend.ts:17
+#: src/lib/supabase/client.ts:14
 msgid "Speech is unavailable in this deployment."
 msgstr "Spraak is niet beschikbaar in deze installatie."
 
@@ -3112,7 +3112,7 @@ msgstr "Vertaling A-Z"
 msgid "Translation Z-A"
 msgstr "Vertaling Z-A"
 
-#: src/lib/cloud-backend.ts:18
+#: src/lib/supabase/client.ts:15
 msgid "Translation is unavailable in this deployment."
 msgstr "Vertaling is niet beschikbaar in deze installatie."
 
@@ -3475,11 +3475,11 @@ msgstr "WordPress-glossary"
 msgid "WordPress Project"
 msgstr ""
 
-#: src/lib/cloud-backend.ts:19
+#: src/lib/supabase/client.ts:16
 msgid "WordPress glossary loading is unavailable in this deployment."
 msgstr "WordPress-glossary laden is niet beschikbaar in deze installatie."
 
-#: src/lib/wp-source/fetcher.ts:222
+#: src/lib/wp-source/fetcher.ts:239
 msgid "WordPress locale discovery is unavailable in this deployment."
 msgstr ""
 
@@ -3491,11 +3491,11 @@ msgstr ""
 msgid "WordPress project type"
 msgstr ""
 
-#: src/lib/cloud-backend.ts:22
+#: src/lib/supabase/client.ts:19
 msgid "WordPress source browsing is unavailable in this deployment."
 msgstr "WordPress-broncode bekijken is niet beschikbaar in deze installatie."
 
-#: src/lib/wp-source/project.ts:139
+#: src/lib/wp-source/project.ts:135
 msgid "WordPress.org did not return a translation export for the selected project."
 msgstr ""
 

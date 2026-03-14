@@ -1,6 +1,5 @@
 import type { FeedbackIssueRequest, FeedbackIssueResponse, FeedbackIssueSuccess } from './types';
-import { getSupabaseAnonKey, getSupabaseFunctionBaseUrl } from '@/lib/cloud-backend';
-import { buildSupabaseFunctionHeaders } from '@/lib/supabase-function-headers';
+import { invokeSupabaseFunction, readSupabaseFunctionError } from '@/lib/supabase/client';
 
 const REQUEST_TIMEOUT_MS = 20000;
 
@@ -14,41 +13,47 @@ export class FeedbackSubmissionError extends Error {
   }
 }
 
-function getFeedbackFunctionUrl(): string {
-  try {
-    return `${getSupabaseFunctionBaseUrl('Feedback')}/feedback-issue`;
-  } catch {
-    throw new FeedbackSubmissionError(
-      'Feedback is unavailable in this deployment.',
-      'MISSING_SUPABASE_URL',
-    );
-  }
-}
-
 export async function submitFeedbackIssue(
   payload: FeedbackIssueRequest,
 ): Promise<FeedbackIssueSuccess> {
-  const functionUrl = getFeedbackFunctionUrl();
-  const anonKey = getSupabaseAnonKey();
-  const headers = buildSupabaseFunctionHeaders(anonKey);
-
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
   try {
-    const response = await fetch(functionUrl, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(payload),
-      signal: controller.signal,
-    });
+    const { data, error, response } = await invokeSupabaseFunction<FeedbackIssueResponse>(
+      'feedback-issue',
+      {
+        featureLabel: 'Feedback',
+        signal: controller.signal,
+        body: payload,
+      },
+    );
 
-    const data = (await response.json().catch(() => null)) as FeedbackIssueResponse | null;
-    const errorBody = data && !data.ok ? data : null;
+    if (error) {
+      if (controller.signal.aborted) {
+        throw new FeedbackSubmissionError(
+          'Feedback request timed out. Please try again.',
+          'TIMEOUT',
+        );
+      }
 
-    if (!response.ok || !data || !data.ok) {
-      const message = errorBody?.message || `Feedback request failed with HTTP ${response.status}`;
-      const code = errorBody?.code || `HTTP_${response.status}`;
+      const errorBody = (await readSupabaseFunctionError(
+        response,
+      )) as Partial<FeedbackIssueResponse>;
+      const message =
+        typeof errorBody.message === 'string'
+          ? errorBody.message
+          : `Feedback request failed with HTTP ${response?.status ?? 'unknown'}`;
+      const code =
+        typeof errorBody.code === 'string'
+          ? errorBody.code
+          : `HTTP_${response?.status ?? 'UNKNOWN'}`;
+      throw new FeedbackSubmissionError(message, code);
+    }
+
+    if (!data || !data.ok) {
+      const message = data?.message || 'Unknown feedback submission error';
+      const code = data?.code || 'REQUEST_FAILED';
       throw new FeedbackSubmissionError(message, code);
     }
 

@@ -1,15 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import {
   buildGlossaryURL,
   clearWPGlossaryCache,
   getCachedWPGlossaryLocales,
   hasGlossaryCache,
 } from './wp-fetcher';
-
-// Mock supabase-function-headers to avoid import.meta.env issues
-vi.mock('@/lib/supabase-function-headers', () => ({
-  buildSupabaseFunctionHeaders: vi.fn(() => ({ 'Content-Type': 'application/json' })),
-}));
 
 describe('buildGlossaryURL', () => {
   it('constructs the WordPress glossary URL for a locale', () => {

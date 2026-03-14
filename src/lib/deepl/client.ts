@@ -16,21 +16,16 @@ import type {
 } from './types';
 import { getDeepLSettings } from './settings';
 import { maskPlaceholders, unmaskPlaceholders } from './placeholder-mask';
-import { getSupabaseAnonKey, getSupabaseFunctionBaseUrl } from '@/lib/cloud-backend';
-import { buildSupabaseFunctionHeaders } from '@/lib/supabase-function-headers';
-
-/**
- * Get the Supabase function URL for DeepL translation
- */
-function getDefaultFunctionUrl(): string {
-  return `${getSupabaseFunctionBaseUrl('Translation')}/deepl-translate`;
-}
+import {
+  invokeSupabaseFunction,
+  readSupabaseFunctionError,
+  type InvokeSupabaseFunctionOptions,
+} from '@/lib/supabase/client';
 
 /** Default configuration */
-const DEFAULT_CONFIG: Omit<Required<DeepLClientConfig>, 'functionUrl'> & { functionUrl?: string } =
-  {
-    timeout: 30000,
-  };
+const DEFAULT_CONFIG: Omit<Required<DeepLClientConfig>, 'functionUrl'> = {
+  timeout: 30000,
+};
 
 /**
  * DeepL API client
@@ -46,8 +41,6 @@ const DEFAULT_CONFIG: Omit<Required<DeepLClientConfig>, 'functionUrl'> & { funct
  */
 export function createDeepLClient(config: DeepLClientConfig = {}) {
   const timeout = config.timeout ?? DEFAULT_CONFIG.timeout;
-  const functionUrl = config.functionUrl ?? getDefaultFunctionUrl();
-  const anonKey = getSupabaseAnonKey();
 
   /**
    * Make a request to the Edge Function
@@ -60,8 +53,6 @@ export function createDeepLClient(config: DeepLClientConfig = {}) {
     const settings = getDeepLSettings();
 
     try {
-      const headers = buildSupabaseFunctionHeaders(anonKey);
-
       // Include user's API key and type if configured
       const requestBody: Record<string, unknown> = {
         action,
@@ -73,21 +64,28 @@ export function createDeepLClient(config: DeepLClientConfig = {}) {
         requestBody.apiType = settings.apiType;
       }
 
-      const response = await fetch(functionUrl, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(requestBody),
+      const invokeOptions: InvokeSupabaseFunctionOptions = {
+        featureLabel: 'Translation',
         signal: controller.signal,
+      };
+
+      const { data, error, response } = await invokeSupabaseFunction<T>('deepl-translate', {
+        ...invokeOptions,
+        body: JSON.stringify(requestBody),
       });
 
-      if (!response.ok) {
-        const error: TranslateError = await response.json();
-        throw new Error(error.message || `Request failed: ${response.status}`);
+      if (error) {
+        if (controller.signal.aborted) {
+          throw new Error('Request timed out');
+        }
+
+        const payload = (await readSupabaseFunctionError(response)) as Partial<TranslateError>;
+        throw new Error(payload.message || `Request failed: ${response?.status ?? 'unknown'}`);
       }
 
-      return await response.json();
+      return data as T;
     } catch (error) {
-      if (error instanceof Error && error.name === 'AbortError') {
+      if (error instanceof Error && error.message === 'Request timed out') {
         throw new Error('Request timed out', { cause: error });
       }
       throw error;

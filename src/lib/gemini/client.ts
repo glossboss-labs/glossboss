@@ -1,6 +1,5 @@
 import { msgid } from '@/lib/app-language';
-import { getSupabaseAnonKey, getSupabaseFunctionBaseUrl } from '@/lib/cloud-backend';
-import { buildSupabaseFunctionHeaders } from '@/lib/supabase-function-headers';
+import { invokeSupabaseFunction, readSupabaseFunctionError } from '@/lib/supabase/client';
 import { getApplicableTerms } from '@/lib/glossary/enforcer';
 import { getGeminiSettings } from './settings';
 import { resolveGeminiContextExcerpts } from './context';
@@ -9,13 +8,7 @@ import type {
   ProviderTranslationResponse,
 } from '@/lib/translation/types';
 
-function getDefaultFunctionUrl(): string {
-  return `${getSupabaseFunctionBaseUrl('Translation')}/gemini-translate`;
-}
-
-export function createGeminiClient(functionUrl: string = getDefaultFunctionUrl()) {
-  const anonKey = getSupabaseAnonKey();
-
+export function createGeminiClient() {
   async function translate(
     request: ProviderTranslationRequest,
   ): Promise<ProviderTranslationResponse> {
@@ -37,29 +30,31 @@ export function createGeminiClient(functionUrl: string = getDefaultFunctionUrl()
           )
         : [];
 
-    const response = await fetch(functionUrl, {
-      method: 'POST',
-      headers: buildSupabaseFunctionHeaders(anonKey),
-      body: JSON.stringify({
-        text: request.text,
-        sourceLang: request.sourceLang,
-        targetLang: request.targetLang,
-        userApiKey: settings.apiKey,
-        modelId: settings.modelId,
-        glossaryEntries,
-        projectSlug: request.projectSlug,
-        contextExcerpts,
-      }),
-    });
+    const { data, error, response } = await invokeSupabaseFunction<ProviderTranslationResponse>(
+      'gemini-translate',
+      {
+        featureLabel: 'Translation',
+        body: {
+          text: request.text,
+          sourceLang: request.sourceLang,
+          targetLang: request.targetLang,
+          userApiKey: settings.apiKey,
+          modelId: settings.modelId,
+          glossaryEntries,
+          projectSlug: request.projectSlug,
+          contextExcerpts,
+        },
+      },
+    );
 
-    const payload = await response.json().catch(() => ({}));
-    if (!response.ok) {
+    if (error) {
+      const payload = await readSupabaseFunctionError(response);
       throw new Error(
-        typeof payload?.message === 'string' ? payload.message : msgid('Gemini translation failed'),
+        typeof payload.message === 'string' ? payload.message : msgid('Gemini translation failed'),
       );
     }
 
-    return payload as ProviderTranslationResponse;
+    return data as ProviderTranslationResponse;
   }
 
   async function testKey(): Promise<void> {

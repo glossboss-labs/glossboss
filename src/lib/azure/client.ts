@@ -1,6 +1,5 @@
 import { msgid } from '@/lib/app-language';
-import { getSupabaseAnonKey, getSupabaseFunctionBaseUrl } from '@/lib/cloud-backend';
-import { buildSupabaseFunctionHeaders } from '@/lib/supabase-function-headers';
+import { invokeSupabaseFunction, readSupabaseFunctionError } from '@/lib/supabase/client';
 import { getAzureSettings } from './settings';
 import type { SourceLanguage, TargetLanguage } from '@/lib/deepl/types';
 import type { ProviderTranslationResponse } from '@/lib/translation/types';
@@ -9,10 +8,6 @@ export interface AzureTranslateRequest {
   text: string | string[];
   sourceLang?: SourceLanguage;
   targetLang: TargetLanguage;
-}
-
-function getDefaultFunctionUrl(): string {
-  return `${getSupabaseFunctionBaseUrl('Translation')}/azure-translate`;
 }
 
 function mapAzureLanguageCode(language: SourceLanguage | TargetLanguage): string {
@@ -30,32 +25,32 @@ function mapAzureLanguageCode(language: SourceLanguage | TargetLanguage): string
   }
 }
 
-export function createAzureClient(functionUrl: string = getDefaultFunctionUrl()) {
-  const anonKey = getSupabaseAnonKey();
-
+export function createAzureClient() {
   async function translate(request: AzureTranslateRequest): Promise<ProviderTranslationResponse> {
     const settings = getAzureSettings();
-    const response = await fetch(functionUrl, {
-      method: 'POST',
-      headers: buildSupabaseFunctionHeaders(anonKey),
-      body: JSON.stringify({
-        text: request.text,
-        sourceLang: request.sourceLang ? mapAzureLanguageCode(request.sourceLang) : undefined,
-        targetLang: mapAzureLanguageCode(request.targetLang),
-        userApiKey: settings.apiKey,
-        userRegion: settings.region,
-        endpoint: settings.endpoint,
-      }),
-    });
+    const { data, error, response } = await invokeSupabaseFunction<ProviderTranslationResponse>(
+      'azure-translate',
+      {
+        featureLabel: 'Translation',
+        body: {
+          text: request.text,
+          sourceLang: request.sourceLang ? mapAzureLanguageCode(request.sourceLang) : undefined,
+          targetLang: mapAzureLanguageCode(request.targetLang),
+          userApiKey: settings.apiKey,
+          userRegion: settings.region,
+          endpoint: settings.endpoint,
+        },
+      },
+    );
 
-    const payload = await response.json().catch(() => ({}));
-    if (!response.ok) {
+    if (error) {
+      const payload = await readSupabaseFunctionError(response);
       throw new Error(
-        typeof payload?.message === 'string' ? payload.message : msgid('Azure translation failed'),
+        typeof payload.message === 'string' ? payload.message : msgid('Azure translation failed'),
       );
     }
 
-    return payload as ProviderTranslationResponse;
+    return data as ProviderTranslationResponse;
   }
 
   async function testKey(): Promise<void> {

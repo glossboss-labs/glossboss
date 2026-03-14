@@ -2,9 +2,8 @@
  * WordPress.org source browser and release fetch helpers.
  */
 import { debugInfo, debugWarn } from '@/lib/debug';
-import { getSupabaseAnonKey, getSupabaseFunctionBaseUrl } from '@/lib/cloud-backend';
 import { msgid } from '@/lib/app-language';
-import { buildSupabaseFunctionHeaders } from '@/lib/supabase-function-headers';
+import { invokeSupabaseFunction, readSupabaseFunctionError } from '@/lib/supabase/client';
 import { normalizeSourcePath, type WordPressProjectType } from '@/lib/wp-source/references';
 import {
   buildWordPressReleaseList,
@@ -130,24 +129,44 @@ async function tryFetchSource(
   };
 }
 
-function getEdgeFunctionUrl(): string {
-  return `${getSupabaseFunctionBaseUrl('WordPress source browsing')}/wp-source`;
-}
-
 async function fetchFromEdge(body: Record<string, unknown>): Promise<Response> {
-  const functionUrl = getEdgeFunctionUrl();
-  const anonKey = getSupabaseAnonKey();
-  const headers = buildSupabaseFunctionHeaders(anonKey);
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
 
   try {
-    return await fetch(functionUrl, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(body),
-      signal: controller.signal,
-    });
+    const { data, error, response } = await invokeSupabaseFunction<Response | string | Blob>(
+      'wp-source',
+      {
+        featureLabel: 'WordPress source browsing',
+        signal: controller.signal,
+        body,
+      },
+    );
+
+    if (error) {
+      if (response) {
+        return response;
+      }
+
+      if (controller.signal.aborted) {
+        throw new Error('Request timed out');
+      }
+
+      const payload = await readSupabaseFunctionError();
+      throw new Error(
+        typeof payload.message === 'string'
+          ? payload.message
+          : 'Failed to reach WordPress source backend.',
+      );
+    }
+
+    return (
+      response ??
+      new Response(JSON.stringify(data), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    );
   } finally {
     clearTimeout(timeoutId);
   }

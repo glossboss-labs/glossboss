@@ -1,6 +1,5 @@
 import { msgid } from '@/lib/app-language';
-import { getSupabaseAnonKey, getSupabaseFunctionBaseUrl } from '@/lib/cloud-backend';
-import { buildSupabaseFunctionHeaders } from '@/lib/supabase-function-headers';
+import { invokeSupabaseFunction, readSupabaseFunctionError } from '@/lib/supabase/client';
 import type { WordPressPluginTranslationTrack, WordPressProjectType } from './references';
 
 export interface WordPressProjectInfo {
@@ -117,31 +116,27 @@ export function buildWordPressTranslationExportUrl({
 export async function fetchWordPressTranslationFile(
   options: FetchWordPressTranslationFileOptions,
 ): Promise<string> {
-  const response = await fetch(
-    `${getSupabaseFunctionBaseUrl('WordPress source browsing')}/wp-source`,
-    {
-      method: 'POST',
-      headers: buildSupabaseFunctionHeaders(getSupabaseAnonKey()),
-      body: JSON.stringify({
-        projectType: options.projectType,
-        slug: options.slug,
-        locale: options.locale,
-        track: options.track ?? 'stable',
-        translationExport: true,
-      }),
+  const { data, error, response } = await invokeSupabaseFunction<{ content: string }>('wp-source', {
+    featureLabel: 'WordPress source browsing',
+    body: {
+      projectType: options.projectType,
+      slug: options.slug,
+      locale: options.locale,
+      track: options.track ?? 'stable',
+      translationExport: true,
     },
-  );
-  if (!response.ok) {
-    const data = await response.json().catch(() => ({}));
+  });
+
+  if (error) {
+    const payload = await readSupabaseFunctionError(response);
     throw new Error(
-      typeof data?.message === 'string'
-        ? data.message
+      typeof payload.message === 'string'
+        ? payload.message
         : msgid('WordPress.org did not return a translation export for the selected project.'),
     );
   }
 
-  const data = await response.json();
-  return data.content as string;
+  return data?.content ?? '';
 }
 
 export function buildWordPressReleaseList(releases: Array<string | null | undefined>): string[] {
