@@ -55,7 +55,9 @@ export const useAuthStore = create<AuthState & AuthActions>()((set) => ({
       set({ session: data.session, user: data.session?.user ?? null, loading: false });
     });
 
-    // Listen to auth state changes
+    // Listen to auth state changes.
+    // The session object includes provider_token from OAuth flows (e.g. GitHub),
+    // which is used by the GitHub raw URL resolver for private repo access.
     const {
       data: { subscription },
     } = client.auth.onAuthStateChange((_event, session) => {

@@ -34,6 +34,11 @@ import { debugError, debugLog } from '@/lib/debug';
 import type { SourceLanguage, TargetLanguage } from '@/lib/deepl/types';
 import { getBundledExamplePo } from '@/lib/example-po';
 import {
+  parseGitHubRawUrl,
+  fetchGitHubRawContent,
+  GitHubPrivateRepoError,
+} from '@/lib/github/raw-url';
+import {
   detectWordPressProject,
   fetchWordPressTranslationFile,
   type WordPressPluginTranslationTrack,
@@ -625,25 +630,36 @@ export function useIndexPageController() {
       setPendingUrl(null);
       clearUpstreamDeltaEntries();
 
-      let timeout: ReturnType<typeof setTimeout> | undefined;
       try {
-        const controller = new AbortController();
-        timeout = setTimeout(() => controller.abort(), 10_000);
-
-        const response = await fetch(url, { signal: controller.signal });
-
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-
-        const text = await response.text();
-
+        let text: string;
         let name = 'remote.po';
-        try {
-          const last = new URL(url).pathname.split('/').filter(Boolean).pop();
-          if (last && /\.(po|pot|json)$/i.test(last)) name = last;
-        } catch {
-          // Keep default filename when the URL is malformed.
+
+        // GitHub raw URLs: use the GitHub API for private repo support
+        const ghParsed = parseGitHubRawUrl(url);
+        if (ghParsed) {
+          text = await fetchGitHubRawContent(ghParsed);
+          const lastSegment = ghParsed.path.split('/').pop();
+          if (lastSegment && /\.(po|pot|json)$/i.test(lastSegment)) name = lastSegment;
+        } else {
+          // Generic URL fetch with timeout
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 10_000);
+          try {
+            const response = await fetch(url, { signal: controller.signal });
+            if (!response.ok) {
+              throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            text = await response.text();
+          } finally {
+            clearTimeout(timeout);
+          }
+
+          try {
+            const last = new URL(url).pathname.split('/').filter(Boolean).pop();
+            if (last && /\.(po|pot|json)$/i.test(last)) name = last;
+          } catch {
+            // Keep default filename when the URL is malformed.
+          }
         }
 
         const outcome = parseFileContent(text, name);
@@ -669,19 +685,20 @@ export function useIndexPageController() {
         setUrlInput('');
       } catch (error) {
         const message =
-          error instanceof DOMException && error.name === 'AbortError'
-            ? t('Request timed out. Try downloading the file and uploading it directly.')
-            : error instanceof TypeError
-              ? t(
-                  'Could not fetch the file. The server may not allow cross-origin requests. Try downloading the file and uploading it directly.',
-                )
-              : error instanceof Error
-                ? error.message
-                : t('Unknown error');
+          error instanceof GitHubPrivateRepoError
+            ? error.message
+            : error instanceof DOMException && error.name === 'AbortError'
+              ? t('Request timed out. Try downloading the file and uploading it directly.')
+              : error instanceof TypeError
+                ? t(
+                    'Could not fetch the file. The server may not allow cross-origin requests. Try downloading the file and uploading it directly.',
+                  )
+                : error instanceof Error
+                  ? error.message
+                  : t('Unknown error');
 
         setErrors([{ severity: 'error', code: 'INVALID_SYNTAX', message }]);
       } finally {
-        clearTimeout(timeout);
         setIsLoadingUrl(false);
       }
     },
