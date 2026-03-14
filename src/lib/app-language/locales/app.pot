@@ -681,6 +681,10 @@ msgstr ""
 msgid "DeepL usage:"
 msgstr ""
 
+#: src/components/projects/ProjectCard.tsx:80
+msgid "Delete"
+msgstr ""
+
 #: src/components/feedback/FeedbackModal.tsx:348
 msgid "Describe what you saw"
 msgstr ""
@@ -1790,6 +1794,10 @@ msgstr ""
 msgid "New line"
 msgstr ""
 
+#: src/pages/Dashboard.tsx:26
+msgid "New project"
+msgstr ""
+
 #: src/components/SettingsModal.tsx:166
 msgid "Next entry"
 msgstr ""
@@ -1853,6 +1861,10 @@ msgstr ""
 
 #: src/components/editor/WordPressProjectModal.tsx:323
 msgid "No matching slugs"
+msgstr ""
+
+#: src/pages/Dashboard.tsx:47
+msgid "No projects yet"
 msgstr ""
 
 #: src/components/editor/WordPressProjectModal.tsx:371
@@ -1955,12 +1967,22 @@ msgstr ""
 msgid "Only visible while running the app in development mode"
 msgstr ""
 
+#: src/pages/Dashboard.tsx:50
+msgid ""
+"Open a PO file in the editor and save it to the cloud to create your first p"
+"roject."
+msgstr ""
+
 #: src/components/repo-sync/CommitPanel.tsx:233
 msgid "Open a PR targeting {{branch}}"
 msgstr ""
 
 #: src/components/editor/EmptyState.tsx:143
 msgid "Open a locale file from a GitHub or GitLab repository"
+msgstr ""
+
+#: src/pages/Dashboard.tsx:53
+msgid "Open editor"
 msgstr ""
 
 #: src/components/editor/EditorHeader.tsx:353
@@ -2200,6 +2222,10 @@ msgstr ""
 
 #: src/components/editor/WordPressProjectModal.tsx:307
 msgid "Project type"
+msgstr ""
+
+#: src/pages/Dashboard.tsx:24
+msgid "Projects"
 msgstr ""
 
 #: src/components/feedback/FeedbackModal.tsx:390
@@ -3575,6 +3601,10 @@ msgstr ""
 
 #: src/components/feedback/FeedbackModal.tsx:419
 msgid "for details."
+msgstr ""
+
+#: src/components/projects/ProjectCard.tsx:99
+msgid "fuzzy"
 msgstr ""
 
 #: src/components/editor/EditorHeader.tsx:239

@@ -700,6 +700,10 @@ msgstr ""
 msgid "DeepL usage:"
 msgstr "DeepL usage:"
 
+#: src/components/projects/ProjectCard.tsx:80
+msgid "Delete"
+msgstr "Delete"
+
 #: src/components/feedback/FeedbackModal.tsx:348
 msgid "Describe what you saw"
 msgstr "Describe what you saw"
@@ -1848,6 +1852,10 @@ msgstr "Nepali"
 msgid "New line"
 msgstr "New line"
 
+#: src/pages/Dashboard.tsx:26
+msgid "New project"
+msgstr "New project"
+
 #: src/components/SettingsModal.tsx:166
 msgid "Next entry"
 msgstr "Next entry"
@@ -1912,6 +1920,10 @@ msgstr "No matching plural form"
 #: src/components/editor/WordPressProjectModal.tsx:323
 msgid "No matching slugs"
 msgstr "No matching slugs"
+
+#: src/pages/Dashboard.tsx:47
+msgid "No projects yet"
+msgstr "No projects yet"
 
 #: src/components/editor/WordPressProjectModal.tsx:371
 #: src/components/editor/WordPressRefreshModal.tsx:263
@@ -2013,6 +2025,14 @@ msgstr "Only include credentials on personal, trusted devices."
 msgid "Only visible while running the app in development mode"
 msgstr "Only visible while running the app in development mode"
 
+#: src/pages/Dashboard.tsx:50
+msgid ""
+"Open a PO file in the editor and save it to the cloud to create your first p"
+"roject."
+msgstr ""
+"Open a PO file in the editor and save it to the cloud to create your first p"
+"roject."
+
 #: src/components/repo-sync/CommitPanel.tsx:233
 msgid "Open a PR targeting {{branch}}"
 msgstr "Open a PR targeting {{branch}}"
@@ -2020,6 +2040,10 @@ msgstr "Open a PR targeting {{branch}}"
 #: src/components/editor/EmptyState.tsx:143
 msgid "Open a locale file from a GitHub or GitLab repository"
 msgstr "Open a locale file from a GitHub or GitLab repository"
+
+#: src/pages/Dashboard.tsx:53
+msgid "Open editor"
+msgstr "Open editor"
 
 #: src/components/editor/EditorHeader.tsx:353
 #: src/components/editor/EmptyState.tsx:138
@@ -2264,6 +2288,10 @@ msgstr "Project not found on WordPress.org."
 #: src/components/editor/WordPressProjectModal.tsx:307
 msgid "Project type"
 msgstr "Project type"
+
+#: src/pages/Dashboard.tsx:24
+msgid "Projects"
+msgstr "Projects"
 
 #: src/components/feedback/FeedbackModal.tsx:390
 msgid "Proposed solution"
@@ -3681,6 +3709,10 @@ msgstr "e.g. woocommerce"
 #: src/components/feedback/FeedbackModal.tsx:419
 msgid "for details."
 msgstr "for details."
+
+#: src/components/projects/ProjectCard.tsx:99
+msgid "fuzzy"
+msgstr "fuzzy"
 
 #: src/components/editor/EditorHeader.tsx:239
 msgid "i18next JSON (.json)"

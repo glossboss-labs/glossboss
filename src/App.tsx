@@ -7,9 +7,11 @@
  */
 import { Routes, Route } from 'react-router';
 import Index from '@/pages/Index';
+import Dashboard from '@/pages/Dashboard';
 import Login from '@/pages/auth/Login';
 import Signup from '@/pages/auth/Signup';
 import Callback from '@/pages/auth/Callback';
+import { AuthGuard } from '@/components/auth/AuthGuard';
 
 export default function App() {
   return (
@@ -19,6 +21,16 @@ export default function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/auth/callback" element={<Callback />} />
+
+      {/* Authenticated routes */}
+      <Route
+        path="/dashboard"
+        element={
+          <AuthGuard>
+            <Dashboard />
+          </AuthGuard>
+        }
+      />
     </Routes>
   );
 }
