@@ -42,8 +42,31 @@ jobs:
         with:
           version: 2.77.0
 
+      - name: Cache Supabase Docker images
+        uses: actions/cache@v4
+        with:
+          path: /tmp/supabase-docker
+          key: supabase-docker-${{ hashFiles('supabase/config.toml') }}
+          restore-keys: supabase-docker-
+
+      - name: Load cached Docker images
+        run: |
+          if ls /tmp/supabase-docker/*.tar 2>/dev/null; then
+            for img in /tmp/supabase-docker/*.tar; do
+              docker load -i "$img" || true
+            done
+          fi
+
       - name: Start local Supabase
         run: supabase start
+
+      - name: Save Docker images to cache
+        run: |
+          mkdir -p /tmp/supabase-docker
+          for img in $(docker images --format '{{.Repository}}:{{.Tag}}' | grep -E 'supabase|postgrest|gotrue|realtime|storage|pg_|studio|kong|logflare|vector|imgproxy'); do
+            name=$(echo "$img" | tr '/:' '__')
+            docker save "$img" -o "/tmp/supabase-docker/${name}.tar" || true
+          done
 
       - name: Reset local database from migrations
         run: supabase db reset --local --no-seed
