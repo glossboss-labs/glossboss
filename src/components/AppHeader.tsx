@@ -47,6 +47,8 @@ const appIcon = '/icon.svg';
 interface AppHeaderProps {
   /** Extra buttons rendered in the center section */
   actions?: ReactNode;
+  /** Cloud project ID — enables project export in settings Backup tab */
+  projectId?: string | null;
   /** Open repo sync modal (shows "Repository sync" in settings menu) */
   onOpenRepoSync?: () => void;
   /** Clear the editor and navigate away */
@@ -76,7 +78,7 @@ function ThemeToggle() {
   );
 }
 
-export function AppHeader({ actions, onOpenRepoSync, onClear }: AppHeaderProps) {
+export function AppHeader({ actions, projectId, onOpenRepoSync, onClear }: AppHeaderProps) {
   const { t } = useTranslation();
   const theme = useMantineTheme();
   const computedColorScheme = useComputedColorScheme('light');
@@ -281,6 +283,7 @@ export function AppHeader({ actions, onOpenRepoSync, onClear }: AppHeaderProps) 
         opened={settingsOpen}
         onClose={() => setSettingsOpen(false)}
         initialTab={settingsTab}
+        projectId={projectId}
       />
       <FeedbackModal opened={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
     </>

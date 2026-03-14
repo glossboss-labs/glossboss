@@ -108,6 +108,7 @@ import {
 } from '@/components/glossary/constants';
 import type { Glossary } from '@/lib/glossary/types';
 import { NAV_SKIP_TRANSLATED_KEY } from '@/components/editor/EditorTable';
+import { ExportSection } from '@/components/projects/ExportSection';
 import { CONTAINER_WIDTH_OPTIONS, type ContainerWidth } from '@/lib/container-width';
 import {
   applyAppSettingsFile,
@@ -277,6 +278,8 @@ interface SettingsModalProps {
   onClose: () => void;
   initialTab?: string;
   initialLocale?: string;
+  /** Cloud project ID — enables project export in Backup tab */
+  projectId?: string | null;
   onGlossaryLoaded?: (glossary: Glossary) => void;
   onGlossaryCleared?: () => void;
   onEnforcementChange?: (enabled: boolean) => void;
@@ -324,6 +327,7 @@ export function SettingsModal({
   onSpeechEnabledChange,
   translateEnabled = true,
   onTranslateEnabledChange,
+  projectId,
 }: SettingsModalProps) {
   const { language, setLanguage, t } = useTranslation();
   const themeSettings = useMantineTheme();
@@ -2510,6 +2514,8 @@ export function SettingsModal({
                   </Group>
                 </Stack>
               </Paper>
+
+              <ExportSection projectId={projectId} />
 
               {transferResult && (
                 <Alert

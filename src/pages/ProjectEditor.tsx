@@ -355,6 +355,7 @@ export default function ProjectEditor() {
   return (
     <Container size="xl" py="xl">
       <AppHeader
+        projectId={id}
         actions={
           <>
             <motion.div {...buttonStates}>
@@ -510,6 +511,7 @@ export default function ProjectEditor() {
         opened={settingsTab !== null}
         onClose={() => setSettingsTab(null)}
         initialTab={settingsTab ?? undefined}
+        projectId={id}
       />
     </Container>
   );
