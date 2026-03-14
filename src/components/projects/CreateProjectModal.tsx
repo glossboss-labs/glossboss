@@ -226,7 +226,11 @@ export function CreateProjectModal({ opened, onClose }: CreateProjectModalProps)
       handleClose();
       void navigate(`/projects/${project.id}`);
     } catch (err) {
-      setCreateError(err instanceof Error ? err.message : t('Failed to create project'));
+      const message =
+        err && typeof err === 'object' && 'message' in err
+          ? String((err as { message: string }).message)
+          : t('Failed to create project');
+      setCreateError(message);
       setCreating(false);
     }
   }, [createProject, handleClose, importedFile, navigate, projectName, t, user, visibility]);

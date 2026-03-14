@@ -74,7 +74,11 @@ export function SaveToCloudModal({ opened, onClose }: SaveToCloudModalProps) {
       onClose();
       void navigate(`/projects/${project.id}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('Failed to save project'));
+      const message =
+        err && typeof err === 'object' && 'message' in err
+          ? String((err as { message: string }).message)
+          : t('Failed to save project');
+      setError(message);
       setSaving(false);
     }
   }, [
