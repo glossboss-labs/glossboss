@@ -1936,7 +1936,7 @@ export default function Index() {
                       </Menu.Label>
                       <Menu.Item
                         component="a"
-                        href="https://github.com/lammersbjorn/glossboss"
+                        href="https://github.com/glossboss-labs/glossboss"
                         target="_blank"
                         rel="noopener noreferrer"
                         leftSection={<ExternalLink size={14} />}

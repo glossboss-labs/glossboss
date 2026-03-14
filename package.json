@@ -4,7 +4,7 @@
   "version": "1.2.0",
   "author": "Toine Rademacher and Bjorn Lammers",
   "license": "AGPL-3.0-only",
-  "repository": "https://github.com/lammersbjorn/glossboss.git",
+  "repository": "https://github.com/glossboss-labs/glossboss.git",
   "packageManager": "bun@1.3.8",
   "type": "module",
   "scripts": {

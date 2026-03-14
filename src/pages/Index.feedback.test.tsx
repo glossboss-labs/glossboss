@@ -128,7 +128,7 @@ describe('Index feedback and empty state actions', () => {
       expect(screen.getByText('Source')).toBeInTheDocument();
     });
     const sourceLink = screen.getByText('Source').closest('a');
-    expect(sourceLink).toHaveAttribute('href', 'https://github.com/lammersbjorn/glossboss');
+    expect(sourceLink).toHaveAttribute('href', 'https://github.com/glossboss-labs/glossboss');
     const licenseLink = screen.getByText('License').closest('a');
     expect(licenseLink).toHaveAttribute('href', '/license/');
     const translateLink = screen.getByText('Translate').closest('a');

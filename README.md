@@ -4,9 +4,9 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/lammersbjorn/glossboss/actions/workflows/ci.yml"><img src="https://github.com/lammersbjorn/glossboss/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
-  <a href="https://github.com/lammersbjorn/glossboss/actions/workflows/cloudflare-pages.yml"><img src="https://github.com/lammersbjorn/glossboss/actions/workflows/cloudflare-pages.yml/badge.svg" alt="Deploy" /></a>
-  <a href="https://github.com/lammersbjorn/glossboss/blob/main/LICENSE"><img src="https://img.shields.io/github/license/lammersbjorn/glossboss" alt="License" /></a>
+  <a href="https://github.com/glossboss-labs/glossboss/actions/workflows/ci.yml"><img src="https://github.com/glossboss-labs/glossboss/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
+  <a href="https://github.com/glossboss-labs/glossboss/actions/workflows/cloudflare-pages.yml"><img src="https://github.com/glossboss-labs/glossboss/actions/workflows/cloudflare-pages.yml/badge.svg" alt="Deploy" /></a>
+  <a href="https://github.com/glossboss-labs/glossboss/blob/main/LICENSE"><img src="https://img.shields.io/github/license/glossboss-labs/glossboss" alt="License" /></a>
 </p>
 
 ---
