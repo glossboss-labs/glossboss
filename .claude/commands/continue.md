@@ -77,14 +77,16 @@ After completing work:
 - **Supabase access token**: stored in GitHub secret `SUPABASE_ACCESS_TOKEN`
 - **Edge function deploy**: `SUPABASE_ACCESS_TOKEN=<token> bunx supabase functions deploy --project-ref aejlzcovdxwwlkreohak`
 
-## Phase dependency order
+## Determining work order
 
-```
-Phase -1 (Done) -> Phase 0 (Foundation) -> Phase 1 (Auth) -> Phase 2 (Cloud Projects)
-                                                                  |-> Phase 3 (Teams) -> Phase 4 (Realtime)
-                                                                  |                   -> Phase 5 (Public)
-                                                                  |-> Phase 6 (Notifications)
-                                                                  |-> Phase 7 (Monetization)
-```
+Do NOT rely on a dynamic work order logic
 
-Always work on the lowest-numbered unfinished phase that has its dependencies met.
+1. Read every open issue's labels and body from the project board (gathered in Step 1).
+2. Look for explicit dependency references in issue bodies (e.g., "depends on #3", "blocked by #6", "requires Phase 1").
+3. If an issue has unchecked prerequisites or depends on an open issue, it is **blocked**.
+4. Among unblocked issues, prioritize by:
+   - Issues already marked "In Progress" first
+   - Then the lowest issue number (earlier phases before later ones)
+5. If the plan has changed (new issues added, issues removed, scope revised), adapt accordingly — the project board is the source of truth, not any static plan.
+
+Phases and plans can be added, removed, reordered, or split at any time. Always derive next steps from the live state of the project board.
