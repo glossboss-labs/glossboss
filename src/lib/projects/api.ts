@@ -28,13 +28,24 @@ function supabase() {
 // ── Projects ─────────────────────────────────────────────────
 
 export async function listProjects(): Promise<ProjectWithLanguages[]> {
-  const { data, error } = await supabase()
+  // Try joined query first; fall back to projects-only if PostgREST
+  // schema cache hasn't picked up the project_languages relationship yet.
+  const joined = await supabase()
     .from('projects')
     .select('*, project_languages(*)')
     .order('updated_at', { ascending: false });
 
+  if (!joined.error) {
+    return (joined.data ?? []) as ProjectWithLanguages[];
+  }
+
+  const { data, error } = await supabase()
+    .from('projects')
+    .select('*')
+    .order('updated_at', { ascending: false });
+
   if (error) throw error;
-  return (data ?? []) as ProjectWithLanguages[];
+  return (data ?? []).map((p) => ({ ...p, project_languages: [] }) as ProjectWithLanguages);
 }
 
 export async function getProject(id: string): Promise<ProjectRow | null> {
