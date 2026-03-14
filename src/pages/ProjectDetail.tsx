@@ -215,7 +215,7 @@ export default function ProjectDetail() {
 
   if (error || !project) {
     return (
-      <Container size="lg" py="xl">
+      <Container size="xl" py="xl">
         <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
           <Alert icon={<AlertCircle size={16} />} color="red" variant="light">
             {error ?? t('Project not found')}
@@ -231,7 +231,7 @@ export default function ProjectDetail() {
   const VisIcon = VISIBILITY_ICON[project.visibility] ?? Globe;
 
   return (
-    <Container size="lg" py="xl">
+    <Container size="xl" py="xl">
       <AppHeader />
       <MotionDiv variants={sectionVariants} initial="hidden" animate="visible">
         <Stack gap="lg">

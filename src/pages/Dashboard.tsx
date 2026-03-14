@@ -85,7 +85,7 @@ export default function Dashboard() {
   ];
 
   return (
-    <Container size="lg" py="xl">
+    <Container size="xl" py="xl">
       <AppHeader />
       <MotionDiv variants={sectionVariants} initial="hidden" animate="visible">
         <Group justify="space-between" mb="xl">

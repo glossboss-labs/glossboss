@@ -16,15 +16,29 @@ export interface StorageAdapter extends StateStorage {
   readonly type: StorageAdapterType;
 }
 
-/** Active adapter instance — defaults to localStorage via init in index.ts */
+/** Lazy fallback — used if getStorageAdapter() is called before setStorageAdapter() */
+let fallbackAdapter: StorageAdapter | null = null;
+
+/** Active adapter instance — defaults to localStorage via init in main.tsx */
 let activeAdapter: StorageAdapter | null = null;
 
-/** Get the active storage adapter. Throws if called before initialization. */
+/** Get the active storage adapter. Falls back to LocalStorageAdapter if not yet initialized. */
 export function getStorageAdapter(): StorageAdapter {
-  if (!activeAdapter) {
-    throw new Error('StorageAdapter not initialized — call setStorageAdapter() first');
+  if (activeAdapter) return activeAdapter;
+
+  // Zustand persist may call getItem() during module-scope store creation,
+  // before main.tsx has a chance to call setStorageAdapter(). Return a
+  // fallback adapter so rehydration can proceed.
+  if (!fallbackAdapter) {
+    // Lazy import to avoid circular dependency
+    fallbackAdapter = {
+      type: 'local' as const,
+      getItem: (name: string) => localStorage.getItem(name),
+      setItem: (name: string, value: string) => localStorage.setItem(name, value),
+      removeItem: (name: string) => localStorage.removeItem(name),
+    };
   }
-  return activeAdapter;
+  return fallbackAdapter;
 }
 
 /** Set the active storage adapter */

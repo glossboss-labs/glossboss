@@ -311,7 +311,7 @@ export default function ProjectEditor() {
 
   if (error || !project || !language) {
     return (
-      <Container size="lg" py="xl">
+      <Container size="xl" py="xl">
         <Alert icon={<AlertCircle size={16} />} color="red" variant="light">
           {error ?? t('Project not found')}
         </Alert>
