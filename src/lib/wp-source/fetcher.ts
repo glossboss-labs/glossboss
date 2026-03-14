@@ -152,7 +152,7 @@ async function fetchFromEdge(body: Record<string, unknown>): Promise<Response> {
         throw new Error('Request timed out');
       }
 
-      const payload = await readSupabaseFunctionError();
+      const payload = await readSupabaseFunctionError(response);
       throw new Error(
         typeof payload.message === 'string'
           ? payload.message
