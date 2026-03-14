@@ -1,0 +1,2 @@
+-- Intentionally empty.
+-- Seed data starts once the authenticated SaaS schema exists.

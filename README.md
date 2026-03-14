@@ -29,15 +29,25 @@ Requires [Bun](https://bun.sh/) v1.3+.
 
 ```bash
 bun install --frozen-lockfile
-cp .env.example .env          # then fill in the values below
+cp .env.example .env.local
+bun run supabase:start
+# then fill in VITE_SUPABASE_ANON_KEY from `bunx supabase status -o env`
 bun run dev
 ```
 
 ```bash
-VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_ANON_KEY=your-anon-key
+VITE_SUPABASE_URL=http://127.0.0.1:54321
+VITE_SUPABASE_ANON_KEY=your-local-anon-key
 VITE_TURNSTILE_SITE_KEY=your-cloudflare-turnstile-site-key
 ```
+
+Environment templates:
+
+- `.env.local` for `supabase start` local development
+- `.env.staging` for the hosted staging project, using [.env.staging.example](.env.staging.example)
+- `.env.production` for the hosted production project, using [.env.production.example](.env.production.example)
+
+Real environment files stay untracked. Only the example templates are committed.
 
 Run `bun run` to see all available scripts.
 
@@ -45,13 +55,29 @@ Run `bun run` to see all available scripts.
 
 ### Frontend — Cloudflare Pages
 
-`.github/workflows/cloudflare-pages.yml` deploys the Vite build: `main` → production, pull requests → preview branches.
+`.github/workflows/cloudflare-pages.yml` deploys the Vite build to the `glossboss-dev` Cloudflare Pages project: `main` updates the protected dev environment, pull requests get preview branches.
 
 **Required GitHub repository secrets:** `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`, `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_TURNSTILE_SITE_KEY`
 
+### Database migrations — staging before production
+
+`.github/workflows/supabase-database.yml` validates migrations locally on every PR/push that touches `supabase/migrations/**`, pushes them to staging on `main`, and supports an explicit production promotion via manual dispatch after staging succeeds.
+
+**Required GitHub repository secrets:**
+
+| Secret                            | Purpose                                           |
+| --------------------------------- | ------------------------------------------------- |
+| `SUPABASE_ACCESS_TOKEN`           | Supabase management API token                     |
+| `SUPABASE_STAGING_PROJECT_REF`    | Hosted staging project reference                  |
+| `SUPABASE_STAGING_DB_PASSWORD`    | Hosted staging Postgres password                  |
+| `SUPABASE_PRODUCTION_PROJECT_REF` | Hosted production project reference for promotion |
+| `SUPABASE_PRODUCTION_DB_PASSWORD` | Hosted production Postgres password for promotion |
+
+`SUPABASE_PROJECT_REF` is still accepted as a staging fallback for older edge-function deploy setups.
+
 ### Backend — Supabase Edge Functions
 
-Edge functions proxy external services and keep server-managed secrets out of the browser. `.github/workflows/supabase-functions.yml` auto-deploys when files under `supabase/functions/` change on `main`.
+Edge functions proxy external services and keep server-managed secrets out of the browser. `.github/workflows/supabase-functions.yml` deploys to staging on `main` and can promote the same function set to production via manual dispatch.
 
 <details>
 <summary><strong>Supabase secrets reference</strong></summary>
@@ -84,10 +110,11 @@ Edge functions proxy external services and keep server-managed secrets out of th
 
 **GitHub repository secrets for CI deploy:**
 
-| Secret                  | Purpose                       |
-| ----------------------- | ----------------------------- |
-| `SUPABASE_ACCESS_TOKEN` | Supabase management API token |
-| `SUPABASE_PROJECT_REF`  | Supabase project reference    |
+| Secret                            | Purpose                       |
+| --------------------------------- | ----------------------------- |
+| `SUPABASE_ACCESS_TOKEN`           | Supabase management API token |
+| `SUPABASE_STAGING_PROJECT_REF`    | Staging project reference     |
+| `SUPABASE_PRODUCTION_PROJECT_REF` | Production project reference  |
 
 </details>
 

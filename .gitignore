@@ -1,6 +1,8 @@
 node_modules
 dist
 .env
+.env.staging
+.env.production
 *.local
 .DS_Store
 supabase/.temp/

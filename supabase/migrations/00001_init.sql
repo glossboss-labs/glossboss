@@ -1,0 +1,2 @@
+-- Baseline migration for the SaaS-era Supabase project structure.
+-- Subsequent phases add concrete tables, policies, and triggers.

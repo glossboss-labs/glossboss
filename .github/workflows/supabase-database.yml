@@ -1,0 +1,128 @@
+name: Supabase Database
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'supabase/config.toml'
+      - 'supabase/migrations/**'
+      - 'supabase/seed.sql'
+      - '.github/workflows/supabase-database.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/config.toml'
+      - 'supabase/migrations/**'
+      - 'supabase/seed.sql'
+      - '.github/workflows/supabase-database.yml'
+  workflow_dispatch:
+    inputs:
+      deploy_production:
+        description: 'Also promote the current migration set to production after staging succeeds'
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: supabase-database-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-local:
+    name: Validate Local Migrations
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: 2.77.0
+
+      - name: Start local Supabase
+        run: supabase start
+
+      - name: Reset local database from migrations
+        run: supabase db reset --local --no-seed
+
+      - name: Lint local database
+        run: supabase db lint --local --fail-on error
+
+  deploy-staging:
+    name: Deploy Migrations To Staging
+    needs: validate-local
+    if: github.event_name != 'pull_request' && secrets.SUPABASE_ACCESS_TOKEN != '' && (secrets.SUPABASE_STAGING_PROJECT_REF != '' || secrets.SUPABASE_PROJECT_REF != '') && secrets.SUPABASE_STAGING_DB_PASSWORD != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_STAGING_PROJECT_REF: ${{ secrets.SUPABASE_STAGING_PROJECT_REF || secrets.SUPABASE_PROJECT_REF }}
+      SUPABASE_STAGING_DB_PASSWORD: ${{ secrets.SUPABASE_STAGING_DB_PASSWORD }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: 2.77.0
+
+      - name: Link staging project
+        run: supabase link --project-ref "$SUPABASE_STAGING_PROJECT_REF" --password "$SUPABASE_STAGING_DB_PASSWORD"
+
+      - name: Push migrations to staging
+        run: supabase db push --linked --include-all -p "$SUPABASE_STAGING_DB_PASSWORD"
+
+  staging-secrets-missing:
+    name: Staging Secrets Missing
+    needs: validate-local
+    if: github.event_name != 'pull_request' && !(secrets.SUPABASE_ACCESS_TOKEN != '' && (secrets.SUPABASE_STAGING_PROJECT_REF != '' || secrets.SUPABASE_PROJECT_REF != '') && secrets.SUPABASE_STAGING_DB_PASSWORD != '')
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+
+    steps:
+      - name: Summarize skipped staging deploy
+        run: |
+          echo "::warning::Skipping staging migration deploy because SUPABASE_ACCESS_TOKEN, SUPABASE_STAGING_PROJECT_REF (or SUPABASE_PROJECT_REF), and/or SUPABASE_STAGING_DB_PASSWORD are not configured."
+          {
+            echo "## Staging Deploy Skipped"
+            echo ""
+            echo "Configure \`SUPABASE_ACCESS_TOKEN\`, \`SUPABASE_STAGING_PROJECT_REF\` (or legacy \`SUPABASE_PROJECT_REF\`), and \`SUPABASE_STAGING_DB_PASSWORD\` to enable automatic staging migration pushes."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  deploy-production:
+    name: Deploy Migrations To Production
+    needs: deploy-staging
+    if: github.event_name == 'workflow_dispatch' && inputs.deploy_production
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_PRODUCTION_PROJECT_REF: ${{ secrets.SUPABASE_PRODUCTION_PROJECT_REF }}
+      SUPABASE_PRODUCTION_DB_PASSWORD: ${{ secrets.SUPABASE_PRODUCTION_DB_PASSWORD }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Validate production deployment secrets
+        run: |
+          if [ -z "$SUPABASE_ACCESS_TOKEN" ] || [ -z "$SUPABASE_PRODUCTION_PROJECT_REF" ] || [ -z "$SUPABASE_PRODUCTION_DB_PASSWORD" ]; then
+            echo "::error::Missing SUPABASE_ACCESS_TOKEN, SUPABASE_PRODUCTION_PROJECT_REF, and/or SUPABASE_PRODUCTION_DB_PASSWORD."
+            exit 1
+          fi
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: 2.77.0
+
+      - name: Link production project
+        run: supabase link --project-ref "$SUPABASE_PRODUCTION_PROJECT_REF" --password "$SUPABASE_PRODUCTION_DB_PASSWORD"
+
+      - name: Push migrations to production
+        run: supabase db push --linked --include-all -p "$SUPABASE_PRODUCTION_DB_PASSWORD"
