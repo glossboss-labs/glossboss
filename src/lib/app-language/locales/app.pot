@@ -604,7 +604,7 @@ msgstr ""
 msgid "Conventional commit prefix prepended to commit messages, e.g. fix(i18n):"
 msgstr ""
 
-#: src/pages/index/useIndexPageController.ts:675
+#: src/pages/index/useIndexPageController.ts:693
 msgid ""
 "Could not fetch the file. The server may not allow cross-origin requests. Tr"
 "y downloading the file and uploading it directly."
@@ -1067,11 +1067,11 @@ msgstr ""
 msgid "Failed to open the WordPress project."
 msgstr ""
 
-#: src/pages/index/useIndexPageController.ts:1045
+#: src/pages/index/useIndexPageController.ts:1062
 msgid "Failed to open the WordPress.org project."
 msgstr ""
 
-#: src/pages/index/useIndexPageController.ts:935
+#: src/pages/index/useIndexPageController.ts:952
 msgid "Failed to parse POT file"
 msgstr ""
 
@@ -1469,7 +1469,7 @@ msgstr ""
 msgid "Interface language"
 msgstr ""
 
-#: src/pages/index/useIndexPageController.ts:817
+#: src/pages/index/useIndexPageController.ts:834
 msgid "Invalid file type: .{{ext}}. Please drop a .po, .pot, or .json file."
 msgstr ""
 
@@ -1878,7 +1878,7 @@ msgstr ""
 msgid "No entries match the current filters."
 msgstr ""
 
-#: src/pages/index/useIndexPageController.ts:803
+#: src/pages/index/useIndexPageController.ts:820
 msgid "No file was dropped"
 msgstr ""
 
@@ -2138,7 +2138,7 @@ msgstr ""
 msgid "Please complete all required feature fields."
 msgstr ""
 
-#: src/pages/index/useIndexPageController.ts:808
+#: src/pages/index/useIndexPageController.ts:825
 msgid "Please drop only one file at a time"
 msgstr ""
 
@@ -2478,7 +2478,7 @@ msgstr ""
 msgid "Request changes selected"
 msgstr ""
 
-#: src/pages/index/useIndexPageController.ts:673
+#: src/pages/index/useIndexPageController.ts:691
 msgid "Request timed out. Try downloading the file and uploading it directly."
 msgstr ""
 
@@ -3094,11 +3094,11 @@ msgstr ""
 msgid "Thanks. Issue #{issueNumber} was created."
 msgstr ""
 
-#: src/pages/index/useIndexPageController.ts:698
+#: src/pages/index/useIndexPageController.ts:715
 msgid "The URL must start with https://"
 msgstr ""
 
-#: src/pages/index/useIndexPageController.ts:412
+#: src/pages/index/useIndexPageController.ts:417
 msgid "The WordPress.org translation export could not be parsed."
 msgstr ""
 
@@ -3343,7 +3343,7 @@ msgstr ""
 
 #: src/components/SettingsModal.tsx:1196
 #: src/components/editor/GlossaryPanel.tsx:199
-#: src/pages/index/useIndexPageController.ts:680
+#: src/pages/index/useIndexPageController.ts:698
 msgid "Unknown error"
 msgstr ""
 
@@ -3616,7 +3616,7 @@ msgstr ""
 msgid "WordPress.org did not return a translation export for the selected project."
 msgstr ""
 
-#: src/pages/index/useIndexPageController.ts:463
+#: src/pages/index/useIndexPageController.ts:468
 msgid "WordPress.org refresh"
 msgstr ""
 

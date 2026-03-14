@@ -608,7 +608,7 @@ msgstr "Bepaalt de toon van DeepL-vertalingen. Niet alle talen ondersteunen dit.
 msgid "Conventional commit prefix prepended to commit messages, e.g. fix(i18n):"
 msgstr ""
 
-#: src/pages/index/useIndexPageController.ts:675
+#: src/pages/index/useIndexPageController.ts:693
 msgid ""
 "Could not fetch the file. The server may not allow cross-origin requests. Tr"
 "y downloading the file and uploading it directly."
@@ -1086,11 +1086,11 @@ msgstr ""
 msgid "Failed to open the WordPress project."
 msgstr ""
 
-#: src/pages/index/useIndexPageController.ts:1045
+#: src/pages/index/useIndexPageController.ts:1062
 msgid "Failed to open the WordPress.org project."
 msgstr ""
 
-#: src/pages/index/useIndexPageController.ts:935
+#: src/pages/index/useIndexPageController.ts:952
 msgid "Failed to parse POT file"
 msgstr "POT-bestand verwerken mislukt"
 
@@ -1498,7 +1498,7 @@ msgstr "Voeg een nieuwe regel toe in de vertaling"
 msgid "Interface language"
 msgstr "Interfacetaal"
 
-#: src/pages/index/useIndexPageController.ts:817
+#: src/pages/index/useIndexPageController.ts:834
 msgid "Invalid file type: .{{ext}}. Please drop a .po, .pot, or .json file."
 msgstr "Ongeldig bestandstype: .{{ext}}. Sleep een .po-, .pot- of .json-bestand."
 
@@ -1911,7 +1911,7 @@ msgstr "Geen context"
 msgid "No entries match the current filters."
 msgstr "Geen items komen overeen met de huidige filters."
 
-#: src/pages/index/useIndexPageController.ts:803
+#: src/pages/index/useIndexPageController.ts:820
 msgid "No file was dropped"
 msgstr "Er is geen bestand gesleept"
 
@@ -2174,7 +2174,7 @@ msgstr "Vul alle verplichte velden voor de bug in."
 msgid "Please complete all required feature fields."
 msgstr "Vul alle verplichte velden voor de functie in."
 
-#: src/pages/index/useIndexPageController.ts:808
+#: src/pages/index/useIndexPageController.ts:825
 msgid "Please drop only one file at a time"
 msgstr "Sleep slechts één bestand tegelijk"
 
@@ -2514,7 +2514,7 @@ msgstr ""
 msgid "Request changes selected"
 msgstr ""
 
-#: src/pages/index/useIndexPageController.ts:673
+#: src/pages/index/useIndexPageController.ts:691
 msgid "Request timed out. Try downloading the file and uploading it directly."
 msgstr ""
 "De verbinding is verlopen. Probeer het bestand te downloaden en direct te up"
@@ -3138,11 +3138,11 @@ msgstr "Thais"
 msgid "Thanks. Issue #{issueNumber} was created."
 msgstr "Bedankt. Issue #{issueNumber} is aangemaakt."
 
-#: src/pages/index/useIndexPageController.ts:698
+#: src/pages/index/useIndexPageController.ts:715
 msgid "The URL must start with https://"
 msgstr "De URL moet beginnen met https://"
 
-#: src/pages/index/useIndexPageController.ts:412
+#: src/pages/index/useIndexPageController.ts:417
 msgid "The WordPress.org translation export could not be parsed."
 msgstr ""
 
@@ -3393,7 +3393,7 @@ msgstr ""
 
 #: src/components/SettingsModal.tsx:1196
 #: src/components/editor/GlossaryPanel.tsx:199
-#: src/pages/index/useIndexPageController.ts:680
+#: src/pages/index/useIndexPageController.ts:698
 msgid "Unknown error"
 msgstr "Onbekende fout"
 
@@ -3680,7 +3680,7 @@ msgstr "WordPress-broncode bekijken is niet beschikbaar in deze installatie."
 msgid "WordPress.org did not return a translation export for the selected project."
 msgstr ""
 
-#: src/pages/index/useIndexPageController.ts:463
+#: src/pages/index/useIndexPageController.ts:468
 msgid "WordPress.org refresh"
 msgstr ""
 
