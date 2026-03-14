@@ -2,17 +2,18 @@
  * Dashboard — project list for authenticated users.
  */
 
-import { useEffect } from 'react';
-import { Link } from 'react-router';
+import { useEffect, useState } from 'react';
 import { Container, Title, Group, Button, Text, Center, Loader, Alert, Stack } from '@mantine/core';
 import { Plus, AlertCircle, FolderOpen } from 'lucide-react';
 import { useTranslation } from '@/lib/app-language';
 import { useProjectsStore } from '@/stores/projects-store';
 import { ProjectGrid } from '@/components/projects/ProjectGrid';
+import { CreateProjectModal } from '@/components/projects/CreateProjectModal';
 
 export default function Dashboard() {
   const { t } = useTranslation();
   const { projects, loading, error, fetchProjects, deleteProject } = useProjectsStore();
+  const [createModalOpen, setCreateModalOpen] = useState(false);
 
   useEffect(() => {
     void fetchProjects();
@@ -22,7 +23,7 @@ export default function Dashboard() {
     <Container size="lg" py="xl">
       <Group justify="space-between" mb="xl">
         <Title order={2}>{t('Projects')}</Title>
-        <Button component={Link} to="/" leftSection={<Plus size={16} />}>
+        <Button leftSection={<Plus size={16} />} onClick={() => setCreateModalOpen(true)}>
           {t('New project')}
         </Button>
       </Group>
@@ -47,12 +48,10 @@ export default function Dashboard() {
               {t('No projects yet')}
             </Text>
             <Text c="dimmed" size="sm" maw={360} ta="center">
-              {t(
-                'Open a PO file in the editor and save it to the cloud to create your first project.',
-              )}
+              {t('Create a cloud project from a PO file, a WordPress.org export, or a repository.')}
             </Text>
-            <Button component={Link} to="/" variant="light">
-              {t('Open editor')}
+            <Button variant="light" onClick={() => setCreateModalOpen(true)}>
+              {t('New project')}
             </Button>
           </Stack>
         </Center>
@@ -61,6 +60,8 @@ export default function Dashboard() {
       {!loading && projects.length > 0 && (
         <ProjectGrid projects={projects} onDelete={deleteProject} />
       )}
+
+      <CreateProjectModal opened={createModalOpen} onClose={() => setCreateModalOpen(false)} />
     </Container>
   );
 }

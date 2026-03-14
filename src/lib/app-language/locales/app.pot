@@ -59,7 +59,7 @@ msgstr ""
 msgid "Action"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:348
+#: src/components/editor/EditorHeader.tsx:392
 msgid "Actions"
 msgstr ""
 
@@ -212,6 +212,14 @@ msgstr ""
 msgid "Azure translation failed"
 msgstr ""
 
+#: src/components/projects/CreateProjectModal.tsx:393
+msgid "Back"
+msgstr ""
+
+#: src/pages/ProjectEditor.tsx:191
+msgid "Back to dashboard"
+msgstr ""
+
 #: src/components/repo-sync/RepoSyncModal.tsx:786
 msgid "Back to detected files"
 msgstr ""
@@ -221,7 +229,7 @@ msgid "Back to listing"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:1322
-#: src/components/editor/EditorHeader.tsx:246
+#: src/components/editor/EditorHeader.tsx:258
 msgid "Backup"
 msgstr ""
 
@@ -258,8 +266,13 @@ msgid "Branch:"
 msgstr ""
 
 #: src/components/editor/EditorTable.tsx:3156
+#: src/components/projects/CreateProjectModal.tsx:298
 #: src/components/repo-sync/RepoSyncModal.tsx:408
 msgid "Browse"
+msgstr ""
+
+#: src/components/projects/CreateProjectModal.tsx:340
+msgid "Browse a GitHub or GitLab repository"
 msgstr ""
 
 #: src/components/repo-sync/RepoSyncModal.tsx:646
@@ -293,6 +306,7 @@ msgstr ""
 #: src/components/editor/WordPressProjectModal.tsx:410
 #: src/components/editor/WordPressRefreshModal.tsx:335
 #: src/components/feedback/FeedbackModal.tsx:480
+#: src/components/projects/SaveToCloudModal.tsx:136
 #: src/components/ui/ConfirmModal.tsx:38
 #: src/components/ui/PromptModal.tsx:34
 msgid "Cancel"
@@ -364,6 +378,10 @@ msgstr ""
 msgid "Choose a slug and locale before opening a project."
 msgstr ""
 
+#: src/components/projects/CreateProjectModal.tsx:254
+msgid "Choose a source to create your cloud project from."
+msgstr ""
+
 #: src/components/editor/HeaderEditor.tsx:501
 msgid "Choose the WordPress project type and slug used for source links."
 msgstr ""
@@ -402,15 +420,15 @@ msgstr ""
 msgid "Clear active source reference"
 msgstr ""
 
-#: src/pages/index/IndexPageDialogs.tsx:173
+#: src/pages/index/IndexPageDialogs.tsx:179
 msgid "Clear anyway"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:364
+#: src/components/editor/EditorHeader.tsx:408
 msgid "Clear editor"
 msgstr ""
 
-#: src/pages/index/IndexPageDialogs.tsx:170
+#: src/pages/index/IndexPageDialogs.tsx:176
 msgid "Clear editor?"
 msgstr ""
 
@@ -458,7 +476,7 @@ msgstr ""
 msgid "Click to show only {{label}}"
 msgstr ""
 
-#: src/pages/index/IndexPageDialogs.tsx:274
+#: src/pages/index/IndexPageDialogs.tsx:280
 msgid "Close QA summary"
 msgstr ""
 
@@ -506,6 +524,10 @@ msgstr ""
 
 #: src/components/repo-sync/RepoSyncModal.tsx:727
 msgid "Commit prefix"
+msgstr ""
+
+#: src/components/projects/CreateProjectModal.tsx:248
+msgid "Configure"
 msgstr ""
 
 #: src/components/ui/SpeakButton.tsx:41
@@ -582,10 +604,16 @@ msgstr ""
 msgid "Conventional commit prefix prepended to commit messages, e.g. fix(i18n):"
 msgstr ""
 
-#: src/pages/index/useIndexPageController.ts:744
+#: src/pages/index/useIndexPageController.ts:675
 msgid ""
 "Could not fetch the file. The server may not allow cross-origin requests. Tr"
 "y downloading the file and uploading it directly."
+msgstr ""
+
+#: src/pages/Dashboard.tsx:51
+msgid ""
+"Create a cloud project from a PO file, a WordPress.org export, or a reposito"
+"ry."
 msgstr ""
 
 #: src/components/repo-sync/CommitPanel.tsx:210
@@ -615,6 +643,10 @@ msgstr ""
 
 #: src/pages/auth/Login.tsx:65
 msgid "Create one"
+msgstr ""
+
+#: src/components/projects/CreateProjectModal.tsx:401
+msgid "Create project"
 msgstr ""
 
 #: src/components/repo-sync/CommitPanel.tsx:232
@@ -665,8 +697,8 @@ msgstr ""
 msgid "Danish"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:59
-#: src/components/editor/EditorHeader.tsx:339
+#: src/components/editor/EditorHeader.tsx:63
+#: src/components/editor/EditorHeader.tsx:383
 msgid "Dark mode"
 msgstr ""
 
@@ -736,23 +768,24 @@ msgstr ""
 msgid "Don't have an account?"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:194
+#: src/components/editor/EditorHeader.tsx:206
+#: src/pages/ProjectEditor.tsx:233
 msgid "Download"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:185
+#: src/components/editor/EditorHeader.tsx:197
 msgid "Download (unsaved changes)"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:234
+#: src/components/editor/EditorHeader.tsx:246
 msgid "Download as"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:174
+#: src/components/editor/EditorHeader.tsx:186
 msgid "Download as {format}"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:223
+#: src/components/editor/EditorHeader.tsx:235
 msgid "Download format options"
 msgstr ""
 
@@ -760,7 +793,7 @@ msgstr ""
 msgid "Draft"
 msgstr ""
 
-#: src/components/editor/EmptyState.tsx:86
+#: src/components/editor/EmptyState.tsx:89
 msgid ""
 "Drag and drop your translation file here, or click to browse. Your translati"
 "ons will be saved locally in your browser."
@@ -797,7 +830,7 @@ msgstr ""
 msgid "Edit Header"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:149
+#: src/components/editor/EditorHeader.tsx:161
 msgid "Edit gettext translation files with DeepL integration"
 msgstr ""
 
@@ -844,12 +877,6 @@ msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:258
 msgid "Encoding"
-msgstr ""
-
-#: src/pages/index/useIndexPageController.ts:541
-msgid ""
-"Encoding detected as {{encoding}} with {{confidence}} confidence. If charact"
-"ers appear incorrect, the file may use a different encoding."
 msgstr ""
 
 #: src/components/SettingsModal.tsx:1611
@@ -942,7 +969,7 @@ msgstr ""
 msgid "Export TMX"
 msgstr ""
 
-#: src/pages/index/IndexPageDialogs.tsx:315
+#: src/pages/index/IndexPageDialogs.tsx:321
 msgid "Export anyway"
 msgstr ""
 
@@ -987,6 +1014,14 @@ msgstr ""
 msgid "Failed to connect"
 msgstr ""
 
+#: src/components/projects/CreateProjectModal.tsx:229
+msgid "Failed to create project"
+msgstr ""
+
+#: src/components/projects/CreateProjectModal.tsx:169
+msgid "Failed to fetch WordPress file"
+msgstr ""
+
 #: src/stores/source-store.ts:212
 msgid "Failed to fetch source"
 msgstr ""
@@ -1012,6 +1047,10 @@ msgstr ""
 msgid "Failed to load glossary"
 msgstr ""
 
+#: src/pages/ProjectEditor.tsx:131
+msgid "Failed to load project"
+msgstr ""
+
 #: src/components/editor/WordPressProjectModal.tsx:215
 msgid "Failed to load project metadata."
 msgstr ""
@@ -1028,17 +1067,18 @@ msgstr ""
 msgid "Failed to open the WordPress project."
 msgstr ""
 
-#: src/pages/index/useIndexPageController.ts:1116
+#: src/pages/index/useIndexPageController.ts:1045
 msgid "Failed to open the WordPress.org project."
 msgstr ""
 
-#: src/pages/index/useIndexPageController.ts:1006
+#: src/pages/index/useIndexPageController.ts:935
 msgid "Failed to parse POT file"
 msgstr ""
 
+#: src/components/projects/CreateProjectModal.tsx:124
+#: src/components/projects/CreateProjectModal.tsx:158
+#: src/components/projects/CreateProjectModal.tsx:187
 #: src/pages/index/IndexPageBanners.tsx:82
-#: src/pages/index/useIndexPageController.ts:575
-#: src/pages/index/useIndexPageController.ts:628
 msgid "Failed to parse file"
 msgstr ""
 
@@ -1046,11 +1086,15 @@ msgstr ""
 msgid "Failed to read the file."
 msgstr ""
 
+#: src/components/projects/SaveToCloudModal.tsx:77
+msgid "Failed to save project"
+msgstr ""
+
 #: src/components/feedback/FeedbackModal.tsx:334
 msgid "Feature"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:305
+#: src/components/editor/EditorHeader.tsx:333
 msgid "Feedback"
 msgstr ""
 
@@ -1074,7 +1118,7 @@ msgstr ""
 msgid "Feedback verification is not configured."
 msgstr ""
 
-#: src/pages/index/IndexPageDialogs.tsx:207
+#: src/pages/index/IndexPageDialogs.tsx:213
 msgid "File URL"
 msgstr ""
 
@@ -1227,13 +1271,13 @@ msgstr ""
 msgid "GitLab instance URL"
 msgstr ""
 
-#: src/pages/index/IndexPageDialogs.tsx:279
+#: src/pages/index/IndexPageDialogs.tsx:285
 msgid ""
 "GlossBoss found QA issues in the current file. You can review them now or ex"
 "port anyway."
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:367
+#: src/components/editor/EditorHeader.tsx:411
 msgid "GlossBoss v{version}"
 msgstr ""
 
@@ -1360,6 +1404,14 @@ msgstr ""
 msgid "Icelandic"
 msgstr ""
 
+#: src/components/projects/CreateProjectModal.tsx:247
+msgid "Import"
+msgstr ""
+
+#: src/components/projects/CreateProjectModal.tsx:315
+msgid "Import a translation export by project slug"
+msgstr ""
+
 #: src/components/SettingsModal.tsx:2662
 msgid "Import credentials"
 msgstr ""
@@ -1417,17 +1469,8 @@ msgstr ""
 msgid "Interface language"
 msgstr ""
 
-#: src/pages/index/useIndexPageController.ts:518
-#: src/pages/index/useIndexPageController.ts:600
-msgid "Invalid JSON file. Expected an i18next JSON resource object."
-msgstr ""
-
-#: src/pages/index/useIndexPageController.ts:886
+#: src/pages/index/useIndexPageController.ts:817
 msgid "Invalid file type: .{{ext}}. Please drop a .po, .pot, or .json file."
-msgstr ""
-
-#: src/pages/index/useIndexPageController.ts:501
-msgid "Invalid file type: .{{ext}}. Please upload a .po, .pot, or .json file."
 msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:97
@@ -1520,12 +1563,12 @@ msgstr ""
 msgid "Latvian"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:384
+#: src/components/editor/EditorHeader.tsx:428
 msgid "License"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:59
-#: src/components/editor/EditorHeader.tsx:339
+#: src/components/editor/EditorHeader.tsx:63
+#: src/components/editor/EditorHeader.tsx:383
 msgid "Light mode"
 msgstr ""
 
@@ -1552,9 +1595,9 @@ msgstr ""
 msgid "Lithuanian"
 msgstr ""
 
-#: src/components/editor/EmptyState.tsx:122
+#: src/components/editor/EmptyState.tsx:125
 #: src/components/editor/GlossaryPanel.tsx:372
-#: src/pages/index/IndexPageDialogs.tsx:209
+#: src/pages/index/IndexPageDialogs.tsx:215
 msgid "Load"
 msgstr ""
 
@@ -1566,7 +1609,7 @@ msgstr ""
 msgid "Load a file with a target language before using translation memory."
 msgstr ""
 
-#: src/components/editor/EmptyState.tsx:155
+#: src/components/editor/EmptyState.tsx:158
 msgid "Load a small example WordPress plugin PO file (Hello Dolly)"
 msgstr ""
 
@@ -1586,12 +1629,12 @@ msgid ""
 "e."
 msgstr ""
 
-#: src/components/editor/EmptyState.tsx:165
+#: src/components/editor/EmptyState.tsx:168
 msgid "Load example PO"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:350
-#: src/pages/index/IndexPageDialogs.tsx:206
+#: src/components/editor/EditorHeader.tsx:394
+#: src/pages/index/IndexPageDialogs.tsx:212
 msgid "Load from URL"
 msgstr ""
 
@@ -1606,7 +1649,7 @@ msgstr ""
 msgid "Load voices by testing your key"
 msgstr ""
 
-#: src/pages/index/IndexPageDialogs.tsx:183
+#: src/pages/index/IndexPageDialogs.tsx:189
 msgid ""
 "Loading a new file from URL will replace the currently loaded file. Any unsa"
 "ved changes will be lost."
@@ -1794,7 +1837,11 @@ msgstr ""
 msgid "New line"
 msgstr ""
 
-#: src/pages/Dashboard.tsx:26
+#: src/components/projects/CreateProjectModal.tsx:106
+#: src/components/projects/CreateProjectModal.tsx:243
+#: src/components/projects/SaveToCloudModal.tsx:48
+#: src/pages/Dashboard.tsx:27
+#: src/pages/Dashboard.tsx:54
 msgid "New project"
 msgstr ""
 
@@ -1831,7 +1878,7 @@ msgstr ""
 msgid "No entries match the current filters."
 msgstr ""
 
-#: src/pages/index/useIndexPageController.ts:872
+#: src/pages/index/useIndexPageController.ts:803
 msgid "No file was dropped"
 msgstr ""
 
@@ -1863,7 +1910,7 @@ msgstr ""
 msgid "No matching slugs"
 msgstr ""
 
-#: src/pages/Dashboard.tsx:47
+#: src/pages/Dashboard.tsx:48
 msgid "No projects yet"
 msgstr ""
 
@@ -1967,32 +2014,24 @@ msgstr ""
 msgid "Only visible while running the app in development mode"
 msgstr ""
 
-#: src/pages/Dashboard.tsx:50
-msgid ""
-"Open a PO file in the editor and save it to the cloud to create your first p"
-"roject."
-msgstr ""
-
 #: src/components/repo-sync/CommitPanel.tsx:233
 msgid "Open a PR targeting {{branch}}"
 msgstr ""
 
-#: src/components/editor/EmptyState.tsx:143
+#: src/components/editor/EmptyState.tsx:146
 msgid "Open a locale file from a GitHub or GitLab repository"
 msgstr ""
 
-#: src/pages/Dashboard.tsx:55
-msgid "Open editor"
-msgstr ""
-
-#: src/components/editor/EditorHeader.tsx:353
-#: src/components/editor/EmptyState.tsx:138
+#: src/components/editor/EditorHeader.tsx:397
+#: src/components/editor/EmptyState.tsx:141
 #: src/components/editor/WordPressProjectModal.tsx:291
+#: src/components/projects/CreateProjectModal.tsx:312
 msgid "Open from WordPress.org"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:361
-#: src/components/editor/EmptyState.tsx:150
+#: src/components/editor/EditorHeader.tsx:405
+#: src/components/editor/EmptyState.tsx:153
+#: src/components/projects/CreateProjectModal.tsx:337
 msgid "Open from repository"
 msgstr ""
 
@@ -2010,25 +2049,25 @@ msgstr ""
 msgid "Open project"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:345
+#: src/components/editor/EditorHeader.tsx:389
 msgid "Open settings"
 msgstr ""
 
-#: src/components/editor/EmptyState.tsx:131
+#: src/components/editor/EmptyState.tsx:134
 msgid "Open the latest WordPress.org translation export by project slug"
 msgstr ""
 
-#: src/pages/index/IndexPageDialogs.tsx:195
+#: src/pages/index/IndexPageDialogs.tsx:201
 msgid ""
 "Opening a WordPress project will replace the currently loaded file. Any unsa"
 "ved changes will be lost."
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:236
+#: src/components/editor/EditorHeader.tsx:248
 msgid "PO file (.po)"
 msgstr ""
 
-#: src/components/editor/EmptyState.tsx:105
+#: src/components/editor/EmptyState.tsx:108
 msgid "PO file URL"
 msgstr ""
 
@@ -2049,7 +2088,7 @@ msgstr ""
 msgid "Password"
 msgstr ""
 
-#: src/components/editor/EmptyState.tsx:104
+#: src/components/editor/EmptyState.tsx:107
 msgid "Paste a .po file URL"
 msgstr ""
 
@@ -2099,7 +2138,7 @@ msgstr ""
 msgid "Please complete all required feature fields."
 msgstr ""
 
-#: src/pages/index/useIndexPageController.ts:877
+#: src/pages/index/useIndexPageController.ts:808
 msgid "Please drop only one file at a time"
 msgstr ""
 
@@ -2186,9 +2225,14 @@ msgstr ""
 msgid "Previous field"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:402
+#: src/components/editor/EditorHeader.tsx:446
 #: src/components/feedback/FeedbackModal.tsx:417
 msgid "Privacy"
+msgstr ""
+
+#: src/components/projects/CreateProjectModal.tsx:41
+#: src/components/projects/SaveToCloudModal.tsx:19
+msgid "Private"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:1438
@@ -2205,11 +2249,18 @@ msgstr ""
 
 #: src/components/SettingsModal.tsx:2416
 #: src/components/SettingsModal.tsx:2420
+#: src/components/projects/CreateProjectModal.tsx:366
+#: src/components/projects/SaveToCloudModal.tsx:107
 msgid "Project name"
 msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:234
 msgid "Project name and version"
+msgstr ""
+
+#: src/pages/ProjectEditor.tsx:74
+#: src/pages/ProjectEditor.tsx:188
+msgid "Project not found"
 msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:555
@@ -2224,7 +2275,10 @@ msgstr ""
 msgid "Project type"
 msgstr ""
 
-#: src/pages/Dashboard.tsx:24
+#: src/components/editor/EditorHeader.tsx:343
+#: src/components/editor/EditorHeader.tsx:350
+#: src/pages/Dashboard.tsx:25
+#: src/pages/ProjectEditor.tsx:210
 msgid "Projects"
 msgstr ""
 
@@ -2241,6 +2295,11 @@ msgstr ""
 msgid "Provider"
 msgstr ""
 
+#: src/components/projects/CreateProjectModal.tsx:42
+#: src/components/projects/SaveToCloudModal.tsx:20
+msgid "Public"
+msgstr ""
+
 #: src/components/repo-sync/CommitPanel.tsx:157
 msgid "Pull request created: #{{number}}"
 msgstr ""
@@ -2253,7 +2312,7 @@ msgstr ""
 msgid "Punjabi"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:283
+#: src/components/editor/EditorHeader.tsx:295
 #: src/components/repo-sync/RepoSyncModal.tsx:412
 msgid "Push"
 msgstr ""
@@ -2262,7 +2321,7 @@ msgstr ""
 msgid "Push changes to repository"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:272
+#: src/components/editor/EditorHeader.tsx:284
 msgid "Push changes to {{provider}}"
 msgstr ""
 
@@ -2282,7 +2341,7 @@ msgstr ""
 msgid "QA errors"
 msgstr ""
 
-#: src/pages/index/IndexPageDialogs.tsx:271
+#: src/pages/index/IndexPageDialogs.tsx:277
 msgid "QA summary before export"
 msgstr ""
 
@@ -2317,7 +2376,7 @@ msgid "Refresh"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:2132
-#: src/components/editor/EditorHeader.tsx:357
+#: src/components/editor/EditorHeader.tsx:401
 #: src/components/editor/GlossaryPanel.tsx:338
 #: src/components/editor/GlossaryPanel.tsx:342
 #: src/components/editor/WordPressRefreshModal.tsx:198
@@ -2376,13 +2435,13 @@ msgid "Repeated-source consistency"
 msgstr ""
 
 #: src/components/editor/TranslateButton.tsx:319
-#: src/pages/index/IndexPageDialogs.tsx:186
-#: src/pages/index/IndexPageDialogs.tsx:198
+#: src/pages/index/IndexPageDialogs.tsx:192
+#: src/pages/index/IndexPageDialogs.tsx:204
 msgid "Replace"
 msgstr ""
 
-#: src/pages/index/IndexPageDialogs.tsx:182
-#: src/pages/index/IndexPageDialogs.tsx:194
+#: src/pages/index/IndexPageDialogs.tsx:188
+#: src/pages/index/IndexPageDialogs.tsx:200
 msgid "Replace current file?"
 msgstr ""
 
@@ -2402,7 +2461,7 @@ msgstr ""
 msgid "Repository"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:361
+#: src/components/editor/EditorHeader.tsx:405
 #: src/components/repo-sync/RepoSyncModal.tsx:397
 msgid "Repository sync"
 msgstr ""
@@ -2419,7 +2478,7 @@ msgstr ""
 msgid "Request changes selected"
 msgstr ""
 
-#: src/pages/index/useIndexPageController.ts:742
+#: src/pages/index/useIndexPageController.ts:673
 msgid "Request timed out. Try downloading the file and uploading it directly."
 msgstr ""
 
@@ -2486,7 +2545,7 @@ msgstr ""
 msgid "Review in progress"
 msgstr ""
 
-#: src/pages/index/IndexPageDialogs.tsx:312
+#: src/pages/index/IndexPageDialogs.tsx:318
 msgid "Review issues"
 msgstr ""
 
@@ -2560,6 +2619,16 @@ msgstr ""
 msgid "Save current field and move to the previous translation field"
 msgstr ""
 
+#: src/components/editor/EditorHeader.tsx:302
+msgid "Save this file as a cloud project"
+msgstr ""
+
+#: src/components/editor/EditorHeader.tsx:311
+#: src/components/projects/SaveToCloudModal.tsx:98
+#: src/components/projects/SaveToCloudModal.tsx:144
+msgid "Save to cloud"
+msgstr ""
+
 #: src/components/repo-sync/RepoSyncModal.tsx:616
 msgid "Scanning for locale files..."
 msgstr ""
@@ -2576,6 +2645,11 @@ msgstr ""
 #: src/components/glossary/shared.tsx:67
 #: src/components/glossary/shared.tsx:72
 msgid "Search terms..."
+msgstr ""
+
+#: src/components/projects/CreateProjectModal.tsx:325
+#: src/components/projects/CreateProjectModal.tsx:350
+msgid "Select"
 msgstr ""
 
 #: src/components/editor/WordPressProjectModal.tsx:339
@@ -2667,12 +2741,12 @@ msgid "Set a WordPress project slug to browse source files."
 msgstr ""
 
 #: src/components/SettingsModal.tsx:1280
-#: src/components/editor/EditorHeader.tsx:343
+#: src/components/editor/EditorHeader.tsx:387
 msgid "Settings"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:318
-#: src/components/editor/EditorHeader.tsx:320
+#: src/components/editor/EditorHeader.tsx:362
+#: src/components/editor/EditorHeader.tsx:364
 msgid "Settings and actions"
 msgstr ""
 
@@ -2709,8 +2783,8 @@ msgstr ""
 msgid "Share Feedback"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:298
-#: src/components/editor/EditorHeader.tsx:329
+#: src/components/editor/EditorHeader.tsx:326
+#: src/components/editor/EditorHeader.tsx:373
 msgid "Share feedback"
 msgstr ""
 
@@ -2762,6 +2836,7 @@ msgstr ""
 
 #: src/components/auth/UserMenu.tsx:24
 #: src/components/auth/UserMenu.tsx:31
+#: src/components/editor/EmptyState.tsx:189
 #: src/pages/auth/Login.tsx:115
 #: src/pages/auth/Signup.tsx:68
 msgid "Sign in"
@@ -2818,7 +2893,7 @@ msgstr ""
 msgid "Sort entries"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:375
+#: src/components/editor/EditorHeader.tsx:419
 #: src/components/editor/EditorTable.tsx:2351
 msgid "Source"
 msgstr ""
@@ -2944,11 +3019,11 @@ msgstr ""
 msgid "Swedish"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:66
+#: src/components/editor/EditorHeader.tsx:70
 msgid "Switch to dark mode"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:66
+#: src/components/editor/EditorHeader.tsx:70
 msgid "Switch to light mode"
 msgstr ""
 
@@ -2976,6 +3051,8 @@ msgid "Target language code"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:2431
+#: src/components/projects/CreateProjectModal.tsx:382
+#: src/components/projects/SaveToCloudModal.tsx:123
 msgid "Target: {{language}}"
 msgstr ""
 
@@ -3017,11 +3094,11 @@ msgstr ""
 msgid "Thanks. Issue #{issueNumber} was created."
 msgstr ""
 
-#: src/pages/index/useIndexPageController.ts:767
+#: src/pages/index/useIndexPageController.ts:698
 msgid "The URL must start with https://"
 msgstr ""
 
-#: src/pages/index/useIndexPageController.ts:409
+#: src/pages/index/useIndexPageController.ts:412
 msgid "The WordPress.org translation export could not be parsed."
 msgstr ""
 
@@ -3069,7 +3146,7 @@ msgid ""
 "tions."
 msgstr ""
 
-#: src/pages/index/IndexPageDialogs.tsx:172
+#: src/pages/index/IndexPageDialogs.tsx:178
 msgid "This will remove all your work on the current file."
 msgstr ""
 
@@ -3099,7 +3176,7 @@ msgstr ""
 msgid "Track"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:393
+#: src/components/editor/EditorHeader.tsx:437
 msgid "Translate"
 msgstr ""
 
@@ -3266,8 +3343,13 @@ msgstr ""
 
 #: src/components/SettingsModal.tsx:1196
 #: src/components/editor/GlossaryPanel.tsx:199
-#: src/pages/index/useIndexPageController.ts:749
+#: src/pages/index/useIndexPageController.ts:680
 msgid "Unknown error"
+msgstr ""
+
+#: src/components/projects/CreateProjectModal.tsx:43
+#: src/components/projects/SaveToCloudModal.tsx:21
+msgid "Unlisted"
 msgstr ""
 
 #: src/components/editor/FilterToolbar.tsx:96
@@ -3287,11 +3369,11 @@ msgstr ""
 msgid "Untranslated"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:263
+#: src/components/editor/EditorHeader.tsx:275
 msgid "Update"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:255
+#: src/components/editor/EditorHeader.tsx:267
 msgid ""
 "Update this file using a .pot template. Existing translations are kept when "
 "source strings still match, new strings are added, and obsolete strings are "
@@ -3324,7 +3406,7 @@ msgstr ""
 msgid "Updated translation"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:159
+#: src/components/editor/EditorHeader.tsx:171
 msgid "Upload"
 msgstr ""
 
@@ -3336,7 +3418,11 @@ msgstr ""
 msgid "Upload a WordPress glossary CSV for the selected language"
 msgstr ""
 
-#: src/components/editor/EmptyState.tsx:84
+#: src/components/projects/CreateProjectModal.tsx:276
+msgid "Upload a file"
+msgstr ""
+
+#: src/components/editor/EmptyState.tsx:87
 msgid "Upload a translation file to start"
 msgstr ""
 
@@ -3410,6 +3496,11 @@ msgstr ""
 
 #: src/components/repo-sync/CommitPanel.tsx:150
 msgid "View commit"
+msgstr ""
+
+#: src/components/projects/CreateProjectModal.tsx:373
+#: src/components/projects/SaveToCloudModal.tsx:114
+msgid "Visibility"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:2354
@@ -3525,7 +3616,7 @@ msgstr ""
 msgid "WordPress.org did not return a translation export for the selected project."
 msgstr ""
 
-#: src/pages/index/useIndexPageController.ts:460
+#: src/pages/index/useIndexPageController.ts:463
 msgid "WordPress.org refresh"
 msgstr ""
 
@@ -3537,7 +3628,7 @@ msgstr ""
 msgid "Write a reply to this comment"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:173
+#: src/components/editor/EditorHeader.tsx:185
 msgid "You have unsaved changes"
 msgstr ""
 
@@ -3547,7 +3638,7 @@ msgid ""
 " work?"
 msgstr ""
 
-#: src/pages/index/IndexPageDialogs.tsx:171
+#: src/pages/index/IndexPageDialogs.tsx:177
 msgid "You have unsaved changes. Are you sure you want to clear the editor?"
 msgstr ""
 
@@ -3607,7 +3698,7 @@ msgstr ""
 msgid "fuzzy"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:239
+#: src/components/editor/EditorHeader.tsx:251
 msgid "i18next JSON (.json)"
 msgstr ""
 
@@ -3619,7 +3710,7 @@ msgstr ""
 msgid "name@example.com"
 msgstr ""
 
-#: src/components/editor/EmptyState.tsx:127
+#: src/components/editor/EmptyState.tsx:130
 msgid "or"
 msgstr ""
 
@@ -3653,6 +3744,10 @@ msgstr ""
 
 #: src/components/SettingsModal.tsx:2186
 msgid "terms"
+msgstr ""
+
+#: src/components/editor/EmptyState.tsx:191
+msgid "to save projects to the cloud and collaborate with your team."
 msgstr ""
 
 #: src/components/repo-sync/RepoSyncModal.tsx:494
@@ -3709,7 +3804,7 @@ msgstr ""
 msgid "{{count}} entries"
 msgstr ""
 
-#: src/pages/index/IndexPageDialogs.tsx:287
+#: src/pages/index/IndexPageDialogs.tsx:293
 msgid "{{count}} error issue(s)"
 msgstr ""
 
@@ -3772,10 +3867,12 @@ msgid "{{count}} terms"
 msgstr ""
 
 #: src/components/editor/WordPressRefreshModal.tsx:314
+#: src/components/projects/CreateProjectModal.tsx:385
+#: src/components/projects/SaveToCloudModal.tsx:126
 msgid "{{count}} total entries"
 msgstr ""
 
-#: src/pages/index/IndexPageDialogs.tsx:293
+#: src/pages/index/IndexPageDialogs.tsx:299
 msgid "{{count}} total issues"
 msgstr ""
 
@@ -3803,7 +3900,7 @@ msgstr ""
 msgid "{{count}} untranslated"
 msgstr ""
 
-#: src/pages/index/IndexPageDialogs.tsx:290
+#: src/pages/index/IndexPageDialogs.tsx:296
 msgid "{{count}} warning issue(s)"
 msgstr ""
 

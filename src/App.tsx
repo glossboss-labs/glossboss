@@ -8,6 +8,7 @@
 import { Routes, Route } from 'react-router';
 import Index from '@/pages/Index';
 import Dashboard from '@/pages/Dashboard';
+import ProjectEditor from '@/pages/ProjectEditor';
 import Login from '@/pages/auth/Login';
 import Signup from '@/pages/auth/Signup';
 import Callback from '@/pages/auth/Callback';
@@ -28,6 +29,14 @@ export default function App() {
         element={
           <AuthGuard>
             <Dashboard />
+          </AuthGuard>
+        }
+      />
+      <Route
+        path="/projects/:id"
+        element={
+          <AuthGuard>
+            <ProjectEditor />
           </AuthGuard>
         }
       />

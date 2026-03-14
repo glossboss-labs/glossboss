@@ -18,6 +18,7 @@ import {
   Menu,
   useComputedColorScheme,
 } from '@mantine/core';
+import { Link as RouterLink } from 'react-router';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Upload,
@@ -37,12 +38,15 @@ import {
   Info,
   Archive,
   Globe,
+  Cloud,
+  LayoutDashboard,
 } from 'lucide-react';
 import { sectionVariants, fadeVariants, buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
 import type { FileFormat } from '@/stores';
 import type { RepoConnection } from '@/lib/repo-sync/types';
 import { UserMenu } from '@/components/auth/UserMenu';
+import { useAuth } from '@/hooks/use-auth';
 
 const MotionDiv = motion.div;
 const appIcon = '/icon.svg';
@@ -110,6 +114,11 @@ export interface EditorHeaderProps {
   onRefreshWordPress?: () => void;
   onOpenRepoSync: () => void;
   onClearClick: () => void;
+
+  /** Callback to save current editor state to a cloud project. */
+  onSaveToCloud?: () => void;
+  /** Whether a cloud save is in progress. */
+  savingToCloud?: boolean;
 }
 
 export function EditorHeader({
@@ -133,8 +142,11 @@ export function EditorHeader({
   onRefreshWordPress,
   onOpenRepoSync,
   onClearClick,
+  onSaveToCloud,
+  savingToCloud,
 }: EditorHeaderProps) {
   const { t } = useTranslation();
+  const { isAuthenticated } = useAuth();
   const computedColorScheme = useComputedColorScheme('light');
 
   return (
@@ -285,6 +297,22 @@ export function EditorHeader({
                         </motion.div>
                       </Tooltip>
                     )}
+
+                    {isAuthenticated && onSaveToCloud && (
+                      <Tooltip label={t('Save this file as a cloud project')}>
+                        <motion.div {...buttonStates}>
+                          <Button
+                            leftSection={<Cloud size={16} />}
+                            variant="light"
+                            color="violet"
+                            onClick={onSaveToCloud}
+                            loading={savingToCloud}
+                          >
+                            {t('Save to cloud')}
+                          </Button>
+                        </motion.div>
+                      </Tooltip>
+                    )}
                   </Group>
                 </MotionDiv>
               )}
@@ -309,6 +337,22 @@ export function EditorHeader({
 
               <ThemeToggle onToggle={onToggleColorScheme} />
             </Group>
+          )}
+
+          {isAuthenticated && (
+            <Tooltip label={t('Projects')}>
+              <motion.div {...buttonStates}>
+                <ActionIcon
+                  component={RouterLink}
+                  to="/dashboard"
+                  variant="default"
+                  size="lg"
+                  aria-label={t('Projects')}
+                >
+                  <LayoutDashboard size={18} />
+                </ActionIcon>
+              </motion.div>
+            </Tooltip>
           )}
 
           <UserMenu />

@@ -18,10 +18,12 @@ import {
   Paper,
   rem,
 } from '@mantine/core';
+import { Link as RouterLink } from 'react-router';
 import { motion } from 'motion/react';
-import { FileUp, Globe, GitBranch, Link } from 'lucide-react';
+import { FileUp, Globe, GitBranch, Link, Cloud } from 'lucide-react';
 import { sectionVariants, buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
+import { useAuth } from '@/hooks/use-auth';
 
 const MotionDiv = motion.div;
 const appIcon = '/icon.svg';
@@ -50,6 +52,7 @@ export function EmptyState({
   onLoadExamplePo,
 }: EmptyStateProps) {
   const { t } = useTranslation();
+  const { isAuthenticated } = useAuth();
 
   return (
     <MotionDiv
@@ -167,6 +170,28 @@ export function EmptyState({
               </motion.div>
             </Tooltip>
           </Group>
+
+          {!isAuthenticated && (
+            <Group
+              gap={4}
+              onClick={(e: React.MouseEvent) => e.stopPropagation()}
+              style={{ cursor: 'default' }}
+            >
+              <Cloud size={14} style={{ opacity: 0.4 }} />
+              <Text size="xs" c="dimmed">
+                <RouterLink
+                  to="/login"
+                  style={{
+                    color: 'var(--mantine-color-blue-6)',
+                    textDecoration: 'none',
+                  }}
+                >
+                  {t('Sign in')}
+                </RouterLink>{' '}
+                {t('to save projects to the cloud and collaborate with your team.')}
+              </Text>
+            </Group>
+          )}
         </Stack>
       </Paper>
     </MotionDiv>

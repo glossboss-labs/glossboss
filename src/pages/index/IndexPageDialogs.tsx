@@ -9,6 +9,7 @@ import {
   WordPressRefreshModal,
 } from '@/components/editor';
 import { ConfirmModal, PromptModal } from '@/components/ui';
+import { SaveToCloudModal } from '@/components/projects/SaveToCloudModal';
 import { type FeedbackIssueSuccess } from '@/lib/feedback';
 import type { Glossary } from '@/lib/glossary/types';
 import type { POEntry } from '@/lib/po';
@@ -96,6 +97,9 @@ export interface IndexPageDialogsProps {
   currentFilename: string | null;
   onFeedbackSubmitted: (result: FeedbackIssueSuccess) => void;
   onFeedbackSubmitError: (message: string) => void;
+
+  saveToCloudOpen: boolean;
+  onCloseSaveToCloud: () => void;
 }
 
 export function IndexPageDialogs({
@@ -158,6 +162,8 @@ export function IndexPageDialogs({
   currentFilename,
   onFeedbackSubmitted,
   onFeedbackSubmitError,
+  saveToCloudOpen,
+  onCloseSaveToCloud,
 }: IndexPageDialogsProps) {
   const { t } = useTranslation();
 
@@ -327,6 +333,8 @@ export function IndexPageDialogs({
           onSubmitError={onFeedbackSubmitError}
         />
       )}
+
+      <SaveToCloudModal opened={saveToCloudOpen} onClose={onCloseSaveToCloud} />
     </>
   );
 }

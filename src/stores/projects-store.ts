@@ -6,8 +6,14 @@
  */
 
 import { create } from 'zustand';
-import type { ProjectRow } from '@/lib/projects/types';
-import { listProjects, deleteProject as apiDeleteProject } from '@/lib/projects/api';
+import type { ProjectRow, ProjectInsert } from '@/lib/projects/types';
+import {
+  listProjects,
+  createProject as apiCreateProject,
+  deleteProject as apiDeleteProject,
+  syncProjectEntries,
+} from '@/lib/projects/api';
+import type { POEntry } from '@/lib/po/types';
 
 export interface ProjectsState {
   projects: ProjectRow[];
@@ -17,6 +23,7 @@ export interface ProjectsState {
 
 export interface ProjectsActions {
   fetchProjects: () => Promise<void>;
+  createProject: (insert: ProjectInsert, entries: POEntry[]) => Promise<ProjectRow>;
   deleteProject: (id: string) => Promise<void>;
 }
 
@@ -36,6 +43,19 @@ export const useProjectsStore = create<ProjectsState & ProjectsActions>()((set, 
         loading: false,
       });
     }
+  },
+
+  createProject: async (insert: ProjectInsert, entries: POEntry[]) => {
+    const project = await apiCreateProject(insert);
+
+    // Sync entries to the new project
+    await syncProjectEntries(project.id, entries, new Map(), new Map());
+
+    // Re-fetch to get stats updated by triggers
+    const projects = await listProjects();
+    set({ projects });
+
+    return project;
   },
 
   deleteProject: async (id: string) => {

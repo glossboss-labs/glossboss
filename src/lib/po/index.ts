@@ -45,3 +45,14 @@ export {
   type SupportedEncoding,
   type EncodingDetectionResult,
 } from './encoding';
+
+// File parsing (shared pipeline for upload, repo, URL)
+export {
+  parseUploadedFile,
+  parseFileContent,
+  getFileExtension,
+  isSupportedExtension,
+  type ParsedFileResult,
+  type ParseFileOutcome,
+  type EncodingInfo,
+} from './parse-file';

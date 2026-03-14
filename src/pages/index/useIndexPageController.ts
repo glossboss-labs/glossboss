@@ -13,12 +13,14 @@ import type { FeedbackIssueSuccess } from '@/lib/feedback';
 import type { Glossary } from '@/lib/glossary/types';
 import { batchAnalyzeTranslations, syncGlossaryToDeepL } from '@/lib/glossary';
 import { fetchWPGlossary } from '@/lib/glossary/wp-fetcher';
-import { parseI18nextJSON, isI18nextContent, serializeToI18next } from '@/lib/i18next';
+import { serializeToI18next } from '@/lib/i18next';
 import {
-  detectAndDecode,
   mergePotIntoPo,
-  parsePOFileWithDiagnostics,
   serializePOFile,
+  parseUploadedFile,
+  parseFileContent,
+  isSupportedExtension,
+  getFileExtension,
   type POEntry,
   type ParseIssue,
 } from '@/lib/po';
@@ -134,6 +136,7 @@ export function useIndexPageController() {
   const [wordpressProjectOpen, setWordpressProjectOpen] = useState(false);
   const [wordpressRefreshOpen, setWordpressRefreshOpen] = useState(false);
   const [repoSyncOpen, setRepoSyncOpen] = useState(false);
+  const [saveToCloudOpen, setSaveToCloudOpen] = useState(false);
   const [repoSyncInitialTab, setRepoSyncInitialTab] = useState<
     'connect' | 'browse' | 'push' | undefined
   >(undefined);
@@ -402,20 +405,20 @@ export function useIndexPageController() {
 
       const text = await fetchWordPressTranslationFile({ projectType, slug, locale, track });
       const wpFilename = `${slug}-${locale.replaceAll('-', '_')}.po`;
-      const result = parsePOFileWithDiagnostics(text, wpFilename);
+      const outcome = parseFileContent(text, wpFilename);
 
-      if (!result.success || !result.file) {
-        setErrors(result.errors);
+      if (!outcome.ok) {
+        setErrors(outcome.errors);
         throw new Error(t('The WordPress.org translation export could not be parsed.'));
       }
 
-      if (result.warnings.length > 0) {
-        setWarnings(result.warnings);
+      if (outcome.result.warnings.length > 0) {
+        setWarnings(outcome.result.warnings);
         setShowWarnings(true);
       }
 
-      loadFile(result.file);
-      applyDetectedWordPressProject(result.file.header, wpFilename);
+      loadFile(outcome.result.file);
+      applyDetectedWordPressProject(outcome.result.file.header, wpFilename);
       useSourceStore.getState().setProjectContext(projectType, slug, { release, track });
     },
     [applyDetectedWordPressProject, clearUpstreamDeltaEntries, loadFile, t],
@@ -492,92 +495,42 @@ export function useIndexPageController() {
       setIsFromDraft(false);
       clearUpstreamDeltaEntries();
 
-      const ext = file.name.toLowerCase().split('.').pop();
-      if (ext !== 'po' && ext !== 'pot' && ext !== 'json') {
-        setErrors([
-          {
-            severity: 'error',
-            code: 'INVALID_SYNTAX',
-            message: t('Invalid file type: .{{ext}}. Please upload a .po, .pot, or .json file.', {
-              ext,
-            }),
-          },
-        ]);
+      const outcome = await parseUploadedFile(file);
+
+      if (!outcome.ok) {
+        setErrors(outcome.errors);
         return;
       }
 
-      try {
-        if (ext === 'json') {
-          const text = await file.text();
+      const { file: poFile, format, encoding, warnings } = outcome.result;
 
-          if (!isI18nextContent(text)) {
-            setErrors([
-              {
-                severity: 'error',
-                code: 'INVALID_SYNTAX',
-                message: t('Invalid JSON file. Expected an i18next JSON resource object.'),
-              },
-            ]);
-            return;
-          }
+      if (encoding) {
+        setEncodingInfo(encoding);
+        debugLog(
+          `[Encoding] Detected: ${encoding.encoding} (${encoding.confidence} confidence, via ${encoding.method})`,
+        );
+      }
 
-          const poFile = parseI18nextJSON(text, file.name);
+      if (warnings.length > 0) {
+        setWarnings(warnings);
+        setShowWarnings(true);
+      }
 
-          loadFile(poFile, 'i18next');
-          debugLog(`[i18next] Parsed ${poFile.entries.length} entries from ${file.name}`);
-        } else {
-          const buffer = await file.arrayBuffer();
-          const { encoding, confidence, method, content } = detectAndDecode(buffer);
+      if (format === 'i18next') {
+        loadFile(poFile, 'i18next');
+        debugLog(`[i18next] Parsed ${poFile.entries.length} entries from ${file.name}`);
+      } else {
+        const existingDraft = loadDraft(file.name);
 
-          setEncodingInfo({ encoding, confidence, method });
-          debugLog(`[Encoding] Detected: ${encoding} (${confidence} confidence, via ${method})`);
-
-          const result = parsePOFileWithDiagnostics(content, file.name);
-
-          if (confidence === 'low' || confidence === 'medium') {
-            result.warnings.unshift({
-              severity: 'warning',
-              code: 'ENCODING_ERROR',
-              message: t(
-                'Encoding detected as {{encoding}} with {{confidence}} confidence. If characters appear incorrect, the file may use a different encoding.',
-                { encoding: encoding.toUpperCase(), confidence },
-              ),
-            });
-          }
-
-          if (result.warnings.length > 0) {
-            setWarnings(result.warnings);
-            setShowWarnings(true);
-          }
-
-          if (!result.success || !result.file) {
-            setErrors(result.errors);
-            return;
-          }
-
-          const existingDraft = loadDraft(file.name);
-
-          if (existingDraft && existingDraft.dirtyEntryIds.length > 0) {
-            setPendingDraft({ draft: existingDraft, filename: file.name });
-            loadFile(result.file);
-          } else {
-            loadFile(result.file);
-          }
-
-          applyDetectedWordPressProject(result.file.header, file.name);
-          debugLog('[PO Parser] Stats:', result.stats);
+        if (existingDraft && existingDraft.dirtyEntryIds.length > 0) {
+          setPendingDraft({ draft: existingDraft, filename: file.name });
         }
-      } catch (error) {
-        setErrors([
-          {
-            severity: 'error',
-            code: 'INVALID_SYNTAX',
-            message: error instanceof Error ? error.message : t('Failed to parse file'),
-          },
-        ]);
+
+        loadFile(poFile);
+        applyDetectedWordPressProject(poFile.header, file.name);
       }
     },
-    [applyDetectedWordPressProject, clearUpstreamDeltaEntries, loadFile, t],
+    [applyDetectedWordPressProject, clearUpstreamDeltaEntries, loadFile],
   );
 
   const handleRepoFileLoaded = useCallback(
@@ -588,49 +541,27 @@ export function useIndexPageController() {
       setDragError(null);
       setIsFromDraft(false);
 
-      try {
-        const ext = repoFilename.toLowerCase().split('.').pop();
+      const outcome = parseFileContent(content, repoFilename);
 
-        if (ext === 'json') {
-          if (!isI18nextContent(content)) {
-            setErrors([
-              {
-                severity: 'error',
-                code: 'INVALID_SYNTAX',
-                message: t('Invalid JSON file. Expected an i18next JSON resource object.'),
-              },
-            ]);
-            return;
-          }
-          const poFile = parseI18nextJSON(content, repoFilename);
-          loadFile(poFile, 'i18next');
-        } else {
-          const result = parsePOFileWithDiagnostics(content, repoFilename);
+      if (!outcome.ok) {
+        setErrors(outcome.errors);
+        return;
+      }
 
-          if (result.warnings.length > 0) {
-            setWarnings(result.warnings);
-            setShowWarnings(true);
-          }
+      const { file: poFile, format, warnings } = outcome.result;
 
-          if (!result.success || !result.file) {
-            setErrors(result.errors);
-            return;
-          }
+      if (warnings.length > 0) {
+        setWarnings(warnings);
+        setShowWarnings(true);
+      }
 
-          loadFile(result.file);
-          applyDetectedWordPressProject(result.file.header, repoFilename);
-        }
-      } catch (error) {
-        setErrors([
-          {
-            severity: 'error',
-            code: 'INVALID_SYNTAX',
-            message: error instanceof Error ? error.message : t('Failed to parse file'),
-          },
-        ]);
+      loadFile(poFile, format === 'i18next' ? 'i18next' : undefined);
+
+      if (format !== 'i18next') {
+        applyDetectedWordPressProject(poFile.header, repoFilename);
       }
     },
-    [applyDetectedWordPressProject, loadFile, t],
+    [applyDetectedWordPressProject, loadFile],
   );
 
   const serializedContentForPush = useMemo(() => {
@@ -662,20 +593,20 @@ export function useIndexPageController() {
 
     try {
       const examplePo = getBundledExamplePo();
-      const result = parsePOFileWithDiagnostics(examplePo.content, examplePo.filename);
+      const outcome = parseFileContent(examplePo.content, examplePo.filename);
 
-      if (!result.success || !result.file) {
-        setErrors(result.errors);
+      if (!outcome.ok) {
+        setErrors(outcome.errors);
         return;
       }
 
-      if (result.warnings.length > 0) {
-        setWarnings(result.warnings);
+      if (outcome.result.warnings.length > 0) {
+        setWarnings(outcome.result.warnings);
         setShowWarnings(true);
       }
 
-      loadFile(result.file);
-      applyDetectedWordPressProject(result.file.header, result.file.filename);
+      loadFile(outcome.result.file);
+      applyDetectedWordPressProject(outcome.result.file.header, outcome.result.file.filename);
     } finally {
       setIsLoadingExample(false);
     }
@@ -715,24 +646,24 @@ export function useIndexPageController() {
           // Keep default filename when the URL is malformed.
         }
 
-        if (isI18nextContent(text)) {
-          const i18nResult = parseI18nextJSON(text, name);
-          loadFile(i18nResult.file);
-        } else {
-          const result = parsePOFileWithDiagnostics(text, name);
+        const outcome = parseFileContent(text, name);
 
-          if (!result.success || !result.file) {
-            setErrors(result.errors);
-            return;
-          }
+        if (!outcome.ok) {
+          setErrors(outcome.errors);
+          return;
+        }
 
-          if (result.warnings.length > 0) {
-            setWarnings(result.warnings);
-            setShowWarnings(true);
-          }
+        const { file: poFile, format, warnings } = outcome.result;
 
-          loadFile(result.file);
-          applyDetectedWordPressProject(result.file.header, name);
+        if (warnings.length > 0) {
+          setWarnings(warnings);
+          setShowWarnings(true);
+        }
+
+        loadFile(poFile, format === 'i18next' ? 'i18next' : undefined);
+
+        if (format !== 'i18next') {
+          applyDetectedWordPressProject(poFile.header, name);
         }
 
         setUrlInput('');
@@ -879,9 +810,9 @@ export function useIndexPageController() {
       }
 
       const file = files[0];
-      const ext = file.name.toLowerCase().split('.').pop();
+      const ext = getFileExtension(file.name);
 
-      if (ext !== 'po' && ext !== 'pot' && ext !== 'json') {
+      if (!isSupportedExtension(ext)) {
         setDragError(
           t('Invalid file type: .{{ext}}. Please drop a .po, .pot, or .json file.', { ext }),
         );
@@ -980,16 +911,14 @@ export function useIndexPageController() {
       if (!file || entries.length === 0) return;
 
       try {
-        const buffer = await file.arrayBuffer();
-        const { content } = detectAndDecode(buffer);
-        const result = parsePOFileWithDiagnostics(content, file.name);
+        const outcome = await parseUploadedFile(file);
 
-        if (!result.success || !result.file) {
-          setErrors(result.errors);
+        if (!outcome.ok) {
+          setErrors(outcome.errors);
           return;
         }
 
-        const mergeResult = mergePotIntoPo(entries, result.file.entries);
+        const mergeResult = mergePotIntoPo(entries, outcome.result.file.entries);
         mergeEntries(mergeResult.entries);
 
         setMergeSuccess({
@@ -1160,6 +1089,7 @@ export function useIndexPageController() {
       currentProjectType && currentProjectSlug && filename ? openWordPressRefreshModal : undefined,
     onOpenRepoSync: openRepoSyncConnectOrPush,
     onClearClick: handleClearClick,
+    onSaveToCloud: filename ? () => setSaveToCloudOpen(true) : undefined,
   };
 
   const workspaceProps: EditorWorkspaceProps | null = filename
@@ -1286,6 +1216,8 @@ export function useIndexPageController() {
     currentFilename: filename,
     onFeedbackSubmitted: handleFeedbackSubmitted,
     onFeedbackSubmitError: handleFeedbackSubmitError,
+    saveToCloudOpen,
+    onCloseSaveToCloud: () => setSaveToCloudOpen(false),
   };
 
   return {
