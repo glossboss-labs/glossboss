@@ -60,9 +60,10 @@ const KNOWN_FLAGS: Set<string> = new Set([
 // ============================================================================
 
 /**
- * Generate a unique ID for a PO entry based on context + msgid
+ * Generate a unique ID for a PO entry based on context + msgid.
+ * Deterministic: same (msgctxt, msgid, index) always yields the same ID.
  */
-function generateEntryId(entry: Partial<POEntry>, index: number): string {
+export function generateEntryId(entry: Partial<POEntry>, index: number): string {
   const base = entry.msgctxt ? `${entry.msgctxt}\x04${entry.msgid}` : entry.msgid || '';
   return `${index}-${hashString(base)}`;
 }

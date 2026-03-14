@@ -20,7 +20,13 @@ export type {
 } from './types';
 
 // Parser
-export { parsePOFile, parsePOFileWithDiagnostics, validatePOFile, isPOFileContent } from './parser';
+export {
+  parsePOFile,
+  parsePOFileWithDiagnostics,
+  validatePOFile,
+  isPOFileContent,
+  generateEntryId,
+} from './parser';
 
 // Serializer
 export { serializePOFile, exportEntriesToJSON, calculatePOFileSize } from './serializer';
