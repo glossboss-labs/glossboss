@@ -153,13 +153,32 @@ export function EditorHeader({
     <MotionDiv variants={sectionVariants} initial="hidden" animate="visible">
       <Group justify="space-between" align="flex-start">
         <div data-ev-id="ev_c00be328c4">
-          <Group gap="xs" align="center">
-            <img src={appIcon} alt="GlossBoss" style={{ width: 28, height: 28, borderRadius: 6 }} />
-            <Title order={1}>GlossBoss</Title>
-          </Group>
-          <Text size="sm" mt={4} style={{ color: 'var(--gb-text-secondary)' }}>
-            {t('Edit gettext translation files with DeepL integration')}
-          </Text>
+          {filename ? (
+            <Group gap={6} align="center">
+              <img
+                src={appIcon}
+                alt="GlossBoss"
+                style={{ width: 20, height: 20, borderRadius: 4 }}
+              />
+              <Text fw={600} size="sm">
+                GlossBoss
+              </Text>
+            </Group>
+          ) : (
+            <>
+              <Group gap="xs" align="center">
+                <img
+                  src={appIcon}
+                  alt="GlossBoss"
+                  style={{ width: 28, height: 28, borderRadius: 6 }}
+                />
+                <Title order={1}>GlossBoss</Title>
+              </Group>
+              <Text size="sm" mt={4} style={{ color: 'var(--gb-text-secondary)' }}>
+                {t('Edit gettext translation files with DeepL integration')}
+              </Text>
+            </>
+          )}
         </div>
 
         <Group gap="sm" wrap="wrap" style={{ rowGap: 8 }}>

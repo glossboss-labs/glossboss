@@ -16,7 +16,6 @@ import {
   ActionIcon,
   Menu,
   Tooltip,
-  Divider,
   useMantineColorScheme,
   useComputedColorScheme,
   useMantineTheme,
@@ -137,16 +136,9 @@ export function AppHeader({ actions, projectId, onOpenRepoSync, onClear }: AppHe
             </Tooltip>
           </Group>
 
-          {/* Center: page-specific actions */}
-          {actions && (
-            <Group gap="sm" wrap="wrap" justify="center" style={{ flex: 1, rowGap: 8 }}>
-              {actions}
-            </Group>
-          )}
-
-          {/* Right: controls — mirrors EditorHeader */}
+          {/* Right: actions + controls */}
           <Group gap="sm" style={{ flex: '0 0 auto' }}>
-            {!isMobile && <Divider orientation="vertical" />}
+            {actions}
 
             {!isMobile && (
               <Group gap="sm">
