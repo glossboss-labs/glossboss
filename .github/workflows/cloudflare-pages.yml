@@ -91,7 +91,7 @@ jobs:
           fi
 
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            DEPLOY_OUTPUT="$(bunx wrangler pages deploy dist --project-name glossboss --branch "$DEPLOY_BRANCH" 2>&1 | tee /dev/stderr)"
+            DEPLOY_OUTPUT="$(bunx wrangler pages deploy dist --project-name glossboss-dev --branch "$DEPLOY_BRANCH" 2>&1 | tee /dev/stderr)"
             set +e
             DEPLOY_URL="$(printf '%s\n' "$DEPLOY_OUTPUT" | grep -Eo 'https://[^[:space:]]+\.pages\.dev' | tail -n1)"
             DEPLOY_URL_STATUS=$?
@@ -114,7 +114,7 @@ jobs:
 
             echo "preview_url=$DEPLOY_URL" >> "$GITHUB_OUTPUT"
           else
-            bunx wrangler pages deploy dist --project-name glossboss --branch "$DEPLOY_BRANCH"
+            bunx wrangler pages deploy dist --project-name glossboss-dev --branch "$DEPLOY_BRANCH"
           fi
 
       - name: Comment PR with preview link
