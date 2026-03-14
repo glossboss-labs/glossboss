@@ -104,7 +104,13 @@ function GitHubConnectSection({
   const hasPat = hasGitHubToken();
 
   // If connected via OAuth, show connected state
-  if (hasOAuth) {
+  if (hasOAuth || hasPat) {
+    const label = hasOAuth
+      ? isGitHubUser && user?.user_metadata?.user_name
+        ? `@${user.user_metadata.user_name}`
+        : 'GitHub'
+      : t('Personal access token');
+
     return (
       <Stack gap="sm">
         <Paper p="sm" withBorder>
@@ -113,36 +119,21 @@ function GitHubConnectSection({
               <Badge size="sm" variant="dot" color="green">
                 {t('Connected')}
               </Badge>
-              <Text size="sm" fw={500}>
-                {isGitHubUser && user?.user_metadata?.user_name
-                  ? `@${user.user_metadata.user_name}`
-                  : 'GitHub'}
+              <Text size="sm" fw={hasOAuth ? 500 : undefined} c={hasOAuth ? undefined : 'dimmed'}>
+                {label}
               </Text>
             </Group>
-          </Group>
-        </Paper>
-
-        <Button onClick={onLoadRepos} loading={loadingRepos}>
-          {t('Connect & list repositories')}
-        </Button>
-      </Stack>
-    );
-  }
-
-  // If connected via PAT only, show PAT connected state
-  if (hasPat) {
-    return (
-      <Stack gap="sm">
-        <Paper p="sm" withBorder>
-          <Group justify="space-between">
-            <Group gap="xs">
-              <Badge size="sm" variant="dot" color="green">
-                {t('Connected')}
-              </Badge>
-              <Text size="sm" c="dimmed">
-                {t('Personal access token')}
-              </Text>
-            </Group>
+            <Button
+              variant="subtle"
+              size="compact-sm"
+              onClick={async () => {
+                setSigningIn(true);
+                await signInWithGitHub();
+              }}
+              loading={signingIn}
+            >
+              {t('Switch account')}
+            </Button>
           </Group>
         </Paper>
 
