@@ -103,12 +103,11 @@ jobs:
 
             count=$(echo "$untranslated" | grep -c '^\- \[' || true)
 
-            # Find existing issue (check current title, then fall back to old format without [Translations] prefix)
+            # Find existing issue (check current title, then fall back to old format without [Translations] prefix).
+            # Avoid GitHub's search query parsing here; matching locally against the
+            # small open i18n issue set is more predictable for titles containing [].
             old_title="i18n: Untranslated strings in ${name} (${lang})"
-            existing=$(gh issue list --label i18n --state open --search "in:title $title" --json number,title --jq ".[] | select(.title == \"$title\") | .number" | head -1)
-            if [ -z "$existing" ]; then
-              existing=$(gh issue list --label i18n --state open --search "in:title $old_title" --json number,title --jq ".[] | select(.title == \"$old_title\") | .number" | head -1)
-            fi
+            existing=$(gh issue list --label i18n --state open --json number,title --jq ".[] | select(.title == \"$title\" or .title == \"$old_title\") | .number" | head -1)
 
             if [ "$count" -gt 0 ]; then
               # Build a raw GitHub URL for the PO file so GlossBoss can load it directly
@@ -131,38 +130,50 @@ jobs:
           EOF
               )
 
-              # Build assignee flags (create uses --assignee, edit uses --add-assignee)
-              create_assignee_flags=""
-              edit_assignee_flags=""
-              if [ -n "$assignees" ]; then
-                for user in $(echo "$assignees" | tr ',' ' '); do
-                  create_assignee_flags="$create_assignee_flags --assignee $user"
-                  edit_assignee_flags="$edit_assignee_flags --add-assignee $user"
-                done
+              if [ -n "$existing" ]; then
+                gh issue edit "$existing" --title "$title" --body "$body"
+                echo "Updated issue #${existing} for ${lang}"
+              else
+                create_output=$(gh issue create --title "$title" --label i18n --body "$body")
+                existing=$(printf '%s\n' "$create_output" | sed -n 's#.*/issues/\([0-9][0-9]*\)$#\1#p' | tail -1)
+                if [ -z "$existing" ]; then
+                  echo "Failed to parse created issue number from gh output: $create_output" >&2
+                  exit 1
+                fi
+                echo "Created issue for ${lang}"
               fi
 
-              if [ -n "$existing" ]; then
-                # Remove assignees that are no longer in the config (tolerate bots that can't be unassigned)
-                current_assignees=$(gh issue view "$existing" --json assignees --jq '.assignees[].login' 2>/dev/null || true)
-                for current in $current_assignees; do
-                  if ! echo ",$assignees," | grep -q ",$current,"; then
-                    # Try to remove the assignee; only tolerate specific "not found"/bot-style failures
-                    if ! remove_output=$(gh issue edit "$existing" --remove-assignee "$current" 2>&1); then
-                      if echo "$remove_output" | grep -qiE 'not found|could not find the requested user'; then
-                        echo "Skipping removal of $current (may be a bot or unknown user)"
+              # Sync assignees separately so issue creation/update succeeds even if
+              # assignee operations are restricted or a configured user is invalid.
+              current_assignees=$(gh issue view "$existing" --json assignees --jq '.assignees[].login' 2>/dev/null || true)
+              for current in $current_assignees; do
+                if ! echo ",$assignees," | grep -q ",$current,"; then
+                  if ! remove_output=$(gh issue edit "$existing" --remove-assignee "$current" 2>&1); then
+                    if echo "$remove_output" | grep -qiE 'not found|could not find the requested user|resource not accessible'; then
+                      echo "Skipping removal of $current (assignee sync is not permitted for this token)"
+                    else
+                      echo "$remove_output" >&2
+                      echo "Failed to remove assignee $current from issue #$existing" >&2
+                      exit 1
+                    fi
+                  fi
+                fi
+              done
+
+              if [ -n "$assignees" ]; then
+                for user in $(echo "$assignees" | tr ',' ' '); do
+                  if ! echo "$current_assignees" | grep -qx "$user"; then
+                    if ! add_output=$(gh issue edit "$existing" --add-assignee "$user" 2>&1); then
+                      if echo "$add_output" | grep -qiE 'not found|could not find the requested user|resource not accessible'; then
+                        echo "Skipping assignment of $user (assignee sync is not permitted for this token)"
                       else
-                        echo "$remove_output" >&2
-                        echo "Failed to remove assignee $current from issue #$existing" >&2
+                        echo "$add_output" >&2
+                        echo "Failed to add assignee $user to issue #$existing" >&2
                         exit 1
                       fi
                     fi
                   fi
                 done
-                gh issue edit "$existing" --title "$title" --body "$body" $edit_assignee_flags
-                echo "Updated issue #${existing} for ${lang}"
-              else
-                gh issue create --title "$title" --label i18n --body "$body" $create_assignee_flags
-                echo "Created issue for ${lang}"
               fi
             else
               if [ -n "$existing" ]; then
