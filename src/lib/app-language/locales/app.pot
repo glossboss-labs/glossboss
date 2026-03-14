@@ -51,11 +51,15 @@ msgstr ""
 msgid "API type"
 msgstr ""
 
+#: src/pages/auth/Signup.tsx:75
+msgid "Account created. Check your email to confirm, or sign in now."
+msgstr ""
+
 #: src/components/SettingsModal.tsx:223
 msgid "Action"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:345
+#: src/components/editor/EditorHeader.tsx:348
 msgid "Actions"
 msgstr ""
 
@@ -101,6 +105,10 @@ msgstr ""
 
 #: src/components/feedback/FeedbackModal.tsx:431
 msgid "Allow follow-up questions about this feedback"
+msgstr ""
+
+#: src/pages/auth/Signup.tsx:66
+msgid "Already have an account?"
 msgstr ""
 
 #: src/components/editor/EditorTable.tsx:843
@@ -213,7 +221,7 @@ msgid "Back to listing"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:1322
-#: src/components/editor/EditorHeader.tsx:245
+#: src/components/editor/EditorHeader.tsx:246
 msgid "Backup"
 msgstr ""
 
@@ -348,6 +356,10 @@ msgstr ""
 msgid "Chinese, Japanese, Korean, Vietnamese, Thai, Indonesian"
 msgstr ""
 
+#: src/pages/auth/Signup.tsx:110
+msgid "Choose a password"
+msgstr ""
+
 #: src/components/editor/WordPressProjectModal.tsx:261
 msgid "Choose a slug and locale before opening a project."
 msgstr ""
@@ -394,7 +406,7 @@ msgstr ""
 msgid "Clear anyway"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:361
+#: src/components/editor/EditorHeader.tsx:364
 msgid "Clear editor"
 msgstr ""
 
@@ -545,6 +557,15 @@ msgstr ""
 msgid "Context"
 msgstr ""
 
+#: src/pages/auth/Login.tsx:76
+#: src/pages/auth/Signup.tsx:85
+msgid "Continue with GitHub"
+msgstr ""
+
+#: src/pages/auth/Login.tsx:110
+msgid "Continue without account"
+msgstr ""
+
 #: src/components/SettingsModal.tsx:2369
 msgid ""
 "Controls the maximum width of the main content area. Use a wider setting on "
@@ -579,9 +600,21 @@ msgstr ""
 msgid "Create a token with repo scope pre-selected"
 msgstr ""
 
+#: src/pages/auth/Signup.tsx:119
+msgid "Create account"
+msgstr ""
+
+#: src/pages/auth/Signup.tsx:63
+msgid "Create an account"
+msgstr ""
+
 #: src/components/repo-sync/CommitPanel.tsx:206
 #: src/components/repo-sync/RepoSyncModal.tsx:751
 msgid "Create new branch"
+msgstr ""
+
+#: src/pages/auth/Login.tsx:65
+msgid "Create one"
 msgstr ""
 
 #: src/components/repo-sync/CommitPanel.tsx:232
@@ -632,8 +665,8 @@ msgstr ""
 msgid "Danish"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:58
-#: src/components/editor/EditorHeader.tsx:336
+#: src/components/editor/EditorHeader.tsx:59
+#: src/components/editor/EditorHeader.tsx:339
 msgid "Dark mode"
 msgstr ""
 
@@ -695,23 +728,27 @@ msgstr ""
 msgid "Display"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:193
+#: src/pages/auth/Login.tsx:63
+msgid "Don't have an account?"
+msgstr ""
+
+#: src/components/editor/EditorHeader.tsx:194
 msgid "Download"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:184
+#: src/components/editor/EditorHeader.tsx:185
 msgid "Download (unsaved changes)"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:233
+#: src/components/editor/EditorHeader.tsx:234
 msgid "Download as"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:173
+#: src/components/editor/EditorHeader.tsx:174
 msgid "Download as {format}"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:222
+#: src/components/editor/EditorHeader.tsx:223
 msgid "Download format options"
 msgstr ""
 
@@ -756,7 +793,7 @@ msgstr ""
 msgid "Edit Header"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:148
+#: src/components/editor/EditorHeader.tsx:149
 msgid "Edit gettext translation files with DeepL integration"
 msgstr ""
 
@@ -779,6 +816,8 @@ msgid ""
 msgstr ""
 
 #: src/components/feedback/FeedbackModal.tsx:424
+#: src/pages/auth/Login.tsx:90
+#: src/pages/auth/Signup.tsx:99
 msgid "Email"
 msgstr ""
 
@@ -1007,7 +1046,7 @@ msgstr ""
 msgid "Feature"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:304
+#: src/components/editor/EditorHeader.tsx:305
 msgid "Feedback"
 msgstr ""
 
@@ -1190,7 +1229,7 @@ msgid ""
 "port anyway."
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:364
+#: src/components/editor/EditorHeader.tsx:367
 msgid "GlossBoss v{version}"
 msgstr ""
 
@@ -1477,12 +1516,12 @@ msgstr ""
 msgid "Latvian"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:381
+#: src/components/editor/EditorHeader.tsx:384
 msgid "License"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:58
-#: src/components/editor/EditorHeader.tsx:336
+#: src/components/editor/EditorHeader.tsx:59
+#: src/components/editor/EditorHeader.tsx:339
 msgid "Light mode"
 msgstr ""
 
@@ -1547,7 +1586,7 @@ msgstr ""
 msgid "Load example PO"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:347
+#: src/components/editor/EditorHeader.tsx:350
 #: src/pages/index/IndexPageDialogs.tsx:206
 msgid "Load from URL"
 msgstr ""
@@ -1695,6 +1734,10 @@ msgstr ""
 
 #: src/components/editor/TranslateToolbar.tsx:672
 msgid "Marked {{count}} row(s) as fuzzy."
+msgstr ""
+
+#: src/pages/auth/Signup.tsx:115
+msgid "Minimum 6 characters"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:1743
@@ -1920,13 +1963,13 @@ msgstr ""
 msgid "Open a locale file from a GitHub or GitLab repository"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:350
+#: src/components/editor/EditorHeader.tsx:353
 #: src/components/editor/EmptyState.tsx:138
 #: src/components/editor/WordPressProjectModal.tsx:291
 msgid "Open from WordPress.org"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:358
+#: src/components/editor/EditorHeader.tsx:361
 #: src/components/editor/EmptyState.tsx:150
 msgid "Open from repository"
 msgstr ""
@@ -1945,7 +1988,7 @@ msgstr ""
 msgid "Open project"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:342
+#: src/components/editor/EditorHeader.tsx:345
 msgid "Open settings"
 msgstr ""
 
@@ -1959,7 +2002,7 @@ msgid ""
 "ved changes will be lost."
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:235
+#: src/components/editor/EditorHeader.tsx:236
 msgid "PO file (.po)"
 msgstr ""
 
@@ -1977,6 +2020,11 @@ msgstr ""
 
 #: src/components/repo-sync/CommitPanel.tsx:243
 msgid "PR title"
+msgstr ""
+
+#: src/pages/auth/Login.tsx:100
+#: src/pages/auth/Signup.tsx:109
+msgid "Password"
 msgstr ""
 
 #: src/components/editor/EmptyState.tsx:104
@@ -2116,7 +2164,7 @@ msgstr ""
 msgid "Previous field"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:399
+#: src/components/editor/EditorHeader.tsx:402
 #: src/components/feedback/FeedbackModal.tsx:417
 msgid "Privacy"
 msgstr ""
@@ -2179,7 +2227,7 @@ msgstr ""
 msgid "Punjabi"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:282
+#: src/components/editor/EditorHeader.tsx:283
 #: src/components/repo-sync/RepoSyncModal.tsx:412
 msgid "Push"
 msgstr ""
@@ -2188,7 +2236,7 @@ msgstr ""
 msgid "Push changes to repository"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:271
+#: src/components/editor/EditorHeader.tsx:272
 msgid "Push changes to {{provider}}"
 msgstr ""
 
@@ -2243,7 +2291,7 @@ msgid "Refresh"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:2132
-#: src/components/editor/EditorHeader.tsx:354
+#: src/components/editor/EditorHeader.tsx:357
 #: src/components/editor/GlossaryPanel.tsx:338
 #: src/components/editor/GlossaryPanel.tsx:342
 #: src/components/editor/WordPressRefreshModal.tsx:198
@@ -2328,7 +2376,7 @@ msgstr ""
 msgid "Repository"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:358
+#: src/components/editor/EditorHeader.tsx:361
 #: src/components/repo-sync/RepoSyncModal.tsx:397
 msgid "Repository sync"
 msgstr ""
@@ -2593,12 +2641,12 @@ msgid "Set a WordPress project slug to browse source files."
 msgstr ""
 
 #: src/components/SettingsModal.tsx:1280
-#: src/components/editor/EditorHeader.tsx:340
+#: src/components/editor/EditorHeader.tsx:343
 msgid "Settings"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:315
-#: src/components/editor/EditorHeader.tsx:317
+#: src/components/editor/EditorHeader.tsx:318
+#: src/components/editor/EditorHeader.tsx:320
 msgid "Settings and actions"
 msgstr ""
 
@@ -2635,8 +2683,8 @@ msgstr ""
 msgid "Share Feedback"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:297
-#: src/components/editor/EditorHeader.tsx:326
+#: src/components/editor/EditorHeader.tsx:298
+#: src/components/editor/EditorHeader.tsx:329
 msgid "Share feedback"
 msgstr ""
 
@@ -2686,10 +2734,28 @@ msgstr ""
 msgid "Showing {{start}}–{{end}} of {{total}} entries"
 msgstr ""
 
+#: src/components/auth/UserMenu.tsx:25
+#: src/pages/auth/Login.tsx:115
+#: src/pages/auth/Signup.tsx:68
+msgid "Sign in"
+msgstr ""
+
+#: src/pages/auth/Login.tsx:60
+msgid "Sign in to GlossBoss"
+msgstr ""
+
+#: src/components/auth/UserMenu.tsx:66
+msgid "Sign out"
+msgstr ""
+
 #: src/components/editor/EditorTable.tsx:131
 #: src/components/editor/EditorTable.tsx:2365
 #: src/components/editor/FilterToolbar.tsx:314
 msgid "Signals"
+msgstr ""
+
+#: src/pages/auth/Callback.tsx:28
+msgid "Signing you in..."
 msgstr ""
 
 #: src/components/editor/EditorTable.tsx:1729
@@ -2725,7 +2791,7 @@ msgstr ""
 msgid "Sort entries"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:372
+#: src/components/editor/EditorHeader.tsx:375
 #: src/components/editor/EditorTable.tsx:2351
 msgid "Source"
 msgstr ""
@@ -2851,11 +2917,11 @@ msgstr ""
 msgid "Swedish"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:65
+#: src/components/editor/EditorHeader.tsx:66
 msgid "Switch to dark mode"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:65
+#: src/components/editor/EditorHeader.tsx:66
 msgid "Switch to light mode"
 msgstr ""
 
@@ -3006,7 +3072,7 @@ msgstr ""
 msgid "Track"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:390
+#: src/components/editor/EditorHeader.tsx:393
 msgid "Translate"
 msgstr ""
 
@@ -3194,11 +3260,11 @@ msgstr ""
 msgid "Untranslated"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:262
+#: src/components/editor/EditorHeader.tsx:263
 msgid "Update"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:254
+#: src/components/editor/EditorHeader.tsx:255
 msgid ""
 "Update this file using a .pot template. Existing translations are kept when "
 "source strings still match, new strings are added, and obsolete strings are "
@@ -3231,7 +3297,7 @@ msgstr ""
 msgid "Updated translation"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:158
+#: src/components/editor/EditorHeader.tsx:159
 msgid "Upload"
 msgstr ""
 
@@ -3444,7 +3510,7 @@ msgstr ""
 msgid "Write a reply to this comment"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:172
+#: src/components/editor/EditorHeader.tsx:173
 msgid "You have unsaved changes"
 msgstr ""
 
@@ -3467,6 +3533,10 @@ msgid ""
 "Your ElevenLabs API key is kept in this browser tab by default and will be c"
 "leared when you close the tab. Enable \"Remember API key\" below to persist "
 "it across sessions."
+msgstr ""
+
+#: src/pages/auth/Login.tsx:101
+msgid "Your password"
 msgstr ""
 
 #: src/components/repo-sync/RepoSyncModal.tsx:452
@@ -3506,7 +3576,7 @@ msgstr ""
 msgid "for details."
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:238
+#: src/components/editor/EditorHeader.tsx:239
 msgid "i18next JSON (.json)"
 msgstr ""
 
@@ -3520,6 +3590,14 @@ msgstr ""
 
 #: src/components/editor/EmptyState.tsx:127
 msgid "or"
+msgstr ""
+
+#: src/pages/auth/Signup.tsx:88
+msgid "or create account with email"
+msgstr ""
+
+#: src/pages/auth/Login.tsx:79
+msgid "or sign in with email"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:2155

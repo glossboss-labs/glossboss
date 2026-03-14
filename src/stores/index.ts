@@ -6,6 +6,8 @@
 
 export { useEditorStore } from './editor-store';
 export type { EditorState, EditorActions, FileFormat } from './editor-store';
+export { useAuthStore } from './auth-store';
+export type { AuthState, AuthActions } from './auth-store';
 export {
   useSourceStore,
   getEffectiveProjectType,

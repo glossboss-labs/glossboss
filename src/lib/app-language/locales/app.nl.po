@@ -52,11 +52,15 @@ msgstr "De API-sleutel is geldig!"
 msgid "API type"
 msgstr "API-type"
 
+#: src/pages/auth/Signup.tsx:75
+msgid "Account created. Check your email to confirm, or sign in now."
+msgstr ""
+
 #: src/components/SettingsModal.tsx:223
 msgid "Action"
 msgstr "Actie"
 
-#: src/components/editor/EditorHeader.tsx:345
+#: src/components/editor/EditorHeader.tsx:348
 msgid "Actions"
 msgstr "Acties"
 
@@ -103,6 +107,10 @@ msgstr "Albanees"
 #: src/components/feedback/FeedbackModal.tsx:431
 msgid "Allow follow-up questions about this feedback"
 msgstr "Sta vervolgvragen over deze feedback toe"
+
+#: src/pages/auth/Signup.tsx:66
+msgid "Already have an account?"
+msgstr ""
 
 #: src/components/editor/EditorTable.tsx:843
 msgid "Apply"
@@ -214,7 +222,7 @@ msgid "Back to listing"
 msgstr "Terug naar lijst"
 
 #: src/components/SettingsModal.tsx:1322
-#: src/components/editor/EditorHeader.tsx:245
+#: src/components/editor/EditorHeader.tsx:246
 msgid "Backup"
 msgstr "Back-up"
 
@@ -349,6 +357,10 @@ msgstr "Chinees (Traditioneel)"
 msgid "Chinese, Japanese, Korean, Vietnamese, Thai, Indonesian"
 msgstr "Chinees, Japans, Koreaans, Vietnamees, Thais, Indonesisch"
 
+#: src/pages/auth/Signup.tsx:110
+msgid "Choose a password"
+msgstr ""
+
 #: src/components/editor/WordPressProjectModal.tsx:261
 msgid "Choose a slug and locale before opening a project."
 msgstr ""
@@ -395,7 +407,7 @@ msgstr "Actieve bronverwijzing wissen"
 msgid "Clear anyway"
 msgstr "Toch wissen"
 
-#: src/components/editor/EditorHeader.tsx:361
+#: src/components/editor/EditorHeader.tsx:364
 msgid "Clear editor"
 msgstr "Editor wissen"
 
@@ -546,6 +558,15 @@ msgstr "Inhoudstype"
 msgid "Context"
 msgstr "Context"
 
+#: src/pages/auth/Login.tsx:76
+#: src/pages/auth/Signup.tsx:85
+msgid "Continue with GitHub"
+msgstr ""
+
+#: src/pages/auth/Login.tsx:110
+msgid "Continue without account"
+msgstr ""
+
 #: src/components/SettingsModal.tsx:2369
 msgid ""
 "Controls the maximum width of the main content area. Use a wider setting on "
@@ -586,9 +607,21 @@ msgstr ""
 msgid "Create a token with repo scope pre-selected"
 msgstr ""
 
+#: src/pages/auth/Signup.tsx:119
+msgid "Create account"
+msgstr ""
+
+#: src/pages/auth/Signup.tsx:63
+msgid "Create an account"
+msgstr ""
+
 #: src/components/repo-sync/CommitPanel.tsx:206
 #: src/components/repo-sync/RepoSyncModal.tsx:751
 msgid "Create new branch"
+msgstr ""
+
+#: src/pages/auth/Login.tsx:65
+msgid "Create one"
 msgstr ""
 
 #: src/components/repo-sync/CommitPanel.tsx:232
@@ -641,8 +674,8 @@ msgstr "Tsjechisch"
 msgid "Danish"
 msgstr "Deens"
 
-#: src/components/editor/EditorHeader.tsx:58
-#: src/components/editor/EditorHeader.tsx:336
+#: src/components/editor/EditorHeader.tsx:59
+#: src/components/editor/EditorHeader.tsx:339
 msgid "Dark mode"
 msgstr "Donkere modus"
 
@@ -708,23 +741,27 @@ msgstr "Wijzigingen weggooien en huidig veld verlaten"
 msgid "Display"
 msgstr "Weergave"
 
-#: src/components/editor/EditorHeader.tsx:193
+#: src/pages/auth/Login.tsx:63
+msgid "Don't have an account?"
+msgstr ""
+
+#: src/components/editor/EditorHeader.tsx:194
 msgid "Download"
 msgstr "Downloaden"
 
-#: src/components/editor/EditorHeader.tsx:184
+#: src/components/editor/EditorHeader.tsx:185
 msgid "Download (unsaved changes)"
 msgstr "Downloaden (niet-opgeslagen wijzigingen)"
 
-#: src/components/editor/EditorHeader.tsx:233
+#: src/components/editor/EditorHeader.tsx:234
 msgid "Download as"
 msgstr "Downloaden als"
 
-#: src/components/editor/EditorHeader.tsx:173
+#: src/components/editor/EditorHeader.tsx:174
 msgid "Download as {format}"
 msgstr "Downloaden als {format}"
 
-#: src/components/editor/EditorHeader.tsx:222
+#: src/components/editor/EditorHeader.tsx:223
 msgid "Download format options"
 msgstr "Downloadformaatopties"
 
@@ -771,7 +808,7 @@ msgstr ""
 msgid "Edit Header"
 msgstr "Header bewerken"
 
-#: src/components/editor/EditorHeader.tsx:148
+#: src/components/editor/EditorHeader.tsx:149
 msgid "Edit gettext translation files with DeepL integration"
 msgstr "Bewerk gettext-vertaalbestanden met DeepL-integratie"
 
@@ -796,6 +833,8 @@ msgstr ""
 "t tot de volgende provider-reset."
 
 #: src/components/feedback/FeedbackModal.tsx:424
+#: src/pages/auth/Login.tsx:90
+#: src/pages/auth/Signup.tsx:99
 msgid "Email"
 msgstr "E-mail"
 
@@ -1029,7 +1068,7 @@ msgstr "Het lukte niet om het bestand te lezen."
 msgid "Feature"
 msgstr "Functie"
 
-#: src/components/editor/EditorHeader.tsx:304
+#: src/components/editor/EditorHeader.tsx:305
 msgid "Feedback"
 msgstr "Feedback"
 
@@ -1212,7 +1251,7 @@ msgid ""
 "port anyway."
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:364
+#: src/components/editor/EditorHeader.tsx:367
 msgid "GlossBoss v{version}"
 msgstr "GlossBoss v{version}"
 
@@ -1509,12 +1548,12 @@ msgstr "Laatst bijgewerkt"
 msgid "Latvian"
 msgstr "Lets"
 
-#: src/components/editor/EditorHeader.tsx:381
+#: src/components/editor/EditorHeader.tsx:384
 msgid "License"
 msgstr "Licentie"
 
-#: src/components/editor/EditorHeader.tsx:58
-#: src/components/editor/EditorHeader.tsx:336
+#: src/components/editor/EditorHeader.tsx:59
+#: src/components/editor/EditorHeader.tsx:339
 msgid "Light mode"
 msgstr "Lichte modus"
 
@@ -1579,7 +1618,7 @@ msgstr ""
 msgid "Load example PO"
 msgstr "Voorbeeld-PO laden"
 
-#: src/components/editor/EditorHeader.tsx:347
+#: src/components/editor/EditorHeader.tsx:350
 #: src/pages/index/IndexPageDialogs.tsx:206
 msgid "Load from URL"
 msgstr ""
@@ -1731,6 +1770,10 @@ msgstr ""
 
 #: src/components/editor/TranslateToolbar.tsx:672
 msgid "Marked {{count}} row(s) as fuzzy."
+msgstr ""
+
+#: src/pages/auth/Signup.tsx:115
+msgid "Minimum 6 characters"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:1743
@@ -1956,13 +1999,13 @@ msgstr ""
 msgid "Open a locale file from a GitHub or GitLab repository"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:350
+#: src/components/editor/EditorHeader.tsx:353
 #: src/components/editor/EmptyState.tsx:138
 #: src/components/editor/WordPressProjectModal.tsx:291
 msgid "Open from WordPress.org"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:358
+#: src/components/editor/EditorHeader.tsx:361
 #: src/components/editor/EmptyState.tsx:150
 msgid "Open from repository"
 msgstr ""
@@ -1981,7 +2024,7 @@ msgstr "Issue openen"
 msgid "Open project"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:342
+#: src/components/editor/EditorHeader.tsx:345
 msgid "Open settings"
 msgstr "Instellingen openen"
 
@@ -1995,7 +2038,7 @@ msgid ""
 "ved changes will be lost."
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:235
+#: src/components/editor/EditorHeader.tsx:236
 msgid "PO file (.po)"
 msgstr "PO-bestand (.po)"
 
@@ -2013,6 +2056,11 @@ msgstr ""
 
 #: src/components/repo-sync/CommitPanel.tsx:243
 msgid "PR title"
+msgstr ""
+
+#: src/pages/auth/Login.tsx:100
+#: src/pages/auth/Signup.tsx:109
+msgid "Password"
 msgstr ""
 
 #: src/components/editor/EmptyState.tsx:104
@@ -2155,7 +2203,7 @@ msgstr "Stemvoorbeeld"
 msgid "Previous field"
 msgstr "Vorig veld"
 
-#: src/components/editor/EditorHeader.tsx:399
+#: src/components/editor/EditorHeader.tsx:402
 #: src/components/feedback/FeedbackModal.tsx:417
 msgid "Privacy"
 msgstr "Privacy"
@@ -2218,7 +2266,7 @@ msgstr ""
 msgid "Punjabi"
 msgstr "Punjabi"
 
-#: src/components/editor/EditorHeader.tsx:282
+#: src/components/editor/EditorHeader.tsx:283
 #: src/components/repo-sync/RepoSyncModal.tsx:412
 msgid "Push"
 msgstr ""
@@ -2227,7 +2275,7 @@ msgstr ""
 msgid "Push changes to repository"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:271
+#: src/components/editor/EditorHeader.tsx:272
 msgid "Push changes to {{provider}}"
 msgstr ""
 
@@ -2282,7 +2330,7 @@ msgid "Refresh"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:2132
-#: src/components/editor/EditorHeader.tsx:354
+#: src/components/editor/EditorHeader.tsx:357
 #: src/components/editor/GlossaryPanel.tsx:338
 #: src/components/editor/GlossaryPanel.tsx:342
 #: src/components/editor/WordPressRefreshModal.tsx:198
@@ -2367,7 +2415,7 @@ msgstr "Bugs melden aan"
 msgid "Repository"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:358
+#: src/components/editor/EditorHeader.tsx:361
 #: src/components/repo-sync/RepoSyncModal.tsx:397
 msgid "Repository sync"
 msgstr ""
@@ -2636,12 +2684,12 @@ msgid "Set a WordPress project slug to browse source files."
 msgstr ""
 
 #: src/components/SettingsModal.tsx:1280
-#: src/components/editor/EditorHeader.tsx:340
+#: src/components/editor/EditorHeader.tsx:343
 msgid "Settings"
 msgstr "Instellingen"
 
-#: src/components/editor/EditorHeader.tsx:315
-#: src/components/editor/EditorHeader.tsx:317
+#: src/components/editor/EditorHeader.tsx:318
+#: src/components/editor/EditorHeader.tsx:320
 msgid "Settings and actions"
 msgstr "Instellingen en acties"
 
@@ -2678,8 +2726,8 @@ msgstr "Instellingen opgeslagen!"
 msgid "Share Feedback"
 msgstr "Feedback delen"
 
-#: src/components/editor/EditorHeader.tsx:297
-#: src/components/editor/EditorHeader.tsx:326
+#: src/components/editor/EditorHeader.tsx:298
+#: src/components/editor/EditorHeader.tsx:329
 msgid "Share feedback"
 msgstr "Feedback delen"
 
@@ -2731,11 +2779,29 @@ msgstr "{{shown}} van {{total}} termen getoond"
 msgid "Showing {{start}}–{{end}} of {{total}} entries"
 msgstr "{{start}}–{{end}} van {{total}} items"
 
+#: src/components/auth/UserMenu.tsx:25
+#: src/pages/auth/Login.tsx:115
+#: src/pages/auth/Signup.tsx:68
+msgid "Sign in"
+msgstr ""
+
+#: src/pages/auth/Login.tsx:60
+msgid "Sign in to GlossBoss"
+msgstr ""
+
+#: src/components/auth/UserMenu.tsx:66
+msgid "Sign out"
+msgstr ""
+
 #: src/components/editor/EditorTable.tsx:131
 #: src/components/editor/EditorTable.tsx:2365
 #: src/components/editor/FilterToolbar.tsx:314
 msgid "Signals"
 msgstr "Signalen"
+
+#: src/pages/auth/Callback.tsx:28
+msgid "Signing you in..."
+msgstr ""
 
 #: src/components/editor/EditorTable.tsx:1729
 msgid "Singular entry"
@@ -2770,7 +2836,7 @@ msgstr ""
 msgid "Sort entries"
 msgstr "Items sorteren"
 
-#: src/components/editor/EditorHeader.tsx:372
+#: src/components/editor/EditorHeader.tsx:375
 #: src/components/editor/EditorTable.tsx:2351
 msgid "Source"
 msgstr "Bron"
@@ -2898,11 +2964,11 @@ msgstr "Swahili"
 msgid "Swedish"
 msgstr "Zweeds"
 
-#: src/components/editor/EditorHeader.tsx:65
+#: src/components/editor/EditorHeader.tsx:66
 msgid "Switch to dark mode"
 msgstr "Schakel naar donkere modus"
 
-#: src/components/editor/EditorHeader.tsx:65
+#: src/components/editor/EditorHeader.tsx:66
 msgid "Switch to light mode"
 msgstr "Schakel naar lichte modus"
 
@@ -3057,7 +3123,7 @@ msgstr ""
 msgid "Track"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:390
+#: src/components/editor/EditorHeader.tsx:393
 msgid "Translate"
 msgstr "Vertalen"
 
@@ -3247,11 +3313,11 @@ msgstr "Onopgeslagen concept gevonden"
 msgid "Untranslated"
 msgstr "Onvertaald"
 
-#: src/components/editor/EditorHeader.tsx:262
+#: src/components/editor/EditorHeader.tsx:263
 msgid "Update"
 msgstr "Bijwerken"
 
-#: src/components/editor/EditorHeader.tsx:254
+#: src/components/editor/EditorHeader.tsx:255
 msgid ""
 "Update this file using a .pot template. Existing translations are kept when "
 "source strings still match, new strings are added, and obsolete strings are "
@@ -3289,7 +3355,7 @@ msgstr ""
 msgid "Updated translation"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:158
+#: src/components/editor/EditorHeader.tsx:159
 msgid "Upload"
 msgstr "Uploaden"
 
@@ -3511,7 +3577,7 @@ msgstr ""
 msgid "Write a reply to this comment"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:172
+#: src/components/editor/EditorHeader.tsx:173
 msgid "You have unsaved changes"
 msgstr "Je hebt onopgeslagen wijzigingen"
 
@@ -3542,6 +3608,10 @@ msgstr ""
 "Je ElevenLabs API-sleutel wordt standaard in dit browsertabblad bewaard en w"
 "ordt gewist als je het tabblad sluit. Zet 'API-sleutel onthouden' hieronder "
 "aan om deze tussen sessies te bewaren."
+
+#: src/pages/auth/Login.tsx:101
+msgid "Your password"
+msgstr ""
 
 #: src/components/repo-sync/RepoSyncModal.tsx:452
 msgid ""
@@ -3580,7 +3650,7 @@ msgstr ""
 msgid "for details."
 msgstr "voor details."
 
-#: src/components/editor/EditorHeader.tsx:238
+#: src/components/editor/EditorHeader.tsx:239
 msgid "i18next JSON (.json)"
 msgstr "i18next JSON (.json)"
 
@@ -3595,6 +3665,14 @@ msgstr "naam@voorbeeld.nl"
 #: src/components/editor/EmptyState.tsx:127
 msgid "or"
 msgstr "of"
+
+#: src/pages/auth/Signup.tsx:88
+msgid "or create account with email"
+msgstr ""
+
+#: src/pages/auth/Login.tsx:79
+msgid "or sign in with email"
+msgstr ""
 
 #: src/components/SettingsModal.tsx:2155
 msgid "or upload manually"

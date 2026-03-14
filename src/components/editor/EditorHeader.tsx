@@ -42,6 +42,7 @@ import { sectionVariants, fadeVariants, buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
 import type { FileFormat } from '@/stores';
 import type { RepoConnection } from '@/lib/repo-sync/types';
+import { UserMenu } from '@/components/auth/UserMenu';
 
 const MotionDiv = motion.div;
 const appIcon = '/icon.svg';
@@ -309,6 +310,8 @@ export function EditorHeader({
               <ThemeToggle onToggle={onToggleColorScheme} />
             </Group>
           )}
+
+          <UserMenu />
 
           <Menu position="bottom-end" withinPortal>
             <Menu.Target>

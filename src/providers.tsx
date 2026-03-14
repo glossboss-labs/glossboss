@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { type ReactNode, useEffect } from 'react';
 import {
   MantineProvider,
   createTheme,
@@ -9,6 +9,7 @@ import {
   type CSSVariablesResolver,
 } from '@mantine/core';
 import { TranslationProvider } from '@/lib/app-language';
+import { useAuthStore } from '@/stores/auth-store';
 
 // Import Mantine styles
 import '@mantine/core/styles.css';
@@ -216,6 +217,13 @@ const theme = createTheme({
  * - TranslationProvider: i18n
  */
 export function AppProviders({ children }: { children: ReactNode }) {
+  const initialize = useAuthStore((s) => s.initialize);
+
+  useEffect(() => {
+    const cleanup = initialize();
+    return cleanup;
+  }, [initialize]);
+
   return (
     <MantineProvider theme={theme} defaultColorScheme="auto" cssVariablesResolver={resolver}>
       <TranslationProvider>{children}</TranslationProvider>

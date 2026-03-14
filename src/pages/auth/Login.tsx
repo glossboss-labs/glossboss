@@ -1,0 +1,122 @@
+/**
+ * Login page — email/password + GitHub OAuth.
+ */
+
+import { useState } from 'react';
+import { useNavigate, Link } from 'react-router';
+import {
+  Container,
+  Paper,
+  Title,
+  Text,
+  TextInput,
+  PasswordInput,
+  Button,
+  Group,
+  Divider,
+  Alert,
+  Stack,
+  Anchor,
+} from '@mantine/core';
+import { AlertCircle } from 'lucide-react';
+import { useTranslation } from '@/lib/app-language';
+import { useAuthStore } from '@/stores/auth-store';
+import { useAuth } from '@/hooks/use-auth';
+import { GithubIcon } from '@/components/auth/GithubIcon';
+
+export default function Login() {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { error } = useAuth();
+  const signInWithEmail = useAuthStore((s) => s.signInWithEmail);
+  const signInWithGitHub = useAuthStore((s) => s.signInWithGitHub);
+  const clearError = useAuthStore((s) => s.clearError);
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleEmailLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    clearError();
+    await signInWithEmail(email, password);
+    setSubmitting(false);
+    // Auth state change listener will update session; navigate after
+    if (!useAuthStore.getState().error) {
+      navigate('/');
+    }
+  };
+
+  const handleGitHubLogin = async () => {
+    clearError();
+    await signInWithGitHub();
+    // OAuth redirects away — no navigation needed
+  };
+
+  return (
+    <Container size={420} py={80}>
+      <Title ta="center" style={{ fontWeight: 800 }}>
+        {t('Sign in to GlossBoss')}
+      </Title>
+      <Text c="dimmed" size="sm" ta="center" mt={5}>
+        {t("Don't have an account?")}{' '}
+        <Anchor component={Link} to="/signup" size="sm">
+          {t('Create one')}
+        </Anchor>
+      </Text>
+
+      <Paper withBorder p="xl" mt={30} radius="md">
+        <Button
+          fullWidth
+          variant="default"
+          leftSection={<GithubIcon />}
+          onClick={handleGitHubLogin}
+        >
+          {t('Continue with GitHub')}
+        </Button>
+
+        <Divider label={t('or sign in with email')} labelPosition="center" my="lg" />
+
+        <form onSubmit={handleEmailLogin}>
+          <Stack>
+            {error && (
+              <Alert icon={<AlertCircle size={16} />} color="red" variant="light">
+                {error.message}
+              </Alert>
+            )}
+
+            <TextInput
+              label={t('Email')}
+              placeholder="you@example.com"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.currentTarget.value)}
+              type="email"
+              autoComplete="email"
+            />
+
+            <PasswordInput
+              label={t('Password')}
+              placeholder={t('Your password')}
+              required
+              value={password}
+              onChange={(e) => setPassword(e.currentTarget.value)}
+              autoComplete="current-password"
+            />
+
+            <Group justify="flex-end">
+              <Anchor component={Link} to="/" size="sm">
+                {t('Continue without account')}
+              </Anchor>
+            </Group>
+
+            <Button type="submit" fullWidth loading={submitting}>
+              {t('Sign in')}
+            </Button>
+          </Stack>
+        </form>
+      </Paper>
+    </Container>
+  );
+}
