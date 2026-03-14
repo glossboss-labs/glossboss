@@ -1,7 +1,7 @@
 /**
  * AppHeader — shared header for project pages (Dashboard, ProjectDetail, ProjectEditor).
  *
- * Provides consistent branding, navigation, and controls across all authenticated pages.
+ * Three-column layout: branding left, page actions center, controls right.
  * The optional `actions` slot lets individual pages inject page-specific buttons
  * (e.g. upload/download in ProjectEditor).
  */
@@ -15,7 +15,6 @@ import {
   ActionIcon,
   Menu,
   Tooltip,
-  Divider,
   useMantineColorScheme,
   useComputedColorScheme,
   useMantineTheme,
@@ -42,7 +41,7 @@ const MotionDiv = motion.div;
 const appIcon = '/icon.svg';
 
 interface AppHeaderProps {
-  /** Extra buttons rendered between left nav and right controls */
+  /** Extra buttons rendered in the center section */
   actions?: ReactNode;
 }
 
@@ -56,13 +55,13 @@ function ThemeToggle() {
       <motion.div {...buttonStates}>
         <ActionIcon
           variant="default"
-          size="lg"
+          size="md"
           onClick={toggleColorScheme}
           aria-label={
             computedColorScheme === 'dark' ? t('Switch to light mode') : t('Switch to dark mode')
           }
         >
-          {computedColorScheme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+          {computedColorScheme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
         </ActionIcon>
       </motion.div>
     </Tooltip>
@@ -79,15 +78,15 @@ export function AppHeader({ actions }: AppHeaderProps) {
   return (
     <>
       <MotionDiv variants={sectionVariants} initial="hidden" animate="visible">
-        <Group justify="space-between" align="center" wrap="wrap" style={{ rowGap: 12 }} mb="lg">
-          {/* Left: branding + home link */}
-          <Group gap="sm" align="center">
+        <Group justify="space-between" align="center" mb="md">
+          {/* Left: branding */}
+          <Group gap="sm" align="center" style={{ flex: '0 0 auto' }}>
             <Link
               to="/dashboard"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: 8,
+                gap: 6,
                 textDecoration: 'none',
                 color: 'inherit',
               }}
@@ -95,29 +94,26 @@ export function AppHeader({ actions }: AppHeaderProps) {
               <img
                 src={appIcon}
                 alt="GlossBoss"
-                style={{ width: 24, height: 24, borderRadius: 4 }}
+                style={{ width: 20, height: 20, borderRadius: 4 }}
               />
-              <Text fw={600} size="md">
+              <Text fw={600} size="sm">
                 GlossBoss
               </Text>
             </Link>
-            <Text size="sm" style={{ color: 'var(--gb-text-tertiary)' }}>
-              ·
-            </Text>
             <Tooltip label={t('Open local editor')}>
               <Text
                 component={Link}
                 to="/"
-                size="sm"
+                size="xs"
                 style={{
-                  color: 'var(--gb-text-secondary)',
+                  color: 'var(--gb-text-tertiary)',
                   textDecoration: 'none',
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: 4,
+                  gap: 3,
                 }}
               >
-                <Home size={14} />
+                <Home size={12} />
                 {t('Editor')}
               </Text>
             </Tooltip>
@@ -125,29 +121,28 @@ export function AppHeader({ actions }: AppHeaderProps) {
 
           {/* Center: page-specific actions */}
           {actions && (
-            <Group gap="sm" wrap="wrap" style={{ rowGap: 8 }}>
+            <Group gap="xs" wrap="wrap" justify="center" style={{ flex: 1, rowGap: 6 }}>
               {actions}
             </Group>
           )}
 
           {/* Right: controls */}
-          <Group gap="sm">
+          <Group gap={6} style={{ flex: '0 0 auto' }}>
             {!isMobile && (
               <>
                 <Tooltip label={t('Share feedback')}>
                   <motion.div {...buttonStates}>
                     <ActionIcon
                       variant="subtle"
-                      size="lg"
+                      size="md"
                       onClick={() => setFeedbackOpen(true)}
                       aria-label={t('Share feedback')}
                     >
-                      <MessageSquare size={18} />
+                      <MessageSquare size={16} />
                     </ActionIcon>
                   </motion.div>
                 </Tooltip>
                 <ThemeToggle />
-                <Divider orientation="vertical" />
               </>
             )}
 
@@ -157,10 +152,10 @@ export function AppHeader({ actions }: AppHeaderProps) {
                   component={Link}
                   to="/dashboard"
                   variant="default"
-                  size="lg"
+                  size="md"
                   aria-label={t('Projects')}
                 >
-                  <LayoutDashboard size={18} />
+                  <LayoutDashboard size={16} />
                 </ActionIcon>
               </motion.div>
             </Tooltip>
@@ -171,8 +166,8 @@ export function AppHeader({ actions }: AppHeaderProps) {
               <Menu.Target>
                 <Tooltip label={t('Settings and actions')}>
                   <motion.div {...buttonStates}>
-                    <ActionIcon variant="default" size="lg" aria-label={t('Settings and actions')}>
-                      <Settings size={18} />
+                    <ActionIcon variant="default" size="md" aria-label={t('Settings and actions')}>
+                      <Settings size={16} />
                     </ActionIcon>
                   </motion.div>
                 </Tooltip>
