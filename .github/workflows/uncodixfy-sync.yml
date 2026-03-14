@@ -17,6 +17,8 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    env:
+      UNCODIXFY_SYNC_TOKEN: ${{ secrets.UNCODIXFY_SYNC_TOKEN }}
 
     steps:
       - name: Checkout
@@ -30,10 +32,20 @@ jobs:
       - name: Sync vendored Uncodixfy files
         run: bun run sync:uncodixfy
 
+      - name: Check for synced changes
+        id: changes
+        run: |
+          if [[ -n "$(git status --porcelain)" ]]; then
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Create pull request
+        if: steps.changes.outputs.has_changes == 'true' && env.UNCODIXFY_SYNC_TOKEN != ''
         uses: peter-evans/create-pull-request@v7
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ env.UNCODIXFY_SYNC_TOKEN }}
           commit-message: 'chore: sync uncodixfy'
           branch: chore/sync-uncodixfy
           delete-branch: true
@@ -49,3 +61,8 @@ jobs:
           assignees: |
             lammersbjorn
             toineenzo
+
+      - name: Warn when PR creation is skipped
+        if: steps.changes.outputs.has_changes == 'true' && env.UNCODIXFY_SYNC_TOKEN == ''
+        run: |
+          echo "::warning::Uncodixfy changes were detected, but the UNCODIXFY_SYNC_TOKEN secret is not configured. Skipping pull request creation because this repository does not allow pull requests to be created with GITHUB_TOKEN."
