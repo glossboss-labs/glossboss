@@ -168,7 +168,7 @@ export async function searchLocaleFiles(
     `/repos/${ownerEnc}/${repoEnc}/git/trees/${branchInfo.commit.sha}?recursive=1`,
   );
 
-  return tree.tree
+  const matched = tree.tree
     .filter((entry) => {
       if (entry.type !== 'blob') return false;
       const lower = entry.path.toLowerCase();
@@ -181,6 +181,43 @@ export async function searchLocaleFiles(
       size: entry.size,
       sha: entry.sha,
     }));
+
+  // If the tree was truncated and we found no locale files, fall back to
+  // the GitHub Code Search API to find .po/.pot files by extension.
+  if (tree.truncated && matched.length === 0) {
+    return searchLocaleFilesByCodeSearch(ownerEnc, repoEnc);
+  }
+
+  return matched;
+}
+
+/** Fallback: use GitHub Code Search API for .po/.pot files when tree is truncated. */
+async function searchLocaleFilesByCodeSearch(
+  owner: string,
+  repo: string,
+): Promise<RepoTreeEntry[]> {
+  const results: RepoTreeEntry[] = [];
+
+  for (const ext of ['po', 'pot']) {
+    try {
+      const search = await request<{
+        items: Array<{ path: string; sha: string; name: string }>;
+      }>(`/search/code?q=extension:${ext}+repo:${owner}/${repo}&per_page=100`);
+
+      for (const item of search.items) {
+        results.push({
+          path: item.path,
+          name: item.name,
+          type: 'file' as const,
+          sha: item.sha,
+        });
+      }
+    } catch {
+      // Code search may fail for very new repos or rate limits — non-fatal
+    }
+  }
+
+  return results;
 }
 
 /** Get file content from a repository */
