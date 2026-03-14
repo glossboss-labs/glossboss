@@ -151,7 +151,7 @@ export function EditorHeader({
 
   return (
     <MotionDiv variants={sectionVariants} initial="hidden" animate="visible">
-      <Group justify="space-between" align="flex-start" wrap="wrap" style={{ rowGap: 12 }}>
+      <Group justify="space-between" align="flex-start">
         <div data-ev-id="ev_c00be328c4">
           <Group gap="xs" align="center">
             <img src={appIcon} alt="GlossBoss" style={{ width: 28, height: 28, borderRadius: 6 }} />
