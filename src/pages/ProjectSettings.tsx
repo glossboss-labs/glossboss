@@ -309,12 +309,12 @@ export default function ProjectSettings() {
             onChange={handleTabChange}
             orientation={isMobile ? 'horizontal' : 'vertical'}
             variant="pills"
+            classNames={{ tab: 'gb-tab-left-align' }}
             styles={{
               root: isMobile ? undefined : { display: 'flex', gap: 'var(--mantine-spacing-xl)' },
               list: isMobile
                 ? { overflowX: 'auto', flexWrap: 'nowrap' }
                 : { minWidth: 180, flexShrink: 0 },
-
               panel: { flex: 1, minWidth: 0 },
             }}
           >

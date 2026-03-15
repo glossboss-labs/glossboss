@@ -105,12 +105,12 @@ export interface EditorHeaderProps {
   onOpenSettings: (tab?: string) => void;
 
   /** Opens the "Load from URL" prompt modal. */
-  onLoadFromUrl: () => void;
-  onOpenWordPressProject: () => void;
+  onLoadFromUrl?: () => void;
+  onOpenWordPressProject?: () => void;
   /** Opens the WP refresh modal (only shown when a WP project is detected). */
   onRefreshWordPress?: () => void;
-  onOpenRepoSync: () => void;
-  onClearClick: () => void;
+  onOpenRepoSync?: () => void;
+  onClearClick?: () => void;
 
   /** Callback to save current editor state to a cloud project. */
   onSaveToCloud?: () => void;

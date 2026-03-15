@@ -128,7 +128,9 @@ body {
 
 /* ----------------------------------------------------------------
  * Vertical pill tabs: left-align labels
+ * Applied via classNames={{ tab: 'gb-tab-left-align' }}
  * ---------------------------------------------------------------- */
-.mantine-Tabs-root[data-orientation='vertical'] .mantine-Tabs-tab {
-  justify-content: flex-start;
+.gb-tab-left-align {
+  justify-content: flex-start !important;
+  text-align: left !important;
 }
