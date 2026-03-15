@@ -12,7 +12,6 @@ import {
   TextInput,
   PasswordInput,
   Button,
-  Group,
   Divider,
   Alert,
   Stack,
@@ -118,18 +117,17 @@ export default function Login() {
               autoComplete="current-password"
             />
 
-            <Group justify="space-between">
-              <Anchor component={Link} to="/forgot-password" size="sm">
-                {t('Forgot password?')}
-              </Anchor>
-              <Anchor component={Link} to="/" size="sm">
-                {t('Continue without account')}
-              </Anchor>
-            </Group>
+            <Anchor component={Link} to="/forgot-password" size="sm">
+              {t('Forgot password?')}
+            </Anchor>
 
             <Button type="submit" fullWidth loading={submitting}>
               {t('Sign in')}
             </Button>
+
+            <Anchor component={Link} to="/" size="sm" ta="center">
+              {t('Continue without account')}
+            </Anchor>
           </Stack>
         </form>
       </Paper>
