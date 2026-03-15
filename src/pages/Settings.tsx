@@ -86,6 +86,7 @@ export default function Settings() {
               list: isMobile
                 ? { overflowX: 'auto', flexWrap: 'nowrap' }
                 : { minWidth: 200, flexShrink: 0 },
+              tab: { justifyContent: 'flex-start' },
               panel: { flex: 1, minWidth: 0 },
             }}
           >
