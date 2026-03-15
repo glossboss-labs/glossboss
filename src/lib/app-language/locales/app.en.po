@@ -901,12 +901,12 @@ msgstr "Danger zone"
 msgid "Danish"
 msgstr "Danish"
 
-#: src/components/AppHeader.tsx:39
+#: src/components/AppHeader.tsx:42
 #: src/components/editor/EditorHeader.tsx:59
 msgid "Dark mode"
 msgstr "Dark mode"
 
-#: src/components/AppHeader.tsx:108
+#: src/components/AppHeader.tsx:115
 #: src/components/editor/EditorHeader.tsx:391
 #: src/pages/OrgSettings.tsx:277
 #: src/pages/Settings.tsx:74
@@ -1270,7 +1270,7 @@ msgstr "Expired"
 msgid "Expires {{date}}"
 msgstr "Expires {{date}}"
 
-#: src/components/AppHeader.tsx:98
+#: src/components/AppHeader.tsx:105
 #: src/components/editor/EditorHeader.tsx:380
 #: src/pages/Explore.tsx:149
 #: src/pages/ProjectDetail.tsx:333
@@ -2181,7 +2181,7 @@ msgstr "Leave this project"
 msgid "License"
 msgstr "License"
 
-#: src/components/AppHeader.tsx:39
+#: src/components/AppHeader.tsx:42
 #: src/components/editor/EditorHeader.tsx:59
 msgid "Light mode"
 msgstr "Light mode"
@@ -2422,6 +2422,10 @@ msgstr "Marathi"
 msgid "Mark Fuzzy ({{count}})"
 msgstr "Mark Fuzzy ({{count}})"
 
+#: src/components/notifications/NotificationDropdown.tsx:37
+msgid "Mark all read"
+msgstr "Mark all read"
+
 #: src/components/editor/EditorTable.tsx:1830
 msgid "Mark as fuzzy"
 msgstr "Mark as fuzzy"
@@ -2533,6 +2537,10 @@ msgstr "Nepali"
 #: src/components/settings/KeybindsSection.tsx:29
 msgid "New line"
 msgstr "New line"
+
+#: src/components/notifications/NotificationItem.tsx:120
+msgid "New notification"
+msgstr "New notification"
 
 #: src/components/settings/AccountSection.tsx:168
 #: src/pages/auth/ResetPassword.tsx:97
@@ -2648,6 +2656,10 @@ msgstr "No matching slugs"
 msgid "No members"
 msgstr "No members"
 
+#: src/components/notifications/NotificationDropdown.tsx:45
+msgid "No notifications"
+msgstr "No notifications"
+
 #: src/pages/Dashboard.tsx:234
 msgid "No organizations yet"
 msgstr "No organizations yet"
@@ -2759,6 +2771,12 @@ msgstr "Notes"
 #: src/components/ui/SpeakButton.tsx:38
 msgid "Nothing to play yet."
 msgstr "Nothing to play yet."
+
+#: src/components/notifications/NotificationBell.tsx:29
+#: src/components/notifications/NotificationBell.tsx:43
+#: src/components/notifications/NotificationDropdown.tsx:28
+msgid "Notifications"
+msgstr "Notifications"
 
 #: src/components/ui/PromptModal.tsx:33
 msgid "OK"
@@ -3515,6 +3533,10 @@ msgstr "Review in progress"
 msgid "Review issues"
 msgstr "Review issues"
 
+#: src/components/notifications/NotificationItem.tsx:107
+msgid "Review status changed to {{status}} on \"{{msgid}}\""
+msgstr "Review status changed to {{status}} on \"{{msgid}}\""
+
 #: src/components/editor/ReviewSummary.tsx:16
 msgid "Review workflow"
 msgstr "Review workflow"
@@ -4084,12 +4106,12 @@ msgstr "Swedish"
 msgid "Switch account"
 msgstr "Switch account"
 
-#: src/components/AppHeader.tsx:46
+#: src/components/AppHeader.tsx:49
 #: src/components/editor/EditorHeader.tsx:66
 msgid "Switch to dark mode"
 msgstr "Switch to dark mode"
 
-#: src/components/AppHeader.tsx:46
+#: src/components/AppHeader.tsx:49
 #: src/components/editor/EditorHeader.tsx:66
 msgid "Switch to light mode"
 msgstr "Switch to light mode"
@@ -4880,6 +4902,14 @@ msgstr ""
 "You signed in with GitHub but the repo access token has expired. Sign in aga"
 "in to reconnect."
 
+#: src/components/notifications/NotificationItem.tsx:103
+msgid "You were added to {{org}}"
+msgstr "You were added to {{org}}"
+
+#: src/components/notifications/NotificationItem.tsx:99
+msgid "You were added to {{project}}"
+msgstr "You were added to {{project}}"
+
 #: src/components/repo-sync/CommitPanel.tsx:209
 msgid "You're on the default branch — creating a new branch is recommended"
 msgstr "You're on the default branch — creating a new branch is recommended"
@@ -5041,6 +5071,10 @@ msgstr "with api scope"
 #: src/pages/index/IndexPageBanners.tsx:151
 msgid "{count} modified entries will be restored."
 msgstr "{count} modified entries will be restored."
+
+#: src/components/notifications/NotificationItem.tsx:114
+msgid "{{author}} commented on \"{{msgid}}\""
+msgstr "{{author}} commented on \"{{msgid}}\""
 
 #: src/components/editor/FilterToolbar.tsx:500
 msgid "{{count}} MT"
@@ -5214,6 +5248,22 @@ msgstr "{{filtered}} of {{total}}"
 #: src/pages/Dashboard.tsx:171
 msgid "{{languages}} languages"
 msgstr "{{languages}} languages"
+
+#: src/components/notifications/NotificationItem.tsx:71
+msgid "{{name}} invited you to {{org}}"
+msgstr "{{name}} invited you to {{org}}"
+
+#: src/components/notifications/NotificationItem.tsx:85
+msgid "{{name}} invited you to {{project}}"
+msgstr "{{name}} invited you to {{project}}"
+
+#: src/components/notifications/NotificationItem.tsx:78
+msgid "{{name}} joined {{org}}"
+msgstr "{{name}} joined {{org}}"
+
+#: src/components/notifications/NotificationItem.tsx:92
+msgid "{{name}} joined {{project}}"
+msgstr "{{name}} joined {{project}}"
 
 #: src/components/editor/FilterToolbar.tsx:386
 msgid "{{percentage}}% translated"

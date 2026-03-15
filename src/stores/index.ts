@@ -22,3 +22,5 @@ export type { RepoSyncSettings } from '@/lib/repo-sync/types';
 export { DEFAULT_SYNC_SETTINGS } from '@/lib/repo-sync/types';
 export { useCollaborationStore } from './collaboration-store';
 export type { CollaborationState, CollaborationActions } from './collaboration-store';
+export { useNotificationsStore } from './notifications-store';
+export type { NotificationsState, NotificationsActions } from './notifications-store';

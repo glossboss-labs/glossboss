@@ -21,7 +21,10 @@ import { motion } from 'motion/react';
 import { Sun, Moon, Globe, LayoutDashboard } from 'lucide-react';
 import { sectionVariants, buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
+import { useAuth } from '@/hooks/use-auth';
+import { useNotifications } from '@/hooks/use-notifications';
 import { UserMenu } from '@/components/auth/UserMenu';
+import { NotificationBell } from '@/components/notifications';
 
 const MotionDiv = motion.div;
 
@@ -55,9 +58,13 @@ function ThemeToggle() {
 
 export function AppHeader({ actions }: AppHeaderProps) {
   const { t } = useTranslation();
+  const { isAuthenticated } = useAuth();
   const theme = useMantineTheme();
   const computedColorScheme = useComputedColorScheme('light');
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
+
+  // Subscribe to notifications when authenticated
+  useNotifications();
 
   return (
     <MotionDiv variants={sectionVariants} initial="hidden" animate="visible">
@@ -111,6 +118,7 @@ export function AppHeader({ actions }: AppHeaderProps) {
             </>
           )}
 
+          {isAuthenticated && <NotificationBell />}
           <ThemeToggle />
           <UserMenu />
         </Group>
