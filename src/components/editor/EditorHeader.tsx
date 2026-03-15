@@ -185,80 +185,75 @@ export function EditorHeader({
             {(props) => <button {...props} ref={fileInputRef} style={{ display: 'none' }} />}
           </FileButton>
 
-          <Menu position="bottom-start" withinPortal>
-            <Menu.Target>
-              <motion.div {...buttonStates}>
-                <Button
-                  variant="subtle"
-                  color="gray"
-                  rightSection={<ChevronDown size={12} />}
-                  style={{ position: 'relative', overflow: 'visible' }}
+          {filename && (
+            <Menu position="bottom-start" withinPortal>
+              <Menu.Target>
+                <motion.div {...buttonStates}>
+                  <Button
+                    variant="subtle"
+                    color="gray"
+                    rightSection={<ChevronDown size={12} />}
+                    style={{ position: 'relative', overflow: 'visible' }}
+                  >
+                    {t('File')}
+                    <AnimatePresence>
+                      {hasUnsavedChanges && (
+                        <MotionDiv
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          exit={{ scale: 0 }}
+                          style={{
+                            position: 'absolute',
+                            top: -4,
+                            right: -4,
+                            width: 10,
+                            height: 10,
+                            borderRadius: '50%',
+                            backgroundColor: 'var(--mantine-color-orange-5)',
+                            border: '2px solid var(--mantine-color-body)',
+                            zIndex: 1,
+                          }}
+                        />
+                      )}
+                    </AnimatePresence>
+                  </Button>
+                </motion.div>
+              </Menu.Target>
+              <Menu.Dropdown>
+                <Menu.Item
+                  leftSection={<Upload size={14} />}
+                  onClick={() => fileInputRef.current?.click()}
                 >
-                  {t('File')}
-                  <AnimatePresence>
-                    {hasUnsavedChanges && filename && (
-                      <MotionDiv
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        exit={{ scale: 0 }}
-                        style={{
-                          position: 'absolute',
-                          top: -4,
-                          right: -4,
-                          width: 10,
-                          height: 10,
-                          borderRadius: '50%',
-                          backgroundColor: 'var(--mantine-color-orange-5)',
-                          border: '2px solid var(--mantine-color-body)',
-                          zIndex: 1,
-                        }}
-                      />
-                    )}
-                  </AnimatePresence>
-                </Button>
-              </motion.div>
-            </Menu.Target>
-            <Menu.Dropdown>
-              <Menu.Item
-                leftSection={<Upload size={14} />}
-                onClick={() => fileInputRef.current?.click()}
-              >
-                {t('Upload file…')}
-              </Menu.Item>
-              {filename && (
-                <>
-                  <Menu.Divider />
-                  <Menu.Item
-                    leftSection={<Download size={14} />}
-                    onClick={() => onDownloadAs('po')}
-                  >
-                    {t('Download as PO')}
-                  </Menu.Item>
-                  <Menu.Item
-                    leftSection={<Download size={14} />}
-                    onClick={() => onDownloadAs('i18next')}
-                  >
-                    {t('Download as JSON')}
-                  </Menu.Item>
-                  <Menu.Divider />
-                  <FileButton onChange={onPotUpload} accept=".pot">
-                    {(props) => (
-                      <Menu.Item leftSection={<FileUp size={14} />} {...props}>
-                        {t('Update from POT…')}
-                      </Menu.Item>
-                    )}
-                  </FileButton>
-                  <Menu.Divider />
-                  <Menu.Item
-                    leftSection={<Archive size={14} />}
-                    onClick={() => onOpenSettings('transfer')}
-                  >
-                    {t('Backup')}
-                  </Menu.Item>
-                </>
-              )}
-            </Menu.Dropdown>
-          </Menu>
+                  {t('Upload file…')}
+                </Menu.Item>
+                <Menu.Divider />
+                <Menu.Item leftSection={<Download size={14} />} onClick={() => onDownloadAs('po')}>
+                  {t('Download as PO')}
+                </Menu.Item>
+                <Menu.Item
+                  leftSection={<Download size={14} />}
+                  onClick={() => onDownloadAs('i18next')}
+                >
+                  {t('Download as JSON')}
+                </Menu.Item>
+                <Menu.Divider />
+                <FileButton onChange={onPotUpload} accept=".pot">
+                  {(props) => (
+                    <Menu.Item leftSection={<FileUp size={14} />} {...props}>
+                      {t('Update from POT…')}
+                    </Menu.Item>
+                  )}
+                </FileButton>
+                <Menu.Divider />
+                <Menu.Item
+                  leftSection={<Archive size={14} />}
+                  onClick={() => onOpenSettings('transfer')}
+                >
+                  {t('Backup')}
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
+          )}
         </Group>
 
         {/* Right: contextual buttons + utility controls */}
