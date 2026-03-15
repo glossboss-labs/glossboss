@@ -133,7 +133,7 @@ function formatRelative(iso: string): string {
 export default function ProjectDetail() {
   const { id } = useParams<{ id: string }>();
   const { t } = useTranslation();
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const deleteLanguage = useProjectsStore((s) => s.deleteLanguage);
 
@@ -157,6 +157,7 @@ export default function ProjectDetail() {
   );
   const isAdmin = myMembership?.role === 'admin';
   const canManage = myMembership?.role === 'admin' || myMembership?.role === 'maintainer';
+  const isMember = Boolean(myMembership);
 
   useEffect(() => {
     if (!id) return;
@@ -164,18 +165,25 @@ export default function ProjectDetail() {
 
     async function load() {
       try {
-        const [proj, langs, mems, invs] = await Promise.all([
-          getProject(id!),
-          getProjectLanguages(id!),
-          listProjectMembers(id!),
-          listProjectInvites(id!).catch(() => [] as ProjectInviteRow[]),
-        ]);
+        const [proj, langs] = await Promise.all([getProject(id!), getProjectLanguages(id!)]);
         if (cancelled) return;
         if (!proj) {
           setError(t('Project not found'));
           setLoading(false);
           return;
         }
+
+        // Members/invites only loadable by project members
+        let mems: ProjectMemberWithProfile[] = [];
+        let invs: ProjectInviteRow[] = [];
+        try {
+          mems = await listProjectMembers(id!);
+          invs = await listProjectInvites(id!).catch(() => [] as ProjectInviteRow[]);
+        } catch {
+          // Non-members may not be able to list invites; that's fine
+        }
+
+        if (cancelled) return;
         setProject(proj);
         setLanguages(langs);
         setMembers(mems);
@@ -289,7 +297,7 @@ export default function ProjectDetail() {
           <Group justify="space-between" align="center">
             <Text
               component={Link}
-              to="/dashboard"
+              to={isMember ? '/dashboard' : '/explore'}
               size="sm"
               style={{
                 color: 'var(--gb-text-secondary)',
@@ -300,7 +308,7 @@ export default function ProjectDetail() {
               }}
             >
               <ArrowLeft size={14} />
-              {t('Projects')}
+              {isMember ? t('Projects') : t('Explore')}
             </Text>
             <Group gap="sm">
               {canManage && (
@@ -310,16 +318,18 @@ export default function ProjectDetail() {
                   </Button>
                 </motion.div>
               )}
-              <motion.div {...buttonStates}>
-                <Button
-                  component={Link}
-                  to={`/projects/${id}/settings`}
-                  variant="subtle"
-                  leftSection={<Settings size={14} />}
-                >
-                  {t('Settings')}
-                </Button>
-              </motion.div>
+              {isMember && (
+                <motion.div {...buttonStates}>
+                  <Button
+                    component={Link}
+                    to={`/projects/${id}/settings`}
+                    variant="subtle"
+                    leftSection={<Settings size={14} />}
+                  >
+                    {t('Settings')}
+                  </Button>
+                </motion.div>
+              )}
             </Group>
           </Group>
 
@@ -367,15 +377,31 @@ export default function ProjectDetail() {
             </Alert>
           )}
 
+          {/* Sign-in prompt for anonymous viewers */}
+          {!isAuthenticated && project.visibility !== 'private' && (
+            <Alert variant="light" color="blue">
+              <Group justify="space-between" align="center">
+                <Text size="sm">
+                  {t('to save projects to the cloud and collaborate with your team.')}
+                </Text>
+                <Button component={Link} to="/signup" variant="light" size="xs">
+                  {t('Create an account')}
+                </Button>
+              </Group>
+            </Alert>
+          )}
+
           {/* Tabs */}
           <Tabs defaultValue="languages">
             <Tabs.List>
               <Tabs.Tab value="languages" leftSection={<Languages size={14} />}>
                 {t('Languages')} ({languages.length})
               </Tabs.Tab>
-              <Tabs.Tab value="members" leftSection={<Users size={14} />}>
-                {t('Members')} ({members.length})
-              </Tabs.Tab>
+              {isMember && (
+                <Tabs.Tab value="members" leftSection={<Users size={14} />}>
+                  {t('Members')} ({members.length})
+                </Tabs.Tab>
+              )}
               {isAdmin && (
                 <Tabs.Tab value="invites" leftSection={<Mail size={14} />}>
                   {t('Invites')} ({invites.length})
@@ -469,25 +495,31 @@ export default function ProjectDetail() {
                       return (
                         <MotionDiv key={lang.id} variants={contentVariants}>
                           <Paper
-                            component={Link}
-                            to={`/projects/${project.id}/languages/${lang.id}`}
+                            {...(isMember
+                              ? {
+                                  component: Link,
+                                  to: `/projects/${project.id}/languages/${lang.id}`,
+                                }
+                              : {})}
                             withBorder
                             p="md"
                             style={{
                               textDecoration: 'none',
                               color: 'inherit',
-                              cursor: 'pointer',
+                              cursor: isMember ? 'pointer' : 'default',
                               transition:
                                 'border-color 120ms ease, background-color 120ms ease, box-shadow 120ms ease',
                             }}
                             styles={{
-                              root: {
-                                '&:hover': {
-                                  borderColor: 'var(--mantine-color-blue-5)',
-                                  backgroundColor: 'var(--gb-highlight-row)',
-                                  boxShadow: 'var(--gb-shadow-tooltip)',
-                                },
-                              },
+                              root: isMember
+                                ? {
+                                    '&:hover': {
+                                      borderColor: 'var(--mantine-color-blue-5)',
+                                      backgroundColor: 'var(--gb-highlight-row)',
+                                      boxShadow: 'var(--gb-shadow-tooltip)',
+                                    },
+                                  }
+                                : {},
                             }}
                           >
                             <Group justify="space-between" align="center" wrap="nowrap">
@@ -617,19 +649,21 @@ export default function ProjectDetail() {
               </Stack>
             </Tabs.Panel>
 
-            {/* Members tab */}
-            <Tabs.Panel value="members" pt="md">
-              <ProjectMembersTab
-                projectId={project.id}
-                members={members}
-                isAdmin={isAdmin ?? false}
-                currentUserId={user?.id}
-                onMembersChange={setMembers}
-                onInviteCreated={(inv) => setInvites((prev) => [inv, ...prev])}
-                onLeave={() => setConfirmLeaveOpen(true)}
-                onError={setError}
-              />
-            </Tabs.Panel>
+            {/* Members tab (members only) */}
+            {isMember && (
+              <Tabs.Panel value="members" pt="md">
+                <ProjectMembersTab
+                  projectId={project.id}
+                  members={members}
+                  isAdmin={isAdmin ?? false}
+                  currentUserId={user?.id}
+                  onMembersChange={setMembers}
+                  onInviteCreated={(inv) => setInvites((prev) => [inv, ...prev])}
+                  onLeave={() => setConfirmLeaveOpen(true)}
+                  onError={setError}
+                />
+              </Tabs.Panel>
+            )}
 
             {/* Invites tab (admin-only) */}
             {isAdmin && (

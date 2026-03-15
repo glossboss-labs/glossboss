@@ -88,6 +88,28 @@ export async function deleteProject(id: string): Promise<void> {
   if (error) throw error;
 }
 
+/** List public projects visible on /explore (excludes unlisted). */
+export async function listPublicProjects(): Promise<ProjectWithLanguages[]> {
+  const joined = await supabase()
+    .from('projects')
+    .select('*, project_languages(*)')
+    .eq('visibility', 'public')
+    .order('updated_at', { ascending: false });
+
+  if (!joined.error) {
+    return (joined.data ?? []) as ProjectWithLanguages[];
+  }
+
+  const { data, error } = await supabase()
+    .from('projects')
+    .select('*')
+    .eq('visibility', 'public')
+    .order('updated_at', { ascending: false });
+
+  if (error) throw error;
+  return (data ?? []).map((p) => ({ ...p, project_languages: [] }) as ProjectWithLanguages);
+}
+
 // ── Project Languages ────────────────────────────────────────
 
 export async function getProjectLanguages(projectId: string): Promise<ProjectLanguageRow[]> {

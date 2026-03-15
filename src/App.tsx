@@ -8,6 +8,7 @@
 import { Routes, Route } from 'react-router';
 import Index from '@/pages/Index';
 import Dashboard from '@/pages/Dashboard';
+import Explore from '@/pages/Explore';
 import ProjectDetail from '@/pages/ProjectDetail';
 import ProjectEditor from '@/pages/ProjectEditor';
 import OrgSettings from '@/pages/OrgSettings';
@@ -33,6 +34,10 @@ export default function App() {
       <Route path="/auth/callback" element={<Callback />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/explore" element={<Explore />} />
+
+      {/* Public project detail — visibility enforced by RLS + component */}
+      <Route path="/projects/:id" element={<ProjectDetail />} />
 
       {/* Authenticated routes */}
       <Route
@@ -48,14 +53,6 @@ export default function App() {
         element={
           <AuthGuard>
             <Settings />
-          </AuthGuard>
-        }
-      />
-      <Route
-        path="/projects/:id"
-        element={
-          <AuthGuard>
-            <ProjectDetail />
           </AuthGuard>
         }
       />

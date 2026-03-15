@@ -21,7 +21,7 @@ import {
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { motion } from 'motion/react';
-import { Sun, Moon, MessageSquare, LayoutDashboard, Home } from 'lucide-react';
+import { Sun, Moon, MessageSquare, LayoutDashboard, Home, Globe } from 'lucide-react';
 import { sectionVariants, buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
 import { UserMenu } from '@/components/auth/UserMenu';
@@ -130,6 +130,20 @@ export function AppHeader({ actions }: AppHeaderProps) {
                 <ThemeToggle />
               </Group>
             )}
+
+            <Tooltip label={t('Explore')}>
+              <motion.div {...buttonStates}>
+                <ActionIcon
+                  component={Link}
+                  to="/explore"
+                  variant="default"
+                  size="lg"
+                  aria-label={t('Explore')}
+                >
+                  <Globe size={18} />
+                </ActionIcon>
+              </motion.div>
+            </Tooltip>
 
             <Tooltip label={t('Projects')}>
               <motion.div {...buttonStates}>

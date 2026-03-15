@@ -12,7 +12,7 @@ const MotionDiv = motion.div;
 
 interface ProjectGridProps {
   projects: ProjectWithLanguages[];
-  onDelete: (id: string) => void;
+  onDelete?: (id: string) => void;
 }
 
 export function ProjectGrid({ projects, onDelete }: ProjectGridProps) {

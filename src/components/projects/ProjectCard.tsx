@@ -24,7 +24,7 @@ const MotionSpan = motion.span;
 
 interface ProjectCardProps {
   project: ProjectWithLanguages;
-  onDelete: (id: string) => void;
+  onDelete?: (id: string) => void;
 }
 
 const VISIBILITY_ICON = {
@@ -104,30 +104,32 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
               <VisIcon size={14} style={{ opacity: 0.4 }} />
             </span>
           </Tooltip>
-          <Menu position="bottom-end" withinPortal>
-            <Menu.Target>
-              <ActionIcon
-                variant="subtle"
-                size="sm"
-                color="gray"
-                onClick={(e) => e.preventDefault()}
-              >
-                <MoreVertical size={14} />
-              </ActionIcon>
-            </Menu.Target>
-            <Menu.Dropdown>
-              <Menu.Item
-                color="red"
-                leftSection={<Trash2 size={14} />}
-                onClick={(e) => {
-                  e.preventDefault();
-                  onDelete(project.id);
-                }}
-              >
-                {t('Delete')}
-              </Menu.Item>
-            </Menu.Dropdown>
-          </Menu>
+          {onDelete && (
+            <Menu position="bottom-end" withinPortal>
+              <Menu.Target>
+                <ActionIcon
+                  variant="subtle"
+                  size="sm"
+                  color="gray"
+                  onClick={(e) => e.preventDefault()}
+                >
+                  <MoreVertical size={14} />
+                </ActionIcon>
+              </Menu.Target>
+              <Menu.Dropdown>
+                <Menu.Item
+                  color="red"
+                  leftSection={<Trash2 size={14} />}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onDelete(project.id);
+                  }}
+                >
+                  {t('Delete')}
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
+          )}
         </Group>
       </Group>
 
