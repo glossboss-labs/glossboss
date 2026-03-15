@@ -250,7 +250,7 @@ export function ProjectMembersTab({
       })}
 
       {/* Leave project (non-owner) */}
-      {myMembership && !isAdmin && (
+      {currentUserId && members.some((m) => m.user_id === currentUserId) && !isAdmin && (
         <Paper withBorder p="md" style={{ borderColor: 'var(--mantine-color-red-4)' }}>
           <Group justify="space-between" align="center">
             <div>
