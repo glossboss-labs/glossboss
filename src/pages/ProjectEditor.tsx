@@ -4,6 +4,9 @@
  * Loads a project language from Supabase via the SupabaseStorageAdapter,
  * then renders the EditorWorkspace for translation editing.
  * Changes are automatically synced back to the cloud.
+ *
+ * Uses EditorHeader directly (same as the local editor) to ensure full
+ * feature parity — File menu, Push, repo sync, settings, feedback, etc.
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -18,27 +21,19 @@ import {
   Center,
   Loader,
   Alert,
-  Menu,
-  FileButton,
   Tooltip,
+  useMantineColorScheme,
+  useMantineTheme,
 } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import { motion } from 'motion/react';
-import {
-  ArrowLeft,
-  AlertCircle,
-  Download,
-  Upload,
-  FileUp,
-  ChevronDown,
-  Archive,
-  Cloud,
-  CloudOff,
-  Check,
-} from 'lucide-react';
-import { sectionVariants, fadeVariants, buttonStates } from '@/lib/motion';
+import { ArrowLeft, AlertCircle, Cloud, CloudOff, Check } from 'lucide-react';
+import { fadeVariants } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
-import { AppHeader } from '@/components/AppHeader';
+import { EditorHeader } from '@/components/editor/EditorHeader';
 import { SettingsModal } from '@/components/SettingsModal';
+import { FeedbackModal } from '@/components/feedback';
+import { RepoSyncModal } from '@/components/repo-sync/RepoSyncModal';
 import { useEditorStore } from '@/stores/editor-store';
 import type { FileFormat } from '@/stores/editor-store';
 import { getProject, getProjectLanguage, getProjectEntries } from '@/lib/projects/api';
@@ -55,23 +50,28 @@ import { EditorWorkspace } from '@/components/editor/EditorWorkspace';
 import { SupabaseStorageAdapter } from '@/lib/cloud/supabase-adapter';
 import { LocalStorageAdapter } from '@/lib/cloud/local-adapter';
 import { setStorageAdapter } from '@/lib/cloud/adapter';
-import { serializePOFile } from '@/lib/po';
-import { serializeToI18next } from '@/lib/i18next';
 import { parseUploadedFile } from '@/lib/po/parse-file';
 import { mergePotIntoPo } from '@/lib/po/merge';
+import { serializePOFile } from '@/lib/po';
+import { serializeToI18next } from '@/lib/i18next';
+import { parseFileContent } from '@/lib/po/parse-file';
 import type { SourceLanguage, TargetLanguage } from '@/lib/deepl/types';
 import type { MachineTranslationMeta } from '@/stores/editor-store';
 import type { ReviewEntryState } from '@/lib/review';
 import type { WordPressProjectType } from '@/lib/wp-source/references';
+import type { RepoConnection } from '@/lib/repo-sync/types';
 
 type SyncState = 'idle' | 'saving' | 'saved' | 'error';
 
 export default function ProjectEditor() {
   const { id, languageId } = useParams<{ id: string; languageId: string }>();
   const { t } = useTranslation();
+  const theme = useMantineTheme();
+  const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
+  const { toggleColorScheme } = useMantineColorScheme();
   const adapterRef = useRef<SupabaseStorageAdapter | null>(null);
+  const fileInputRef = useRef<HTMLButtonElement | null>(null);
   const fileResetRef = useRef<(() => void) | null>(null);
-  const potResetRef = useRef<(() => void) | null>(null);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -79,10 +79,28 @@ export default function ProjectEditor() {
   const [language, setLanguage] = useState<ProjectLanguageRow | null>(null);
   const [workspaceMode, setWorkspaceMode] = useState<WorkspaceMode>('edit');
   const [syncState, setSyncState] = useState<SyncState>('idle');
-  const [settingsTab, setSettingsTab] = useState<string | null>(null);
+
+  // Modal state
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [settingsTab, setSettingsTab] = useState<string | undefined>();
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [repoSyncOpen, setRepoSyncOpen] = useState(false);
+
+  // Repo connection from language metadata
+  const repoConnection: RepoConnection | null =
+    language?.repo_provider && language?.repo_owner && language?.repo_name
+      ? {
+          provider: language.repo_provider,
+          owner: language.repo_owner,
+          repo: language.repo_name,
+          branch: language.repo_branch ?? language.repo_default_branch ?? 'main',
+          filePath: language.repo_file_path ?? '',
+        }
+      : null;
 
   const loadFile = useEditorStore((s) => s.loadFile);
   const filename = useEditorStore((s) => s.filename);
+  const sourceFormat = useEditorStore((s) => s.sourceFormat);
   const header = useEditorStore((s) => s.header);
   const entries = useEditorStore((s) => s.entries);
   const mergeEntries = useEditorStore((s) => s.mergeEntries);
@@ -120,7 +138,6 @@ export default function ProjectEditor() {
         setProject(proj);
         setLanguage(lang);
 
-        // Convert DB rows to editor state
         const poEntries = dbEntries.map((row, i) => dbEntryToPOEntry(row, i));
         const poHeader = dbLanguageToHeader(lang);
         const poFile: POFile = {
@@ -130,15 +147,12 @@ export default function ProjectEditor() {
           charset: 'UTF-8',
         };
 
-        // Switch to cloud adapter before loading data
         const adapter = new SupabaseStorageAdapter(id!, languageId!);
         adapterRef.current = adapter;
         setStorageAdapter(adapter);
 
-        // Load file into editor store
         loadFile(poFile, proj.source_format === 'i18next' ? 'i18next' : undefined);
 
-        // Restore MT metadata
         const mtMeta = new Map<string, MachineTranslationMeta>();
         const mtIds = new Set<string>();
         for (let i = 0; i < dbEntries.length; i++) {
@@ -155,7 +169,6 @@ export default function ProjectEditor() {
           });
         }
 
-        // Restore review entries
         const reviewMap = new Map<string, ReviewEntryState>();
         for (let i = 0; i < dbEntries.length; i++) {
           const review = dbEntryToReviewState(dbEntries[i]);
@@ -180,7 +193,6 @@ export default function ProjectEditor() {
 
     return () => {
       cancelled = true;
-      // Flush pending sync and restore local adapter
       if (adapterRef.current) {
         void adapterRef.current.flush();
         adapterRef.current = null;
@@ -213,7 +225,7 @@ export default function ProjectEditor() {
     };
   }, [hasUnsavedChanges, syncState]);
 
-  // Placeholder callbacks — wired up in a future iteration
+  // Placeholder callbacks
   const noop = useCallback(() => {}, []);
   const handleLanguageChange = noop as unknown as (
     source: SourceLanguage | undefined,
@@ -226,19 +238,17 @@ export default function ProjectEditor() {
   const handleFileUpload = useCallback(
     async (file: File | null) => {
       if (!file) return;
-
       const outcome = await parseUploadedFile(file);
       if (!outcome.ok) {
         setError(outcome.errors[0]?.message ?? t('Failed to parse file'));
         return;
       }
-
       loadFile(outcome.result.file, outcome.result.format === 'i18next' ? 'i18next' : undefined);
     },
     [loadFile, t],
   );
 
-  const performDownload = useCallback(
+  const handleDownloadAs = useCallback(
     (format: FileFormat) => {
       if (!filename || !entries.length) return;
 
@@ -276,21 +286,41 @@ export default function ProjectEditor() {
     [entries, filename, header],
   );
 
+  const handleDownload = useCallback(() => {
+    handleDownloadAs(sourceFormat);
+  }, [handleDownloadAs, sourceFormat]);
+
   const handlePotUpload = useCallback(
     async (file: File | null) => {
       if (!file || entries.length === 0) return;
-
       const outcome = await parseUploadedFile(file);
       if (!outcome.ok) {
         setError(outcome.errors[0]?.message ?? t('Failed to parse POT file'));
         return;
       }
-
       const mergeResult = mergePotIntoPo(entries, outcome.result.file.entries);
       mergeEntries(mergeResult.entries);
     },
     [entries, mergeEntries, t],
   );
+
+  const handleRepoFileLoaded = useCallback(
+    (content: string, repoFilename: string) => {
+      setRepoSyncOpen(false);
+      const outcome = parseFileContent(content, repoFilename);
+      if (!outcome.ok) {
+        setError(outcome.errors[0]?.message ?? t('Failed to parse file'));
+        return;
+      }
+      loadFile(outcome.result.file, outcome.result.format === 'i18next' ? 'i18next' : undefined);
+    },
+    [loadFile, t],
+  );
+
+  const handleOpenSettings = useCallback((tab?: string) => {
+    setSettingsTab(tab);
+    setSettingsOpen(true);
+  }, []);
 
   // ── Render ─────────────────────────────────────────────────
 
@@ -349,147 +379,107 @@ export default function ProjectEditor() {
 
   return (
     <Container size="xl" py="xl">
-      <AppHeader
-        projectId={id}
-        actions={
-          <>
-            {/* Hidden file input for upload */}
-            <FileButton
-              onChange={(f) => void handleFileUpload(f)}
-              accept=".po,.pot,.json"
-              resetRef={fileResetRef}
-            >
-              {(props) => (
-                <button
-                  {...props}
-                  ref={undefined}
-                  style={{ display: 'none' }}
-                  className="upload-trigger"
-                />
-              )}
-            </FileButton>
+      <Stack gap="lg">
+        {/* EditorHeader — same component as the local editor */}
+        <EditorHeader
+          onFileUpload={handleFileUpload}
+          fileInputRef={fileInputRef}
+          fileResetRef={fileResetRef}
+          filename={filename}
+          hasUnsavedChanges={hasUnsavedChanges}
+          sourceFormat={sourceFormat}
+          onDownload={handleDownload}
+          onDownloadAs={handleDownloadAs}
+          onPotUpload={handlePotUpload}
+          repoConnection={repoConnection}
+          onPushToRepo={() => setRepoSyncOpen(true)}
+          isMobile={isMobile}
+          onOpenFeedback={() => setFeedbackOpen(true)}
+          onToggleColorScheme={toggleColorScheme}
+          onOpenSettings={handleOpenSettings}
+          onLoadFromUrl={noop}
+          onOpenWordPressProject={noop}
+          onRefreshWordPress={
+            project.wp_project_type && project.wp_slug && filename ? noop : undefined
+          }
+          onOpenRepoSync={() => setRepoSyncOpen(true)}
+          onClearClick={noop}
+        />
 
-            <Menu position="bottom-start" withinPortal>
-              <Menu.Target>
-                <motion.div {...buttonStates}>
-                  <Button variant="subtle" color="gray" rightSection={<ChevronDown size={12} />}>
-                    {t('File')}
-                  </Button>
-                </motion.div>
-              </Menu.Target>
-              <Menu.Dropdown>
-                <Menu.Item
-                  leftSection={<Upload size={14} />}
-                  onClick={() => {
-                    const btn = document.querySelector(
-                      '.upload-trigger',
-                    ) as HTMLButtonElement | null;
-                    btn?.click();
-                  }}
-                >
-                  {t('Upload file…')}
-                </Menu.Item>
-                {filename && (
-                  <>
-                    <Menu.Divider />
-                    <Menu.Item
-                      leftSection={<Download size={14} />}
-                      onClick={() => performDownload('po')}
-                    >
-                      {t('Download as PO')}
-                    </Menu.Item>
-                    <Menu.Item
-                      leftSection={<Download size={14} />}
-                      onClick={() => performDownload('i18next')}
-                    >
-                      {t('Download as JSON')}
-                    </Menu.Item>
-                    <Menu.Divider />
-                    <FileButton
-                      onChange={(f) => void handlePotUpload(f)}
-                      accept=".pot"
-                      resetRef={potResetRef}
-                    >
-                      {(props) => (
-                        <Menu.Item leftSection={<FileUp size={14} />} {...props}>
-                          {t('Update from POT…')}
-                        </Menu.Item>
-                      )}
-                    </FileButton>
-                    <Menu.Divider />
-                    <Menu.Item
-                      leftSection={<Archive size={14} />}
-                      onClick={() => setSettingsTab('transfer')}
-                    >
-                      {t('Backup')}
-                    </Menu.Item>
-                  </>
-                )}
-              </Menu.Dropdown>
-            </Menu>
+        {/* Sync indicator */}
+        {syncIndicator && <div style={{ marginTop: -8 }}>{syncIndicator}</div>}
 
-            {syncIndicator}
-          </>
-        }
-      />
-      <motion.div variants={sectionVariants} initial="hidden" animate="visible">
-        <Stack gap="lg">
-          {/* Breadcrumb */}
-          <Group gap={6} align="center">
-            <Text
-              component={Link}
-              to={`/projects/${project.id}`}
-              size="sm"
-              style={{
-                color: 'var(--gb-text-secondary)',
-                textDecoration: 'none',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 4,
-              }}
-            >
-              <ArrowLeft size={14} />
-              {project.name}
+        {/* Breadcrumb */}
+        <Group gap={6} align="center">
+          <Text
+            component={Link}
+            to={`/projects/${project.id}`}
+            size="sm"
+            style={{
+              color: 'var(--gb-text-secondary)',
+              textDecoration: 'none',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 4,
+            }}
+          >
+            <ArrowLeft size={14} />
+            {project.name}
+          </Text>
+        </Group>
+
+        {/* Title */}
+        <div style={{ marginTop: -8 }}>
+          <Title order={3}>
+            {project.name} · {language.locale}
+          </Title>
+          {language.source_filename && (
+            <Text size="xs" mt={4} style={{ color: 'var(--gb-text-tertiary)' }}>
+              {language.source_filename}
             </Text>
-          </Group>
+          )}
+        </div>
 
-          {/* Title */}
-          <div style={{ marginTop: -8 }}>
-            <Title order={3}>
-              {project.name} · {language.locale}
-            </Title>
-            {language.source_filename && (
-              <Text size="xs" mt={4} style={{ color: 'var(--gb-text-tertiary)' }}>
-                {language.source_filename}
-              </Text>
-            )}
-          </div>
+        {/* Editor workspace */}
+        <EditorWorkspace
+          workspaceMode={workspaceMode}
+          onWorkspaceModeChange={setWorkspaceMode}
+          encodingInfo={null}
+          currentProjectType={project.wp_project_type as WordPressProjectType | null}
+          currentProjectSlug={project.wp_slug ?? null}
+          currentProjectRelease={null}
+          onLanguageChange={handleLanguageChange}
+          deeplGlossaryId={null}
+          glossary={null}
+          glossaryEnforcementEnabled={false}
+          translateEnabled={false}
+          glossarySyncStatus={null}
+          speechEnabled={false}
+          onEntrySelect={handleEntrySelect}
+        />
+      </Stack>
 
-          {/* Editor workspace */}
-          <EditorWorkspace
-            workspaceMode={workspaceMode}
-            onWorkspaceModeChange={setWorkspaceMode}
-            encodingInfo={null}
-            currentProjectType={project.wp_project_type as WordPressProjectType | null}
-            currentProjectSlug={project.wp_slug ?? null}
-            currentProjectRelease={null}
-            onLanguageChange={handleLanguageChange}
-            deeplGlossaryId={null}
-            glossary={null}
-            glossaryEnforcementEnabled={false}
-            translateEnabled={false}
-            glossarySyncStatus={null}
-            speechEnabled={false}
-            onEntrySelect={handleEntrySelect}
-          />
-        </Stack>
-      </motion.div>
-
+      {/* Modals */}
       <SettingsModal
-        opened={settingsTab !== null}
-        onClose={() => setSettingsTab(null)}
-        initialTab={settingsTab ?? undefined}
+        opened={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        initialTab={settingsTab}
         projectId={id}
+      />
+      <FeedbackModal opened={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
+      <RepoSyncModal
+        opened={repoSyncOpen}
+        onClose={() => setRepoSyncOpen(false)}
+        onFileLoaded={handleRepoFileLoaded}
+        serializedContent={
+          filename && entries.length > 0
+            ? serializePOFile(
+                { filename, header: header ?? {}, entries, charset: 'UTF-8' },
+                { updateRevisionDate: true },
+              )
+            : null
+        }
+        initialTab={repoConnection ? 'push' : 'browse'}
       />
     </Container>
   );
