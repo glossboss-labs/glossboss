@@ -6,7 +6,6 @@
 
 import { Badge, Box } from '@mantine/core';
 import { Lock } from 'lucide-react';
-import { useTranslation } from '@/lib/app-language';
 import type { CellLock } from '@/lib/realtime';
 
 interface CellLockIndicatorProps {
@@ -14,30 +13,26 @@ interface CellLockIndicatorProps {
 }
 
 export function CellLockIndicator({ lock }: CellLockIndicatorProps) {
-  const { t } = useTranslation();
-
   return (
     <Box
       style={{
         position: 'absolute',
-        top: 2,
-        right: 2,
+        top: 4,
+        right: 4,
         zIndex: 10,
         pointerEvents: 'none',
       }}
     >
       <Badge
         size="xs"
-        variant="light"
+        variant="filled"
         leftSection={<Lock size={10} />}
         style={{
-          backgroundColor: `${lock.color}20`,
-          color: lock.color,
-          borderColor: `${lock.color}40`,
-          border: '1px solid',
+          backgroundColor: lock.color,
+          color: '#fff',
         }}
       >
-        {t('Locked by {{name}}', { name: lock.displayName })}
+        {lock.displayName}
       </Badge>
     </Box>
   );

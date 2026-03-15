@@ -2220,11 +2220,13 @@ const EntryRow = memo(function EntryRow({
       onClick={handleClick}
       style={{
         cursor: 'pointer',
-        backgroundColor: isSelected
-          ? 'var(--gb-highlight-row)'
-          : isUntranslated
-            ? 'var(--gb-highlight-danger)'
-            : undefined,
+        backgroundColor: remoteLock
+          ? `${remoteLock.color}12`
+          : isSelected
+            ? 'var(--gb-highlight-row)'
+            : isUntranslated
+              ? 'var(--gb-highlight-danger)'
+              : undefined,
         boxShadow: remoteLock
           ? `inset 4px 0 0 ${remoteLock.color}`
           : isModified
@@ -2416,11 +2418,13 @@ const MobileEntryCard = memo(function MobileEntryCard({
         borderColor: isSelected ? 'var(--mantine-color-blue-4)' : undefined,
         borderLeftColor: remoteLock ? remoteLock.color : undefined,
         borderLeftWidth: remoteLock ? 3 : undefined,
-        backgroundColor: isSelected
-          ? 'var(--gb-highlight-row)'
-          : isUntranslated
-            ? 'var(--gb-highlight-danger)'
-            : undefined,
+        backgroundColor: remoteLock
+          ? `${remoteLock.color}12`
+          : isSelected
+            ? 'var(--gb-highlight-row)'
+            : isUntranslated
+              ? 'var(--gb-highlight-danger)'
+              : undefined,
       }}
     >
       <Group justify="space-between" align="flex-start" wrap="nowrap">
