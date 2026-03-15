@@ -1,3 +1,10 @@
+<p align="center">
+  <picture>
+    <source srcset="public/glossboss-combined-light.svg" media="(prefers-color-scheme: dark)" />
+    <img src="public/glossboss-combined-dark.svg" alt="GlossBoss" height="40" />
+  </picture>
+</p>
+
 # Contributing
 
 Thanks for helping improve GlossBoss.

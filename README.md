@@ -1,5 +1,9 @@
 <p align="center">
-  <strong>GlossBoss</strong><br />
+  <picture>
+    <source srcset="public/glossboss-combined-light.svg" media="(prefers-color-scheme: dark)" />
+    <img src="public/glossboss-combined-dark.svg" alt="GlossBoss" height="48" />
+  </picture>
+  <br />
   A browser-based translation editor for gettext <code>.po</code> / <code>.pot</code> files and i18next JSON resources.
 </p>
 
