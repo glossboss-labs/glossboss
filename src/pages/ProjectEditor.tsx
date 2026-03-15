@@ -29,7 +29,6 @@ import {
   Download,
   Upload,
   FileUp,
-  FileText,
   ChevronDown,
   Archive,
   Cloud,
@@ -373,11 +372,7 @@ export default function ProjectEditor() {
             <Menu position="bottom-start" withinPortal>
               <Menu.Target>
                 <motion.div {...buttonStates}>
-                  <Button
-                    variant="default"
-                    leftSection={<FileText size={16} />}
-                    rightSection={<ChevronDown size={14} />}
-                  >
+                  <Button variant="subtle" color="gray" rightSection={<ChevronDown size={12} />}>
                     {t('File')}
                   </Button>
                 </motion.div>

@@ -27,7 +27,6 @@ import {
   Trash2,
   MessageSquare,
   FileUp,
-  FileText,
   RotateCcw,
   Settings,
   Sun,
@@ -193,9 +192,9 @@ export function EditorHeader({
               <Menu.Target>
                 <motion.div {...buttonStates}>
                   <Button
-                    variant="default"
-                    leftSection={<FileText size={16} />}
-                    rightSection={<ChevronDown size={14} />}
+                    variant="subtle"
+                    color="gray"
+                    rightSection={<ChevronDown size={12} />}
                     style={{ position: 'relative', overflow: 'visible' }}
                   >
                     {t('File')}
