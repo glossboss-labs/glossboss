@@ -46,6 +46,7 @@ export default function ProjectEditor() {
   const [language, setLanguage] = useState<ProjectLanguageRow | null>(null);
 
   const loadFile = useEditorStore((s) => s.loadFile);
+  const setProjectName = useEditorStore((s) => s.setProjectName);
   const restoreReviewEntries = useEditorStore((s) => s.restoreReviewEntries);
 
   // Load project + language from Supabase into the editor store
@@ -96,6 +97,16 @@ export default function ProjectEditor() {
         // Load into editor store — same store the Index page uses
         loadFile(poFile, proj.source_format === 'i18next' ? 'i18next' : undefined);
 
+        // Override project name with the actual cloud project name
+        setProjectName(proj.name);
+
+        // Ensure the header has a language field for TM scoping
+        if (!poFile.header.language && lang.locale) {
+          useEditorStore.setState((state) => ({
+            header: { ...state.header, language: lang.locale },
+          }));
+        }
+
         // Restore MT metadata
         const mtMeta = new Map<string, MachineTranslationMeta>();
         const mtIds = new Set<string>();
@@ -144,7 +155,7 @@ export default function ProjectEditor() {
       }
       setStorageAdapter(new LocalStorageAdapter());
     };
-  }, [id, languageId, loadFile, restoreReviewEntries, t]);
+  }, [id, languageId, loadFile, setProjectName, restoreReviewEntries, t]);
 
   // Loading state
   if (loading) {
