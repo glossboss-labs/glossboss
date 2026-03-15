@@ -3,6 +3,7 @@
  */
 
 import { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router';
 import {
   Container,
   Title,
@@ -16,15 +17,18 @@ import {
   TextInput,
   Select,
   ThemeIcon,
+  Paper,
 } from '@mantine/core';
 import { motion } from 'motion/react';
-import { Plus, AlertCircle, FolderOpen, Search } from 'lucide-react';
+import { Plus, AlertCircle, FolderOpen, Search, Building2 } from 'lucide-react';
 import { sectionVariants, contentVariants, fadeVariants, buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
 import { useProjectsStore } from '@/stores/projects-store';
+import { useOrganizationsStore } from '@/stores/organizations-store';
 import { AppHeader } from '@/components/AppHeader';
 import { ProjectGrid } from '@/components/projects/ProjectGrid';
 import { CreateProjectModal } from '@/components/projects/CreateProjectModal';
+import { CreateOrgModal } from '@/components/organizations/CreateOrgModal';
 import type { ProjectWithLanguages } from '@/lib/projects/types';
 
 const MotionDiv = motion.div;
@@ -54,13 +58,16 @@ function sortProjects(projects: ProjectWithLanguages[], sort: SortOption): Proje
 export default function Dashboard() {
   const { t } = useTranslation();
   const { projects, loading, error, fetchProjects, deleteProject } = useProjectsStore();
+  const { organizations, loading: orgsLoading, fetchOrganizations } = useOrganizationsStore();
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [createOrgModalOpen, setCreateOrgModalOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<SortOption>('updated');
 
   useEffect(() => {
     void fetchProjects();
-  }, [fetchProjects]);
+    void fetchOrganizations();
+  }, [fetchProjects, fetchOrganizations]);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
@@ -183,7 +190,94 @@ export default function Dashboard() {
         )}
       </MotionDiv>
 
+      {/* Organizations section */}
+      <MotionDiv variants={sectionVariants} initial="hidden" animate="visible">
+        <Group justify="space-between" mb="md" mt="xl">
+          <Title order={3}>{t('Organizations')}</Title>
+          <motion.div {...buttonStates}>
+            <Button
+              variant="light"
+              leftSection={<Plus size={16} />}
+              onClick={() => setCreateOrgModalOpen(true)}
+            >
+              {t('Create organization')}
+            </Button>
+          </motion.div>
+        </Group>
+
+        {!orgsLoading && organizations.length === 0 && (
+          <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
+            <Center py={40}>
+              <Stack align="center" gap="sm">
+                <ThemeIcon size="xl" variant="light" color="violet" radius="xl">
+                  <Building2 size={24} />
+                </ThemeIcon>
+                <Text size="sm" style={{ color: 'var(--gb-text-secondary)' }}>
+                  {t('No organizations yet')}
+                </Text>
+              </Stack>
+            </Center>
+          </MotionDiv>
+        )}
+
+        {organizations.length > 0 && (
+          <Stack gap="sm">
+            {organizations.map((org) => (
+              <MotionDiv key={org.id} variants={contentVariants} initial="hidden" animate="visible">
+                <Paper
+                  component={Link}
+                  to={`/orgs/${org.slug}`}
+                  withBorder
+                  p="md"
+                  style={{
+                    textDecoration: 'none',
+                    color: 'inherit',
+                    cursor: 'pointer',
+                    transition: 'border-color 120ms ease, background-color 120ms ease',
+                  }}
+                  styles={{
+                    root: {
+                      '&:hover': {
+                        borderColor: 'var(--mantine-color-violet-5)',
+                        backgroundColor: 'var(--gb-highlight-row)',
+                      },
+                    },
+                  }}
+                >
+                  <Group justify="space-between" align="center">
+                    <Group gap="sm">
+                      <ThemeIcon variant="light" color="violet" size="md" radius="xl">
+                        <Building2 size={14} />
+                      </ThemeIcon>
+                      <div>
+                        <Text size="sm" fw={600}>
+                          {org.name}
+                        </Text>
+                        <Text size="xs" style={{ color: 'var(--gb-text-secondary)' }}>
+                          {org.slug}
+                        </Text>
+                      </div>
+                    </Group>
+                    {org.description && (
+                      <Text
+                        size="xs"
+                        style={{ color: 'var(--gb-text-secondary)' }}
+                        truncate
+                        maw={300}
+                      >
+                        {org.description}
+                      </Text>
+                    )}
+                  </Group>
+                </Paper>
+              </MotionDiv>
+            ))}
+          </Stack>
+        )}
+      </MotionDiv>
+
       <CreateProjectModal opened={createModalOpen} onClose={() => setCreateModalOpen(false)} />
+      <CreateOrgModal opened={createOrgModalOpen} onClose={() => setCreateOrgModalOpen(false)} />
     </Container>
   );
 }

@@ -10,6 +10,8 @@ import Index from '@/pages/Index';
 import Dashboard from '@/pages/Dashboard';
 import ProjectDetail from '@/pages/ProjectDetail';
 import ProjectEditor from '@/pages/ProjectEditor';
+import OrgSettings from '@/pages/OrgSettings';
+import Invite from '@/pages/Invite';
 import Login from '@/pages/auth/Login';
 import Signup from '@/pages/auth/Signup';
 import Callback from '@/pages/auth/Callback';
@@ -46,6 +48,22 @@ export default function App() {
         element={
           <AuthGuard>
             <ProjectEditor />
+          </AuthGuard>
+        }
+      />
+      <Route
+        path="/orgs/:slug"
+        element={
+          <AuthGuard>
+            <OrgSettings />
+          </AuthGuard>
+        }
+      />
+      <Route
+        path="/invite/:token"
+        element={
+          <AuthGuard>
+            <Invite />
           </AuthGuard>
         }
       />

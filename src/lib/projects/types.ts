@@ -9,6 +9,7 @@
 export interface ProjectRow {
   id: string;
   owner_id: string;
+  organization_id: string | null;
   name: string;
   description: string;
   visibility: 'private' | 'public' | 'unlisted';
