@@ -1553,9 +1553,11 @@ function ReviewCommentThread({
 function ReviewCommentsPanel({
   entryId,
   reviewEntry,
+  isRemoteLocked = false,
 }: {
   entryId: string;
   reviewEntry: ReviewEntryState;
+  isRemoteLocked?: boolean;
 }) {
   const { t } = useTranslation();
   const addReviewComment = useEditorStore((state) => state.addReviewComment);
@@ -1601,7 +1603,7 @@ function ReviewCommentsPanel({
             setDraftComment('');
             setReplyTo(null);
           }}
-          disabled={!draftComment.trim()}
+          disabled={!draftComment.trim() || isRemoteLocked}
         >
           {replyTo ? t('Add reply') : t('Add comment')}
         </Button>
@@ -1685,7 +1687,15 @@ function ReviewHistoryPanel({ reviewEntry }: { reviewEntry: ReviewEntryState }) 
   );
 }
 
-function ReviewPanel({ entry, reviewEntry }: { entry: POEntry; reviewEntry: ReviewEntryState }) {
+function ReviewPanel({
+  entry,
+  reviewEntry,
+  isRemoteLocked = false,
+}: {
+  entry: POEntry;
+  reviewEntry: ReviewEntryState;
+  isRemoteLocked?: boolean;
+}) {
   const { t } = useTranslation();
   const setReviewStatus = useEditorStore((state) => state.setReviewStatus);
   const clearFuzzyBatch = useEditorStore((state) => state.clearFuzzyBatch);
@@ -1768,11 +1778,16 @@ function ReviewPanel({ entry, reviewEntry }: { entry: POEntry; reviewEntry: Revi
             variant="light"
             color="green"
             onClick={handleApprove}
-            disabled={!canApprove}
+            disabled={!canApprove || isRemoteLocked}
           >
             {t('Approve')}
           </Button>
-          <Button size="xs" variant="default" onClick={handleUnapprove} disabled={!canUnapprove}>
+          <Button
+            size="xs"
+            variant="default"
+            onClick={handleUnapprove}
+            disabled={!canUnapprove || isRemoteLocked}
+          >
             {t('Unapprove')}
           </Button>
           <Button
@@ -1780,7 +1795,7 @@ function ReviewPanel({ entry, reviewEntry }: { entry: POEntry; reviewEntry: Revi
             variant="light"
             color="orange"
             onClick={handleRequestChanges}
-            disabled={!canRequestChanges}
+            disabled={!canRequestChanges || isRemoteLocked}
           >
             {t('Request changes')}
           </Button>
@@ -1798,6 +1813,7 @@ function ReviewPanel({ entry, reviewEntry }: { entry: POEntry; reviewEntry: Revi
           <Button
             size="xs"
             variant="default"
+            disabled={isRemoteLocked}
             onClick={() => {
               if (translationStatus === 'fuzzy') {
                 clearFuzzyBatch([entry.id]);
@@ -1815,7 +1831,11 @@ function ReviewPanel({ entry, reviewEntry }: { entry: POEntry; reviewEntry: Revi
         <Text size="xs" fw={600} c="dimmed">
           {t('Comments')}
         </Text>
-        <ReviewCommentsPanel entryId={entry.id} reviewEntry={reviewEntry} />
+        <ReviewCommentsPanel
+          entryId={entry.id}
+          reviewEntry={reviewEntry}
+          isRemoteLocked={isRemoteLocked}
+        />
       </Stack>
 
       <Divider />
@@ -1857,6 +1877,7 @@ function EntryDetailsPanel({
   translationMemoryScope = null,
   onActivateReference,
   mode = 'edit',
+  isRemoteLocked = false,
 }: {
   entry: POEntry;
   status: TranslationStatus;
@@ -1869,6 +1890,7 @@ function EntryDetailsPanel({
   translationMemoryScope?: TranslationMemoryScope | null;
   onActivateReference: (ref: ParsedReference) => void;
   mode?: WorkspaceMode;
+  isRemoteLocked?: boolean;
 }) {
   const { t } = useTranslation();
   const projectType = useSourceStore((state) => getEffectiveProjectType(state));
@@ -2038,7 +2060,7 @@ function EntryDetailsPanel({
             <Text size="xs" fw={600} c="dimmed">
               {t('Review')}
             </Text>
-            <ReviewPanel entry={entry} reviewEntry={reviewEntry} />
+            <ReviewPanel entry={entry} reviewEntry={reviewEntry} isRemoteLocked={isRemoteLocked} />
           </Stack>
 
           <Divider />
@@ -2502,6 +2524,7 @@ const MobileEntryCard = memo(function MobileEntryCard({
           translationMemoryScope={translationMemoryScope}
           onActivateReference={handleActivateReference}
           mode={mode}
+          isRemoteLocked={Boolean(remoteLock)}
         />
       </Collapse>
     </Paper>
@@ -3058,6 +3081,10 @@ export function EditorTable({
     [broadcastEntryUpdate, broadcastLock, broadcastUnlock, broadcastReviewEvent],
   );
 
+  const selectedRemoteLock = useCollaborationStore((s) =>
+    selectedEntryId ? Boolean(s.cellLocks.get(selectedEntryId)) : false,
+  );
+
   if (!filename) {
     return null;
   }
@@ -3370,6 +3397,7 @@ export function EditorTable({
                                 translationMemoryScope={translationMemoryScope}
                                 onActivateReference={handleInspectorReference}
                                 mode={mode}
+                                isRemoteLocked={selectedRemoteLock}
                               />
                             </Stack>
                           ) : (
