@@ -100,26 +100,13 @@ export function useRealtimeChannel(
   }, []);
 
   useEffect(() => {
-    console.log('[Realtime] Effect fired', {
-      projectId,
-      languageId,
-      userId,
-      configured: isCloudBackendConfigured(),
-    });
     if (!projectId || !languageId || !userId || !isCloudBackendConfigured()) {
-      console.log('[Realtime] Skipping — missing:', {
-        projectId: !projectId,
-        languageId: !languageId,
-        userId: !userId,
-        configured: !isCloudBackendConfigured(),
-      });
       return;
     }
 
     const client = getSupabaseClient('Realtime');
     const channel = createProjectChannel(client, { projectId, languageId, userId });
     channelRef.current = channel;
-    console.log('[Realtime] Channel created, subscribing...');
 
     // ── Presence ─────────────────────────────────────────
     channel.on('presence', { event: 'sync' }, () => {
@@ -162,7 +149,6 @@ export function useRealtimeChannel(
 
     // ── Subscribe ────────────────────────────────────────
     channel.subscribe(async (status) => {
-      console.log('[Realtime] Subscribe status:', status);
       if (status === 'SUBSCRIBED') {
         setChannelConnected(true);
         await channel.track({
