@@ -95,7 +95,7 @@ export function AppHeader({ actions, projectId, onOpenRepoSync, onClear }: AppHe
   return (
     <>
       <MotionDiv variants={sectionVariants} initial="hidden" animate="visible">
-        <Group justify="space-between" align="center" mb="sm">
+        <Group justify="space-between" align="center" mb="lg">
           {/* Left: branding */}
           <Group gap="sm" align="center" style={{ flex: '0 0 auto' }}>
             <Link

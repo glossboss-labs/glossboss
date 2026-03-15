@@ -87,14 +87,29 @@ export async function deleteOrganization(id: string): Promise<void> {
 // ── Members ───────────────────────────────────────────────────
 
 export async function listOrgMembers(orgId: string): Promise<OrgMemberWithProfile[]> {
-  const { data, error } = await supabase()
+  // Fetch members first, then profiles separately to avoid PostgREST
+  // FK resolution issues (organization_members.user_id → auth.users, not profiles).
+  const { data: members, error } = await supabase()
     .from('organization_members')
-    .select('*, profiles(email, full_name, avatar_url)')
+    .select('*')
     .eq('organization_id', orgId)
     .order('created_at', { ascending: true });
 
   if (error) throw error;
-  return (data ?? []) as OrgMemberWithProfile[];
+  if (!members?.length) return [];
+
+  const userIds = members.map((m) => m.user_id);
+  const { data: profiles } = await supabase()
+    .from('profiles')
+    .select('id, email, full_name, avatar_url')
+    .in('id', userIds);
+
+  const profileMap = new Map((profiles ?? []).map((p) => [p.id, p]));
+
+  return members.map((m) => ({
+    ...m,
+    profiles: profileMap.get(m.user_id) ?? { email: '', full_name: null, avatar_url: null },
+  })) as OrgMemberWithProfile[];
 }
 
 export async function addOrgMember(

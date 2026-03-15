@@ -40,6 +40,9 @@ import {
   EyeOff,
   Search,
   GitBranch,
+  Pencil,
+  Check,
+  X,
 } from 'lucide-react';
 import {
   sectionVariants,
@@ -50,7 +53,7 @@ import {
   fadeVariants,
 } from '@/lib/motion';
 import { useTranslation, msgid } from '@/lib/app-language';
-import { getProject, getProjectLanguages } from '@/lib/projects/api';
+import { getProject, getProjectLanguages, updateProject } from '@/lib/projects/api';
 import type { ProjectRow, ProjectLanguageRow } from '@/lib/projects/types';
 import { useProjectsStore } from '@/stores/projects-store';
 import { AppHeader } from '@/components/AppHeader';
@@ -127,6 +130,9 @@ export default function ProjectDetail() {
   const [refreshKey, setRefreshKey] = useState(0);
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<LangSortOption>('locale');
+  const [editingName, setEditingName] = useState(false);
+  const [editName, setEditName] = useState('');
+  const [editVisibility, setEditVisibility] = useState<string>('');
 
   useEffect(() => {
     if (!id) return;
@@ -173,6 +179,27 @@ export default function ProjectDetail() {
     setAddModalOpen(false);
     setRefreshKey((k) => k + 1);
   }, []);
+
+  const handleStartEditName = useCallback(() => {
+    if (!project) return;
+    setEditName(project.name);
+    setEditVisibility(project.visibility);
+    setEditingName(true);
+  }, [project]);
+
+  const handleSaveProject = useCallback(async () => {
+    if (!project || !editName.trim()) return;
+    try {
+      const updated = await updateProject(project.id, {
+        name: editName.trim(),
+        visibility: editVisibility as 'private' | 'public' | 'unlisted',
+      });
+      setProject(updated);
+      setEditingName(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t('Failed to save project'));
+    }
+  }, [project, editName, editVisibility, t]);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
@@ -261,7 +288,57 @@ export default function ProjectDetail() {
 
           {/* Title + metadata */}
           <div>
-            <Title order={3}>{project.name}</Title>
+            {editingName ? (
+              <Group gap="sm" align="end">
+                <TextInput
+                  value={editName}
+                  onChange={(e) => setEditName(e.currentTarget.value)}
+                  size="md"
+                  style={{ flex: 1, maxWidth: 400 }}
+                  autoFocus
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') void handleSaveProject();
+                    if (e.key === 'Escape') setEditingName(false);
+                  }}
+                />
+                <Select
+                  data={[
+                    { value: 'private', label: t('Private') },
+                    { value: 'public', label: t('Public') },
+                    { value: 'unlisted', label: t('Unlisted') },
+                  ]}
+                  value={editVisibility}
+                  onChange={(v) => setEditVisibility(v || 'private')}
+                  w={130}
+                  allowDeselect={false}
+                />
+                <ActionIcon
+                  variant="light"
+                  color="teal"
+                  size="lg"
+                  onClick={() => void handleSaveProject()}
+                >
+                  <Check size={16} />
+                </ActionIcon>
+                <ActionIcon
+                  variant="subtle"
+                  color="gray"
+                  size="lg"
+                  onClick={() => setEditingName(false)}
+                >
+                  <X size={16} />
+                </ActionIcon>
+              </Group>
+            ) : (
+              <Group gap="xs" align="center">
+                <Title order={3}>{project.name}</Title>
+                <Tooltip label={t('Edit project')}>
+                  <ActionIcon variant="subtle" color="gray" size="sm" onClick={handleStartEditName}>
+                    <Pencil size={14} />
+                  </ActionIcon>
+                </Tooltip>
+              </Group>
+            )}
             <Group gap={6} mt={4} align="center">
               <VisIcon size={12} style={{ color: 'var(--gb-text-tertiary)' }} />
               <Text size="xs" style={{ color: 'var(--gb-text-tertiary)' }}>

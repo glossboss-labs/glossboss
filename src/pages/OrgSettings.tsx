@@ -27,6 +27,7 @@ import {
   Avatar,
   Tooltip,
   CopyButton,
+  Textarea,
 } from '@mantine/core';
 import { motion } from 'motion/react';
 import {
@@ -41,6 +42,8 @@ import {
   Crown,
   Copy,
   Check,
+  Pencil,
+  X,
 } from 'lucide-react';
 import { sectionVariants, contentVariants, fadeVariants, buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
@@ -49,6 +52,7 @@ import {
   listOrgMembers,
   updateOrgMemberRole,
   removeOrgMember,
+  updateOrganization,
   listInvites,
   createInvite,
   revokeInvite,
@@ -89,6 +93,11 @@ export default function OrgSettings() {
   const [org, setOrg] = useState<OrganizationRow | null>(null);
   const [members, setMembers] = useState<OrgMemberWithProfile[]>([]);
   const [invites, setInvites] = useState<InviteRow[]>([]);
+
+  // Edit org state
+  const [editingOrg, setEditingOrg] = useState(false);
+  const [editOrgName, setEditOrgName] = useState('');
+  const [editOrgDescription, setEditOrgDescription] = useState('');
 
   // Invite form state
   const [inviteEmail, setInviteEmail] = useState('');
@@ -181,6 +190,27 @@ export default function OrgSettings() {
     }
   }, [org, inviteEmail, inviteRole, t]);
 
+  const handleStartEditOrg = useCallback(() => {
+    if (!org) return;
+    setEditOrgName(org.name);
+    setEditOrgDescription(org.description);
+    setEditingOrg(true);
+  }, [org]);
+
+  const handleSaveOrg = useCallback(async () => {
+    if (!org || !editOrgName.trim()) return;
+    try {
+      const updated = await updateOrganization(org.id, {
+        name: editOrgName.trim(),
+        description: editOrgDescription.trim(),
+      });
+      setOrg(updated);
+      setEditingOrg(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t('Failed to update organization'));
+    }
+  }, [org, editOrgName, editOrgDescription, t]);
+
   const handleRevokeInvite = useCallback(
     async (inviteId: string) => {
       try {
@@ -243,15 +273,72 @@ export default function OrgSettings() {
           </Text>
 
           {/* Title */}
-          <Group justify="space-between" align="center">
-            <div>
-              <Title order={3}>{org.name}</Title>
-              <Text size="sm" style={{ color: 'var(--gb-text-secondary)' }}>
-                {org.slug}
-                {org.description && ` — ${org.description}`}
-              </Text>
-            </div>
-          </Group>
+          {editingOrg ? (
+            <Stack gap="sm">
+              <Group gap="sm" align="end">
+                <TextInput
+                  label={t('Organization name')}
+                  value={editOrgName}
+                  onChange={(e) => setEditOrgName(e.currentTarget.value)}
+                  style={{ flex: 1, maxWidth: 400 }}
+                  autoFocus
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') void handleSaveOrg();
+                    if (e.key === 'Escape') setEditingOrg(false);
+                  }}
+                />
+                <ActionIcon
+                  variant="light"
+                  color="teal"
+                  size="lg"
+                  onClick={() => void handleSaveOrg()}
+                >
+                  <Check size={16} />
+                </ActionIcon>
+                <ActionIcon
+                  variant="subtle"
+                  color="gray"
+                  size="lg"
+                  onClick={() => setEditingOrg(false)}
+                >
+                  <X size={16} />
+                </ActionIcon>
+              </Group>
+              <Textarea
+                label={t('Description')}
+                value={editOrgDescription}
+                onChange={(e) => setEditOrgDescription(e.currentTarget.value)}
+                autosize
+                minRows={1}
+                maxRows={3}
+                maw={400}
+              />
+            </Stack>
+          ) : (
+            <Group justify="space-between" align="center">
+              <div>
+                <Group gap="xs" align="center">
+                  <Title order={3}>{org.name}</Title>
+                  {isAdmin && (
+                    <Tooltip label={t('Edit organization')}>
+                      <ActionIcon
+                        variant="subtle"
+                        color="gray"
+                        size="sm"
+                        onClick={handleStartEditOrg}
+                      >
+                        <Pencil size={14} />
+                      </ActionIcon>
+                    </Tooltip>
+                  )}
+                </Group>
+                <Text size="sm" style={{ color: 'var(--gb-text-secondary)' }}>
+                  {org.slug}
+                  {org.description && ` — ${org.description}`}
+                </Text>
+              </div>
+            </Group>
+          )}
 
           {error && (
             <Alert
