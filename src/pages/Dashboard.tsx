@@ -29,6 +29,7 @@ import { AppHeader } from '@/components/AppHeader';
 import { ProjectGrid } from '@/components/projects/ProjectGrid';
 import { CreateProjectModal } from '@/components/projects/CreateProjectModal';
 import { CreateOrgModal } from '@/components/organizations/CreateOrgModal';
+import { ConfirmModal } from '@/components/ui';
 import type { ProjectWithLanguages } from '@/lib/projects/types';
 
 const MotionDiv = motion.div;
@@ -61,8 +62,25 @@ export default function Dashboard() {
   const { organizations, loading: orgsLoading, fetchOrganizations } = useOrganizationsStore();
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [createOrgModalOpen, setCreateOrgModalOpen] = useState(false);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<SortOption>('updated');
+
+  const confirmDeleteProject = confirmDeleteId
+    ? projects.find((p) => p.id === confirmDeleteId)
+    : null;
+
+  const handleDeleteConfirmed = async () => {
+    if (!confirmDeleteId) return;
+    setDeleting(true);
+    try {
+      await deleteProject(confirmDeleteId);
+      setConfirmDeleteId(null);
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   useEffect(() => {
     void fetchProjects();
@@ -184,7 +202,7 @@ export default function Dashboard() {
                 </Center>
               </MotionDiv>
             ) : (
-              <ProjectGrid projects={filtered} onDelete={deleteProject} />
+              <ProjectGrid projects={filtered} onDelete={setConfirmDeleteId} />
             )}
           </>
         )}
@@ -278,6 +296,20 @@ export default function Dashboard() {
 
       <CreateProjectModal opened={createModalOpen} onClose={() => setCreateModalOpen(false)} />
       <CreateOrgModal opened={createOrgModalOpen} onClose={() => setCreateOrgModalOpen(false)} />
+
+      <ConfirmModal
+        opened={Boolean(confirmDeleteId)}
+        onClose={() => setConfirmDeleteId(null)}
+        onConfirm={() => void handleDeleteConfirmed()}
+        title={t('Delete project')}
+        message={t(
+          'Are you sure you want to delete "{{name}}"? All languages and entries will be permanently removed.',
+          { name: confirmDeleteProject?.name ?? '' },
+        )}
+        confirmLabel={t('Delete project')}
+        variant="danger"
+        loading={deleting}
+      />
     </Container>
   );
 }
