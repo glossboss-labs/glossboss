@@ -93,8 +93,7 @@ export function AppHeader({ actions }: AppHeaderProps) {
                   component={Link}
                   to="/explore"
                   variant="subtle"
-                  size="compact-sm"
-                  leftSection={<Globe size={14} />}
+                  leftSection={<Globe size={16} />}
                 >
                   {t('Explore')}
                 </Button>
@@ -104,8 +103,7 @@ export function AppHeader({ actions }: AppHeaderProps) {
                   component={Link}
                   to="/dashboard"
                   variant="subtle"
-                  size="compact-sm"
-                  leftSection={<LayoutDashboard size={14} />}
+                  leftSection={<LayoutDashboard size={16} />}
                 >
                   {t('Dashboard')}
                 </Button>

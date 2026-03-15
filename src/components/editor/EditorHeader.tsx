@@ -24,10 +24,8 @@ import {
   Upload,
   Download,
   Trash2,
-  MessageSquare,
   FileUp,
   RotateCcw,
-  MoreVertical,
   Sun,
   Moon,
   ChevronDown,
@@ -129,7 +127,6 @@ export function EditorHeader({
   repoConnection,
   onPushToRepo,
   isMobile,
-  onOpenFeedback,
   onToggleColorScheme,
   onOpenSettings,
   onLoadFromUrl,
@@ -249,6 +246,42 @@ export function EditorHeader({
                 >
                   {t('Backup')}
                 </Menu.Item>
+                {(onLoadFromUrl ||
+                  onOpenWordPressProject ||
+                  onRefreshWordPress ||
+                  onOpenRepoSync) && <Menu.Divider />}
+                {onLoadFromUrl && (
+                  <Menu.Item leftSection={<Link size={14} />} onClick={onLoadFromUrl}>
+                    {t('Load from URL')}
+                  </Menu.Item>
+                )}
+                {onOpenWordPressProject && (
+                  <Menu.Item leftSection={<Globe size={14} />} onClick={onOpenWordPressProject}>
+                    {t('Open from WordPress.org')}
+                  </Menu.Item>
+                )}
+                {onRefreshWordPress && (
+                  <Menu.Item leftSection={<RotateCcw size={14} />} onClick={onRefreshWordPress}>
+                    {t('Refresh from WordPress.org')}
+                  </Menu.Item>
+                )}
+                {onOpenRepoSync && (
+                  <Menu.Item leftSection={<GitBranch size={14} />} onClick={onOpenRepoSync}>
+                    {repoConnection ? t('Repository sync') : t('Open from repository')}
+                  </Menu.Item>
+                )}
+                {onClearClick && (
+                  <>
+                    <Menu.Divider />
+                    <Menu.Item
+                      color="red"
+                      leftSection={<Trash2 size={14} />}
+                      onClick={onClearClick}
+                    >
+                      {t('Clear editor')}
+                    </Menu.Item>
+                  </>
+                )}
               </Menu.Dropdown>
             </Menu>
           )}
@@ -310,97 +343,36 @@ export function EditorHeader({
             )}
           </AnimatePresence>
 
-          {!isMobile && <Divider orientation="vertical" />}
-
           {!isMobile && (
-            <Group gap="sm">
-              <Tooltip label={t('Share feedback')}>
+            <>
+              <Divider orientation="vertical" />
+              <motion.div {...buttonStates}>
+                <Button
+                  component={RouterLink}
+                  to="/explore"
+                  variant="subtle"
+                  leftSection={<Globe size={16} />}
+                >
+                  {t('Explore')}
+                </Button>
+              </motion.div>
+              {isAuthenticated && (
                 <motion.div {...buttonStates}>
                   <Button
+                    component={RouterLink}
+                    to="/dashboard"
                     variant="subtle"
-                    leftSection={<MessageSquare size={16} />}
-                    onClick={onOpenFeedback}
+                    leftSection={<LayoutDashboard size={16} />}
                   >
-                    {t('Feedback')}
+                    {t('Dashboard')}
                   </Button>
                 </motion.div>
-              </Tooltip>
-
+              )}
               <ThemeToggle onToggle={onToggleColorScheme} />
-            </Group>
-          )}
-
-          {isAuthenticated && (
-            <Tooltip label={t('Projects')}>
-              <motion.div {...buttonStates}>
-                <ActionIcon
-                  component={RouterLink}
-                  to="/dashboard"
-                  variant="default"
-                  size="lg"
-                  aria-label={t('Projects')}
-                >
-                  <LayoutDashboard size={18} />
-                </ActionIcon>
-              </motion.div>
-            </Tooltip>
+            </>
           )}
 
           <UserMenu />
-
-          <Menu position="bottom-end" withinPortal>
-            <Menu.Target>
-              <motion.div {...buttonStates}>
-                <ActionIcon variant="default" size="lg" aria-label={t('Actions')}>
-                  <MoreVertical size={18} />
-                </ActionIcon>
-              </motion.div>
-            </Menu.Target>
-            <Menu.Dropdown>
-              {isMobile && (
-                <Menu.Item leftSection={<MessageSquare size={14} />} onClick={onOpenFeedback}>
-                  {t('Share feedback')}
-                </Menu.Item>
-              )}
-              {isMobile && (
-                <Menu.Item
-                  leftSection={
-                    computedColorScheme === 'dark' ? <Sun size={14} /> : <Moon size={14} />
-                  }
-                  onClick={onToggleColorScheme}
-                >
-                  {computedColorScheme === 'dark' ? t('Light mode') : t('Dark mode')}
-                </Menu.Item>
-              )}
-              {isMobile && <Menu.Divider />}
-              <Menu.Label>{t('Editor')}</Menu.Label>
-              {onLoadFromUrl && (
-                <Menu.Item leftSection={<Link size={14} />} onClick={onLoadFromUrl}>
-                  {t('Load from URL')}
-                </Menu.Item>
-              )}
-              {onOpenWordPressProject && (
-                <Menu.Item leftSection={<Globe size={14} />} onClick={onOpenWordPressProject}>
-                  {t('Open from WordPress.org')}
-                </Menu.Item>
-              )}
-              {onRefreshWordPress && (
-                <Menu.Item leftSection={<RotateCcw size={14} />} onClick={onRefreshWordPress}>
-                  {t('Refresh from WordPress.org')}
-                </Menu.Item>
-              )}
-              {onOpenRepoSync && (
-                <Menu.Item leftSection={<GitBranch size={14} />} onClick={onOpenRepoSync}>
-                  {repoConnection ? t('Repository sync') : t('Open from repository')}
-                </Menu.Item>
-              )}
-              {onClearClick && (
-                <Menu.Item color="red" leftSection={<Trash2 size={14} />} onClick={onClearClick}>
-                  {t('Clear editor')}
-                </Menu.Item>
-              )}
-            </Menu.Dropdown>
-          </Menu>
         </Group>
       </Group>
     </MotionDiv>

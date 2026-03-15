@@ -91,10 +91,6 @@ msgstr "Account created. Check your email to confirm, or sign in now."
 msgid "Action"
 msgstr "Action"
 
-#: src/components/editor/EditorHeader.tsx:354
-msgid "Actions"
-msgstr "Actions"
-
 #: src/components/projects/ProjectMembersTab.tsx:170
 msgid "Add"
 msgstr "Add"
@@ -329,7 +325,7 @@ msgid "Back to sign in"
 msgstr "Back to sign in"
 
 #: src/components/SettingsModal.tsx:1326
-#: src/components/editor/EditorHeader.tsx:250
+#: src/components/editor/EditorHeader.tsx:247
 #: src/pages/Settings.tsx:113
 msgid "Backup"
 msgstr "Backup"
@@ -556,7 +552,7 @@ msgstr "Clear active source reference"
 msgid "Clear anyway"
 msgstr "Clear anyway"
 
-#: src/components/editor/EditorHeader.tsx:399
+#: src/components/editor/EditorHeader.tsx:281
 msgid "Clear editor"
 msgstr "Clear editor"
 
@@ -905,12 +901,12 @@ msgid "Danish"
 msgstr "Danish"
 
 #: src/components/AppHeader.tsx:39
-#: src/components/editor/EditorHeader.tsx:60
-#: src/components/editor/EditorHeader.tsx:372
+#: src/components/editor/EditorHeader.tsx:58
 msgid "Dark mode"
 msgstr "Dark mode"
 
-#: src/components/AppHeader.tsx:110
+#: src/components/AppHeader.tsx:108
+#: src/components/editor/EditorHeader.tsx:367
 #: src/pages/OrgSettings.tsx:276
 #: src/pages/Settings.tsx:74
 msgid "Dashboard"
@@ -1034,11 +1030,11 @@ msgstr "Display"
 msgid "Don't have an account?"
 msgstr "Don't have an account?"
 
-#: src/components/editor/EditorHeader.tsx:235
+#: src/components/editor/EditorHeader.tsx:232
 msgid "Download as JSON"
 msgstr "Download as JSON"
 
-#: src/components/editor/EditorHeader.tsx:229
+#: src/components/editor/EditorHeader.tsx:226
 msgid "Download as PO"
 msgstr "Download as PO"
 
@@ -1085,7 +1081,7 @@ msgstr "Edit"
 msgid "Edit Header"
 msgstr "Edit Header"
 
-#: src/components/editor/EditorHeader.tsx:175
+#: src/components/editor/EditorHeader.tsx:172
 msgid "Edit gettext translation files with DeepL integration"
 msgstr "Edit gettext translation files with DeepL integration"
 
@@ -1096,10 +1092,6 @@ msgstr "Edit workspace"
 #: src/pages/index/IndexPageBanners.tsx:177
 msgid "Editing draft"
 msgstr "Editing draft"
-
-#: src/components/editor/EditorHeader.tsx:376
-msgid "Editor"
-msgstr "Editor"
 
 #: src/components/projects/ExportSection.tsx:150
 msgid "Editor snapshot"
@@ -1275,7 +1267,8 @@ msgstr "Expired"
 msgid "Expires {{date}}"
 msgstr "Expires {{date}}"
 
-#: src/components/AppHeader.tsx:99
+#: src/components/AppHeader.tsx:98
+#: src/components/editor/EditorHeader.tsx:356
 #: src/pages/Explore.tsx:149
 #: src/pages/ProjectDetail.tsx:332
 msgid "Explore"
@@ -1561,10 +1554,6 @@ msgstr "Failed to update role"
 msgid "Feature"
 msgstr "Feature"
 
-#: src/components/editor/EditorHeader.tsx:324
-msgid "Feedback"
-msgstr "Feedback"
-
 #: src/components/feedback/FeedbackModal.tsx:281
 msgid "Feedback could not be submitted at this time."
 msgstr "Feedback could not be submitted at this time."
@@ -1585,7 +1574,7 @@ msgstr "Feedback submitted"
 msgid "Feedback verification is not configured."
 msgstr "Feedback verification is not configured."
 
-#: src/components/editor/EditorHeader.tsx:196
+#: src/components/editor/EditorHeader.tsx:193
 msgid "File"
 msgstr "File"
 
@@ -2190,8 +2179,7 @@ msgid "License"
 msgstr "License"
 
 #: src/components/AppHeader.tsx:39
-#: src/components/editor/EditorHeader.tsx:60
-#: src/components/editor/EditorHeader.tsx:372
+#: src/components/editor/EditorHeader.tsx:58
 msgid "Light mode"
 msgstr "Light mode"
 
@@ -2268,7 +2256,7 @@ msgstr ""
 msgid "Load example PO"
 msgstr "Load example PO"
 
-#: src/components/editor/EditorHeader.tsx:379
+#: src/components/editor/EditorHeader.tsx:255
 #: src/pages/index/IndexPageDialogs.tsx:168
 msgid "Load from URL"
 msgstr "Load from URL"
@@ -2799,14 +2787,14 @@ msgstr "Open a PR targeting {{branch}}"
 msgid "Open a locale file from a GitHub or GitLab repository"
 msgstr "Open a locale file from a GitHub or GitLab repository"
 
-#: src/components/editor/EditorHeader.tsx:384
+#: src/components/editor/EditorHeader.tsx:260
 #: src/components/editor/EmptyState.tsx:140
 #: src/components/editor/WordPressProjectModal.tsx:291
 #: src/components/projects/CreateProjectModal.tsx:394
 msgid "Open from WordPress.org"
 msgstr "Open from WordPress.org"
 
-#: src/components/editor/EditorHeader.tsx:394
+#: src/components/editor/EditorHeader.tsx:270
 #: src/components/editor/EmptyState.tsx:152
 #: src/components/projects/CreateProjectModal.tsx:419
 msgid "Open from repository"
@@ -3186,8 +3174,6 @@ msgstr "Project settings"
 msgid "Project type"
 msgstr "Project type"
 
-#: src/components/editor/EditorHeader.tsx:334
-#: src/components/editor/EditorHeader.tsx:341
 #: src/pages/Dashboard.tsx:99
 #: src/pages/OrgSettings.tsx:318
 #: src/pages/OrgSettingsPage.tsx:347
@@ -3234,7 +3220,7 @@ msgstr "Punctuation drift"
 msgid "Punjabi"
 msgstr "Punjabi"
 
-#: src/components/editor/EditorHeader.tsx:280
+#: src/components/editor/EditorHeader.tsx:313
 #: src/components/repo-sync/RepoSyncModal.tsx:582
 msgid "Push"
 msgstr "Push"
@@ -3243,7 +3229,7 @@ msgstr "Push"
 msgid "Push changes to repository"
 msgstr "Push changes to repository"
 
-#: src/components/editor/EditorHeader.tsx:269
+#: src/components/editor/EditorHeader.tsx:302
 msgid "Push changes to {{provider}}"
 msgstr "Push changes to {{provider}}"
 
@@ -3301,7 +3287,7 @@ msgid "Refresh"
 msgstr "Refresh"
 
 #: src/components/SettingsModal.tsx:2136
-#: src/components/editor/EditorHeader.tsx:389
+#: src/components/editor/EditorHeader.tsx:265
 #: src/components/editor/GlossaryPanel.tsx:338
 #: src/components/editor/GlossaryPanel.tsx:342
 #: src/components/editor/WordPressRefreshModal.tsx:198
@@ -3424,7 +3410,7 @@ msgstr ""
 "Repository connections are per-language. Each language can be linked to a fi"
 "le in a GitHub or GitLab repository."
 
-#: src/components/editor/EditorHeader.tsx:394
+#: src/components/editor/EditorHeader.tsx:270
 #: src/components/repo-sync/RepoSyncModal.tsx:567
 msgid "Repository sync"
 msgstr "Repository sync"
@@ -3603,11 +3589,11 @@ msgstr "Save current field and move to the next translation field"
 msgid "Save current field and move to the previous translation field"
 msgstr "Save current field and move to the previous translation field"
 
-#: src/components/editor/EditorHeader.tsx:296
+#: src/components/editor/EditorHeader.tsx:329
 msgid "Save this file as a cloud project"
 msgstr "Save this file as a cloud project"
 
-#: src/components/editor/EditorHeader.tsx:305
+#: src/components/editor/EditorHeader.tsx:338
 #: src/components/projects/SaveToCloudModal.tsx:120
 #: src/components/projects/SaveToCloudModal.tsx:166
 msgid "Save to cloud"
@@ -3808,8 +3794,6 @@ msgid "Share Feedback"
 msgstr "Share Feedback"
 
 #: src/components/auth/UserMenu.tsx:98
-#: src/components/editor/EditorHeader.tsx:317
-#: src/components/editor/EditorHeader.tsx:362
 msgid "Share feedback"
 msgstr "Share feedback"
 
@@ -4081,12 +4065,12 @@ msgid "Switch account"
 msgstr "Switch account"
 
 #: src/components/AppHeader.tsx:46
-#: src/components/editor/EditorHeader.tsx:67
+#: src/components/editor/EditorHeader.tsx:65
 msgid "Switch to dark mode"
 msgstr "Switch to dark mode"
 
 #: src/components/AppHeader.tsx:46
-#: src/components/editor/EditorHeader.tsx:67
+#: src/components/editor/EditorHeader.tsx:65
 msgid "Switch to light mode"
 msgstr "Switch to light mode"
 
@@ -4507,7 +4491,7 @@ msgstr "Unsaved draft found"
 msgid "Untranslated"
 msgstr "Untranslated"
 
-#: src/components/editor/EditorHeader.tsx:241
+#: src/components/editor/EditorHeader.tsx:238
 msgid "Update from POT…"
 msgstr "Update from POT…"
 
@@ -4575,7 +4559,7 @@ msgstr "Upload a translation file to start"
 msgid "Upload failed"
 msgstr "Upload failed"
 
-#: src/components/editor/EditorHeader.tsx:225
+#: src/components/editor/EditorHeader.tsx:222
 msgid "Upload file…"
 msgstr "Upload file…"
 
