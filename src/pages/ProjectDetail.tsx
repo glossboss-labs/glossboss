@@ -6,7 +6,7 @@
  */
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useParams, Link } from 'react-router';
+import { useParams, Link, useNavigate } from 'react-router';
 import {
   Container,
   Stack,
@@ -23,9 +23,11 @@ import {
   ActionIcon,
   Menu,
   TextInput,
+  Textarea,
   Select,
   Tooltip,
   ThemeIcon,
+  Tabs,
 } from '@mantine/core';
 import { motion, AnimatePresence } from 'motion/react';
 import {
@@ -40,9 +42,7 @@ import {
   EyeOff,
   Search,
   GitBranch,
-  Pencil,
-  Check,
-  X,
+  Settings,
 } from 'lucide-react';
 import {
   sectionVariants,
@@ -53,11 +53,12 @@ import {
   fadeVariants,
 } from '@/lib/motion';
 import { useTranslation, msgid } from '@/lib/app-language';
-import { getProject, getProjectLanguages, updateProject } from '@/lib/projects/api';
+import { getProject, getProjectLanguages, updateProject, deleteProject } from '@/lib/projects/api';
 import type { ProjectRow, ProjectLanguageRow } from '@/lib/projects/types';
 import { useProjectsStore } from '@/stores/projects-store';
 import { AppHeader } from '@/components/AppHeader';
 import { AddLanguageModal } from '@/components/projects/AddLanguageModal';
+import { ConfirmModal } from '@/components/ui';
 
 const MotionDiv = motion.div;
 const MotionSpan = motion.span;
@@ -120,6 +121,7 @@ function formatRelative(iso: string): string {
 export default function ProjectDetail() {
   const { id } = useParams<{ id: string }>();
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const deleteLanguage = useProjectsStore((s) => s.deleteLanguage);
 
   const [loading, setLoading] = useState(true);
@@ -130,9 +132,14 @@ export default function ProjectDetail() {
   const [refreshKey, setRefreshKey] = useState(0);
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<LangSortOption>('locale');
-  const [editingName, setEditingName] = useState(false);
+
+  // Settings tab state
   const [editName, setEditName] = useState('');
+  const [editDescription, setEditDescription] = useState('');
   const [editVisibility, setEditVisibility] = useState<string>('');
+  const [saving, setSaving] = useState(false);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [actionLoading, setActionLoading] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -149,6 +156,9 @@ export default function ProjectDetail() {
         }
         setProject(proj);
         setLanguages(langs);
+        setEditName(proj.name);
+        setEditDescription(proj.description);
+        setEditVisibility(proj.visibility);
         setLoading(false);
       } catch (err) {
         if (cancelled) return;
@@ -180,26 +190,35 @@ export default function ProjectDetail() {
     setRefreshKey((k) => k + 1);
   }, []);
 
-  const handleStartEditName = useCallback(() => {
-    if (!project) return;
-    setEditName(project.name);
-    setEditVisibility(project.visibility);
-    setEditingName(true);
-  }, [project]);
-
   const handleSaveProject = useCallback(async () => {
     if (!project || !editName.trim()) return;
+    setSaving(true);
     try {
       const updated = await updateProject(project.id, {
         name: editName.trim(),
+        description: editDescription.trim(),
         visibility: editVisibility as 'private' | 'public' | 'unlisted',
       });
       setProject(updated);
-      setEditingName(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : t('Failed to save project'));
+    } finally {
+      setSaving(false);
     }
-  }, [project, editName, editVisibility, t]);
+  }, [project, editName, editDescription, editVisibility, t]);
+
+  const handleDeleteProject = useCallback(async () => {
+    if (!project) return;
+    setActionLoading(true);
+    try {
+      await deleteProject(project.id);
+      setConfirmDeleteOpen(false);
+      void navigate('/dashboard');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t('Failed to delete project'));
+      setActionLoading(false);
+    }
+  }, [project, navigate, t]);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
@@ -288,57 +307,7 @@ export default function ProjectDetail() {
 
           {/* Title + metadata */}
           <div>
-            {editingName ? (
-              <Group gap="sm" align="end">
-                <TextInput
-                  value={editName}
-                  onChange={(e) => setEditName(e.currentTarget.value)}
-                  size="md"
-                  style={{ flex: 1, maxWidth: 400 }}
-                  autoFocus
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') void handleSaveProject();
-                    if (e.key === 'Escape') setEditingName(false);
-                  }}
-                />
-                <Select
-                  data={[
-                    { value: 'private', label: t('Private') },
-                    { value: 'public', label: t('Public') },
-                    { value: 'unlisted', label: t('Unlisted') },
-                  ]}
-                  value={editVisibility}
-                  onChange={(v) => setEditVisibility(v || 'private')}
-                  w={130}
-                  allowDeselect={false}
-                />
-                <ActionIcon
-                  variant="light"
-                  color="teal"
-                  size="lg"
-                  onClick={() => void handleSaveProject()}
-                >
-                  <Check size={16} />
-                </ActionIcon>
-                <ActionIcon
-                  variant="subtle"
-                  color="gray"
-                  size="lg"
-                  onClick={() => setEditingName(false)}
-                >
-                  <X size={16} />
-                </ActionIcon>
-              </Group>
-            ) : (
-              <Group gap="xs" align="center">
-                <Title order={3}>{project.name}</Title>
-                <Tooltip label={t('Edit project')}>
-                  <ActionIcon variant="subtle" color="gray" size="sm" onClick={handleStartEditName}>
-                    <Pencil size={14} />
-                  </ActionIcon>
-                </Tooltip>
-              </Group>
-            )}
+            <Title order={3}>{project.name}</Title>
             <Group gap={6} mt={4} align="center">
               <VisIcon size={12} style={{ color: 'var(--gb-text-tertiary)' }} />
               <Text size="xs" style={{ color: 'var(--gb-text-tertiary)' }}>
@@ -368,232 +337,327 @@ export default function ProjectDetail() {
             </Group>
           </div>
 
-          {/* Aggregate stats */}
-          {languages.length > 0 && (
-            <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
-              <Paper withBorder p="md">
-                <Group justify="space-between" align="center" mb={8}>
-                  <Text size="sm" style={{ color: 'var(--gb-text-secondary)' }}>
-                    {t('{{count}} languages', { count: languages.length })}
-                    {' · '}
-                    {t('{{strings}} total strings', { strings: aggTotal })}
-                  </Text>
-                  <Text size="sm" fw={600} c={aggPct === 100 ? 'teal' : undefined}>
-                    {aggPct}% {t('complete')}
-                  </Text>
-                </Group>
-                <Progress.Root size="md">
-                  <Progress.Section value={aggPct} color="blue" />
-                  <Progress.Section value={aggFuzzyPct} color="yellow" />
-                </Progress.Root>
-              </Paper>
-            </MotionDiv>
-          )}
+          <Tabs defaultValue="languages">
+            <Tabs.List>
+              <Tabs.Tab value="languages" leftSection={<Languages size={14} />}>
+                {t('Languages')} ({languages.length})
+              </Tabs.Tab>
+              <Tabs.Tab value="settings" leftSection={<Settings size={14} />}>
+                {t('Settings')}
+              </Tabs.Tab>
+            </Tabs.List>
 
-          {/* Search and sort */}
-          {languages.length > 0 && (
-            <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
-              <Group gap="sm">
-                <TextInput
-                  placeholder={t('Search languages…')}
-                  leftSection={<Search size={14} />}
-                  value={search}
-                  onChange={(e) => setSearch(e.currentTarget.value)}
-                  style={{ flex: 1, maxWidth: 280 }}
-                />
-                <Select
-                  data={sortOptions}
-                  value={sort}
-                  onChange={(v) => setSort((v as LangSortOption) || 'locale')}
-                  w={180}
-                  size="sm"
-                  allowDeselect={false}
-                />
-              </Group>
-            </MotionDiv>
-          )}
-
-          {languages.length === 0 && (
-            <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
-              <Center py={40}>
-                <Stack align="center" gap="sm">
-                  <ThemeIcon size="xl" variant="light" color="blue" radius="xl">
-                    <Languages size={20} />
-                  </ThemeIcon>
-                  <Text style={{ color: 'var(--gb-text-secondary)' }}>{t('No languages yet')}</Text>
-                </Stack>
-              </Center>
-            </MotionDiv>
-          )}
-
-          {languages.length > 0 && filtered.length === 0 && (
-            <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
-              <Center py={40}>
-                <Text size="sm" style={{ color: 'var(--gb-text-secondary)' }}>
-                  {t('No languages match your search')}
-                </Text>
-              </Center>
-            </MotionDiv>
-          )}
-
-          <MotionDiv variants={staggerContainerVariants} initial="hidden" animate="visible">
-            <Stack gap="sm">
-              {filtered.map((lang) => {
-                const pct =
-                  lang.stats_total > 0
-                    ? Math.round((lang.stats_translated / lang.stats_total) * 100)
-                    : 0;
-                const fuzzyPct =
-                  lang.stats_total > 0
-                    ? Math.round((lang.stats_fuzzy / lang.stats_total) * 100)
-                    : 0;
-
-                return (
-                  <MotionDiv key={lang.id} variants={contentVariants}>
-                    <Paper
-                      component={Link}
-                      to={`/projects/${project.id}/languages/${lang.id}`}
-                      withBorder
-                      p="md"
-                      style={{
-                        textDecoration: 'none',
-                        color: 'inherit',
-                        cursor: 'pointer',
-                        transition:
-                          'border-color 120ms ease, background-color 120ms ease, box-shadow 120ms ease',
-                      }}
-                      styles={{
-                        root: {
-                          '&:hover': {
-                            borderColor: 'var(--mantine-color-blue-5)',
-                            backgroundColor: 'var(--gb-highlight-row)',
-                            boxShadow: 'var(--gb-shadow-tooltip)',
-                          },
-                        },
-                      }}
-                    >
-                      <Group justify="space-between" align="center" wrap="nowrap">
-                        <Stack gap={4} style={{ flex: 1, minWidth: 0 }}>
-                          <Group gap="sm">
-                            <Text fw={600} size="sm">
-                              {lang.locale}
-                            </Text>
-                            {lang.source_filename && (
-                              <Text
-                                size="xs"
-                                truncate
-                                style={{ color: 'var(--gb-text-secondary)' }}
-                              >
-                                {lang.source_filename}
-                              </Text>
-                            )}
-                            {lang.wp_locale && (
-                              <Badge variant="light" size="xs" color="grape">
-                                {lang.wp_locale}
-                              </Badge>
-                            )}
-                            {lang.repo_provider && lang.repo_owner && lang.repo_name && (
-                              <Tooltip
-                                label={`${lang.repo_owner}/${lang.repo_name}${lang.repo_branch ? ` @ ${lang.repo_branch}` : ''}`}
-                              >
-                                <Badge
-                                  variant="light"
-                                  size="xs"
-                                  color="dark"
-                                  leftSection={<GitBranch size={10} />}
-                                >
-                                  {lang.repo_provider === 'github' ? 'GitHub' : 'GitLab'}
-                                </Badge>
-                              </Tooltip>
-                            )}
-                          </Group>
-                          <Group gap={8} align="center">
-                            <Progress.Root size="sm" style={{ flex: 1 }}>
-                              <Progress.Section value={pct} color="blue" />
-                              <Progress.Section value={fuzzyPct} color="yellow" />
-                            </Progress.Root>
-                            <Text
-                              size="sm"
-                              fw={600}
-                              c={pct === 100 ? 'teal' : undefined}
-                              style={{ minWidth: 36, textAlign: 'right' }}
-                            >
-                              {pct}%
-                            </Text>
-                          </Group>
-                          <Group gap={8} justify="space-between">
-                            <Group gap={8}>
-                              <Badge variant="light" size="xs" color="blue">
-                                {lang.stats_translated} {t('translated')}
-                              </Badge>
-                              <AnimatePresence>
-                                {lang.stats_fuzzy > 0 && (
-                                  <MotionSpan
-                                    key="fuzzy"
-                                    variants={badgeVariants}
-                                    initial="hidden"
-                                    animate="visible"
-                                    exit="exit"
-                                  >
-                                    <Badge variant="light" size="xs" color="yellow">
-                                      {lang.stats_fuzzy} {t('fuzzy')}
-                                    </Badge>
-                                  </MotionSpan>
-                                )}
-                              </AnimatePresence>
-                              <AnimatePresence>
-                                {lang.stats_untranslated > 0 && (
-                                  <MotionSpan
-                                    key="untranslated"
-                                    variants={badgeVariants}
-                                    initial="hidden"
-                                    animate="visible"
-                                    exit="exit"
-                                  >
-                                    <Badge variant="light" size="xs" color="gray">
-                                      {lang.stats_untranslated} {t('untranslated')}
-                                    </Badge>
-                                  </MotionSpan>
-                                )}
-                              </AnimatePresence>
-                            </Group>
-                            <Text size="xs" style={{ color: 'var(--gb-text-secondary)' }}>
-                              {formatRelative(lang.updated_at)}
-                            </Text>
-                          </Group>
-                        </Stack>
-
-                        <Menu position="bottom-end" withinPortal>
-                          <Menu.Target>
-                            <ActionIcon
-                              variant="subtle"
-                              size="sm"
-                              color="gray"
-                              onClick={(e) => e.preventDefault()}
-                            >
-                              <MoreVertical size={14} />
-                            </ActionIcon>
-                          </Menu.Target>
-                          <Menu.Dropdown>
-                            <Menu.Item
-                              color="red"
-                              leftSection={<Trash2 size={14} />}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                void handleDeleteLanguage(lang.id);
-                              }}
-                            >
-                              {t('Delete')}
-                            </Menu.Item>
-                          </Menu.Dropdown>
-                        </Menu>
+            <Tabs.Panel value="languages" pt="md">
+              <Stack gap="lg">
+                {/* Aggregate stats */}
+                {languages.length > 0 && (
+                  <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
+                    <Paper withBorder p="md">
+                      <Group justify="space-between" align="center" mb={8}>
+                        <Text size="sm" style={{ color: 'var(--gb-text-secondary)' }}>
+                          {t('{{count}} languages', { count: languages.length })}
+                          {' · '}
+                          {t('{{strings}} total strings', { strings: aggTotal })}
+                        </Text>
+                        <Text size="sm" fw={600} c={aggPct === 100 ? 'teal' : undefined}>
+                          {aggPct}% {t('complete')}
+                        </Text>
                       </Group>
+                      <Progress.Root size="md">
+                        <Progress.Section value={aggPct} color="blue" />
+                        <Progress.Section value={aggFuzzyPct} color="yellow" />
+                      </Progress.Root>
                     </Paper>
                   </MotionDiv>
-                );
-              })}
-            </Stack>
-          </MotionDiv>
+                )}
+
+                {/* Search and sort */}
+                {languages.length > 0 && (
+                  <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
+                    <Group gap="sm">
+                      <TextInput
+                        placeholder={t('Search languages…')}
+                        leftSection={<Search size={14} />}
+                        value={search}
+                        onChange={(e) => setSearch(e.currentTarget.value)}
+                        style={{ flex: 1, maxWidth: 280 }}
+                      />
+                      <Select
+                        data={sortOptions}
+                        value={sort}
+                        onChange={(v) => setSort((v as LangSortOption) || 'locale')}
+                        w={180}
+                        size="sm"
+                        allowDeselect={false}
+                      />
+                    </Group>
+                  </MotionDiv>
+                )}
+
+                {languages.length === 0 && (
+                  <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
+                    <Center py={40}>
+                      <Stack align="center" gap="sm">
+                        <ThemeIcon size="xl" variant="light" color="blue" radius="xl">
+                          <Languages size={20} />
+                        </ThemeIcon>
+                        <Text style={{ color: 'var(--gb-text-secondary)' }}>
+                          {t('No languages yet')}
+                        </Text>
+                      </Stack>
+                    </Center>
+                  </MotionDiv>
+                )}
+
+                {languages.length > 0 && filtered.length === 0 && (
+                  <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
+                    <Center py={40}>
+                      <Text size="sm" style={{ color: 'var(--gb-text-secondary)' }}>
+                        {t('No languages match your search')}
+                      </Text>
+                    </Center>
+                  </MotionDiv>
+                )}
+
+                <MotionDiv variants={staggerContainerVariants} initial="hidden" animate="visible">
+                  <Stack gap="sm">
+                    {filtered.map((lang) => {
+                      const pct =
+                        lang.stats_total > 0
+                          ? Math.round((lang.stats_translated / lang.stats_total) * 100)
+                          : 0;
+                      const fuzzyPct =
+                        lang.stats_total > 0
+                          ? Math.round((lang.stats_fuzzy / lang.stats_total) * 100)
+                          : 0;
+
+                      return (
+                        <MotionDiv key={lang.id} variants={contentVariants}>
+                          <Paper
+                            component={Link}
+                            to={`/projects/${project.id}/languages/${lang.id}`}
+                            withBorder
+                            p="md"
+                            style={{
+                              textDecoration: 'none',
+                              color: 'inherit',
+                              cursor: 'pointer',
+                              transition:
+                                'border-color 120ms ease, background-color 120ms ease, box-shadow 120ms ease',
+                            }}
+                            styles={{
+                              root: {
+                                '&:hover': {
+                                  borderColor: 'var(--mantine-color-blue-5)',
+                                  backgroundColor: 'var(--gb-highlight-row)',
+                                  boxShadow: 'var(--gb-shadow-tooltip)',
+                                },
+                              },
+                            }}
+                          >
+                            <Group justify="space-between" align="center" wrap="nowrap">
+                              <Stack gap={4} style={{ flex: 1, minWidth: 0 }}>
+                                <Group gap="sm">
+                                  <Text fw={600} size="sm">
+                                    {lang.locale}
+                                  </Text>
+                                  {lang.source_filename && (
+                                    <Text
+                                      size="xs"
+                                      truncate
+                                      style={{ color: 'var(--gb-text-secondary)' }}
+                                    >
+                                      {lang.source_filename}
+                                    </Text>
+                                  )}
+                                  {lang.wp_locale && (
+                                    <Badge variant="light" size="xs" color="grape">
+                                      {lang.wp_locale}
+                                    </Badge>
+                                  )}
+                                  {lang.repo_provider && lang.repo_owner && lang.repo_name && (
+                                    <Tooltip
+                                      label={`${lang.repo_owner}/${lang.repo_name}${lang.repo_branch ? ` @ ${lang.repo_branch}` : ''}`}
+                                    >
+                                      <Badge
+                                        variant="light"
+                                        size="xs"
+                                        color="dark"
+                                        leftSection={<GitBranch size={10} />}
+                                      >
+                                        {lang.repo_provider === 'github' ? 'GitHub' : 'GitLab'}
+                                      </Badge>
+                                    </Tooltip>
+                                  )}
+                                </Group>
+                                <Group gap={8} align="center">
+                                  <Progress.Root size="sm" style={{ flex: 1 }}>
+                                    <Progress.Section value={pct} color="blue" />
+                                    <Progress.Section value={fuzzyPct} color="yellow" />
+                                  </Progress.Root>
+                                  <Text
+                                    size="sm"
+                                    fw={600}
+                                    c={pct === 100 ? 'teal' : undefined}
+                                    style={{ minWidth: 36, textAlign: 'right' }}
+                                  >
+                                    {pct}%
+                                  </Text>
+                                </Group>
+                                <Group gap={8} justify="space-between">
+                                  <Group gap={8}>
+                                    <Badge variant="light" size="xs" color="blue">
+                                      {lang.stats_translated} {t('translated')}
+                                    </Badge>
+                                    <AnimatePresence>
+                                      {lang.stats_fuzzy > 0 && (
+                                        <MotionSpan
+                                          key="fuzzy"
+                                          variants={badgeVariants}
+                                          initial="hidden"
+                                          animate="visible"
+                                          exit="exit"
+                                        >
+                                          <Badge variant="light" size="xs" color="yellow">
+                                            {lang.stats_fuzzy} {t('fuzzy')}
+                                          </Badge>
+                                        </MotionSpan>
+                                      )}
+                                    </AnimatePresence>
+                                    <AnimatePresence>
+                                      {lang.stats_untranslated > 0 && (
+                                        <MotionSpan
+                                          key="untranslated"
+                                          variants={badgeVariants}
+                                          initial="hidden"
+                                          animate="visible"
+                                          exit="exit"
+                                        >
+                                          <Badge variant="light" size="xs" color="gray">
+                                            {lang.stats_untranslated} {t('untranslated')}
+                                          </Badge>
+                                        </MotionSpan>
+                                      )}
+                                    </AnimatePresence>
+                                  </Group>
+                                  <Text size="xs" style={{ color: 'var(--gb-text-secondary)' }}>
+                                    {formatRelative(lang.updated_at)}
+                                  </Text>
+                                </Group>
+                              </Stack>
+
+                              <Menu position="bottom-end" withinPortal>
+                                <Menu.Target>
+                                  <ActionIcon
+                                    variant="subtle"
+                                    size="sm"
+                                    color="gray"
+                                    onClick={(e) => e.preventDefault()}
+                                  >
+                                    <MoreVertical size={14} />
+                                  </ActionIcon>
+                                </Menu.Target>
+                                <Menu.Dropdown>
+                                  <Menu.Item
+                                    color="red"
+                                    leftSection={<Trash2 size={14} />}
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      void handleDeleteLanguage(lang.id);
+                                    }}
+                                  >
+                                    {t('Delete')}
+                                  </Menu.Item>
+                                </Menu.Dropdown>
+                              </Menu>
+                            </Group>
+                          </Paper>
+                        </MotionDiv>
+                      );
+                    })}
+                  </Stack>
+                </MotionDiv>
+              </Stack>
+            </Tabs.Panel>
+
+            <Tabs.Panel value="settings" pt="md">
+              <Stack gap="lg">
+                {/* Edit project details */}
+                <Paper withBorder p="md">
+                  <Text size="sm" fw={500} mb="sm">
+                    {t('Project details')}
+                  </Text>
+                  <Stack gap="sm">
+                    <TextInput
+                      label={t('Project name')}
+                      value={editName}
+                      onChange={(e) => setEditName(e.currentTarget.value)}
+                      maw={400}
+                    />
+                    <Textarea
+                      label={t('Description')}
+                      value={editDescription}
+                      onChange={(e) => setEditDescription(e.currentTarget.value)}
+                      autosize
+                      minRows={2}
+                      maxRows={4}
+                      maw={400}
+                    />
+                    <Select
+                      label={t('Visibility')}
+                      data={[
+                        { value: 'private', label: t('Private') },
+                        { value: 'public', label: t('Public') },
+                        { value: 'unlisted', label: t('Unlisted') },
+                      ]}
+                      value={editVisibility}
+                      onChange={(v) => setEditVisibility(v || 'private')}
+                      w={200}
+                      allowDeselect={false}
+                    />
+                    <div>
+                      <motion.div {...buttonStates}>
+                        <Button
+                          onClick={() => void handleSaveProject()}
+                          loading={saving}
+                          disabled={!editName.trim()}
+                        >
+                          {t('Save changes')}
+                        </Button>
+                      </motion.div>
+                    </div>
+                  </Stack>
+                </Paper>
+
+                {/* Danger zone */}
+                <Paper withBorder p="md" style={{ borderColor: 'var(--mantine-color-red-4)' }}>
+                  <Text size="sm" fw={500} mb="sm" c="red">
+                    {t('Danger zone')}
+                  </Text>
+                  <Group justify="space-between" align="center">
+                    <div>
+                      <Text size="sm">{t('Delete this project')}</Text>
+                      <Text size="xs" style={{ color: 'var(--gb-text-secondary)' }}>
+                        {t(
+                          'Permanently delete this project, all languages, and all entries. This cannot be undone.',
+                        )}
+                      </Text>
+                    </div>
+                    <motion.div {...buttonStates}>
+                      <Button
+                        color="red"
+                        variant="outline"
+                        leftSection={<Trash2 size={14} />}
+                        onClick={() => setConfirmDeleteOpen(true)}
+                      >
+                        {t('Delete project')}
+                      </Button>
+                    </motion.div>
+                  </Group>
+                </Paper>
+              </Stack>
+            </Tabs.Panel>
+          </Tabs>
         </Stack>
       </MotionDiv>
 
@@ -605,6 +669,20 @@ export default function ProjectDetail() {
         wpProjectType={project.wp_project_type}
         wpSlug={project.wp_slug}
         onLanguageAdded={handleLanguageAdded}
+      />
+
+      <ConfirmModal
+        opened={confirmDeleteOpen}
+        onClose={() => setConfirmDeleteOpen(false)}
+        onConfirm={() => void handleDeleteProject()}
+        title={t('Delete project')}
+        message={t(
+          'Are you sure you want to delete "{{name}}"? All languages and entries will be permanently removed.',
+          { name: project.name },
+        )}
+        confirmLabel={t('Delete project')}
+        variant="danger"
+        loading={actionLoading}
       />
     </Container>
   );

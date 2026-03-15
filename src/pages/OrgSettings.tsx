@@ -6,7 +6,7 @@
  */
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useParams, Link } from 'react-router';
+import { useParams, Link, useNavigate } from 'react-router';
 import {
   Container,
   Stack,
@@ -42,8 +42,8 @@ import {
   Crown,
   Copy,
   Check,
-  Pencil,
-  X,
+  Settings,
+  LogOut,
 } from 'lucide-react';
 import { sectionVariants, contentVariants, fadeVariants, buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
@@ -53,6 +53,7 @@ import {
   updateOrgMemberRole,
   removeOrgMember,
   updateOrganization,
+  deleteOrganization,
   listInvites,
   createInvite,
   revokeInvite,
@@ -65,6 +66,7 @@ import type {
 } from '@/lib/organizations/types';
 import { useAuth } from '@/hooks/use-auth';
 import { AppHeader } from '@/components/AppHeader';
+import { ConfirmModal } from '@/components/ui';
 
 const MotionDiv = motion.div;
 
@@ -87,6 +89,7 @@ export default function OrgSettings() {
   const { slug } = useParams<{ slug: string }>();
   const { t } = useTranslation();
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -95,20 +98,31 @@ export default function OrgSettings() {
   const [invites, setInvites] = useState<InviteRow[]>([]);
 
   // Edit org state
-  const [editingOrg, setEditingOrg] = useState(false);
   const [editOrgName, setEditOrgName] = useState('');
   const [editOrgDescription, setEditOrgDescription] = useState('');
+  const [saving, setSaving] = useState(false);
 
   // Invite form state
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState<'admin' | 'member'>('member');
   const [inviting, setInviting] = useState(false);
 
-  const isAdmin = useMemo(() => {
-    if (!user || !members.length) return false;
-    const me = members.find((m) => m.user_id === user.id);
-    return me?.role === 'owner' || me?.role === 'admin';
-  }, [user, members]);
+  // Delete/leave confirm
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [confirmLeaveOpen, setConfirmLeaveOpen] = useState(false);
+  const [actionLoading, setActionLoading] = useState(false);
+
+  const myMembership = useMemo(
+    () => (user ? members.find((m) => m.user_id === user.id) : undefined),
+    [user, members],
+  );
+
+  const isAdmin = useMemo(
+    () => myMembership?.role === 'owner' || myMembership?.role === 'admin',
+    [myMembership],
+  );
+
+  const isOwner = useMemo(() => myMembership?.role === 'owner', [myMembership]);
 
   useEffect(() => {
     if (!slug) return;
@@ -124,6 +138,8 @@ export default function OrgSettings() {
           return;
         }
         setOrg(organization);
+        setEditOrgName(organization.name);
+        setEditOrgDescription(organization.description);
 
         const [memberList, inviteList] = await Promise.all([
           listOrgMembers(organization.id),
@@ -190,26 +206,47 @@ export default function OrgSettings() {
     }
   }, [org, inviteEmail, inviteRole, t]);
 
-  const handleStartEditOrg = useCallback(() => {
-    if (!org) return;
-    setEditOrgName(org.name);
-    setEditOrgDescription(org.description);
-    setEditingOrg(true);
-  }, [org]);
-
   const handleSaveOrg = useCallback(async () => {
     if (!org || !editOrgName.trim()) return;
+    setSaving(true);
     try {
       const updated = await updateOrganization(org.id, {
         name: editOrgName.trim(),
         description: editOrgDescription.trim(),
       });
       setOrg(updated);
-      setEditingOrg(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : t('Failed to update organization'));
+    } finally {
+      setSaving(false);
     }
   }, [org, editOrgName, editOrgDescription, t]);
+
+  const handleDeleteOrg = useCallback(async () => {
+    if (!org) return;
+    setActionLoading(true);
+    try {
+      await deleteOrganization(org.id);
+      setConfirmDeleteOpen(false);
+      void navigate('/dashboard');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t('Failed to delete organization'));
+      setActionLoading(false);
+    }
+  }, [org, navigate, t]);
+
+  const handleLeaveOrg = useCallback(async () => {
+    if (!myMembership) return;
+    setActionLoading(true);
+    try {
+      await removeOrgMember(myMembership.id);
+      setConfirmLeaveOpen(false);
+      void navigate('/dashboard');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t('Failed to leave organization'));
+      setActionLoading(false);
+    }
+  }, [myMembership, navigate, t]);
 
   const handleRevokeInvite = useCallback(
     async (inviteId: string) => {
@@ -273,72 +310,13 @@ export default function OrgSettings() {
           </Text>
 
           {/* Title */}
-          {editingOrg ? (
-            <Stack gap="sm">
-              <Group gap="sm" align="end">
-                <TextInput
-                  label={t('Organization name')}
-                  value={editOrgName}
-                  onChange={(e) => setEditOrgName(e.currentTarget.value)}
-                  style={{ flex: 1, maxWidth: 400 }}
-                  autoFocus
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') void handleSaveOrg();
-                    if (e.key === 'Escape') setEditingOrg(false);
-                  }}
-                />
-                <ActionIcon
-                  variant="light"
-                  color="teal"
-                  size="lg"
-                  onClick={() => void handleSaveOrg()}
-                >
-                  <Check size={16} />
-                </ActionIcon>
-                <ActionIcon
-                  variant="subtle"
-                  color="gray"
-                  size="lg"
-                  onClick={() => setEditingOrg(false)}
-                >
-                  <X size={16} />
-                </ActionIcon>
-              </Group>
-              <Textarea
-                label={t('Description')}
-                value={editOrgDescription}
-                onChange={(e) => setEditOrgDescription(e.currentTarget.value)}
-                autosize
-                minRows={1}
-                maxRows={3}
-                maw={400}
-              />
-            </Stack>
-          ) : (
-            <Group justify="space-between" align="center">
-              <div>
-                <Group gap="xs" align="center">
-                  <Title order={3}>{org.name}</Title>
-                  {isAdmin && (
-                    <Tooltip label={t('Edit organization')}>
-                      <ActionIcon
-                        variant="subtle"
-                        color="gray"
-                        size="sm"
-                        onClick={handleStartEditOrg}
-                      >
-                        <Pencil size={14} />
-                      </ActionIcon>
-                    </Tooltip>
-                  )}
-                </Group>
-                <Text size="sm" style={{ color: 'var(--gb-text-secondary)' }}>
-                  {org.slug}
-                  {org.description && ` — ${org.description}`}
-                </Text>
-              </div>
-            </Group>
-          )}
+          <div>
+            <Title order={3}>{org.name}</Title>
+            <Text size="sm" style={{ color: 'var(--gb-text-secondary)' }}>
+              {org.slug}
+              {org.description && ` — ${org.description}`}
+            </Text>
+          </div>
 
           {error && (
             <Alert
@@ -362,6 +340,9 @@ export default function OrgSettings() {
                   {t('Invites')} ({invites.length})
                 </Tabs.Tab>
               )}
+              <Tabs.Tab value="settings" leftSection={<Settings size={14} />}>
+                {t('Settings')}
+              </Tabs.Tab>
             </Tabs.List>
 
             {/* Members tab */}
@@ -542,9 +523,125 @@ export default function OrgSettings() {
                 </Stack>
               </Tabs.Panel>
             )}
+            {/* Settings tab */}
+            <Tabs.Panel value="settings" pt="md">
+              <Stack gap="lg">
+                {/* Edit org details */}
+                {isAdmin && (
+                  <Paper withBorder p="md">
+                    <Text size="sm" fw={500} mb="sm">
+                      {t('Organization details')}
+                    </Text>
+                    <Stack gap="sm">
+                      <TextInput
+                        label={t('Name')}
+                        value={editOrgName}
+                        onChange={(e) => setEditOrgName(e.currentTarget.value)}
+                        maw={400}
+                      />
+                      <Textarea
+                        label={t('Description')}
+                        value={editOrgDescription}
+                        onChange={(e) => setEditOrgDescription(e.currentTarget.value)}
+                        autosize
+                        minRows={2}
+                        maxRows={4}
+                        maw={400}
+                      />
+                      <div>
+                        <motion.div {...buttonStates}>
+                          <Button
+                            onClick={() => void handleSaveOrg()}
+                            loading={saving}
+                            disabled={!editOrgName.trim()}
+                          >
+                            {t('Save changes')}
+                          </Button>
+                        </motion.div>
+                      </div>
+                    </Stack>
+                  </Paper>
+                )}
+
+                {/* Danger zone */}
+                <Paper withBorder p="md" style={{ borderColor: 'var(--mantine-color-red-4)' }}>
+                  <Text size="sm" fw={500} mb="sm" c="red">
+                    {t('Danger zone')}
+                  </Text>
+                  <Stack gap="sm">
+                    {isOwner ? (
+                      <Group justify="space-between" align="center">
+                        <div>
+                          <Text size="sm">{t('Delete this organization')}</Text>
+                          <Text size="xs" style={{ color: 'var(--gb-text-secondary)' }}>
+                            {t(
+                              'Permanently delete this organization and all its data. This cannot be undone.',
+                            )}
+                          </Text>
+                        </div>
+                        <motion.div {...buttonStates}>
+                          <Button
+                            color="red"
+                            variant="outline"
+                            leftSection={<Trash2 size={14} />}
+                            onClick={() => setConfirmDeleteOpen(true)}
+                          >
+                            {t('Delete organization')}
+                          </Button>
+                        </motion.div>
+                      </Group>
+                    ) : (
+                      <Group justify="space-between" align="center">
+                        <div>
+                          <Text size="sm">{t('Leave this organization')}</Text>
+                          <Text size="xs" style={{ color: 'var(--gb-text-secondary)' }}>
+                            {t('Remove yourself from this organization.')}
+                          </Text>
+                        </div>
+                        <motion.div {...buttonStates}>
+                          <Button
+                            color="red"
+                            variant="outline"
+                            leftSection={<LogOut size={14} />}
+                            onClick={() => setConfirmLeaveOpen(true)}
+                          >
+                            {t('Leave organization')}
+                          </Button>
+                        </motion.div>
+                      </Group>
+                    )}
+                  </Stack>
+                </Paper>
+              </Stack>
+            </Tabs.Panel>
           </Tabs>
         </Stack>
       </MotionDiv>
+
+      <ConfirmModal
+        opened={confirmDeleteOpen}
+        onClose={() => setConfirmDeleteOpen(false)}
+        onConfirm={() => void handleDeleteOrg()}
+        title={t('Delete organization')}
+        message={t(
+          'Are you sure you want to delete "{{name}}"? All members, invites, and associated data will be permanently removed.',
+          { name: org.name },
+        )}
+        confirmLabel={t('Delete organization')}
+        variant="danger"
+        loading={actionLoading}
+      />
+
+      <ConfirmModal
+        opened={confirmLeaveOpen}
+        onClose={() => setConfirmLeaveOpen(false)}
+        onConfirm={() => void handleLeaveOrg()}
+        title={t('Leave organization')}
+        message={t('Are you sure you want to leave "{{name}}"?', { name: org.name })}
+        confirmLabel={t('Leave organization')}
+        variant="warning"
+        loading={actionLoading}
+      />
     </Container>
   );
 }
