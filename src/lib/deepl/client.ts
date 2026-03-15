@@ -71,7 +71,7 @@ export function createDeepLClient(config: DeepLClientConfig = {}) {
 
       const { data, error, response } = await invokeSupabaseFunction<T>('deepl-translate', {
         ...invokeOptions,
-        body: JSON.stringify(requestBody),
+        body: requestBody,
       });
 
       if (error) {

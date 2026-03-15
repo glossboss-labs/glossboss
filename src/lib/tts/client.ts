@@ -30,11 +30,11 @@ export function createElevenLabsClient(config: ElevenLabsClientConfig = {}) {
       const { data, error, response } = await invokeSupabaseFunction<T>('tts-elevenlabs', {
         featureLabel: 'Speech',
         signal: controller.signal,
-        body: JSON.stringify({
+        body: {
           action,
           apiKey: settings.apiKey,
           ...params,
-        }),
+        },
       });
 
       if (error) {
