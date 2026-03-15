@@ -16,6 +16,7 @@ import {
   Alert,
   Stack,
   Anchor,
+  useComputedColorScheme,
 } from '@mantine/core';
 import { AlertCircle, CheckCircle } from 'lucide-react';
 import { useTranslation } from '@/lib/app-language';
@@ -35,6 +36,7 @@ export default function Signup() {
   const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const computedColorScheme = useComputedColorScheme('light');
 
   const handleEmailSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,6 +61,17 @@ export default function Signup() {
 
   return (
     <Container size={420} py={80}>
+      <Stack align="center" gap={8} mb="md">
+        <img
+          src={
+            computedColorScheme === 'dark'
+              ? '/glossboss-combined-light.svg'
+              : '/glossboss-combined-dark.svg'
+          }
+          alt="GlossBoss"
+          style={{ height: 32 }}
+        />
+      </Stack>
       <Title ta="center" style={{ fontWeight: 800 }}>
         {t('Create an account')}
       </Title>

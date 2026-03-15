@@ -26,7 +26,7 @@ import { useTranslation } from '@/lib/app-language';
 import { useAuth } from '@/hooks/use-auth';
 
 const MotionDiv = motion.div;
-const appIcon = '/icon.svg';
+const appIcon = '/icon.svg'; // glossboss-icon-dark-bg
 
 export interface EmptyStateProps {
   onFileClick: () => void;
@@ -79,7 +79,6 @@ export function EmptyState({
             style={{
               width: 64,
               height: 64,
-              borderRadius: 16,
             }}
           />
 

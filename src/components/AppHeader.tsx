@@ -42,7 +42,6 @@ import { SettingsModal } from '@/components/SettingsModal';
 import { FeedbackModal } from '@/components/feedback';
 
 const MotionDiv = motion.div;
-const appIcon = '/icon.svg';
 
 interface AppHeaderProps {
   /** Extra buttons rendered in the center section */
@@ -104,19 +103,18 @@ export function AppHeader({ actions, projectId, onOpenRepoSync, onClear }: AppHe
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: 6,
                 textDecoration: 'none',
-                color: 'inherit',
               }}
             >
               <img
-                src={appIcon}
+                src={
+                  computedColorScheme === 'dark'
+                    ? '/glossboss-combined-light.svg'
+                    : '/glossboss-combined-dark.svg'
+                }
                 alt="GlossBoss"
-                style={{ width: 20, height: 20, borderRadius: 4 }}
+                style={{ height: 20 }}
               />
-              <Text fw={600} size="sm">
-                GlossBoss
-              </Text>
             </Link>
             <Tooltip label={t('Open local editor')}>
               <Text

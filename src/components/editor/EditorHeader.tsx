@@ -8,7 +8,6 @@
 
 import type { MutableRefObject, RefObject } from 'react';
 import {
-  Title,
   Text,
   Group,
   Button,
@@ -50,7 +49,6 @@ import { UserMenu } from '@/components/auth/UserMenu';
 import { useAuth } from '@/hooks/use-auth';
 
 const MotionDiv = motion.div;
-const appIcon = '/icon.svg';
 
 /* ------------------------------------------------------------------ */
 /*  ThemeToggle                                                        */
@@ -155,26 +153,26 @@ export function EditorHeader({
         <Group gap="sm" align="center">
           <div data-ev-id="ev_c00be328c4">
             {filename ? (
-              <Group gap={6} align="center">
-                <img
-                  src={appIcon}
-                  alt="GlossBoss"
-                  style={{ width: 20, height: 20, borderRadius: 4 }}
-                />
-                <Text fw={600} size="sm">
-                  GlossBoss
-                </Text>
-              </Group>
+              <img
+                src={
+                  computedColorScheme === 'dark'
+                    ? '/glossboss-combined-light.svg'
+                    : '/glossboss-combined-dark.svg'
+                }
+                alt="GlossBoss"
+                style={{ height: 20 }}
+              />
             ) : (
               <>
-                <Group gap="xs" align="center">
-                  <img
-                    src={appIcon}
-                    alt="GlossBoss"
-                    style={{ width: 28, height: 28, borderRadius: 6 }}
-                  />
-                  <Title order={1}>GlossBoss</Title>
-                </Group>
+                <img
+                  src={
+                    computedColorScheme === 'dark'
+                      ? '/glossboss-combined-light.svg'
+                      : '/glossboss-combined-dark.svg'
+                  }
+                  alt="GlossBoss"
+                  style={{ height: 28 }}
+                />
                 <Text size="sm" mt={4} style={{ color: 'var(--gb-text-secondary)' }}>
                   {t('Edit gettext translation files with DeepL integration')}
                 </Text>

@@ -1,29 +1,9 @@
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  width="600"
-  height="600"
-  viewBox="0 0 600 600"
-  fill="none"
-  role="img"
-  aria-labelledby="glossboss-icon-title glossboss-icon-desc"
->
-  <title id="glossboss-icon-title">GlossBoss icon</title>
-  <desc id="glossboss-icon-desc">
-    Rounded square with a dark-to-teal gradient and translation symbols.
-  </desc>
-  <defs>
-    <linearGradient id="glossboss-icon-bg" x1="32" y1="568" x2="568" y2="32" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#030303" />
-      <stop offset="1" stop-color="#0E5F64" />
-    </linearGradient>
-  </defs>
-  <rect x="32" y="32" width="536" height="536" rx="110" fill="url(#glossboss-icon-bg)" />
-  <g stroke="#D6EAF3" stroke-width="26" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M147 193H332" />
-    <path d="M223 147H239" />
-    <path d="M192 238L274 320" />
-    <path d="M306 195C285 238 251 278 177 329" />
-    <path d="M300 452L376 302L456 452" />
-    <path d="M334 391H421" />
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#0A0A0A"/>
+  <path d="M196 120 Q148 120, 148 168 L148 228 Q148 256, 112 256 Q148 256, 148 284 L148 344 Q148 392, 196 392"
+        stroke="#666666" stroke-width="24" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <line x1="224" y1="256" x2="296" y2="256" stroke="#888888" stroke-width="14" stroke-linecap="round"/>
+  <path d="M276 232 L304 256 L276 280" stroke="#888888" stroke-width="14" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M316 120 Q364 120, 364 168 L364 228 Q364 256, 400 256 Q364 256, 364 284 L364 344 Q364 392, 316 392"
+        stroke="#ffffff" stroke-width="34" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
