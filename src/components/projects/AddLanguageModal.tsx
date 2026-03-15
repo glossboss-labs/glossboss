@@ -39,8 +39,8 @@ interface AddLanguageModalProps {
   onClose: () => void;
   projectId: string;
   existingLanguages: ProjectLanguageRow[];
-  wpProjectType: 'plugin' | 'theme' | null;
-  wpSlug: string | null;
+  wpProjectType?: 'plugin' | 'theme' | null;
+  wpSlug?: string | null;
   onLanguageAdded: () => void;
 }
 
@@ -51,8 +51,6 @@ export function AddLanguageModal({
   onClose,
   projectId,
   existingLanguages,
-  wpProjectType,
-  wpSlug,
   onLanguageAdded,
 }: AddLanguageModalProps) {
   const { t } = useTranslation();
@@ -375,37 +373,35 @@ export function AddLanguageModal({
           </Paper>
 
           {/* WordPress */}
-          {wpProjectType && wpSlug && (
-            <Paper
-              withBorder
-              p="md"
-              style={{
-                borderColor: sourceType === 'wordpress' ? 'var(--mantine-color-blue-5)' : undefined,
-              }}
-            >
-              <Group justify="space-between" align="center">
-                <Group gap="sm">
-                  <Globe size={20} />
-                  <Text size="sm" fw={500}>
-                    {t('WordPress.org')}
-                  </Text>
-                </Group>
-                <Button
-                  size="sm"
-                  variant="default"
-                  onClick={() => setWpModalOpen(true)}
-                  loading={importing}
-                >
-                  {t('Select')}
-                </Button>
+          <Paper
+            withBorder
+            p="md"
+            style={{
+              borderColor: sourceType === 'wordpress' ? 'var(--mantine-color-blue-5)' : undefined,
+            }}
+          >
+            <Group justify="space-between" align="center">
+              <Group gap="sm">
+                <Globe size={20} />
+                <Text size="sm" fw={500}>
+                  {t('WordPress.org')}
+                </Text>
               </Group>
-              {sourceType === 'wordpress' && importedFilename && (
-                <Badge variant="light" size="sm" mt="xs">
-                  {importedFilename}
-                </Badge>
-              )}
-            </Paper>
-          )}
+              <Button
+                size="sm"
+                variant="default"
+                onClick={() => setWpModalOpen(true)}
+                loading={importing}
+              >
+                {t('Select')}
+              </Button>
+            </Group>
+            {sourceType === 'wordpress' && importedFilename && (
+              <Badge variant="light" size="sm" mt="xs">
+                {importedFilename}
+              </Badge>
+            )}
+          </Paper>
 
           {/* Repository */}
           <Paper
@@ -454,14 +450,12 @@ export function AddLanguageModal({
         </Stack>
       </Modal>
 
-      {wpProjectType && wpSlug && (
-        <WordPressProjectModal
-          opened={wpModalOpen}
-          onClose={() => setWpModalOpen(false)}
-          onOpenProject={handleWordPressProject}
-          initialLocale={locale}
-        />
-      )}
+      <WordPressProjectModal
+        opened={wpModalOpen}
+        onClose={() => setWpModalOpen(false)}
+        onOpenProject={handleWordPressProject}
+        initialLocale={locale}
+      />
 
       <RepoSyncModal
         opened={repoModalOpen}
