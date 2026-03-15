@@ -1,0 +1,162 @@
+/**
+ * Cloud Settings API
+ *
+ * Read/write user settings to Supabase profiles.settings JSONB column.
+ * Also provides helpers to collect settings from localStorage and apply
+ * cloud settings back to localStorage.
+ */
+
+import { getSupabaseClient } from '@/lib/supabase/client';
+import { getDeepLSettings, saveDeepLSettings } from '@/lib/deepl';
+import { getAzureSettings, saveAzureSettings } from '@/lib/azure';
+import { getGeminiSettings, saveGeminiSettings } from '@/lib/gemini';
+import { getTtsSettings, saveTtsSettings } from '@/lib/tts';
+import { getTranslationProviderSettings, saveActiveTranslationProvider } from '@/lib/translation';
+import { getAppLanguage, saveAppLanguage } from '@/lib/app-language';
+import { CONTAINER_WIDTH_KEY, type ContainerWidth } from '@/lib/container-width';
+import {
+  GLOSSARY_SELECTED_LOCALE_KEY,
+  GLOSSARY_ENFORCEMENT_KEY,
+} from '@/components/glossary/constants';
+import { NAV_SKIP_TRANSLATED_KEY } from '@/components/editor/EditorTable';
+import type { CloudSettingsPayload, CloudSettingsCredentials } from './types';
+
+const SPEECH_ENABLED_KEY = 'glossboss-speech-enabled';
+const TRANSLATE_ENABLED_KEY = 'glossboss-translate-enabled';
+
+function supabase() {
+  return getSupabaseClient('Settings');
+}
+
+// ── Cloud read/write ────────────────────────────────────────
+
+/** Read the current user's cloud settings from profiles.settings. */
+export async function readCloudSettings(): Promise<CloudSettingsPayload | null> {
+  const { data, error } = await supabase().from('profiles').select('settings').single();
+
+  if (error || !data?.settings) return null;
+
+  const payload = data.settings as Record<string, unknown>;
+  if (payload.version !== 1) return null;
+
+  return payload as unknown as CloudSettingsPayload;
+}
+
+/** Write settings to the current user's profiles.settings column. */
+export async function writeCloudSettings(payload: CloudSettingsPayload): Promise<void> {
+  const { error } = await supabase()
+    .from('profiles')
+    .update({ settings: payload as unknown as Record<string, unknown> })
+    .eq('id', (await supabase().auth.getUser()).data.user?.id ?? '');
+
+  if (error) throw error;
+}
+
+/** Clear settings from the current user's profile (opt-out). */
+export async function clearCloudSettings(): Promise<void> {
+  const { error } = await supabase()
+    .from('profiles')
+    .update({ settings: {} })
+    .eq('id', (await supabase().auth.getUser()).data.user?.id ?? '');
+
+  if (error) throw error;
+}
+
+// ── Collect from localStorage ───────────────────────────────
+
+/** Gather all current local settings into the cloud payload shape. */
+export function collectLocalSettings(includeCredentials: boolean = false): CloudSettingsPayload {
+  const deepl = getDeepLSettings();
+  const azure = getAzureSettings();
+  const gemini = getGeminiSettings();
+  const tts = getTtsSettings();
+  const translation = getTranslationProviderSettings();
+
+  const containerWidth = (localStorage.getItem(CONTAINER_WIDTH_KEY) as ContainerWidth) || 'xl';
+  const glossaryLocale = localStorage.getItem(GLOSSARY_SELECTED_LOCALE_KEY) || '';
+  const glossaryEnforcement = localStorage.getItem(GLOSSARY_ENFORCEMENT_KEY);
+  const navSkip = localStorage.getItem(NAV_SKIP_TRANSLATED_KEY);
+  const speechEnabled = localStorage.getItem(SPEECH_ENABLED_KEY);
+  const translateEnabled = localStorage.getItem(TRANSLATE_ENABLED_KEY);
+
+  const payload: CloudSettingsPayload = {
+    version: 1,
+    updatedAt: new Date().toISOString(),
+    preferences: {
+      appLanguage: getAppLanguage(),
+      containerWidth,
+      glossaryLocale,
+      glossaryEnforcementEnabled: glossaryEnforcement !== 'false',
+      navSkipTranslated: navSkip === 'true',
+      speechEnabled: speechEnabled !== 'false',
+      translateEnabled: translateEnabled !== 'false',
+    },
+    providers: {
+      translationProvider: translation.provider,
+      deepl: { apiType: deepl.apiType, formality: deepl.formality },
+      azure: { region: azure.region, endpoint: azure.endpoint },
+      gemini: { modelId: gemini.modelId, useProjectContext: gemini.useProjectContext },
+    },
+  };
+
+  if (includeCredentials) {
+    const credentials: CloudSettingsCredentials = {};
+    if (deepl.apiKey) credentials.deepl = { apiKey: deepl.apiKey };
+    if (azure.apiKey) credentials.azure = { apiKey: azure.apiKey };
+    if (gemini.apiKey) credentials.gemini = { apiKey: gemini.apiKey };
+    if (tts.apiKey) credentials.tts = { apiKey: tts.apiKey, provider: tts.provider };
+    if (Object.keys(credentials).length > 0) {
+      payload.credentials = credentials;
+    }
+  }
+
+  return payload;
+}
+
+// ── Apply cloud settings to localStorage ────────────────────
+
+/** Apply a cloud settings payload to localStorage, overwriting local values. */
+export function applyCloudSettings(payload: CloudSettingsPayload): void {
+  const { preferences, providers, credentials } = payload;
+
+  // Preferences
+  saveAppLanguage(preferences.appLanguage);
+  localStorage.setItem(CONTAINER_WIDTH_KEY, preferences.containerWidth);
+  localStorage.setItem(GLOSSARY_SELECTED_LOCALE_KEY, preferences.glossaryLocale);
+  localStorage.setItem(GLOSSARY_ENFORCEMENT_KEY, String(preferences.glossaryEnforcementEnabled));
+  localStorage.setItem(NAV_SKIP_TRANSLATED_KEY, String(preferences.navSkipTranslated));
+  localStorage.setItem(SPEECH_ENABLED_KEY, String(preferences.speechEnabled));
+  localStorage.setItem(TRANSLATE_ENABLED_KEY, String(preferences.translateEnabled));
+
+  // Provider config (preserve existing API keys unless credentials are provided)
+  const currentDeepL = getDeepLSettings();
+  const currentAzure = getAzureSettings();
+  const currentGemini = getGeminiSettings();
+
+  saveActiveTranslationProvider(providers.translationProvider);
+
+  saveDeepLSettings({
+    apiKey: credentials?.deepl?.apiKey ?? currentDeepL.apiKey,
+    apiType: providers.deepl.apiType,
+    formality: providers.deepl.formality,
+  });
+
+  saveAzureSettings({
+    apiKey: credentials?.azure?.apiKey ?? currentAzure.apiKey,
+    region: providers.azure.region,
+    endpoint: providers.azure.endpoint,
+  });
+
+  saveGeminiSettings({
+    apiKey: credentials?.gemini?.apiKey ?? currentGemini.apiKey,
+    modelId: providers.gemini.modelId,
+    useProjectContext: providers.gemini.useProjectContext,
+  });
+
+  if (credentials?.tts) {
+    saveTtsSettings({
+      apiKey: credentials.tts.apiKey,
+      provider: credentials.tts.provider,
+    });
+  }
+}

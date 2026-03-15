@@ -34,6 +34,9 @@ import type { POFile } from '@/lib/po/types';
 import { SupabaseStorageAdapter } from '@/lib/cloud/supabase-adapter';
 import { LocalStorageAdapter } from '@/lib/cloud/local-adapter';
 import { setStorageAdapter } from '@/lib/cloud/adapter';
+import { useRepoSyncStore } from '@/stores/repo-sync-store';
+import { useProjectRole } from '@/hooks/use-project-role';
+import { useRepoDbSync } from '@/hooks/use-repo-db-sync';
 import type { ReviewEntryState } from '@/lib/review';
 
 export default function ProjectEditor() {
@@ -137,6 +140,21 @@ export default function ProjectEditor() {
           restoreReviewEntries(reviewMap);
         }
 
+        // Initialize repo sync store from DB language record
+        if (lang.repo_provider && lang.repo_owner && lang.repo_name) {
+          useRepoSyncStore.getState().setConnection({
+            provider: lang.repo_provider,
+            owner: lang.repo_owner,
+            repo: lang.repo_name,
+            branch: lang.repo_branch ?? lang.repo_default_branch ?? 'main',
+            filePath: lang.repo_file_path ?? '',
+            baseSha: '',
+            defaultBranch: lang.repo_default_branch ?? 'main',
+          });
+        } else {
+          useRepoSyncStore.getState().clearConnection();
+        }
+
         setLoading(false);
       } catch (err) {
         if (!cancelled) {
@@ -155,6 +173,7 @@ export default function ProjectEditor() {
         adapterRef.current = null;
       }
       setStorageAdapter(new LocalStorageAdapter());
+      useRepoSyncStore.getState().clearConnection();
     };
   }, [id, languageId, loadFile, setProjectName, restoreReviewEntries, t]);
 
@@ -203,6 +222,12 @@ function ProjectEditorLoaded({
   const { broadcastEntryUpdate, broadcastLock, broadcastUnlock, broadcastReviewEvent } =
     useRealtimeChannel(project.id, language.id);
 
+  // Role-based permissions
+  const { isManager, isContributor } = useProjectRole(project.id);
+
+  // Sync repo connection changes back to the database
+  useRepoDbSync(language.id);
+
   const {
     containerWidth,
     headerProps,
@@ -211,7 +236,7 @@ function ProjectEditorLoaded({
     notificationsProps,
     bannersProps,
     dialogsProps,
-  } = useIndexPageController();
+  } = useIndexPageController({ readOnly: !isContributor });
 
   return (
     <Box style={{ minHeight: '100vh', position: 'relative' }}>
@@ -224,7 +249,11 @@ function ProjectEditorLoaded({
           py="xl"
         >
           <Stack gap="lg">
-            <EditorHeader {...headerProps} />
+            <EditorHeader
+              {...headerProps}
+              onOpenRepoSync={isManager ? headerProps.onOpenRepoSync : undefined}
+              onPushToRepo={isManager ? headerProps.onPushToRepo : undefined}
+            />
 
             {/* Cloud project breadcrumb + presence */}
             <Group gap={6} align="center" justify="space-between" style={{ marginTop: -8 }}>

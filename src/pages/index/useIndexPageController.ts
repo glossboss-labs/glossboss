@@ -45,7 +45,7 @@ import {
 } from '@/lib/wp-source';
 import { useTranslation } from '@/lib/app-language';
 import { getStorageAdapter } from '@/lib/cloud';
-import { useSearchParams } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 import type { FileFormat } from '@/stores';
 import {
   getEffectiveProjectType,
@@ -72,7 +72,13 @@ function formatFileSize(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-export function useIndexPageController() {
+interface IndexPageControllerOptions {
+  /** When true, disables editing actions (viewer role in cloud projects). */
+  readOnly?: boolean;
+}
+
+export function useIndexPageController(options?: IndexPageControllerOptions) {
+  const readOnly = options?.readOnly ?? false;
   const { t } = useTranslation();
   const theme = useMantineTheme();
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
@@ -107,28 +113,27 @@ export function useIndexPageController() {
   );
   const [glossary, setGlossary] = useState<Glossary | null>(null);
   const [deeplGlossaryId, setDeeplGlossaryId] = useState<string | null>(null);
-  const [glossaryTermCount, setGlossaryTermCount] = useState<number>(0);
+  const [, setGlossaryTermCount] = useState<number>(0);
   const [glossarySyncStatus, setGlossarySyncStatus] = useState<string | null>(null);
-  const [glossaryEnforcementEnabled, setGlossaryEnforcementEnabled] = useState(true);
-  const [selectedSourceText, setSelectedSourceText] = useState<string | null>(null);
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const [settingsInitialTab, setSettingsInitialTab] = useState<string | undefined>(undefined);
-  const [branchChipEnabled, setBranchChipEnabled] = useLocalStorage<boolean>({
+  const [glossaryEnforcementEnabled] = useState(true);
+  const [, setSelectedSourceText] = useState<string | null>(null);
+  const settingsNavigate = useNavigate();
+  const [branchChipEnabled] = useLocalStorage<boolean>({
     key: DEV_BRANCH_CHIP_STORAGE_KEY,
     defaultValue: true,
     getInitialValueInEffect: false,
   });
-  const [containerWidth, setContainerWidth] = useLocalStorage<ContainerWidth>({
+  const [containerWidth] = useLocalStorage<ContainerWidth>({
     key: CONTAINER_WIDTH_KEY,
     defaultValue: 'xl',
     getInitialValueInEffect: false,
   });
-  const [speechEnabled, setSpeechEnabled] = useLocalStorage<boolean>({
+  const [speechEnabled] = useLocalStorage<boolean>({
     key: SPEECH_ENABLED_KEY,
     defaultValue: true,
     getInitialValueInEffect: false,
   });
-  const [translateEnabled, setTranslateEnabled] = useLocalStorage<boolean>({
+  const [translateEnabled] = useLocalStorage<boolean>({
     key: TRANSLATE_ENABLED_KEY,
     defaultValue: true,
     getInitialValueInEffect: false,
@@ -255,37 +260,6 @@ export function useIndexPageController() {
     },
     [clearGlossaryAnalysis, entries, setGlossaryAnalysisBatch, setQaReports],
   );
-
-  const handleGlossaryCleared = useCallback(() => {
-    setGlossary(null);
-    setDeeplGlossaryId(null);
-    setGlossaryTermCount(0);
-    setGlossarySyncStatus(null);
-    clearGlossaryAnalysis();
-    setQaReports(analyzeQaForEntries(entries, new Map()));
-  }, [clearGlossaryAnalysis, entries, setQaReports]);
-
-  const handleEnforcementChange = useCallback((enabled: boolean) => {
-    setGlossaryEnforcementEnabled(enabled);
-  }, []);
-
-  const handleForceResync = useCallback(async (glossaryToSync: Glossary) => {
-    const provider = getActiveTranslationProvider();
-    if (!TRANSLATION_PROVIDER_CAPABILITIES[provider].nativeGlossary) return;
-
-    setGlossarySyncStatus('syncing');
-
-    try {
-      const glossaryId = await syncGlossaryToDeepL(glossaryToSync, setGlossarySyncStatus, true);
-      setDeeplGlossaryId(glossaryId);
-      setGlossaryTermCount(glossaryToSync.entries.length);
-      debugLog('[Glossary] Force resync complete, DeepL glossary ID:', glossaryId);
-    } catch (error) {
-      debugError('[Glossary] Force resync failed:', error);
-      setGlossarySyncStatus('sync-failed');
-      setGlossaryTermCount(glossaryToSync.entries.length);
-    }
-  }, []);
 
   const handleEntrySelect = useCallback((sourceText: string) => {
     setSelectedSourceText(sourceText);
@@ -761,10 +735,13 @@ export function useIndexPageController() {
     debugLog('[Drafts] Restored from draft');
   }, [loadFile, pendingDraft, restoreReviewEntries]);
 
-  const handleOpenSettings = useCallback((tab?: string) => {
-    setSettingsInitialTab(typeof tab === 'string' ? tab : undefined);
-    setSettingsOpen(true);
-  }, []);
+  const handleOpenSettings = useCallback(
+    (tab?: string) => {
+      const query = typeof tab === 'string' ? `?tab=${tab}` : '';
+      settingsNavigate(`/settings${query}`);
+    },
+    [settingsNavigate],
+  );
 
   const handleOpenFeedback = useCallback(() => {
     setFeedbackOpen(true);
@@ -1030,11 +1007,6 @@ export function useIndexPageController() {
     setRepoSyncOpen(true);
   }, [repoConnection]);
 
-  const closeSettings = useCallback(() => {
-    setSettingsOpen(false);
-    setSettingsInitialTab(undefined);
-  }, []);
-
   const closeRepoSync = useCallback(() => {
     setRepoSyncOpen(false);
     setRepoSyncInitialTab(undefined);
@@ -1096,19 +1068,23 @@ export function useIndexPageController() {
     onDownloadAs: handleDownloadAs,
     onPotUpload: handlePotUpload,
     repoConnection,
-    onPushToRepo: openRepoSyncPush,
+    onPushToRepo: readOnly ? undefined : openRepoSyncPush,
     isMobile,
     onOpenFeedback: handleOpenFeedback,
     onToggleColorScheme: toggleColorScheme,
     onOpenSettings: handleOpenSettings,
-    onLoadFromUrl: openUrlPrompt,
-    onOpenWordPressProject: openWordPressProjectModal,
+    onLoadFromUrl: readOnly ? undefined : openUrlPrompt,
+    onOpenWordPressProject: readOnly ? undefined : openWordPressProjectModal,
     onRefreshWordPress:
-      currentProjectType && currentProjectSlug && filename ? openWordPressRefreshModal : undefined,
-    onOpenRepoSync: openRepoSyncConnectOrPush,
-    onClearClick: handleClearClick,
+      !readOnly && currentProjectType && currentProjectSlug && filename
+        ? openWordPressRefreshModal
+        : undefined,
+    onOpenRepoSync: readOnly ? undefined : openRepoSyncConnectOrPush,
+    onClearClick: readOnly ? undefined : handleClearClick,
     onSaveToCloud:
-      filename && getStorageAdapter().type === 'local' ? () => setSaveToCloudOpen(true) : undefined,
+      !readOnly && filename && getStorageAdapter().type === 'local'
+        ? () => setSaveToCloudOpen(true)
+        : undefined,
   };
 
   const workspaceProps: EditorWorkspaceProps | null = filename
@@ -1119,17 +1095,18 @@ export function useIndexPageController() {
         currentProjectType,
         currentProjectSlug,
         currentProjectRelease,
-        onRefreshWordPress: openWordPressRefreshModal,
-        onLanguageChange: handleLanguageChange,
+        onRefreshWordPress: readOnly ? undefined : openWordPressRefreshModal,
+        onLanguageChange: readOnly ? undefined : handleLanguageChange,
         deeplGlossaryId: glossaryEnforcementEnabled ? deeplGlossaryId : null,
         glossary,
         glossaryEnforcementEnabled,
-        translateEnabled,
+        translateEnabled: readOnly ? false : translateEnabled,
         glossarySyncStatus,
         targetLang: translateTargetLang,
         sourceLang: translateSourceLang,
         speechEnabled,
         onEntrySelect: handleEntrySelect,
+        readOnly,
       }
     : null;
 
@@ -1200,26 +1177,6 @@ export function useIndexPageController() {
     currentEntries: entries,
     currentProjectRelease,
     onApplyWordPressRefresh: handleApplyWordPressRefresh,
-    settingsOpen,
-    onCloseSettings: closeSettings,
-    settingsInitialTab,
-    glossary,
-    glossarySyncStatus,
-    deeplGlossaryId,
-    glossaryTermCount,
-    selectedSourceText,
-    branchChipEnabled,
-    onBranchChipEnabledChange: setBranchChipEnabled,
-    containerWidth,
-    onContainerWidthChange: setContainerWidth,
-    speechEnabled,
-    onSpeechEnabledChange: setSpeechEnabled,
-    translateEnabled,
-    onTranslateEnabledChange: setTranslateEnabled,
-    onGlossaryLoaded: handleGlossaryLoaded,
-    onGlossaryCleared: handleGlossaryCleared,
-    onEnforcementChange: handleEnforcementChange,
-    onForceResync: handleForceResync,
     repoSyncOpen,
     onCloseRepoSync: closeRepoSync,
     onRepoFileLoaded: handleRepoFileLoaded,

@@ -11,6 +11,9 @@ import Dashboard from '@/pages/Dashboard';
 import ProjectDetail from '@/pages/ProjectDetail';
 import ProjectEditor from '@/pages/ProjectEditor';
 import OrgSettings from '@/pages/OrgSettings';
+import Settings from '@/pages/Settings';
+import ProjectSettings from '@/pages/ProjectSettings';
+import OrgSettingsPage from '@/pages/OrgSettingsPage';
 import Invite from '@/pages/Invite';
 import ProjectInvite from '@/pages/ProjectInvite';
 import Login from '@/pages/auth/Login';
@@ -41,10 +44,26 @@ export default function App() {
         }
       />
       <Route
+        path="/settings"
+        element={
+          <AuthGuard>
+            <Settings />
+          </AuthGuard>
+        }
+      />
+      <Route
         path="/projects/:id"
         element={
           <AuthGuard>
             <ProjectDetail />
+          </AuthGuard>
+        }
+      />
+      <Route
+        path="/projects/:id/settings"
+        element={
+          <AuthGuard>
+            <ProjectSettings />
           </AuthGuard>
         }
       />
@@ -61,6 +80,14 @@ export default function App() {
         element={
           <AuthGuard>
             <OrgSettings />
+          </AuthGuard>
+        }
+      />
+      <Route
+        path="/orgs/:slug/settings"
+        element={
+          <AuthGuard>
+            <OrgSettingsPage />
           </AuthGuard>
         }
       />

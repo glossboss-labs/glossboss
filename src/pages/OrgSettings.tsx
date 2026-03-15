@@ -27,7 +27,6 @@ import {
   Avatar,
   Tooltip,
   CopyButton,
-  Textarea,
 } from '@mantine/core';
 import { motion } from 'motion/react';
 import {
@@ -42,7 +41,6 @@ import {
   Copy,
   Check,
   Settings,
-  LogOut,
   FolderOpen,
 } from 'lucide-react';
 import { sectionVariants, contentVariants, fadeVariants, buttonStates } from '@/lib/motion';
@@ -52,7 +50,6 @@ import {
   listOrgMembers,
   updateOrgMemberRole,
   removeOrgMember,
-  updateOrganization,
   deleteOrganization,
   listInvites,
   createInvite,
@@ -90,11 +87,6 @@ export default function OrgSettings() {
   const [invites, setInvites] = useState<InviteRow[]>([]);
   const [orgProjects, setOrgProjects] = useState<ProjectWithLanguages[]>([]);
 
-  // Edit org state
-  const [editOrgName, setEditOrgName] = useState('');
-  const [editOrgDescription, setEditOrgDescription] = useState('');
-  const [saving, setSaving] = useState(false);
-
   // Invite form state
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState<'admin' | 'member'>('member');
@@ -115,8 +107,6 @@ export default function OrgSettings() {
     [myMembership],
   );
 
-  const isOwner = useMemo(() => myMembership?.role === 'owner', [myMembership]);
-
   useEffect(() => {
     if (!slug) return;
     let cancelled = false;
@@ -131,8 +121,6 @@ export default function OrgSettings() {
           return;
         }
         setOrg(organization);
-        setEditOrgName(organization.name);
-        setEditOrgDescription(organization.description);
 
         const [memberList, inviteList, projectList] = await Promise.all([
           listOrgMembers(organization.id),
@@ -200,22 +188,6 @@ export default function OrgSettings() {
       setInviting(false);
     }
   }, [org, inviteEmail, inviteRole, t]);
-
-  const handleSaveOrg = useCallback(async () => {
-    if (!org || !editOrgName.trim()) return;
-    setSaving(true);
-    try {
-      const updated = await updateOrganization(org.id, {
-        name: editOrgName.trim(),
-        description: editOrgDescription.trim(),
-      });
-      setOrg(updated);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : t('Failed to update organization'));
-    } finally {
-      setSaving(false);
-    }
-  }, [org, editOrgName, editOrgDescription, t]);
 
   const handleDeleteOrg = useCallback(async () => {
     if (!org) return;
@@ -305,13 +277,25 @@ export default function OrgSettings() {
           </Text>
 
           {/* Title */}
-          <div>
-            <Title order={3}>{org.name}</Title>
-            <Text size="sm" style={{ color: 'var(--gb-text-secondary)' }}>
-              {org.slug}
-              {org.description && ` — ${org.description}`}
-            </Text>
-          </div>
+          <Group justify="space-between" align="flex-start">
+            <div>
+              <Title order={3}>{org.name}</Title>
+              <Text size="sm" style={{ color: 'var(--gb-text-secondary)' }}>
+                {org.slug}
+                {org.description && ` — ${org.description}`}
+              </Text>
+            </div>
+            <Tooltip label={t('Organization settings')}>
+              <ActionIcon
+                component={Link}
+                to={`/orgs/${org.slug}/settings`}
+                variant="default"
+                size="lg"
+              >
+                <Settings size={18} />
+              </ActionIcon>
+            </Tooltip>
+          </Group>
 
           {error && (
             <Alert
@@ -338,9 +322,6 @@ export default function OrgSettings() {
                   {t('Invites')} ({invites.length})
                 </Tabs.Tab>
               )}
-              <Tabs.Tab value="settings" leftSection={<Settings size={14} />}>
-                {t('Settings')}
-              </Tabs.Tab>
             </Tabs.List>
 
             {/* Members tab */}
@@ -574,97 +555,6 @@ export default function OrgSettings() {
                 </Stack>
               </Tabs.Panel>
             )}
-            {/* Settings tab */}
-            <Tabs.Panel value="settings" pt="md">
-              <Stack gap="lg">
-                {/* Edit org details */}
-                {isAdmin && (
-                  <Paper withBorder p="md">
-                    <Text size="sm" fw={500} mb="sm">
-                      {t('Organization details')}
-                    </Text>
-                    <Stack gap="sm">
-                      <TextInput
-                        label={t('Name')}
-                        value={editOrgName}
-                        onChange={(e) => setEditOrgName(e.currentTarget.value)}
-                        maw={400}
-                      />
-                      <Textarea
-                        label={t('Description')}
-                        value={editOrgDescription}
-                        onChange={(e) => setEditOrgDescription(e.currentTarget.value)}
-                        autosize
-                        minRows={2}
-                        maxRows={4}
-                        maw={400}
-                      />
-                      <div>
-                        <motion.div {...buttonStates}>
-                          <Button
-                            onClick={() => void handleSaveOrg()}
-                            loading={saving}
-                            disabled={!editOrgName.trim()}
-                          >
-                            {t('Save changes')}
-                          </Button>
-                        </motion.div>
-                      </div>
-                    </Stack>
-                  </Paper>
-                )}
-
-                {/* Danger zone */}
-                <Paper withBorder p="md" style={{ borderColor: 'var(--mantine-color-red-4)' }}>
-                  <Text size="sm" fw={500} mb="sm" c="red">
-                    {t('Danger zone')}
-                  </Text>
-                  <Stack gap="sm">
-                    {isOwner ? (
-                      <Group justify="space-between" align="center">
-                        <div>
-                          <Text size="sm">{t('Delete this organization')}</Text>
-                          <Text size="xs" style={{ color: 'var(--gb-text-secondary)' }}>
-                            {t(
-                              'Permanently delete this organization and all its data. This cannot be undone.',
-                            )}
-                          </Text>
-                        </div>
-                        <motion.div {...buttonStates}>
-                          <Button
-                            color="red"
-                            variant="outline"
-                            leftSection={<Trash2 size={14} />}
-                            onClick={() => setConfirmDeleteOpen(true)}
-                          >
-                            {t('Delete organization')}
-                          </Button>
-                        </motion.div>
-                      </Group>
-                    ) : (
-                      <Group justify="space-between" align="center">
-                        <div>
-                          <Text size="sm">{t('Leave this organization')}</Text>
-                          <Text size="xs" style={{ color: 'var(--gb-text-secondary)' }}>
-                            {t('Remove yourself from this organization.')}
-                          </Text>
-                        </div>
-                        <motion.div {...buttonStates}>
-                          <Button
-                            color="red"
-                            variant="outline"
-                            leftSection={<LogOut size={14} />}
-                            onClick={() => setConfirmLeaveOpen(true)}
-                          >
-                            {t('Leave organization')}
-                          </Button>
-                        </motion.div>
-                      </Group>
-                    )}
-                  </Stack>
-                </Paper>
-              </Stack>
-            </Tabs.Panel>
           </Tabs>
         </Stack>
       </MotionDiv>

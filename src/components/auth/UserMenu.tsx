@@ -5,7 +5,7 @@
 
 import { Link } from 'react-router';
 import { Menu, Avatar, ActionIcon, Tooltip, UnstyledButton, Group, Text } from '@mantine/core';
-import { LogIn, LogOut, User } from 'lucide-react';
+import { LogIn, LogOut, User, Settings } from 'lucide-react';
 import { motion } from 'motion/react';
 import { buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
@@ -71,6 +71,10 @@ export function UserMenu() {
         </Menu.Label>
 
         <Menu.Divider />
+
+        <Menu.Item component={Link} to="/settings" leftSection={<Settings size={14} />}>
+          {t('Settings')}
+        </Menu.Item>
 
         <Menu.Item color="red" leftSection={<LogOut size={14} />} onClick={signOut}>
           {t('Sign out')}

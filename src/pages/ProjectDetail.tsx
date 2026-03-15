@@ -70,7 +70,6 @@ import { AppHeader } from '@/components/AppHeader';
 import { AddLanguageModal } from '@/components/projects/AddLanguageModal';
 import { ProjectMembersTab } from '@/components/projects/ProjectMembersTab';
 import { ProjectInvitesTab } from '@/components/projects/ProjectInvitesTab';
-import { ProjectSettingsTab } from '@/components/projects/ProjectSettingsTab';
 import { ConfirmModal } from '@/components/ui';
 
 const MotionDiv = motion.div;
@@ -303,13 +302,25 @@ export default function ProjectDetail() {
               <ArrowLeft size={14} />
               {t('Projects')}
             </Text>
-            {canManage && (
-              <motion.div {...buttonStates}>
-                <Button leftSection={<Plus size={16} />} onClick={() => setAddModalOpen(true)}>
-                  {t('Add language')}
-                </Button>
-              </motion.div>
-            )}
+            <Group gap="sm">
+              {canManage && (
+                <motion.div {...buttonStates}>
+                  <Button leftSection={<Plus size={16} />} onClick={() => setAddModalOpen(true)}>
+                    {t('Add language')}
+                  </Button>
+                </motion.div>
+              )}
+              <Tooltip label={t('Project settings')}>
+                <ActionIcon
+                  component={Link}
+                  to={`/projects/${id}/settings`}
+                  variant="default"
+                  size="lg"
+                >
+                  <Settings size={18} />
+                </ActionIcon>
+              </Tooltip>
+            </Group>
           </Group>
 
           {/* Title + metadata */}
@@ -370,9 +381,6 @@ export default function ProjectDetail() {
                   {t('Invites')} ({invites.length})
                 </Tabs.Tab>
               )}
-              <Tabs.Tab value="settings" leftSection={<Settings size={14} />}>
-                {t('Settings')}
-              </Tabs.Tab>
             </Tabs.List>
 
             {/* Languages tab */}
@@ -634,17 +642,6 @@ export default function ProjectDetail() {
                 />
               </Tabs.Panel>
             )}
-
-            {/* Settings tab */}
-            <Tabs.Panel value="settings" pt="md">
-              <ProjectSettingsTab
-                project={project}
-                canManage={canManage ?? false}
-                isAdmin={isAdmin ?? false}
-                onProjectUpdate={setProject}
-                onError={setError}
-              />
-            </Tabs.Panel>
           </Tabs>
         </Stack>
       </MotionDiv>

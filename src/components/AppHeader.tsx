@@ -38,7 +38,6 @@ import {
 import { sectionVariants, buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
 import { UserMenu } from '@/components/auth/UserMenu';
-import { SettingsModal } from '@/components/SettingsModal';
 import { FeedbackModal } from '@/components/feedback';
 
 const MotionDiv = motion.div;
@@ -46,8 +45,6 @@ const MotionDiv = motion.div;
 interface AppHeaderProps {
   /** Extra buttons rendered in the center section */
   actions?: ReactNode;
-  /** Cloud project ID — enables project export in settings Backup tab */
-  projectId?: string | null;
   /** Open repo sync modal (shows "Repository sync" in settings menu) */
   onOpenRepoSync?: () => void;
   /** Clear the editor and navigate away */
@@ -77,20 +74,13 @@ function ThemeToggle() {
   );
 }
 
-export function AppHeader({ actions, projectId, onOpenRepoSync, onClear }: AppHeaderProps) {
+export function AppHeader({ actions, onOpenRepoSync, onClear }: AppHeaderProps) {
   const { t } = useTranslation();
   const theme = useMantineTheme();
   const computedColorScheme = useComputedColorScheme('light');
   const { toggleColorScheme } = useMantineColorScheme();
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const [settingsTab, setSettingsTab] = useState<string | undefined>();
   const [feedbackOpen, setFeedbackOpen] = useState(false);
-
-  const handleOpenSettings = (tab?: string) => {
-    setSettingsTab(tab);
-    setSettingsOpen(true);
-  };
 
   return (
     <>
@@ -206,10 +196,7 @@ export function AppHeader({ actions, projectId, onOpenRepoSync, onClear }: AppHe
                 )}
                 {isMobile && <Menu.Divider />}
                 <Menu.Label>{t('Settings')}</Menu.Label>
-                <Menu.Item
-                  leftSection={<Settings size={14} />}
-                  onClick={() => handleOpenSettings()}
-                >
+                <Menu.Item component={Link} to="/settings" leftSection={<Settings size={14} />}>
                   {t('Open settings')}
                 </Menu.Item>
                 {(onOpenRepoSync || onClear) && (
@@ -272,12 +259,6 @@ export function AppHeader({ actions, projectId, onOpenRepoSync, onClear }: AppHe
         </Group>
       </MotionDiv>
 
-      <SettingsModal
-        opened={settingsOpen}
-        onClose={() => setSettingsOpen(false)}
-        initialTab={settingsTab}
-        projectId={projectId}
-      />
       <FeedbackModal opened={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
     </>
   );

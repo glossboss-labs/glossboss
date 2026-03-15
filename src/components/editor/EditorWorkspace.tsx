@@ -56,6 +56,9 @@ export interface EditorWorkspaceProps {
   speechEnabled: boolean;
   onEntrySelect: (sourceText: string) => void;
 
+  /** When true, disables all editing (viewer role). */
+  readOnly?: boolean;
+
   /** Broadcast callback for realtime entry updates (cloud editor only). */
   broadcastEntryUpdate?: (event: {
     entryId: string;
@@ -99,6 +102,7 @@ export function EditorWorkspace({
   sourceLang,
   speechEnabled,
   onEntrySelect,
+  readOnly,
   broadcastEntryUpdate,
   broadcastLock,
   broadcastUnlock,
@@ -146,13 +150,15 @@ export function EditorWorkspace({
             <Divider />
 
             {workspaceMode === 'review' && <ReviewSummary />}
-            <TranslateToolbar
-              onLanguageChange={onLanguageChange}
-              deeplGlossaryId={glossaryEnforcementEnabled ? deeplGlossaryId : null}
-              glossary={glossary}
-              translateEnabled={translateEnabled}
-              mode={workspaceMode}
-            />
+            {!readOnly && (
+              <TranslateToolbar
+                onLanguageChange={onLanguageChange}
+                deeplGlossaryId={glossaryEnforcementEnabled ? deeplGlossaryId : null}
+                glossary={glossary}
+                translateEnabled={translateEnabled}
+                mode={workspaceMode}
+              />
+            )}
             {workspaceMode === 'edit' && glossary && (
               <Group gap="xs">
                 <Badge color="green" variant="light" size="sm" leftSection={<Check size={10} />}>
@@ -183,8 +189,9 @@ export function EditorWorkspace({
           glossaryEnforcementEnabled={glossaryEnforcementEnabled}
           onEntrySelect={onEntrySelect}
           speechEnabled={speechEnabled}
-          translateEnabled={translateEnabled}
+          translateEnabled={readOnly ? false : translateEnabled}
           mode={workspaceMode}
+          readOnly={readOnly}
           broadcastEntryUpdate={broadcastEntryUpdate}
           broadcastLock={broadcastLock}
           broadcastUnlock={broadcastUnlock}

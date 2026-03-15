@@ -1,7 +1,6 @@
 import { Alert, Badge, Button, Group, Modal, Stack, Text } from '@mantine/core';
 import { AlertTriangle } from 'lucide-react';
 import { FeedbackModal } from '@/components/feedback';
-import { SettingsModal } from '@/components/SettingsModal';
 import { RepoSyncModal } from '@/components/repo-sync';
 import {
   type WordPressProjectOpenRequest,
@@ -11,10 +10,8 @@ import {
 import { ConfirmModal, PromptModal } from '@/components/ui';
 import { SaveToCloudModal } from '@/components/projects/SaveToCloudModal';
 import { type FeedbackIssueSuccess } from '@/lib/feedback';
-import type { Glossary } from '@/lib/glossary/types';
 import type { POEntry } from '@/lib/po';
 import { QA_RULE_LABELS, type QASummary } from '@/lib/qa';
-import type { ContainerWidth } from '@/lib/container-width';
 import type { WordPressPluginTranslationTrack } from '@/lib/wp-source';
 import { msgid, useTranslation } from '@/lib/app-language';
 import type { FileFormat } from '@/stores';
@@ -58,27 +55,6 @@ export interface IndexPageDialogsProps {
     summary: { added: number; removed: number; changed: number; metaUpdated: number };
     refreshGlossary: boolean;
   }) => Promise<void>;
-
-  settingsOpen: boolean;
-  onCloseSettings: () => void;
-  settingsInitialTab: string | undefined;
-  glossary: Glossary | null;
-  glossarySyncStatus: string | null;
-  deeplGlossaryId: string | null;
-  glossaryTermCount: number;
-  selectedSourceText: string | null;
-  branchChipEnabled: boolean;
-  onBranchChipEnabledChange: (enabled: boolean) => void;
-  containerWidth: ContainerWidth;
-  onContainerWidthChange: (width: ContainerWidth) => void;
-  speechEnabled: boolean;
-  onSpeechEnabledChange: (enabled: boolean) => void;
-  translateEnabled: boolean;
-  onTranslateEnabledChange: (enabled: boolean) => void;
-  onGlossaryLoaded: (glossary: Glossary) => Promise<void>;
-  onGlossaryCleared: () => void;
-  onEnforcementChange: (enabled: boolean) => void;
-  onForceResync: (glossary: Glossary) => Promise<void>;
 
   repoSyncOpen: boolean;
   onCloseRepoSync: () => void;
@@ -127,26 +103,6 @@ export function IndexPageDialogs({
   currentEntries,
   currentProjectRelease,
   onApplyWordPressRefresh,
-  settingsOpen,
-  onCloseSettings,
-  settingsInitialTab,
-  glossary,
-  glossarySyncStatus,
-  deeplGlossaryId,
-  glossaryTermCount,
-  selectedSourceText,
-  branchChipEnabled,
-  onBranchChipEnabledChange,
-  containerWidth,
-  onContainerWidthChange,
-  speechEnabled,
-  onSpeechEnabledChange,
-  translateEnabled,
-  onTranslateEnabledChange,
-  onGlossaryLoaded,
-  onGlossaryCleared,
-  onEnforcementChange,
-  onForceResync,
   repoSyncOpen,
   onCloseRepoSync,
   onRepoFileLoaded,
@@ -232,32 +188,6 @@ export function IndexPageDialogs({
           currentRelease={currentProjectRelease}
           locale={initialLocale}
           onApplyRefresh={onApplyWordPressRefresh}
-        />
-      )}
-
-      {settingsOpen && (
-        <SettingsModal
-          opened={settingsOpen}
-          onClose={onCloseSettings}
-          initialTab={settingsInitialTab}
-          initialLocale={initialLocale}
-          onGlossaryLoaded={onGlossaryLoaded}
-          onGlossaryCleared={onGlossaryCleared}
-          onEnforcementChange={onEnforcementChange}
-          onForceResync={onForceResync}
-          glossary={glossary}
-          syncStatus={glossarySyncStatus}
-          deeplGlossaryId={deeplGlossaryId}
-          glossaryTermCount={glossaryTermCount}
-          selectedSourceText={selectedSourceText}
-          branchChipEnabled={branchChipEnabled}
-          onBranchChipEnabledChange={onBranchChipEnabledChange}
-          containerWidth={containerWidth}
-          onContainerWidthChange={onContainerWidthChange}
-          speechEnabled={speechEnabled}
-          onSpeechEnabledChange={onSpeechEnabledChange}
-          translateEnabled={translateEnabled}
-          onTranslateEnabledChange={onTranslateEnabledChange}
         />
       )}
 
