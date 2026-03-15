@@ -211,6 +211,7 @@ export async function syncProjectEntries(
   for (let i = 0; i < entries.length; i++) {
     const entry = entries[i];
     const key = entryKey(entry.msgctxt, entry.msgid);
+    if (processedKeys.has(key)) continue;
     processedKeys.add(key);
 
     const dbId = existingByKey.get(key);
