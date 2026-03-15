@@ -117,7 +117,7 @@ export default function Login() {
               autoComplete="current-password"
             />
 
-            <Anchor component={Link} to="/forgot-password" size="sm">
+            <Anchor component={Link} to="/forgot-password" size="sm" ta="right">
               {t('Forgot password?')}
             </Anchor>
 
