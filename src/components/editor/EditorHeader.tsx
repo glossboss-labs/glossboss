@@ -34,8 +34,6 @@ import {
   GitBranch,
   GitPullRequest,
   Link,
-  ExternalLink,
-  Info,
   Archive,
   Globe,
   Cloud,
@@ -352,9 +350,9 @@ export function EditorHeader({
 
           <Menu position="bottom-end" withinPortal>
             <Menu.Target>
-              <Tooltip label={t('Settings and actions')}>
+              <Tooltip label={t('Editor actions')}>
                 <motion.div {...buttonStates}>
-                  <ActionIcon variant="default" size="lg" aria-label={t('Settings and actions')}>
+                  <ActionIcon variant="default" size="lg" aria-label={t('Editor actions')}>
                     <Settings size={18} />
                   </ActionIcon>
                 </motion.div>
@@ -377,67 +375,32 @@ export function EditorHeader({
                 </Menu.Item>
               )}
               {isMobile && <Menu.Divider />}
-              <Menu.Label>{t('Settings')}</Menu.Label>
-              <Menu.Item leftSection={<Settings size={14} />} onClick={() => onOpenSettings()}>
-                {t('Open settings')}
-              </Menu.Item>
-              <Menu.Divider />
-              <Menu.Label>{t('Actions')}</Menu.Label>
-              <Menu.Item leftSection={<Link size={14} />} onClick={onLoadFromUrl}>
-                {t('Load from URL')}
-              </Menu.Item>
-              <Menu.Item leftSection={<Globe size={14} />} onClick={onOpenWordPressProject}>
-                {t('Open from WordPress.org')}
-              </Menu.Item>
+              <Menu.Label>{t('Editor')}</Menu.Label>
+              {onLoadFromUrl && (
+                <Menu.Item leftSection={<Link size={14} />} onClick={onLoadFromUrl}>
+                  {t('Load from URL')}
+                </Menu.Item>
+              )}
+              {onOpenWordPressProject && (
+                <Menu.Item leftSection={<Globe size={14} />} onClick={onOpenWordPressProject}>
+                  {t('Open from WordPress.org')}
+                </Menu.Item>
+              )}
               {onRefreshWordPress && (
                 <Menu.Item leftSection={<RotateCcw size={14} />} onClick={onRefreshWordPress}>
                   {t('Refresh from WordPress.org')}
                 </Menu.Item>
               )}
-              <Menu.Item leftSection={<GitBranch size={14} />} onClick={onOpenRepoSync}>
-                {repoConnection ? t('Repository sync') : t('Open from repository')}
-              </Menu.Item>
-              <Menu.Item color="red" leftSection={<Trash2 size={14} />} onClick={onClearClick}>
-                {t('Clear editor')}
-              </Menu.Item>
-              <Menu.Divider />
-              <Menu.Label>{t('GlossBoss v{version}', { version: __APP_VERSION__ })}</Menu.Label>
-              <Menu.Item
-                component="a"
-                href="https://github.com/glossboss-labs/glossboss"
-                target="_blank"
-                rel="noopener noreferrer"
-                leftSection={<ExternalLink size={14} />}
-              >
-                {t('Source')}
-              </Menu.Item>
-              <Menu.Item
-                component="a"
-                href="/license/"
-                target="_blank"
-                rel="noopener noreferrer"
-                leftSection={<Info size={14} />}
-              >
-                {t('License')}
-              </Menu.Item>
-              <Menu.Item
-                component="a"
-                href="/translate/"
-                target="_blank"
-                rel="noopener noreferrer"
-                leftSection={<ExternalLink size={14} />}
-              >
-                {t('Translate')}
-              </Menu.Item>
-              <Menu.Item
-                component="a"
-                href="/privacy/"
-                target="_blank"
-                rel="noopener noreferrer"
-                leftSection={<Info size={14} />}
-              >
-                {t('Privacy')}
-              </Menu.Item>
+              {onOpenRepoSync && (
+                <Menu.Item leftSection={<GitBranch size={14} />} onClick={onOpenRepoSync}>
+                  {repoConnection ? t('Repository sync') : t('Open from repository')}
+                </Menu.Item>
+              )}
+              {onClearClick && (
+                <Menu.Item color="red" leftSection={<Trash2 size={14} />} onClick={onClearClick}>
+                  {t('Clear editor')}
+                </Menu.Item>
+              )}
             </Menu.Dropdown>
           </Menu>
         </Group>

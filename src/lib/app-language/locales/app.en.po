@@ -90,10 +90,6 @@ msgstr "Account created. Check your email to confirm, or sign in now."
 msgid "Action"
 msgstr "Action"
 
-#: src/components/editor/EditorHeader.tsx:385
-msgid "Actions"
-msgstr "Actions"
-
 #: src/components/projects/ProjectMembersTab.tsx:170
 msgid "Add"
 msgstr "Add"
@@ -113,7 +109,7 @@ msgstr "Add comment"
 #: src/components/projects/AddLanguageModal.tsx:269
 #: src/components/projects/AddLanguageModal.tsx:447
 #: src/pages/ProjectDetail.tsx:309
-#: src/pages/ProjectSettings.tsx:517
+#: src/pages/ProjectSettings.tsx:547
 msgid "Add language"
 msgstr "Add language"
 
@@ -212,7 +208,7 @@ msgid "Arabic (Saudi Arabia)"
 msgstr "Arabic (Saudi Arabia)"
 
 #: src/components/projects/ProjectSettingsTab.tsx:170
-#: src/pages/ProjectSettings.tsx:675
+#: src/pages/ProjectSettings.tsx:705
 msgid ""
 "Are you sure you want to delete \"{{name}}\"? All languages and entries will"
 " be permanently removed."
@@ -232,7 +228,7 @@ msgstr ""
 #: src/pages/OrgSettings.tsx:595
 #: src/pages/OrgSettingsPage.tsx:729
 #: src/pages/ProjectDetail.tsx:664
-#: src/pages/ProjectSettings.tsx:689
+#: src/pages/ProjectSettings.tsx:719
 msgid "Are you sure you want to leave \"{{name}}\"?"
 msgstr "Are you sure you want to leave \"{{name}}\"?"
 
@@ -304,7 +300,7 @@ msgstr "Back"
 #: src/pages/OrgSettings.tsx:248
 #: src/pages/OrgSettingsPage.tsx:278
 #: src/pages/ProjectDetail.tsx:274
-#: src/pages/ProjectEditor.tsx:199
+#: src/pages/ProjectEditor.tsx:200
 #: src/pages/ProjectInvite.tsx:100
 #: src/pages/ProjectSettings.tsx:258
 msgid "Back to dashboard"
@@ -324,7 +320,7 @@ msgid "Back to sign in"
 msgstr "Back to sign in"
 
 #: src/components/SettingsModal.tsx:1326
-#: src/components/editor/EditorHeader.tsx:252
+#: src/components/editor/EditorHeader.tsx:250
 #: src/pages/Settings.tsx:113
 msgid "Backup"
 msgstr "Backup"
@@ -903,8 +899,8 @@ msgid "Danish"
 msgstr "Danish"
 
 #: src/components/AppHeader.tsx:43
-#: src/components/editor/EditorHeader.tsx:62
-#: src/components/editor/EditorHeader.tsx:376
+#: src/components/editor/EditorHeader.tsx:60
+#: src/components/editor/EditorHeader.tsx:374
 msgid "Dark mode"
 msgstr "Dark mode"
 
@@ -938,7 +934,7 @@ msgstr "DeepL usage:"
 msgid "Delete"
 msgstr "Delete"
 
-#: src/pages/ProjectSettings.tsx:563
+#: src/pages/ProjectSettings.tsx:593
 msgid "Delete language"
 msgstr "Delete language"
 
@@ -953,9 +949,9 @@ msgstr "Delete organization"
 #: src/components/projects/ProjectSettingsTab.tsx:158
 #: src/components/projects/ProjectSettingsTab.tsx:169
 #: src/components/projects/ProjectSettingsTab.tsx:174
-#: src/pages/ProjectSettings.tsx:622
-#: src/pages/ProjectSettings.tsx:674
-#: src/pages/ProjectSettings.tsx:679
+#: src/pages/ProjectSettings.tsx:652
+#: src/pages/ProjectSettings.tsx:704
+#: src/pages/ProjectSettings.tsx:709
 msgid "Delete project"
 msgstr "Delete project"
 
@@ -964,7 +960,7 @@ msgid "Delete this organization"
 msgstr "Delete this organization"
 
 #: src/components/projects/ProjectSettingsTab.tsx:144
-#: src/pages/ProjectSettings.tsx:607
+#: src/pages/ProjectSettings.tsx:637
 msgid "Delete this project"
 msgstr "Delete this project"
 
@@ -980,7 +976,7 @@ msgstr "Describe what you saw"
 #: src/pages/OrgSettingsPage.tsx:370
 #: src/pages/OrgSettingsPage.tsx:401
 #: src/pages/ProjectSettings.tsx:355
-#: src/pages/ProjectSettings.tsx:400
+#: src/pages/ProjectSettings.tsx:423
 msgid "Description"
 msgstr "Description"
 
@@ -1031,11 +1027,11 @@ msgstr "Display"
 msgid "Don't have an account?"
 msgstr "Don't have an account?"
 
-#: src/components/editor/EditorHeader.tsx:237
+#: src/components/editor/EditorHeader.tsx:235
 msgid "Download as JSON"
 msgstr "Download as JSON"
 
-#: src/components/editor/EditorHeader.tsx:231
+#: src/components/editor/EditorHeader.tsx:229
 msgid "Download as PO"
 msgstr "Download as PO"
 
@@ -1082,7 +1078,7 @@ msgstr "Edit"
 msgid "Edit Header"
 msgstr "Edit Header"
 
-#: src/components/editor/EditorHeader.tsx:177
+#: src/components/editor/EditorHeader.tsx:175
 msgid "Edit gettext translation files with DeepL integration"
 msgstr "Edit gettext translation files with DeepL integration"
 
@@ -1095,8 +1091,14 @@ msgid "Editing draft"
 msgstr "Editing draft"
 
 #: src/components/AppHeader.tsx:105
+#: src/components/editor/EditorHeader.tsx:378
 msgid "Editor"
 msgstr "Editor"
+
+#: src/components/editor/EditorHeader.tsx:353
+#: src/components/editor/EditorHeader.tsx:355
+msgid "Editor actions"
+msgstr "Editor actions"
 
 #: src/components/projects/ExportSection.tsx:150
 msgid "Editor snapshot"
@@ -1454,7 +1456,7 @@ msgid "Failed to load organization"
 msgstr "Failed to load organization"
 
 #: src/pages/ProjectDetail.tsx:186
-#: src/pages/ProjectEditor.tsx:161
+#: src/pages/ProjectEditor.tsx:162
 #: src/pages/ProjectSettings.tsx:138
 msgid "Failed to load project"
 msgstr "Failed to load project"
@@ -1545,7 +1547,7 @@ msgid "Feature"
 msgstr "Feature"
 
 #: src/components/AppHeader.tsx:125
-#: src/components/editor/EditorHeader.tsx:326
+#: src/components/editor/EditorHeader.tsx:324
 msgid "Feedback"
 msgstr "Feedback"
 
@@ -1569,7 +1571,7 @@ msgstr "Feedback submitted"
 msgid "Feedback verification is not configured."
 msgstr "Feedback verification is not configured."
 
-#: src/components/editor/EditorHeader.tsx:198
+#: src/components/editor/EditorHeader.tsx:196
 msgid "File"
 msgstr "File"
 
@@ -1627,7 +1629,7 @@ msgid "Formality"
 msgstr "Formality"
 
 #: src/components/projects/ProjectSettingsTab.tsx:130
-#: src/pages/ProjectSettings.tsx:406
+#: src/pages/ProjectSettings.tsx:413
 msgid "Format"
 msgstr "Format"
 
@@ -1762,7 +1764,6 @@ msgstr ""
 "port anyway."
 
 #: src/components/auth/UserMenu.tsx:91
-#: src/components/editor/EditorHeader.tsx:404
 msgid "GlossBoss v{version}"
 msgstr "GlossBoss v{version}"
 
@@ -2101,7 +2102,7 @@ msgstr "Language Team"
 msgid "Language code"
 msgstr "Language code"
 
-#: src/pages/ProjectEditor.tsx:79
+#: src/pages/ProjectEditor.tsx:80
 msgid "Language not found"
 msgstr "Language not found"
 
@@ -2150,9 +2151,9 @@ msgstr "Leave organization"
 #: src/components/projects/ProjectMembersTab.tsx:269
 #: src/pages/ProjectDetail.tsx:663
 #: src/pages/ProjectDetail.tsx:665
-#: src/pages/ProjectSettings.tsx:646
-#: src/pages/ProjectSettings.tsx:688
-#: src/pages/ProjectSettings.tsx:690
+#: src/pages/ProjectSettings.tsx:676
+#: src/pages/ProjectSettings.tsx:718
+#: src/pages/ProjectSettings.tsx:720
 msgid "Leave project"
 msgstr "Leave project"
 
@@ -2161,18 +2162,17 @@ msgid "Leave this organization"
 msgstr "Leave this organization"
 
 #: src/components/projects/ProjectMembersTab.tsx:257
-#: src/pages/ProjectSettings.tsx:633
+#: src/pages/ProjectSettings.tsx:663
 msgid "Leave this project"
 msgstr "Leave this project"
 
 #: src/components/auth/UserMenu.tsx:108
-#: src/components/editor/EditorHeader.tsx:421
 msgid "License"
 msgstr "License"
 
 #: src/components/AppHeader.tsx:43
-#: src/components/editor/EditorHeader.tsx:62
-#: src/components/editor/EditorHeader.tsx:376
+#: src/components/editor/EditorHeader.tsx:60
+#: src/components/editor/EditorHeader.tsx:374
 msgid "Light mode"
 msgstr "Light mode"
 
@@ -2189,7 +2189,7 @@ msgstr "Line {{lineNumber}}"
 msgid "Line {{line}}"
 msgstr "Line {{line}}"
 
-#: src/pages/ProjectSettings.tsx:494
+#: src/pages/ProjectSettings.tsx:524
 msgid "Link repository"
 msgstr "Link repository"
 
@@ -2249,7 +2249,7 @@ msgstr ""
 msgid "Load example PO"
 msgstr "Load example PO"
 
-#: src/components/editor/EditorHeader.tsx:387
+#: src/components/editor/EditorHeader.tsx:381
 #: src/pages/index/IndexPageDialogs.tsx:168
 msgid "Load from URL"
 msgstr "Load from URL"
@@ -2479,7 +2479,7 @@ msgstr "My Team"
 #: src/components/projects/ProjectSettingsTab.tsx:121
 #: src/pages/OrgSettingsPage.tsx:363
 #: src/pages/OrgSettingsPage.tsx:395
-#: src/pages/ProjectSettings.tsx:397
+#: src/pages/ProjectSettings.tsx:399
 msgid "Name"
 msgstr "Name"
 
@@ -2598,7 +2598,7 @@ msgstr "No glossary entries found in the uploaded file."
 msgid "No glossary terms in selected text"
 msgstr "No glossary terms in selected text"
 
-#: src/pages/ProjectSettings.tsx:426
+#: src/pages/ProjectSettings.tsx:456
 msgid "No languages in this project yet."
 msgstr "No languages in this project yet."
 
@@ -2607,7 +2607,7 @@ msgid "No languages match your search"
 msgstr "No languages match your search"
 
 #: src/pages/ProjectDetail.tsx:440
-#: src/pages/ProjectSettings.tsx:526
+#: src/pages/ProjectSettings.tsx:556
 msgid "No languages yet"
 msgstr "No languages yet"
 
@@ -2662,7 +2662,7 @@ msgstr "No releases found"
 msgid "No repositories found"
 msgstr "No repositories found"
 
-#: src/pages/ProjectSettings.tsx:469
+#: src/pages/ProjectSettings.tsx:499
 msgid "No repository linked"
 msgstr "No repository linked"
 
@@ -2768,14 +2768,14 @@ msgstr "Open a PR targeting {{branch}}"
 msgid "Open a locale file from a GitHub or GitLab repository"
 msgstr "Open a locale file from a GitHub or GitLab repository"
 
-#: src/components/editor/EditorHeader.tsx:390
+#: src/components/editor/EditorHeader.tsx:386
 #: src/components/editor/EmptyState.tsx:140
 #: src/components/editor/WordPressProjectModal.tsx:291
 #: src/components/projects/CreateProjectModal.tsx:394
 msgid "Open from WordPress.org"
 msgstr "Open from WordPress.org"
 
-#: src/components/editor/EditorHeader.tsx:398
+#: src/components/editor/EditorHeader.tsx:396
 #: src/components/editor/EmptyState.tsx:152
 #: src/components/projects/CreateProjectModal.tsx:419
 msgid "Open from repository"
@@ -2798,10 +2798,6 @@ msgstr "Open local editor"
 #: src/components/editor/WordPressProjectModal.tsx:415
 msgid "Open project"
 msgstr "Open project"
-
-#: src/components/editor/EditorHeader.tsx:382
-msgid "Open settings"
-msgstr "Open settings"
 
 #: src/components/editor/EmptyState.tsx:133
 msgid "Open the latest WordPress.org translation export by project slug"
@@ -2903,7 +2899,7 @@ msgstr ""
 "."
 
 #: src/components/projects/ProjectSettingsTab.tsx:146
-#: src/pages/ProjectSettings.tsx:610
+#: src/pages/ProjectSettings.tsx:640
 msgid ""
 "Permanently delete this project, all languages, and all entries. This cannot"
 " be undone."
@@ -3068,7 +3064,6 @@ msgid "Previous field"
 msgstr "Previous field"
 
 #: src/components/auth/UserMenu.tsx:117
-#: src/components/editor/EditorHeader.tsx:439
 #: src/components/feedback/FeedbackModal.tsx:417
 msgid "Privacy"
 msgstr "Privacy"
@@ -3137,8 +3132,8 @@ msgstr "Project name and version"
 
 #: src/pages/ProjectDetail.tsx:175
 #: src/pages/ProjectDetail.tsx:271
-#: src/pages/ProjectEditor.tsx:73
-#: src/pages/ProjectEditor.tsx:196
+#: src/pages/ProjectEditor.tsx:74
+#: src/pages/ProjectEditor.tsx:197
 #: src/pages/ProjectSettings.tsx:124
 msgid "Project not found"
 msgstr "Project not found"
@@ -3161,8 +3156,8 @@ msgstr "Project type"
 
 #: src/components/AppHeader.tsx:134
 #: src/components/AppHeader.tsx:141
-#: src/components/editor/EditorHeader.tsx:336
-#: src/components/editor/EditorHeader.tsx:343
+#: src/components/editor/EditorHeader.tsx:334
+#: src/components/editor/EditorHeader.tsx:341
 #: src/pages/Dashboard.tsx:99
 #: src/pages/OrgSettings.tsx:318
 #: src/pages/OrgSettingsPage.tsx:347
@@ -3205,7 +3200,7 @@ msgstr "Punctuation drift"
 msgid "Punjabi"
 msgstr "Punjabi"
 
-#: src/components/editor/EditorHeader.tsx:282
+#: src/components/editor/EditorHeader.tsx:280
 #: src/components/repo-sync/RepoSyncModal.tsx:582
 msgid "Push"
 msgstr "Push"
@@ -3214,7 +3209,7 @@ msgstr "Push"
 msgid "Push changes to repository"
 msgstr "Push changes to repository"
 
-#: src/components/editor/EditorHeader.tsx:271
+#: src/components/editor/EditorHeader.tsx:269
 msgid "Push changes to {{provider}}"
 msgstr "Push changes to {{provider}}"
 
@@ -3272,7 +3267,7 @@ msgid "Refresh"
 msgstr "Refresh"
 
 #: src/components/SettingsModal.tsx:2136
-#: src/components/editor/EditorHeader.tsx:394
+#: src/components/editor/EditorHeader.tsx:391
 #: src/components/editor/GlossaryPanel.tsx:338
 #: src/components/editor/GlossaryPanel.tsx:342
 #: src/components/editor/WordPressRefreshModal.tsx:198
@@ -3339,7 +3334,7 @@ msgid "Remove yourself from this organization."
 msgstr "Remove yourself from this organization."
 
 #: src/components/projects/ProjectMembersTab.tsx:259
-#: src/pages/ProjectSettings.tsx:636
+#: src/pages/ProjectSettings.tsx:666
 msgid "Remove yourself from this project."
 msgstr "Remove yourself from this project."
 
@@ -3388,7 +3383,7 @@ msgstr "Report Bugs To"
 msgid "Repository"
 msgstr "Repository"
 
-#: src/pages/ProjectSettings.tsx:418
+#: src/pages/ProjectSettings.tsx:448
 msgid ""
 "Repository connections are per-language. Each language can be linked to a fi"
 "le in a GitHub or GitLab repository."
@@ -3396,7 +3391,7 @@ msgstr ""
 "Repository connections are per-language. Each language can be linked to a fi"
 "le in a GitHub or GitLab repository."
 
-#: src/components/editor/EditorHeader.tsx:398
+#: src/components/editor/EditorHeader.tsx:396
 #: src/components/repo-sync/RepoSyncModal.tsx:567
 msgid "Repository sync"
 msgstr "Repository sync"
@@ -3575,11 +3570,11 @@ msgstr "Save current field and move to the next translation field"
 msgid "Save current field and move to the previous translation field"
 msgstr "Save current field and move to the previous translation field"
 
-#: src/components/editor/EditorHeader.tsx:298
+#: src/components/editor/EditorHeader.tsx:296
 msgid "Save this file as a cloud project"
 msgstr "Save this file as a cloud project"
 
-#: src/components/editor/EditorHeader.tsx:307
+#: src/components/editor/EditorHeader.tsx:305
 #: src/components/projects/SaveToCloudModal.tsx:120
 #: src/components/projects/SaveToCloudModal.tsx:166
 msgid "Save to cloud"
@@ -3728,17 +3723,11 @@ msgstr "Set up a project and add languages later"
 
 #: src/components/SettingsModal.tsx:1284
 #: src/components/auth/UserMenu.tsx:77
-#: src/components/editor/EditorHeader.tsx:380
 #: src/pages/OrgSettings.tsx:295
 #: src/pages/ProjectDetail.tsx:320
 #: src/pages/Settings.tsx:77
 msgid "Settings"
 msgstr "Settings"
-
-#: src/components/editor/EditorHeader.tsx:355
-#: src/components/editor/EditorHeader.tsx:357
-msgid "Settings and actions"
-msgstr "Settings and actions"
 
 #: src/components/SettingsModal.tsx:927
 #: src/components/settings/BackupSection.tsx:182
@@ -3786,8 +3775,8 @@ msgstr "Share Feedback"
 
 #: src/components/AppHeader.tsx:118
 #: src/components/auth/UserMenu.tsx:86
-#: src/components/editor/EditorHeader.tsx:319
-#: src/components/editor/EditorHeader.tsx:366
+#: src/components/editor/EditorHeader.tsx:317
+#: src/components/editor/EditorHeader.tsx:364
 msgid "Share feedback"
 msgstr "Share feedback"
 
@@ -3918,7 +3907,6 @@ msgid "Sort entries"
 msgstr "Sort entries"
 
 #: src/components/auth/UserMenu.tsx:99
-#: src/components/editor/EditorHeader.tsx:412
 #: src/components/editor/EditorTable.tsx:2498
 #: src/components/projects/AddLanguageModal.tsx:300
 msgid "Source"
@@ -4064,12 +4052,12 @@ msgid "Switch account"
 msgstr "Switch account"
 
 #: src/components/AppHeader.tsx:50
-#: src/components/editor/EditorHeader.tsx:69
+#: src/components/editor/EditorHeader.tsx:67
 msgid "Switch to dark mode"
 msgstr "Switch to dark mode"
 
 #: src/components/AppHeader.tsx:50
-#: src/components/editor/EditorHeader.tsx:69
+#: src/components/editor/EditorHeader.tsx:67
 msgid "Switch to light mode"
 msgstr "Switch to light mode"
 
@@ -4274,10 +4262,6 @@ msgstr "Token not configured. Go to Connect tab to set up authentication."
 msgid "Track"
 msgstr "Track"
 
-#: src/components/editor/EditorHeader.tsx:430
-msgid "Translate"
-msgstr "Translate"
-
 #: src/components/editor/TranslateButton.tsx:99
 msgid "Translate with Glossary"
 msgstr "Translate with Glossary"
@@ -4464,7 +4448,7 @@ msgstr "Unknown"
 msgid "Unknown error"
 msgstr "Unknown error"
 
-#: src/pages/ProjectSettings.tsx:476
+#: src/pages/ProjectSettings.tsx:506
 msgid "Unlink repository"
 msgstr "Unlink repository"
 
@@ -4494,7 +4478,7 @@ msgstr "Unsaved draft found"
 msgid "Untranslated"
 msgstr "Untranslated"
 
-#: src/components/editor/EditorHeader.tsx:243
+#: src/components/editor/EditorHeader.tsx:241
 msgid "Update from POT…"
 msgstr "Update from POT…"
 
@@ -4562,7 +4546,7 @@ msgstr "Upload a translation file to start"
 msgid "Upload failed"
 msgstr "Upload failed"
 
-#: src/components/editor/EditorHeader.tsx:227
+#: src/components/editor/EditorHeader.tsx:225
 msgid "Upload file…"
 msgstr "Upload file…"
 
@@ -4652,7 +4636,7 @@ msgstr "View commit"
 #: src/components/projects/ProjectSettingsTab.tsx:127
 #: src/components/projects/SaveToCloudModal.tsx:136
 #: src/pages/ProjectSettings.tsx:364
-#: src/pages/ProjectSettings.tsx:403
+#: src/pages/ProjectSettings.tsx:405
 msgid "Visibility"
 msgstr "Visibility"
 
@@ -4771,6 +4755,7 @@ msgid "Whitespace drift"
 msgstr "Whitespace drift"
 
 #: src/pages/ProjectSettings.tsx:378
+#: src/pages/ProjectSettings.tsx:431
 msgid "WordPress"
 msgstr "WordPress"
 
@@ -4979,7 +4964,7 @@ msgstr "skipped"
 
 #: src/pages/OrgSettings.tsx:454
 #: src/pages/OrgSettingsPage.tsx:638
-#: src/pages/ProjectSettings.tsx:546
+#: src/pages/ProjectSettings.tsx:576
 msgid "strings"
 msgstr "strings"
 
@@ -4994,7 +4979,7 @@ msgstr "to save projects to the cloud and collaborate with your team."
 
 #: src/components/projects/ProjectCard.tsx:153
 #: src/pages/ProjectDetail.tsx:545
-#: src/pages/ProjectSettings.tsx:547
+#: src/pages/ProjectSettings.tsx:577
 msgid "translated"
 msgstr "translated"
 
