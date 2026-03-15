@@ -151,7 +151,7 @@ export function EditorHeader({
 
   return (
     <MotionDiv variants={sectionVariants} initial="hidden" animate="visible">
-      <Group justify="space-between" align="flex-start">
+      <Group justify="space-between" align={filename ? 'center' : 'flex-start'}>
         <div data-ev-id="ev_c00be328c4">
           {filename ? (
             <Group gap={6} align="center">
