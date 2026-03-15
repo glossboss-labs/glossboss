@@ -27,7 +27,7 @@ import {
   MessageSquare,
   FileUp,
   RotateCcw,
-  Settings,
+  MoreVertical,
   Sun,
   Moon,
   ChevronDown,
@@ -350,13 +350,11 @@ export function EditorHeader({
 
           <Menu position="bottom-end" withinPortal>
             <Menu.Target>
-              <Tooltip label={t('Editor actions')}>
-                <motion.div {...buttonStates}>
-                  <ActionIcon variant="default" size="lg" aria-label={t('Editor actions')}>
-                    <Settings size={18} />
-                  </ActionIcon>
-                </motion.div>
-              </Tooltip>
+              <motion.div {...buttonStates}>
+                <ActionIcon variant="default" size="lg" aria-label={t('Actions')}>
+                  <MoreVertical size={18} />
+                </ActionIcon>
+              </motion.div>
             </Menu.Target>
             <Menu.Dropdown>
               {isMobile && (
