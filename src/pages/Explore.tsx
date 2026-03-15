@@ -70,6 +70,7 @@ export default function Explore() {
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<SortOption>('updated');
   const [formatFilter, setFormatFilter] = useState<string | null>(null);
+  const [languageFilter, setLanguageFilter] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -112,8 +113,12 @@ export default function Explore() {
       result = result.filter((p) => p.source_format === formatFilter);
     }
 
+    if (languageFilter) {
+      result = result.filter((p) => p.project_languages?.some((l) => l.locale === languageFilter));
+    }
+
     return sortProjects(result, sort);
-  }, [projects, search, sort, formatFilter]);
+  }, [projects, search, sort, formatFilter, languageFilter]);
 
   const sortOptions = (Object.keys(SORT_LABELS) as SortOption[]).map((k) => ({
     value: k,
@@ -124,6 +129,16 @@ export default function Explore() {
     { value: 'po', label: 'PO' },
     { value: 'i18next', label: 'i18next' },
   ];
+
+  const languageOptions = useMemo(() => {
+    const locales = new Set<string>();
+    for (const p of projects) {
+      for (const l of p.project_languages ?? []) {
+        locales.add(l.locale);
+      }
+    }
+    return [...locales].sort().map((l) => ({ value: l, label: l }));
+  }, [projects]);
 
   return (
     <Container size="xl" py="xl">
@@ -193,6 +208,18 @@ export default function Explore() {
                   w={120}
                   size="sm"
                 />
+                {languageOptions.length > 0 && (
+                  <Select
+                    data={languageOptions}
+                    value={languageFilter}
+                    onChange={setLanguageFilter}
+                    placeholder={t('Language')}
+                    clearable
+                    searchable
+                    w={140}
+                    size="sm"
+                  />
+                )}
                 <Select
                   data={sortOptions}
                   value={sort}

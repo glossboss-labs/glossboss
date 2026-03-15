@@ -110,7 +110,7 @@ msgstr ""
 
 #: src/components/projects/AddLanguageModal.tsx:269
 #: src/components/projects/AddLanguageModal.tsx:447
-#: src/pages/ProjectDetail.tsx:317
+#: src/pages/ProjectDetail.tsx:349
 #: src/pages/ProjectSettings.tsx:547
 msgid "Add language"
 msgstr ""
@@ -223,7 +223,7 @@ msgstr ""
 
 #: src/pages/OrgSettings.tsx:595
 #: src/pages/OrgSettingsPage.tsx:729
-#: src/pages/ProjectDetail.tsx:698
+#: src/pages/ProjectDetail.tsx:730
 #: src/pages/ProjectSettings.tsx:719
 msgid "Are you sure you want to leave \"{{name}}\"?"
 msgstr ""
@@ -291,7 +291,7 @@ msgstr ""
 #: src/pages/Invite.tsx:98
 #: src/pages/OrgSettings.tsx:248
 #: src/pages/OrgSettingsPage.tsx:278
-#: src/pages/ProjectDetail.tsx:282
+#: src/pages/ProjectDetail.tsx:303
 #: src/pages/ProjectEditor.tsx:200
 #: src/pages/ProjectInvite.tsx:100
 #: src/pages/ProjectSettings.tsx:258
@@ -304,6 +304,10 @@ msgstr ""
 
 #: src/components/editor/SourceBrowser.tsx:154
 msgid "Back to listing"
+msgstr ""
+
+#: src/pages/ProjectDetail.tsx:303
+msgid "Back to projects"
 msgstr ""
 
 #: src/pages/auth/ForgotPassword.tsx:72
@@ -794,7 +798,7 @@ msgstr ""
 msgid "Create account"
 msgstr ""
 
-#: src/pages/ProjectDetail.tsx:388
+#: src/pages/ProjectDetail.tsx:420
 #: src/pages/auth/Signup.tsx:76
 msgid "Create an account"
 msgstr ""
@@ -830,7 +834,7 @@ msgstr ""
 msgid "Create resource"
 msgstr ""
 
-#: src/pages/ProjectDetail.tsx:358
+#: src/pages/ProjectDetail.tsx:390
 msgid "Created {{date}}"
 msgstr ""
 
@@ -908,7 +912,7 @@ msgid "DeepL usage:"
 msgstr ""
 
 #: src/components/projects/ProjectCard.tsx:128
-#: src/pages/ProjectDetail.tsx:637
+#: src/pages/ProjectDetail.tsx:669
 msgid "Delete"
 msgstr ""
 
@@ -1245,8 +1249,8 @@ msgstr ""
 
 #: src/components/AppHeader.tsx:134
 #: src/components/AppHeader.tsx:141
-#: src/pages/Explore.tsx:134
-#: src/pages/ProjectDetail.tsx:311
+#: src/pages/Explore.tsx:149
+#: src/pages/ProjectDetail.tsx:332
 msgid "Explore"
 msgstr ""
 
@@ -1352,7 +1356,7 @@ msgstr ""
 msgid "Failed to create project"
 msgstr ""
 
-#: src/pages/ProjectDetail.tsx:211
+#: src/pages/ProjectDetail.tsx:214
 #: src/pages/ProjectSettings.tsx:202
 msgid "Failed to delete language"
 msgstr ""
@@ -1389,12 +1393,16 @@ msgstr ""
 msgid "Failed to initialize verification."
 msgstr ""
 
+#: src/pages/ProjectDetail.tsx:245
+msgid "Failed to join project"
+msgstr ""
+
 #: src/pages/OrgSettings.tsx:213
 #: src/pages/OrgSettingsPage.tsx:256
 msgid "Failed to leave organization"
 msgstr ""
 
-#: src/pages/ProjectDetail.tsx:230
+#: src/pages/ProjectDetail.tsx:233
 #: src/pages/ProjectSettings.tsx:191
 msgid "Failed to leave project"
 msgstr ""
@@ -1423,7 +1431,7 @@ msgstr ""
 msgid "Failed to load organization"
 msgstr ""
 
-#: src/pages/ProjectDetail.tsx:194
+#: src/pages/ProjectDetail.tsx:197
 #: src/pages/ProjectEditor.tsx:162
 #: src/pages/ProjectSettings.tsx:138
 msgid "Failed to load project"
@@ -1433,7 +1441,7 @@ msgstr ""
 msgid "Failed to load project metadata."
 msgstr ""
 
-#: src/pages/Explore.tsx:86
+#: src/pages/Explore.tsx:87
 msgid "Failed to load projects"
 msgstr ""
 
@@ -1601,7 +1609,7 @@ msgid "Formality"
 msgstr ""
 
 #: src/components/projects/ProjectSettingsTab.tsx:130
-#: src/pages/Explore.tsx:191
+#: src/pages/Explore.tsx:206
 #: src/pages/ProjectSettings.tsx:413
 msgid "Format"
 msgstr ""
@@ -1972,7 +1980,7 @@ msgid "Invite accepted"
 msgstr ""
 
 #: src/pages/OrgSettings.tsx:322
-#: src/pages/ProjectDetail.tsx:407
+#: src/pages/ProjectDetail.tsx:439
 msgid "Invites"
 msgstr ""
 
@@ -1998,6 +2006,10 @@ msgstr ""
 #: src/components/editor/TranslateToolbar.tsx:87
 #: src/components/editor/TranslateToolbar.tsx:120
 msgid "Japanese"
+msgstr ""
+
+#: src/pages/ProjectDetail.tsx:342
+msgid "Join as translator"
 msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:102
@@ -2047,6 +2059,7 @@ msgstr ""
 #: src/components/editor/GlossaryPanel.tsx:384
 #: src/components/editor/HeaderEditor.tsx:220
 #: src/components/settings/GlossarySection.tsx:228
+#: src/pages/Explore.tsx:216
 msgid "Language"
 msgstr ""
 
@@ -2062,7 +2075,7 @@ msgstr ""
 msgid "Language not found"
 msgstr ""
 
-#: src/pages/ProjectDetail.tsx:398
+#: src/pages/ProjectDetail.tsx:430
 #: src/pages/ProjectSettings.tsx:329
 msgid "Languages"
 msgstr ""
@@ -2081,7 +2094,7 @@ msgstr ""
 
 #: src/pages/Dashboard.tsx:88
 #: src/pages/Explore.tsx:33
-#: src/pages/ProjectDetail.tsx:261
+#: src/pages/ProjectDetail.tsx:277
 msgid "Last updated"
 msgstr ""
 
@@ -2094,7 +2107,7 @@ msgstr ""
 
 #: src/pages/Dashboard.tsx:91
 #: src/pages/Explore.tsx:37
-#: src/pages/ProjectDetail.tsx:259
+#: src/pages/ProjectDetail.tsx:275
 msgid "Least complete"
 msgstr ""
 
@@ -2107,8 +2120,8 @@ msgid "Leave organization"
 msgstr ""
 
 #: src/components/projects/ProjectMembersTab.tsx:269
-#: src/pages/ProjectDetail.tsx:697
-#: src/pages/ProjectDetail.tsx:699
+#: src/pages/ProjectDetail.tsx:729
+#: src/pages/ProjectDetail.tsx:731
 #: src/pages/ProjectSettings.tsx:676
 #: src/pages/ProjectSettings.tsx:718
 #: src/pages/ProjectSettings.tsx:720
@@ -2250,7 +2263,7 @@ msgstr ""
 msgid "Locale"
 msgstr ""
 
-#: src/pages/ProjectDetail.tsx:257
+#: src/pages/ProjectDetail.tsx:273
 msgid "Locale A–Z"
 msgstr ""
 
@@ -2374,7 +2387,7 @@ msgstr ""
 
 #: src/pages/OrgSettings.tsx:315
 #: src/pages/OrgSettingsPage.tsx:344
-#: src/pages/ProjectDetail.tsx:402
+#: src/pages/ProjectDetail.tsx:434
 #: src/pages/ProjectSettings.tsx:332
 msgid "Members"
 msgstr ""
@@ -2408,13 +2421,13 @@ msgid "More info"
 msgstr ""
 
 #: src/pages/Explore.tsx:36
-#: src/pages/ProjectDetail.tsx:258
+#: src/pages/ProjectDetail.tsx:274
 msgid "Most complete"
 msgstr ""
 
 #: src/pages/Dashboard.tsx:90
 #: src/pages/Explore.tsx:35
-#: src/pages/ProjectDetail.tsx:260
+#: src/pages/ProjectDetail.tsx:276
 msgid "Most strings"
 msgstr ""
 
@@ -2553,11 +2566,11 @@ msgstr ""
 msgid "No languages in this project yet."
 msgstr ""
 
-#: src/pages/ProjectDetail.tsx:477
+#: src/pages/ProjectDetail.tsx:509
 msgid "No languages match your search"
 msgstr ""
 
-#: src/pages/ProjectDetail.tsx:466
+#: src/pages/ProjectDetail.tsx:498
 #: src/pages/ProjectSettings.tsx:556
 msgid "No languages yet"
 msgstr ""
@@ -2597,7 +2610,7 @@ msgid "No projects in this organization yet"
 msgstr ""
 
 #: src/pages/Dashboard.tsx:182
-#: src/pages/Explore.tsx:211
+#: src/pages/Explore.tsx:238
 msgid "No projects match your search"
 msgstr ""
 
@@ -2605,7 +2618,7 @@ msgstr ""
 msgid "No projects yet"
 msgstr ""
 
-#: src/pages/Explore.tsx:165
+#: src/pages/Explore.tsx:180
 msgid "No public projects yet"
 msgstr ""
 
@@ -3019,7 +3032,7 @@ msgstr ""
 #: src/components/projects/ProjectCard.tsx:37
 #: src/components/projects/ProjectSettingsTab.tsx:97
 #: src/components/projects/SaveToCloudModal.tsx:19
-#: src/pages/ProjectDetail.tsx:87
+#: src/pages/ProjectDetail.tsx:89
 #: src/pages/ProjectSettings.tsx:366
 msgid "Private"
 msgstr ""
@@ -3077,8 +3090,8 @@ msgstr ""
 msgid "Project name and version"
 msgstr ""
 
-#: src/pages/ProjectDetail.tsx:171
-#: src/pages/ProjectDetail.tsx:279
+#: src/pages/ProjectDetail.tsx:174
+#: src/pages/ProjectDetail.tsx:295
 #: src/pages/ProjectEditor.tsx:74
 #: src/pages/ProjectEditor.tsx:197
 #: src/pages/ProjectSettings.tsx:124
@@ -3108,7 +3121,7 @@ msgstr ""
 #: src/pages/Dashboard.tsx:99
 #: src/pages/OrgSettings.tsx:318
 #: src/pages/OrgSettingsPage.tsx:347
-#: src/pages/ProjectDetail.tsx:311
+#: src/pages/ProjectDetail.tsx:332
 msgid "Projects"
 msgstr ""
 
@@ -3130,12 +3143,12 @@ msgstr ""
 #: src/components/projects/ProjectCard.tsx:38
 #: src/components/projects/ProjectSettingsTab.tsx:98
 #: src/components/projects/SaveToCloudModal.tsx:20
-#: src/pages/ProjectDetail.tsx:88
+#: src/pages/ProjectDetail.tsx:90
 #: src/pages/ProjectSettings.tsx:367
 msgid "Public"
 msgstr ""
 
-#: src/pages/Explore.tsx:136
+#: src/pages/Explore.tsx:151
 msgid "Public translation projects"
 msgstr ""
 
@@ -3533,7 +3546,7 @@ msgstr ""
 msgid "Scanning for locale files..."
 msgstr ""
 
-#: src/pages/ProjectDetail.tsx:440
+#: src/pages/ProjectDetail.tsx:472
 msgid "Search languages…"
 msgstr ""
 
@@ -3542,7 +3555,7 @@ msgid "Search or type language code..."
 msgstr ""
 
 #: src/pages/Dashboard.tsx:161
-#: src/pages/Explore.tsx:181
+#: src/pages/Explore.tsx:196
 msgid "Search projects…"
 msgstr ""
 
@@ -3674,7 +3687,7 @@ msgstr ""
 #: src/components/SettingsModal.tsx:1284
 #: src/components/auth/UserMenu.tsx:77
 #: src/pages/OrgSettings.tsx:295
-#: src/pages/ProjectDetail.tsx:329
+#: src/pages/ProjectDetail.tsx:361
 #: src/pages/Settings.tsx:77
 msgid "Settings"
 msgstr ""
@@ -3896,7 +3909,7 @@ msgstr ""
 msgid "Source voice"
 msgstr ""
 
-#: src/pages/ProjectDetail.tsx:348
+#: src/pages/ProjectDetail.tsx:380
 msgid "Source: {{lang}}"
 msgstr ""
 
@@ -4390,7 +4403,7 @@ msgstr ""
 #: src/components/projects/ProjectCard.tsx:39
 #: src/components/projects/ProjectSettingsTab.tsx:99
 #: src/components/projects/SaveToCloudModal.tsx:21
-#: src/pages/ProjectDetail.tsx:89
+#: src/pages/ProjectDetail.tsx:91
 #: src/pages/ProjectSettings.tsx:368
 msgid "Unlisted"
 msgstr ""
@@ -4792,7 +4805,7 @@ msgstr ""
 msgid "characters"
 msgstr ""
 
-#: src/pages/ProjectDetail.tsx:425
+#: src/pages/ProjectDetail.tsx:457
 msgid "complete"
 msgstr ""
 
@@ -4814,7 +4827,7 @@ msgid "for details."
 msgstr ""
 
 #: src/components/projects/ProjectCard.tsx:167
-#: src/pages/ProjectDetail.tsx:589
+#: src/pages/ProjectDetail.tsx:621
 msgid "fuzzy"
 msgstr ""
 
@@ -4877,18 +4890,18 @@ msgid "terms"
 msgstr ""
 
 #: src/components/editor/EmptyState.tsx:190
-#: src/pages/ProjectDetail.tsx:385
+#: src/pages/ProjectDetail.tsx:417
 msgid "to save projects to the cloud and collaborate with your team."
 msgstr ""
 
 #: src/components/projects/ProjectCard.tsx:155
-#: src/pages/ProjectDetail.tsx:577
+#: src/pages/ProjectDetail.tsx:609
 #: src/pages/ProjectSettings.tsx:577
 msgid "translated"
 msgstr ""
 
 #: src/components/projects/ProjectCard.tsx:182
-#: src/pages/ProjectDetail.tsx:604
+#: src/pages/ProjectDetail.tsx:636
 msgid "untranslated"
 msgstr ""
 
@@ -4963,7 +4976,7 @@ msgid "{{count}} hours ago"
 msgstr ""
 
 #: src/components/projects/ProjectCard.tsx:86
-#: src/pages/ProjectDetail.tsx:420
+#: src/pages/ProjectDetail.tsx:452
 msgid "{{count}} languages"
 msgstr ""
 
@@ -5077,7 +5090,7 @@ msgid "{{percentage}}% translated"
 msgstr ""
 
 #: src/pages/Dashboard.tsx:151
-#: src/pages/Explore.tsx:175
+#: src/pages/Explore.tsx:190
 msgid "{{projects}} projects"
 msgstr ""
 
@@ -5121,7 +5134,7 @@ msgstr ""
 msgid "{{strings}} strings"
 msgstr ""
 
-#: src/pages/ProjectDetail.tsx:422
+#: src/pages/ProjectDetail.tsx:454
 msgid "{{strings}} total strings"
 msgstr ""
 

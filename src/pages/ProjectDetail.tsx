@@ -39,6 +39,7 @@ import {
   Search,
   GitBranch,
   Users,
+  UserPlus,
   Mail,
   Settings,
 } from 'lucide-react';
@@ -57,6 +58,7 @@ import {
   listProjectMembers,
   listProjectInvites,
   removeProjectMember,
+  joinProjectAsTranslator,
 } from '@/lib/projects/api';
 import type {
   ProjectRow,
@@ -149,6 +151,7 @@ export default function ProjectDetail() {
   const [sort, setSort] = useState<LangSortOption>('locale');
   const [confirmLeaveOpen, setConfirmLeaveOpen] = useState(false);
   const [leaveLoading, setLeaveLoading] = useState(false);
+  const [joinLoading, setJoinLoading] = useState(false);
 
   // Derive role info
   const myMembership = useMemo(
@@ -232,6 +235,19 @@ export default function ProjectDetail() {
     }
   }, [myMembership, navigate, t]);
 
+  const handleJoinProject = useCallback(async () => {
+    if (!user || !id) return;
+    setJoinLoading(true);
+    try {
+      await joinProjectAsTranslator(id, user.id);
+      setRefreshKey((k) => k + 1);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t('Failed to join project'));
+    } finally {
+      setJoinLoading(false);
+    }
+  }, [user, id, t]);
+
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
     const base = q
@@ -278,8 +294,13 @@ export default function ProjectDetail() {
           <Alert icon={<AlertCircle size={16} />} color="red" variant="light">
             {error ?? t('Project not found')}
           </Alert>
-          <Button component={Link} to="/dashboard" variant="light" mt="md">
-            {t('Back to dashboard')}
+          <Button
+            component={Link}
+            to={isAuthenticated ? '/dashboard' : '/explore'}
+            variant="light"
+            mt="md"
+          >
+            {isAuthenticated ? t('Back to dashboard') : t('Back to projects')}
           </Button>
         </MotionDiv>
       </Container>
@@ -311,6 +332,17 @@ export default function ProjectDetail() {
               {isMember ? t('Projects') : t('Explore')}
             </Text>
             <Group gap="sm">
+              {isAuthenticated && !isMember && project.visibility === 'public' && (
+                <motion.div {...buttonStates}>
+                  <Button
+                    leftSection={<UserPlus size={16} />}
+                    onClick={() => void handleJoinProject()}
+                    loading={joinLoading}
+                  >
+                    {t('Join as translator')}
+                  </Button>
+                </motion.div>
+              )}
               {canManage && (
                 <motion.div {...buttonStates}>
                   <Button leftSection={<Plus size={16} />} onClick={() => setAddModalOpen(true)}>

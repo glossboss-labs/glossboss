@@ -56,3 +56,20 @@ create policy "Anyone can view public project members"
         and visibility in ('public', 'unlisted')
     )
   );
+
+-- ============================================================
+-- 5. Self-join: authenticated users can join public projects as translator
+-- ============================================================
+
+create policy "Users can join public projects as translator"
+  on public.project_members for insert
+  to authenticated
+  with check (
+    auth.uid() = user_id
+    and role = 'translator'
+    and exists (
+      select 1 from public.projects
+      where id = project_id
+        and visibility = 'public'
+    )
+  );
