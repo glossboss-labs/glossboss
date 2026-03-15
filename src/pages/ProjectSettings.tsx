@@ -314,7 +314,7 @@ export default function ProjectSettings() {
               list: isMobile
                 ? { overflowX: 'auto', flexWrap: 'nowrap' }
                 : { minWidth: 180, flexShrink: 0 },
-              tab: { justifyContent: 'flex-start' },
+
               panel: { flex: 1, minWidth: 0 },
             }}
           >
@@ -392,19 +392,49 @@ export default function ProjectSettings() {
                       </div>
                     </Stack>
                   ) : (
-                    <Stack gap="xs">
-                      <Text size="sm">
-                        <strong>{t('Name')}:</strong> {project.name}
-                      </Text>
-                      <Text size="sm">
-                        <strong>{t('Description')}:</strong> {project.description || '—'}
-                      </Text>
-                      <Text size="sm">
-                        <strong>{t('Visibility')}:</strong> {project.visibility}
-                      </Text>
-                      <Text size="sm">
-                        <strong>{t('Format')}:</strong> {project.source_format}
-                      </Text>
+                    <Stack gap="md">
+                      <Group gap="xl" wrap="wrap">
+                        <div>
+                          <Text size="xs" c="dimmed" tt="uppercase" fw={600} mb={2}>
+                            {t('Name')}
+                          </Text>
+                          <Text size="sm">{project.name}</Text>
+                        </div>
+                        <div>
+                          <Text size="xs" c="dimmed" tt="uppercase" fw={600} mb={2}>
+                            {t('Visibility')}
+                          </Text>
+                          <Badge variant="light" size="sm">
+                            {project.visibility}
+                          </Badge>
+                        </div>
+                        <div>
+                          <Text size="xs" c="dimmed" tt="uppercase" fw={600} mb={2}>
+                            {t('Format')}
+                          </Text>
+                          <Badge variant="light" size="sm" color="gray">
+                            {project.source_format}
+                          </Badge>
+                        </div>
+                      </Group>
+                      {project.description && (
+                        <div>
+                          <Text size="xs" c="dimmed" tt="uppercase" fw={600} mb={2}>
+                            {t('Description')}
+                          </Text>
+                          <Text size="sm">{project.description}</Text>
+                        </div>
+                      )}
+                      {project.wp_slug && (
+                        <div>
+                          <Text size="xs" c="dimmed" tt="uppercase" fw={600} mb={2}>
+                            {t('WordPress')}
+                          </Text>
+                          <Text size="sm">
+                            {project.wp_project_type} / {project.wp_slug}
+                          </Text>
+                        </div>
+                      )}
                     </Stack>
                   )}
                 </Paper>

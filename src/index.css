@@ -125,3 +125,10 @@ body {
   background-color: var(--gb-surface-3);
   box-shadow: var(--gb-shadow-tooltip);
 }
+
+/* ----------------------------------------------------------------
+ * Vertical pill tabs: left-align labels
+ * ---------------------------------------------------------------- */
+.mantine-Tabs-root[data-orientation='vertical'] .mantine-Tabs-tab {
+  justify-content: flex-start;
+}

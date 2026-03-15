@@ -332,7 +332,7 @@ export default function OrgSettingsPage() {
               list: isMobile
                 ? { overflowX: 'auto', flexWrap: 'nowrap' }
                 : { minWidth: 180, flexShrink: 0 },
-              tab: { justifyContent: 'flex-start' },
+
               panel: { flex: 1, minWidth: 0 },
             }}
           >
