@@ -37,6 +37,7 @@ import { setStorageAdapter } from '@/lib/cloud/adapter';
 import { useRepoSyncStore } from '@/stores/repo-sync-store';
 import { useProjectRole } from '@/hooks/use-project-role';
 import { useRepoDbSync } from '@/hooks/use-repo-db-sync';
+import { fetchWPGlossary } from '@/lib/glossary/wp-fetcher';
 import type { ReviewEntryState } from '@/lib/review';
 
 export default function ProjectEditor() {
@@ -236,7 +237,24 @@ function ProjectEditorLoaded({
     notificationsProps,
     bannersProps,
     dialogsProps,
+    loadGlossaryForLocale,
   } = useIndexPageController({ readOnly: !isContributor });
+
+  // Auto-load glossary for the project language
+  useEffect(() => {
+    if (!language.locale || !loadGlossaryForLocale) return;
+    let cancelled = false;
+
+    fetchWPGlossary(language.locale).then((result) => {
+      if (!cancelled && result.glossary) {
+        void loadGlossaryForLocale(result.glossary);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [language.locale, loadGlossaryForLocale]);
 
   return (
     <Box style={{ minHeight: '100vh', position: 'relative' }}>

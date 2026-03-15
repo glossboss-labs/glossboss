@@ -1211,5 +1211,7 @@ export function useIndexPageController(options?: IndexPageControllerOptions) {
     bannersProps,
     dialogsProps,
     showBranchChip: isDevelopment && branchChipEnabled,
+    /** Load glossary for a specific locale (used by cloud projects to auto-load). */
+    loadGlossaryForLocale: handleGlossaryLoaded,
   };
 }
