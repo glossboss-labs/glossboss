@@ -134,3 +134,7 @@ body {
   justify-content: flex-start !important;
   text-align: left !important;
 }
+.gb-tab-left-align .mantine-Tabs-tabLabel {
+  text-align: left !important;
+  flex: none !important;
+}

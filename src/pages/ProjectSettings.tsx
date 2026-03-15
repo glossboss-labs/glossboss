@@ -514,15 +514,21 @@ export default function ProjectSettings() {
                                   </ActionIcon>
                                 </Tooltip>
                               ) : (
-                                <Button
-                                  component={Link}
-                                  to={`/projects/${project.id}/languages/${lang.id}`}
-                                  variant="light"
-                                  size="xs"
-                                  leftSection={<GitBranch size={12} />}
+                                <Tooltip
+                                  label={t(
+                                    'Open the editor to connect this language to a repository via Push settings.',
+                                  )}
                                 >
-                                  {t('Link repository')}
-                                </Button>
+                                  <Button
+                                    component={Link}
+                                    to={`/projects/${project.id}/languages/${lang.id}`}
+                                    variant="light"
+                                    size="xs"
+                                    leftSection={<GitBranch size={12} />}
+                                  >
+                                    {t('Link repository')}
+                                  </Button>
+                                </Tooltip>
                               )}
                             </Group>
                           )}

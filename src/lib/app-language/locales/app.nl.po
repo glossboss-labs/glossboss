@@ -113,7 +113,7 @@ msgstr ""
 #: src/components/projects/AddLanguageModal.tsx:269
 #: src/components/projects/AddLanguageModal.tsx:447
 #: src/pages/ProjectDetail.tsx:449
-#: src/pages/ProjectSettings.tsx:547
+#: src/pages/ProjectSettings.tsx:553
 msgid "Add language"
 msgstr ""
 
@@ -210,7 +210,7 @@ msgid "Arabic (Saudi Arabia)"
 msgstr "Arabisch (Saoedi-Arabië)"
 
 #: src/components/projects/ProjectSettingsTab.tsx:170
-#: src/pages/ProjectSettings.tsx:705
+#: src/pages/ProjectSettings.tsx:711
 msgid ""
 "Are you sure you want to delete \"{{name}}\"? All languages and entries will"
 " be permanently removed."
@@ -226,7 +226,7 @@ msgstr ""
 #: src/pages/OrgSettings.tsx:595
 #: src/pages/OrgSettingsPage.tsx:729
 #: src/pages/ProjectDetail.tsx:738
-#: src/pages/ProjectSettings.tsx:719
+#: src/pages/ProjectSettings.tsx:725
 msgid "Are you sure you want to leave \"{{name}}\"?"
 msgstr ""
 
@@ -927,7 +927,7 @@ msgstr "DeepL-gebruik:"
 msgid "Delete"
 msgstr ""
 
-#: src/pages/ProjectSettings.tsx:593
+#: src/pages/ProjectSettings.tsx:599
 msgid "Delete language"
 msgstr ""
 
@@ -942,9 +942,9 @@ msgstr ""
 #: src/components/projects/ProjectSettingsTab.tsx:158
 #: src/components/projects/ProjectSettingsTab.tsx:169
 #: src/components/projects/ProjectSettingsTab.tsx:174
-#: src/pages/ProjectSettings.tsx:652
-#: src/pages/ProjectSettings.tsx:704
-#: src/pages/ProjectSettings.tsx:709
+#: src/pages/ProjectSettings.tsx:658
+#: src/pages/ProjectSettings.tsx:710
+#: src/pages/ProjectSettings.tsx:715
 msgid "Delete project"
 msgstr ""
 
@@ -953,7 +953,7 @@ msgid "Delete this organization"
 msgstr ""
 
 #: src/components/projects/ProjectSettingsTab.tsx:144
-#: src/pages/ProjectSettings.tsx:637
+#: src/pages/ProjectSettings.tsx:643
 msgid "Delete this project"
 msgstr ""
 
@@ -2144,9 +2144,9 @@ msgstr ""
 
 #: src/pages/ProjectDetail.tsx:737
 #: src/pages/ProjectDetail.tsx:739
-#: src/pages/ProjectSettings.tsx:676
-#: src/pages/ProjectSettings.tsx:718
-#: src/pages/ProjectSettings.tsx:720
+#: src/pages/ProjectSettings.tsx:682
+#: src/pages/ProjectSettings.tsx:724
+#: src/pages/ProjectSettings.tsx:726
 msgid "Leave project"
 msgstr ""
 
@@ -2154,7 +2154,7 @@ msgstr ""
 msgid "Leave this organization"
 msgstr ""
 
-#: src/pages/ProjectSettings.tsx:663
+#: src/pages/ProjectSettings.tsx:669
 msgid "Leave this project"
 msgstr ""
 
@@ -2181,7 +2181,7 @@ msgstr "Regel {{lineNumber}}"
 msgid "Line {{line}}"
 msgstr "Regel {{line}}"
 
-#: src/pages/ProjectSettings.tsx:524
+#: src/pages/ProjectSettings.tsx:529
 msgid "Link repository"
 msgstr ""
 
@@ -2600,7 +2600,7 @@ msgid "No languages match your search"
 msgstr ""
 
 #: src/pages/ProjectDetail.tsx:506
-#: src/pages/ProjectSettings.tsx:556
+#: src/pages/ProjectSettings.tsx:562
 msgid "No languages yet"
 msgstr ""
 
@@ -2793,6 +2793,10 @@ msgstr "Issue openen"
 msgid "Open project"
 msgstr ""
 
+#: src/pages/ProjectSettings.tsx:518
+msgid "Open the editor to connect this language to a repository via Push settings."
+msgstr ""
+
 #: src/components/editor/EmptyState.tsx:133
 msgid "Open the latest WordPress.org translation export by project slug"
 msgstr ""
@@ -2889,7 +2893,7 @@ msgid ""
 msgstr ""
 
 #: src/components/projects/ProjectSettingsTab.tsx:146
-#: src/pages/ProjectSettings.tsx:640
+#: src/pages/ProjectSettings.tsx:646
 msgid ""
 "Permanently delete this project, all languages, and all entries. This cannot"
 " be undone."
@@ -3324,7 +3328,7 @@ msgstr "Opgeslagen sleutel verwijderen"
 msgid "Remove yourself from this organization."
 msgstr ""
 
-#: src/pages/ProjectSettings.tsx:666
+#: src/pages/ProjectSettings.tsx:672
 msgid "Remove yourself from this project."
 msgstr ""
 
@@ -4933,7 +4937,7 @@ msgstr "overgeslagen"
 
 #: src/pages/OrgSettings.tsx:454
 #: src/pages/OrgSettingsPage.tsx:638
-#: src/pages/ProjectSettings.tsx:576
+#: src/pages/ProjectSettings.tsx:582
 msgid "strings"
 msgstr ""
 
@@ -4949,7 +4953,7 @@ msgstr ""
 
 #: src/components/projects/ProjectCard.tsx:164
 #: src/pages/ProjectDetail.tsx:617
-#: src/pages/ProjectSettings.tsx:577
+#: src/pages/ProjectSettings.tsx:583
 msgid "translated"
 msgstr ""
 
