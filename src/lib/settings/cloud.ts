@@ -30,9 +30,22 @@ function supabase() {
 
 // ── Cloud read/write ────────────────────────────────────────
 
+async function getUserId(): Promise<string> {
+  const {
+    data: { user },
+  } = await supabase().auth.getUser();
+  if (!user?.id) throw new Error('Not authenticated');
+  return user.id;
+}
+
 /** Read the current user's cloud settings from profiles.settings. */
 export async function readCloudSettings(): Promise<CloudSettingsPayload | null> {
-  const { data, error } = await supabase().from('profiles').select('settings').single();
+  const userId = await getUserId();
+  const { data, error } = await supabase()
+    .from('profiles')
+    .select('settings')
+    .eq('id', userId)
+    .single();
 
   if (error || !data?.settings) return null;
 
@@ -44,20 +57,19 @@ export async function readCloudSettings(): Promise<CloudSettingsPayload | null> 
 
 /** Write settings to the current user's profiles.settings column. */
 export async function writeCloudSettings(payload: CloudSettingsPayload): Promise<void> {
+  const userId = await getUserId();
   const { error } = await supabase()
     .from('profiles')
     .update({ settings: payload as unknown as Record<string, unknown> })
-    .eq('id', (await supabase().auth.getUser()).data.user?.id ?? '');
+    .eq('id', userId);
 
   if (error) throw error;
 }
 
 /** Clear settings from the current user's profile (opt-out). */
 export async function clearCloudSettings(): Promise<void> {
-  const { error } = await supabase()
-    .from('profiles')
-    .update({ settings: {} })
-    .eq('id', (await supabase().auth.getUser()).data.user?.id ?? '');
+  const userId = await getUserId();
+  const { error } = await supabase().from('profiles').update({ settings: {} }).eq('id', userId);
 
   if (error) throw error;
 }
