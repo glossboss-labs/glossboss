@@ -21,3 +21,5 @@ export { EditorHeader, type EditorHeaderProps } from './EditorHeader';
 export { EditorWorkspace, type EditorWorkspaceProps } from './EditorWorkspace';
 export type { WorkspaceMode, EncodingInfo } from './EditorWorkspace';
 export { EmptyState, type EmptyStateProps } from './EmptyState';
+export { PresenceAvatars } from './PresenceAvatars';
+export { CellLockIndicator } from './CellLockIndicator';

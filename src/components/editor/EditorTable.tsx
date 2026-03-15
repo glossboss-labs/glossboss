@@ -77,11 +77,13 @@ import {
 } from '@/lib/review';
 import { TranslateButton } from './TranslateButton';
 import { GlossaryIndicator } from './GlossaryIndicator';
+import { CellLockIndicator } from './CellLockIndicator';
 import { SourceCodeViewer } from './SourceCodeViewer';
 import { SourceBrowser } from './SourceBrowser';
 import type { TargetLanguage, SourceLanguage } from '@/lib/deepl/types';
 import type { Glossary, GlossaryAnalysisResult } from '@/lib/glossary/types';
 import { useDragGhost } from '@/hooks/use-drag-ghost';
+import { useCollaborationStore } from '@/stores/collaboration-store';
 import { toSpeakLanguageTag } from '@/lib/tts';
 import { SpeakButton } from '@/components/ui';
 import { msgid, useTranslation } from '@/lib/app-language';
@@ -278,6 +280,18 @@ const TranslateSettingsContext = createContext<TranslateSettings>({
   speechEnabled: true,
   translateEnabled: true,
 });
+
+/** Broadcast context for realtime collaboration. */
+interface RealtimeBroadcast {
+  broadcastEntryUpdate?: (event: {
+    entryId: string;
+    msgstr?: string;
+    msgstrPlural?: string[];
+    flags?: string[];
+  }) => void;
+}
+
+const RealtimeBroadcastContext = createContext<RealtimeBroadcast>({});
 
 /**
  * Regex to match code-like tokens in translation strings:
@@ -903,12 +917,21 @@ function TranslationCell({
     mtProvider === 'gemini' ? 'Gemini' : mtProvider === 'azure' ? 'Azure' : 'DeepL';
   const signalsColumnHidden = useEditorStore((state) => !state.visibleColumns.has('signals'));
 
+  const remoteLock = useCollaborationStore((s) => s.cellLocks.get(entry.id));
+  const localUserId = useCollaborationStore((s) => {
+    const lock = s.cellLocks.get(entry.id);
+    return lock ? lock.userId : null;
+  });
+
   const translateSettings = useContext(TranslateSettingsContext);
+  const { broadcastEntryUpdate } = useContext(RealtimeBroadcastContext);
   const hasPlural = Boolean(entry.msgidPlural);
   const pluralForms = useMemo(() => entry.msgstrPlural ?? [], [entry.msgstrPlural]);
   const glossaryAnalysis = signalsColumnHidden ? getGlossaryAnalysis(entry.id) : null;
   const translationLang = toSpeakLanguageTag(translateSettings.targetLang);
-  const isLocked = isReviewLocked(reviewStatus, lockApprovedEntries);
+  const isReviewEntryLocked = isReviewLocked(reviewStatus, lockApprovedEntries);
+  const isRemoteLocked = Boolean(remoteLock && localUserId !== undefined);
+  const isLocked = isReviewEntryLocked || isRemoteLocked;
 
   const handleSingularChange = useCallback(
     (value: string) => {
@@ -916,8 +939,9 @@ function TranslationCell({
       if (isMT) {
         clearMachineTranslated(entry.id);
       }
+      broadcastEntryUpdate?.({ entryId: entry.id, msgstr: value });
     },
-    [entry.id, updateEntry, isMT, clearMachineTranslated],
+    [entry.id, updateEntry, isMT, clearMachineTranslated, broadcastEntryUpdate],
   );
 
   const handlePluralChange = useCallback(
@@ -931,8 +955,9 @@ function TranslationCell({
       if (isMT) {
         clearMachineTranslated(entry.id);
       }
+      broadcastEntryUpdate?.({ entryId: entry.id, msgstrPlural: newPlurals });
     },
-    [entry.id, pluralForms, updateEntryPlural, isMT, clearMachineTranslated],
+    [entry.id, pluralForms, updateEntryPlural, isMT, clearMachineTranslated, broadcastEntryUpdate],
   );
 
   const handleTranslated = useCallback(
@@ -947,8 +972,9 @@ function TranslationCell({
     ) => {
       updateEntry(entry.id, translatedText);
       markAsMachineTranslated(entry.id, meta);
+      broadcastEntryUpdate?.({ entryId: entry.id, msgstr: translatedText });
     },
-    [entry.id, updateEntry, markAsMachineTranslated],
+    [entry.id, updateEntry, markAsMachineTranslated, broadcastEntryUpdate],
   );
 
   const handlePluralTranslated = useCallback(
@@ -969,8 +995,9 @@ function TranslationCell({
       newPlurals[index] = translatedText;
       updateEntryPlural(entry.id, newPlurals);
       markAsMachineTranslated(entry.id, meta);
+      broadcastEntryUpdate?.({ entryId: entry.id, msgstrPlural: newPlurals });
     },
-    [entry.id, pluralForms, updateEntryPlural, markAsMachineTranslated],
+    [entry.id, pluralForms, updateEntryPlural, markAsMachineTranslated, broadcastEntryUpdate],
   );
 
   if (hasPlural) {
@@ -981,6 +1008,7 @@ function TranslationCell({
 
     return (
       <Stack gap={8}>
+        {isRemoteLocked && remoteLock && <CellLockIndicator lock={remoteLock} />}
         {displayForms.map((form, index) => (
           <Group key={index} gap="xs" align="flex-start" wrap="nowrap">
             <Box style={{ flex: 1, minWidth: 0 }}>
@@ -1061,7 +1089,8 @@ function TranslationCell({
   return (
     <Stack gap={4}>
       <Group gap="xs" align="flex-start" wrap="nowrap">
-        <Box style={{ flex: 1, minWidth: 0 }}>
+        <Box style={{ flex: 1, minWidth: 0, position: 'relative' }}>
+          {isRemoteLocked && remoteLock && <CellLockIndicator lock={remoteLock} />}
           <EditableField
             value={entry.msgstr}
             onChange={handleSingularChange}
@@ -2096,6 +2125,7 @@ const EntryRow = memo(function EntryRow({
   const status = getTranslationStatus(entry.msgstr, entry.flags, entry.msgstrPlural);
   const isUntranslated = status === 'untranslated';
   const isReviewEntryLocked = isReviewLocked(reviewStatus, lockApprovedEntries);
+  const remoteLock = useCollaborationStore((s) => s.cellLocks.get(entry.id));
 
   const rowRef = useRef<HTMLTableRowElement>(null);
   const handleClick = useCallback(() => {
@@ -2116,7 +2146,11 @@ const EntryRow = memo(function EntryRow({
           : isUntranslated
             ? 'var(--gb-highlight-danger)'
             : undefined,
-        boxShadow: isModified ? 'inset 4px 0 0 var(--mantine-color-orange-5)' : undefined,
+        boxShadow: remoteLock
+          ? `inset 4px 0 0 ${remoteLock.color}`
+          : isModified
+            ? 'inset 4px 0 0 var(--mantine-color-orange-5)'
+            : undefined,
       }}
     >
       <Table.Td
@@ -2276,6 +2310,7 @@ const MobileEntryCard = memo(function MobileEntryCard({
     history: [],
   };
   const isReviewEntryLocked = isReviewLocked(reviewStatus, lockApprovedEntries);
+  const remoteLock = useCollaborationStore((s) => s.cellLocks.get(entry.id));
 
   const handleSelect = useCallback(() => {
     selectEntry(entry.id);
@@ -2300,6 +2335,8 @@ const MobileEntryCard = memo(function MobileEntryCard({
       style={{
         cursor: 'pointer',
         borderColor: isSelected ? 'var(--mantine-color-blue-4)' : undefined,
+        borderLeftColor: remoteLock ? remoteLock.color : undefined,
+        borderLeftWidth: remoteLock ? 3 : undefined,
         backgroundColor: isSelected
           ? 'var(--gb-highlight-row)'
           : isUntranslated
@@ -2401,6 +2438,13 @@ export interface EditorTableProps {
   speechEnabled?: boolean;
   translateEnabled?: boolean;
   mode?: WorkspaceMode;
+  /** Broadcast callback for realtime entry updates (cloud editor only). */
+  broadcastEntryUpdate?: (event: {
+    entryId: string;
+    msgstr?: string;
+    msgstrPlural?: string[];
+    flags?: string[];
+  }) => void;
 }
 
 export function EditorTable({
@@ -2413,6 +2457,7 @@ export function EditorTable({
   speechEnabled = true,
   translateEnabled = true,
   mode = 'edit',
+  broadcastEntryUpdate,
 }: EditorTableProps) {
   const { t } = useTranslation();
   const theme = useMantineTheme();
@@ -2906,6 +2951,11 @@ export function EditorTable({
     [onEntrySelect, selectEntry, selectedEntry, setActiveReference],
   );
 
+  const realtimeBroadcast = useMemo<RealtimeBroadcast>(
+    () => ({ broadcastEntryUpdate }),
+    [broadcastEntryUpdate],
+  );
+
   if (!filename) {
     return null;
   }
@@ -2939,345 +2989,351 @@ export function EditorTable({
   })();
 
   return (
-    <TranslateSettingsContext.Provider value={translateSettings}>
-      {isMobile ? (
-        <Stack gap="sm" data-testid="mobile-entry-card-list">
-          {paginatedEntries.map((entry) => (
-            <MobileEntryCard
-              key={entry.id}
-              entry={entry}
-              isChecked={selectedEntryIds.has(entry.id)}
-              detailsExpanded={expandedMobileEntryIds.has(entry.id)}
-              onToggleDetails={() => toggleMobileDetails(entry.id)}
-              onToggleSelection={(checked) => setEntrySelection(entry.id, checked)}
-              onKeyDown={handleKeyDown}
-              onSelect={onEntrySelect}
-              translationMemoryScope={translationMemoryScope}
-              mode={mode}
-            />
-          ))}
-        </Stack>
-      ) : (
-        <Stack gap="xs">
-          <Group justify="flex-end">
-            <Button
-              variant={inspectorOpen ? 'light' : 'subtle'}
-              size="xs"
-              leftSection={
-                inspectorOpen ? <PanelRightClose size={14} /> : <PanelRightOpen size={14} />
-              }
-              onClick={() => setInspectorOpen(!inspectorOpen)}
-              data-testid="toggle-inspector-btn"
-            >
-              {inspectorOpen ? t('Hide info') : t('More info')}
-            </Button>
-          </Group>
-          <Box style={{ display: 'flex', alignItems: 'flex-start' }}>
-            <Box style={{ flex: 1, minWidth: 0 }}>
-              <Table
-                ref={tableRef}
-                striped
-                highlightOnHover
-                verticalSpacing="md"
-                style={{ tableLayout: 'fixed' }}
-                data-testid="editor-table-desktop"
+    <RealtimeBroadcastContext.Provider value={realtimeBroadcast}>
+      <TranslateSettingsContext.Provider value={translateSettings}>
+        {isMobile ? (
+          <Stack gap="sm" data-testid="mobile-entry-card-list">
+            {paginatedEntries.map((entry) => (
+              <MobileEntryCard
+                key={entry.id}
+                entry={entry}
+                isChecked={selectedEntryIds.has(entry.id)}
+                detailsExpanded={expandedMobileEntryIds.has(entry.id)}
+                onToggleDetails={() => toggleMobileDetails(entry.id)}
+                onToggleSelection={(checked) => setEntrySelection(entry.id, checked)}
+                onKeyDown={handleKeyDown}
+                onSelect={onEntrySelect}
+                translationMemoryScope={translationMemoryScope}
+                mode={mode}
+              />
+            ))}
+          </Stack>
+        ) : (
+          <Stack gap="xs">
+            <Group justify="flex-end">
+              <Button
+                variant={inspectorOpen ? 'light' : 'subtle'}
+                size="xs"
+                leftSection={
+                  inspectorOpen ? <PanelRightClose size={14} /> : <PanelRightOpen size={14} />
+                }
+                onClick={() => setInspectorOpen(!inspectorOpen)}
+                data-testid="toggle-inspector-btn"
               >
-                <Table.Thead
-                  ref={theadRef}
-                  onPointerMove={handleHeaderPointerMove}
-                  onPointerUp={(e) => finishHeaderDrag(e.pointerId, true)}
-                  onPointerCancel={(e) => finishHeaderDrag(e.pointerId, false)}
-                  onLostPointerCapture={(e) => finishHeaderDrag(e.pointerId, false)}
+                {inspectorOpen ? t('Hide info') : t('More info')}
+              </Button>
+            </Group>
+            <Box style={{ display: 'flex', alignItems: 'flex-start' }}>
+              <Box style={{ flex: 1, minWidth: 0 }}>
+                <Table
+                  ref={tableRef}
+                  striped
+                  highlightOnHover
+                  verticalSpacing="md"
+                  style={{ tableLayout: 'fixed' }}
+                  data-testid="editor-table-desktop"
+                >
+                  <Table.Thead
+                    ref={theadRef}
+                    onPointerMove={handleHeaderPointerMove}
+                    onPointerUp={(e) => finishHeaderDrag(e.pointerId, true)}
+                    onPointerCancel={(e) => finishHeaderDrag(e.pointerId, false)}
+                    onLostPointerCapture={(e) => finishHeaderDrag(e.pointerId, false)}
+                    style={{
+                      position: 'sticky',
+                      top: 0,
+                      zIndex: 10,
+                      background: 'var(--gb-surface-2)',
+                      touchAction: 'none',
+                    }}
+                  >
+                    <Table.Tr>
+                      {visibleColumnKeys.map((columnKey, i) => {
+                        const nextColumn = visibleColumnKeys[i + 1];
+                        const isDataColumn = columnKey !== 'select';
+                        const label =
+                          columnKey === 'select' ? (
+                            <Checkbox
+                              key="select-all-checkbox-input"
+                              checked={allFilteredSelected}
+                              indeterminate={someFilteredSelected}
+                              onChange={(e) => handleSelectAllFiltered(e.currentTarget.checked)}
+                              aria-label={t('Select all filtered entries')}
+                              data-testid="select-all-checkbox"
+                            />
+                          ) : (
+                            t(DATA_COLUMN_LABELS[columnKey])
+                          );
+
+                        const dropIndicator =
+                          isDataColumn && headerDropTarget?.column === columnKey
+                            ? headerDropTarget.position
+                            : undefined;
+
+                        return (
+                          <ResizableTh
+                            key={columnKey}
+                            widthPercent={columnPercentByKey[columnKey]}
+                            isLast={!nextColumn}
+                            onResize={
+                              nextColumn
+                                ? (delta) => handleColumnResize(columnKey, nextColumn, delta)
+                                : undefined
+                            }
+                            align={columnKey === 'select' ? 'center' : 'left'}
+                            padding={columnKey === 'select' ? '8px 4px' : undefined}
+                            dataColumnKey={isDataColumn ? columnKey : undefined}
+                            onCellPointerDown={
+                              isDataColumn ? handleHeaderPointerDown(columnKey) : undefined
+                            }
+                            isDragging={draggingHeaderColumn === columnKey}
+                            dropIndicatorPosition={dropIndicator}
+                          >
+                            {typeof label === 'string' ? (
+                              label
+                            ) : (
+                              <Box
+                                style={{
+                                  display: 'flex',
+                                  justifyContent: 'center',
+                                  alignItems: 'center',
+                                }}
+                              >
+                                {label}
+                              </Box>
+                            )}
+                          </ResizableTh>
+                        );
+                      })}
+                    </Table.Tr>
+                  </Table.Thead>
+                  <Table.Tbody>
+                    {paginatedEntries.map((entry) => (
+                      <EntryRow
+                        key={entry.id}
+                        entry={entry}
+                        isChecked={selectedEntryIds.has(entry.id)}
+                        visibleDataColumns={visibleDataColumns}
+                        onToggleSelection={(checked) => setEntrySelection(entry.id, checked)}
+                        onSelect={onEntrySelect}
+                        onKeyDown={handleKeyDown}
+                      />
+                    ))}
+                  </Table.Tbody>
+                </Table>
+              </Box>
+
+              <Box
+                style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: 'var(--mantine-spacing-md)',
+                  overflow:
+                    typeof CSS !== 'undefined' &&
+                    typeof CSS.supports === 'function' &&
+                    CSS.supports('overflow', 'clip')
+                      ? 'clip'
+                      : 'hidden',
+                  flexShrink: 0,
+                  width: inspectorOpen ? inspectorWidth + 24 : 0,
+                  marginLeft: inspectorOpen ? 'var(--mantine-spacing-md)' : 0,
+                  opacity: inspectorOpen ? 1 : 0,
+                  transition: 'width 250ms ease, margin-left 250ms ease, opacity 150ms ease',
+                  pointerEvents: inspectorOpen ? 'auto' : 'none',
+                }}
+              >
+                <Box
+                  role="separator"
+                  aria-orientation="vertical"
+                  aria-label={t('Resize inspector')}
+                  onPointerDown={handleInspectorResizeStart}
+                  onDoubleClick={() => setInspectorWidth(INSPECTOR_DEFAULT_WIDTH)}
                   style={{
+                    width: 8,
+                    flexShrink: 0,
+                    alignSelf: 'stretch',
+                    cursor: 'col-resize',
+                    borderRadius: 6,
+                    backgroundColor: 'var(--mantine-color-default-border)',
+                    opacity: 0.35,
+                    transition: 'opacity 120ms ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.opacity = '0.8';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.opacity = '0.35';
+                  }}
+                />
+
+                <Paper
+                  withBorder
+                  p="sm"
+                  w={inspectorWidth}
+                  style={{
+                    flexShrink: 0,
                     position: 'sticky',
-                    top: 0,
-                    zIndex: 10,
-                    background: 'var(--gb-surface-2)',
-                    touchAction: 'none',
+                    top: 16,
+                    height: 'calc(100vh - 32px)',
+                    maxHeight: 'calc(100vh - 32px)',
+                    overflow: 'hidden',
+                    display: 'flex',
+                    flexDirection: 'column',
                   }}
                 >
-                  <Table.Tr>
-                    {visibleColumnKeys.map((columnKey, i) => {
-                      const nextColumn = visibleColumnKeys[i + 1];
-                      const isDataColumn = columnKey !== 'select';
-                      const label =
-                        columnKey === 'select' ? (
-                          <Checkbox
-                            key="select-all-checkbox-input"
-                            checked={allFilteredSelected}
-                            indeterminate={someFilteredSelected}
-                            onChange={(e) => handleSelectAllFiltered(e.currentTarget.checked)}
-                            aria-label={t('Select all filtered entries')}
-                            data-testid="select-all-checkbox"
-                          />
-                        ) : (
-                          t(DATA_COLUMN_LABELS[columnKey])
-                        );
-
-                      const dropIndicator =
-                        isDataColumn && headerDropTarget?.column === columnKey
-                          ? headerDropTarget.position
-                          : undefined;
-
-                      return (
-                        <ResizableTh
-                          key={columnKey}
-                          widthPercent={columnPercentByKey[columnKey]}
-                          isLast={!nextColumn}
-                          onResize={
-                            nextColumn
-                              ? (delta) => handleColumnResize(columnKey, nextColumn, delta)
-                              : undefined
-                          }
-                          align={columnKey === 'select' ? 'center' : 'left'}
-                          padding={columnKey === 'select' ? '8px 4px' : undefined}
-                          dataColumnKey={isDataColumn ? columnKey : undefined}
-                          onCellPointerDown={
-                            isDataColumn ? handleHeaderPointerDown(columnKey) : undefined
-                          }
-                          isDragging={draggingHeaderColumn === columnKey}
-                          dropIndicatorPosition={dropIndicator}
-                        >
-                          {typeof label === 'string' ? (
-                            label
-                          ) : (
-                            <Box
-                              style={{
-                                display: 'flex',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                              }}
-                            >
-                              {label}
-                            </Box>
-                          )}
-                        </ResizableTh>
-                      );
-                    })}
-                  </Table.Tr>
-                </Table.Thead>
-                <Table.Tbody>
-                  {paginatedEntries.map((entry) => (
-                    <EntryRow
-                      key={entry.id}
-                      entry={entry}
-                      isChecked={selectedEntryIds.has(entry.id)}
-                      visibleDataColumns={visibleDataColumns}
-                      onToggleSelection={(checked) => setEntrySelection(entry.id, checked)}
-                      onSelect={onEntrySelect}
-                      onKeyDown={handleKeyDown}
-                    />
-                  ))}
-                </Table.Tbody>
-              </Table>
-            </Box>
-
-            <Box
-              style={{
-                display: 'flex',
-                alignItems: 'flex-start',
-                gap: 'var(--mantine-spacing-md)',
-                overflow:
-                  typeof CSS !== 'undefined' &&
-                  typeof CSS.supports === 'function' &&
-                  CSS.supports('overflow', 'clip')
-                    ? 'clip'
-                    : 'hidden',
-                flexShrink: 0,
-                width: inspectorOpen ? inspectorWidth + 24 : 0,
-                marginLeft: inspectorOpen ? 'var(--mantine-spacing-md)' : 0,
-                opacity: inspectorOpen ? 1 : 0,
-                transition: 'width 250ms ease, margin-left 250ms ease, opacity 150ms ease',
-                pointerEvents: inspectorOpen ? 'auto' : 'none',
-              }}
-            >
-              <Box
-                role="separator"
-                aria-orientation="vertical"
-                aria-label={t('Resize inspector')}
-                onPointerDown={handleInspectorResizeStart}
-                onDoubleClick={() => setInspectorWidth(INSPECTOR_DEFAULT_WIDTH)}
-                style={{
-                  width: 8,
-                  flexShrink: 0,
-                  alignSelf: 'stretch',
-                  cursor: 'col-resize',
-                  borderRadius: 6,
-                  backgroundColor: 'var(--mantine-color-default-border)',
-                  opacity: 0.35,
-                  transition: 'opacity 120ms ease',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.opacity = '0.8';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.opacity = '0.35';
-                }}
-              />
-
-              <Paper
-                withBorder
-                p="sm"
-                w={inspectorWidth}
-                style={{
-                  flexShrink: 0,
-                  position: 'sticky',
-                  top: 16,
-                  height: 'calc(100vh - 32px)',
-                  maxHeight: 'calc(100vh - 32px)',
-                  overflow: 'hidden',
-                  display: 'flex',
-                  flexDirection: 'column',
-                }}
-              >
-                <Stack gap="sm" pt={2} style={{ height: '100%', minHeight: 0 }}>
-                  <Group justify="space-between" align="center">
-                    <Text fw={600} size="sm">
-                      {t('String Inspector')}
-                    </Text>
-                    <Tooltip
-                      label={selectedInspectorLabel}
-                      disabled={!selectedEntry}
-                      position="bottom"
-                    >
-                      <Text size="xs" c="dimmed" maw="58%" ta="right" truncate="end">
-                        {selectedInspectorLabel}
+                  <Stack gap="sm" pt={2} style={{ height: '100%', minHeight: 0 }}>
+                    <Group justify="space-between" align="center">
+                      <Text fw={600} size="sm">
+                        {t('String Inspector')}
                       </Text>
-                    </Tooltip>
-                  </Group>
-
-                  <Group justify="space-between" align="center">
-                    <SegmentedControl
-                      size="xs"
-                      value={inspectorMode}
-                      onChange={(value) => setInspectorMode(value as 'context' | 'browse')}
-                      data={[
-                        { label: t('Context'), value: 'context' },
-                        { label: t('Browse'), value: 'browse' },
-                      ]}
-                    />
-
-                    {inspectorMode === 'context' && activeReference && (
-                      <Tooltip label={t('Clear active source reference')}>
-                        <ActionIcon
-                          variant="subtle"
-                          size="sm"
-                          onClick={() => setActiveReference(null)}
-                        >
-                          <X size={14} />
-                        </ActionIcon>
+                      <Tooltip
+                        label={selectedInspectorLabel}
+                        disabled={!selectedEntry}
+                        position="bottom"
+                      >
+                        <Text size="xs" c="dimmed" maw="58%" ta="right" truncate="end">
+                          {selectedInspectorLabel}
+                        </Text>
                       </Tooltip>
-                    )}
-                  </Group>
+                    </Group>
 
-                  <Divider />
+                    <Group justify="space-between" align="center">
+                      <SegmentedControl
+                        size="xs"
+                        value={inspectorMode}
+                        onChange={(value) => setInspectorMode(value as 'context' | 'browse')}
+                        data={[
+                          { label: t('Context'), value: 'context' },
+                          { label: t('Browse'), value: 'browse' },
+                        ]}
+                      />
 
-                  <Box style={{ flex: 1, minHeight: 0 }}>
-                    {inspectorMode === 'browse' ? (
-                      <Paper withBorder radius="md" style={{ overflow: 'hidden', height: '100%' }}>
-                        <SourceBrowser listingMaxHeight={420} viewerMaxHeight={420} />
-                      </Paper>
-                    ) : (
-                      <ScrollArea h="100%" type="auto" offsetScrollbars="y">
-                        {selectedEntry && selectedStatus ? (
-                          <Stack gap="sm">
-                            <Stack gap={6}>
-                              <Text size="xs" fw={600} c="dimmed">
-                                {t('Translation')}
-                              </Text>
-                              <TranslationCell
+                      {inspectorMode === 'context' && activeReference && (
+                        <Tooltip label={t('Clear active source reference')}>
+                          <ActionIcon
+                            variant="subtle"
+                            size="sm"
+                            onClick={() => setActiveReference(null)}
+                          >
+                            <X size={14} />
+                          </ActionIcon>
+                        </Tooltip>
+                      )}
+                    </Group>
+
+                    <Divider />
+
+                    <Box style={{ flex: 1, minHeight: 0 }}>
+                      {inspectorMode === 'browse' ? (
+                        <Paper
+                          withBorder
+                          radius="md"
+                          style={{ overflow: 'hidden', height: '100%' }}
+                        >
+                          <SourceBrowser listingMaxHeight={420} viewerMaxHeight={420} />
+                        </Paper>
+                      ) : (
+                        <ScrollArea h="100%" type="auto" offsetScrollbars="y">
+                          {selectedEntry && selectedStatus ? (
+                            <Stack gap="sm">
+                              <Stack gap={6}>
+                                <Text size="xs" fw={600} c="dimmed">
+                                  {t('Translation')}
+                                </Text>
+                                <TranslationCell
+                                  entry={selectedEntry}
+                                  onKeyDown={handleKeyDown}
+                                  translateButtonSize="md"
+                                  translateButtonDisplay="icon"
+                                />
+                              </Stack>
+
+                              <Divider />
+
+                              <EntryDetailsPanel
                                 entry={selectedEntry}
-                                onKeyDown={handleKeyDown}
-                                translateButtonSize="md"
-                                translateButtonDisplay="icon"
+                                status={selectedStatus}
+                                isModified={selectedIsModified}
+                                isMT={selectedIsMT}
+                                isManualEdit={selectedIsManualEdit}
+                                hasGlossaryTerms={selectedHasGlossaryTerms}
+                                qaReport={selectedQaReport}
+                                reviewEntry={
+                                  selectedReviewEntry ?? {
+                                    status: 'draft',
+                                    comments: [],
+                                    history: [],
+                                  }
+                                }
+                                translationMemoryScope={translationMemoryScope}
+                                onActivateReference={handleInspectorReference}
+                                mode={mode}
                               />
                             </Stack>
-
-                            <Divider />
-
-                            <EntryDetailsPanel
-                              entry={selectedEntry}
-                              status={selectedStatus}
-                              isModified={selectedIsModified}
-                              isMT={selectedIsMT}
-                              isManualEdit={selectedIsManualEdit}
-                              hasGlossaryTerms={selectedHasGlossaryTerms}
-                              qaReport={selectedQaReport}
-                              reviewEntry={
-                                selectedReviewEntry ?? {
-                                  status: 'draft',
-                                  comments: [],
-                                  history: [],
-                                }
-                              }
-                              translationMemoryScope={translationMemoryScope}
-                              onActivateReference={handleInspectorReference}
-                              mode={mode}
-                            />
-                          </Stack>
-                        ) : (
-                          <Text size="sm" c="dimmed">
-                            {t('Select a row to inspect context and metadata.')}
-                          </Text>
-                        )}
-                      </ScrollArea>
-                    )}
-                  </Box>
-                </Stack>
-              </Paper>
+                          ) : (
+                            <Text size="sm" c="dimmed">
+                              {t('Select a row to inspect context and metadata.')}
+                            </Text>
+                          )}
+                        </ScrollArea>
+                      )}
+                    </Box>
+                  </Stack>
+                </Paper>
+              </Box>
             </Box>
-          </Box>
 
-          {/* Pagination controls */}
-          {filteredEntries.length > 0 && (
-            <Group justify="space-between" align="center" mt="xs" wrap="wrap">
-              <Group gap="sm">
-                <Select
-                  value={rowsPerPage}
-                  onChange={(value) => value && setRowsPerPage(value)}
-                  data={ROWS_PER_PAGE_OPTIONS.map((opt) => ({ ...opt, label: t(opt.label) }))}
-                  size="xs"
-                  w={120}
-                  aria-label={t('Rows per page')}
-                />
-                {!isMobile && (
-                  <Text size="sm" c="dimmed">
-                    {t('Showing {{start}}–{{end}} of {{total}} entries', {
-                      start: startItem,
-                      end: endItem,
-                      total: filteredEntries.length,
-                    })}
-                  </Text>
+            {/* Pagination controls */}
+            {filteredEntries.length > 0 && (
+              <Group justify="space-between" align="center" mt="xs" wrap="wrap">
+                <Group gap="sm">
+                  <Select
+                    value={rowsPerPage}
+                    onChange={(value) => value && setRowsPerPage(value)}
+                    data={ROWS_PER_PAGE_OPTIONS.map((opt) => ({ ...opt, label: t(opt.label) }))}
+                    size="xs"
+                    w={120}
+                    aria-label={t('Rows per page')}
+                  />
+                  {!isMobile && (
+                    <Text size="sm" c="dimmed">
+                      {t('Showing {{start}}–{{end}} of {{total}} entries', {
+                        start: startItem,
+                        end: endItem,
+                        total: filteredEntries.length,
+                      })}
+                    </Text>
+                  )}
+                </Group>
+
+                {totalPages > 1 && (
+                  <Pagination
+                    value={currentPage}
+                    onChange={setCurrentPage}
+                    total={totalPages}
+                    size={isMobile ? 'xs' : 'sm'}
+                    withEdges
+                  />
                 )}
               </Group>
-
-              {totalPages > 1 && (
-                <Pagination
-                  value={currentPage}
-                  onChange={setCurrentPage}
-                  total={totalPages}
-                  size={isMobile ? 'xs' : 'sm'}
-                  withEdges
-                />
-              )}
-            </Group>
-          )}
-        </Stack>
-      )}
-
-      {/* Empty state for filtered results */}
-      {filteredEntries.length === 0 && entries.length > 0 && (
-        <Paper p="xl" withBorder radius="md" mt="md">
-          <Stack align="center" gap="sm">
-            <Text c="dimmed" ta="center">
-              {t('No entries match the current filters.')}
-            </Text>
-            <Text size="sm" c="dimmed">
-              {t('Try adjusting your search or clearing some filters.')}
-            </Text>
+            )}
           </Stack>
-        </Paper>
-      )}
-    </TranslateSettingsContext.Provider>
+        )}
+
+        {/* Empty state for filtered results */}
+        {filteredEntries.length === 0 && entries.length > 0 && (
+          <Paper p="xl" withBorder radius="md" mt="md">
+            <Stack align="center" gap="sm">
+              <Text c="dimmed" ta="center">
+                {t('No entries match the current filters.')}
+              </Text>
+              <Text size="sm" c="dimmed">
+                {t('Try adjusting your search or clearing some filters.')}
+              </Text>
+            </Stack>
+          </Paper>
+        )}
+      </TranslateSettingsContext.Provider>
+    </RealtimeBroadcastContext.Provider>
   );
 }

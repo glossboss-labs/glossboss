@@ -55,6 +55,14 @@ export interface EditorWorkspaceProps {
   sourceLang?: SourceLanguage;
   speechEnabled: boolean;
   onEntrySelect: (sourceText: string) => void;
+
+  /** Broadcast callback for realtime entry updates (cloud editor only). */
+  broadcastEntryUpdate?: (event: {
+    entryId: string;
+    msgstr?: string;
+    msgstrPlural?: string[];
+    flags?: string[];
+  }) => void;
 }
 
 export function EditorWorkspace({
@@ -75,6 +83,7 @@ export function EditorWorkspace({
   sourceLang,
   speechEnabled,
   onEntrySelect,
+  broadcastEntryUpdate,
 }: EditorWorkspaceProps) {
   const { t } = useTranslation();
 
@@ -157,6 +166,7 @@ export function EditorWorkspace({
           speechEnabled={speechEnabled}
           translateEnabled={translateEnabled}
           mode={workspaceMode}
+          broadcastEntryUpdate={broadcastEntryUpdate}
         />
       </MotionDiv>
     </>

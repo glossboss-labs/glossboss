@@ -18,23 +18,23 @@ msgstr "...en nog {{count}} waarschuwingen"
 msgid "1 language"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:117
+#: src/components/editor/EditorTable.tsx:119
 msgid "100 rows"
 msgstr "100 rijen"
 
-#: src/components/editor/EditorTable.tsx:115
+#: src/components/editor/EditorTable.tsx:117
 msgid "25 rows"
 msgstr "25 rijen"
 
-#: src/components/editor/EditorTable.tsx:118
+#: src/components/editor/EditorTable.tsx:120
 msgid "250 rows"
 msgstr "250 rijen"
 
-#: src/components/editor/EditorTable.tsx:116
+#: src/components/editor/EditorTable.tsx:118
 msgid "50 rows"
 msgstr "50 rijen"
 
-#: src/components/editor/EditorTable.tsx:119
+#: src/components/editor/EditorTable.tsx:121
 msgid "500 rows"
 msgstr "500 rijen"
 
@@ -70,7 +70,7 @@ msgid "Action"
 msgstr "Actie"
 
 #: src/components/AppHeader.tsx:218
-#: src/components/editor/EditorHeader.tsx:390
+#: src/components/editor/EditorHeader.tsx:385
 msgid "Actions"
 msgstr "Acties"
 
@@ -82,11 +82,11 @@ msgstr ""
 msgid "Add a member"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:1516
+#: src/components/editor/EditorTable.tsx:1545
 msgid "Add a review comment for this string"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:1532
+#: src/components/editor/EditorTable.tsx:1561
 msgid "Add comment"
 msgstr ""
 
@@ -96,7 +96,7 @@ msgstr ""
 msgid "Add language"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:1532
+#: src/components/editor/EditorTable.tsx:1561
 msgid "Add reply"
 msgstr ""
 
@@ -108,11 +108,11 @@ msgstr ""
 msgid "Add your {{provider}} credentials in Settings to enable translations."
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:1407
+#: src/components/editor/EditorTable.tsx:1436
 msgid "Added comment"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:1407
+#: src/components/editor/EditorTable.tsx:1436
 msgid "Added reply"
 msgstr ""
 
@@ -140,7 +140,7 @@ msgstr ""
 msgid "App settings"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:843
+#: src/components/editor/EditorTable.tsx:857
 msgid "Apply"
 msgstr ""
 
@@ -158,7 +158,7 @@ msgid ""
 "e and focus the resulting upstream delta entries."
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:1665
+#: src/components/editor/EditorTable.tsx:1694
 msgid "Approve"
 msgstr ""
 
@@ -166,11 +166,11 @@ msgstr ""
 msgid "Approve selected"
 msgstr "Selectie goedkeuren"
 
-#: src/components/editor/EditorTable.tsx:380
+#: src/components/editor/EditorTable.tsx:394
 msgid "Approved"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:1684
+#: src/components/editor/EditorTable.tsx:1713
 msgid "Approved strings stay read-only until they are unapproved."
 msgstr ""
 
@@ -265,7 +265,7 @@ msgstr ""
 #: src/pages/Invite.tsx:98
 #: src/pages/OrgSettings.tsx:276
 #: src/pages/ProjectDetail.tsx:275
-#: src/pages/ProjectEditor.tsx:179
+#: src/pages/ProjectEditor.tsx:180
 #: src/pages/ProjectInvite.tsx:100
 msgid "Back to dashboard"
 msgstr ""
@@ -284,7 +284,7 @@ msgid "Back to sign in"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:1326
-#: src/components/editor/EditorHeader.tsx:256
+#: src/components/editor/EditorHeader.tsx:252
 msgid "Backup"
 msgstr "Back-up"
 
@@ -320,7 +320,7 @@ msgstr ""
 msgid "Branch:"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:3156
+#: src/components/editor/EditorTable.tsx:3207
 #: src/components/projects/AddLanguageModal.tsx:363
 #: src/components/projects/CreateProjectModal.tsx:380
 #: src/components/repo-sync/RepoSyncModal.tsx:578
@@ -353,7 +353,7 @@ msgstr "Bug"
 msgid "Bulgarian"
 msgstr "Bulgaars"
 
-#: src/components/editor/EditorTable.tsx:1593
+#: src/components/editor/EditorTable.tsx:1622
 msgid "By {{actor}}"
 msgstr ""
 
@@ -377,7 +377,7 @@ msgstr "Aangepaste invoer annuleren"
 msgid "Cancel edit"
 msgstr "Bewerking annuleren"
 
-#: src/components/editor/EditorTable.tsx:1536
+#: src/components/editor/EditorTable.tsx:1565
 msgid "Cancel reply"
 msgstr ""
 
@@ -389,7 +389,7 @@ msgstr "Catalaans"
 msgid "Change file"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:1717
+#: src/components/editor/EditorTable.tsx:1746
 msgid "Change history"
 msgstr ""
 
@@ -397,7 +397,7 @@ msgstr ""
 msgid "Change role"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:1402
+#: src/components/editor/EditorTable.tsx:1431
 msgid "Changed review status from {{from}} to {{to}}"
 msgstr ""
 
@@ -486,7 +486,7 @@ msgstr "Wissen"
 msgid "Clear Fuzzy ({{count}})"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:3161
+#: src/components/editor/EditorTable.tsx:3212
 msgid "Clear active source reference"
 msgstr "Actieve bronverwijzing wissen"
 
@@ -495,7 +495,7 @@ msgid "Clear anyway"
 msgstr "Toch wissen"
 
 #: src/components/AppHeader.tsx:226
-#: src/components/editor/EditorHeader.tsx:406
+#: src/components/editor/EditorHeader.tsx:401
 msgid "Clear editor"
 msgstr "Editor wissen"
 
@@ -507,7 +507,7 @@ msgstr "Editor wissen?"
 msgid "Clear filters"
 msgstr "Filters wissen"
 
-#: src/components/editor/EditorTable.tsx:1701
+#: src/components/editor/EditorTable.tsx:1730
 msgid "Clear fuzzy flag"
 msgstr ""
 
@@ -539,7 +539,7 @@ msgstr ""
 msgid "Cleared translation memory for this project."
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:400
+#: src/components/editor/EditorTable.tsx:414
 msgid "Click to add translation"
 msgstr "Klik om een vertaling toe te voegen"
 
@@ -581,7 +581,7 @@ msgstr "Instellingen sluiten"
 msgid "Columns"
 msgstr "Kolommen"
 
-#: src/components/editor/EditorTable.tsx:1708
+#: src/components/editor/EditorTable.tsx:1737
 msgid "Comments"
 msgstr ""
 
@@ -648,7 +648,7 @@ msgstr "Contact (optioneel)"
 msgid "Container width"
 msgstr "Containerbreedte"
 
-#: src/components/editor/EditorTable.tsx:1230
+#: src/components/editor/EditorTable.tsx:1259
 msgid "Contains glossary terms"
 msgstr "Bevat glossarytermen"
 
@@ -656,18 +656,18 @@ msgstr "Bevat glossarytermen"
 msgid "Content Type"
 msgstr "Inhoudstype"
 
-#: src/components/editor/EditorTable.tsx:1827
-#: src/components/editor/EditorTable.tsx:3155
+#: src/components/editor/EditorTable.tsx:1856
+#: src/components/editor/EditorTable.tsx:3206
 msgid "Context"
 msgstr "Context"
 
 #: src/components/repo-sync/RepoSyncModal.tsx:178
-#: src/pages/auth/Login.tsx:89
+#: src/pages/auth/Login.tsx:88
 #: src/pages/auth/Signup.tsx:98
 msgid "Continue with GitHub"
 msgstr ""
 
-#: src/pages/auth/Login.tsx:126
+#: src/pages/auth/Login.tsx:129
 msgid "Continue without account"
 msgstr ""
 
@@ -748,7 +748,7 @@ msgstr ""
 msgid "Create new branch"
 msgstr ""
 
-#: src/pages/auth/Login.tsx:78
+#: src/pages/auth/Login.tsx:77
 msgid "Create one"
 msgstr ""
 
@@ -779,8 +779,8 @@ msgstr ""
 msgid "Croatian"
 msgstr "Kroatisch"
 
-#: src/components/editor/EditorTable.tsx:1439
-#: src/components/editor/EditorTable.tsx:1593
+#: src/components/editor/EditorTable.tsx:1468
+#: src/components/editor/EditorTable.tsx:1622
 #: src/components/editor/ReviewSummary.tsx:26
 #: src/lib/review/index.ts:50
 msgid "Current editor"
@@ -824,7 +824,7 @@ msgstr "Deens"
 #: src/components/AppHeader.tsx:63
 #: src/components/AppHeader.tsx:204
 #: src/components/editor/EditorHeader.tsx:62
-#: src/components/editor/EditorHeader.tsx:381
+#: src/components/editor/EditorHeader.tsx:376
 msgid "Dark mode"
 msgstr "Donkere modus"
 
@@ -889,7 +889,7 @@ msgstr "Beschrijf wat je hebt gezien"
 msgid "Description"
 msgstr "Beschrijving"
 
-#: src/components/editor/EditorTable.tsx:2341
+#: src/components/editor/EditorTable.tsx:2378
 msgid "Details"
 msgstr "Details"
 
@@ -928,19 +928,19 @@ msgstr "Wijzigingen weggooien en huidig veld verlaten"
 msgid "Display"
 msgstr "Weergave"
 
-#: src/pages/auth/Login.tsx:76
+#: src/pages/auth/Login.tsx:75
 msgid "Don't have an account?"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:241
+#: src/components/editor/EditorHeader.tsx:237
 msgid "Download as JSON"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:235
+#: src/components/editor/EditorHeader.tsx:231
 msgid "Download as PO"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:378
+#: src/components/editor/EditorTable.tsx:392
 msgid "Draft"
 msgstr ""
 
@@ -974,7 +974,7 @@ msgstr "Nederlands (België)"
 msgid "Dutch (Netherlands)"
 msgstr "Nederlands (Nederland)"
 
-#: src/components/editor/EditorWorkspace.tsx:110
+#: src/components/editor/EditorWorkspace.tsx:119
 msgid "Edit"
 msgstr ""
 
@@ -987,7 +987,7 @@ msgstr "Header bewerken"
 msgid "Edit gettext translation files with DeepL integration"
 msgstr "Bewerk gettext-vertaalbestanden met DeepL-integratie"
 
-#: src/components/editor/EditorWorkspace.tsx:103
+#: src/components/editor/EditorWorkspace.tsx:112
 msgid "Edit workspace"
 msgstr ""
 
@@ -1025,7 +1025,7 @@ msgstr ""
 
 #: src/components/feedback/FeedbackModal.tsx:424
 #: src/pages/auth/ForgotPassword.tsx:85
-#: src/pages/auth/Login.tsx:103
+#: src/pages/auth/Login.tsx:102
 #: src/pages/auth/Signup.tsx:112
 msgid "Email"
 msgstr "E-mail"
@@ -1036,8 +1036,8 @@ msgstr "E-mail"
 msgid "Email address"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:851
-#: src/components/editor/EditorTable.tsx:857
+#: src/components/editor/EditorTable.tsx:865
+#: src/components/editor/EditorTable.tsx:871
 msgid "Empty"
 msgstr ""
 
@@ -1126,7 +1126,7 @@ msgstr ""
 msgid "Enter {{field}}..."
 msgstr "Voer {{field}} in..."
 
-#: src/components/editor/EditorTable.tsx:752
+#: src/components/editor/EditorTable.tsx:766
 msgid "Error"
 msgstr ""
 
@@ -1141,7 +1141,7 @@ msgstr "Fout: {{error}}. Klik om opnieuw te proberen."
 msgid "Estonian"
 msgstr "Ests"
 
-#: src/components/editor/EditorTable.tsx:826
+#: src/components/editor/EditorTable.tsx:840
 msgid "Exact match"
 msgstr ""
 
@@ -1211,7 +1211,7 @@ msgid ""
 "clude them."
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:1962
+#: src/components/editor/EditorTable.tsx:1991
 msgid "Extracted comments"
 msgstr "Geëxtraheerde opmerkingen"
 
@@ -1315,7 +1315,7 @@ msgid "Failed to load organization"
 msgstr ""
 
 #: src/pages/ProjectDetail.tsx:187
-#: src/pages/ProjectEditor.tsx:142
+#: src/pages/ProjectEditor.tsx:143
 msgid "Failed to load project"
 msgstr ""
 
@@ -1391,7 +1391,7 @@ msgid "Feature"
 msgstr "Functie"
 
 #: src/components/AppHeader.tsx:153
-#: src/components/editor/EditorHeader.tsx:331
+#: src/components/editor/EditorHeader.tsx:326
 msgid "Feedback"
 msgstr "Feedback"
 
@@ -1415,7 +1415,7 @@ msgstr "Feedback ingediend"
 msgid "Feedback verification is not configured."
 msgstr "Feedbackverificatie is niet ingesteld."
 
-#: src/components/editor/EditorHeader.tsx:197
+#: src/components/editor/EditorHeader.tsx:198
 msgid "File"
 msgstr ""
 
@@ -1449,7 +1449,7 @@ msgstr ""
 msgid "Finnish"
 msgstr "Fins"
 
-#: src/components/editor/EditorTable.tsx:1985
+#: src/components/editor/EditorTable.tsx:2014
 msgid "Flags"
 msgstr "Vlaggen"
 
@@ -1457,7 +1457,7 @@ msgstr "Vlaggen"
 msgid "Force recreate glossary on {{provider}}"
 msgstr ""
 
-#: src/pages/auth/Login.tsx:123
+#: src/pages/auth/Login.tsx:121
 msgid "Forgot password?"
 msgstr ""
 
@@ -1516,12 +1516,12 @@ msgstr "Frans, Portugees (Brazilië)"
 msgid "From"
 msgstr "Van"
 
-#: src/components/editor/EditorTable.tsx:367
+#: src/components/editor/EditorTable.tsx:381
 #: src/components/editor/FilterToolbar.tsx:77
 msgid "Fuzzy"
 msgstr "Fuzzy"
 
-#: src/components/editor/EditorTable.tsx:826
+#: src/components/editor/EditorTable.tsx:840
 msgid "Fuzzy match"
 msgstr ""
 
@@ -1587,12 +1587,12 @@ msgid ""
 msgstr ""
 
 #: src/components/AppHeader.tsx:232
-#: src/components/editor/EditorHeader.tsx:409
+#: src/components/editor/EditorHeader.tsx:404
 msgid "GlossBoss v{version}"
 msgstr "GlossBoss v{version}"
 
 #: src/components/SettingsModal.tsx:1317
-#: src/components/editor/EditorTable.tsx:1232
+#: src/components/editor/EditorTable.tsx:1261
 #: src/components/editor/GlossaryPanel.tsx:306
 msgid "Glossary"
 msgstr "Glossary"
@@ -1639,7 +1639,7 @@ msgid ""
 "ement"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:1804
+#: src/components/editor/EditorTable.tsx:1833
 msgid "Glossary match"
 msgstr "Glossary-overeenkomst"
 
@@ -1659,7 +1659,7 @@ msgstr ""
 "Glossary niet gevonden in DeepL. Deze vertaling is gedaan zonder glossary. O"
 "pnieuw synchroniseren in Instellingen wordt aanbevolen."
 
-#: src/components/editor/EditorWorkspace.tsx:131
+#: src/components/editor/EditorWorkspace.tsx:140
 msgid "Glossary: {count} terms ({locale})"
 msgstr "Glossary: {count} termen ({locale})"
 
@@ -1698,7 +1698,7 @@ msgstr "Hebreeuws"
 msgid "Hide Header"
 msgstr "Header verbergen"
 
-#: src/components/editor/EditorTable.tsx:2972
+#: src/components/editor/EditorTable.tsx:3023
 msgid "Hide info"
 msgstr "Info verbergen"
 
@@ -1760,7 +1760,7 @@ msgstr "Instellingen importeren"
 msgid "Imported {{count}} translation memory entries."
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:379
+#: src/components/editor/EditorTable.tsx:393
 msgid "In review"
 msgstr ""
 
@@ -1899,7 +1899,7 @@ msgstr "Vertaalteam"
 msgid "Language code"
 msgstr "Taalcode"
 
-#: src/pages/ProjectEditor.tsx:75
+#: src/pages/ProjectEditor.tsx:76
 msgid "Language not found"
 msgstr ""
 
@@ -1953,14 +1953,14 @@ msgid "Leave this project"
 msgstr ""
 
 #: src/components/AppHeader.tsx:249
-#: src/components/editor/EditorHeader.tsx:426
+#: src/components/editor/EditorHeader.tsx:421
 msgid "License"
 msgstr "Licentie"
 
 #: src/components/AppHeader.tsx:63
 #: src/components/AppHeader.tsx:204
 #: src/components/editor/EditorHeader.tsx:62
-#: src/components/editor/EditorHeader.tsx:381
+#: src/components/editor/EditorHeader.tsx:376
 msgid "Light mode"
 msgstr "Lichte modus"
 
@@ -1968,8 +1968,8 @@ msgstr "Lichte modus"
 msgid "Line {line}"
 msgstr "Regel {line}"
 
-#: src/components/editor/EditorTable.tsx:1819
-#: src/components/editor/EditorTable.tsx:2933
+#: src/components/editor/EditorTable.tsx:1848
+#: src/components/editor/EditorTable.tsx:2983
 msgid "Line {{lineNumber}}"
 msgstr "Regel {{lineNumber}}"
 
@@ -1997,7 +1997,7 @@ msgstr "Laden"
 msgid "Load Glossary"
 msgstr "Glossary laden"
 
-#: src/components/editor/EditorTable.tsx:801
+#: src/components/editor/EditorTable.tsx:815
 msgid "Load a file with a target language before using translation memory."
 msgstr ""
 
@@ -2025,7 +2025,7 @@ msgstr ""
 msgid "Load example PO"
 msgstr "Voorbeeld-PO laden"
 
-#: src/components/editor/EditorHeader.tsx:392
+#: src/components/editor/EditorHeader.tsx:387
 #: src/pages/index/IndexPageDialogs.tsx:212
 msgid "Load from URL"
 msgstr ""
@@ -2059,7 +2059,7 @@ msgstr ""
 msgid "Loading releases..."
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:2021
+#: src/components/editor/EditorTable.tsx:2050
 msgid "Loading source..."
 msgstr "Bron laden..."
 
@@ -2081,19 +2081,23 @@ msgstr ""
 msgid "Lock approved strings"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:1110
-#: src/components/editor/EditorTable.tsx:1197
-#: src/components/editor/EditorTable.tsx:1648
+#: src/components/editor/EditorTable.tsx:1139
+#: src/components/editor/EditorTable.tsx:1226
+#: src/components/editor/EditorTable.tsx:1677
 msgid "Locked"
+msgstr ""
+
+#: src/components/editor/CellLockIndicator.tsx:40
+msgid "Locked by {{name}}"
 msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:259
 msgid "MIME Version"
 msgstr "MIME-versie"
 
-#: src/components/editor/EditorTable.tsx:703
-#: src/components/editor/EditorTable.tsx:1050
-#: src/components/editor/EditorTable.tsx:1129
+#: src/components/editor/EditorTable.tsx:717
+#: src/components/editor/EditorTable.tsx:1078
+#: src/components/editor/EditorTable.tsx:1158
 msgid "MT + Glossary"
 msgstr "AV + Glossary"
 
@@ -2105,24 +2109,24 @@ msgstr "Macedonisch"
 msgid "Machine Translation"
 msgstr "Automatische vertaling"
 
-#: src/components/editor/EditorTable.tsx:703
-#: src/components/editor/EditorTable.tsx:1050
-#: src/components/editor/EditorTable.tsx:1129
-#: src/components/editor/EditorTable.tsx:1238
-#: src/components/editor/EditorTable.tsx:1799
+#: src/components/editor/EditorTable.tsx:717
+#: src/components/editor/EditorTable.tsx:1078
+#: src/components/editor/EditorTable.tsx:1158
+#: src/components/editor/EditorTable.tsx:1267
+#: src/components/editor/EditorTable.tsx:1828
 #: src/components/editor/FilterToolbar.tsx:483
 msgid "Machine translated"
 msgstr "Automatisch vertaald"
 
-#: src/components/editor/EditorTable.tsx:694
-#: src/components/editor/EditorTable.tsx:1041
-#: src/components/editor/EditorTable.tsx:1120
+#: src/components/editor/EditorTable.tsx:708
+#: src/components/editor/EditorTable.tsx:1069
+#: src/components/editor/EditorTable.tsx:1149
 msgid "Machine translated by {{provider}}"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:693
-#: src/components/editor/EditorTable.tsx:1038
-#: src/components/editor/EditorTable.tsx:1117
+#: src/components/editor/EditorTable.tsx:707
+#: src/components/editor/EditorTable.tsx:1066
+#: src/components/editor/EditorTable.tsx:1146
 msgid "Machine translated with glossary by {{provider}}"
 msgstr ""
 
@@ -2152,11 +2156,11 @@ msgid ""
 " into the active project scope."
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:1224
+#: src/components/editor/EditorTable.tsx:1253
 msgid "Manual"
 msgstr "Handmatig"
 
-#: src/components/editor/EditorTable.tsx:1794
+#: src/components/editor/EditorTable.tsx:1823
 msgid "Manual edit"
 msgstr "Handmatige bewerking"
 
@@ -2164,7 +2168,7 @@ msgstr "Handmatige bewerking"
 msgid "Manual edits"
 msgstr "Handmatige bewerkingen"
 
-#: src/components/editor/EditorTable.tsx:1216
+#: src/components/editor/EditorTable.tsx:1245
 msgid "Manually edited - protected from bulk translation"
 msgstr "Handmatig bewerkt — beschermd tegen bulkvertaling"
 
@@ -2176,7 +2180,7 @@ msgstr "Marathi"
 msgid "Mark Fuzzy ({{count}})"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:1701
+#: src/components/editor/EditorTable.tsx:1730
 msgid "Mark as fuzzy"
 msgstr "Markeren als fuzzy"
 
@@ -2206,13 +2210,13 @@ msgstr ""
 msgid "Model"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:1210
-#: src/components/editor/EditorTable.tsx:1789
+#: src/components/editor/EditorTable.tsx:1239
+#: src/components/editor/EditorTable.tsx:1818
 #: src/components/editor/FilterToolbar.tsx:78
 msgid "Modified"
 msgstr "Gewijzigd"
 
-#: src/components/editor/EditorTable.tsx:1202
+#: src/components/editor/EditorTable.tsx:1231
 msgid "Modified this session"
 msgstr "Deze sessie gewijzigd"
 
@@ -2220,7 +2224,7 @@ msgstr "Deze sessie gewijzigd"
 msgid "Mongolian"
 msgstr "Mongools"
 
-#: src/components/editor/EditorTable.tsx:2972
+#: src/components/editor/EditorTable.tsx:3023
 msgid "More info"
 msgstr "Meer info"
 
@@ -2258,7 +2262,7 @@ msgstr "Naam en e-mail van de laatste vertaler"
 msgid "Navigation Settings"
 msgstr "Navigatie-instellingen"
 
-#: src/components/editor/EditorTable.tsx:381
+#: src/components/editor/EditorTable.tsx:395
 msgid "Needs changes"
 msgstr ""
 
@@ -2305,7 +2309,7 @@ msgstr "Volgend veld"
 msgid "No POT template was found for the selected release."
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:733
+#: src/components/editor/EditorTable.tsx:747
 msgid "No QA issues for this string."
 msgstr ""
 
@@ -2321,11 +2325,11 @@ msgstr ""
 msgid "No additional metadata fields"
 msgstr "Geen extra metadatavelden"
 
-#: src/components/editor/EditorTable.tsx:1830
+#: src/components/editor/EditorTable.tsx:1859
 msgid "No context"
 msgstr "Geen context"
 
-#: src/components/editor/EditorTable.tsx:3273
+#: src/components/editor/EditorTable.tsx:3328
 msgid "No entries match the current filters."
 msgstr "Geen items komen overeen met de huidige filters."
 
@@ -2407,11 +2411,11 @@ msgstr ""
 msgid "No repositories found"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:1543
+#: src/components/editor/EditorTable.tsx:1572
 msgid "No review comments yet."
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:1574
+#: src/components/editor/EditorTable.tsx:1603
 msgid "No review history yet."
 msgstr ""
 
@@ -2423,11 +2427,11 @@ msgstr ""
 msgid "No selected rows available to mark as fuzzy."
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:2930
+#: src/components/editor/EditorTable.tsx:2980
 msgid "No selection"
 msgstr "Geen selectie"
 
-#: src/components/editor/EditorTable.tsx:1869
+#: src/components/editor/EditorTable.tsx:1898
 msgid "No source references"
 msgstr "Geen bronverwijzingen"
 
@@ -2443,12 +2447,12 @@ msgstr "Geen tekst om af te spelen."
 msgid "No translation memory entries are stored for this project yet."
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:809
+#: src/components/editor/EditorTable.tsx:823
 msgid "No translation memory suggestions yet."
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:1955
-#: src/components/editor/EditorTable.tsx:1974
+#: src/components/editor/EditorTable.tsx:1984
+#: src/components/editor/EditorTable.tsx:2003
 msgid "None"
 msgstr "Geen"
 
@@ -2506,20 +2510,20 @@ msgstr ""
 msgid "Open a locale file from a GitHub or GitLab repository"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:395
+#: src/components/editor/EditorHeader.tsx:390
 #: src/components/editor/EmptyState.tsx:140
 #: src/components/editor/WordPressProjectModal.tsx:291
 #: src/components/projects/CreateProjectModal.tsx:394
 msgid "Open from WordPress.org"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:403
+#: src/components/editor/EditorHeader.tsx:398
 #: src/components/editor/EmptyState.tsx:152
 #: src/components/projects/CreateProjectModal.tsx:419
 msgid "Open from repository"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:1898
+#: src/components/editor/EditorTable.tsx:1927
 #: src/components/editor/SourceCodeViewer.tsx:179
 #: src/components/editor/SourceCodeViewer.tsx:187
 msgid "Open in Trac"
@@ -2538,7 +2542,7 @@ msgid "Open project"
 msgstr ""
 
 #: src/components/AppHeader.tsx:213
-#: src/components/editor/EditorHeader.tsx:387
+#: src/components/editor/EditorHeader.tsx:382
 msgid "Open settings"
 msgstr "Instellingen openen"
 
@@ -2596,7 +2600,7 @@ msgstr ""
 msgid "PR title"
 msgstr ""
 
-#: src/pages/auth/Login.tsx:113
+#: src/pages/auth/Login.tsx:112
 #: src/pages/auth/Signup.tsx:122
 msgid "Password"
 msgstr ""
@@ -2709,7 +2713,7 @@ msgstr ""
 msgid "Plural Forms"
 msgstr "Meervoudsvormen"
 
-#: src/components/editor/EditorTable.tsx:1733
+#: src/components/editor/EditorTable.tsx:1762
 msgid "Plural entry: {{completed}}/{{total}} forms translated"
 msgstr "Meervoudig item: {{completed}}/{{total}} vormen vertaald"
 
@@ -2717,11 +2721,11 @@ msgstr "Meervoudig item: {{completed}}/{{total}} vormen vertaald"
 msgid "Plural form preset"
 msgstr "Voorinstelling meervoudsvorm"
 
-#: src/components/editor/EditorTable.tsx:995
+#: src/components/editor/EditorTable.tsx:1023
 msgid "Plural form {{index}}"
 msgstr "Meervoudsvorm {{index}}"
 
-#: src/components/editor/EditorTable.tsx:851
+#: src/components/editor/EditorTable.tsx:865
 msgid "Plural {{index}}: {{value}}"
 msgstr ""
 
@@ -2767,7 +2771,7 @@ msgid "Previous field"
 msgstr "Vorig veld"
 
 #: src/components/AppHeader.tsx:267
-#: src/components/editor/EditorHeader.tsx:444
+#: src/components/editor/EditorHeader.tsx:439
 #: src/components/feedback/FeedbackModal.tsx:417
 msgid "Privacy"
 msgstr "Privacy"
@@ -2826,8 +2830,8 @@ msgstr "Projectnaam en versie"
 
 #: src/pages/ProjectDetail.tsx:176
 #: src/pages/ProjectDetail.tsx:272
-#: src/pages/ProjectEditor.tsx:69
-#: src/pages/ProjectEditor.tsx:176
+#: src/pages/ProjectEditor.tsx:70
+#: src/pages/ProjectEditor.tsx:177
 msgid "Project not found"
 msgstr ""
 
@@ -2845,8 +2849,8 @@ msgstr ""
 
 #: src/components/AppHeader.tsx:162
 #: src/components/AppHeader.tsx:169
-#: src/components/editor/EditorHeader.tsx:341
-#: src/components/editor/EditorHeader.tsx:348
+#: src/components/editor/EditorHeader.tsx:336
+#: src/components/editor/EditorHeader.tsx:343
 #: src/pages/Dashboard.tsx:99
 #: src/pages/OrgSettings.tsx:334
 #: src/pages/ProjectDetail.tsx:304
@@ -2886,7 +2890,7 @@ msgstr ""
 msgid "Punjabi"
 msgstr "Punjabi"
 
-#: src/components/editor/EditorHeader.tsx:287
+#: src/components/editor/EditorHeader.tsx:282
 #: src/components/repo-sync/RepoSyncModal.tsx:582
 msgid "Push"
 msgstr ""
@@ -2895,7 +2899,7 @@ msgstr ""
 msgid "Push changes to repository"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:276
+#: src/components/editor/EditorHeader.tsx:271
 msgid "Push changes to {{provider}}"
 msgstr ""
 
@@ -2907,7 +2911,7 @@ msgstr ""
 msgid "Push to a new branch instead of the default branch"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:1855
+#: src/components/editor/EditorTable.tsx:1884
 msgid "QA checks"
 msgstr ""
 
@@ -2940,7 +2944,7 @@ msgstr "Lees de vertaalhandleiding"
 msgid "Ready for export"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:1864
+#: src/components/editor/EditorTable.tsx:1893
 msgid "References"
 msgstr "Verwijzingen"
 
@@ -2950,7 +2954,7 @@ msgid "Refresh"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:2136
-#: src/components/editor/EditorHeader.tsx:399
+#: src/components/editor/EditorHeader.tsx:394
 #: src/components/editor/GlossaryPanel.tsx:338
 #: src/components/editor/GlossaryPanel.tsx:342
 #: src/components/editor/WordPressRefreshModal.tsx:198
@@ -3009,11 +3013,11 @@ msgstr ""
 msgid "Remove yourself from this project."
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:1455
+#: src/components/editor/EditorTable.tsx:1484
 msgid "Reopen"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:1411
+#: src/components/editor/EditorTable.tsx:1440
 msgid "Reopened comment"
 msgstr ""
 
@@ -3040,7 +3044,7 @@ msgstr "Huidig bestand vervangen?"
 msgid "Replace existing translation?"
 msgstr "Bestaande vertaling vervangen?"
 
-#: src/components/editor/EditorTable.tsx:1447
+#: src/components/editor/EditorTable.tsx:1476
 msgid "Reply"
 msgstr ""
 
@@ -3054,7 +3058,7 @@ msgid "Repository"
 msgstr ""
 
 #: src/components/AppHeader.tsx:221
-#: src/components/editor/EditorHeader.tsx:403
+#: src/components/editor/EditorHeader.tsx:398
 #: src/components/repo-sync/RepoSyncModal.tsx:567
 msgid "Repository sync"
 msgstr ""
@@ -3063,7 +3067,7 @@ msgstr ""
 msgid "Repository:"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:1677
+#: src/components/editor/EditorTable.tsx:1706
 msgid "Request changes"
 msgstr ""
 
@@ -3081,19 +3085,19 @@ msgstr ""
 msgid "Reset your password"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:3097
+#: src/components/editor/EditorTable.tsx:3148
 msgid "Resize inspector"
 msgstr "Inspecteur formaat wijzigen"
 
-#: src/components/editor/EditorTable.tsx:1455
+#: src/components/editor/EditorTable.tsx:1484
 msgid "Resolve"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:1466
+#: src/components/editor/EditorTable.tsx:1495
 msgid "Resolved by {{author}} on {{date}}"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:1409
+#: src/components/editor/EditorTable.tsx:1438
 msgid "Resolved comment"
 msgstr ""
 
@@ -3133,9 +3137,9 @@ msgstr "Opnieuw proberen"
 msgid "Retry translation"
 msgstr "Vertaling opnieuw proberen"
 
-#: src/components/editor/EditorTable.tsx:128
-#: src/components/editor/EditorTable.tsx:1931
-#: src/components/editor/EditorWorkspace.tsx:111
+#: src/components/editor/EditorTable.tsx:130
+#: src/components/editor/EditorTable.tsx:1960
+#: src/components/editor/EditorWorkspace.tsx:120
 #: src/components/editor/FilterToolbar.tsx:311
 msgid "Review"
 msgstr ""
@@ -3152,7 +3156,7 @@ msgstr ""
 msgid "Review workflow"
 msgstr ""
 
-#: src/components/editor/EditorWorkspace.tsx:103
+#: src/components/editor/EditorWorkspace.tsx:112
 msgid "Review workspace"
 msgstr ""
 
@@ -3183,7 +3187,7 @@ msgstr ""
 msgid "Romanian"
 msgstr "Roemeens"
 
-#: src/components/editor/EditorTable.tsx:3241
+#: src/components/editor/EditorTable.tsx:3296
 msgid "Rows per page"
 msgstr "Rijen per pagina"
 
@@ -3225,11 +3229,11 @@ msgstr "Huidig veld opslaan en naar volgend vertaalveld gaan"
 msgid "Save current field and move to the previous translation field"
 msgstr "Huidig veld opslaan en naar vorig vertaalveld gaan"
 
-#: src/components/editor/EditorHeader.tsx:303
+#: src/components/editor/EditorHeader.tsx:298
 msgid "Save this file as a cloud project"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:312
+#: src/components/editor/EditorHeader.tsx:307
 #: src/components/projects/SaveToCloudModal.tsx:120
 #: src/components/projects/SaveToCloudModal.tsx:166
 msgid "Save to cloud"
@@ -3272,7 +3276,7 @@ msgstr ""
 msgid "Select a locale"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:2013
+#: src/components/editor/EditorTable.tsx:2042
 msgid "Select a reference above to load source context."
 msgstr "Selecteer een referentie hierboven om de broncontext te laden."
 
@@ -3285,7 +3289,7 @@ msgstr ""
 msgid "Select a repository"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:3220
+#: src/components/editor/EditorTable.tsx:3275
 msgid "Select a row to inspect context and metadata."
 msgstr "Selecteer een rij om context en metadata te bekijken."
 
@@ -3293,7 +3297,7 @@ msgstr "Selecteer een rij om context en metadata te bekijken."
 msgid "Select all filtered"
 msgstr "Alle gefilterde selecteren"
 
-#: src/components/editor/EditorTable.tsx:3010
+#: src/components/editor/EditorTable.tsx:3061
 msgid "Select all filtered entries"
 msgstr "Alle gefilterde items selecteren"
 
@@ -3301,8 +3305,8 @@ msgstr "Alle gefilterde items selecteren"
 msgid "Select branch"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:2140
-#: src/components/editor/EditorTable.tsx:2316
+#: src/components/editor/EditorTable.tsx:2174
+#: src/components/editor/EditorTable.tsx:2353
 msgid "Select entry {{entry}}"
 msgstr ""
 
@@ -3331,7 +3335,7 @@ msgstr "Selecteer doel..."
 msgid "Selected provider: {{provider}}"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:2936
+#: src/components/editor/EditorTable.tsx:2986
 msgid "Selected string"
 msgstr "Geselecteerde tekst"
 
@@ -3356,7 +3360,7 @@ msgstr "Servisch (Latijn)"
 msgid "Session usage: {{count}} characters"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:2007
+#: src/components/editor/EditorTable.tsx:2036
 msgid "Set a WordPress project in Settings to enable source preview."
 msgstr ""
 
@@ -3374,7 +3378,7 @@ msgstr ""
 
 #: src/components/AppHeader.tsx:208
 #: src/components/SettingsModal.tsx:1284
-#: src/components/editor/EditorHeader.tsx:385
+#: src/components/editor/EditorHeader.tsx:380
 #: src/pages/OrgSettings.tsx:342
 #: src/pages/ProjectDetail.tsx:374
 msgid "Settings"
@@ -3382,8 +3386,8 @@ msgstr "Instellingen"
 
 #: src/components/AppHeader.tsx:180
 #: src/components/AppHeader.tsx:182
-#: src/components/editor/EditorHeader.tsx:360
-#: src/components/editor/EditorHeader.tsx:362
+#: src/components/editor/EditorHeader.tsx:355
+#: src/components/editor/EditorHeader.tsx:357
 msgid "Settings and actions"
 msgstr "Instellingen en acties"
 
@@ -3422,8 +3426,8 @@ msgstr "Feedback delen"
 
 #: src/components/AppHeader.tsx:146
 #: src/components/AppHeader.tsx:194
-#: src/components/editor/EditorHeader.tsx:324
-#: src/components/editor/EditorHeader.tsx:371
+#: src/components/editor/EditorHeader.tsx:319
+#: src/components/editor/EditorHeader.tsx:366
 msgid "Share feedback"
 msgstr "Feedback delen"
 
@@ -3471,19 +3475,19 @@ msgstr "Alleen {{label}} getoond • Klik om uit te sluiten"
 msgid "Showing {{shown}} of {{total}} terms"
 msgstr "{{shown}} van {{total}} termen getoond"
 
-#: src/components/editor/EditorTable.tsx:3245
+#: src/components/editor/EditorTable.tsx:3300
 msgid "Showing {{start}}–{{end}} of {{total}} entries"
 msgstr "{{start}}–{{end}} van {{total}} items"
 
 #: src/components/auth/UserMenu.tsx:24
 #: src/components/auth/UserMenu.tsx:31
 #: src/components/editor/EmptyState.tsx:188
-#: src/pages/auth/Login.tsx:131
+#: src/pages/auth/Login.tsx:125
 #: src/pages/auth/Signup.tsx:81
 msgid "Sign in"
 msgstr ""
 
-#: src/pages/auth/Login.tsx:73
+#: src/pages/auth/Login.tsx:72
 msgid "Sign in to GlossBoss"
 msgstr ""
 
@@ -3491,8 +3495,8 @@ msgstr ""
 msgid "Sign out"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:131
-#: src/components/editor/EditorTable.tsx:2365
+#: src/components/editor/EditorTable.tsx:133
+#: src/components/editor/EditorTable.tsx:2402
 #: src/components/editor/FilterToolbar.tsx:314
 msgid "Signals"
 msgstr "Signalen"
@@ -3501,7 +3505,7 @@ msgstr "Signalen"
 msgid "Signing you in..."
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:1729
+#: src/components/editor/EditorTable.tsx:1758
 msgid "Singular entry"
 msgstr "Enkelvoudig item"
 
@@ -3536,8 +3540,8 @@ msgid "Sort entries"
 msgstr "Items sorteren"
 
 #: src/components/AppHeader.tsx:240
-#: src/components/editor/EditorHeader.tsx:417
-#: src/components/editor/EditorTable.tsx:2351
+#: src/components/editor/EditorHeader.tsx:412
+#: src/components/editor/EditorTable.tsx:2388
 #: src/components/projects/AddLanguageModal.tsx:300
 msgid "Source"
 msgstr "Bron"
@@ -3560,7 +3564,7 @@ msgstr ""
 msgid "Source language"
 msgstr "Brontaal"
 
-#: src/components/editor/EditorTable.tsx:2002
+#: src/components/editor/EditorTable.tsx:2031
 msgid "Source preview"
 msgstr "Bronvoorbeeld"
 
@@ -3568,7 +3572,7 @@ msgstr "Bronvoorbeeld"
 msgid "Source release"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:129
+#: src/components/editor/EditorTable.tsx:131
 #: src/components/editor/FilterToolbar.tsx:312
 msgid "Source string"
 msgstr "Brontekst"
@@ -3617,7 +3621,7 @@ msgstr "Spraaksynthese is niet beschikbaar in deze browser."
 msgid "Stable"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:127
+#: src/components/editor/EditorTable.tsx:129
 #: src/components/editor/FilterToolbar.tsx:310
 msgid "Status"
 msgstr "Status"
@@ -3644,11 +3648,11 @@ msgstr "Afspelen stoppen"
 msgid "Store in localStorage (persists across sessions)"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:3136
+#: src/components/editor/EditorTable.tsx:3187
 msgid "String Inspector"
 msgstr "Tekst-inspecteur"
 
-#: src/components/editor/EditorTable.tsx:1836
+#: src/components/editor/EditorTable.tsx:1865
 msgid "Structure"
 msgstr "Structuur"
 
@@ -3834,7 +3838,7 @@ msgstr "Titel"
 msgid "To"
 msgstr "Naar"
 
-#: src/components/editor/EditorTable.tsx:2337
+#: src/components/editor/EditorTable.tsx:2374
 msgid "Toggle details for {{entry}}"
 msgstr ""
 
@@ -3847,7 +3851,7 @@ msgid "Track"
 msgstr ""
 
 #: src/components/AppHeader.tsx:258
-#: src/components/editor/EditorHeader.tsx:435
+#: src/components/editor/EditorHeader.tsx:430
 msgid "Translate"
 msgstr "Vertalen"
 
@@ -3868,12 +3872,12 @@ msgstr ""
 msgid "Translate {{count}} untranslated"
 msgstr "{{count}} onvertaalde vertalen"
 
-#: src/components/editor/EditorTable.tsx:365
+#: src/components/editor/EditorTable.tsx:379
 #: src/components/editor/FilterToolbar.tsx:76
 msgid "Translated"
 msgstr "Vertaald"
 
-#: src/components/editor/EditorTable.tsx:130
+#: src/components/editor/EditorTable.tsx:132
 #: src/components/editor/FilterToolbar.tsx:313
 msgid "Translated string"
 msgstr "Vertaalde tekst"
@@ -3888,8 +3892,8 @@ msgid "Translating..."
 msgstr "Bezig met vertalen..."
 
 #: src/components/SettingsModal.tsx:1301
-#: src/components/editor/EditorTable.tsx:2358
-#: src/components/editor/EditorTable.tsx:3186
+#: src/components/editor/EditorTable.tsx:2395
+#: src/components/editor/EditorTable.tsx:3241
 #: src/components/glossary/shared.tsx:91
 msgid "Translation"
 msgstr "Vertaling"
@@ -3911,7 +3915,7 @@ msgid "Translation is unavailable in this deployment."
 msgstr "Vertaling is niet beschikbaar in deze installatie."
 
 #: src/components/SettingsModal.tsx:2406
-#: src/components/editor/EditorTable.tsx:1846
+#: src/components/editor/EditorTable.tsx:1875
 #: src/components/projects/ExportSection.tsx:204
 msgid "Translation memory"
 msgstr ""
@@ -3949,7 +3953,7 @@ msgstr "Vertaalstem"
 msgid "Translations without glossary enforcement"
 msgstr "Vertalingen zonder glossary-afdwinging"
 
-#: src/components/editor/EditorTable.tsx:1943
+#: src/components/editor/EditorTable.tsx:1972
 msgid "Translator comments"
 msgstr "Vertalersopmerkingen"
 
@@ -3958,7 +3962,7 @@ msgstr "Vertalersopmerkingen"
 msgid "Trunk / development"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:3276
+#: src/components/editor/EditorTable.tsx:3331
 msgid "Try adjusting your search or clearing some filters."
 msgstr "Pas je zoekopdracht aan of wis een paar filters."
 
@@ -4008,7 +4012,7 @@ msgstr "Kan het geselecteerde instellingenbestand niet importeren."
 msgid "Unable to read the selected settings file."
 msgstr "Kan het geselecteerde instellingenbestand niet lezen."
 
-#: src/components/editor/EditorTable.tsx:1668
+#: src/components/editor/EditorTable.tsx:1697
 msgid "Unapprove"
 msgstr ""
 
@@ -4016,10 +4020,10 @@ msgstr ""
 msgid "Unapprove selected"
 msgstr "Selectie afkeuren"
 
-#: src/components/editor/EditorTable.tsx:1403
-#: src/components/editor/EditorTable.tsx:1404
-#: src/components/editor/EditorTable.tsx:1467
-#: src/components/editor/EditorTable.tsx:1468
+#: src/components/editor/EditorTable.tsx:1432
+#: src/components/editor/EditorTable.tsx:1433
+#: src/components/editor/EditorTable.tsx:1496
+#: src/components/editor/EditorTable.tsx:1497
 msgid "Unknown"
 msgstr ""
 
@@ -4049,12 +4053,12 @@ msgstr "Onopgeslagen wijzigingen"
 msgid "Unsaved draft found"
 msgstr "Onopgeslagen concept gevonden"
 
-#: src/components/editor/EditorTable.tsx:366
+#: src/components/editor/EditorTable.tsx:380
 #: src/components/editor/FilterToolbar.tsx:75
 msgid "Untranslated"
 msgstr "Onvertaald"
 
-#: src/components/editor/EditorHeader.tsx:247
+#: src/components/editor/EditorHeader.tsx:243
 msgid "Update from POT…"
 msgstr ""
 
@@ -4078,15 +4082,15 @@ msgstr ""
 "Bijgewerkt vanuit {{filename}}: +{{added}} nieuw, -{{removed}} verwijderd, {"
 "{kept}} behouden"
 
-#: src/components/editor/EditorTable.tsx:1400
+#: src/components/editor/EditorTable.tsx:1429
 msgid "Updated plural translation"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:1413
+#: src/components/editor/EditorTable.tsx:1442
 msgid "Updated review"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:1400
+#: src/components/editor/EditorTable.tsx:1429
 msgid "Updated translation"
 msgstr ""
 
@@ -4111,7 +4115,7 @@ msgstr "Upload een vertaalbestand om te beginnen"
 msgid "Upload failed"
 msgstr "Uploaden mislukt"
 
-#: src/components/editor/EditorHeader.tsx:226
+#: src/components/editor/EditorHeader.tsx:227
 msgid "Upload file…"
 msgstr ""
 
@@ -4200,7 +4204,7 @@ msgstr ""
 msgid "Want to help translate GlossBoss?"
 msgstr "Wil je helpen met het vertalen van GlossBoss?"
 
-#: src/components/editor/EditorTable.tsx:752
+#: src/components/editor/EditorTable.tsx:766
 msgid "Warning"
 msgstr ""
 
@@ -4328,7 +4332,7 @@ msgstr ""
 msgid "WordPress.org translation export"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:1516
+#: src/components/editor/EditorTable.tsx:1545
 msgid "Write a reply to this comment"
 msgstr ""
 
@@ -4382,7 +4386,7 @@ msgstr ""
 "ordt gewist als je het tabblad sluit. Zet 'API-sleutel onthouden' hieronder "
 "aan om deze tussen sessies te bewaren."
 
-#: src/pages/auth/Login.tsx:114
+#: src/pages/auth/Login.tsx:113
 msgid "Your password"
 msgstr ""
 
@@ -4453,7 +4457,7 @@ msgstr "of"
 msgid "or create account with email"
 msgstr ""
 
-#: src/pages/auth/Login.tsx:92
+#: src/pages/auth/Login.tsx:91
 msgid "or sign in with email"
 msgstr ""
 
@@ -4465,11 +4469,11 @@ msgstr "of handmatig uploaden"
 msgid "overwritten"
 msgstr "overschreven"
 
-#: src/components/editor/EditorTable.tsx:617
+#: src/components/editor/EditorTable.tsx:631
 msgid "plural"
 msgstr "meervoud"
 
-#: src/components/editor/EditorTable.tsx:601
+#: src/components/editor/EditorTable.tsx:615
 msgid "singular"
 msgstr "enkelvoud"
 
@@ -4515,13 +4519,13 @@ msgstr "{{count}} MT"
 msgid "{{count}} Manual"
 msgstr "{{count}} handmatig"
 
-#: src/components/editor/EditorTable.tsx:710
-#: src/components/editor/EditorTable.tsx:1809
+#: src/components/editor/EditorTable.tsx:724
+#: src/components/editor/EditorTable.tsx:1838
 msgid "{{count}} QA error(s)"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:715
-#: src/components/editor/EditorTable.tsx:1814
+#: src/components/editor/EditorTable.tsx:729
+#: src/components/editor/EditorTable.tsx:1843
 msgid "{{count}} QA warning(s)"
 msgstr ""
 
@@ -4533,11 +4537,15 @@ msgstr ""
 msgid "{{count}} changed"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:1368
+#: src/components/editor/PresenceAvatars.tsx:23
+msgid "{{count}} collaborator(s) online"
+msgstr ""
+
+#: src/components/editor/EditorTable.tsx:1397
 msgid "{{count}} comment(s)"
 msgstr "{{count}} opmerking(en)"
 
-#: src/components/editor/EditorTable.tsx:1262
+#: src/components/editor/EditorTable.tsx:1291
 msgid "{{count}} comments"
 msgstr ""
 
@@ -4594,8 +4602,8 @@ msgstr "{{count}} minuut geleden"
 msgid "{{count}} minutes ago"
 msgstr "{{count}} minuten geleden"
 
-#: src/components/editor/EditorTable.tsx:1346
-#: src/components/editor/EditorTable.tsx:1357
+#: src/components/editor/EditorTable.tsx:1375
+#: src/components/editor/EditorTable.tsx:1386
 msgid "{{count}} ref(s)"
 msgstr "{{count}} ref(s)"
 
@@ -4638,15 +4646,15 @@ msgstr "{{count}} vertalingen mislukt"
 msgid "{{count}} unchanged"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:1653
+#: src/components/editor/EditorTable.tsx:1682
 msgid "{{count}} unresolved"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:720
+#: src/components/editor/EditorTable.tsx:734
 msgid "{{count}} unresolved comment(s)"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:1253
+#: src/components/editor/EditorTable.tsx:1282
 msgid "{{count}} unresolved review comment(s)"
 msgstr ""
 
@@ -4687,7 +4695,7 @@ msgid "{{projects}} projects"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:2225
-#: src/components/editor/EditorWorkspace.tsx:138
+#: src/components/editor/EditorWorkspace.tsx:147
 #: src/components/editor/GlossaryPanel.tsx:259
 msgid "{{provider}} ready"
 msgstr ""
@@ -4714,7 +4722,7 @@ msgstr ""
 msgid "{{provider}} will include glossary terms in the translation prompt"
 msgstr ""
 
-#: src/components/editor/EditorTable.tsx:829
+#: src/components/editor/EditorTable.tsx:843
 msgid "{{score}}% match"
 msgstr ""
 

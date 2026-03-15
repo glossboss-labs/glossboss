@@ -14,7 +14,8 @@ import { ArrowLeft, AlertCircle } from 'lucide-react';
 import { motion } from 'motion/react';
 import { fadeVariants } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
-import { EditorHeader, EditorWorkspace, EmptyState } from '@/components/editor';
+import { EditorHeader, EditorWorkspace, EmptyState, PresenceAvatars } from '@/components/editor';
+import { useRealtimeChannel } from '@/hooks/use-realtime-channel';
 import { useIndexPageController } from './index/useIndexPageController';
 import { IndexPageBanners } from './index/IndexPageBanners';
 import { IndexPageDialogs } from './index/IndexPageDialogs';
@@ -198,6 +199,9 @@ function ProjectEditorLoaded({
   project: ProjectRow;
   language: ProjectLanguageRow;
 }) {
+  // Connect to realtime channel for this project-language
+  const { broadcastEntryUpdate } = useRealtimeChannel(project.id, language.id);
+
   const {
     containerWidth,
     headerProps,
@@ -221,31 +225,34 @@ function ProjectEditorLoaded({
           <Stack gap="lg">
             <EditorHeader {...headerProps} />
 
-            {/* Cloud project breadcrumb */}
-            <Group gap={6} align="center" style={{ marginTop: -8 }}>
-              <Text
-                component={Link}
-                to={`/projects/${project.id}`}
-                size="sm"
-                style={{
-                  color: 'var(--gb-text-secondary)',
-                  textDecoration: 'none',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 4,
-                }}
-              >
-                <ArrowLeft size={14} />
-                {project.name}
-              </Text>
-              <Text size="xs" style={{ color: 'var(--gb-text-tertiary)' }}>
-                · {language.locale}
-              </Text>
+            {/* Cloud project breadcrumb + presence */}
+            <Group gap={6} align="center" justify="space-between" style={{ marginTop: -8 }}>
+              <Group gap={6} align="center">
+                <Text
+                  component={Link}
+                  to={`/projects/${project.id}`}
+                  size="sm"
+                  style={{
+                    color: 'var(--gb-text-secondary)',
+                    textDecoration: 'none',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 4,
+                  }}
+                >
+                  <ArrowLeft size={14} />
+                  {project.name}
+                </Text>
+                <Text size="xs" style={{ color: 'var(--gb-text-tertiary)' }}>
+                  · {language.locale}
+                </Text>
+              </Group>
+              <PresenceAvatars />
             </Group>
 
             <IndexPageBanners {...bannersProps} />
             {workspaceProps ? (
-              <EditorWorkspace {...workspaceProps} />
+              <EditorWorkspace {...workspaceProps} broadcastEntryUpdate={broadcastEntryUpdate} />
             ) : (
               <EmptyState {...emptyStateProps} />
             )}
