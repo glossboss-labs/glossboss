@@ -150,15 +150,13 @@ export function EditorWorkspace({
             <Divider />
 
             {workspaceMode === 'review' && <ReviewSummary />}
-            {!readOnly && (
-              <TranslateToolbar
-                onLanguageChange={onLanguageChange}
-                deeplGlossaryId={glossaryEnforcementEnabled ? deeplGlossaryId : null}
-                glossary={glossary}
-                translateEnabled={translateEnabled}
-                mode={workspaceMode}
-              />
-            )}
+            <TranslateToolbar
+              onLanguageChange={onLanguageChange}
+              deeplGlossaryId={glossaryEnforcementEnabled ? deeplGlossaryId : null}
+              glossary={glossary}
+              translateEnabled={translateEnabled}
+              mode={workspaceMode}
+            />
             {workspaceMode === 'edit' && glossary && (
               <Group gap="xs">
                 <Badge color="green" variant="light" size="sm" leftSection={<Check size={10} />}>
