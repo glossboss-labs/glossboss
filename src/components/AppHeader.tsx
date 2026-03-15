@@ -113,7 +113,7 @@ export function AppHeader({ actions, projectId, onOpenRepoSync, onClear }: AppHe
                     : '/glossboss-combined-dark.svg'
                 }
                 alt="GlossBoss"
-                style={{ height: 20 }}
+                style={{ height: 28, display: 'block' }}
               />
             </Link>
             <Tooltip label={t('Open local editor')}>

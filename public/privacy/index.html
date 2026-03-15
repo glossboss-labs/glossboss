@@ -14,79 +14,115 @@
     <style>
       :root {
         color-scheme: light dark;
-        --bg: #eef3ef;
-        --panel: #fcfefc;
-        --text: #16211b;
-        --muted: #52615a;
-        --border: #c9d8cf;
-        --accent: #1f5f4d;
-        --gradient: radial-gradient(circle at top, #f8fffb 0%, var(--bg) 60%);
-        --shadow: 0 12px 32px rgba(22, 33, 27, 0.06);
+        --bg: #fafbfc;
+        --panel: #ffffff;
+        --text: #111111;
+        --muted: #555555;
+        --border: #e0e0e0;
+        --accent: #111111;
+        --code-bg: #f3f3f3;
+        --shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
       }
 
       @media (prefers-color-scheme: dark) {
         :root {
-          --bg: #080b09;
-          --panel: #111614;
-          --text: #dce5df;
-          --muted: #8a9b91;
-          --border: #1f2e26;
-          --accent: #5ebfa3;
-          --gradient: radial-gradient(circle at top, #0e1510 0%, var(--bg) 60%);
-          --shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+          --bg: #050505;
+          --panel: #0e0e0e;
+          --text: #e0e0e0;
+          --muted: #999999;
+          --border: #1e1e1e;
+          --accent: #e0e0e0;
+          --code-bg: #1a1a1a;
+          --shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
         }
+      }
+
+      * {
+        box-sizing: border-box;
       }
 
       body {
         margin: 0;
-        font-family: 'IBM Plex Sans', 'Segoe UI', sans-serif;
-        background: var(--gradient);
+        font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+        background: var(--bg);
         color: var(--text);
+        -webkit-font-smoothing: antialiased;
       }
 
       main {
-        max-width: 800px;
+        max-width: 640px;
         margin: 0 auto;
-        padding: 48px 20px 64px;
+        padding: 48px 24px 80px;
+      }
+
+      .logo {
+        margin-bottom: 32px;
       }
 
       article {
         background: var(--panel);
         border: 1px solid var(--border);
-        border-radius: 18px;
-        padding: 28px;
+        border-radius: 12px;
+        padding: 32px;
         box-shadow: var(--shadow);
       }
 
-      h1,
+      h1 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0 0 16px;
+        letter-spacing: -0.02em;
+      }
+
       h2 {
-        margin-top: 0;
+        font-size: 1.05rem;
+        font-weight: 600;
+        margin: 28px 0 12px;
+        letter-spacing: -0.01em;
       }
 
       p,
       li {
-        line-height: 1.6;
+        font-size: 0.935rem;
+        line-height: 1.65;
         color: var(--muted);
+      }
+
+      ul,
+      ol {
+        padding-left: 20px;
+      }
+
+      li {
+        margin-bottom: 6px;
       }
 
       a {
         color: var(--accent);
+        text-underline-offset: 2px;
+      }
+
+      code {
+        font-family: 'SF Mono', 'Fira Code', monospace;
+        font-size: 0.85em;
+        background: var(--code-bg);
+        padding: 2px 5px;
+        border-radius: 4px;
+      }
+
+      strong {
+        color: var(--text);
       }
     </style>
   </head>
   <body>
     <main>
       <article>
-        <picture>
+        <picture class="logo">
           <source srcset="/glossboss-combined-light.svg" media="(prefers-color-scheme: dark)" />
-          <img
-            src="/glossboss-combined-dark.svg"
-            alt="GlossBoss"
-            height="32"
-            style="margin-bottom: 16px"
-          />
+          <img src="/glossboss-combined-dark.svg" alt="GlossBoss" height="28" />
         </picture>
-        <h1>GlossBoss Privacy</h1>
+        <h1>Privacy</h1>
         <p>
           GlossBoss is designed to keep most work in your browser. This page summarizes the data the
           app stores locally and the data that is sent to backend services when you use optional

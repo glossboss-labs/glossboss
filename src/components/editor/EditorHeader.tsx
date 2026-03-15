@@ -160,7 +160,7 @@ export function EditorHeader({
                     : '/glossboss-combined-dark.svg'
                 }
                 alt="GlossBoss"
-                style={{ height: 20 }}
+                style={{ height: 28, display: 'block' }}
               />
             ) : (
               <>
@@ -171,7 +171,7 @@ export function EditorHeader({
                       : '/glossboss-combined-dark.svg'
                   }
                   alt="GlossBoss"
-                  style={{ height: 28 }}
+                  style={{ height: 36, display: 'block' }}
                 />
                 <Text size="sm" mt={4} style={{ color: 'var(--gb-text-secondary)' }}>
                   {t('Edit gettext translation files with DeepL integration')}
