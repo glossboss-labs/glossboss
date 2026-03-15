@@ -66,7 +66,7 @@ export function UserMenu() {
           <motion.div {...buttonStates}>
             <UnstyledButton>
               <Group gap={8}>
-                <Avatar src={avatarUrl} size={28} radius="sm" color="blue">
+                <Avatar src={avatarUrl} size={34} radius="sm" color="blue">
                   {initials}
                 </Avatar>
               </Group>

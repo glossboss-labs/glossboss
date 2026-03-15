@@ -45,6 +45,7 @@ import {
   MoreVertical,
   Copy,
   Check,
+  ExternalLink,
 } from 'lucide-react';
 import { sectionVariants, fadeVariants, buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
@@ -98,6 +99,7 @@ export default function OrgSettingsPage() {
   // Edit state
   const [editOrgName, setEditOrgName] = useState('');
   const [editOrgDescription, setEditOrgDescription] = useState('');
+  const [editOrgWebsite, setEditOrgWebsite] = useState('');
   const [saving, setSaving] = useState(false);
 
   // Invite state
@@ -133,6 +135,7 @@ export default function OrgSettingsPage() {
         setOrg(organization);
         setEditOrgName(organization.name);
         setEditOrgDescription(organization.description);
+        setEditOrgWebsite(organization.website ?? '');
 
         const [memberList, inviteList, projectList] = await Promise.all([
           listOrgMembers(organization.id),
@@ -168,6 +171,7 @@ export default function OrgSettingsPage() {
       const updated = await updateOrganization(org.id, {
         name: editOrgName.trim(),
         description: editOrgDescription.trim(),
+        website: editOrgWebsite.trim(),
       });
       setOrg(updated);
     } catch (err) {
@@ -175,7 +179,7 @@ export default function OrgSettingsPage() {
     } finally {
       setSaving(false);
     }
-  }, [org, editOrgName, editOrgDescription, t]);
+  }, [org, editOrgName, editOrgDescription, editOrgWebsite, t]);
 
   const handleUpdateRole = useCallback(
     async (memberId: string, role: OrgRole) => {
@@ -375,6 +379,14 @@ export default function OrgSettingsPage() {
                       maxRows={4}
                       maw={400}
                     />
+                    <TextInput
+                      label={t('Website')}
+                      placeholder="https://example.com"
+                      value={editOrgWebsite}
+                      onChange={(e) => setEditOrgWebsite(e.currentTarget.value)}
+                      leftSection={<ExternalLink size={14} />}
+                      maw={400}
+                    />
                     <div>
                       <motion.div {...buttonStates}>
                         <Button
@@ -399,6 +411,28 @@ export default function OrgSettingsPage() {
                     </Text>
                     <Text size="sm">
                       <strong>{t('Description')}:</strong> {org.description || '—'}
+                    </Text>
+                    <Text size="sm">
+                      <strong>{t('Website')}:</strong>{' '}
+                      {org.website ? (
+                        <Text
+                          component="a"
+                          href={
+                            org.website.startsWith('http') ? org.website : `https://${org.website}`
+                          }
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          size="sm"
+                          style={{
+                            color: 'var(--mantine-color-blue-6)',
+                            textDecoration: 'none',
+                          }}
+                        >
+                          {org.website.replace(/^https?:\/\//, '')}
+                        </Text>
+                      ) : (
+                        '—'
+                      )}
                     </Text>
                   </Stack>
                 </Paper>

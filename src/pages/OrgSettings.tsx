@@ -42,6 +42,7 @@ import {
   Check,
   Settings,
   FolderOpen,
+  ExternalLink,
 } from 'lucide-react';
 import { sectionVariants, contentVariants, fadeVariants, buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
@@ -284,6 +285,26 @@ export default function OrgSettings() {
                 {org.slug}
                 {org.description && ` — ${org.description}`}
               </Text>
+              {org.website && (
+                <Text
+                  component="a"
+                  href={org.website.startsWith('http') ? org.website : `https://${org.website}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  size="xs"
+                  mt={2}
+                  style={{
+                    color: 'var(--mantine-color-blue-6)',
+                    textDecoration: 'none',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 4,
+                  }}
+                >
+                  <ExternalLink size={12} />
+                  {org.website.replace(/^https?:\/\//, '')}
+                </Text>
+              )}
             </div>
             <motion.div {...buttonStates}>
               <Button

@@ -42,6 +42,7 @@ import {
   UserPlus,
   Mail,
   Settings,
+  ExternalLink,
 } from 'lucide-react';
 import {
   sectionVariants,
@@ -344,17 +345,16 @@ export default function ProjectDetail() {
                 </motion.div>
               )}
               {isMember && (
-                <Tooltip label={t('Project settings')}>
-                  <ActionIcon
+                <motion.div {...buttonStates}>
+                  <Button
                     component={Link}
                     to={`/projects/${id}/settings`}
                     variant="subtle"
-                    size="lg"
-                    color="gray"
+                    leftSection={<Settings size={14} />}
                   >
-                    <Settings size={18} />
-                  </ActionIcon>
-                </Tooltip>
+                    {t('Settings')}
+                  </Button>
+                </motion.div>
               )}
             </Group>
           </Group>
@@ -362,6 +362,35 @@ export default function ProjectDetail() {
           {/* Title + metadata */}
           <div>
             <Title order={3}>{project.name}</Title>
+            {project.description && (
+              <Text size="sm" mt={4} style={{ color: 'var(--gb-text-secondary)' }}>
+                {project.description}
+              </Text>
+            )}
+            {project.website && (
+              <Text
+                component="a"
+                href={
+                  project.website.startsWith('http')
+                    ? project.website
+                    : `https://${project.website}`
+                }
+                target="_blank"
+                rel="noopener noreferrer"
+                size="xs"
+                mt={2}
+                style={{
+                  color: 'var(--mantine-color-blue-6)',
+                  textDecoration: 'none',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 4,
+                }}
+              >
+                <ExternalLink size={12} />
+                {project.website.replace(/^https?:\/\//, '')}
+              </Text>
+            )}
             <Group gap={6} mt={4} align="center">
               <VisIcon size={12} style={{ color: 'var(--gb-text-tertiary)' }} />
               <Text size="xs" style={{ color: 'var(--gb-text-tertiary)' }}>

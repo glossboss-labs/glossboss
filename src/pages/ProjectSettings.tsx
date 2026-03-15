@@ -41,6 +41,7 @@ import {
   LogOut,
   Unlink,
   Plus,
+  ExternalLink,
 } from 'lucide-react';
 import { sectionVariants, fadeVariants, buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
@@ -93,6 +94,7 @@ export default function ProjectSettings() {
   // Edit state
   const [editName, setEditName] = useState('');
   const [editDescription, setEditDescription] = useState('');
+  const [editWebsite, setEditWebsite] = useState('');
   const [editVisibility, setEditVisibility] = useState('private');
   const [editPublicRole, setEditPublicRole] = useState('viewer');
   const [saving, setSaving] = useState(false);
@@ -132,6 +134,7 @@ export default function ProjectSettings() {
         setInvites(invs);
         setEditName(proj.name);
         setEditDescription(proj.description);
+        setEditWebsite(proj.website ?? '');
         setEditVisibility(proj.visibility);
         setEditPublicRole(proj.public_role);
         setLoading(false);
@@ -159,6 +162,7 @@ export default function ProjectSettings() {
       const updated = await updateProject(project.id, {
         name: editName.trim(),
         description: editDescription.trim(),
+        website: editWebsite.trim(),
         visibility: editVisibility as 'private' | 'public' | 'unlisted',
         public_role: editPublicRole as 'viewer' | 'translator' | 'reviewer',
       });
@@ -168,7 +172,7 @@ export default function ProjectSettings() {
     } finally {
       setSaving(false);
     }
-  }, [project, editName, editDescription, editVisibility, editPublicRole, t]);
+  }, [project, editName, editDescription, editWebsite, editVisibility, editPublicRole, t]);
 
   const handleDelete = useCallback(async () => {
     if (!project) return;
@@ -363,6 +367,14 @@ export default function ProjectSettings() {
                         maxRows={4}
                         maw={400}
                       />
+                      <TextInput
+                        label={t('Website')}
+                        placeholder="https://example.com"
+                        value={editWebsite}
+                        onChange={(e) => setEditWebsite(e.currentTarget.value)}
+                        leftSection={<ExternalLink size={14} />}
+                        maw={400}
+                      />
                       <Select
                         label={t('Visibility')}
                         data={[
@@ -443,6 +455,34 @@ export default function ProjectSettings() {
                             {t('Description')}
                           </Text>
                           <Text size="sm">{project.description}</Text>
+                        </div>
+                      )}
+                      {project.website && (
+                        <div>
+                          <Text size="xs" c="dimmed" tt="uppercase" fw={600} mb={2}>
+                            {t('Website')}
+                          </Text>
+                          <Text
+                            component="a"
+                            href={
+                              project.website.startsWith('http')
+                                ? project.website
+                                : `https://${project.website}`
+                            }
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            size="sm"
+                            style={{
+                              color: 'var(--mantine-color-blue-6)',
+                              textDecoration: 'none',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 4,
+                            }}
+                          >
+                            <ExternalLink size={12} />
+                            {project.website.replace(/^https?:\/\//, '')}
+                          </Text>
                         </div>
                       )}
                       {project.wp_slug && (

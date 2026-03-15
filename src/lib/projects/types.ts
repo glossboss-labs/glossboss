@@ -12,6 +12,7 @@ export interface ProjectRow {
   organization_id: string | null;
   name: string;
   description: string;
+  website: string;
   visibility: 'private' | 'public' | 'unlisted';
   public_role: 'viewer' | 'translator' | 'reviewer';
   source_language: string | null;
@@ -48,6 +49,7 @@ export type ProjectUpdate = Partial<
     ProjectRow,
     | 'name'
     | 'description'
+    | 'website'
     | 'visibility'
     | 'public_role'
     | 'source_language'

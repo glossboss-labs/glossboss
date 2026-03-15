@@ -11,6 +11,7 @@ export interface OrganizationRow {
   name: string;
   slug: string;
   description: string;
+  website: string;
   avatar_url: string | null;
   owner_id: string;
   created_at: string;
@@ -22,7 +23,7 @@ export type OrganizationInsert = Omit<OrganizationRow, 'id' | 'created_at' | 'up
 
 /** Updatable fields on `organizations` */
 export type OrganizationUpdate = Partial<
-  Pick<OrganizationRow, 'name' | 'slug' | 'description' | 'avatar_url'>
+  Pick<OrganizationRow, 'name' | 'slug' | 'description' | 'website' | 'avatar_url'>
 >;
 
 /** Org-level role hierarchy: owner > admin > member */
