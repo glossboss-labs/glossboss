@@ -14,6 +14,7 @@ import {
   Text,
   Button,
   ActionIcon,
+  Divider,
   Menu,
   Tooltip,
   useMantineColorScheme,
@@ -139,6 +140,8 @@ export function AppHeader({ actions, projectId, onOpenRepoSync, onClear }: AppHe
           {/* Right: actions + controls */}
           <Group gap="sm" style={{ flex: '0 0 auto' }}>
             {actions}
+
+            {!isMobile && <Divider orientation="vertical" />}
 
             {!isMobile && (
               <Group gap="sm">

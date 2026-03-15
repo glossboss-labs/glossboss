@@ -29,6 +29,7 @@ import {
   Download,
   Upload,
   FileUp,
+  FileText,
   ChevronDown,
   Archive,
   Cloud,
@@ -83,7 +84,6 @@ export default function ProjectEditor() {
 
   const loadFile = useEditorStore((s) => s.loadFile);
   const filename = useEditorStore((s) => s.filename);
-  const sourceFormat = useEditorStore((s) => s.sourceFormat);
   const header = useEditorStore((s) => s.header);
   const entries = useEditorStore((s) => s.entries);
   const mergeEntries = useEditorStore((s) => s.mergeEntries);
@@ -277,10 +277,6 @@ export default function ProjectEditor() {
     [entries, filename, header],
   );
 
-  const handleDownload = useCallback(() => {
-    performDownload(sourceFormat);
-  }, [performDownload, sourceFormat]);
-
   const handlePotUpload = useCallback(
     async (file: File | null) => {
       if (!file || entries.length === 0) return;
@@ -358,97 +354,84 @@ export default function ProjectEditor() {
         projectId={id}
         actions={
           <>
-            <motion.div {...buttonStates}>
-              <FileButton
-                onChange={(f) => void handleFileUpload(f)}
-                accept=".po,.pot,.json"
-                resetRef={fileResetRef}
-              >
-                {(props) => (
-                  <Button size="sm" leftSection={<Upload size={16} />} {...props}>
-                    {t('Upload')}
+            {/* Hidden file input for upload */}
+            <FileButton
+              onChange={(f) => void handleFileUpload(f)}
+              accept=".po,.pot,.json"
+              resetRef={fileResetRef}
+            >
+              {(props) => (
+                <button
+                  {...props}
+                  ref={undefined}
+                  style={{ display: 'none' }}
+                  className="upload-trigger"
+                />
+              )}
+            </FileButton>
+
+            <Menu position="bottom-start" withinPortal>
+              <Menu.Target>
+                <motion.div {...buttonStates}>
+                  <Button
+                    variant="default"
+                    leftSection={<FileText size={16} />}
+                    rightSection={<ChevronDown size={14} />}
+                  >
+                    {t('File')}
                   </Button>
-                )}
-              </FileButton>
-            </motion.div>
-
-            {filename && (
-              <>
-                <Group gap={0}>
-                  <motion.div {...buttonStates}>
-                    <Button
-                      size="sm"
-                      variant="light"
-                      leftSection={<Download size={16} />}
-                      onClick={handleDownload}
-                      style={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
-                    >
-                      {t('Download')}
-                    </Button>
-                  </motion.div>
-                  <Menu position="bottom-end" withinPortal>
-                    <Menu.Target>
-                      <Button
-                        size="sm"
-                        variant="light"
-                        px={8}
-                        aria-label={t('Download format options')}
-                        style={{
-                          borderTopLeftRadius: 0,
-                          borderBottomLeftRadius: 0,
-                          borderLeft: '1px solid var(--mantine-color-default-border)',
-                        }}
-                      >
-                        <ChevronDown size={14} />
-                      </Button>
-                    </Menu.Target>
-                    <Menu.Dropdown>
-                      <Menu.Label>{t('Download as')}</Menu.Label>
-                      <Menu.Item onClick={() => performDownload('po')}>
-                        {t('PO file (.po)')}
-                      </Menu.Item>
-                      <Menu.Item onClick={() => performDownload('i18next')}>
-                        {t('i18next JSON (.json)')}
-                      </Menu.Item>
-                      <Menu.Divider />
-                      <Menu.Item
-                        leftSection={<Archive size={14} />}
-                        onClick={() => setSettingsTab('transfer')}
-                      >
-                        {t('Backup')}
-                      </Menu.Item>
-                    </Menu.Dropdown>
-                  </Menu>
-                </Group>
-
-                <Tooltip
-                  multiline
-                  w={340}
-                  label={t(
-                    'Update this file using a .pot template. Existing translations are kept when source strings still match, new strings are added, and obsolete strings are removed.',
-                  )}
+                </motion.div>
+              </Menu.Target>
+              <Menu.Dropdown>
+                <Menu.Item
+                  leftSection={<Upload size={14} />}
+                  onClick={() => {
+                    const btn = document.querySelector(
+                      '.upload-trigger',
+                    ) as HTMLButtonElement | null;
+                    btn?.click();
+                  }}
                 >
-                  <motion.div {...buttonStates}>
+                  {t('Upload file…')}
+                </Menu.Item>
+                {filename && (
+                  <>
+                    <Menu.Divider />
+                    <Menu.Item
+                      leftSection={<Download size={14} />}
+                      onClick={() => performDownload('po')}
+                    >
+                      {t('Download as PO')}
+                    </Menu.Item>
+                    <Menu.Item
+                      leftSection={<Download size={14} />}
+                      onClick={() => performDownload('i18next')}
+                    >
+                      {t('Download as JSON')}
+                    </Menu.Item>
+                    <Menu.Divider />
                     <FileButton
                       onChange={(f) => void handlePotUpload(f)}
                       accept=".pot"
                       resetRef={potResetRef}
                     >
                       {(props) => (
-                        <Button
-                          size="sm"
-                          leftSection={<FileUp size={16} />}
-                          variant="light"
-                          {...props}
-                        >
-                          {t('Update')}
-                        </Button>
+                        <Menu.Item leftSection={<FileUp size={14} />} {...props}>
+                          {t('Update from POT…')}
+                        </Menu.Item>
                       )}
                     </FileButton>
-                  </motion.div>
-                </Tooltip>
-              </>
-            )}
+                    <Menu.Divider />
+                    <Menu.Item
+                      leftSection={<Archive size={14} />}
+                      onClick={() => setSettingsTab('transfer')}
+                    >
+                      {t('Backup')}
+                    </Menu.Item>
+                  </>
+                )}
+              </Menu.Dropdown>
+            </Menu>
 
             {syncIndicator}
           </>

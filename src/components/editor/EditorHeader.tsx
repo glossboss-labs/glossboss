@@ -1,8 +1,9 @@
 /**
- * EditorHeader — top toolbar with app title, file actions, and settings.
+ * EditorHeader — top toolbar with app title, file menu, and settings.
  *
- * Contains the Upload / Download / Update / Push buttons, the feedback
- * button, the theme toggle, and the gear-menu with all secondary actions.
+ * File operations (Upload, Download, Update, Backup) are grouped into a
+ * single "File" dropdown menu. Push and Save to cloud remain as visible
+ * buttons since they're contextual.
  */
 
 import type { MutableRefObject, RefObject } from 'react';
@@ -26,6 +27,7 @@ import {
   Trash2,
   MessageSquare,
   FileUp,
+  FileText,
   RotateCcw,
   Settings,
   Sun,
@@ -41,7 +43,7 @@ import {
   Cloud,
   LayoutDashboard,
 } from 'lucide-react';
-import { sectionVariants, fadeVariants, buttonStates } from '@/lib/motion';
+import { sectionVariants, buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
 import type { FileFormat } from '@/stores';
 import type { RepoConnection } from '@/lib/repo-sync/types';
@@ -127,8 +129,6 @@ export function EditorHeader({
   fileResetRef,
   filename,
   hasUnsavedChanges,
-  sourceFormat,
-  onDownload,
   onDownloadAs,
   onPotUpload,
   repoConnection,
@@ -182,157 +182,138 @@ export function EditorHeader({
         </div>
 
         <Group gap="sm" wrap="wrap" style={{ rowGap: 8 }}>
+          {/* File menu — combines Upload, Download, Update, Backup */}
           <Group gap="sm">
-            <motion.div {...buttonStates}>
-              <FileButton onChange={onFileUpload} accept=".po,.pot,.json" resetRef={fileResetRef}>
-                {(props) => (
-                  <Button leftSection={<Upload size={16} />} {...props} ref={fileInputRef}>
-                    {t('Upload')}
+            {/* Hidden file inputs triggered from menu items */}
+            <FileButton onChange={onFileUpload} accept=".po,.pot,.json" resetRef={fileResetRef}>
+              {(props) => <button {...props} ref={fileInputRef} style={{ display: 'none' }} />}
+            </FileButton>
+
+            <Menu position="bottom-start" withinPortal>
+              <Menu.Target>
+                <motion.div {...buttonStates}>
+                  <Button
+                    variant="default"
+                    leftSection={<FileText size={16} />}
+                    rightSection={<ChevronDown size={14} />}
+                    style={{ position: 'relative', overflow: 'visible' }}
+                  >
+                    {t('File')}
+                    <AnimatePresence>
+                      {hasUnsavedChanges && filename && (
+                        <MotionDiv
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          exit={{ scale: 0 }}
+                          style={{
+                            position: 'absolute',
+                            top: -4,
+                            right: -4,
+                            width: 10,
+                            height: 10,
+                            borderRadius: '50%',
+                            backgroundColor: 'var(--mantine-color-orange-5)',
+                            border: '2px solid var(--mantine-color-body)',
+                            zIndex: 1,
+                          }}
+                        />
+                      )}
+                    </AnimatePresence>
                   </Button>
+                </motion.div>
+              </Menu.Target>
+              <Menu.Dropdown>
+                <Menu.Item
+                  leftSection={<Upload size={14} />}
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  {t('Upload file…')}
+                </Menu.Item>
+                {filename && (
+                  <>
+                    <Menu.Divider />
+                    <Menu.Item
+                      leftSection={<Download size={14} />}
+                      onClick={() => onDownloadAs('po')}
+                    >
+                      {t('Download as PO')}
+                    </Menu.Item>
+                    <Menu.Item
+                      leftSection={<Download size={14} />}
+                      onClick={() => onDownloadAs('i18next')}
+                    >
+                      {t('Download as JSON')}
+                    </Menu.Item>
+                    <Menu.Divider />
+                    <FileButton onChange={onPotUpload} accept=".pot">
+                      {(props) => (
+                        <Menu.Item leftSection={<FileUp size={14} />} {...props}>
+                          {t('Update from POT…')}
+                        </Menu.Item>
+                      )}
+                    </FileButton>
+                    <Menu.Divider />
+                    <Menu.Item
+                      leftSection={<Archive size={14} />}
+                      onClick={() => onOpenSettings('transfer')}
+                    >
+                      {t('Backup')}
+                    </Menu.Item>
+                  </>
                 )}
-              </FileButton>
-            </motion.div>
+              </Menu.Dropdown>
+            </Menu>
+
+            {/* Contextual buttons that stay visible */}
+            <AnimatePresence>
+              {filename && repoConnection && (
+                <MotionDiv
+                  key="push"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                >
+                  <Tooltip
+                    label={t('Push changes to {{provider}}', {
+                      provider: repoConnection.provider === 'github' ? 'GitHub' : 'GitLab',
+                    })}
+                  >
+                    <motion.div {...buttonStates}>
+                      <Button
+                        leftSection={<GitPullRequest size={16} />}
+                        variant="light"
+                        color="teal"
+                        onClick={onPushToRepo}
+                      >
+                        {t('Push')}
+                      </Button>
+                    </motion.div>
+                  </Tooltip>
+                </MotionDiv>
+              )}
+            </AnimatePresence>
 
             <AnimatePresence>
-              {filename && (
-                <MotionDiv variants={fadeVariants} initial="hidden" animate="visible" exit="exit">
-                  <Group gap="sm">
-                    <Group gap={0} style={{ position: 'relative', overflow: 'visible' }}>
-                      <Tooltip
-                        label={
-                          hasUnsavedChanges
-                            ? t('You have unsaved changes')
-                            : t('Download as {format}', {
-                                format: sourceFormat === 'i18next' ? 'JSON' : 'PO',
-                              })
-                        }
+              {filename && isAuthenticated && onSaveToCloud && (
+                <MotionDiv
+                  key="cloud"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                >
+                  <Tooltip label={t('Save this file as a cloud project')}>
+                    <motion.div {...buttonStates}>
+                      <Button
+                        leftSection={<Cloud size={16} />}
+                        variant="light"
+                        color="violet"
+                        onClick={onSaveToCloud}
+                        loading={savingToCloud}
                       >
-                        <motion.div {...buttonStates}>
-                          <Button
-                            leftSection={<Download size={16} />}
-                            variant="light"
-                            onClick={onDownload}
-                            aria-label={
-                              hasUnsavedChanges ? t('Download (unsaved changes)') : undefined
-                            }
-                            style={{
-                              borderTopRightRadius: 0,
-                              borderBottomRightRadius: 0,
-                              position: 'relative',
-                              overflow: 'visible',
-                            }}
-                          >
-                            {t('Download')}
-                            <AnimatePresence>
-                              {hasUnsavedChanges && (
-                                <MotionDiv
-                                  initial={{ scale: 0 }}
-                                  animate={{ scale: 1 }}
-                                  exit={{ scale: 0 }}
-                                  style={{
-                                    position: 'absolute',
-                                    top: -4,
-                                    right: -4,
-                                    width: 10,
-                                    height: 10,
-                                    borderRadius: '50%',
-                                    backgroundColor: 'var(--mantine-color-orange-5)',
-                                    border: '2px solid var(--mantine-color-body)',
-                                    zIndex: 1,
-                                  }}
-                                />
-                              )}
-                            </AnimatePresence>
-                          </Button>
-                        </motion.div>
-                      </Tooltip>
-                      <Menu position="bottom-end" withinPortal>
-                        <Menu.Target>
-                          <Button
-                            variant="light"
-                            px={8}
-                            aria-label={t('Download format options')}
-                            style={{
-                              borderTopLeftRadius: 0,
-                              borderBottomLeftRadius: 0,
-                              borderLeft: '1px solid var(--mantine-color-default-border)',
-                            }}
-                          >
-                            <ChevronDown size={14} />
-                          </Button>
-                        </Menu.Target>
-                        <Menu.Dropdown>
-                          <Menu.Label>{t('Download as')}</Menu.Label>
-                          <Menu.Item onClick={() => onDownloadAs('po')}>
-                            {t('PO file (.po)')}
-                          </Menu.Item>
-                          <Menu.Item onClick={() => onDownloadAs('i18next')}>
-                            {t('i18next JSON (.json)')}
-                          </Menu.Item>
-                          <Menu.Divider />
-                          <Menu.Item
-                            leftSection={<Archive size={14} />}
-                            onClick={() => onOpenSettings('transfer')}
-                          >
-                            {t('Backup')}
-                          </Menu.Item>
-                        </Menu.Dropdown>
-                      </Menu>
-                    </Group>
-
-                    <Tooltip
-                      multiline
-                      w={340}
-                      label={t(
-                        'Update this file using a .pot template. Existing translations are kept when source strings still match, new strings are added, and obsolete strings are removed.',
-                      )}
-                    >
-                      <motion.div {...buttonStates}>
-                        <FileButton onChange={onPotUpload} accept=".pot">
-                          {(props) => (
-                            <Button leftSection={<FileUp size={16} />} variant="light" {...props}>
-                              {t('Update')}
-                            </Button>
-                          )}
-                        </FileButton>
-                      </motion.div>
-                    </Tooltip>
-
-                    {repoConnection && (
-                      <Tooltip
-                        label={t('Push changes to {{provider}}', {
-                          provider: repoConnection.provider === 'github' ? 'GitHub' : 'GitLab',
-                        })}
-                      >
-                        <motion.div {...buttonStates}>
-                          <Button
-                            leftSection={<GitPullRequest size={16} />}
-                            variant="light"
-                            color="teal"
-                            onClick={onPushToRepo}
-                          >
-                            {t('Push')}
-                          </Button>
-                        </motion.div>
-                      </Tooltip>
-                    )}
-
-                    {isAuthenticated && onSaveToCloud && (
-                      <Tooltip label={t('Save this file as a cloud project')}>
-                        <motion.div {...buttonStates}>
-                          <Button
-                            leftSection={<Cloud size={16} />}
-                            variant="light"
-                            color="violet"
-                            onClick={onSaveToCloud}
-                            loading={savingToCloud}
-                          >
-                            {t('Save to cloud')}
-                          </Button>
-                        </motion.div>
-                      </Tooltip>
-                    )}
-                  </Group>
+                        {t('Save to cloud')}
+                      </Button>
+                    </motion.div>
+                  </Tooltip>
                 </MotionDiv>
               )}
             </AnimatePresence>

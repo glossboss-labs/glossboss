@@ -64,7 +64,7 @@ msgstr ""
 msgid "Action"
 msgstr "Actie"
 
-#: src/components/AppHeader.tsx:225
+#: src/components/AppHeader.tsx:220
 #: src/components/editor/EditorHeader.tsx:392
 msgid "Actions"
 msgstr "Acties"
@@ -77,8 +77,8 @@ msgstr ""
 msgid "Add comment"
 msgstr ""
 
-#: src/components/projects/AddLanguageModal.tsx:271
-#: src/components/projects/AddLanguageModal.tsx:451
+#: src/components/projects/AddLanguageModal.tsx:269
+#: src/components/projects/AddLanguageModal.tsx:447
 #: src/pages/ProjectDetail.tsx:257
 msgid "Add language"
 msgstr ""
@@ -115,7 +115,7 @@ msgstr "Afrikaans"
 msgid "Albanian"
 msgstr "Albanees"
 
-#: src/pages/ProjectEditor.tsx:336
+#: src/pages/ProjectEditor.tsx:332
 msgid "All changes saved"
 msgstr ""
 
@@ -237,7 +237,7 @@ msgid "Back"
 msgstr ""
 
 #: src/pages/ProjectDetail.tsx:224
-#: src/pages/ProjectEditor.tsx:319
+#: src/pages/ProjectEditor.tsx:315
 msgid "Back to dashboard"
 msgstr ""
 
@@ -250,8 +250,8 @@ msgid "Back to listing"
 msgstr "Terug naar lijst"
 
 #: src/components/SettingsModal.tsx:1326
-#: src/components/editor/EditorHeader.tsx:258
-#: src/pages/ProjectEditor.tsx:418
+#: src/components/editor/EditorHeader.tsx:260
+#: src/pages/ProjectEditor.tsx:429
 msgid "Backup"
 msgstr "Back-up"
 
@@ -288,7 +288,7 @@ msgid "Branch:"
 msgstr ""
 
 #: src/components/editor/EditorTable.tsx:3156
-#: src/components/projects/AddLanguageModal.tsx:365
+#: src/components/projects/AddLanguageModal.tsx:363
 #: src/components/projects/CreateProjectModal.tsx:373
 #: src/components/repo-sync/RepoSyncModal.tsx:578
 msgid "Browse"
@@ -329,7 +329,7 @@ msgstr ""
 #: src/components/editor/WordPressProjectModal.tsx:410
 #: src/components/editor/WordPressRefreshModal.tsx:335
 #: src/components/feedback/FeedbackModal.tsx:480
-#: src/components/projects/AddLanguageModal.tsx:443
+#: src/components/projects/AddLanguageModal.tsx:439
 #: src/components/projects/SaveToCloudModal.tsx:158
 #: src/components/ui/ConfirmModal.tsx:38
 #: src/components/ui/PromptModal.tsx:34
@@ -448,7 +448,7 @@ msgstr "Actieve bronverwijzing wissen"
 msgid "Clear anyway"
 msgstr "Toch wissen"
 
-#: src/components/AppHeader.tsx:233
+#: src/components/AppHeader.tsx:228
 #: src/components/editor/EditorHeader.tsx:408
 msgid "Clear editor"
 msgstr "Editor wissen"
@@ -501,7 +501,7 @@ msgstr "Klik om een vertaling toe te voegen"
 msgid "Click to show only {{label}}"
 msgstr "Klik om alleen {{label}} te tonen"
 
-#: src/components/projects/AddLanguageModal.tsx:319
+#: src/components/projects/AddLanguageModal.tsx:317
 msgid "Clone from existing language"
 msgstr ""
 
@@ -640,7 +640,7 @@ msgstr "Bepaalt de toon van DeepL-vertalingen. Niet alle talen ondersteunen dit.
 msgid "Conventional commit prefix prepended to commit messages, e.g. fix(i18n):"
 msgstr ""
 
-#: src/components/projects/AddLanguageModal.tsx:322
+#: src/components/projects/AddLanguageModal.tsx:320
 msgid "Copy entries with empty translations"
 msgstr ""
 
@@ -751,8 +751,8 @@ msgid "Danish"
 msgstr "Deens"
 
 #: src/components/AppHeader.tsx:64
-#: src/components/AppHeader.tsx:211
-#: src/components/editor/EditorHeader.tsx:63
+#: src/components/AppHeader.tsx:206
+#: src/components/editor/EditorHeader.tsx:65
 #: src/components/editor/EditorHeader.tsx:383
 msgid "Dark mode"
 msgstr "Donkere modus"
@@ -828,28 +828,15 @@ msgstr "Weergave"
 msgid "Don't have an account?"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:206
-#: src/pages/ProjectEditor.tsx:386
-msgid "Download"
-msgstr "Downloaden"
+#: src/components/editor/EditorHeader.tsx:245
+#: src/pages/ProjectEditor.tsx:410
+msgid "Download as JSON"
+msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:197
-msgid "Download (unsaved changes)"
-msgstr "Downloaden (niet-opgeslagen wijzigingen)"
-
-#: src/components/editor/EditorHeader.tsx:246
-#: src/pages/ProjectEditor.tsx:406
-msgid "Download as"
-msgstr "Downloaden als"
-
-#: src/components/editor/EditorHeader.tsx:186
-msgid "Download as {format}"
-msgstr "Downloaden als {format}"
-
-#: src/components/editor/EditorHeader.tsx:235
-#: src/pages/ProjectEditor.tsx:395
-msgid "Download format options"
-msgstr "Downloadformaatopties"
+#: src/components/editor/EditorHeader.tsx:239
+#: src/pages/ProjectEditor.tsx:404
+msgid "Download as PO"
+msgstr ""
 
 #: src/components/editor/EditorTable.tsx:378
 msgid "Draft"
@@ -894,7 +881,7 @@ msgstr ""
 msgid "Edit Header"
 msgstr "Header bewerken"
 
-#: src/components/editor/EditorHeader.tsx:161
+#: src/components/editor/EditorHeader.tsx:178
 msgid "Edit gettext translation files with DeepL integration"
 msgstr "Bewerk gettext-vertaalbestanden met DeepL-integratie"
 
@@ -1027,7 +1014,7 @@ msgid "Enter {{field}}..."
 msgstr "Voer {{field}} in..."
 
 #: src/components/editor/EditorTable.tsx:752
-#: src/pages/ProjectEditor.tsx:349
+#: src/pages/ProjectEditor.tsx:345
 msgid "Error"
 msgstr ""
 
@@ -1106,7 +1093,7 @@ msgstr ""
 msgid "Extracted comments"
 msgstr "Geëxtraheerde opmerkingen"
 
-#: src/components/projects/AddLanguageModal.tsx:244
+#: src/components/projects/AddLanguageModal.tsx:242
 msgid "Failed to add language"
 msgstr ""
 
@@ -1137,7 +1124,7 @@ msgstr ""
 msgid "Failed to export project."
 msgstr ""
 
-#: src/components/projects/AddLanguageModal.tsx:148
+#: src/components/projects/AddLanguageModal.tsx:146
 #: src/components/projects/CreateProjectModal.tsx:182
 msgid "Failed to fetch WordPress file"
 msgstr ""
@@ -1192,14 +1179,14 @@ msgstr ""
 msgid "Failed to open the WordPress.org project."
 msgstr ""
 
-#: src/pages/ProjectEditor.tsx:290
+#: src/pages/ProjectEditor.tsx:286
 #: src/pages/index/useIndexPageController.ts:952
 msgid "Failed to parse POT file"
 msgstr "POT-bestand verwerken mislukt"
 
-#: src/components/projects/AddLanguageModal.tsx:103
-#: src/components/projects/AddLanguageModal.tsx:138
-#: src/components/projects/AddLanguageModal.tsx:165
+#: src/components/projects/AddLanguageModal.tsx:101
+#: src/components/projects/AddLanguageModal.tsx:136
+#: src/components/projects/AddLanguageModal.tsx:163
 #: src/components/projects/CreateProjectModal.tsx:133
 #: src/components/projects/CreateProjectModal.tsx:167
 #: src/components/projects/CreateProjectModal.tsx:200
@@ -1220,7 +1207,7 @@ msgstr ""
 msgid "Feature"
 msgstr "Functie"
 
-#: src/components/AppHeader.tsx:160
+#: src/components/AppHeader.tsx:155
 #: src/components/editor/EditorHeader.tsx:333
 msgid "Feedback"
 msgstr "Feedback"
@@ -1244,6 +1231,11 @@ msgstr "Feedback ingediend"
 #: src/components/feedback/FeedbackModal.tsx:132
 msgid "Feedback verification is not configured."
 msgstr "Feedbackverificatie is niet ingesteld."
+
+#: src/components/editor/EditorHeader.tsx:201
+#: src/pages/ProjectEditor.tsx:381
+msgid "File"
+msgstr ""
 
 #: src/pages/index/IndexPageDialogs.tsx:213
 msgid "File URL"
@@ -1404,7 +1396,7 @@ msgid ""
 "port anyway."
 msgstr ""
 
-#: src/components/AppHeader.tsx:239
+#: src/components/AppHeader.tsx:234
 #: src/components/editor/EditorHeader.tsx:411
 msgid "GlossBoss v{version}"
 msgstr "GlossBoss v{version}"
@@ -1715,14 +1707,14 @@ msgstr "Lets"
 msgid "Least complete"
 msgstr ""
 
-#: src/components/AppHeader.tsx:256
+#: src/components/AppHeader.tsx:251
 #: src/components/editor/EditorHeader.tsx:428
 msgid "License"
 msgstr "Licentie"
 
 #: src/components/AppHeader.tsx:64
-#: src/components/AppHeader.tsx:211
-#: src/components/editor/EditorHeader.tsx:63
+#: src/components/AppHeader.tsx:206
+#: src/components/editor/EditorHeader.tsx:65
 #: src/components/editor/EditorHeader.tsx:383
 msgid "Light mode"
 msgstr "Lichte modus"
@@ -1832,7 +1824,7 @@ msgstr ""
 
 #: src/components/editor/WordPressProjectModal.tsx:331
 #: src/components/editor/WordPressProjectModal.tsx:338
-#: src/components/projects/AddLanguageModal.tsx:294
+#: src/components/projects/AddLanguageModal.tsx:292
 msgid "Locale"
 msgstr ""
 
@@ -2248,7 +2240,7 @@ msgstr ""
 msgid "Open project"
 msgstr ""
 
-#: src/components/AppHeader.tsx:220
+#: src/components/AppHeader.tsx:215
 #: src/components/editor/EditorHeader.tsx:389
 msgid "Open settings"
 msgstr "Instellingen openen"
@@ -2262,11 +2254,6 @@ msgid ""
 "Opening a WordPress project will replace the currently loaded file. Any unsa"
 "ved changes will be lost."
 msgstr ""
-
-#: src/components/editor/EditorHeader.tsx:248
-#: src/pages/ProjectEditor.tsx:408
-msgid "PO file (.po)"
-msgstr "PO-bestand (.po)"
 
 #: src/components/editor/EmptyState.tsx:108
 msgid "PO file URL"
@@ -2430,7 +2417,7 @@ msgstr "Stemvoorbeeld"
 msgid "Previous field"
 msgstr "Vorig veld"
 
-#: src/components/AppHeader.tsx:274
+#: src/components/AppHeader.tsx:269
 #: src/components/editor/EditorHeader.tsx:446
 #: src/components/feedback/FeedbackModal.tsx:417
 msgid "Privacy"
@@ -2481,7 +2468,7 @@ msgstr "Projectnaam en versie"
 #: src/pages/ProjectDetail.tsx:140
 #: src/pages/ProjectDetail.tsx:221
 #: src/pages/ProjectEditor.tsx:110
-#: src/pages/ProjectEditor.tsx:316
+#: src/pages/ProjectEditor.tsx:312
 msgid "Project not found"
 msgstr ""
 
@@ -2497,8 +2484,8 @@ msgstr ""
 msgid "Project type"
 msgstr ""
 
-#: src/components/AppHeader.tsx:169
-#: src/components/AppHeader.tsx:176
+#: src/components/AppHeader.tsx:164
+#: src/components/AppHeader.tsx:171
 #: src/components/editor/EditorHeader.tsx:343
 #: src/components/editor/EditorHeader.tsx:350
 #: src/pages/Dashboard.tsx:92
@@ -2538,7 +2525,7 @@ msgstr ""
 msgid "Punjabi"
 msgstr "Punjabi"
 
-#: src/components/editor/EditorHeader.tsx:295
+#: src/components/editor/EditorHeader.tsx:288
 #: src/components/repo-sync/RepoSyncModal.tsx:582
 msgid "Push"
 msgstr ""
@@ -2547,7 +2534,7 @@ msgstr ""
 msgid "Push changes to repository"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:284
+#: src/components/editor/EditorHeader.tsx:277
 msgid "Push changes to {{provider}}"
 msgstr ""
 
@@ -2683,12 +2670,12 @@ msgstr ""
 msgid "Report Bugs To"
 msgstr "Bugs melden aan"
 
-#: src/components/projects/AddLanguageModal.tsx:422
+#: src/components/projects/AddLanguageModal.tsx:418
 #: src/components/repo-sync/RepoSyncModal.tsx:741
 msgid "Repository"
 msgstr ""
 
-#: src/components/AppHeader.tsx:228
+#: src/components/AppHeader.tsx:223
 #: src/components/editor/EditorHeader.tsx:405
 #: src/components/repo-sync/RepoSyncModal.tsx:567
 msgid "Repository sync"
@@ -2851,21 +2838,21 @@ msgstr "Huidig veld opslaan en naar volgend vertaalveld gaan"
 msgid "Save current field and move to the previous translation field"
 msgstr "Huidig veld opslaan en naar vorig vertaalveld gaan"
 
-#: src/components/editor/EditorHeader.tsx:302
+#: src/components/editor/EditorHeader.tsx:304
 msgid "Save this file as a cloud project"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:311
+#: src/components/editor/EditorHeader.tsx:313
 #: src/components/projects/SaveToCloudModal.tsx:120
 #: src/components/projects/SaveToCloudModal.tsx:166
 msgid "Save to cloud"
 msgstr ""
 
-#: src/pages/ProjectEditor.tsx:340
+#: src/pages/ProjectEditor.tsx:336
 msgid "Saved"
 msgstr ""
 
-#: src/pages/ProjectEditor.tsx:331
+#: src/pages/ProjectEditor.tsx:327
 msgid "Saving…"
 msgstr ""
 
@@ -2895,8 +2882,8 @@ msgstr "Zoek in bron, vertaling, context..."
 msgid "Search terms..."
 msgstr "Zoek termen..."
 
-#: src/components/projects/AddLanguageModal.tsx:399
-#: src/components/projects/AddLanguageModal.tsx:431
+#: src/components/projects/AddLanguageModal.tsx:396
+#: src/components/projects/AddLanguageModal.tsx:427
 #: src/components/projects/CreateProjectModal.tsx:400
 #: src/components/projects/CreateProjectModal.tsx:425
 msgid "Select"
@@ -2940,7 +2927,7 @@ msgstr ""
 msgid "Select entry {{entry}}"
 msgstr ""
 
-#: src/components/projects/AddLanguageModal.tsx:327
+#: src/components/projects/AddLanguageModal.tsx:325
 msgid "Select language"
 msgstr ""
 
@@ -2998,14 +2985,14 @@ msgstr ""
 msgid "Set up a project and add languages later"
 msgstr ""
 
-#: src/components/AppHeader.tsx:215
+#: src/components/AppHeader.tsx:210
 #: src/components/SettingsModal.tsx:1284
 #: src/components/editor/EditorHeader.tsx:387
 msgid "Settings"
 msgstr "Instellingen"
 
-#: src/components/AppHeader.tsx:187
-#: src/components/AppHeader.tsx:189
+#: src/components/AppHeader.tsx:182
+#: src/components/AppHeader.tsx:184
 #: src/components/editor/EditorHeader.tsx:362
 #: src/components/editor/EditorHeader.tsx:364
 msgid "Settings and actions"
@@ -3044,8 +3031,8 @@ msgstr "Instellingen opgeslagen!"
 msgid "Share Feedback"
 msgstr "Feedback delen"
 
-#: src/components/AppHeader.tsx:153
-#: src/components/AppHeader.tsx:201
+#: src/components/AppHeader.tsx:148
+#: src/components/AppHeader.tsx:196
 #: src/components/editor/EditorHeader.tsx:326
 #: src/components/editor/EditorHeader.tsx:373
 msgid "Share feedback"
@@ -3158,10 +3145,10 @@ msgstr ""
 msgid "Sort entries"
 msgstr "Items sorteren"
 
-#: src/components/AppHeader.tsx:247
+#: src/components/AppHeader.tsx:242
 #: src/components/editor/EditorHeader.tsx:419
 #: src/components/editor/EditorTable.tsx:2351
-#: src/components/projects/AddLanguageModal.tsx:302
+#: src/components/projects/AddLanguageModal.tsx:300
 msgid "Source"
 msgstr "Bron"
 
@@ -3302,16 +3289,16 @@ msgid "Switch account"
 msgstr ""
 
 #: src/components/AppHeader.tsx:71
-#: src/components/editor/EditorHeader.tsx:70
+#: src/components/editor/EditorHeader.tsx:72
 msgid "Switch to dark mode"
 msgstr "Schakel naar donkere modus"
 
 #: src/components/AppHeader.tsx:71
-#: src/components/editor/EditorHeader.tsx:70
+#: src/components/editor/EditorHeader.tsx:72
 msgid "Switch to light mode"
 msgstr "Schakel naar lichte modus"
 
-#: src/pages/ProjectEditor.tsx:345
+#: src/pages/ProjectEditor.tsx:341
 msgid "Sync error — retrying"
 msgstr ""
 
@@ -3325,7 +3312,7 @@ msgstr "Synchronisatie mislukt"
 msgid "Syncing glossary..."
 msgstr ""
 
-#: src/pages/ProjectEditor.tsx:327
+#: src/pages/ProjectEditor.tsx:323
 msgid "Syncing to cloud…"
 msgstr ""
 
@@ -3472,7 +3459,7 @@ msgstr ""
 msgid "Track"
 msgstr ""
 
-#: src/components/AppHeader.tsx:265
+#: src/components/AppHeader.tsx:260
 #: src/components/editor/EditorHeader.tsx:437
 msgid "Translate"
 msgstr "Vertalen"
@@ -3675,21 +3662,10 @@ msgstr "Onopgeslagen concept gevonden"
 msgid "Untranslated"
 msgstr "Onvertaald"
 
-#: src/components/editor/EditorHeader.tsx:275
-#: src/pages/ProjectEditor.tsx:444
-msgid "Update"
-msgstr "Bijwerken"
-
-#: src/components/editor/EditorHeader.tsx:267
-#: src/pages/ProjectEditor.tsx:427
-msgid ""
-"Update this file using a .pot template. Existing translations are kept when "
-"source strings still match, new strings are added, and obsolete strings are "
-"removed."
+#: src/components/editor/EditorHeader.tsx:251
+#: src/pages/ProjectEditor.tsx:420
+msgid "Update from POT…"
 msgstr ""
-"Werk dit bestand bij met een .pot-template. Bestaande vertalingen blijven be"
-"houden als de bronteksten nog overeenkomen. Nieuwe teksten worden toegevoegd"
-" en verouderde teksten worden verwijderd."
 
 #: src/components/repo-sync/CommitPanel.tsx:201
 msgid "Update translations"
@@ -3719,11 +3695,6 @@ msgstr ""
 msgid "Updated translation"
 msgstr ""
 
-#: src/components/editor/EditorHeader.tsx:171
-#: src/pages/ProjectEditor.tsx:369
-msgid "Upload"
-msgstr "Uploaden"
-
 #: src/components/SettingsModal.tsx:2174
 msgid "Upload CSV"
 msgstr "CSV uploaden"
@@ -3732,7 +3703,7 @@ msgstr "CSV uploaden"
 msgid "Upload a WordPress glossary CSV for the selected language"
 msgstr "Upload een WordPress-glossary CSV voor de geselecteerde taal"
 
-#: src/components/projects/AddLanguageModal.tsx:355
+#: src/components/projects/AddLanguageModal.tsx:353
 #: src/components/projects/CreateProjectModal.tsx:351
 msgid "Upload a file"
 msgstr ""
@@ -3744,6 +3715,11 @@ msgstr "Upload een vertaalbestand om te beginnen"
 #: src/pages/index/IndexPageBanners.tsx:69
 msgid "Upload failed"
 msgstr "Uploaden mislukt"
+
+#: src/components/editor/EditorHeader.tsx:230
+#: src/pages/ProjectEditor.tsx:395
+msgid "Upload file…"
+msgstr ""
 
 #: src/components/editor/FilterToolbar.tsx:81
 msgid "Upstream delta"
@@ -3940,7 +3916,7 @@ msgstr ""
 msgid "WordPress source browsing is unavailable in this deployment."
 msgstr "WordPress-broncode bekijken is niet beschikbaar in deze installatie."
 
-#: src/components/projects/AddLanguageModal.tsx:390
+#: src/components/projects/AddLanguageModal.tsx:387
 msgid "WordPress.org"
 msgstr ""
 
@@ -3959,10 +3935,6 @@ msgstr ""
 #: src/components/editor/EditorTable.tsx:1516
 msgid "Write a reply to this comment"
 msgstr ""
-
-#: src/components/editor/EditorHeader.tsx:185
-msgid "You have unsaved changes"
-msgstr "Je hebt onopgeslagen wijzigingen"
 
 #: src/pages/index/IndexPageBanners.tsx:143
 msgid ""
@@ -4047,11 +4019,6 @@ msgstr "voor details."
 #: src/pages/ProjectDetail.tsx:462
 msgid "fuzzy"
 msgstr ""
-
-#: src/components/editor/EditorHeader.tsx:251
-#: src/pages/ProjectEditor.tsx:411
-msgid "i18next JSON (.json)"
-msgstr "i18next JSON (.json)"
 
 #: src/lib/storage/drafts.ts:299
 msgid "just now"
