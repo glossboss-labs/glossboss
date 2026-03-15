@@ -44,6 +44,7 @@ import {
   type WordPressPluginTranslationTrack,
 } from '@/lib/wp-source';
 import { useTranslation } from '@/lib/app-language';
+import { getStorageAdapter } from '@/lib/cloud';
 import { useSearchParams } from 'react-router';
 import type { FileFormat } from '@/stores';
 import {
@@ -1106,7 +1107,8 @@ export function useIndexPageController() {
       currentProjectType && currentProjectSlug && filename ? openWordPressRefreshModal : undefined,
     onOpenRepoSync: openRepoSyncConnectOrPush,
     onClearClick: handleClearClick,
-    onSaveToCloud: filename ? () => setSaveToCloudOpen(true) : undefined,
+    onSaveToCloud:
+      filename && getStorageAdapter().type === 'local' ? () => setSaveToCloudOpen(true) : undefined,
   };
 
   const workspaceProps: EditorWorkspaceProps | null = filename
