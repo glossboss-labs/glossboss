@@ -36,6 +36,7 @@ import {
   Globe,
   Cloud,
   LayoutDashboard,
+  Settings,
 } from 'lucide-react';
 import { sectionVariants, buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
@@ -114,6 +115,9 @@ export interface EditorHeaderProps {
   onSaveToCloud?: () => void;
   /** Whether a cloud save is in progress. */
   savingToCloud?: boolean;
+
+  /** Cloud project ID — when set, shows project overview/settings links in the File menu. */
+  projectId?: string;
 }
 
 export function EditorHeader({
@@ -136,6 +140,7 @@ export function EditorHeader({
   onClearClick,
   onSaveToCloud,
   savingToCloud,
+  projectId,
 }: EditorHeaderProps) {
   const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
@@ -269,6 +274,25 @@ export function EditorHeader({
                   <Menu.Item leftSection={<GitBranch size={14} />} onClick={onOpenRepoSync}>
                     {repoConnection ? t('Repository sync') : t('Open from repository')}
                   </Menu.Item>
+                )}
+                {projectId && (
+                  <>
+                    <Menu.Divider />
+                    <Menu.Item
+                      leftSection={<LayoutDashboard size={14} />}
+                      component={RouterLink}
+                      to={`/projects/${projectId}`}
+                    >
+                      {t('Project overview')}
+                    </Menu.Item>
+                    <Menu.Item
+                      leftSection={<Settings size={14} />}
+                      component={RouterLink}
+                      to={`/projects/${projectId}/settings`}
+                    >
+                      {t('Project settings')}
+                    </Menu.Item>
+                  </>
                 )}
                 {onClearClick && (
                   <>

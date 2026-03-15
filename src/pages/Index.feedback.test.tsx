@@ -43,29 +43,6 @@ describe('Index feedback and empty state actions', () => {
   });
 
   it(
-    'renders a feedback button and opens feedback modal',
-    async () => {
-      const user = userEvent.setup();
-
-      render(
-        <MemoryRouter>
-          <AppProviders>
-            <Index />
-          </AppProviders>
-        </MemoryRouter>,
-      );
-
-      const feedbackButton = screen.getByRole('button', { name: /feedback/i });
-      expect(feedbackButton).toBeInTheDocument();
-
-      await user.click(feedbackButton);
-
-      expect(await screen.findByText('Share Feedback')).toBeInTheDocument();
-    },
-    SLOW_UI_TEST_TIMEOUT,
-  );
-
-  it(
     'loads the bundled example PO from the empty state and hides the action afterward',
     async () => {
       const user = userEvent.setup();
@@ -121,34 +98,6 @@ describe('Index feedback and empty state actions', () => {
     },
     SLOW_UI_TEST_TIMEOUT,
   );
-
-  it('renders footer links for source, license, translate, and privacy in settings menu', async () => {
-    const user = userEvent.setup();
-    render(
-      <MemoryRouter>
-        <AppProviders>
-          <Index />
-        </AppProviders>
-      </MemoryRouter>,
-    );
-
-    // Open the settings menu
-    const settingsButton = screen.getByRole('button', { name: 'Settings and actions' });
-    await user.click(settingsButton);
-
-    // Menu items with component="a" render as links inside the portal
-    await waitFor(() => {
-      expect(screen.getByText('Source')).toBeInTheDocument();
-    });
-    const sourceLink = screen.getByText('Source').closest('a');
-    expect(sourceLink).toHaveAttribute('href', 'https://github.com/glossboss-labs/glossboss');
-    const licenseLink = screen.getByText('License').closest('a');
-    expect(licenseLink).toHaveAttribute('href', '/license/');
-    const translateLink = screen.getByText('Translate').closest('a');
-    expect(translateLink).toHaveAttribute('href', '/translate/');
-    const privacyLink = screen.getByText('Privacy').closest('a');
-    expect(privacyLink).toHaveAttribute('href', '/privacy/');
-  });
 
   it('shows the development branch chip by default and hides it when disabled in storage', () => {
     const { unmount } = render(

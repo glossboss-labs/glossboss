@@ -269,6 +269,7 @@ function ProjectEditorLoaded({
           <Stack gap="lg">
             <EditorHeader
               {...headerProps}
+              projectId={project.id}
               onOpenRepoSync={isManager ? headerProps.onOpenRepoSync : undefined}
               onPushToRepo={isManager ? headerProps.onPushToRepo : undefined}
             />

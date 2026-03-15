@@ -186,27 +186,52 @@ export async function cloneLanguageEntries(
 // ── Project Entries ──────────────────────────────────────────
 
 export async function getProjectEntries(languageId: string): Promise<ProjectEntryRow[]> {
-  const { data, error } = await supabase()
-    .from('project_entries')
-    .select('*')
-    .eq('language_id', languageId)
-    .order('entry_index', { ascending: true });
+  const PAGE_SIZE = 1000;
+  const all: ProjectEntryRow[] = [];
+  let from = 0;
 
-  if (error) throw error;
-  return data ?? [];
+  // Supabase defaults to 1000 rows — paginate to fetch all entries
+  while (true) {
+    const { data, error } = await supabase()
+      .from('project_entries')
+      .select('*')
+      .eq('language_id', languageId)
+      .order('entry_index', { ascending: true })
+      .range(from, from + PAGE_SIZE - 1);
+
+    if (error) throw error;
+    if (!data || data.length === 0) break;
+    all.push(...data);
+    if (data.length < PAGE_SIZE) break;
+    from += PAGE_SIZE;
+  }
+
+  return all;
 }
 
 /** Lightweight fetch of just entry keys for diffing. */
 export async function getProjectEntryKeys(
   languageId: string,
 ): Promise<{ id: string; msgctxt: string | null; msgid: string }[]> {
-  const { data, error } = await supabase()
-    .from('project_entries')
-    .select('id, msgctxt, msgid')
-    .eq('language_id', languageId);
+  const PAGE_SIZE = 1000;
+  const all: { id: string; msgctxt: string | null; msgid: string }[] = [];
+  let from = 0;
 
-  if (error) throw error;
-  return data ?? [];
+  while (true) {
+    const { data, error } = await supabase()
+      .from('project_entries')
+      .select('id, msgctxt, msgid')
+      .eq('language_id', languageId)
+      .range(from, from + PAGE_SIZE - 1);
+
+    if (error) throw error;
+    if (!data || data.length === 0) break;
+    all.push(...data);
+    if (data.length < PAGE_SIZE) break;
+    from += PAGE_SIZE;
+  }
+
+  return all;
 }
 
 /**
