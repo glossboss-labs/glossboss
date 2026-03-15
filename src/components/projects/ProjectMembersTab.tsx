@@ -18,7 +18,7 @@ import {
   Center,
 } from '@mantine/core';
 import { motion } from 'motion/react';
-import { UserPlus, MoreVertical, Trash2, LogOut, AlertCircle } from 'lucide-react';
+import { UserPlus, MoreVertical, Trash2, AlertCircle } from 'lucide-react';
 import { buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
 import {
@@ -46,7 +46,8 @@ interface ProjectMembersTabProps {
   currentUserId: string | undefined;
   onMembersChange: (members: ProjectMemberWithProfile[]) => void;
   onInviteCreated: (invite: ProjectInviteRow) => void;
-  onLeave: () => void;
+  /** @deprecated Moved to Settings > Danger Zone */
+  onLeave?: () => void;
   onError: (msg: string) => void;
 }
 
@@ -57,7 +58,6 @@ export function ProjectMembersTab({
   currentUserId,
   onMembersChange,
   onInviteCreated,
-  onLeave,
   onError,
 }: ProjectMembersTabProps) {
   const { t } = useTranslation();
@@ -249,29 +249,7 @@ export function ProjectMembersTab({
         );
       })}
 
-      {/* Leave project (non-owner) */}
-      {currentUserId && members.some((m) => m.user_id === currentUserId) && !isAdmin && (
-        <Paper withBorder p="md" style={{ borderColor: 'var(--mantine-color-red-4)' }}>
-          <Group justify="space-between" align="center">
-            <div>
-              <Text size="sm">{t('Leave this project')}</Text>
-              <Text size="xs" style={{ color: 'var(--gb-text-secondary)' }}>
-                {t('Remove yourself from this project.')}
-              </Text>
-            </div>
-            <motion.div {...buttonStates}>
-              <Button
-                color="red"
-                variant="outline"
-                leftSection={<LogOut size={14} />}
-                onClick={onLeave}
-              >
-                {t('Leave project')}
-              </Button>
-            </motion.div>
-          </Group>
-        </Paper>
-      )}
+      {/* Leave project moved to Settings > Danger Zone */}
     </Stack>
   );
 }

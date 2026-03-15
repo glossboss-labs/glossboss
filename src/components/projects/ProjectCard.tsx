@@ -15,7 +15,7 @@ import {
   Tooltip,
 } from '@mantine/core';
 import { motion, AnimatePresence } from 'motion/react';
-import { MoreVertical, Trash2, Languages, Lock, Globe, EyeOff } from 'lucide-react';
+import { MoreVertical, Trash2, Settings, Languages, Lock, Globe, EyeOff } from 'lucide-react';
 import { badgeVariants } from '@/lib/motion';
 import { useTranslation, msgid } from '@/lib/app-language';
 import type { ProjectWithLanguages } from '@/lib/projects/types';
@@ -117,6 +117,15 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
                 </ActionIcon>
               </Menu.Target>
               <Menu.Dropdown>
+                <Menu.Item
+                  component={Link}
+                  to={`/projects/${project.id}/settings`}
+                  leftSection={<Settings size={14} />}
+                  onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                >
+                  {t('Settings')}
+                </Menu.Item>
+                <Menu.Divider />
                 <Menu.Item
                   color="red"
                   leftSection={<Trash2 size={14} />}

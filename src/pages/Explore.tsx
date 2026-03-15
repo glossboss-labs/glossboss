@@ -190,46 +190,48 @@ export default function Explore() {
               {t('{{projects}} projects', { projects: projects.length })}
             </Text>
 
-            <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
-              <Group mb="md" gap="sm">
-                <TextInput
-                  placeholder={t('Search projects…')}
-                  leftSection={<Search size={14} />}
-                  value={search}
-                  onChange={(e) => setSearch(e.currentTarget.value)}
-                  style={{ flex: 1, maxWidth: 320 }}
-                />
-                <Select
-                  data={formatOptions}
-                  value={formatFilter}
-                  onChange={setFormatFilter}
-                  placeholder={t('Format')}
-                  clearable
-                  w={120}
-                  size="sm"
-                />
-                {languageOptions.length > 0 && (
+            {projects.length >= 3 && (
+              <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
+                <Group mb="md" gap="sm">
+                  <TextInput
+                    placeholder={t('Search projects…')}
+                    leftSection={<Search size={14} />}
+                    value={search}
+                    onChange={(e) => setSearch(e.currentTarget.value)}
+                    style={{ flex: 1, maxWidth: 320 }}
+                  />
                   <Select
-                    data={languageOptions}
-                    value={languageFilter}
-                    onChange={setLanguageFilter}
-                    placeholder={t('Language')}
+                    data={formatOptions}
+                    value={formatFilter}
+                    onChange={setFormatFilter}
+                    placeholder={t('Format')}
                     clearable
-                    searchable
-                    w={140}
+                    w={120}
                     size="sm"
                   />
-                )}
-                <Select
-                  data={sortOptions}
-                  value={sort}
-                  onChange={(v) => setSort((v as SortOption) || 'updated')}
-                  w={180}
-                  size="sm"
-                  allowDeselect={false}
-                />
-              </Group>
-            </MotionDiv>
+                  {languageOptions.length > 0 && (
+                    <Select
+                      data={languageOptions}
+                      value={languageFilter}
+                      onChange={setLanguageFilter}
+                      placeholder={t('Language')}
+                      clearable
+                      searchable
+                      w={140}
+                      size="sm"
+                    />
+                  )}
+                  <Select
+                    data={sortOptions}
+                    value={sort}
+                    onChange={(v) => setSort((v as SortOption) || 'updated')}
+                    w={180}
+                    size="sm"
+                    allowDeselect={false}
+                  />
+                </Group>
+              </MotionDiv>
+            )}
 
             {filtered.length === 0 ? (
               <MotionDiv variants={contentVariants} initial="hidden" animate="visible">

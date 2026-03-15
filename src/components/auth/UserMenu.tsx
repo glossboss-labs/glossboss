@@ -6,7 +6,16 @@
 
 import { Link } from 'react-router';
 import { Menu, Avatar, ActionIcon, Tooltip, UnstyledButton, Group, Text } from '@mantine/core';
-import { LogIn, LogOut, User, Settings, ExternalLink, Info, MessageSquare } from 'lucide-react';
+import {
+  LogIn,
+  LogOut,
+  User,
+  Settings,
+  ExternalLink,
+  Info,
+  MessageSquare,
+  Home,
+} from 'lucide-react';
 import { motion } from 'motion/react';
 import { buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
@@ -73,6 +82,9 @@ export function UserMenu() {
 
         <Menu.Divider />
 
+        <Menu.Item component={Link} to="/" leftSection={<Home size={14} />}>
+          {t('Local editor')}
+        </Menu.Item>
         <Menu.Item component={Link} to="/settings" leftSection={<Settings size={14} />}>
           {t('Settings')}
         </Menu.Item>

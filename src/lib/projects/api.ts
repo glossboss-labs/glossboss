@@ -277,12 +277,18 @@ export async function syncProjectEntries(
 
 // ── Project Members ─────────────────────────────────────────
 
-/** Get the current user's role in a project (via RLS — only returns the caller's row). */
+/** Get the current user's role in a project. */
 export async function getMyProjectRole(projectId: string): Promise<ProjectRole | null> {
+  const {
+    data: { user },
+  } = await supabase().auth.getUser();
+  if (!user) return null;
+
   const { data, error } = await supabase()
     .from('project_members')
     .select('role')
     .eq('project_id', projectId)
+    .eq('user_id', user.id)
     .maybeSingle();
 
   if (error) return null;

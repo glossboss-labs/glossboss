@@ -1,19 +1,16 @@
 /**
- * AppHeader — shared header for project pages (Dashboard, ProjectDetail, ProjectEditor).
+ * AppHeader — shared header for all cloud pages.
  *
- * Three-column layout: branding left, page actions center, controls right.
- * Right-side controls: Feedback button, theme toggle, dashboard link, user menu.
+ * Layout: branding left, page actions center, navigation + controls right.
+ * Right-side: Explore, Dashboard (text buttons), theme toggle, user menu.
  */
 
 import type { ReactNode } from 'react';
-import { useState } from 'react';
 import { Link } from 'react-router';
 import {
   Group,
-  Text,
   Button,
   ActionIcon,
-  Divider,
   Tooltip,
   useMantineColorScheme,
   useComputedColorScheme,
@@ -21,16 +18,15 @@ import {
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { motion } from 'motion/react';
-import { Sun, Moon, MessageSquare, LayoutDashboard, Home, Globe } from 'lucide-react';
+import { Sun, Moon, Globe, LayoutDashboard } from 'lucide-react';
 import { sectionVariants, buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
 import { UserMenu } from '@/components/auth/UserMenu';
-import { FeedbackModal } from '@/components/feedback';
 
 const MotionDiv = motion.div;
 
 interface AppHeaderProps {
-  /** Extra buttons rendered in the center section */
+  /** Extra buttons rendered in the right section before nav */
   actions?: ReactNode;
 }
 
@@ -62,109 +58,65 @@ export function AppHeader({ actions }: AppHeaderProps) {
   const theme = useMantineTheme();
   const computedColorScheme = useComputedColorScheme('light');
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
-  const [feedbackOpen, setFeedbackOpen] = useState(false);
 
   return (
-    <>
-      <MotionDiv variants={sectionVariants} initial="hidden" animate="visible">
-        <Group justify="space-between" align="center" mb="lg">
-          {/* Left: branding */}
-          <Group gap="sm" align="center" style={{ flex: '0 0 auto' }}>
-            <Link
-              to="/dashboard"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                textDecoration: 'none',
-              }}
-            >
-              <img
-                src={
-                  computedColorScheme === 'dark'
-                    ? '/glossboss-combined-light.svg'
-                    : '/glossboss-combined-dark.svg'
-                }
-                alt="GlossBoss"
-                style={{ height: 28, display: 'block' }}
-              />
-            </Link>
-            <Tooltip label={t('Open local editor')}>
-              <Text
-                component={Link}
-                to="/"
-                size="xs"
-                style={{
-                  color: 'var(--gb-text-tertiary)',
-                  textDecoration: 'none',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 3,
-                }}
-              >
-                <Home size={12} />
-                {t('Editor')}
-              </Text>
-            </Tooltip>
-          </Group>
+    <MotionDiv variants={sectionVariants} initial="hidden" animate="visible">
+      <Group justify="space-between" align="center" mb="lg">
+        {/* Left: branding */}
+        <Link
+          to="/dashboard"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            textDecoration: 'none',
+          }}
+        >
+          <img
+            src={
+              computedColorScheme === 'dark'
+                ? '/glossboss-combined-light.svg'
+                : '/glossboss-combined-dark.svg'
+            }
+            alt="GlossBoss"
+            style={{ height: 28, display: 'block' }}
+          />
+        </Link>
 
-          {/* Right: actions + controls */}
-          <Group gap="sm" style={{ flex: '0 0 auto' }}>
-            {actions}
+        {/* Right: actions + nav + controls */}
+        <Group gap="sm" style={{ flex: '0 0 auto' }}>
+          {actions}
 
-            {!isMobile && <Divider orientation="vertical" />}
-
-            {!isMobile && (
-              <Group gap="sm">
-                <Tooltip label={t('Share feedback')}>
-                  <motion.div {...buttonStates}>
-                    <Button
-                      variant="subtle"
-                      leftSection={<MessageSquare size={16} />}
-                      onClick={() => setFeedbackOpen(true)}
-                    >
-                      {t('Feedback')}
-                    </Button>
-                  </motion.div>
-                </Tooltip>
-
-                <ThemeToggle />
-              </Group>
-            )}
-
-            <Tooltip label={t('Explore')}>
+          {!isMobile && (
+            <>
               <motion.div {...buttonStates}>
-                <ActionIcon
+                <Button
                   component={Link}
                   to="/explore"
-                  variant="default"
-                  size="lg"
-                  aria-label={t('Explore')}
+                  variant="subtle"
+                  size="compact-sm"
+                  leftSection={<Globe size={14} />}
                 >
-                  <Globe size={18} />
-                </ActionIcon>
+                  {t('Explore')}
+                </Button>
               </motion.div>
-            </Tooltip>
-
-            <Tooltip label={t('Projects')}>
               <motion.div {...buttonStates}>
-                <ActionIcon
+                <Button
                   component={Link}
                   to="/dashboard"
-                  variant="default"
-                  size="lg"
-                  aria-label={t('Projects')}
+                  variant="subtle"
+                  size="compact-sm"
+                  leftSection={<LayoutDashboard size={14} />}
                 >
-                  <LayoutDashboard size={18} />
-                </ActionIcon>
+                  {t('Dashboard')}
+                </Button>
               </motion.div>
-            </Tooltip>
+            </>
+          )}
 
-            <UserMenu />
-          </Group>
+          <ThemeToggle />
+          <UserMenu />
         </Group>
-      </MotionDiv>
-
-      <FeedbackModal opened={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
-    </>
+      </Group>
+    </MotionDiv>
   );
 }

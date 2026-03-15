@@ -343,24 +343,18 @@ export default function ProjectDetail() {
                   </Button>
                 </motion.div>
               )}
-              {canManage && (
-                <motion.div {...buttonStates}>
-                  <Button leftSection={<Plus size={16} />} onClick={() => setAddModalOpen(true)}>
-                    {t('Add language')}
-                  </Button>
-                </motion.div>
-              )}
               {isMember && (
-                <motion.div {...buttonStates}>
-                  <Button
+                <Tooltip label={t('Project settings')}>
+                  <ActionIcon
                     component={Link}
                     to={`/projects/${id}/settings`}
                     variant="subtle"
-                    leftSection={<Settings size={14} />}
+                    size="lg"
+                    color="gray"
                   >
-                    {t('Settings')}
-                  </Button>
-                </motion.div>
+                    <Settings size={18} />
+                  </ActionIcon>
+                </Tooltip>
               )}
             </Group>
           </Group>
@@ -373,26 +367,24 @@ export default function ProjectDetail() {
               <Text size="xs" style={{ color: 'var(--gb-text-tertiary)' }}>
                 {t(VISIBILITY_LABEL[project.visibility] ?? 'Public')}
                 {' · '}
-                {project.source_format}
-                {project.source_language && (
-                  <>
-                    {' · '}
-                    {t('Source: {{lang}}', { lang: project.source_language })}
-                  </>
-                )}
+                {project.source_format.toUpperCase()}
+                {project.source_language &&
+                  project.target_language &&
+                  project.source_language !== project.target_language && (
+                    <>
+                      {' · '}
+                      {project.source_language} → {project.target_language}
+                    </>
+                  )}
                 {project.wp_slug && (
                   <>
                     {' · '}
-                    {project.wp_project_type}: {project.wp_slug}
+                    {t('{{type}} / {{slug}}', {
+                      type: project.wp_project_type,
+                      slug: project.wp_slug,
+                    })}
                   </>
                 )}
-                {' · '}
-                {t('Created {{date}}', {
-                  date: new Date(project.created_at).toLocaleDateString(undefined, {
-                    month: 'short',
-                    day: 'numeric',
-                  }),
-                })}
               </Text>
             </Group>
           </div>
@@ -427,7 +419,9 @@ export default function ProjectDetail() {
           <Tabs defaultValue="languages">
             <Tabs.List>
               <Tabs.Tab value="languages" leftSection={<Languages size={14} />}>
-                {t('Languages')} ({languages.length})
+                {languages.length === 1
+                  ? t('1 language')
+                  : t('{{count}} languages', { count: languages.length })}
               </Tabs.Tab>
               {isMember && (
                 <Tabs.Tab value="members" leftSection={<Users size={14} />}>
@@ -444,7 +438,21 @@ export default function ProjectDetail() {
             {/* Languages tab */}
             <Tabs.Panel value="languages" pt="md">
               <Stack gap="lg">
-                {languages.length > 0 && (
+                {canManage && (
+                  <Group justify="flex-end">
+                    <motion.div {...buttonStates}>
+                      <Button
+                        variant="light"
+                        leftSection={<Plus size={16} />}
+                        onClick={() => setAddModalOpen(true)}
+                      >
+                        {t('Add language')}
+                      </Button>
+                    </motion.div>
+                  </Group>
+                )}
+
+                {languages.length > 1 && (
                   <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
                     <Paper withBorder p="md">
                       <Group justify="space-between" align="center" mb={8}>
@@ -465,7 +473,7 @@ export default function ProjectDetail() {
                   </MotionDiv>
                 )}
 
-                {languages.length > 0 && (
+                {languages.length >= 3 && (
                   <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
                     <Group gap="sm">
                       <TextInput
