@@ -470,17 +470,31 @@ export default function ProjectSettings() {
                               </Text>
                             )}
                           </Stack>
-                          {isManager && hasRepo && (
-                            <Tooltip label={t('Unlink repository')}>
-                              <ActionIcon
-                                variant="subtle"
-                                color="red"
-                                size="sm"
-                                onClick={() => void handleUnlinkRepo(lang.id)}
-                              >
-                                <Unlink size={14} />
-                              </ActionIcon>
-                            </Tooltip>
+                          {isManager && (
+                            <Group gap="xs">
+                              {hasRepo ? (
+                                <Tooltip label={t('Unlink repository')}>
+                                  <ActionIcon
+                                    variant="subtle"
+                                    color="red"
+                                    size="sm"
+                                    onClick={() => void handleUnlinkRepo(lang.id)}
+                                  >
+                                    <Unlink size={14} />
+                                  </ActionIcon>
+                                </Tooltip>
+                              ) : (
+                                <Button
+                                  component={Link}
+                                  to={`/projects/${project.id}/languages/${lang.id}`}
+                                  variant="light"
+                                  size="xs"
+                                  leftSection={<GitBranch size={12} />}
+                                >
+                                  {t('Link repository')}
+                                </Button>
+                              )}
+                            </Group>
                           )}
                         </Group>
                       </Paper>

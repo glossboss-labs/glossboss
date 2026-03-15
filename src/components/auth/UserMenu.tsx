@@ -1,11 +1,12 @@
 /**
  * UserMenu — avatar + dropdown for signed-in users.
  * Shows sign-in link when not authenticated.
+ * Includes settings, about links, and sign out.
  */
 
 import { Link } from 'react-router';
 import { Menu, Avatar, ActionIcon, Tooltip, UnstyledButton, Group, Text } from '@mantine/core';
-import { LogIn, LogOut, User, Settings } from 'lucide-react';
+import { LogIn, LogOut, User, Settings, ExternalLink, Info, MessageSquare } from 'lucide-react';
 import { motion } from 'motion/react';
 import { buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
@@ -75,6 +76,48 @@ export function UserMenu() {
         <Menu.Item component={Link} to="/settings" leftSection={<Settings size={14} />}>
           {t('Settings')}
         </Menu.Item>
+        <Menu.Item
+          component="a"
+          href="https://github.com/glossboss-labs/glossboss/issues"
+          target="_blank"
+          rel="noopener noreferrer"
+          leftSection={<MessageSquare size={14} />}
+        >
+          {t('Share feedback')}
+        </Menu.Item>
+
+        <Menu.Divider />
+
+        <Menu.Label>{t('GlossBoss v{version}', { version: __APP_VERSION__ })}</Menu.Label>
+        <Menu.Item
+          component="a"
+          href="https://github.com/glossboss-labs/glossboss"
+          target="_blank"
+          rel="noopener noreferrer"
+          leftSection={<ExternalLink size={14} />}
+        >
+          {t('Source')}
+        </Menu.Item>
+        <Menu.Item
+          component="a"
+          href="/license/"
+          target="_blank"
+          rel="noopener noreferrer"
+          leftSection={<Info size={14} />}
+        >
+          {t('License')}
+        </Menu.Item>
+        <Menu.Item
+          component="a"
+          href="/privacy/"
+          target="_blank"
+          rel="noopener noreferrer"
+          leftSection={<Info size={14} />}
+        >
+          {t('Privacy')}
+        </Menu.Item>
+
+        <Menu.Divider />
 
         <Menu.Item color="red" leftSection={<LogOut size={14} />} onClick={signOut}>
           {t('Sign out')}

@@ -285,16 +285,16 @@ export default function OrgSettings() {
                 {org.description && ` — ${org.description}`}
               </Text>
             </div>
-            <Tooltip label={t('Organization settings')}>
-              <ActionIcon
+            <motion.div {...buttonStates}>
+              <Button
                 component={Link}
                 to={`/orgs/${org.slug}/settings`}
-                variant="default"
-                size="lg"
+                variant="subtle"
+                leftSection={<Settings size={14} />}
               >
-                <Settings size={18} />
-              </ActionIcon>
-            </Tooltip>
+                {t('Settings')}
+              </Button>
+            </motion.div>
           </Group>
 
           {error && (
@@ -400,55 +400,69 @@ export default function OrgSettings() {
 
             {/* Projects tab */}
             <Tabs.Panel value="projects" pt="md">
-              {orgProjects.length === 0 ? (
-                <Center py={40}>
-                  <Text size="sm" style={{ color: 'var(--gb-text-secondary)' }}>
-                    {t('No projects in this organization yet')}
-                  </Text>
-                </Center>
-              ) : (
-                <Stack gap="sm">
-                  {orgProjects.map((proj) => (
-                    <Paper
-                      key={proj.id}
+              <Stack gap="md">
+                <Group justify="flex-end">
+                  <motion.div {...buttonStates}>
+                    <Button
                       component={Link}
-                      to={`/projects/${proj.id}`}
-                      withBorder
-                      p="sm"
-                      style={{
-                        textDecoration: 'none',
-                        color: 'inherit',
-                        cursor: 'pointer',
-                        transition: 'border-color 120ms ease, background-color 120ms ease',
-                      }}
-                      styles={{
-                        root: {
-                          '&:hover': {
-                            borderColor: 'var(--mantine-color-blue-5)',
-                            backgroundColor: 'var(--gb-highlight-row)',
-                          },
-                        },
-                      }}
+                      to="/dashboard"
+                      variant="light"
+                      leftSection={<FolderOpen size={14} />}
                     >
-                      <Group justify="space-between" align="center">
-                        <div>
-                          <Text size="sm" fw={600}>
-                            {proj.name}
-                          </Text>
-                          <Text size="xs" style={{ color: 'var(--gb-text-secondary)' }}>
-                            {proj.project_languages?.length ?? 0} {t('languages')}
-                            {' · '}
-                            {proj.stats_total} {t('strings')}
-                          </Text>
-                        </div>
-                        <Badge variant="light" size="xs">
-                          {proj.visibility}
-                        </Badge>
-                      </Group>
-                    </Paper>
-                  ))}
-                </Stack>
-              )}
+                      {t('Create project')}
+                    </Button>
+                  </motion.div>
+                </Group>
+                {orgProjects.length === 0 ? (
+                  <Center py={40}>
+                    <Text size="sm" style={{ color: 'var(--gb-text-secondary)' }}>
+                      {t('No projects in this organization yet')}
+                    </Text>
+                  </Center>
+                ) : (
+                  <Stack gap="sm">
+                    {orgProjects.map((proj) => (
+                      <Paper
+                        key={proj.id}
+                        component={Link}
+                        to={`/projects/${proj.id}`}
+                        withBorder
+                        p="sm"
+                        style={{
+                          textDecoration: 'none',
+                          color: 'inherit',
+                          cursor: 'pointer',
+                          transition: 'border-color 120ms ease, background-color 120ms ease',
+                        }}
+                        styles={{
+                          root: {
+                            '&:hover': {
+                              borderColor: 'var(--mantine-color-blue-5)',
+                              backgroundColor: 'var(--gb-highlight-row)',
+                            },
+                          },
+                        }}
+                      >
+                        <Group justify="space-between" align="center">
+                          <div>
+                            <Text size="sm" fw={600}>
+                              {proj.name}
+                            </Text>
+                            <Text size="xs" style={{ color: 'var(--gb-text-secondary)' }}>
+                              {proj.project_languages?.length ?? 0} {t('languages')}
+                              {' · '}
+                              {proj.stats_total} {t('strings')}
+                            </Text>
+                          </div>
+                          <Badge variant="light" size="xs">
+                            {proj.visibility}
+                          </Badge>
+                        </Group>
+                      </Paper>
+                    ))}
+                  </Stack>
+                )}
+              </Stack>
             </Tabs.Panel>
 
             {/* Invites tab */}

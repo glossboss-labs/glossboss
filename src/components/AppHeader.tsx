@@ -2,8 +2,7 @@
  * AppHeader — shared header for project pages (Dashboard, ProjectDetail, ProjectEditor).
  *
  * Three-column layout: branding left, page actions center, controls right.
- * Right-side controls mirror EditorHeader exactly: Feedback button, theme toggle,
- * dashboard link, user menu, and settings gear with full menu.
+ * Right-side controls: Feedback button, theme toggle, dashboard link, user menu.
  */
 
 import type { ReactNode } from 'react';
@@ -15,7 +14,6 @@ import {
   Button,
   ActionIcon,
   Divider,
-  Menu,
   Tooltip,
   useMantineColorScheme,
   useComputedColorScheme,
@@ -23,18 +21,7 @@ import {
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { motion } from 'motion/react';
-import {
-  Sun,
-  Moon,
-  MessageSquare,
-  Settings,
-  LayoutDashboard,
-  ExternalLink,
-  Info,
-  Home,
-  GitBranch,
-  Trash2,
-} from 'lucide-react';
+import { Sun, Moon, MessageSquare, LayoutDashboard, Home } from 'lucide-react';
 import { sectionVariants, buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
 import { UserMenu } from '@/components/auth/UserMenu';
@@ -45,10 +32,6 @@ const MotionDiv = motion.div;
 interface AppHeaderProps {
   /** Extra buttons rendered in the center section */
   actions?: ReactNode;
-  /** Open repo sync modal (shows "Repository sync" in settings menu) */
-  onOpenRepoSync?: () => void;
-  /** Clear the editor and navigate away */
-  onClear?: () => void;
 }
 
 function ThemeToggle() {
@@ -74,11 +57,10 @@ function ThemeToggle() {
   );
 }
 
-export function AppHeader({ actions, onOpenRepoSync, onClear }: AppHeaderProps) {
+export function AppHeader({ actions }: AppHeaderProps) {
   const { t } = useTranslation();
   const theme = useMantineTheme();
   const computedColorScheme = useComputedColorScheme('light');
-  const { toggleColorScheme } = useMantineColorScheme();
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
 
@@ -164,97 +146,6 @@ export function AppHeader({ actions, onOpenRepoSync, onClear }: AppHeaderProps) 
             </Tooltip>
 
             <UserMenu />
-
-            <Menu position="bottom-end" withinPortal>
-              <Menu.Target>
-                <Tooltip label={t('Settings and actions')}>
-                  <motion.div {...buttonStates}>
-                    <ActionIcon variant="default" size="lg" aria-label={t('Settings and actions')}>
-                      <Settings size={18} />
-                    </ActionIcon>
-                  </motion.div>
-                </Tooltip>
-              </Menu.Target>
-              <Menu.Dropdown>
-                {isMobile && (
-                  <Menu.Item
-                    leftSection={<MessageSquare size={14} />}
-                    onClick={() => setFeedbackOpen(true)}
-                  >
-                    {t('Share feedback')}
-                  </Menu.Item>
-                )}
-                {isMobile && (
-                  <Menu.Item
-                    leftSection={
-                      computedColorScheme === 'dark' ? <Sun size={14} /> : <Moon size={14} />
-                    }
-                    onClick={toggleColorScheme}
-                  >
-                    {computedColorScheme === 'dark' ? t('Light mode') : t('Dark mode')}
-                  </Menu.Item>
-                )}
-                {isMobile && <Menu.Divider />}
-                <Menu.Label>{t('Settings')}</Menu.Label>
-                <Menu.Item component={Link} to="/settings" leftSection={<Settings size={14} />}>
-                  {t('Open settings')}
-                </Menu.Item>
-                {(onOpenRepoSync || onClear) && (
-                  <>
-                    <Menu.Divider />
-                    <Menu.Label>{t('Actions')}</Menu.Label>
-                    {onOpenRepoSync && (
-                      <Menu.Item leftSection={<GitBranch size={14} />} onClick={onOpenRepoSync}>
-                        {t('Repository sync')}
-                      </Menu.Item>
-                    )}
-                    {onClear && (
-                      <Menu.Item color="red" leftSection={<Trash2 size={14} />} onClick={onClear}>
-                        {t('Clear editor')}
-                      </Menu.Item>
-                    )}
-                  </>
-                )}
-                <Menu.Divider />
-                <Menu.Label>{t('GlossBoss v{version}', { version: __APP_VERSION__ })}</Menu.Label>
-                <Menu.Item
-                  component="a"
-                  href="https://github.com/glossboss-labs/glossboss"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  leftSection={<ExternalLink size={14} />}
-                >
-                  {t('Source')}
-                </Menu.Item>
-                <Menu.Item
-                  component="a"
-                  href="/license/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  leftSection={<Info size={14} />}
-                >
-                  {t('License')}
-                </Menu.Item>
-                <Menu.Item
-                  component="a"
-                  href="/translate/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  leftSection={<ExternalLink size={14} />}
-                >
-                  {t('Translate')}
-                </Menu.Item>
-                <Menu.Item
-                  component="a"
-                  href="/privacy/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  leftSection={<Info size={14} />}
-                >
-                  {t('Privacy')}
-                </Menu.Item>
-              </Menu.Dropdown>
-            </Menu>
           </Group>
         </Group>
       </MotionDiv>

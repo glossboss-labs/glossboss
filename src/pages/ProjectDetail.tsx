@@ -310,16 +310,16 @@ export default function ProjectDetail() {
                   </Button>
                 </motion.div>
               )}
-              <Tooltip label={t('Project settings')}>
-                <ActionIcon
+              <motion.div {...buttonStates}>
+                <Button
                   component={Link}
                   to={`/projects/${id}/settings`}
-                  variant="default"
-                  size="lg"
+                  variant="subtle"
+                  leftSection={<Settings size={14} />}
                 >
-                  <Settings size={18} />
-                </ActionIcon>
-              </Tooltip>
+                  {t('Settings')}
+                </Button>
+              </motion.div>
             </Group>
           </Group>
 
