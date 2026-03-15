@@ -19,6 +19,7 @@ import {
   Monitor,
   Download,
   GitBranch,
+  CreditCard,
 } from 'lucide-react';
 import { sectionVariants } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
@@ -31,6 +32,7 @@ import {
   KeybindsSection,
   DisplaySection,
   BackupSection,
+  BillingSection,
   DevelopmentSection,
 } from '@/components/settings';
 
@@ -94,6 +96,9 @@ export default function Settings() {
               <Tabs.Tab value="account" leftSection={<User size={14} />}>
                 {t('Account')}
               </Tabs.Tab>
+              <Tabs.Tab value="billing" leftSection={<CreditCard size={14} />}>
+                {t('Billing')}
+              </Tabs.Tab>
               <Tabs.Tab value="translation" leftSection={<Key size={14} />}>
                 {t('Translation')}
               </Tabs.Tab>
@@ -121,6 +126,10 @@ export default function Settings() {
 
             <Tabs.Panel value="account" pt={isMobile ? 'md' : undefined}>
               <AccountSection />
+            </Tabs.Panel>
+
+            <Tabs.Panel value="billing" pt={isMobile ? 'md' : undefined}>
+              <BillingSection />
             </Tabs.Panel>
 
             <Tabs.Panel value="translation" pt={isMobile ? 'md' : undefined}>

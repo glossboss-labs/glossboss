@@ -19,3 +19,5 @@ export { DevelopmentSection } from './DevelopmentSection';
 export type { DevelopmentSectionProps } from './DevelopmentSection';
 
 export { AccountSection } from './AccountSection';
+
+export { BillingSection } from './BillingSection';

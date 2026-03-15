@@ -1,0 +1,41 @@
+import { getSupabaseClient } from '@/lib/supabase/client';
+import type { SubscriptionRow } from './types';
+
+function supabase() {
+  return getSupabaseClient('Billing');
+}
+
+/** Fetch the current user's personal subscription. */
+export async function getUserSubscription(): Promise<SubscriptionRow | null> {
+  const {
+    data: { user },
+  } = await supabase().auth.getUser();
+  if (!user) return null;
+
+  const { data, error } = await supabase()
+    .from('subscriptions')
+    .select('*')
+    .eq('user_id', user.id)
+    .eq('status', 'active')
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data;
+}
+
+/** Fetch the subscription for an organization. */
+export async function getOrgSubscription(orgId: string): Promise<SubscriptionRow | null> {
+  const { data, error } = await supabase()
+    .from('subscriptions')
+    .select('*')
+    .eq('organization_id', orgId)
+    .eq('status', 'active')
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data;
+}

@@ -77,7 +77,7 @@ msgstr "API-type"
 msgid "Accept invite"
 msgstr ""
 
-#: src/pages/Settings.tsx:95
+#: src/pages/Settings.tsx:97
 msgid "Account"
 msgstr ""
 
@@ -316,7 +316,7 @@ msgstr ""
 
 #: src/components/SettingsModal.tsx:1326
 #: src/components/editor/EditorHeader.tsx:252
-#: src/pages/Settings.tsx:113
+#: src/pages/Settings.tsx:118
 msgid "Backup"
 msgstr "Back-up"
 
@@ -331,6 +331,18 @@ msgstr "Wit-Russisch"
 #: src/components/editor/HeaderEditor.tsx:58
 msgid "Bengali"
 msgstr "Bengaals"
+
+#: src/components/settings/BillingSection.tsx:134
+msgid "Billed annually"
+msgstr ""
+
+#: src/components/settings/BillingSection.tsx:135
+msgid "Billed monthly"
+msgstr ""
+
+#: src/pages/Settings.tsx:100
+msgid "Billing"
+msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:59
 msgid "Bosnian"
@@ -850,6 +862,10 @@ msgstr "Kroatisch"
 msgid "Current editor"
 msgstr ""
 
+#: src/components/settings/BillingSection.tsx:124
+msgid "Current plan"
+msgstr ""
+
 #: src/components/editor/WordPressRefreshModal.tsx:222
 msgid "Current release: {{release}}"
 msgstr ""
@@ -894,7 +910,7 @@ msgstr "Donkere modus"
 #: src/components/AppHeader.tsx:115
 #: src/components/editor/EditorHeader.tsx:391
 #: src/pages/OrgSettings.tsx:277
-#: src/pages/Settings.tsx:74
+#: src/pages/Settings.tsx:76
 msgid "Dashboard"
 msgstr ""
 
@@ -988,7 +1004,7 @@ msgstr "Gedetecteerd: {{target}}"
 #: src/components/SettingsModal.tsx:1330
 #: src/components/editor/WordPressProjectModal.tsx:356
 #: src/components/editor/WordPressRefreshModal.tsx:242
-#: src/pages/Settings.tsx:117
+#: src/pages/Settings.tsx:122
 msgid "Development"
 msgstr "Ontwikkeling"
 
@@ -1011,7 +1027,7 @@ msgid "Discard changes and exit the current field"
 msgstr "Wijzigingen weggooien en huidig veld verlaten"
 
 #: src/components/SettingsModal.tsx:1323
-#: src/pages/Settings.tsx:110
+#: src/pages/Settings.tsx:115
 msgid "Display"
 msgstr "Weergave"
 
@@ -1750,7 +1766,7 @@ msgstr "GlossBoss v{version}"
 #: src/components/SettingsModal.tsx:1317
 #: src/components/editor/EditorTable.tsx:1297
 #: src/components/editor/GlossaryPanel.tsx:306
-#: src/pages/Settings.tsx:104
+#: src/pages/Settings.tsx:109
 msgid "Glossary"
 msgstr "Glossary"
 
@@ -2365,6 +2381,10 @@ msgid ""
 " into the active project scope."
 msgstr ""
 
+#: src/components/settings/BillingSection.tsx:159
+msgid "Manage subscription"
+msgstr ""
+
 #: src/components/editor/EditorTable.tsx:1289
 msgid "Manual"
 msgstr "Handmatig"
@@ -2483,6 +2503,10 @@ msgstr "Naam en e-mail van de laatste vertaler"
 #: src/components/settings/KeybindsSection.tsx:121
 msgid "Navigation Settings"
 msgstr "Navigatie-instellingen"
+
+#: src/components/settings/BillingSection.tsx:253
+msgid "Need more capacity?"
+msgstr ""
 
 #: src/components/editor/EditorTable.tsx:411
 msgid "Needs changes"
@@ -3025,6 +3049,10 @@ msgstr ""
 msgid "Polish"
 msgstr "Pools"
 
+#: src/components/settings/BillingSection.tsx:204
+msgid "Popular"
+msgstr ""
+
 #: src/components/editor/HeaderEditor.tsx:119
 #: src/components/editor/TranslateToolbar.tsx:94
 msgid "Portuguese"
@@ -3160,6 +3188,7 @@ msgstr ""
 msgid "Project type"
 msgstr ""
 
+#: src/components/settings/BillingSection.tsx:173
 #: src/pages/Dashboard.tsx:117
 #: src/pages/OrgSettings.tsx:339
 #: src/pages/OrgSettingsPage.tsx:351
@@ -3345,6 +3374,10 @@ msgstr ""
 
 #: src/pages/ProjectSettings.tsx:732
 msgid "Remove yourself from this project."
+msgstr ""
+
+#: src/components/settings/BillingSection.tsx:143
+msgid "Renews {{date}}"
 msgstr ""
 
 #: src/components/editor/EditorTable.tsx:1520
@@ -3603,6 +3636,10 @@ msgstr ""
 msgid "Save to cloud"
 msgstr ""
 
+#: src/components/settings/BillingSection.tsx:242
+msgid "Save with annual billing"
+msgstr ""
+
 #: src/components/repo-sync/RepoSyncModal.tsx:760
 msgid "Scanning for locale files..."
 msgstr ""
@@ -3750,7 +3787,7 @@ msgstr ""
 #: src/components/projects/ProjectCard.tsx:126
 #: src/pages/OrgSettings.tsx:316
 #: src/pages/ProjectDetail.tsx:355
-#: src/pages/Settings.tsx:77
+#: src/pages/Settings.tsx:79
 msgid "Settings"
 msgstr "Instellingen"
 
@@ -3813,7 +3850,7 @@ msgstr "Korte samenvatting van het verzoek"
 msgid "Shortcut"
 msgstr "Sneltoets"
 
-#: src/pages/Settings.tsx:107
+#: src/pages/Settings.tsx:112
 msgid "Shortcuts"
 msgstr ""
 
@@ -3869,6 +3906,10 @@ msgstr ""
 
 #: src/components/settings/AccountSection.tsx:123
 msgid "Sign in to manage your account settings and enable cloud sync."
+msgstr ""
+
+#: src/components/settings/BillingSection.tsx:60
+msgid "Sign in to manage your subscription."
 msgstr ""
 
 #: src/components/auth/UserMenu.tsx:136
@@ -3989,7 +4030,7 @@ msgid "Spanish (Spain)"
 msgstr "Spaans (Spanje)"
 
 #: src/components/SettingsModal.tsx:1304
-#: src/pages/Settings.tsx:101
+#: src/pages/Settings.tsx:106
 msgid "Speech"
 msgstr "Spraak"
 
@@ -4036,6 +4077,10 @@ msgstr ""
 #: src/components/editor/EditorTable.tsx:3325
 msgid "String Inspector"
 msgstr "Tekst-inspecteur"
+
+#: src/components/settings/BillingSection.tsx:178
+msgid "Strings"
+msgstr ""
 
 #: src/components/editor/EditorTable.tsx:1971
 msgid "Structure"
@@ -4312,7 +4357,7 @@ msgstr "Bezig met vertalen..."
 #: src/components/editor/EditorTable.tsx:2505
 #: src/components/editor/EditorTable.tsx:3379
 #: src/components/glossary/shared.tsx:91
-#: src/pages/Settings.tsx:98
+#: src/pages/Settings.tsx:103
 msgid "Translation"
 msgstr "Vertaling"
 
@@ -4464,6 +4509,10 @@ msgstr ""
 msgid "Unknown error"
 msgstr "Onbekende fout"
 
+#: src/components/settings/BillingSection.tsx:36
+msgid "Unlimited"
+msgstr ""
+
 #: src/pages/ProjectSettings.tsx:566
 msgid "Unlink repository"
 msgstr ""
@@ -4537,6 +4586,18 @@ msgstr ""
 msgid "Updated translation"
 msgstr ""
 
+#: src/components/settings/BillingSection.tsx:192
+msgid "Upgrade"
+msgstr ""
+
+#: src/components/settings/BillingSection.tsx:261
+msgid "Upgrade to Organization"
+msgstr ""
+
+#: src/components/billing/UpgradePrompt.tsx:48
+msgid "Upgrade to {{plan}}"
+msgstr ""
+
 #: src/components/SettingsModal.tsx:2174
 #: src/components/settings/GlossarySection.tsx:285
 msgid "Upload CSV"
@@ -4571,6 +4632,10 @@ msgstr ""
 #: src/components/editor/HeaderEditor.tsx:140
 msgid "Urdu"
 msgstr "Urdu"
+
+#: src/components/settings/BillingSection.tsx:169
+msgid "Usage"
+msgstr ""
 
 #: src/components/SettingsModal.tsx:2024
 #: src/components/settings/SpeechSection.tsx:478
@@ -4885,6 +4950,16 @@ msgstr ""
 msgid "Your password"
 msgstr ""
 
+#: src/components/settings/BillingSection.tsx:102
+msgid ""
+"Your payment is past due. Please update your payment method to avoid service"
+" interruption."
+msgstr ""
+
+#: src/components/settings/BillingSection.tsx:110
+msgid "Your subscription is canceled and will expire on {{date}}."
+msgstr ""
+
 #: src/components/repo-sync/RepoSyncModal.tsx:209
 msgid ""
 "Your token is sent directly to the GitHub API from your browser and is never"
@@ -4943,6 +5018,16 @@ msgstr "zojuist"
 msgid "languages"
 msgstr ""
 
+#: src/components/settings/BillingSection.tsx:216
+#: src/components/settings/BillingSection.tsx:235
+msgid "members"
+msgstr ""
+
+#: src/components/settings/BillingSection.tsx:210
+#: src/components/settings/BillingSection.tsx:229
+msgid "month"
+msgstr ""
+
 #: src/components/feedback/FeedbackModal.tsx:425
 msgid "name@example.com"
 msgstr "naam@voorbeeld.nl"
@@ -4973,6 +5058,11 @@ msgstr "overschreven"
 msgid "plural"
 msgstr "meervoud"
 
+#: src/components/settings/BillingSection.tsx:214
+#: src/components/settings/BillingSection.tsx:233
+msgid "projects"
+msgstr ""
+
 #: src/components/editor/EditorTable.tsx:637
 msgid "singular"
 msgstr "enkelvoud"
@@ -4981,6 +5071,8 @@ msgstr "enkelvoud"
 msgid "skipped"
 msgstr "overgeslagen"
 
+#: src/components/settings/BillingSection.tsx:215
+#: src/components/settings/BillingSection.tsx:234
 #: src/pages/OrgSettings.tsx:475
 #: src/pages/OrgSettingsPage.tsx:672
 #: src/pages/ProjectSettings.tsx:642
@@ -5010,6 +5102,11 @@ msgstr ""
 
 #: src/components/repo-sync/RepoSyncModal.tsx:635
 msgid "with api scope"
+msgstr ""
+
+#: src/components/settings/BillingSection.tsx:242
+#: src/components/settings/BillingSection.tsx:243
+msgid "year"
 msgstr ""
 
 #: src/pages/index/IndexPageBanners.tsx:151
