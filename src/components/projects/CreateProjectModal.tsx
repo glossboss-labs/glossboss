@@ -34,6 +34,7 @@ import type { WordPressProjectOpenRequest } from '@/components/editor/WordPressP
 import { WordPressProjectModal } from '@/components/editor/WordPressProjectModal';
 import { RepoSyncModal } from '@/components/repo-sync/RepoSyncModal';
 import { useProjectsStore } from '@/stores/projects-store';
+import { useOrganizationsStore } from '@/stores/organizations-store';
 import { useAuth } from '@/hooks/use-auth';
 import { useNavigate } from 'react-router';
 import type { WordPressProjectType } from '@/lib/wp-source/references';
@@ -64,6 +65,7 @@ export function CreateProjectModal({ opened, onClose }: CreateProjectModalProps)
   const navigate = useNavigate();
   const { user } = useAuth();
   const createProject = useProjectsStore((s) => s.createProject);
+  const organizations = useOrganizationsStore((s) => s.organizations);
   const fileResetRef = useRef<(() => void) | null>(null);
 
   // Stepper
@@ -81,6 +83,7 @@ export function CreateProjectModal({ opened, onClose }: CreateProjectModalProps)
   const [visibility, setVisibility] = useState<string>('private');
   const [sourceFormat, setSourceFormat] = useState<string>('po');
   const [sourceLanguage, setSourceLanguage] = useState('');
+  const [organizationId, setOrganizationId] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
 
@@ -95,6 +98,7 @@ export function CreateProjectModal({ opened, onClose }: CreateProjectModalProps)
     setVisibility('private');
     setSourceFormat('po');
     setSourceLanguage('');
+    setOrganizationId(null);
     setCreating(false);
     setCreateError(null);
   }, []);
@@ -235,6 +239,7 @@ export function CreateProjectModal({ opened, onClose }: CreateProjectModalProps)
         const { project } = await createProject(
           {
             owner_id: user.id,
+            organization_id: organizationId,
             name: projectName.trim() || importedFile.originalFilename,
             description: '',
             visibility: visibility as 'private' | 'public' | 'unlisted',
@@ -269,6 +274,7 @@ export function CreateProjectModal({ opened, onClose }: CreateProjectModalProps)
         // Empty project — no language or entries
         const { project } = await createProject({
           owner_id: user.id,
+          organization_id: organizationId,
           name: projectName.trim() || t('New project'),
           description: '',
           visibility: visibility as 'private' | 'public' | 'unlisted',
@@ -298,6 +304,7 @@ export function CreateProjectModal({ opened, onClose }: CreateProjectModalProps)
     handleClose,
     importedFile,
     navigate,
+    organizationId,
     projectName,
     sourceFormat,
     sourceLanguage,
@@ -470,6 +477,17 @@ export function CreateProjectModal({ opened, onClose }: CreateProjectModalProps)
               value={visibility}
               onChange={(v) => setVisibility(v ?? 'private')}
             />
+
+            {organizations.length > 0 && (
+              <Select
+                label={t('Organization')}
+                placeholder={t('Personal project')}
+                data={organizations.map((o) => ({ value: o.id, label: o.name }))}
+                value={organizationId}
+                onChange={setOrganizationId}
+                clearable
+              />
+            )}
 
             {!importedFile && (
               <>

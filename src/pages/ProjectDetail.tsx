@@ -1,8 +1,5 @@
 /**
- * ProjectDetail — project language list page.
- *
- * Shows a project's languages with per-language progress,
- * and provides actions to add or remove languages.
+ * ProjectDetail — project overview page with Languages, Members, Invites, and Settings tabs.
  */
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -23,7 +20,6 @@ import {
   ActionIcon,
   Menu,
   TextInput,
-  Textarea,
   Select,
   Tooltip,
   ThemeIcon,
@@ -42,6 +38,8 @@ import {
   EyeOff,
   Search,
   GitBranch,
+  Users,
+  Mail,
   Settings,
 } from 'lucide-react';
 import {
@@ -53,11 +51,26 @@ import {
   fadeVariants,
 } from '@/lib/motion';
 import { useTranslation, msgid } from '@/lib/app-language';
-import { getProject, getProjectLanguages, updateProject, deleteProject } from '@/lib/projects/api';
-import type { ProjectRow, ProjectLanguageRow } from '@/lib/projects/types';
+import {
+  getProject,
+  getProjectLanguages,
+  listProjectMembers,
+  listProjectInvites,
+  removeProjectMember,
+} from '@/lib/projects/api';
+import type {
+  ProjectRow,
+  ProjectLanguageRow,
+  ProjectMemberWithProfile,
+  ProjectInviteRow,
+} from '@/lib/projects/types';
 import { useProjectsStore } from '@/stores/projects-store';
+import { useAuth } from '@/hooks/use-auth';
 import { AppHeader } from '@/components/AppHeader';
 import { AddLanguageModal } from '@/components/projects/AddLanguageModal';
+import { ProjectMembersTab } from '@/components/projects/ProjectMembersTab';
+import { ProjectInvitesTab } from '@/components/projects/ProjectInvitesTab';
+import { ProjectSettingsTab } from '@/components/projects/ProjectSettingsTab';
 import { ConfirmModal } from '@/components/ui';
 
 const MotionDiv = motion.div;
@@ -121,6 +134,7 @@ function formatRelative(iso: string): string {
 export default function ProjectDetail() {
   const { id } = useParams<{ id: string }>();
   const { t } = useTranslation();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const deleteLanguage = useProjectsStore((s) => s.deleteLanguage);
 
@@ -128,18 +142,22 @@ export default function ProjectDetail() {
   const [error, setError] = useState<string | null>(null);
   const [project, setProject] = useState<ProjectRow | null>(null);
   const [languages, setLanguages] = useState<ProjectLanguageRow[]>([]);
+  const [members, setMembers] = useState<ProjectMemberWithProfile[]>([]);
+  const [invites, setInvites] = useState<ProjectInviteRow[]>([]);
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<LangSortOption>('locale');
+  const [confirmLeaveOpen, setConfirmLeaveOpen] = useState(false);
+  const [leaveLoading, setLeaveLoading] = useState(false);
 
-  // Settings tab state
-  const [editName, setEditName] = useState('');
-  const [editDescription, setEditDescription] = useState('');
-  const [editVisibility, setEditVisibility] = useState<string>('');
-  const [saving, setSaving] = useState(false);
-  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
-  const [actionLoading, setActionLoading] = useState(false);
+  // Derive role info
+  const myMembership = useMemo(
+    () => (user ? members.find((m) => m.user_id === user.id) : undefined),
+    [user, members],
+  );
+  const isAdmin = myMembership?.role === 'admin';
+  const canManage = myMembership?.role === 'admin' || myMembership?.role === 'maintainer';
 
   useEffect(() => {
     if (!id) return;
@@ -147,7 +165,12 @@ export default function ProjectDetail() {
 
     async function load() {
       try {
-        const [proj, langs] = await Promise.all([getProject(id!), getProjectLanguages(id!)]);
+        const [proj, langs, mems, invs] = await Promise.all([
+          getProject(id!),
+          getProjectLanguages(id!),
+          listProjectMembers(id!),
+          listProjectInvites(id!).catch(() => [] as ProjectInviteRow[]),
+        ]);
         if (cancelled) return;
         if (!proj) {
           setError(t('Project not found'));
@@ -156,9 +179,8 @@ export default function ProjectDetail() {
         }
         setProject(proj);
         setLanguages(langs);
-        setEditName(proj.name);
-        setEditDescription(proj.description);
-        setEditVisibility(proj.visibility);
+        setMembers(mems);
+        setInvites(invs);
         setLoading(false);
       } catch (err) {
         if (cancelled) return;
@@ -190,35 +212,18 @@ export default function ProjectDetail() {
     setRefreshKey((k) => k + 1);
   }, []);
 
-  const handleSaveProject = useCallback(async () => {
-    if (!project || !editName.trim()) return;
-    setSaving(true);
+  const handleLeaveProject = useCallback(async () => {
+    if (!myMembership) return;
+    setLeaveLoading(true);
     try {
-      const updated = await updateProject(project.id, {
-        name: editName.trim(),
-        description: editDescription.trim(),
-        visibility: editVisibility as 'private' | 'public' | 'unlisted',
-      });
-      setProject(updated);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : t('Failed to save project'));
-    } finally {
-      setSaving(false);
-    }
-  }, [project, editName, editDescription, editVisibility, t]);
-
-  const handleDeleteProject = useCallback(async () => {
-    if (!project) return;
-    setActionLoading(true);
-    try {
-      await deleteProject(project.id);
-      setConfirmDeleteOpen(false);
+      await removeProjectMember(myMembership.id);
+      setConfirmLeaveOpen(false);
       void navigate('/dashboard');
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('Failed to delete project'));
-      setActionLoading(false);
+      setError(err instanceof Error ? err.message : t('Failed to leave project'));
+      setLeaveLoading(false);
     }
-  }, [project, navigate, t]);
+  }, [myMembership, navigate, t]);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
@@ -298,11 +303,13 @@ export default function ProjectDetail() {
               <ArrowLeft size={14} />
               {t('Projects')}
             </Text>
-            <motion.div {...buttonStates}>
-              <Button leftSection={<Plus size={16} />} onClick={() => setAddModalOpen(true)}>
-                {t('Add language')}
-              </Button>
-            </motion.div>
+            {canManage && (
+              <motion.div {...buttonStates}>
+                <Button leftSection={<Plus size={16} />} onClick={() => setAddModalOpen(true)}>
+                  {t('Add language')}
+                </Button>
+              </motion.div>
+            )}
           </Group>
 
           {/* Title + metadata */}
@@ -337,19 +344,40 @@ export default function ProjectDetail() {
             </Group>
           </div>
 
+          {error && (
+            <Alert
+              icon={<AlertCircle size={16} />}
+              color="red"
+              variant="light"
+              withCloseButton
+              onClose={() => setError(null)}
+            >
+              {error}
+            </Alert>
+          )}
+
+          {/* Tabs */}
           <Tabs defaultValue="languages">
             <Tabs.List>
               <Tabs.Tab value="languages" leftSection={<Languages size={14} />}>
                 {t('Languages')} ({languages.length})
               </Tabs.Tab>
+              <Tabs.Tab value="members" leftSection={<Users size={14} />}>
+                {t('Members')} ({members.length})
+              </Tabs.Tab>
+              {isAdmin && (
+                <Tabs.Tab value="invites" leftSection={<Mail size={14} />}>
+                  {t('Invites')} ({invites.length})
+                </Tabs.Tab>
+              )}
               <Tabs.Tab value="settings" leftSection={<Settings size={14} />}>
                 {t('Settings')}
               </Tabs.Tab>
             </Tabs.List>
 
+            {/* Languages tab */}
             <Tabs.Panel value="languages" pt="md">
               <Stack gap="lg">
-                {/* Aggregate stats */}
                 {languages.length > 0 && (
                   <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
                     <Paper withBorder p="md">
@@ -371,7 +399,6 @@ export default function ProjectDetail() {
                   </MotionDiv>
                 )}
 
-                {/* Search and sort */}
                 {languages.length > 0 && (
                   <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
                     <Group gap="sm">
@@ -546,30 +573,32 @@ export default function ProjectDetail() {
                                 </Group>
                               </Stack>
 
-                              <Menu position="bottom-end" withinPortal>
-                                <Menu.Target>
-                                  <ActionIcon
-                                    variant="subtle"
-                                    size="sm"
-                                    color="gray"
-                                    onClick={(e) => e.preventDefault()}
-                                  >
-                                    <MoreVertical size={14} />
-                                  </ActionIcon>
-                                </Menu.Target>
-                                <Menu.Dropdown>
-                                  <Menu.Item
-                                    color="red"
-                                    leftSection={<Trash2 size={14} />}
-                                    onClick={(e) => {
-                                      e.preventDefault();
-                                      void handleDeleteLanguage(lang.id);
-                                    }}
-                                  >
-                                    {t('Delete')}
-                                  </Menu.Item>
-                                </Menu.Dropdown>
-                              </Menu>
+                              {canManage && (
+                                <Menu position="bottom-end" withinPortal>
+                                  <Menu.Target>
+                                    <ActionIcon
+                                      variant="subtle"
+                                      size="sm"
+                                      color="gray"
+                                      onClick={(e) => e.preventDefault()}
+                                    >
+                                      <MoreVertical size={14} />
+                                    </ActionIcon>
+                                  </Menu.Target>
+                                  <Menu.Dropdown>
+                                    <Menu.Item
+                                      color="red"
+                                      leftSection={<Trash2 size={14} />}
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        void handleDeleteLanguage(lang.id);
+                                      }}
+                                    >
+                                      {t('Delete')}
+                                    </Menu.Item>
+                                  </Menu.Dropdown>
+                                </Menu>
+                              )}
                             </Group>
                           </Paper>
                         </MotionDiv>
@@ -580,82 +609,41 @@ export default function ProjectDetail() {
               </Stack>
             </Tabs.Panel>
 
-            <Tabs.Panel value="settings" pt="md">
-              <Stack gap="lg">
-                {/* Edit project details */}
-                <Paper withBorder p="md">
-                  <Text size="sm" fw={500} mb="sm">
-                    {t('Project details')}
-                  </Text>
-                  <Stack gap="sm">
-                    <TextInput
-                      label={t('Project name')}
-                      value={editName}
-                      onChange={(e) => setEditName(e.currentTarget.value)}
-                      maw={400}
-                    />
-                    <Textarea
-                      label={t('Description')}
-                      value={editDescription}
-                      onChange={(e) => setEditDescription(e.currentTarget.value)}
-                      autosize
-                      minRows={2}
-                      maxRows={4}
-                      maw={400}
-                    />
-                    <Select
-                      label={t('Visibility')}
-                      data={[
-                        { value: 'private', label: t('Private') },
-                        { value: 'public', label: t('Public') },
-                        { value: 'unlisted', label: t('Unlisted') },
-                      ]}
-                      value={editVisibility}
-                      onChange={(v) => setEditVisibility(v || 'private')}
-                      w={200}
-                      allowDeselect={false}
-                    />
-                    <div>
-                      <motion.div {...buttonStates}>
-                        <Button
-                          onClick={() => void handleSaveProject()}
-                          loading={saving}
-                          disabled={!editName.trim()}
-                        >
-                          {t('Save changes')}
-                        </Button>
-                      </motion.div>
-                    </div>
-                  </Stack>
-                </Paper>
+            {/* Members tab */}
+            <Tabs.Panel value="members" pt="md">
+              <ProjectMembersTab
+                projectId={project.id}
+                members={members}
+                isAdmin={isAdmin ?? false}
+                currentUserId={user?.id}
+                onMembersChange={setMembers}
+                onInviteCreated={(inv) => setInvites((prev) => [inv, ...prev])}
+                onLeave={() => setConfirmLeaveOpen(true)}
+                onError={setError}
+              />
+            </Tabs.Panel>
 
-                {/* Danger zone */}
-                <Paper withBorder p="md" style={{ borderColor: 'var(--mantine-color-red-4)' }}>
-                  <Text size="sm" fw={500} mb="sm" c="red">
-                    {t('Danger zone')}
-                  </Text>
-                  <Group justify="space-between" align="center">
-                    <div>
-                      <Text size="sm">{t('Delete this project')}</Text>
-                      <Text size="xs" style={{ color: 'var(--gb-text-secondary)' }}>
-                        {t(
-                          'Permanently delete this project, all languages, and all entries. This cannot be undone.',
-                        )}
-                      </Text>
-                    </div>
-                    <motion.div {...buttonStates}>
-                      <Button
-                        color="red"
-                        variant="outline"
-                        leftSection={<Trash2 size={14} />}
-                        onClick={() => setConfirmDeleteOpen(true)}
-                      >
-                        {t('Delete project')}
-                      </Button>
-                    </motion.div>
-                  </Group>
-                </Paper>
-              </Stack>
+            {/* Invites tab (admin-only) */}
+            {isAdmin && (
+              <Tabs.Panel value="invites" pt="md">
+                <ProjectInvitesTab
+                  projectId={project.id}
+                  invites={invites}
+                  onInvitesChange={setInvites}
+                  onError={setError}
+                />
+              </Tabs.Panel>
+            )}
+
+            {/* Settings tab */}
+            <Tabs.Panel value="settings" pt="md">
+              <ProjectSettingsTab
+                project={project}
+                canManage={canManage ?? false}
+                isAdmin={isAdmin ?? false}
+                onProjectUpdate={setProject}
+                onError={setError}
+              />
             </Tabs.Panel>
           </Tabs>
         </Stack>
@@ -672,17 +660,14 @@ export default function ProjectDetail() {
       />
 
       <ConfirmModal
-        opened={confirmDeleteOpen}
-        onClose={() => setConfirmDeleteOpen(false)}
-        onConfirm={() => void handleDeleteProject()}
-        title={t('Delete project')}
-        message={t(
-          'Are you sure you want to delete "{{name}}"? All languages and entries will be permanently removed.',
-          { name: project.name },
-        )}
-        confirmLabel={t('Delete project')}
-        variant="danger"
-        loading={actionLoading}
+        opened={confirmLeaveOpen}
+        onClose={() => setConfirmLeaveOpen(false)}
+        onConfirm={() => void handleLeaveProject()}
+        title={t('Leave project')}
+        message={t('Are you sure you want to leave "{{name}}"?', { name: project.name })}
+        confirmLabel={t('Leave project')}
+        variant="warning"
+        loading={leaveLoading}
       />
     </Container>
   );

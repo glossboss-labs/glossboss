@@ -11,6 +11,11 @@ import type {
   ProjectInsert,
   ProjectUpdate,
   ProjectEntryRow,
+  ProjectMemberRow,
+  ProjectMemberWithProfile,
+  ProjectRole,
+  ProjectInviteRow,
+  ProjectInviteInsert,
   ProjectLanguageRow,
   ProjectLanguageInsert,
   ProjectLanguageUpdate,
@@ -245,4 +250,158 @@ export async function syncProjectEntries(
 
     if (error) throw error;
   }
+}
+
+// ── Project Members ─────────────────────────────────────────
+
+export async function listProjectMembers(projectId: string): Promise<ProjectMemberWithProfile[]> {
+  const { data: members, error } = await supabase()
+    .from('project_members')
+    .select('*')
+    .eq('project_id', projectId)
+    .order('created_at', { ascending: true });
+
+  if (error) throw error;
+  if (!members?.length) return [];
+
+  const userIds = members.map((m) => m.user_id);
+  const { data: profiles } = await supabase()
+    .from('profiles')
+    .select('id, email, full_name, avatar_url')
+    .in('id', userIds);
+
+  const profileMap = new Map((profiles ?? []).map((p) => [p.id, p]));
+
+  return members.map((m) => ({
+    ...m,
+    profiles: profileMap.get(m.user_id) ?? { email: '', full_name: null, avatar_url: null },
+  })) as ProjectMemberWithProfile[];
+}
+
+export async function addProjectMember(
+  projectId: string,
+  userId: string,
+  role: ProjectRole = 'translator',
+): Promise<ProjectMemberRow> {
+  const { data, error } = await supabase()
+    .from('project_members')
+    .insert({ project_id: projectId, user_id: userId, role })
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function updateProjectMemberRole(
+  memberId: string,
+  role: ProjectRole,
+): Promise<ProjectMemberRow> {
+  const { data, error } = await supabase()
+    .from('project_members')
+    .update({ role })
+    .eq('id', memberId)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function removeProjectMember(memberId: string): Promise<void> {
+  const { error } = await supabase().from('project_members').delete().eq('id', memberId);
+
+  if (error) throw error;
+}
+
+export async function findProfileByEmail(email: string): Promise<{
+  id: string;
+  email: string;
+  full_name: string | null;
+  avatar_url: string | null;
+} | null> {
+  const { data, error } = await supabase()
+    .from('profiles')
+    .select('id, email, full_name, avatar_url')
+    .eq('email', email)
+    .single();
+
+  if (error) {
+    if (error.code === 'PGRST116') return null;
+    throw error;
+  }
+  return data;
+}
+
+// ── Project Invites ─────────────────────────────────────────
+
+export async function listProjectInvites(projectId: string): Promise<ProjectInviteRow[]> {
+  const { data, error } = await supabase()
+    .from('project_invites')
+    .select('*')
+    .eq('project_id', projectId)
+    .is('accepted_at', null)
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function createProjectInvite(insert: ProjectInviteInsert): Promise<ProjectInviteRow> {
+  const { data, error } = await supabase().from('project_invites').insert(insert).select().single();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function revokeProjectInvite(inviteId: string): Promise<void> {
+  const { error } = await supabase().from('project_invites').delete().eq('id', inviteId);
+
+  if (error) throw error;
+}
+
+export async function acceptProjectInvite(token: string): Promise<string> {
+  const { data, error } = await supabase().rpc('accept_project_invite', { p_token: token });
+
+  if (error) throw error;
+  return data as string;
+}
+
+export async function getProjectInviteByToken(token: string): Promise<ProjectInviteRow | null> {
+  const { data, error } = await supabase()
+    .from('project_invites')
+    .select('*')
+    .eq('token', token)
+    .is('accepted_at', null)
+    .gt('expires_at', new Date().toISOString())
+    .single();
+
+  if (error) {
+    if (error.code === 'PGRST116') return null;
+    throw error;
+  }
+  return data;
+}
+
+// ── Org Projects ────────────────────────────────────────────
+
+export async function listOrgProjects(orgId: string): Promise<ProjectWithLanguages[]> {
+  const joined = await supabase()
+    .from('projects')
+    .select('*, project_languages(*)')
+    .eq('organization_id', orgId)
+    .order('updated_at', { ascending: false });
+
+  if (!joined.error) {
+    return (joined.data ?? []) as ProjectWithLanguages[];
+  }
+
+  const { data, error } = await supabase()
+    .from('projects')
+    .select('*')
+    .eq('organization_id', orgId)
+    .order('updated_at', { ascending: false });
+
+  if (error) throw error;
+  return (data ?? []).map((p) => ({ ...p, project_languages: [] }) as ProjectWithLanguages);
 }

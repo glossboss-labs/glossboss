@@ -39,11 +39,11 @@ import {
   Users,
   Mail,
   Shield,
-  Crown,
   Copy,
   Check,
   Settings,
   LogOut,
+  FolderOpen,
 } from 'lucide-react';
 import { sectionVariants, contentVariants, fadeVariants, buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
@@ -66,7 +66,9 @@ import type {
 } from '@/lib/organizations/types';
 import { useAuth } from '@/hooks/use-auth';
 import { AppHeader } from '@/components/AppHeader';
-import { ConfirmModal } from '@/components/ui';
+import { ConfirmModal, RoleBadge } from '@/components/ui';
+import { listOrgProjects } from '@/lib/projects/api';
+import type { ProjectWithLanguages } from '@/lib/projects/types';
 
 const MotionDiv = motion.div;
 
@@ -74,16 +76,6 @@ const ROLE_OPTIONS: { value: OrgRole; label: string }[] = [
   { value: 'admin', label: 'Admin' },
   { value: 'member', label: 'Member' },
 ];
-
-function RoleBadge({ role }: { role: OrgRole }) {
-  const color = role === 'owner' ? 'yellow' : role === 'admin' ? 'blue' : 'gray';
-  const Icon = role === 'owner' ? Crown : role === 'admin' ? Shield : Users;
-  return (
-    <Badge variant="light" size="sm" color={color} leftSection={<Icon size={10} />}>
-      {role}
-    </Badge>
-  );
-}
 
 export default function OrgSettings() {
   const { slug } = useParams<{ slug: string }>();
@@ -96,6 +88,7 @@ export default function OrgSettings() {
   const [org, setOrg] = useState<OrganizationRow | null>(null);
   const [members, setMembers] = useState<OrgMemberWithProfile[]>([]);
   const [invites, setInvites] = useState<InviteRow[]>([]);
+  const [orgProjects, setOrgProjects] = useState<ProjectWithLanguages[]>([]);
 
   // Edit org state
   const [editOrgName, setEditOrgName] = useState('');
@@ -141,13 +134,15 @@ export default function OrgSettings() {
         setEditOrgName(organization.name);
         setEditOrgDescription(organization.description);
 
-        const [memberList, inviteList] = await Promise.all([
+        const [memberList, inviteList, projectList] = await Promise.all([
           listOrgMembers(organization.id),
           listInvites(organization.id).catch(() => [] as InviteRow[]),
+          listOrgProjects(organization.id).catch(() => [] as ProjectWithLanguages[]),
         ]);
         if (cancelled) return;
         setMembers(memberList);
         setInvites(inviteList);
+        setOrgProjects(projectList);
         setLoading(false);
       } catch (err) {
         if (cancelled) return;
@@ -335,6 +330,9 @@ export default function OrgSettings() {
               <Tabs.Tab value="members" leftSection={<Users size={14} />}>
                 {t('Members')} ({members.length})
               </Tabs.Tab>
+              <Tabs.Tab value="projects" leftSection={<FolderOpen size={14} />}>
+                {t('Projects')} ({orgProjects.length})
+              </Tabs.Tab>
               {isAdmin && (
                 <Tabs.Tab value="invites" leftSection={<Mail size={14} />}>
                   {t('Invites')} ({invites.length})
@@ -417,6 +415,59 @@ export default function OrgSettings() {
                   );
                 })}
               </Stack>
+            </Tabs.Panel>
+
+            {/* Projects tab */}
+            <Tabs.Panel value="projects" pt="md">
+              {orgProjects.length === 0 ? (
+                <Center py={40}>
+                  <Text size="sm" style={{ color: 'var(--gb-text-secondary)' }}>
+                    {t('No projects in this organization yet')}
+                  </Text>
+                </Center>
+              ) : (
+                <Stack gap="sm">
+                  {orgProjects.map((proj) => (
+                    <Paper
+                      key={proj.id}
+                      component={Link}
+                      to={`/projects/${proj.id}`}
+                      withBorder
+                      p="sm"
+                      style={{
+                        textDecoration: 'none',
+                        color: 'inherit',
+                        cursor: 'pointer',
+                        transition: 'border-color 120ms ease, background-color 120ms ease',
+                      }}
+                      styles={{
+                        root: {
+                          '&:hover': {
+                            borderColor: 'var(--mantine-color-blue-5)',
+                            backgroundColor: 'var(--gb-highlight-row)',
+                          },
+                        },
+                      }}
+                    >
+                      <Group justify="space-between" align="center">
+                        <div>
+                          <Text size="sm" fw={600}>
+                            {proj.name}
+                          </Text>
+                          <Text size="xs" style={{ color: 'var(--gb-text-secondary)' }}>
+                            {proj.project_languages?.length ?? 0} {t('languages')}
+                            {' · '}
+                            {proj.stats_total} {t('strings')}
+                          </Text>
+                        </div>
+                        <Badge variant="light" size="xs">
+                          {proj.visibility}
+                        </Badge>
+                      </Group>
+                    </Paper>
+                  ))}
+                </Stack>
+              )}
             </Tabs.Panel>
 
             {/* Invites tab */}

@@ -11,6 +11,10 @@ export type {
   ProjectEntryRow,
   ProjectEntryInsert,
   ProjectMemberRow,
+  ProjectMemberWithProfile,
+  ProjectRole,
+  ProjectInviteRow,
+  ProjectInviteInsert,
   ProjectLanguageRow,
   ProjectLanguageInsert,
   ProjectLanguageUpdate,
@@ -32,6 +36,17 @@ export {
   getProjectEntries,
   getProjectEntryKeys,
   syncProjectEntries,
+  listProjectMembers,
+  addProjectMember,
+  updateProjectMemberRole,
+  removeProjectMember,
+  findProfileByEmail,
+  listProjectInvites,
+  createProjectInvite,
+  revokeProjectInvite,
+  acceptProjectInvite,
+  getProjectInviteByToken,
+  listOrgProjects,
 } from './api';
 
 export {

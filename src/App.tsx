@@ -12,6 +12,7 @@ import ProjectDetail from '@/pages/ProjectDetail';
 import ProjectEditor from '@/pages/ProjectEditor';
 import OrgSettings from '@/pages/OrgSettings';
 import Invite from '@/pages/Invite';
+import ProjectInvite from '@/pages/ProjectInvite';
 import Login from '@/pages/auth/Login';
 import Signup from '@/pages/auth/Signup';
 import Callback from '@/pages/auth/Callback';
@@ -64,6 +65,14 @@ export default function App() {
         element={
           <AuthGuard>
             <Invite />
+          </AuthGuard>
+        }
+      />
+      <Route
+        path="/invite/project/:token"
+        element={
+          <AuthGuard>
+            <ProjectInvite />
           </AuthGuard>
         }
       />

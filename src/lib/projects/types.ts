@@ -152,6 +152,35 @@ export interface ProjectMemberRow {
   updated_at: string;
 }
 
+/** Project-level role type */
+export type ProjectRole = ProjectMemberRow['role'];
+
+/** Project member with profile info from a separate profiles fetch */
+export interface ProjectMemberWithProfile extends ProjectMemberRow {
+  profiles: {
+    email: string;
+    full_name: string | null;
+    avatar_url: string | null;
+  };
+}
+
+/** Row shape for the `project_invites` table */
+export interface ProjectInviteRow {
+  id: string;
+  project_id: string;
+  email: string;
+  role: ProjectRole;
+  token: string;
+  invited_by: string | null;
+  accepted_at: string | null;
+  accepted_by: string | null;
+  expires_at: string;
+  created_at: string;
+}
+
+/** Insert shape for `project_invites` */
+export type ProjectInviteInsert = Pick<ProjectInviteRow, 'project_id' | 'email' | 'role'>;
+
 /** Project with embedded languages from a join query */
 export type ProjectWithLanguages = ProjectRow & {
   project_languages: ProjectLanguageRow[];
