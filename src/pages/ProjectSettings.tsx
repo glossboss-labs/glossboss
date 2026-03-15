@@ -94,6 +94,7 @@ export default function ProjectSettings() {
   const [editName, setEditName] = useState('');
   const [editDescription, setEditDescription] = useState('');
   const [editVisibility, setEditVisibility] = useState('private');
+  const [editPublicRole, setEditPublicRole] = useState('viewer');
   const [saving, setSaving] = useState(false);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [confirmLeaveOpen, setConfirmLeaveOpen] = useState(false);
@@ -132,6 +133,7 @@ export default function ProjectSettings() {
         setEditName(proj.name);
         setEditDescription(proj.description);
         setEditVisibility(proj.visibility);
+        setEditPublicRole(proj.public_role);
         setLoading(false);
       } catch (err) {
         if (cancelled) return;
@@ -158,6 +160,7 @@ export default function ProjectSettings() {
         name: editName.trim(),
         description: editDescription.trim(),
         visibility: editVisibility as 'private' | 'public' | 'unlisted',
+        public_role: editPublicRole as 'viewer' | 'translator' | 'reviewer',
       });
       setProject(updated);
     } catch (err) {
@@ -165,7 +168,7 @@ export default function ProjectSettings() {
     } finally {
       setSaving(false);
     }
-  }, [project, editName, editDescription, editVisibility, t]);
+  }, [project, editName, editDescription, editVisibility, editPublicRole, t]);
 
   const handleDelete = useCallback(async () => {
     if (!project) return;
@@ -372,6 +375,23 @@ export default function ProjectSettings() {
                         w={200}
                         allowDeselect={false}
                       />
+                      {editVisibility === 'public' && (
+                        <Select
+                          label={t('Public permissions')}
+                          description={t(
+                            'Role assigned to non-members who visit this public project.',
+                          )}
+                          data={[
+                            { value: 'viewer', label: t('Viewer — read-only') },
+                            { value: 'translator', label: t('Translator — can translate') },
+                            { value: 'reviewer', label: t('Reviewer — can translate and review') },
+                          ]}
+                          value={editPublicRole}
+                          onChange={(v) => setEditPublicRole(v || 'viewer')}
+                          w={300}
+                          allowDeselect={false}
+                        />
+                      )}
                       {project.wp_slug && (
                         <Group gap="xs">
                           <Text size="sm" c="dimmed">

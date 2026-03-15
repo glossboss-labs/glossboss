@@ -349,14 +349,15 @@ export async function updateProjectMemberRole(
   return data;
 }
 
-/** Join a public project as a translator (self-insert via RLS). */
-export async function joinProjectAsTranslator(
+/** Join a public project with the project's configured public_role (self-insert via RLS). */
+export async function joinPublicProject(
   projectId: string,
   userId: string,
+  role: ProjectRole = 'translator',
 ): Promise<ProjectMemberRow> {
   const { data, error } = await supabase()
     .from('project_members')
-    .insert({ project_id: projectId, user_id: userId, role: 'translator' as const })
+    .insert({ project_id: projectId, user_id: userId, role })
     .select()
     .single();
 

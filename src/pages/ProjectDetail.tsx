@@ -58,7 +58,7 @@ import {
   listProjectMembers,
   listProjectInvites,
   removeProjectMember,
-  joinProjectAsTranslator,
+  joinPublicProject,
 } from '@/lib/projects/api';
 import type {
   ProjectRow,
@@ -239,14 +239,14 @@ export default function ProjectDetail() {
     if (!user || !id) return;
     setJoinLoading(true);
     try {
-      await joinProjectAsTranslator(id, user.id);
+      await joinPublicProject(id, user.id, project?.public_role ?? 'viewer');
       setRefreshKey((k) => k + 1);
     } catch (err) {
       setError(err instanceof Error ? err.message : t('Failed to join project'));
     } finally {
       setJoinLoading(false);
     }
-  }, [user, id, t]);
+  }, [user, id, project?.public_role, t]);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
@@ -339,7 +339,7 @@ export default function ProjectDetail() {
                     onClick={() => void handleJoinProject()}
                     loading={joinLoading}
                   >
-                    {t('Join as translator')}
+                    {t('Join as {{role}}', { role: project.public_role })}
                   </Button>
                 </motion.div>
               )}
