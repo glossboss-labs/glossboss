@@ -200,7 +200,8 @@ function ProjectEditorLoaded({
   language: ProjectLanguageRow;
 }) {
   // Connect to realtime channel for this project-language
-  const { broadcastEntryUpdate } = useRealtimeChannel(project.id, language.id);
+  const { broadcastEntryUpdate, broadcastLock, broadcastUnlock, broadcastReviewEvent } =
+    useRealtimeChannel(project.id, language.id);
 
   const {
     containerWidth,
@@ -252,7 +253,13 @@ function ProjectEditorLoaded({
 
             <IndexPageBanners {...bannersProps} />
             {workspaceProps ? (
-              <EditorWorkspace {...workspaceProps} broadcastEntryUpdate={broadcastEntryUpdate} />
+              <EditorWorkspace
+                {...workspaceProps}
+                broadcastEntryUpdate={broadcastEntryUpdate}
+                broadcastLock={broadcastLock}
+                broadcastUnlock={broadcastUnlock}
+                broadcastReviewEvent={broadcastReviewEvent}
+              />
             ) : (
               <EmptyState {...emptyStateProps} />
             )}

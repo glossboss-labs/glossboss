@@ -63,6 +63,22 @@ export interface EditorWorkspaceProps {
     msgstrPlural?: string[];
     flags?: string[];
   }) => void;
+  /** Broadcast cell lock (cloud editor only). */
+  broadcastLock?: (entryId: string) => void;
+  /** Broadcast cell unlock (cloud editor only). */
+  broadcastUnlock?: (entryId: string) => void;
+  /** Broadcast review event (cloud editor only). */
+  broadcastReviewEvent?: (event: {
+    entryId: string;
+    displayName: string;
+    type: 'status-changed' | 'comment-added' | 'comment-resolved';
+    data: {
+      status?: import('@/lib/review').ReviewStatus;
+      comment?: import('@/lib/review').ReviewComment;
+      commentId?: string;
+      resolved?: boolean;
+    };
+  }) => void;
 }
 
 export function EditorWorkspace({
@@ -84,6 +100,9 @@ export function EditorWorkspace({
   speechEnabled,
   onEntrySelect,
   broadcastEntryUpdate,
+  broadcastLock,
+  broadcastUnlock,
+  broadcastReviewEvent,
 }: EditorWorkspaceProps) {
   const { t } = useTranslation();
 
@@ -167,6 +186,9 @@ export function EditorWorkspace({
           translateEnabled={translateEnabled}
           mode={workspaceMode}
           broadcastEntryUpdate={broadcastEntryUpdate}
+          broadcastLock={broadcastLock}
+          broadcastUnlock={broadcastUnlock}
+          broadcastReviewEvent={broadcastReviewEvent}
         />
       </MotionDiv>
     </>

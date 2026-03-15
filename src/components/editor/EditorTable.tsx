@@ -289,6 +289,19 @@ interface RealtimeBroadcast {
     msgstrPlural?: string[];
     flags?: string[];
   }) => void;
+  broadcastLock?: (entryId: string) => void;
+  broadcastUnlock?: (entryId: string) => void;
+  broadcastReviewEvent?: (event: {
+    entryId: string;
+    displayName: string;
+    type: 'status-changed' | 'comment-added' | 'comment-resolved';
+    data: {
+      status?: import('@/lib/review').ReviewStatus;
+      comment?: import('@/lib/review').ReviewComment;
+      commentId?: string;
+      resolved?: boolean;
+    };
+  }) => void;
 }
 
 const RealtimeBroadcastContext = createContext<RealtimeBroadcast>({});
@@ -420,6 +433,8 @@ function EditableField({
   pluralIndex,
   useNativeTextColor = false,
   disabled = false,
+  onEditStart,
+  onEditEnd,
 }: {
   value: string;
   placeholder?: string;
@@ -431,6 +446,8 @@ function EditableField({
   pluralIndex?: number;
   useNativeTextColor?: boolean;
   disabled?: boolean;
+  onEditStart?: () => void;
+  onEditEnd?: () => void;
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(value);
@@ -441,6 +458,7 @@ function EditableField({
     if (disabled) return;
     setEditValue(value);
     setIsEditing(true);
+    onEditStart?.();
     setTimeout(() => {
       const textarea = textareaRef.current;
       if (textarea) {
@@ -449,14 +467,15 @@ function EditableField({
         textarea.setSelectionRange(len, len);
       }
     }, 0);
-  }, [disabled, value]);
+  }, [disabled, value, onEditStart]);
 
   const handleBlur = useCallback(() => {
     setIsEditing(false);
+    onEditEnd?.();
     if (editValue !== value) {
       onChange(editValue);
     }
-  }, [editValue, value, onChange]);
+  }, [editValue, value, onChange, onEditEnd]);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -924,7 +943,16 @@ function TranslationCell({
   });
 
   const translateSettings = useContext(TranslateSettingsContext);
-  const { broadcastEntryUpdate } = useContext(RealtimeBroadcastContext);
+  const { broadcastEntryUpdate, broadcastLock, broadcastUnlock } =
+    useContext(RealtimeBroadcastContext);
+
+  const handleEditStart = useCallback(() => {
+    broadcastLock?.(entry.id);
+  }, [broadcastLock, entry.id]);
+
+  const handleEditEnd = useCallback(() => {
+    broadcastUnlock?.(entry.id);
+  }, [broadcastUnlock, entry.id]);
   const hasPlural = Boolean(entry.msgidPlural);
   const pluralForms = useMemo(() => entry.msgstrPlural ?? [], [entry.msgstrPlural]);
   const glossaryAnalysis = signalsColumnHidden ? getGlossaryAnalysis(entry.id) : null;
@@ -1023,6 +1051,8 @@ function TranslationCell({
                 placeholder={t('Plural form {{index}}', { index })}
                 useNativeTextColor={useNativeTextColor}
                 disabled={isLocked}
+                onEditStart={handleEditStart}
+                onEditEnd={handleEditEnd}
               />
             </Box>
             {translateSettings.translateEnabled &&
@@ -1099,6 +1129,8 @@ function TranslationCell({
             fieldId={`${entry.id}-singular`}
             useNativeTextColor={useNativeTextColor}
             disabled={isLocked}
+            onEditStart={handleEditStart}
+            onEditEnd={handleEditEnd}
           />
         </Box>
         {translateSettings.translateEnabled &&
@@ -1528,6 +1560,8 @@ function ReviewCommentsPanel({
   const { t } = useTranslation();
   const addReviewComment = useEditorStore((state) => state.addReviewComment);
   const setReviewCommentResolved = useEditorStore((state) => state.setReviewCommentResolved);
+  const reviewerName = useEditorStore((state) => state.reviewerName);
+  const { broadcastReviewEvent } = useContext(RealtimeBroadcastContext);
   const [draftComment, setDraftComment] = useState('');
   const [replyTo, setReplyTo] = useState<string | null>(null);
 
@@ -1553,6 +1587,17 @@ function ReviewCommentsPanel({
           size="xs"
           onClick={() => {
             addReviewComment(entryId, draftComment, replyTo ?? undefined);
+            // Broadcast the newly added comment
+            const updated = useEditorStore.getState().reviewEntries.get(entryId);
+            const newComment = updated?.comments[updated.comments.length - 1];
+            if (newComment) {
+              broadcastReviewEvent?.({
+                entryId,
+                displayName: reviewerName,
+                type: 'comment-added',
+                data: { comment: newComment },
+              });
+            }
             setDraftComment('');
             setReplyTo(null);
           }}
@@ -1579,9 +1624,15 @@ function ReviewCommentsPanel({
               comment={comment}
               comments={reviewEntry.comments}
               onReply={setReplyTo}
-              onToggleResolved={(commentId, resolved) =>
-                setReviewCommentResolved(entryId, commentId, resolved)
-              }
+              onToggleResolved={(commentId, resolved) => {
+                setReviewCommentResolved(entryId, commentId, resolved);
+                broadcastReviewEvent?.({
+                  entryId,
+                  displayName: reviewerName,
+                  type: 'comment-resolved',
+                  data: { commentId, resolved },
+                });
+              }}
             />
           ))}
         </Stack>
@@ -1640,6 +1691,8 @@ function ReviewPanel({ entry, reviewEntry }: { entry: POEntry; reviewEntry: Revi
   const clearFuzzyBatch = useEditorStore((state) => state.clearFuzzyBatch);
   const addFuzzyBatch = useEditorStore((state) => state.addFuzzyBatch);
   const lockApprovedEntries = useEditorStore((state) => state.lockApprovedEntries);
+  const reviewerName = useEditorStore((state) => state.reviewerName);
+  const { broadcastReviewEvent } = useContext(RealtimeBroadcastContext);
   const translationStatus = getTranslationStatus(entry.msgstr, entry.flags, entry.msgstrPlural);
   const locked = isReviewLocked(reviewEntry.status, lockApprovedEntries);
   const unresolvedCount = reviewEntry.comments.filter((comment) => !comment.resolvedAt).length;
@@ -1653,19 +1706,45 @@ function ReviewPanel({ entry, reviewEntry }: { entry: POEntry; reviewEntry: Revi
       clearFuzzyBatch([entry.id]);
     }
     setReviewStatus(entry.id, 'approved');
-  }, [clearFuzzyBatch, entry.flags, entry.id, setReviewStatus]);
+    broadcastReviewEvent?.({
+      entryId: entry.id,
+      displayName: reviewerName,
+      type: 'status-changed',
+      data: { status: 'approved' },
+    });
+  }, [clearFuzzyBatch, entry.flags, entry.id, setReviewStatus, broadcastReviewEvent, reviewerName]);
 
   const handleUnapprove = useCallback(() => {
     setReviewStatus(entry.id, 'in-review');
-  }, [entry.id, setReviewStatus]);
+    broadcastReviewEvent?.({
+      entryId: entry.id,
+      displayName: reviewerName,
+      type: 'status-changed',
+      data: { status: 'in-review' },
+    });
+  }, [entry.id, setReviewStatus, broadcastReviewEvent, reviewerName]);
 
   const handleRequestChanges = useCallback(() => {
     setReviewStatus(entry.id, 'needs-changes');
+    broadcastReviewEvent?.({
+      entryId: entry.id,
+      displayName: reviewerName,
+      type: 'status-changed',
+      data: { status: 'needs-changes' },
+    });
 
     if (translationStatus !== 'untranslated' && !entry.flags.includes('fuzzy')) {
       addFuzzyBatch([entry.id]);
     }
-  }, [addFuzzyBatch, entry.flags, entry.id, setReviewStatus, translationStatus]);
+  }, [
+    addFuzzyBatch,
+    entry.flags,
+    entry.id,
+    setReviewStatus,
+    translationStatus,
+    broadcastReviewEvent,
+    reviewerName,
+  ]);
 
   return (
     <Stack gap="sm">
@@ -2445,6 +2524,22 @@ export interface EditorTableProps {
     msgstrPlural?: string[];
     flags?: string[];
   }) => void;
+  /** Broadcast cell lock (cloud editor only). */
+  broadcastLock?: (entryId: string) => void;
+  /** Broadcast cell unlock (cloud editor only). */
+  broadcastUnlock?: (entryId: string) => void;
+  /** Broadcast review event (cloud editor only). */
+  broadcastReviewEvent?: (event: {
+    entryId: string;
+    displayName: string;
+    type: 'status-changed' | 'comment-added' | 'comment-resolved';
+    data: {
+      status?: import('@/lib/review').ReviewStatus;
+      comment?: import('@/lib/review').ReviewComment;
+      commentId?: string;
+      resolved?: boolean;
+    };
+  }) => void;
 }
 
 export function EditorTable({
@@ -2458,6 +2553,9 @@ export function EditorTable({
   translateEnabled = true,
   mode = 'edit',
   broadcastEntryUpdate,
+  broadcastLock,
+  broadcastUnlock,
+  broadcastReviewEvent,
 }: EditorTableProps) {
   const { t } = useTranslation();
   const theme = useMantineTheme();
@@ -2952,8 +3050,8 @@ export function EditorTable({
   );
 
   const realtimeBroadcast = useMemo<RealtimeBroadcast>(
-    () => ({ broadcastEntryUpdate }),
-    [broadcastEntryUpdate],
+    () => ({ broadcastEntryUpdate, broadcastLock, broadcastUnlock, broadcastReviewEvent }),
+    [broadcastEntryUpdate, broadcastLock, broadcastUnlock, broadcastReviewEvent],
   );
 
   if (!filename) {
