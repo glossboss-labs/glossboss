@@ -49,11 +49,14 @@ export async function signInWithEmail(email: string, password: string): Promise<
 
 const RETURN_PATH_KEY = 'glossboss-oauth-return-path';
 
+/** Paths that should not be restored after OAuth — redirect to dashboard instead. */
+const AUTH_PATHS = new Set(['/login', '/signup', '/auth/callback']);
+
 /** Save the current path so the OAuth callback can redirect back to it. */
 export function saveReturnPath(): void {
   try {
     const path = window.location.pathname + window.location.search;
-    if (path !== '/auth/callback') {
+    if (!AUTH_PATHS.has(window.location.pathname)) {
       sessionStorage.setItem(RETURN_PATH_KEY, path);
     }
   } catch {
@@ -61,14 +64,14 @@ export function saveReturnPath(): void {
   }
 }
 
-/** Consume the saved return path (reads and deletes). Falls back to '/'. */
+/** Consume the saved return path (reads and deletes). Falls back to '/dashboard'. */
 export function consumeReturnPath(): string {
   try {
     const path = sessionStorage.getItem(RETURN_PATH_KEY);
     sessionStorage.removeItem(RETURN_PATH_KEY);
-    return path ?? '/';
+    return path ?? '/dashboard';
   } catch {
-    return '/';
+    return '/dashboard';
   }
 }
 
@@ -81,6 +84,22 @@ export async function signInWithGitHub(): Promise<{ error: AuthError | null }> {
       scopes: 'repo',
     },
   });
+  return { error };
+}
+
+/* ------------------------------------------------------------------ */
+/*  Password reset                                                     */
+/* ------------------------------------------------------------------ */
+
+export async function resetPasswordForEmail(email: string): Promise<{ error: AuthError | null }> {
+  const { error } = await auth().resetPasswordForEmail(email, {
+    redirectTo: `${window.location.origin}/auth/callback`,
+  });
+  return { error };
+}
+
+export async function updatePassword(newPassword: string): Promise<{ error: AuthError | null }> {
+  const { error } = await auth().updateUser({ password: newPassword });
   return { error };
 }
 

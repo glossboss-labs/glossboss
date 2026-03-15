@@ -118,7 +118,10 @@ export default function Login() {
               autoComplete="current-password"
             />
 
-            <Group justify="flex-end">
+            <Group justify="space-between">
+              <Anchor component={Link} to="/forgot-password" size="sm">
+                {t('Forgot password?')}
+              </Anchor>
               <Anchor component={Link} to="/" size="sm">
                 {t('Continue without account')}
               </Anchor>

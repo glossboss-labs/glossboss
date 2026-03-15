@@ -287,6 +287,11 @@ msgstr "Back to detected files"
 msgid "Back to listing"
 msgstr "Back to listing"
 
+#: src/pages/auth/ForgotPassword.tsx:72
+#: src/pages/auth/ForgotPassword.tsx:100
+msgid "Back to sign in"
+msgstr "Back to sign in"
+
 #: src/components/SettingsModal.tsx:1326
 #: src/components/editor/EditorHeader.tsx:256
 msgid "Backup"
@@ -413,6 +418,10 @@ msgstr "Changed strings"
 msgid "Changes committed successfully"
 msgstr "Changes committed successfully"
 
+#: src/pages/auth/ForgotPassword.tsx:68
+msgid "Check your email for a password reset link."
+msgstr "Check your email for a password reset link."
+
 #: src/components/editor/HeaderEditor.tsx:62
 #: src/components/editor/TranslateToolbar.tsx:102
 #: src/components/editor/TranslateToolbar.tsx:136
@@ -435,6 +444,11 @@ msgstr "Chinese (Traditional)"
 msgid "Chinese, Japanese, Korean, Vietnamese, Thai, Indonesian"
 msgstr "Chinese, Japanese, Korean, Vietnamese, Thai, Indonesian"
 
+#: src/pages/auth/ResetPassword.tsx:73
+msgid "Choose a new password for your account."
+msgstr "Choose a new password for your account."
+
+#: src/pages/auth/ResetPassword.tsx:98
 #: src/pages/auth/Signup.tsx:123
 msgid "Choose a password"
 msgstr "Choose a password"
@@ -612,6 +626,10 @@ msgstr "Configure your ElevenLabs API key in Settings."
 msgid "Confirm"
 msgstr "Confirm"
 
+#: src/pages/auth/ResetPassword.tsx:107
+msgid "Confirm password"
+msgstr "Confirm password"
+
 #: src/components/repo-sync/RepoSyncModal.tsx:575
 msgid "Connect"
 msgstr "Connect"
@@ -662,7 +680,7 @@ msgstr "Context"
 msgid "Continue with GitHub"
 msgstr "Continue with GitHub"
 
-#: src/pages/auth/Login.tsx:123
+#: src/pages/auth/Login.tsx:126
 msgid "Continue without account"
 msgstr "Continue without account"
 
@@ -1018,6 +1036,7 @@ msgstr ""
 "xt provider reset."
 
 #: src/components/feedback/FeedbackModal.tsx:424
+#: src/pages/auth/ForgotPassword.tsx:85
 #: src/pages/auth/Login.tsx:103
 #: src/pages/auth/Signup.tsx:112
 msgid "Email"
@@ -1108,6 +1127,10 @@ msgstr "Enter your ElevenLabs API key"
 #: src/components/SettingsModal.tsx:1730
 msgid "Enter your Gemini API key"
 msgstr "Enter your Gemini API key"
+
+#: src/pages/auth/ForgotPassword.tsx:61
+msgid "Enter your email and we'll send you a reset link."
+msgstr "Enter your email and we'll send you a reset link."
 
 #: src/components/editor/HeaderEditor.tsx:740
 msgid "Enter {{field}}..."
@@ -1451,6 +1474,10 @@ msgstr "Flags"
 #: src/components/editor/GlossaryPanel.tsx:263
 msgid "Force recreate glossary on {{provider}}"
 msgstr "Force recreate glossary on {{provider}}"
+
+#: src/pages/auth/Login.tsx:123
+msgid "Forgot password?"
+msgstr "Forgot password?"
 
 #: src/components/SettingsModal.tsx:1464
 msgid "Formal"
@@ -2201,6 +2228,7 @@ msgstr "Marked {{count}} row(s) as fuzzy."
 msgid "Members"
 msgstr "Members"
 
+#: src/pages/auth/ResetPassword.tsx:103
 #: src/pages/auth/Signup.tsx:128
 msgid "Minimum 8 characters, with uppercase, lowercase, and a digit"
 msgstr "Minimum 8 characters, with uppercase, lowercase, and a digit"
@@ -2280,6 +2308,10 @@ msgstr "Nepali"
 #: src/components/SettingsModal.tsx:159
 msgid "New line"
 msgstr "New line"
+
+#: src/pages/auth/ResetPassword.tsx:97
+msgid "New password"
+msgstr "New password"
 
 #: src/components/projects/CreateProjectModal.tsx:119
 #: src/components/projects/CreateProjectModal.tsx:222
@@ -2601,6 +2633,14 @@ msgstr "PR title"
 #: src/pages/auth/Signup.tsx:122
 msgid "Password"
 msgstr "Password"
+
+#: src/pages/auth/ResetPassword.tsx:79
+msgid "Password updated. Redirecting..."
+msgstr "Password updated. Redirecting..."
+
+#: src/pages/auth/ResetPassword.tsx:92
+msgid "Passwords do not match."
+msgstr "Passwords do not match."
 
 #: src/components/editor/EmptyState.tsx:106
 msgid "Paste a .po file URL"
@@ -3014,6 +3054,10 @@ msgstr "Reopen"
 msgid "Reopened comment"
 msgstr "Reopened comment"
 
+#: src/pages/auth/ResetPassword.tsx:108
+msgid "Repeat your password"
+msgstr "Repeat your password"
+
 #: src/lib/qa/types.ts:44
 msgid "Repeated-source consistency"
 msgstr "Repeated-source consistency"
@@ -3067,6 +3111,10 @@ msgstr "Request changes selected"
 #: src/pages/index/useIndexPageController.ts:692
 msgid "Request timed out. Try downloading the file and uploading it directly."
 msgstr "Request timed out. Try downloading the file and uploading it directly."
+
+#: src/pages/auth/ForgotPassword.tsx:58
+msgid "Reset your password"
+msgstr "Reset your password"
 
 #: src/components/editor/EditorTable.tsx:3097
 msgid "Resize inspector"
@@ -3324,6 +3372,10 @@ msgstr "Selected string"
 msgid "Send feedback"
 msgstr "Send feedback"
 
+#: src/pages/auth/ForgotPassword.tsx:95
+msgid "Send reset link"
+msgstr "Send reset link"
+
 #: src/components/editor/HeaderEditor.tsx:125
 msgid "Serbian"
 msgstr "Serbian"
@@ -3344,6 +3396,10 @@ msgstr "Set a WordPress project in Settings to enable source preview."
 #: src/components/editor/SourceBrowser.tsx:72
 msgid "Set a WordPress project slug to browse source files."
 msgstr "Set a WordPress project slug to browse source files."
+
+#: src/pages/auth/ResetPassword.tsx:70
+msgid "Set new password"
+msgstr "Set new password"
 
 #: src/components/projects/CreateProjectModal.tsx:447
 msgid "Set up a project and add languages later"
@@ -3457,7 +3513,7 @@ msgstr "Showing {{start}}–{{end}} of {{total}} entries"
 #: src/components/auth/UserMenu.tsx:24
 #: src/components/auth/UserMenu.tsx:31
 #: src/components/editor/EmptyState.tsx:188
-#: src/pages/auth/Login.tsx:128
+#: src/pages/auth/Login.tsx:131
 #: src/pages/auth/Signup.tsx:81
 msgid "Sign in"
 msgstr "Sign in"
@@ -3476,7 +3532,7 @@ msgstr "Sign out"
 msgid "Signals"
 msgstr "Signals"
 
-#: src/pages/auth/Callback.tsx:31
+#: src/pages/auth/Callback.tsx:61
 msgid "Signing you in..."
 msgstr "Signing you in..."
 
@@ -4038,6 +4094,10 @@ msgstr "Untranslated"
 #: src/components/editor/EditorHeader.tsx:247
 msgid "Update from POT…"
 msgstr "Update from POT…"
+
+#: src/pages/auth/ResetPassword.tsx:116
+msgid "Update password"
+msgstr "Update password"
 
 #: src/components/repo-sync/CommitPanel.tsx:201
 msgid "Update translations"

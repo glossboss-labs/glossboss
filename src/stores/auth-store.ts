@@ -13,6 +13,8 @@ import {
   signInWithEmail,
   signInWithGitHub,
   signOut as sessionSignOut,
+  resetPasswordForEmail,
+  updatePassword,
 } from '@/lib/auth/session';
 import { setGitHubOAuthToken, clearGitHubOAuthToken } from '@/lib/github/token';
 
@@ -33,6 +35,8 @@ export interface AuthActions {
   signUpWithEmail: (email: string, password: string) => Promise<void>;
   signInWithEmail: (email: string, password: string) => Promise<void>;
   signInWithGitHub: () => Promise<void>;
+  resetPasswordForEmail: (email: string) => Promise<boolean>;
+  updatePassword: (newPassword: string) => Promise<boolean>;
   signOut: () => Promise<void>;
   clearError: () => void;
 }
@@ -97,6 +101,26 @@ export const useAuthStore = create<AuthState & AuthActions>()((set) => ({
     set({ error: null });
     const { error } = await signInWithGitHub();
     if (error) set({ error });
+  },
+
+  resetPasswordForEmail: async (email) => {
+    set({ error: null });
+    const { error } = await resetPasswordForEmail(email);
+    if (error) {
+      set({ error });
+      return false;
+    }
+    return true;
+  },
+
+  updatePassword: async (newPassword) => {
+    set({ error: null });
+    const { error } = await updatePassword(newPassword);
+    if (error) {
+      set({ error });
+      return false;
+    }
+    return true;
   },
 
   signOut: async () => {

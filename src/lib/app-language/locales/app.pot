@@ -277,6 +277,11 @@ msgstr ""
 msgid "Back to listing"
 msgstr ""
 
+#: src/pages/auth/ForgotPassword.tsx:72
+#: src/pages/auth/ForgotPassword.tsx:100
+msgid "Back to sign in"
+msgstr ""
+
 #: src/components/SettingsModal.tsx:1326
 #: src/components/editor/EditorHeader.tsx:256
 msgid "Backup"
@@ -403,6 +408,10 @@ msgstr ""
 msgid "Changes committed successfully"
 msgstr ""
 
+#: src/pages/auth/ForgotPassword.tsx:68
+msgid "Check your email for a password reset link."
+msgstr ""
+
 #: src/components/editor/HeaderEditor.tsx:62
 #: src/components/editor/TranslateToolbar.tsx:102
 #: src/components/editor/TranslateToolbar.tsx:136
@@ -425,6 +434,11 @@ msgstr ""
 msgid "Chinese, Japanese, Korean, Vietnamese, Thai, Indonesian"
 msgstr ""
 
+#: src/pages/auth/ResetPassword.tsx:73
+msgid "Choose a new password for your account."
+msgstr ""
+
+#: src/pages/auth/ResetPassword.tsx:98
 #: src/pages/auth/Signup.tsx:123
 msgid "Choose a password"
 msgstr ""
@@ -598,6 +612,10 @@ msgstr ""
 msgid "Confirm"
 msgstr ""
 
+#: src/pages/auth/ResetPassword.tsx:107
+msgid "Confirm password"
+msgstr ""
+
 #: src/components/repo-sync/RepoSyncModal.tsx:575
 msgid "Connect"
 msgstr ""
@@ -648,7 +666,7 @@ msgstr ""
 msgid "Continue with GitHub"
 msgstr ""
 
-#: src/pages/auth/Login.tsx:123
+#: src/pages/auth/Login.tsx:126
 msgid "Continue without account"
 msgstr ""
 
@@ -989,6 +1007,7 @@ msgid ""
 msgstr ""
 
 #: src/components/feedback/FeedbackModal.tsx:424
+#: src/pages/auth/ForgotPassword.tsx:85
 #: src/pages/auth/Login.tsx:103
 #: src/pages/auth/Signup.tsx:112
 msgid "Email"
@@ -1078,6 +1097,10 @@ msgstr ""
 
 #: src/components/SettingsModal.tsx:1730
 msgid "Enter your Gemini API key"
+msgstr ""
+
+#: src/pages/auth/ForgotPassword.tsx:61
+msgid "Enter your email and we'll send you a reset link."
 msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:740
@@ -1413,6 +1436,10 @@ msgstr ""
 
 #: src/components/editor/GlossaryPanel.tsx:263
 msgid "Force recreate glossary on {{provider}}"
+msgstr ""
+
+#: src/pages/auth/Login.tsx:123
+msgid "Forgot password?"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:1464
@@ -2137,6 +2164,7 @@ msgstr ""
 msgid "Members"
 msgstr ""
 
+#: src/pages/auth/ResetPassword.tsx:103
 #: src/pages/auth/Signup.tsx:128
 msgid "Minimum 8 characters, with uppercase, lowercase, and a digit"
 msgstr ""
@@ -2215,6 +2243,10 @@ msgstr ""
 
 #: src/components/SettingsModal.tsx:159
 msgid "New line"
+msgstr ""
+
+#: src/pages/auth/ResetPassword.tsx:97
+msgid "New password"
 msgstr ""
 
 #: src/components/projects/CreateProjectModal.tsx:119
@@ -2534,6 +2566,14 @@ msgstr ""
 #: src/pages/auth/Login.tsx:113
 #: src/pages/auth/Signup.tsx:122
 msgid "Password"
+msgstr ""
+
+#: src/pages/auth/ResetPassword.tsx:79
+msgid "Password updated. Redirecting..."
+msgstr ""
+
+#: src/pages/auth/ResetPassword.tsx:92
+msgid "Passwords do not match."
 msgstr ""
 
 #: src/components/editor/EmptyState.tsx:106
@@ -2941,6 +2981,10 @@ msgstr ""
 msgid "Reopened comment"
 msgstr ""
 
+#: src/pages/auth/ResetPassword.tsx:108
+msgid "Repeat your password"
+msgstr ""
+
 #: src/lib/qa/types.ts:44
 msgid "Repeated-source consistency"
 msgstr ""
@@ -2993,6 +3037,10 @@ msgstr ""
 
 #: src/pages/index/useIndexPageController.ts:692
 msgid "Request timed out. Try downloading the file and uploading it directly."
+msgstr ""
+
+#: src/pages/auth/ForgotPassword.tsx:58
+msgid "Reset your password"
 msgstr ""
 
 #: src/components/editor/EditorTable.tsx:3097
@@ -3251,6 +3299,10 @@ msgstr ""
 msgid "Send feedback"
 msgstr ""
 
+#: src/pages/auth/ForgotPassword.tsx:95
+msgid "Send reset link"
+msgstr ""
+
 #: src/components/editor/HeaderEditor.tsx:125
 msgid "Serbian"
 msgstr ""
@@ -3270,6 +3322,10 @@ msgstr ""
 
 #: src/components/editor/SourceBrowser.tsx:72
 msgid "Set a WordPress project slug to browse source files."
+msgstr ""
+
+#: src/pages/auth/ResetPassword.tsx:70
+msgid "Set new password"
 msgstr ""
 
 #: src/components/projects/CreateProjectModal.tsx:447
@@ -3380,7 +3436,7 @@ msgstr ""
 #: src/components/auth/UserMenu.tsx:24
 #: src/components/auth/UserMenu.tsx:31
 #: src/components/editor/EmptyState.tsx:188
-#: src/pages/auth/Login.tsx:128
+#: src/pages/auth/Login.tsx:131
 #: src/pages/auth/Signup.tsx:81
 msgid "Sign in"
 msgstr ""
@@ -3399,7 +3455,7 @@ msgstr ""
 msgid "Signals"
 msgstr ""
 
-#: src/pages/auth/Callback.tsx:31
+#: src/pages/auth/Callback.tsx:61
 msgid "Signing you in..."
 msgstr ""
 
@@ -3950,6 +4006,10 @@ msgstr ""
 
 #: src/components/editor/EditorHeader.tsx:247
 msgid "Update from POT…"
+msgstr ""
+
+#: src/pages/auth/ResetPassword.tsx:116
+msgid "Update password"
 msgstr ""
 
 #: src/components/repo-sync/CommitPanel.tsx:201
