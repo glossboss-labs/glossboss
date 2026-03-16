@@ -1,9 +1,9 @@
 /**
- * Billing Section — plan overview, usage stats, pricing comparison, upgrade flow.
+ * Billing Section — current plan overview, upgrade cards, Flex calculator.
  *
- * Follows proven SaaS pricing page patterns: all plans visible, annual savings
- * always prominent, highlighted recommended tier, differentiated CTAs, and
- * clear visual hierarchy.
+ * Follows in-app billing patterns (Linear, Vercel, Supabase): compact plan
+ * cards with key differentiators, current plan prominently displayed, and
+ * usage-based calculator shown only when relevant.
  */
 
 import { useState } from 'react';
@@ -18,14 +18,17 @@ import {
   Alert,
   Loader,
   SegmentedControl,
-  List,
   Divider,
   Notification,
-  SimpleGrid,
   Title,
   Box,
   ThemeIcon,
+  SimpleGrid,
+  NumberInput,
+  Slider,
+  Collapse,
 } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
 import {
   CreditCard,
   ExternalLink,
@@ -36,16 +39,31 @@ import {
   Building2,
   Sparkles,
   User,
+  TrendingUp,
+  Activity,
+  Calculator,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { useSubscription } from '@/hooks/use-subscription';
 import { useProjectsStore } from '@/stores/projects-store';
 import { useTranslation } from '@/lib/app-language';
 import { createCheckoutSession } from '@/lib/billing/api';
-import { formatLimit, PLAN_LIMITS } from '@/lib/billing/limits';
+import {
+  formatLimit,
+  PLAN_LIMITS,
+  FLEX_PRICING,
+  FLEX_CROSSOVER,
+  getFlexMonthlyCost,
+} from '@/lib/billing/limits';
 import { PLAN_PRICING, POLAR_PRODUCT_IDS } from '@/lib/billing/polar';
 import { PlanBadge } from '@/components/billing/PlanBadge';
 import type { BillingInterval, PlanTier } from '@/lib/billing/types';
+
+/* ------------------------------------------------------------------ */
+/* Usage bar                                                           */
+/* ------------------------------------------------------------------ */
 
 function UsageBar({ label, current, limit }: { label: string; current: number; limit: number }) {
   const { t } = useTranslation();
@@ -74,77 +92,141 @@ function UsageBar({ label, current, limit }: { label: string; current: number; l
   );
 }
 
-interface PricingCardProps {
-  tier: PlanTier;
+/* ------------------------------------------------------------------ */
+/* Flex cost calculator                                                */
+/* ------------------------------------------------------------------ */
+
+function FlexCalculator({ interval }: { interval: BillingInterval }) {
+  const { t } = useTranslation();
+  const [strings, setStrings] = useState(10_000);
+  const cost = getFlexMonthlyCost(strings);
+
+  const proCost = interval === 'year' ? PLAN_PRICING.pro.year / 12 : PLAN_PRICING.pro.month;
+  const orgCost =
+    interval === 'year' ? PLAN_PRICING.organization.year / 12 : PLAN_PRICING.organization.month;
+
+  const cheaperPlan = cost > orgCost ? 'Organization' : cost > proCost ? 'Pro' : null;
+
+  return (
+    <Stack gap="md">
+      <Stack gap="xs">
+        <Group justify="space-between">
+          <Text size="xs" c="dimmed">
+            {t('Strings')}
+          </Text>
+          <NumberInput
+            value={strings}
+            onChange={(v) => setStrings(typeof v === 'number' ? v : 0)}
+            min={0}
+            max={500_000}
+            step={1000}
+            size="xs"
+            w={120}
+            thousandSeparator=","
+          />
+        </Group>
+        <Slider
+          value={strings}
+          onChange={setStrings}
+          min={0}
+          max={500_000}
+          step={1000}
+          color="teal"
+          size="sm"
+          label={(v) => `${(v / 1000).toFixed(0)}K`}
+          marks={[
+            { value: 5_000, label: '5K' },
+            { value: 100_000, label: '100K' },
+            { value: 250_000, label: '250K' },
+            { value: 500_000, label: '500K' },
+          ]}
+          mb="lg"
+        />
+      </Stack>
+
+      <Group justify="space-between" align="baseline">
+        <Stack gap={2}>
+          <Text size="xs" c="dimmed">
+            {t('Estimated monthly cost')}
+          </Text>
+          {strings <= FLEX_PRICING.freeStrings && (
+            <Text size="xs" c="teal">
+              {t('First {{count}} strings are free', {
+                count: FLEX_PRICING.freeStrings.toLocaleString(),
+              })}
+            </Text>
+          )}
+        </Stack>
+        <Text fz={24} fw={700} c="teal">
+          €{cost.toFixed(2)}
+        </Text>
+      </Group>
+
+      {cheaperPlan && (
+        <Alert color="blue" variant="light" icon={<TrendingUp size={14} />} py="xs">
+          <Text size="xs">
+            {cheaperPlan === 'Organization'
+              ? t(
+                  'At {{count}} strings, the Organization plan (€{{price}}/mo) would save you money.',
+                  {
+                    count: strings.toLocaleString(),
+                    price: orgCost.toFixed(2),
+                  },
+                )
+              : t('At {{count}} strings, the Pro plan (€{{price}}/mo) would save you money.', {
+                  count: strings.toLocaleString(),
+                  price: proCost.toFixed(2),
+                })}
+          </Text>
+        </Alert>
+      )}
+    </Stack>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Plan card                                                           */
+/* ------------------------------------------------------------------ */
+
+interface PlanCardProps {
   name: string;
   icon: React.ReactNode;
   color: string;
-  interval: BillingInterval;
+  price: React.ReactNode;
+  subtitle: string;
   features: string[];
-  isCurrentPlan: boolean;
-  isHighlighted: boolean;
+  isCurrent: boolean;
   ctaLabel: string;
   onUpgrade?: () => void;
   upgrading: boolean;
+  children?: React.ReactNode;
 }
 
-function PricingCard({
-  tier,
+function PlanCard({
   name,
   icon,
   color,
-  interval,
+  price,
+  subtitle,
   features,
-  isCurrentPlan,
-  isHighlighted,
+  isCurrent,
   ctaLabel,
   onUpgrade,
   upgrading,
-}: PricingCardProps) {
-  const { t } = useTranslation();
-  const isFree = tier === 'free';
-  const paidTier = tier as Exclude<PlanTier, 'free'>;
-
-  const yearlyPrice = isFree ? 0 : PLAN_PRICING[paidTier].year;
-  const monthlyPrice = isFree ? 0 : PLAN_PRICING[paidTier].month;
-  const monthlyEquivalent = isFree
-    ? 0
-    : interval === 'year'
-      ? Math.round((yearlyPrice / 12) * 100) / 100
-      : monthlyPrice;
-  const savingsPercent =
-    isFree || interval === 'month' ? 0 : Math.round((1 - yearlyPrice / (monthlyPrice * 12)) * 100);
-
+  children,
+}: PlanCardProps) {
   return (
     <Paper
-      p="lg"
+      p="md"
       withBorder
       style={{
-        borderColor: isHighlighted ? `var(--mantine-color-${color}-6)` : undefined,
-        borderWidth: isHighlighted ? 2 : 1,
-        position: 'relative',
+        borderTop: `3px solid var(--mantine-color-${color}-6)`,
         display: 'flex',
         flexDirection: 'column',
       }}
     >
-      {isHighlighted && (
-        <Badge
-          color={color}
-          size="sm"
-          variant="filled"
-          style={{
-            position: 'absolute',
-            top: -12,
-            left: '50%',
-            transform: 'translateX(-50%)',
-          }}
-        >
-          {t('Most popular')}
-        </Badge>
-      )}
-
-      <Stack gap="md" style={{ flex: 1 }}>
-        {/* Plan header */}
+      <Stack gap="sm" style={{ flex: 1 }}>
+        {/* Header */}
         <Group gap="xs">
           <ThemeIcon variant="light" color={color} size="sm" radius="xl">
             {icon}
@@ -152,82 +234,63 @@ function PricingCard({
           <Text size="sm" fw={600}>
             {name}
           </Text>
+          {isCurrent && (
+            <Badge variant="light" color={color} size="xs">
+              Current
+            </Badge>
+          )}
         </Group>
 
         {/* Price */}
         <Box>
-          <Group gap={4} align="baseline">
-            <Text fz={32} fw={800} lh={1}>
-              {isFree ? t('Free') : `€${monthlyEquivalent.toFixed(interval === 'year' ? 2 : 0)}`}
-            </Text>
-            {!isFree && (
-              <Text size="sm" c="dimmed">
-                /{t('month')}
-              </Text>
-            )}
-          </Group>
-
-          {!isFree && interval === 'year' && (
-            <Group gap="xs" mt={4}>
-              <Text size="xs" c="dimmed" td="line-through">
-                €{monthlyPrice}/{t('month')}
-              </Text>
-              <Badge size="xs" color="green" variant="light">
-                {t('Save {{percent}}%', { percent: savingsPercent })}
-              </Badge>
-            </Group>
-          )}
-
-          {!isFree && interval === 'year' && (
-            <Text size="xs" c="dimmed" mt={2}>
-              €{yearlyPrice} {t('billed annually')}
-            </Text>
-          )}
-
-          {!isFree && interval === 'month' && (
-            <Text size="xs" c="dimmed" mt={2}>
-              {t('Billed monthly')}
-            </Text>
-          )}
-
-          {isFree && (
-            <Text size="xs" c="dimmed" mt={2}>
-              {t('No credit card required')}
-            </Text>
-          )}
+          {price}
+          <Text size="xs" c="dimmed" mt={2}>
+            {subtitle}
+          </Text>
         </Box>
 
         <Divider />
 
         {/* Features */}
-        <List
-          size="xs"
-          spacing={8}
-          icon={<Check size={14} color={`var(--mantine-color-${color}-6)`} />}
-          style={{ flex: 1 }}
-        >
+        <Stack gap={6} style={{ flex: 1 }}>
           {features.map((f) => (
-            <List.Item key={f}>{f}</List.Item>
+            <Group key={f} gap={6} wrap="nowrap" align="flex-start">
+              <Check
+                size={12}
+                color={`var(--mantine-color-${color}-6)`}
+                style={{ flexShrink: 0, marginTop: 3 }}
+              />
+              <Text size="xs" lh={1.4}>
+                {f}
+              </Text>
+            </Group>
           ))}
-        </List>
+        </Stack>
+
+        {/* Extra content (e.g. calculator toggle) */}
+        {children}
 
         {/* CTA */}
         <Button
           fullWidth
-          variant={isHighlighted ? 'filled' : isCurrentPlan ? 'default' : 'light'}
-          color={isCurrentPlan ? 'gray' : color}
-          disabled={isCurrentPlan}
+          variant={isCurrent ? 'default' : 'light'}
+          color={isCurrent ? 'gray' : color}
+          disabled={isCurrent}
           loading={upgrading}
           onClick={onUpgrade}
-          leftSection={isCurrentPlan ? <Check size={14} /> : <Zap size={14} />}
-          size="md"
+          leftSection={isCurrent ? <Check size={14} /> : <Zap size={14} />}
+          size="sm"
         >
-          {isCurrentPlan ? t('Current plan') : ctaLabel}
+          {isCurrent ? 'Current plan' : ctaLabel}
         </Button>
       </Stack>
     </Paper>
   );
 }
+
+/* ------------------------------------------------------------------ */
+/* Main component                                                      */
+/* ------------------------------------------------------------------ */
 
 export function BillingSection() {
   const { t } = useTranslation();
@@ -237,6 +300,7 @@ export function BillingSection() {
   const [billingInterval, setBillingInterval] = useState<BillingInterval>('year');
   const [upgrading, setUpgrading] = useState<string | null>(null);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const [calcOpen, { toggle: toggleCalc }] = useDisclosure(false);
 
   if (!user) {
     return (
@@ -262,15 +326,18 @@ export function BillingSection() {
     .reduce((sum, p) => sum + (p.stats_total ?? 0), 0);
 
   const isFreePlan = plan === 'free';
+  const isFlexPlan = plan === 'flex';
   const isAdminOverride = subscription !== null && !subscription.polar_subscription_id;
   const isCanceled = subscription?.status === 'canceled';
   const isPastDue = subscription?.status === 'past_due';
 
-  const handleUpgrade = async (tier: 'pro' | 'organization') => {
+  const flexMonthlyCost = getFlexMonthlyCost(stringCount);
+
+  const handleUpgrade = async (tier: Exclude<PlanTier, 'free'>) => {
     setUpgrading(tier);
     setCheckoutError(null);
     try {
-      const productId = POLAR_PRODUCT_IDS[tier][billingInterval];
+      const productId = POLAR_PRODUCT_IDS[tier][tier === 'flex' ? 'month' : billingInterval]!;
       const url = await createCheckoutSession(productId);
       window.location.href = url;
     } catch (err) {
@@ -285,33 +352,19 @@ export function BillingSection() {
     window.open('https://polar.sh/glossboss/portal', '_blank');
   };
 
-  const freeFeatures = [
-    `${formatLimit(PLAN_LIMITS.free.projects)} ${t('project')}`,
-    `${formatLimit(PLAN_LIMITS.free.strings)} ${t('strings')}`,
-    `${formatLimit(PLAN_LIMITS.free.members)} ${t('member')}`,
-  ];
+  // Price helpers
+  const proMonthly = PLAN_PRICING.pro.month;
+  const proYearly = PLAN_PRICING.pro.year;
+  const orgMonthly = PLAN_PRICING.organization.month;
+  const orgYearly = PLAN_PRICING.organization.year;
 
-  const proFeatures = [
-    `${formatLimit(PLAN_LIMITS.pro.projects)} ${t('projects')}`,
-    `${formatLimit(PLAN_LIMITS.pro.strings)} ${t('strings')}`,
-    `${formatLimit(PLAN_LIMITS.pro.members)} ${t('team members')}`,
-    t('Real-time collaboration'),
-    t('Review workflows'),
-    t('Repository sync'),
-  ];
+  const proDisplayPrice =
+    billingInterval === 'year' ? `€${(proYearly / 12).toFixed(2)}` : `€${proMonthly}`;
+  const orgDisplayPrice =
+    billingInterval === 'year' ? `€${(orgYearly / 12).toFixed(2)}` : `€${orgMonthly}`;
 
-  const orgFeatures = [
-    t('Unlimited projects'),
-    t('Unlimited strings'),
-    t('Unlimited team members'),
-    t('Real-time collaboration'),
-    t('Review workflows'),
-    t('Repository sync'),
-    t('Organization management'),
-    t('Priority support'),
-  ];
-
-  const showUpgradeSection = (isFreePlan || plan === 'pro') && !isAdminOverride;
+  const proSavings = Math.round((1 - proYearly / (proMonthly * 12)) * 100);
+  const orgSavings = Math.round((1 - orgYearly / (orgMonthly * 12)) * 100);
 
   return (
     <Stack gap="xl">
@@ -404,6 +457,44 @@ export function BillingSection() {
           <UsageBar label={t('Projects')} current={projectCount} limit={limits.projects} />
           <UsageBar label={t('Strings')} current={stringCount} limit={limits.strings} />
 
+          {isFlexPlan && (
+            <>
+              <Divider />
+              <Group justify="space-between">
+                <Group gap="xs">
+                  <Activity size={14} />
+                  <Text size="xs" c="dimmed">
+                    {t('Estimated monthly cost')}
+                  </Text>
+                </Group>
+                <Text size="sm" fw={600} c="teal">
+                  €{flexMonthlyCost.toFixed(2)}
+                </Text>
+              </Group>
+              {stringCount > FLEX_CROSSOVER.pro && (
+                <Alert color="blue" variant="light" icon={<TrendingUp size={14} />} py="xs">
+                  <Text size="xs">
+                    {stringCount > FLEX_CROSSOVER.organization
+                      ? t(
+                          'At {{count}} strings, the Organization plan (€{{price}}/mo) would save you money.',
+                          {
+                            count: stringCount.toLocaleString(),
+                            price: orgMonthly,
+                          },
+                        )
+                      : t(
+                          'At {{count}} strings, the Pro plan (€{{price}}/mo) would save you money.',
+                          {
+                            count: stringCount.toLocaleString(),
+                            price: proMonthly,
+                          },
+                        )}
+                  </Text>
+                </Alert>
+              )}
+            </>
+          )}
+
           {!isFreePlan && !isAdminOverride && (
             <Button
               variant="light"
@@ -417,21 +508,19 @@ export function BillingSection() {
         </Stack>
       </Paper>
 
-      {/* Pricing section */}
-      {showUpgradeSection && (
-        <Stack gap="lg">
-          {/* Section header */}
-          <Stack gap={4}>
-            <Title order={4}>{t('Upgrade your plan')}</Title>
+      {/* Plan cards */}
+      <Stack gap="md">
+        <Group justify="space-between" align="center" wrap="wrap">
+          <Stack gap={2}>
+            <Title order={4}>{t('Compare plans')}</Title>
             <Text size="sm" c="dimmed">
               {t('Choose the plan that fits your translation workflow.')}
             </Text>
           </Stack>
 
-          {/* Billing toggle with savings callout */}
-          <Group justify="space-between" align="center" wrap="wrap">
+          <Group gap="sm">
             <SegmentedControl
-              size="sm"
+              size="xs"
               value={billingInterval}
               onChange={(v) => setBillingInterval(v as BillingInterval)}
               data={[
@@ -439,57 +528,144 @@ export function BillingSection() {
                 { label: t('Yearly'), value: 'year' },
               ]}
             />
-
-            <Badge size="lg" variant="light" color="green" leftSection={<Sparkles size={14} />}>
+            <Badge size="sm" variant="light" color="green" leftSection={<Sparkles size={10} />}>
               {t('Save up to 20% with annual billing')}
             </Badge>
           </Group>
+        </Group>
 
-          {/* Plan cards */}
-          <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="md">
-            <PricingCard
-              tier="free"
-              name={t('Free plan')}
-              icon={<User size={14} />}
-              color="gray"
-              interval={billingInterval}
-              features={freeFeatures}
-              isCurrentPlan={isFreePlan}
-              isHighlighted={false}
-              ctaLabel={t('Get started free')}
-              upgrading={false}
-            />
+        <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
+          {/* Free */}
+          <PlanCard
+            name={t('Free')}
+            icon={<User size={14} />}
+            color="gray"
+            price={
+              <Text fz={24} fw={700}>
+                €0
+              </Text>
+            }
+            subtitle={t('No credit card required')}
+            features={[
+              `${formatLimit(PLAN_LIMITS.free.projects)} ${t('project')}`,
+              `${formatLimit(PLAN_LIMITS.free.strings)} ${t('strings')}`,
+              `${formatLimit(PLAN_LIMITS.free.members)} ${t('member')}`,
+            ]}
+            isCurrent={isFreePlan}
+            ctaLabel={t('Get started free')}
+            upgrading={false}
+          />
 
-            <PricingCard
-              tier="pro"
-              name="Pro"
-              icon={<Crown size={14} />}
-              color="blue"
-              interval={billingInterval}
-              features={proFeatures}
-              isCurrentPlan={plan === 'pro'}
-              isHighlighted={isFreePlan}
-              ctaLabel={t('Upgrade to {{plan}}', { plan: 'Pro' })}
-              onUpgrade={() => void handleUpgrade('pro')}
-              upgrading={upgrading === 'pro'}
-            />
+          {/* Flex */}
+          <PlanCard
+            name="Flex"
+            icon={<Activity size={14} />}
+            color="teal"
+            price={
+              <Group gap={4} align="baseline">
+                <Text fz={24} fw={700}>
+                  €{FLEX_PRICING.pricePerKStrings}
+                </Text>
+                <Text size="xs" c="dimmed">
+                  / 1K {t('strings')}
+                </Text>
+              </Group>
+            }
+            subtitle={t('Pay as you go · billed monthly')}
+            features={[
+              t('Unlimited projects'),
+              t('Unlimited team members'),
+              `${formatLimit(FLEX_PRICING.freeStrings)} ${t('strings')} ${t('Free').toLowerCase()}`,
+              t('Real-time collaboration'),
+            ]}
+            isCurrent={isFlexPlan}
+            ctaLabel={t('Upgrade to {{plan}}', { plan: 'Flex' })}
+            onUpgrade={() => void handleUpgrade('flex')}
+            upgrading={upgrading === 'flex'}
+          >
+            {/* Inline calculator toggle */}
+            <Button
+              variant="subtle"
+              size="compact-xs"
+              color="teal"
+              onClick={toggleCalc}
+              leftSection={<Calculator size={12} />}
+              rightSection={calcOpen ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+            >
+              {t('Estimate cost')}
+            </Button>
+            <Collapse in={calcOpen}>
+              <FlexCalculator interval={billingInterval} />
+            </Collapse>
+          </PlanCard>
 
-            <PricingCard
-              tier="organization"
-              name={t('Organization')}
-              icon={<Building2 size={14} />}
-              color="violet"
-              interval={billingInterval}
-              features={orgFeatures}
-              isCurrentPlan={plan === 'organization'}
-              isHighlighted={plan === 'pro'}
-              ctaLabel={t('Upgrade to {{plan}}', { plan: 'Organization' })}
-              onUpgrade={() => void handleUpgrade('organization')}
-              upgrading={upgrading === 'organization'}
-            />
-          </SimpleGrid>
-        </Stack>
-      )}
+          {/* Pro */}
+          <PlanCard
+            name="Pro"
+            icon={<Crown size={14} />}
+            color="blue"
+            price={
+              <Group gap={4} align="baseline">
+                <Text fz={24} fw={700}>
+                  {proDisplayPrice}
+                </Text>
+                <Text size="xs" c="dimmed">
+                  / {t('month')}
+                </Text>
+              </Group>
+            }
+            subtitle={
+              billingInterval === 'year'
+                ? `€${proYearly} ${t('billed annually')} · ${t('Save {{percent}}%', { percent: proSavings })}`
+                : t('Billed monthly')
+            }
+            features={[
+              `${formatLimit(PLAN_LIMITS.pro.projects)} ${t('projects')}`,
+              `${formatLimit(PLAN_LIMITS.pro.strings)} ${t('strings')}`,
+              `${formatLimit(PLAN_LIMITS.pro.members)} ${t('team members')}`,
+              t('Real-time collaboration'),
+              t('Repository sync'),
+            ]}
+            isCurrent={plan === 'pro'}
+            ctaLabel={t('Upgrade to {{plan}}', { plan: 'Pro' })}
+            onUpgrade={() => void handleUpgrade('pro')}
+            upgrading={upgrading === 'pro'}
+          />
+
+          {/* Organization */}
+          <PlanCard
+            name={t('Organization')}
+            icon={<Building2 size={14} />}
+            color="violet"
+            price={
+              <Group gap={4} align="baseline">
+                <Text fz={24} fw={700}>
+                  {orgDisplayPrice}
+                </Text>
+                <Text size="xs" c="dimmed">
+                  / {t('month')}
+                </Text>
+              </Group>
+            }
+            subtitle={
+              billingInterval === 'year'
+                ? `€${orgYearly} ${t('billed annually')} · ${t('Save {{percent}}%', { percent: orgSavings })}`
+                : t('Billed monthly')
+            }
+            features={[
+              t('Unlimited projects'),
+              t('Unlimited strings'),
+              t('Unlimited team members'),
+              t('Organization management'),
+              t('Priority support'),
+            ]}
+            isCurrent={plan === 'organization'}
+            ctaLabel={t('Upgrade to {{plan}}', { plan: 'Organization' })}
+            onUpgrade={() => void handleUpgrade('organization')}
+            upgrading={upgrading === 'organization'}
+          />
+        </SimpleGrid>
+      </Stack>
     </Stack>
   );
 }

@@ -21,9 +21,10 @@ const RESOURCE_MESSAGES: Record<string, string> = {
 export function UpgradePrompt({ resource, currentPlan }: UpgradePromptProps) {
   const { t } = useTranslation();
 
-  const suggestedPlan: Exclude<PlanTier, 'free'> = currentPlan === 'free' ? 'pro' : 'organization';
+  const suggestedPlan: Exclude<PlanTier, 'free'> =
+    currentPlan === 'free' || currentPlan === 'flex' ? 'pro' : 'organization';
 
-  const productId = POLAR_PRODUCT_IDS[suggestedPlan].month;
+  const productId = POLAR_PRODUCT_IDS[suggestedPlan].month!;
 
   const handleUpgrade = async () => {
     try {

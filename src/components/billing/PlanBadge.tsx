@@ -5,12 +5,14 @@ const PLAN_COLORS: Record<PlanTier, string> = {
   free: 'gray',
   pro: 'blue',
   organization: 'violet',
+  flex: 'teal',
 };
 
 const PLAN_LABELS: Record<PlanTier, string> = {
   free: 'Free',
   pro: 'Pro',
   organization: 'Organization',
+  flex: 'Flex',
 };
 
 interface PlanBadgeProps {

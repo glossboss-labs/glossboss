@@ -103,6 +103,7 @@ const PRODUCT_TO_PLAN: Record<string, { plan: string; interval: string }> = {
   'POLAR_PRODUCT_ID': { plan: 'pro', interval: 'year' },
   'POLAR_PRODUCT_ID': { plan: 'organization', interval: 'month' },
   'POLAR_PRODUCT_ID': { plan: 'organization', interval: 'year' },
+  'POLAR_PRODUCT_ID': { plan: 'flex', interval: 'month' },
 };
 
 // ---------------------------------------------------------------------------

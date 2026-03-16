@@ -1,4 +1,4 @@
-export type PlanTier = 'free' | 'pro' | 'organization';
+export type PlanTier = 'free' | 'pro' | 'organization' | 'flex';
 
 export type BillingInterval = 'month' | 'year';
 

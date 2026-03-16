@@ -3,10 +3,12 @@ import type { BillingInterval, PlanTier } from './types';
 /**
  * Polar.sh product IDs — each plan tier × billing interval maps to a
  * separate Polar product because Polar uses one interval per product.
+ *
+ * Flex is a single metered subscription product (monthly billing cycle).
  */
 export const POLAR_PRODUCT_IDS: Record<
   Exclude<PlanTier, 'free'>,
-  Record<BillingInterval, string>
+  Partial<Record<BillingInterval, string>>
 > = {
   pro: {
     month: 'POLAR_PRODUCT_ID',
@@ -15,6 +17,9 @@ export const POLAR_PRODUCT_IDS: Record<
   organization: {
     month: 'POLAR_PRODUCT_ID',
     year: 'POLAR_PRODUCT_ID',
+  },
+  flex: {
+    month: 'POLAR_PRODUCT_ID',
   },
 };
 
@@ -39,4 +44,5 @@ export function resolvePolarProduct(
 export const PLAN_PRICING: Record<Exclude<PlanTier, 'free'>, { month: number; year: number }> = {
   pro: { month: 7, year: 69 },
   organization: { month: 29, year: 279 },
+  flex: { month: 0, year: 0 },
 };
