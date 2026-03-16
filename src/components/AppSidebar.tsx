@@ -43,6 +43,8 @@ import { useAuthStore } from '@/stores/auth-store';
 import { NotificationBell } from '@/components/notifications';
 import { PlanBadge } from '@/components/billing/PlanBadge';
 import { useSubscription } from '@/hooks/use-subscription';
+import { useProjectsStore } from '@/stores/projects-store';
+import { formatLimit } from '@/lib/billing/limits';
 import { FeedbackModal } from '@/components/feedback';
 
 interface AppSidebarProps {
@@ -147,7 +149,8 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
   const location = useLocation();
   const { user, isAuthenticated } = useAuth();
   const signOut = useAuthStore((s) => s.signOut);
-  const { plan } = useSubscription();
+  const { plan, limits } = useSubscription();
+  const projects = useProjectsStore((s) => s.projects);
   const { toggleColorScheme } = useMantineColorScheme();
   const computedColorScheme = useComputedColorScheme('light');
   const pathname = location.pathname;
@@ -264,23 +267,22 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
 
           <Divider />
 
-          {/* Theme + notifications */}
-          <Group justify={collapsed ? 'center' : 'flex-start'} gap="xs" px={collapsed ? 0 : 4}>
-            {isAuthenticated && <NotificationBell />}
-            <Tooltip label={computedColorScheme === 'dark' ? t('Light mode') : t('Dark mode')}>
-              <ActionIcon variant="subtle" color="gray" size="sm" onClick={toggleColorScheme}>
-                {computedColorScheme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-              </ActionIcon>
-            </Tooltip>
-          </Group>
+          {/* Theme toggle as nav item */}
+          <NavItem
+            icon={computedColorScheme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+            label={computedColorScheme === 'dark' ? t('Light mode') : t('Dark mode')}
+            collapsed={collapsed}
+            onClick={toggleColorScheme}
+          />
 
           <Divider />
 
           {/* User section */}
           {isAuthenticated ? (
-            <Stack gap={4}>
-              {!collapsed && (
-                <Group gap="sm" px={4} py={4}>
+            <Stack gap={2}>
+              {/* User profile */}
+              {!collapsed ? (
+                <Group gap="sm" px={12} py={8}>
                   <Avatar src={avatarUrl} size="sm" radius="xl" color="blue">
                     {initials}
                   </Avatar>
@@ -288,19 +290,40 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
                     <Text size="xs" fw={500} truncate>
                       {displayName}
                     </Text>
-                    <PlanBadge plan={plan} />
+                    <Group gap={4}>
+                      <PlanBadge plan={plan} />
+                      {isAuthenticated && <NotificationBell />}
+                    </Group>
                   </Stack>
                 </Group>
+              ) : (
+                <Stack gap={4} align="center">
+                  <Tooltip label={displayName} position="right">
+                    <Box style={{ display: 'flex', justifyContent: 'center' }}>
+                      <Avatar src={avatarUrl} size="sm" radius="xl" color="blue">
+                        {initials}
+                      </Avatar>
+                    </Box>
+                  </Tooltip>
+                  {isAuthenticated && <NotificationBell />}
+                </Stack>
               )}
-              {collapsed && (
-                <Tooltip label={displayName} position="right">
-                  <Box style={{ display: 'flex', justifyContent: 'center' }}>
-                    <Avatar src={avatarUrl} size="sm" radius="xl" color="blue">
-                      {initials}
-                    </Avatar>
-                  </Box>
-                </Tooltip>
+
+              {/* Usage stats */}
+              {!collapsed && (
+                <Box px={12} py={4}>
+                  <Text size="xs" c="dimmed" className="gb-tabular-nums">
+                    {projects.filter((p) => !p.organization_id).length}/
+                    {formatLimit(limits.projects)} {t('projects')} &middot;{' '}
+                    {projects
+                      .filter((p) => !p.organization_id)
+                      .reduce((s, p) => s + (p.stats_total ?? 0), 0)
+                      .toLocaleString()}
+                    /{formatLimit(limits.strings)} {t('strings')}
+                  </Text>
+                </Box>
               )}
+
               <NavItem
                 icon={<LogOut size={18} />}
                 label={t('Sign out')}

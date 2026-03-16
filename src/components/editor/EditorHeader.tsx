@@ -31,6 +31,7 @@ import {
   Archive,
   Globe,
   Cloud,
+  LayoutDashboard,
   Settings,
 } from 'lucide-react';
 import { sectionVariants, buttonStates } from '@/lib/motion';
