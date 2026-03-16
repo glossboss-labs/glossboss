@@ -3013,7 +3013,7 @@ msgstr ""
 msgid "No credit card required"
 msgstr ""
 
-#: src/components/landing/HeroSection.tsx:98
+#: src/components/landing/HeroSection.tsx:157
 msgid "No credit card required. Free for individuals."
 msgstr ""
 
@@ -3290,7 +3290,7 @@ msgstr ""
 msgid "Open project"
 msgstr ""
 
-#: src/components/landing/HeroSection.tsx:33
+#: src/components/landing/HeroSection.tsx:72
 msgid "Open source & free forever"
 msgstr ""
 
@@ -3572,7 +3572,7 @@ msgstr ""
 msgid "Portuguese (Portugal)"
 msgstr ""
 
-#: src/components/landing/HeroSection.tsx:67
+#: src/components/landing/HeroSection.tsx:126
 msgid "Powered by DeepL, Azure Translator & Google Gemini"
 msgstr ""
 
@@ -4178,10 +4178,6 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
-#: src/components/landing/PricingSection.tsx:154
-msgid "Save 17%"
-msgstr ""
-
 #: src/components/SettingsModal.tsx:168
 #: src/components/settings/KeybindsSection.tsx:71
 msgid "Save and jump to the next translation entry (skips translated by default)"
@@ -4215,8 +4211,9 @@ msgstr ""
 msgid "Save to cloud"
 msgstr ""
 
+#: src/components/landing/PricingSection.tsx:154
 #: src/components/settings/BillingSection.tsx:558
-msgid "Save up to 20% with annual billing"
+msgid "Save up to 20%"
 msgstr ""
 
 #: src/components/settings/BillingSection.tsx:645
@@ -4451,7 +4448,7 @@ msgstr ""
 msgid "Ship"
 msgstr ""
 
-#: src/components/landing/HeroSection.tsx:45
+#: src/components/landing/HeroSection.tsx:104
 msgid "Ship faster."
 msgstr ""
 
@@ -4691,7 +4688,7 @@ msgstr ""
 msgid "Start over"
 msgstr ""
 
-#: src/components/landing/HeroSection.tsx:81
+#: src/components/landing/HeroSection.tsx:140
 msgid "Start translating free"
 msgstr ""
 
@@ -4897,7 +4894,7 @@ msgstr ""
 msgid "The WordPress.org translation export could not be parsed."
 msgstr ""
 
-#: src/components/landing/HeroSection.tsx:55
+#: src/components/landing/HeroSection.tsx:114
 msgid ""
 "The browser-based translation editor with multi-provider AI, real-time colla"
 "boration, and one-click deploys to GitHub."
@@ -5036,10 +5033,6 @@ msgstr ""
 
 #: src/components/landing/HowItWorks.tsx:17
 msgid "Translate"
-msgstr ""
-
-#: src/components/landing/HeroSection.tsx:43
-msgid "Translate smarter."
 msgstr ""
 
 #: src/components/landing/HowItWorks.tsx:18
@@ -5192,7 +5185,7 @@ msgstr ""
 msgid "Try another file"
 msgstr ""
 
-#: src/components/landing/HeroSection.tsx:87
+#: src/components/landing/HeroSection.tsx:146
 msgid "Try the editor"
 msgstr ""
 

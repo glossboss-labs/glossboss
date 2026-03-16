@@ -1,11 +1,52 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
-import { motion } from 'motion/react';
+import { AnimatePresence, motion } from 'motion/react';
 import { useTranslation } from '@/lib/app-language';
 import { AnimatedGridPattern } from '@/components/magicui/animated-grid-pattern';
 import { cn } from '@/lib/utils';
 
+const HERO_TRANSLATIONS = [
+  { text: 'Translate smarter.', lang: 'EN' },
+  { text: 'Slimmer vertalen.', lang: 'NL' },
+  { text: 'Schlauer übersetzen.', lang: 'DE' },
+  { text: 'Traduire plus malin.', lang: 'FR' },
+  { text: 'Traducir más inteligente.', lang: 'ES' },
+  { text: 'もっと賢く翻訳。', lang: 'JA' },
+  { text: 'Översätt smartare.', lang: 'SV' },
+  { text: 'Tłumacz mądrzej.', lang: 'PL' },
+  { text: '더 스마트하게 번역.', lang: 'KO' },
+  { text: 'Daha akıllı çevir.', lang: 'TR' },
+];
+
+function getReducedMotion() {
+  return (
+    typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  );
+}
+
+function useReducedMotion() {
+  const [reduced, setReduced] = useState(getReducedMotion);
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const handler = (e: MediaQueryListEvent) => setReduced(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+  return reduced;
+}
+
 export function HeroSection() {
   const { t } = useTranslation();
+  const reducedMotion = useReducedMotion();
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    if (reducedMotion) return;
+    const interval = setInterval(() => {
+      setIndex((prev) => (prev + 1) % HERO_TRANSLATIONS.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [reducedMotion]);
 
   return (
     <section className="relative flex min-h-[70vh] items-center justify-center overflow-hidden px-6 py-24">
@@ -40,7 +81,27 @@ export function HeroSection() {
           transition={{ duration: 0.6, ease: 'easeOut', delay: 0.1 }}
           className="text-4xl font-semibold leading-[1.1] tracking-tight text-text-primary sm:text-5xl md:text-6xl"
         >
-          {t('Translate smarter.')}
+          {/* Cycling translation line */}
+          <span className="inline-grid justify-center [&>*]:[grid-area:1/1]">
+            {/* Invisible sizing spans — reserves width of widest translation */}
+            {HERO_TRANSLATIONS.map((entry) => (
+              <span key={entry.lang} className="invisible select-none" aria-hidden="true">
+                {entry.text}
+              </span>
+            ))}
+            {/* Visible animated span */}
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={HERO_TRANSLATIONS[index].lang}
+                initial={reducedMotion ? false : { opacity: 0, y: 16, filter: 'blur(6px)' }}
+                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                exit={reducedMotion ? undefined : { opacity: 0, y: -16, filter: 'blur(6px)' }}
+                transition={{ duration: 0.3, ease: 'easeOut' }}
+              >
+                {HERO_TRANSLATIONS[index].text}
+              </motion.span>
+            </AnimatePresence>
+          </span>
           <br />
           <span className="text-text-secondary">{t('Ship faster.')}</span>
         </motion.h1>

@@ -3117,7 +3117,7 @@ msgstr "No context"
 msgid "No credit card required"
 msgstr "No credit card required"
 
-#: src/components/landing/HeroSection.tsx:98
+#: src/components/landing/HeroSection.tsx:157
 msgid "No credit card required. Free for individuals."
 msgstr "No credit card required. Free for individuals."
 
@@ -3394,7 +3394,7 @@ msgstr "Open issue"
 msgid "Open project"
 msgstr "Open project"
 
-#: src/components/landing/HeroSection.tsx:33
+#: src/components/landing/HeroSection.tsx:72
 msgid "Open source & free forever"
 msgstr "Open source & free forever"
 
@@ -3688,7 +3688,7 @@ msgstr "Portuguese (Brazil)"
 msgid "Portuguese (Portugal)"
 msgstr "Portuguese (Portugal)"
 
-#: src/components/landing/HeroSection.tsx:67
+#: src/components/landing/HeroSection.tsx:126
 msgid "Powered by DeepL, Azure Translator & Google Gemini"
 msgstr "Powered by DeepL, Azure Translator & Google Gemini"
 
@@ -4296,10 +4296,6 @@ msgstr "Russian, Ukrainian, Serbian, Croatian"
 msgid "Save"
 msgstr "Save"
 
-#: src/components/landing/PricingSection.tsx:154
-msgid "Save 17%"
-msgstr "Save 17%"
-
 #: src/components/SettingsModal.tsx:168
 #: src/components/settings/KeybindsSection.tsx:71
 msgid "Save and jump to the next translation entry (skips translated by default)"
@@ -4333,9 +4329,10 @@ msgstr "Save this file as a cloud project"
 msgid "Save to cloud"
 msgstr "Save to cloud"
 
+#: src/components/landing/PricingSection.tsx:154
 #: src/components/settings/BillingSection.tsx:558
-msgid "Save up to 20% with annual billing"
-msgstr "Save up to 20% with annual billing"
+msgid "Save up to 20%"
+msgstr "Save up to 20%"
 
 #: src/components/settings/BillingSection.tsx:645
 #: src/components/settings/BillingSection.tsx:678
@@ -4577,7 +4574,7 @@ msgstr "Share feedback"
 msgid "Ship"
 msgstr "Ship"
 
-#: src/components/landing/HeroSection.tsx:45
+#: src/components/landing/HeroSection.tsx:104
 msgid "Ship faster."
 msgstr "Ship faster."
 
@@ -4819,7 +4816,7 @@ msgstr "Stable"
 msgid "Start over"
 msgstr "Start over"
 
-#: src/components/landing/HeroSection.tsx:81
+#: src/components/landing/HeroSection.tsx:140
 msgid "Start translating free"
 msgstr "Start translating free"
 
@@ -5032,7 +5029,7 @@ msgstr "The URL must start with https://"
 msgid "The WordPress.org translation export could not be parsed."
 msgstr "The WordPress.org translation export could not be parsed."
 
-#: src/components/landing/HeroSection.tsx:55
+#: src/components/landing/HeroSection.tsx:114
 msgid ""
 "The browser-based translation editor with multi-provider AI, real-time colla"
 "boration, and one-click deploys to GitHub."
@@ -5196,10 +5193,6 @@ msgstr "Track"
 msgid "Translate"
 msgstr "Translate"
 
-#: src/components/landing/HeroSection.tsx:43
-msgid "Translate smarter."
-msgstr "Translate smarter."
-
 #: src/components/landing/HowItWorks.tsx:18
 msgid ""
 "Translate with AI from DeepL, Azure, or Gemini. Review with your team. Run Q"
@@ -5356,7 +5349,7 @@ msgstr "Try adjusting your search or clearing some filters."
 msgid "Try another file"
 msgstr "Try another file"
 
-#: src/components/landing/HeroSection.tsx:87
+#: src/components/landing/HeroSection.tsx:146
 msgid "Try the editor"
 msgstr "Try the editor"
 
