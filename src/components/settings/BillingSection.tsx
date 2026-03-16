@@ -544,7 +544,7 @@ export function BillingSection() {
             </Text>
           </Stack>
 
-          <Group gap="sm">
+          <Group gap="sm" wrap="wrap">
             <SegmentedControl
               size="xs"
               value={billingInterval}
@@ -555,7 +555,7 @@ export function BillingSection() {
               ]}
             />
             <Badge size="sm" variant="light" color="green" leftSection={<Sparkles size={10} />}>
-              {t('Save up to 20% with annual billing')}
+              {t('Save up to 20%')}
             </Badge>
           </Group>
         </Group>

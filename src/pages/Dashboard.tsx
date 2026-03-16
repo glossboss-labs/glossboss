@@ -115,7 +115,7 @@ export default function Dashboard() {
     <>
       <FreePlanBanner />
       <MotionDiv variants={sectionVariants} initial="hidden" animate="visible">
-        <Group justify="space-between" mb="xl">
+        <Group justify="space-between" mb="xl" wrap="wrap">
           <Title order={2}>{t('Projects')}</Title>
           <motion.div {...buttonStates}>
             <Button leftSection={<Plus size={16} />} onClick={() => setCreateModalOpen(true)}>
@@ -170,19 +170,19 @@ export default function Dashboard() {
             </Text>
 
             <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
-              <Group mb="md" gap="sm">
+              <Group mb="md" gap="sm" wrap="wrap">
                 <TextInput
                   placeholder={t('Search projects…')}
                   leftSection={<Search size={14} />}
                   value={search}
                   onChange={(e) => setSearch(e.currentTarget.value)}
-                  style={{ flex: 1, maxWidth: 320 }}
+                  style={{ flex: '1 1 200px', minWidth: 0 }}
                 />
                 <Select
                   data={sortOptions}
                   value={sort}
                   onChange={(v) => setSort((v as SortOption) || 'updated')}
-                  w={180}
+                  style={{ flex: '0 1 auto' }}
                   size="sm"
                   allowDeselect={false}
                 />
@@ -206,7 +206,7 @@ export default function Dashboard() {
 
       {/* Organizations section */}
       <MotionDiv variants={sectionVariants} initial="hidden" animate="visible">
-        <Group justify="space-between" mb="md" mt="xl">
+        <Group justify="space-between" mb="md" mt="xl" wrap="wrap">
           <Title order={3}>{t('Organizations')}</Title>
           <motion.div {...buttonStates}>
             <Button

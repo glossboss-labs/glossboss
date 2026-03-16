@@ -150,8 +150,8 @@ export function PricingSection() {
           </p>
 
           <div className="relative mt-8 inline-flex items-center rounded-md border border-border-subtle bg-surface-1 p-0.5">
-            <span className="absolute -top-2.5 right-0 translate-x-2 rounded-full bg-status-translated px-2 py-0.5 text-[10px] font-bold text-black">
-              {t('Save 17%')}
+            <span className="absolute -top-2.5 right-0 translate-x-0 rounded-full bg-status-translated px-2 py-0.5 text-[10px] font-bold text-black sm:translate-x-2">
+              {t('Save up to 20%')}
             </span>
             <button
               className={cn(

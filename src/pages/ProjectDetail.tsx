@@ -313,7 +313,7 @@ export default function ProjectDetail() {
       <MotionDiv variants={sectionVariants} initial="hidden" animate="visible">
         <Stack gap="lg">
           {/* Breadcrumb */}
-          <Group justify="space-between" align="center">
+          <Group justify="space-between" align="center" wrap="wrap" gap="sm">
             <Text
               component={Link}
               to={isMember ? '/dashboard' : '/explore'}
@@ -596,7 +596,7 @@ export default function ProjectDetail() {
                           >
                             <Group justify="space-between" align="center" wrap="nowrap">
                               <Stack gap={4} style={{ flex: 1, minWidth: 0 }}>
-                                <Group gap="sm">
+                                <Group gap="sm" wrap="wrap">
                                   <Text fw={600} size="sm">
                                     {lang.locale}
                                   </Text>
@@ -639,8 +639,8 @@ export default function ProjectDetail() {
                                     {pct}%
                                   </Text>
                                 </Group>
-                                <Group gap={8} justify="space-between">
-                                  <Group gap={8}>
+                                <Group gap={8} justify="space-between" wrap="wrap">
+                                  <Group gap={8} wrap="wrap">
                                     <Badge variant="light" size="xs" color="blue">
                                       {lang.stats_translated} {t('translated')}
                                     </Badge>

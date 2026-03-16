@@ -45,68 +45,128 @@ async function getInputsBelowMinFontSize(page: Page) {
   });
 }
 
+// ---------------------------------------------------------------------------
+// Responsive overflow tests — all public routes × 3 viewports
+// ---------------------------------------------------------------------------
+
 for (const [name, size] of Object.entries(VIEWPORTS)) {
   test.describe(`${name} (${size.width}x${size.height})`, () => {
     test.use({ viewport: size, ...FORCE_ENGLISH });
 
     test('landing page renders without overflow', async ({ page }) => {
       await page.goto('/');
-      await expect(page.getByRole('heading', { name: 'GlossBoss' })).toBeVisible();
-      await expect(page.getByRole('button', { name: /upload/i })).toBeVisible();
-      await expect(page.getByRole('button', { name: /load example/i })).toBeVisible();
+      await expect(page.getByRole('link', { name: /start translating/i })).toBeVisible();
       await expectNoOverflow(page);
     });
 
-    test('editor loads and fits viewport', async ({ page }) => {
-      await page.goto('/');
-      await page.getByRole('button', { name: /load example/i }).click();
-      // Wait for editor to render
-      await expect(page.getByRole('button', { name: 'Download', exact: true })).toBeVisible({
-        timeout: 15_000,
-      });
+    test('editor empty state fits viewport', async ({ page }) => {
+      await page.goto('/editor');
+      await expect(page.getByRole('heading', { name: /upload a translation file/i })).toBeVisible();
       await expectNoOverflow(page);
-
-      // Settings gear should always be visible
-      await expect(page.getByRole('button', { name: /settings and actions/i })).toBeVisible();
     });
 
-    test('settings modal opens and fits viewport', async ({ page }) => {
-      await page.goto('/');
-      // Open settings via gear menu
-      await page.getByRole('button', { name: /settings and actions/i }).click();
-      await page.getByRole('menuitem', { name: /open settings/i }).click();
-      await expect(page.getByRole('dialog')).toBeVisible();
+    test('login page renders without overflow', async ({ page }) => {
+      await page.goto('/login');
+      await expect(page.getByRole('heading', { name: /sign in/i })).toBeVisible();
+      await expect(page.getByRole('button', { name: /continue with github/i })).toBeVisible();
+      await expectNoOverflow(page);
+    });
+
+    test('signup page renders without overflow', async ({ page }) => {
+      await page.goto('/signup');
+      await expect(page.getByRole('heading', { name: /create an account/i })).toBeVisible();
+      await expect(page.getByRole('button', { name: /continue with github/i })).toBeVisible();
+      await expectNoOverflow(page);
+    });
+
+    test('forgot password page renders without overflow', async ({ page }) => {
+      await page.goto('/forgot-password');
+      await expect(page.getByRole('heading', { name: /reset your password/i })).toBeVisible();
+      await expect(page.getByRole('button', { name: /send reset link/i })).toBeVisible();
+      await expectNoOverflow(page);
+    });
+
+    test('reset password page renders without overflow', async ({ page }) => {
+      await page.goto('/reset-password');
+      await expect(page.getByRole('heading', { name: /set new password/i })).toBeVisible();
+      await expect(page.getByRole('button', { name: /update password/i })).toBeVisible();
+      await expectNoOverflow(page);
+    });
+
+    test('settings page renders without overflow', async ({ page }) => {
+      await page.goto('/settings');
+      await expect(page.getByRole('heading', { name: /settings/i })).toBeVisible();
+      await expect(page.getByRole('tab', { name: /translation/i })).toBeVisible();
+      await expectNoOverflow(page);
+    });
+
+    test('explore page renders without overflow', async ({ page }) => {
+      await page.goto('/explore');
+      await expect(page.getByRole('heading', { name: /explore/i })).toBeVisible();
+      await expectNoOverflow(page);
+    });
+
+    test('roadmap page renders without overflow', async ({ page }) => {
+      await page.goto('/roadmap');
+      await expect(page.getByRole('heading', { name: /roadmap/i })).toBeVisible();
       await expectNoOverflow(page);
     });
   });
 }
 
-// iOS zoom guard — mobile only, checks landing, editor, and settings modal
+// ---------------------------------------------------------------------------
+// iOS zoom guard — mobile only
+// ---------------------------------------------------------------------------
+
 test.describe('iOS zoom prevention', () => {
   test.use({ viewport: VIEWPORTS.mobile, ...FORCE_ENGLISH });
 
   test('landing page inputs have font-size >= 16px', async ({ page }) => {
     await page.goto('/');
+    await expect(page.getByRole('link', { name: /start translating/i })).toBeVisible();
     const violations = await getInputsBelowMinFontSize(page);
     expect(violations, 'All landing page inputs should have font-size >= 16px').toEqual([]);
   });
 
   test('editor inputs have font-size >= 16px', async ({ page }) => {
-    await page.goto('/');
-    await page.getByRole('button', { name: /load example/i }).click();
-    await expect(page.getByRole('button', { name: 'Download', exact: true })).toBeVisible({
-      timeout: 15_000,
-    });
+    await page.goto('/editor');
+    await expect(page.getByRole('heading', { name: /upload a translation file/i })).toBeVisible();
     const violations = await getInputsBelowMinFontSize(page);
     expect(violations, 'All editor inputs should have font-size >= 16px').toEqual([]);
   });
 
-  test('settings modal inputs have font-size >= 16px', async ({ page }) => {
-    await page.goto('/');
-    await page.getByRole('button', { name: /settings and actions/i }).click();
-    await page.getByRole('menuitem', { name: /open settings/i }).click();
-    await expect(page.getByRole('dialog')).toBeVisible();
+  test('login page inputs have font-size >= 16px', async ({ page }) => {
+    await page.goto('/login');
+    await expect(page.getByRole('heading', { name: /sign in/i })).toBeVisible();
     const violations = await getInputsBelowMinFontSize(page);
-    expect(violations, 'All settings modal inputs should have font-size >= 16px').toEqual([]);
+    expect(violations, 'All login inputs should have font-size >= 16px').toEqual([]);
+  });
+
+  test('signup page inputs have font-size >= 16px', async ({ page }) => {
+    await page.goto('/signup');
+    await expect(page.getByRole('heading', { name: /create an account/i })).toBeVisible();
+    const violations = await getInputsBelowMinFontSize(page);
+    expect(violations, 'All signup inputs should have font-size >= 16px').toEqual([]);
+  });
+
+  test('forgot password page inputs have font-size >= 16px', async ({ page }) => {
+    await page.goto('/forgot-password');
+    await expect(page.getByRole('heading', { name: /reset your password/i })).toBeVisible();
+    const violations = await getInputsBelowMinFontSize(page);
+    expect(violations, 'All forgot password inputs should have font-size >= 16px').toEqual([]);
+  });
+
+  test('reset password page inputs have font-size >= 16px', async ({ page }) => {
+    await page.goto('/reset-password');
+    await expect(page.getByRole('heading', { name: /set new password/i })).toBeVisible();
+    const violations = await getInputsBelowMinFontSize(page);
+    expect(violations, 'All reset password inputs should have font-size >= 16px').toEqual([]);
+  });
+
+  test('settings page inputs have font-size >= 16px', async ({ page }) => {
+    await page.goto('/settings');
+    await expect(page.getByRole('tab', { name: /translation/i })).toBeVisible();
+    const violations = await getInputsBelowMinFontSize(page);
+    expect(violations, 'All settings inputs should have font-size >= 16px').toEqual([]);
   });
 });

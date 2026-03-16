@@ -325,22 +325,22 @@ export default function Roadmap() {
         {!loading && issues.length > 0 && (
           <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
             <Stack gap="md">
-              <Group gap="sm">
+              <Stack gap="sm">
                 <SegmentedControl
                   value={statusFilter}
                   onChange={(v) => setStatusFilter(v as RoadmapStatus)}
                   data={segmentData}
                   size="xs"
+                  fullWidth
                 />
                 <TextInput
                   placeholder={t('Search roadmap…')}
                   leftSection={<Search size={14} />}
                   value={search}
                   onChange={(e) => setSearch(e.currentTarget.value)}
-                  style={{ flex: 1, maxWidth: 280 }}
                   size="sm"
                 />
-              </Group>
+              </Stack>
 
               {filtered.length === 0 ? (
                 <Center py={40}>
