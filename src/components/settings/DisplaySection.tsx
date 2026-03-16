@@ -177,45 +177,50 @@ export function DisplaySection({
                 <Skel w="8%" h={3} />
               </Box>
 
-              {/* Content area */}
+              {/* Content area — the background is the "empty" space, the content block just changes width */}
               <Box
                 style={{
                   flex: 1,
                   display: 'flex',
                   justifyContent: 'center',
                   overflow: 'hidden',
+                  position: 'relative',
                 }}
               >
+                {/* Animated content container — only the width changes, children are fixed-size */}
                 <motion.div
                   initial={false}
                   animate={{ width: `${CONTENT_FRACTION[containerWidth] * 100}%` }}
                   transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                   style={{
                     height: '100%',
+                    borderLeft:
+                      containerWidth !== '100%'
+                        ? '1px solid var(--mantine-color-default-border)'
+                        : undefined,
+                    borderRight:
+                      containerWidth !== '100%'
+                        ? '1px solid var(--mantine-color-default-border)'
+                        : undefined,
+                    overflow: 'hidden',
+                    padding: '6px 8px 0',
                     display: 'flex',
                     flexDirection: 'column',
-                    padding: '2% 2% 0',
+                    gap: 4,
                   }}
                 >
                   {/* File info bar */}
-                  <Box style={{ display: 'flex', gap: '2%', marginBottom: '3%' }}>
-                    <Skel w="25%" h={3} />
-                    <Skel w={16} h={3} color="var(--mantine-color-blue-4)" />
+                  <Box style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                    <Skel w={80} h={3} />
+                    <Skel w={20} h={3} color="var(--mantine-color-blue-4)" />
                   </Box>
 
                   {/* Toolbar row */}
-                  <Box
-                    style={{
-                      display: 'flex',
-                      gap: '2%',
-                      marginBottom: '3%',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <Skel w="35%" h={4} color="var(--mantine-color-default-border)" />
+                  <Box style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+                    <Skel w={100} h={4} color="var(--mantine-color-default-border)" />
                     <Box style={{ flex: 1 }} />
-                    <Skel w="8%" h={3} />
-                    <Skel w="8%" h={3} />
+                    <Skel w={24} h={3} />
+                    <Skel w={24} h={3} />
                   </Box>
 
                   {/* Table header */}
@@ -224,50 +229,38 @@ export function DisplaySection({
                       display: 'flex',
                       borderBottom: '1px solid var(--mantine-color-default-border)',
                       paddingBottom: 2,
-                      marginBottom: 2,
-                      gap: '4%',
+                      gap: 8,
                     }}
                   >
-                    <Box style={{ width: '8%' }}>
-                      <Skel w="100%" h={2} />
+                    <Skel w={20} h={2} />
+                    <Box style={{ flex: 1 }}>
+                      <Skel w={40} h={2} />
                     </Box>
                     <Box style={{ flex: 1 }}>
-                      <Skel w="30%" h={2} />
-                    </Box>
-                    <Box style={{ flex: 1 }}>
-                      <Skel w="35%" h={2} />
+                      <Skel w={50} h={2} />
                     </Box>
                   </Box>
 
-                  {/* Table rows */}
-                  {Array.from({ length: 5 }).map((_, i) => (
+                  {/* Table rows — fixed-size content, only the flex columns stretch */}
+                  {[90, 140, 60, 80, 110].map((srcW, i) => (
                     <Box
                       key={i}
                       style={{
                         display: 'flex',
-                        gap: '4%',
-                        padding: '1.5% 0',
+                        gap: 8,
+                        paddingTop: 3,
+                        paddingBottom: 3,
                         borderBottom: '1px solid var(--mantine-color-default-border)',
-                        opacity: 1 - i * 0.1,
                       }}
                     >
-                      <Box
-                        style={{
-                          width: '8%',
-                          display: 'flex',
-                          alignItems: 'flex-start',
-                          paddingTop: 1,
-                        }}
-                      >
-                        <Skel w={14} h={3} color="var(--mantine-color-teal-4)" />
+                      <Skel w={16} h={3} color="var(--mantine-color-teal-4)" />
+                      <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                        <Skel w={srcW} h={2} />
+                        {i === 1 && <Skel w={120} h={2} />}
                       </Box>
                       <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
-                        <Skel w={`${65 - i * 8}%`} h={2} />
-                        {i === 1 && <Skel w="80%" h={2} />}
-                      </Box>
-                      <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
-                        <Skel w={`${60 - i * 6}%`} h={2} />
-                        {i === 1 && <Skel w="75%" h={2} />}
+                        <Skel w={srcW * 0.9} h={2} />
+                        {i === 1 && <Skel w={100} h={2} />}
                       </Box>
                     </Box>
                   ))}
