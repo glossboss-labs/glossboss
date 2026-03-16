@@ -138,3 +138,10 @@ body {
   text-align: left !important;
   flex: none !important;
 }
+
+/* ----------------------------------------------------------------
+ * Tabular numbers — use on counts, percentages, pagination
+ * ---------------------------------------------------------------- */
+.gb-tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
