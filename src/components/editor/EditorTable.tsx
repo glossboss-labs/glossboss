@@ -3235,163 +3235,158 @@ export function EditorTable({
                   </Table>
                 </Box>
 
-                <Box
-                  style={{
-                    display: 'flex',
-                    alignItems: 'flex-start',
-                    gap: 'var(--mantine-spacing-md)',
-                    overflow:
-                      typeof CSS !== 'undefined' &&
-                      typeof CSS.supports === 'function' &&
-                      CSS.supports('overflow', 'clip')
-                        ? 'clip'
-                        : 'hidden',
-                    flexShrink: 0,
-                    width: inspectorOpen ? inspectorWidth + 24 : 0,
-                    marginLeft: inspectorOpen ? 'var(--mantine-spacing-md)' : 0,
-                    opacity: inspectorOpen ? 1 : 0,
-                    transition: 'width 250ms ease, margin-left 250ms ease, opacity 150ms ease',
-                    pointerEvents: inspectorOpen ? 'auto' : 'none',
-                  }}
-                >
+                {inspectorOpen && (
                   <Box
-                    role="separator"
-                    aria-orientation="vertical"
-                    aria-label={t('Resize inspector')}
-                    onPointerDown={handleInspectorResizeStart}
-                    onDoubleClick={() => setInspectorWidth(INSPECTOR_DEFAULT_WIDTH)}
                     style={{
-                      width: 8,
+                      display: 'flex',
+                      alignItems: 'flex-start',
+                      gap: 'var(--mantine-spacing-md)',
                       flexShrink: 0,
-                      alignSelf: 'stretch',
-                      cursor: 'col-resize',
-                      borderRadius: 6,
-                      backgroundColor: 'var(--mantine-color-default-border)',
-                      opacity: 0.35,
-                      transition: 'opacity 120ms ease',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.opacity = '0.8';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.opacity = '0.35';
-                    }}
-                  />
-
-                  <Paper
-                    withBorder
-                    p="sm"
-                    w={inspectorWidth}
-                    style={{
-                      flexShrink: 0,
+                      width: inspectorWidth + 24,
+                      marginLeft: 'var(--mantine-spacing-md)',
                       position: 'sticky',
                       top: 16,
                       height: 'calc(100vh - 32px)',
                       maxHeight: 'calc(100vh - 32px)',
-                      overflow: 'hidden',
-                      display: 'flex',
-                      flexDirection: 'column',
+                      alignSelf: 'flex-start',
                     }}
                   >
-                    <Stack gap="sm" pt={2} style={{ height: '100%', minHeight: 0 }}>
-                      <Group justify="space-between" align="center">
-                        <Text fw={600} size="sm">
-                          {t('String Inspector')}
-                        </Text>
-                        <Tooltip
-                          label={selectedInspectorLabel}
-                          disabled={!selectedEntry}
-                          position="bottom"
-                        >
-                          <Text size="xs" c="dimmed" maw="58%" ta="right" truncate="end">
-                            {selectedInspectorLabel}
+                    <Box
+                      role="separator"
+                      aria-orientation="vertical"
+                      aria-label={t('Resize inspector')}
+                      onPointerDown={handleInspectorResizeStart}
+                      onDoubleClick={() => setInspectorWidth(INSPECTOR_DEFAULT_WIDTH)}
+                      style={{
+                        width: 8,
+                        flexShrink: 0,
+                        alignSelf: 'stretch',
+                        cursor: 'col-resize',
+                        borderRadius: 6,
+                        backgroundColor: 'var(--mantine-color-default-border)',
+                        opacity: 0.35,
+                        transition: 'opacity 120ms ease',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.opacity = '0.8';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.opacity = '0.35';
+                      }}
+                    />
+
+                    <Paper
+                      withBorder
+                      p="sm"
+                      w={inspectorWidth}
+                      style={{
+                        flexShrink: 0,
+                        height: '100%',
+                        overflow: 'hidden',
+                        display: 'flex',
+                        flexDirection: 'column',
+                      }}
+                    >
+                      <Stack gap="sm" pt={2} style={{ height: '100%', minHeight: 0 }}>
+                        <Group justify="space-between" align="center">
+                          <Text fw={600} size="sm">
+                            {t('String Inspector')}
                           </Text>
-                        </Tooltip>
-                      </Group>
-
-                      <Group justify="space-between" align="center">
-                        <SegmentedControl
-                          size="xs"
-                          value={inspectorMode}
-                          onChange={(value) => setInspectorMode(value as 'context' | 'browse')}
-                          data={[
-                            { label: t('Context'), value: 'context' },
-                            { label: t('Browse'), value: 'browse' },
-                          ]}
-                        />
-
-                        {inspectorMode === 'context' && activeReference && (
-                          <Tooltip label={t('Clear active source reference')}>
-                            <ActionIcon
-                              variant="subtle"
-                              size="sm"
-                              onClick={() => setActiveReference(null)}
-                            >
-                              <X size={14} />
-                            </ActionIcon>
-                          </Tooltip>
-                        )}
-                      </Group>
-
-                      <Divider />
-
-                      <Box style={{ flex: 1, minHeight: 0 }}>
-                        {inspectorMode === 'browse' ? (
-                          <Paper
-                            withBorder
-                            radius="md"
-                            style={{ overflow: 'hidden', height: '100%' }}
+                          <Tooltip
+                            label={selectedInspectorLabel}
+                            disabled={!selectedEntry}
+                            position="bottom"
                           >
-                            <SourceBrowser listingMaxHeight={420} viewerMaxHeight={420} />
-                          </Paper>
-                        ) : (
-                          <ScrollArea h="100%" type="auto" offsetScrollbars="y">
-                            {selectedEntry && selectedStatus ? (
-                              <Stack gap="sm">
-                                <Stack gap={6}>
-                                  <Text size="xs" fw={600} c="dimmed">
-                                    {t('Translation')}
-                                  </Text>
-                                  <TranslationCell
+                            <Text size="xs" c="dimmed" maw="58%" ta="right" truncate="end">
+                              {selectedInspectorLabel}
+                            </Text>
+                          </Tooltip>
+                        </Group>
+
+                        <Group justify="space-between" align="center">
+                          <SegmentedControl
+                            size="xs"
+                            value={inspectorMode}
+                            onChange={(value) => setInspectorMode(value as 'context' | 'browse')}
+                            data={[
+                              { label: t('Context'), value: 'context' },
+                              { label: t('Browse'), value: 'browse' },
+                            ]}
+                          />
+
+                          {inspectorMode === 'context' && activeReference && (
+                            <Tooltip label={t('Clear active source reference')}>
+                              <ActionIcon
+                                variant="subtle"
+                                size="sm"
+                                onClick={() => setActiveReference(null)}
+                              >
+                                <X size={14} />
+                              </ActionIcon>
+                            </Tooltip>
+                          )}
+                        </Group>
+
+                        <Divider />
+
+                        <Box style={{ flex: 1, minHeight: 0 }}>
+                          {inspectorMode === 'browse' ? (
+                            <Paper
+                              withBorder
+                              radius="md"
+                              style={{ overflow: 'hidden', height: '100%' }}
+                            >
+                              <SourceBrowser listingMaxHeight={420} viewerMaxHeight={420} />
+                            </Paper>
+                          ) : (
+                            <ScrollArea h="100%" type="auto" offsetScrollbars="y">
+                              {selectedEntry && selectedStatus ? (
+                                <Stack gap="sm">
+                                  <Stack gap={6}>
+                                    <Text size="xs" fw={600} c="dimmed">
+                                      {t('Translation')}
+                                    </Text>
+                                    <TranslationCell
+                                      entry={selectedEntry}
+                                      onKeyDown={handleKeyDown}
+                                      translateButtonSize="md"
+                                      translateButtonDisplay="icon"
+                                    />
+                                  </Stack>
+
+                                  <Divider />
+
+                                  <EntryDetailsPanel
                                     entry={selectedEntry}
-                                    onKeyDown={handleKeyDown}
-                                    translateButtonSize="md"
-                                    translateButtonDisplay="icon"
+                                    status={selectedStatus}
+                                    isModified={selectedIsModified}
+                                    isMT={selectedIsMT}
+                                    qaReport={selectedQaReport}
+                                    reviewEntry={
+                                      selectedReviewEntry ?? {
+                                        status: 'draft',
+                                        comments: [],
+                                        history: [],
+                                      }
+                                    }
+                                    translationMemoryScope={translationMemoryScope}
+                                    onActivateReference={handleInspectorReference}
+                                    mode={mode}
+                                    isRemoteLocked={selectedRemoteLock}
                                   />
                                 </Stack>
-
-                                <Divider />
-
-                                <EntryDetailsPanel
-                                  entry={selectedEntry}
-                                  status={selectedStatus}
-                                  isModified={selectedIsModified}
-                                  isMT={selectedIsMT}
-                                  qaReport={selectedQaReport}
-                                  reviewEntry={
-                                    selectedReviewEntry ?? {
-                                      status: 'draft',
-                                      comments: [],
-                                      history: [],
-                                    }
-                                  }
-                                  translationMemoryScope={translationMemoryScope}
-                                  onActivateReference={handleInspectorReference}
-                                  mode={mode}
-                                  isRemoteLocked={selectedRemoteLock}
-                                />
-                              </Stack>
-                            ) : (
-                              <Text size="sm" c="dimmed">
-                                {t('Select a row to inspect context and metadata.')}
-                              </Text>
-                            )}
-                          </ScrollArea>
-                        )}
-                      </Box>
-                    </Stack>
-                  </Paper>
-                </Box>
+                              ) : (
+                                <Text size="sm" c="dimmed">
+                                  {t('Select a row to inspect context and metadata.')}
+                                </Text>
+                              )}
+                            </ScrollArea>
+                          )}
+                        </Box>
+                      </Stack>
+                    </Paper>
+                  </Box>
+                )}
               </Box>
 
               {/* Pagination controls */}
