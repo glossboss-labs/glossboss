@@ -28,25 +28,14 @@ import { CloudAppShell } from '@/components/AppShell';
 export default function App() {
   return (
     <Routes>
-      {/* Public routes (no shell) */}
-      <Route path="/" element={<Index />} />
+      {/* Auth routes (no shell) */}
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/auth/callback" element={<Callback />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
 
-      {/* Full-width editor (no sidebar) */}
-      <Route
-        path="/projects/:id/languages/:languageId"
-        element={
-          <AuthGuard>
-            <ProjectEditor />
-          </AuthGuard>
-        }
-      />
-
-      {/* Cloud pages with sidebar shell */}
+      {/* Authenticated pages with sidebar shell */}
       <Route
         element={
           <AuthGuard>
@@ -57,6 +46,7 @@ export default function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/projects/:id/settings" element={<ProjectSettings />} />
+        <Route path="/projects/:id/languages/:languageId" element={<ProjectEditor />} />
         <Route path="/orgs/:slug" element={<OrgSettings />} />
         <Route path="/orgs/:slug/settings" element={<OrgSettingsPage />} />
         <Route path="/invite/:token" element={<Invite />} />
@@ -65,6 +55,7 @@ export default function App() {
 
       {/* Public pages with sidebar shell (no auth guard) */}
       <Route element={<CloudAppShell />}>
+        <Route path="/" element={<Index />} />
         <Route path="/explore" element={<Explore />} />
         <Route path="/projects/:id" element={<ProjectDetail />} />
       </Route>

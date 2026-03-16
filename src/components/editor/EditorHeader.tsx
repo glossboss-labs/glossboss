@@ -13,8 +13,6 @@ import {
   Button,
   FileButton,
   Tooltip,
-  ActionIcon,
-  Divider,
   Menu,
   useComputedColorScheme,
 } from '@mantine/core';
@@ -26,8 +24,6 @@ import {
   Trash2,
   FileUp,
   RotateCcw,
-  Sun,
-  Moon,
   ChevronDown,
   GitBranch,
   GitPullRequest,
@@ -35,44 +31,18 @@ import {
   Archive,
   Globe,
   Cloud,
-  LayoutDashboard,
   Settings,
 } from 'lucide-react';
 import { sectionVariants, buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
 import type { FileFormat } from '@/stores';
 import type { RepoConnection } from '@/lib/repo-sync/types';
-import { UserMenu } from '@/components/auth/UserMenu';
 import { useAuth } from '@/hooks/use-auth';
 
 const MotionDiv = motion.div;
 
 /* ------------------------------------------------------------------ */
 /*  ThemeToggle                                                        */
-/* ------------------------------------------------------------------ */
-
-function ThemeToggle({ onToggle }: { onToggle: () => void }) {
-  const { t } = useTranslation();
-  const computedColorScheme = useComputedColorScheme('light');
-
-  return (
-    <Tooltip label={computedColorScheme === 'dark' ? t('Light mode') : t('Dark mode')}>
-      <motion.div {...buttonStates}>
-        <ActionIcon
-          variant="default"
-          size="lg"
-          onClick={onToggle}
-          aria-label={
-            computedColorScheme === 'dark' ? t('Switch to light mode') : t('Switch to dark mode')
-          }
-        >
-          {computedColorScheme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-        </ActionIcon>
-      </motion.div>
-    </Tooltip>
-  );
-}
-
 /* ------------------------------------------------------------------ */
 /*  EditorHeader                                                       */
 /* ------------------------------------------------------------------ */
@@ -97,10 +67,6 @@ export interface EditorHeaderProps {
   repoConnection: RepoConnection | null;
   onPushToRepo: () => void;
 
-  isMobile: boolean | undefined;
-
-  onOpenFeedback: () => void;
-  onToggleColorScheme: () => void;
   onOpenSettings: (tab?: string) => void;
 
   /** Opens the "Load from URL" prompt modal. */
@@ -130,8 +96,6 @@ export function EditorHeader({
   onPotUpload,
   repoConnection,
   onPushToRepo,
-  isMobile,
-  onToggleColorScheme,
   onOpenSettings,
   onLoadFromUrl,
   onOpenWordPressProject,
@@ -366,37 +330,6 @@ export function EditorHeader({
               </MotionDiv>
             )}
           </AnimatePresence>
-
-          {!isMobile && (
-            <>
-              <Divider orientation="vertical" />
-              <motion.div {...buttonStates}>
-                <Button
-                  component={RouterLink}
-                  to="/explore"
-                  variant="subtle"
-                  leftSection={<Globe size={16} />}
-                >
-                  {t('Explore')}
-                </Button>
-              </motion.div>
-              {isAuthenticated && (
-                <motion.div {...buttonStates}>
-                  <Button
-                    component={RouterLink}
-                    to="/dashboard"
-                    variant="subtle"
-                    leftSection={<LayoutDashboard size={16} />}
-                  >
-                    {t('Dashboard')}
-                  </Button>
-                </motion.div>
-              )}
-              <ThemeToggle onToggle={onToggleColorScheme} />
-            </>
-          )}
-
-          <UserMenu />
         </Group>
       </Group>
     </MotionDiv>
