@@ -1,4 +1,4 @@
-name: Sync Uncodixfy
+name: Maintenance / Sync Uncodixfy
 
 on:
   schedule:
