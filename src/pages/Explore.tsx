@@ -189,13 +189,13 @@ export default function Explore() {
 
             {projects.length >= 3 && (
               <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
-                <Group mb="md" gap="sm">
+                <Group mb="md" gap="sm" wrap="wrap">
                   <TextInput
                     placeholder={t('Search projects…')}
                     leftSection={<Search size={14} />}
                     value={search}
                     onChange={(e) => setSearch(e.currentTarget.value)}
-                    style={{ flex: 1, maxWidth: 320 }}
+                    style={{ flex: '1 1 200px', minWidth: 0 }}
                   />
                   <Select
                     data={formatOptions}
@@ -203,7 +203,7 @@ export default function Explore() {
                     onChange={setFormatFilter}
                     placeholder={t('Format')}
                     clearable
-                    w={120}
+                    style={{ flex: '0 1 auto' }}
                     size="sm"
                   />
                   {languageOptions.length > 0 && (
@@ -214,7 +214,7 @@ export default function Explore() {
                       placeholder={t('Language')}
                       clearable
                       searchable
-                      w={140}
+                      style={{ flex: '0 1 auto' }}
                       size="sm"
                     />
                   )}
@@ -222,7 +222,7 @@ export default function Explore() {
                     data={sortOptions}
                     value={sort}
                     onChange={(v) => setSort((v as SortOption) || 'updated')}
-                    w={180}
+                    style={{ flex: '0 1 auto' }}
                     size="sm"
                     allowDeselect={false}
                   />

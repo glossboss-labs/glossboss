@@ -544,7 +544,7 @@ export function BillingSection() {
             </Text>
           </Stack>
 
-          <Group gap="sm">
+          <Group gap="sm" wrap="wrap">
             <SegmentedControl
               size="xs"
               value={billingInterval}

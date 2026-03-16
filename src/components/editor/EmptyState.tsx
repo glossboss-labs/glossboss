@@ -63,7 +63,7 @@ export function EmptyState({
       style={{ cursor: 'pointer' }}
     >
       <Paper
-        p={rem(80)}
+        p={{ base: rem(24), sm: rem(80) }}
         withBorder
         style={{
           borderStyle: 'dashed',
@@ -129,7 +129,12 @@ export function EmptyState({
             {t('or')}
           </Text>
 
-          <Group gap="sm" onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+          <Group
+            gap="sm"
+            wrap="wrap"
+            justify="center"
+            onClick={(e: React.MouseEvent) => e.stopPropagation()}
+          >
             <Tooltip label={t('Open the latest WordPress.org translation export by project slug')}>
               <motion.div {...buttonStates}>
                 <Button

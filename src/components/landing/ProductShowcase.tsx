@@ -344,7 +344,7 @@ export function ProductShowcase() {
             <table className="w-full border-collapse text-left" style={{ tableLayout: 'fixed' }}>
               <colgroup>
                 <col style={{ width: '36px' }} />
-                <col style={{ width: '18%' }} />
+                <col className="hidden sm:table-column" style={{ width: '18%' }} />
                 <col />
                 <col />
               </colgroup>
@@ -356,14 +356,15 @@ export function ProductShowcase() {
                       <div className="h-4 w-4 rounded border border-border-default bg-surface-1" />
                     </div>
                   </th>
-                  {['STATUS', 'SOURCE STRING', 'TRANSLATED STRING'].map((label) => (
-                    <th
-                      key={label}
-                      className="px-3 py-2.5 text-[11px] font-medium tracking-[0.04em] text-text-tertiary"
-                    >
-                      {label}
-                    </th>
-                  ))}
+                  <th className="hidden px-3 py-2.5 text-[11px] font-medium tracking-[0.04em] text-text-tertiary sm:table-cell">
+                    STATUS
+                  </th>
+                  <th className="px-3 py-2.5 text-[11px] font-medium tracking-[0.04em] text-text-tertiary">
+                    SOURCE STRING
+                  </th>
+                  <th className="px-3 py-2.5 text-[11px] font-medium tracking-[0.04em] text-text-tertiary">
+                    TRANSLATED STRING
+                  </th>
                 </tr>
               </thead>
 
@@ -380,8 +381,9 @@ export function ProductShowcase() {
                     <tr
                       key={entry.id}
                       onClick={() => setSelectedId(entry.id)}
+                      style={{ borderLeft: `3px solid var(--color-status-${status})` }}
                       className={[
-                        'transition-colors duration-150 cursor-pointer',
+                        'transition-colors duration-150 cursor-pointer sm:!border-l-0',
                         isActive
                           ? 'bg-accent/5'
                           : isSelected
@@ -400,7 +402,7 @@ export function ProductShowcase() {
                       </td>
 
                       {/* Status */}
-                      <td className="px-3 py-3 align-top">
+                      <td className="hidden px-3 py-3 align-top sm:table-cell">
                         <span
                           className={`inline-block rounded-full px-2.5 py-1 text-[10px] font-bold leading-none tracking-wide text-white ${STATUS_STYLE[status]}`}
                         >
