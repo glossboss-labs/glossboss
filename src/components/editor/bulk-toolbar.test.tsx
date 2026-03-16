@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { act, render, screen, waitFor, within } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MantineProvider } from '@mantine/core';
 import type { ReactNode } from 'react';
@@ -272,18 +272,12 @@ describe('editor details and mobile layout', () => {
 
     renderWithMantine(<EditorTable />);
 
-    const statusBadges = screen.getByTestId('status-badges-a');
-
-    expect(within(statusBadges).getByText('Translated')).toBeInTheDocument();
-    expect(within(statusBadges).getByText('Modified')).toBeInTheDocument();
-    expect(within(statusBadges).getByText('Manual')).toBeInTheDocument();
-    expect(within(statusBadges).getByText('Glossary')).toBeInTheDocument();
-
-    const statusBadgesStyle = getComputedStyle(statusBadges);
-
-    expect(statusBadges.style.getPropertyValue('--group-wrap')).toBe('wrap');
-    expect(statusBadgesStyle.overflowX).toBe('visible');
-    expect(statusBadgesStyle.overflowY).toBe('visible');
+    // Status is now a compact dot (10x10 circle) with tooltip instead of badge text.
+    // Verify the dot is rendered with the correct test ID and color.
+    const statusDot = screen.getByTestId('status-badges-a');
+    expect(statusDot).toBeInTheDocument();
+    expect(statusDot.style.borderRadius).toBe('50%');
+    expect(statusDot.style.backgroundColor).toBe('var(--mantine-color-green-6)');
   });
 
   it('activates source reference from the inspector reference link', async () => {

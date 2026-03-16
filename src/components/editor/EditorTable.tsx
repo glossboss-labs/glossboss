@@ -48,7 +48,6 @@ import {
   FileCode,
   Pencil,
   Bot,
-  Edit3,
   ChevronDown,
   ChevronUp,
   ExternalLink,
@@ -704,7 +703,9 @@ function SignalsOverviewCell({
 }) {
   const { t } = useTranslation();
   const hasGlossarySignals = (glossaryAnalysis?.terms.length ?? 0) > 0;
-  const hasQaSignals = Boolean(qaReport && (qaReport.errorCount > 0 || qaReport.warningCount > 0));
+  const qaErrors = qaReport?.errorCount ?? 0;
+  const qaWarnings = qaReport?.warningCount ?? 0;
+  const hasQaSignals = qaErrors > 0 || qaWarnings > 0;
   const providerLabel = provider === 'gemini' ? 'Gemini' : provider === 'azure' ? 'Azure' : 'DeepL';
 
   if (
@@ -721,7 +722,7 @@ function SignalsOverviewCell({
   }
 
   return (
-    <Stack gap={4}>
+    <Group gap={6} wrap="nowrap">
       {isMT && (
         <Tooltip
           label={
@@ -730,33 +731,55 @@ function SignalsOverviewCell({
               : t('Machine translated by {{provider}}', { provider: providerLabel })
           }
         >
-          <Badge
-            size="xs"
-            variant="light"
-            color={usedGlossary ? 'teal' : 'blue'}
-            leftSection={<Bot size={10} />}
-          >
-            {usedGlossary ? t('MT + Glossary') : t('Machine translated')}
-          </Badge>
+          <Box style={{ color: `var(--mantine-color-blue-6)`, lineHeight: 0 }}>
+            <Bot size={16} />
+          </Box>
         </Tooltip>
       )}
-      <GlossaryIndicator analysis={hasGlossarySignals ? glossaryAnalysis : null} />
-      {qaReport && qaReport.errorCount > 0 && (
-        <Badge size="xs" variant="light" color="red" leftSection={<ShieldAlert size={10} />}>
-          {t('{{count}} QA error(s)', { count: qaReport.errorCount })}
-        </Badge>
-      )}
-      {qaReport && qaReport.warningCount > 0 && (
-        <Badge size="xs" variant="light" color="orange" leftSection={<AlertTriangle size={10} />}>
-          {t('{{count}} QA warning(s)', { count: qaReport.warningCount })}
-        </Badge>
+      {hasGlossarySignals && <GlossaryIndicator analysis={glossaryAnalysis} />}
+      {hasQaSignals && (
+        <Tooltip
+          label={
+            qaErrors > 0 && qaWarnings > 0
+              ? `${t('{{count}} QA error(s)', { count: qaErrors })}, ${t('{{count}} QA warning(s)', { count: qaWarnings })}`
+              : qaErrors > 0
+                ? t('{{count}} QA error(s)', { count: qaErrors })
+                : t('{{count}} QA warning(s)', { count: qaWarnings })
+          }
+        >
+          <Box
+            style={{
+              color: qaErrors > 0 ? 'var(--mantine-color-red-6)' : 'var(--mantine-color-orange-6)',
+              lineHeight: 0,
+            }}
+          >
+            {qaErrors > 0 ? <ShieldAlert size={16} /> : <AlertTriangle size={16} />}
+          </Box>
+        </Tooltip>
       )}
       {showReviewSignals && unresolvedCommentCount > 0 && (
-        <Badge size="xs" variant="light" color="red" leftSection={<MessageSquare size={10} />}>
-          {t('{{count}} unresolved comment(s)', { count: unresolvedCommentCount })}
-        </Badge>
+        <Tooltip label={t('{{count}} unresolved comment(s)', { count: unresolvedCommentCount })}>
+          <Box style={{ color: 'var(--mantine-color-red-6)', lineHeight: 0, position: 'relative' }}>
+            <MessageSquare size={16} />
+            <Text
+              size="xs"
+              fw={700}
+              style={{
+                position: 'absolute',
+                top: -4,
+                right: -6,
+                fontSize: 9,
+                lineHeight: 1,
+                color: 'var(--mantine-color-red-6)',
+              }}
+              className="gb-tabular-nums"
+            >
+              {unresolvedCommentCount}
+            </Text>
+          </Box>
+        </Tooltip>
       )}
-    </Stack>
+    </Group>
   );
 }
 
@@ -1231,22 +1254,49 @@ const StatusBadges = memo(function StatusBadges({
   const { t } = useTranslation();
   const status = getTranslationStatus(entry.msgstr, entry.flags, entry.msgstrPlural);
 
-  return (
-    <Group
-      data-testid={`status-badges-${entry.id}`}
-      gap={4}
-      wrap="wrap"
-      style={{
-        maxWidth: '100%',
-        overflowX: 'visible',
-        overflowY: 'visible',
-      }}
-    >
-      <Badge color={STATUS_COLORS[status]} size="sm" variant="filled" style={{ flexShrink: 0 }}>
-        {t(STATUS_LABELS[status])}
-      </Badge>
+  // Build a compact tooltip with secondary status info
+  const hints: string[] = [];
+  if (isModified) hints.push(t('Modified'));
+  if (isManualEdit) hints.push(t('Manual edit'));
+  if (hasGlossaryTerms) hints.push(t('Glossary match'));
+  if (isMT) hints.push(t('Machine translated'));
+  if (isReviewEntryLocked) hints.push(t('Locked'));
+  if (showReviewComments && unresolvedCommentCount > 0)
+    hints.push(t('{{count}} comments', { count: unresolvedCommentCount }));
 
-      {showReviewStatus && (
+  const dotWithHints = (
+    <Tooltip
+      label={
+        <Stack gap={2}>
+          <Text size="xs" fw={500}>
+            {t(STATUS_LABELS[status])}
+          </Text>
+          {hints.length > 0 && (
+            <Text size="xs" c="dimmed">
+              {hints.join(' · ')}
+            </Text>
+          )}
+        </Stack>
+      }
+      multiline
+    >
+      <Box
+        data-testid={`status-badges-${entry.id}`}
+        style={{
+          width: 10,
+          height: 10,
+          borderRadius: '50%',
+          backgroundColor: `var(--mantine-color-${STATUS_COLORS[status]}-6)`,
+          flexShrink: 0,
+        }}
+      />
+    </Tooltip>
+  );
+
+  return (
+    <Group gap={6} wrap="nowrap" align="center">
+      {dotWithHints}
+      {showReviewStatus && reviewStatus !== 'draft' && (
         <Badge
           color={REVIEW_STATUS_COLORS[reviewStatus]}
           size="xs"
@@ -1255,78 +1305,6 @@ const StatusBadges = memo(function StatusBadges({
         >
           {t(REVIEW_STATUS_LABELS[reviewStatus])}
         </Badge>
-      )}
-
-      {isReviewEntryLocked && (
-        <Badge size="xs" variant="light" color="gray" style={{ flexShrink: 0 }}>
-          {t('Locked')}
-        </Badge>
-      )}
-
-      {isModified && (
-        <Tooltip label={t('Modified this session')}>
-          <Badge
-            size="xs"
-            variant="light"
-            color="orange"
-            leftSection={<Edit3 size={10} />}
-            style={{ flexShrink: 0 }}
-          >
-            {t('Modified')}
-          </Badge>
-        </Tooltip>
-      )}
-
-      {isManualEdit && (
-        <Tooltip label={t('Manually edited - protected from bulk translation')}>
-          <Badge
-            size="xs"
-            variant="light"
-            color="grape"
-            leftSection={<Pencil size={10} />}
-            style={{ flexShrink: 0 }}
-          >
-            {t('Manual')}
-          </Badge>
-        </Tooltip>
-      )}
-
-      {hasGlossaryTerms && (
-        <Tooltip label={t('Contains glossary terms')}>
-          <Badge size="xs" variant="dot" color="violet" style={{ flexShrink: 0 }}>
-            {t('Glossary')}
-          </Badge>
-        </Tooltip>
-      )}
-
-      {isMT && (
-        <Tooltip label={t('Machine translated')}>
-          <Badge
-            size="xs"
-            variant="light"
-            color="blue"
-            leftSection={<Bot size={10} />}
-            style={{ flexShrink: 0 }}
-          >
-            MT
-          </Badge>
-        </Tooltip>
-      )}
-
-      {showReviewComments && unresolvedCommentCount > 0 && (
-        <Tooltip
-          label={t('{{count}} unresolved review comment(s)', { count: unresolvedCommentCount })}
-        >
-          <Badge
-            size="xs"
-            variant="light"
-            color="red"
-            leftSection={<MessageSquare size={10} />}
-            style={{ flexShrink: 0 }}
-          >
-            {t('{{count}} comments', { count: unresolvedCommentCount })}
-          </Badge>
-        </Tooltip>
       )}
     </Group>
   );
