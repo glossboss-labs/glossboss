@@ -4,9 +4,10 @@ import { Tooltip } from '@mantine/core';
 import { Check, TrendingUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useTranslation } from '@/lib/app-language';
-import { PLAN_CATALOG } from '@/lib/billing/catalog';
+import { PLAN_CATALOG, formatMonthlyPrice } from '@/lib/billing/catalog';
 import { PLAN_PRICING } from '@/lib/billing/polar';
 import { getFlexMonthlyCost, FLEX_PRICING } from '@/lib/billing/limits';
+import type { PlanTier } from '@/lib/billing/types';
 import { cn } from '@/lib/utils';
 
 type Interval = 'month' | 'year';
@@ -31,7 +32,7 @@ function PriceDisplay({ tier, interval }: { tier: string; interval: Interval }) 
     );
   }
   const pricing = PLAN_PRICING[tier as 'pro' | 'organization'];
-  const price = interval === 'year' ? Math.round(pricing.year / 12) : pricing.month;
+  const displayPrice = formatMonthlyPrice(tier as Exclude<PlanTier, 'free'>, interval);
   return (
     <div className="my-4 h-[52px]">
       <AnimatePresence mode="wait">
@@ -42,7 +43,7 @@ function PriceDisplay({ tier, interval }: { tier: string; interval: Interval }) 
           exit={{ opacity: 0, y: -4 }}
           transition={{ duration: 0.15 }}
         >
-          <span className="text-3xl font-semibold text-text-primary">€{price}</span>
+          <span className="text-3xl font-semibold text-text-primary">{displayPrice}</span>
           <span className="text-sm text-text-tertiary">/mo</span>
           {interval === 'year' && (
             <p className="mt-0.5 text-xs text-text-tertiary">€{pricing.year} billed yearly</p>
