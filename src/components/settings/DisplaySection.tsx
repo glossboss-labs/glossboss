@@ -16,13 +16,18 @@ import {
 } from '@/lib/container-width';
 import { APP_LANGUAGE_OPTIONS, useTranslation, type AppLanguage } from '@/lib/app-language';
 
-/** Maps container width values to a proportional percentage for the preview bar. */
-const WIDTH_PREVIEW: Record<ContainerWidth, number> = {
-  md: 55,
-  lg: 70,
-  xl: 85,
-  '100%': 100,
+/**
+ * Pixel widths that map to each container option, used to calculate
+ * the proportional content area inside a 1920px-wide display preview.
+ */
+const CONTENT_PX: Record<ContainerWidth, number> = {
+  md: 980,
+  lg: 1120,
+  xl: 1320,
+  '100%': 1920,
 };
+const DISPLAY_W = 1920;
+const SIDEBAR_RATIO = 240 / DISPLAY_W; // sidebar takes 240px of 1920
 
 export interface DisplaySectionProps {
   containerWidth?: ContainerWidth;
@@ -113,33 +118,137 @@ export function DisplaySection({
             size="xs"
           />
 
+          {/* Scaled 1920x1080 display preview */}
           <Box
             style={{
               position: 'relative',
-              height: 32,
-              borderRadius: 'var(--mantine-radius-sm)',
-              backgroundColor: 'var(--mantine-color-dark-6)',
+              width: '100%',
+              aspectRatio: '16 / 9',
+              borderRadius: 'var(--mantine-radius-md)',
+              border: '2px solid var(--mantine-color-dark-4)',
+              backgroundColor: 'var(--mantine-color-dark-7)',
               overflow: 'hidden',
             }}
           >
-            <motion.div
-              initial={false}
-              animate={{ width: `${WIDTH_PREVIEW[containerWidth]}%` }}
-              transition={{ type: 'spring', stiffness: 300, damping: 28 }}
+            {/* Sidebar */}
+            <Box
               style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: `${SIDEBAR_RATIO * 100}%`,
                 height: '100%',
-                borderRadius: 'var(--mantine-radius-sm)',
-                background:
-                  'linear-gradient(90deg, var(--mantine-color-blue-8), var(--mantine-color-blue-6))',
+                backgroundColor: 'var(--mantine-color-dark-6)',
+                borderRight: '1px solid var(--mantine-color-dark-4)',
                 display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
+                flexDirection: 'column',
+                padding: '6% 8%',
+                gap: '6%',
               }}
             >
-              <Text size="xs" fw={500} c="white" style={{ userSelect: 'none' }}>
+              {/* Sidebar skeleton lines */}
+              {[60, 45, 50, 40].map((w, i) => (
+                <Box
+                  key={i}
+                  style={{
+                    width: `${w}%`,
+                    height: 3,
+                    borderRadius: 2,
+                    backgroundColor: 'var(--mantine-color-dark-4)',
+                  }}
+                />
+              ))}
+            </Box>
+
+            {/* Main area */}
+            <Box
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: `${SIDEBAR_RATIO * 100}%`,
+                right: 0,
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              {/* Header bar */}
+              <Box
+                style={{
+                  height: '8%',
+                  borderBottom: '1px solid var(--mantine-color-dark-4)',
+                  backgroundColor: 'var(--mantine-color-dark-6)',
+                }}
+              />
+
+              {/* Content area with centered container */}
+              <Box
+                style={{
+                  flex: 1,
+                  display: 'flex',
+                  justifyContent: 'center',
+                  padding: '3% 0',
+                }}
+              >
+                <motion.div
+                  initial={false}
+                  animate={{
+                    width: `${(CONTENT_PX[containerWidth] / (DISPLAY_W - 240)) * 100}%`,
+                  }}
+                  transition={{ type: 'spring', stiffness: 260, damping: 26 }}
+                  style={{
+                    height: '100%',
+                    maxWidth: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '4%',
+                    padding: '0 3%',
+                  }}
+                >
+                  {/* Editor table skeleton rows */}
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <Box
+                      key={i}
+                      style={{
+                        display: 'flex',
+                        gap: '3%',
+                        height: '10%',
+                      }}
+                    >
+                      <Box
+                        style={{
+                          flex: 1,
+                          borderRadius: 2,
+                          backgroundColor:
+                            i === 0 ? 'var(--mantine-color-dark-4)' : 'var(--mantine-color-dark-5)',
+                        }}
+                      />
+                      <Box
+                        style={{
+                          flex: 1,
+                          borderRadius: 2,
+                          backgroundColor:
+                            i === 0 ? 'var(--mantine-color-dark-4)' : 'var(--mantine-color-dark-5)',
+                        }}
+                      />
+                    </Box>
+                  ))}
+                </motion.div>
+              </Box>
+            </Box>
+
+            {/* Width label overlay */}
+            <Box
+              style={{
+                position: 'absolute',
+                bottom: 6,
+                right: 8,
+              }}
+            >
+              <Text size="9px" c="dimmed" fw={500} style={{ userSelect: 'none', opacity: 0.6 }}>
                 {CONTAINER_WIDTH_OPTIONS.find((o) => o.value === containerWidth)?.label}
               </Text>
-            </motion.div>
+            </Box>
           </Box>
         </Stack>
       </Paper>
