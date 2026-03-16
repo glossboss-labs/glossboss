@@ -277,36 +277,43 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
 
           <Divider />
 
+          {/* Notifications */}
+          {isAuthenticated && (
+            <NavItem icon={<NotificationBell />} label={t('Notifications')} collapsed={collapsed} />
+          )}
+
+          <Divider />
+
           {/* User section */}
           {isAuthenticated ? (
             <Stack gap={2}>
               {/* User profile */}
               {!collapsed ? (
-                <Group gap="sm" px={12} py={8}>
-                  <Avatar src={avatarUrl} size="sm" radius="xl" color="blue">
+                <Group gap="sm" px={12} py={8} wrap="nowrap">
+                  <Avatar
+                    src={avatarUrl}
+                    size="sm"
+                    radius="xl"
+                    color="blue"
+                    style={{ flexShrink: 0 }}
+                  >
                     {initials}
                   </Avatar>
                   <Stack gap={0} style={{ flex: 1, minWidth: 0 }}>
                     <Text size="xs" fw={500} truncate>
                       {displayName}
                     </Text>
-                    <Group gap={4}>
-                      <PlanBadge plan={plan} />
-                      {isAuthenticated && <NotificationBell />}
-                    </Group>
+                    <PlanBadge plan={plan} />
                   </Stack>
                 </Group>
               ) : (
-                <Stack gap={4} align="center">
-                  <Tooltip label={displayName} position="right">
-                    <Box style={{ display: 'flex', justifyContent: 'center' }}>
-                      <Avatar src={avatarUrl} size="sm" radius="xl" color="blue">
-                        {initials}
-                      </Avatar>
-                    </Box>
-                  </Tooltip>
-                  {isAuthenticated && <NotificationBell />}
-                </Stack>
+                <Tooltip label={displayName} position="right">
+                  <Box style={{ display: 'flex', justifyContent: 'center', padding: '4px 0' }}>
+                    <Avatar src={avatarUrl} size="sm" radius="xl" color="blue">
+                      {initials}
+                    </Avatar>
+                  </Box>
+                </Tooltip>
               )}
 
               {/* Usage stats */}

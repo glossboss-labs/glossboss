@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent } from 'react';
-import { useComputedColorScheme, useMantineColorScheme, useMantineTheme } from '@mantine/core';
-import { useLocalStorage, useMediaQuery } from '@mantine/hooks';
+import { useLocalStorage } from '@mantine/hooks';
 import type {
   EditorHeaderProps,
   EmptyStateProps,
@@ -80,10 +79,6 @@ interface IndexPageControllerOptions {
 export function useIndexPageController(options?: IndexPageControllerOptions) {
   const readOnly = options?.readOnly ?? false;
   const { t } = useTranslation();
-  const theme = useMantineTheme();
-  const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
-  const { setColorScheme } = useMantineColorScheme();
-  const computedColorScheme = useComputedColorScheme('light');
   const isDevelopment = import.meta.env.DEV;
   const [errors, setErrors] = useState<ParseIssue[]>([]);
   const [warnings, setWarnings] = useState<ParseIssue[]>([]);
@@ -204,29 +199,6 @@ export function useIndexPageController(options?: IndexPageControllerOptions) {
     [projectName, targetLanguageForMemory, translateSourceLang],
   );
   const qaSummary = useMemo<QASummary>(() => summarizeQaReports(qaReports), [qaReports]);
-
-  const toggleColorScheme = useCallback(() => {
-    const oldBg = getComputedStyle(document.body).backgroundColor;
-    setColorScheme(computedColorScheme === 'dark' ? 'light' : 'dark');
-
-    const prefersReducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion) return;
-
-    const overlay = document.createElement('div');
-    overlay.className = 'theme-transition-overlay';
-    overlay.style.backgroundColor = oldBg;
-    document.body.appendChild(overlay);
-
-    let cleanedUp = false;
-    const cleanup = () => {
-      if (cleanedUp) return;
-      cleanedUp = true;
-      overlay.remove();
-    };
-
-    overlay.addEventListener('animationend', cleanup, { once: true });
-    setTimeout(cleanup, 1500);
-  }, [computedColorScheme, setColorScheme]);
 
   const handleGlossaryLoaded = useCallback(
     async (loadedGlossary: Glossary) => {
@@ -743,10 +715,6 @@ export function useIndexPageController(options?: IndexPageControllerOptions) {
     [settingsNavigate],
   );
 
-  const handleOpenFeedback = useCallback(() => {
-    setFeedbackOpen(true);
-  }, []);
-
   const handleDiscardDraft = useCallback(() => {
     if (pendingDraft) {
       deleteDraft(pendingDraft.filename);
@@ -1069,9 +1037,6 @@ export function useIndexPageController(options?: IndexPageControllerOptions) {
     onPotUpload: handlePotUpload,
     repoConnection,
     onPushToRepo: readOnly ? undefined : openRepoSyncPush,
-    isMobile,
-    onOpenFeedback: handleOpenFeedback,
-    onToggleColorScheme: toggleColorScheme,
     onOpenSettings: handleOpenSettings,
     onLoadFromUrl: readOnly ? undefined : openUrlPrompt,
     onOpenWordPressProject: readOnly ? undefined : openWordPressProjectModal,

@@ -1,10 +1,18 @@
 /**
  * Display Section — container width selector, app language selector.
+ *
+ * Self-contained: reads/writes localStorage directly so it works both
+ * in the Settings page (standalone) and when passed props from the editor.
  */
 
 import { Stack, Text, Paper, Select, SegmentedControl, Anchor } from '@mantine/core';
+import { useLocalStorage } from '@mantine/hooks';
 import { Languages } from 'lucide-react';
-import { CONTAINER_WIDTH_OPTIONS, type ContainerWidth } from '@/lib/container-width';
+import {
+  CONTAINER_WIDTH_KEY,
+  CONTAINER_WIDTH_OPTIONS,
+  type ContainerWidth,
+} from '@/lib/container-width';
 import { APP_LANGUAGE_OPTIONS, useTranslation, type AppLanguage } from '@/lib/app-language';
 
 export interface DisplaySectionProps {
@@ -13,10 +21,22 @@ export interface DisplaySectionProps {
 }
 
 export function DisplaySection({
-  containerWidth = 'xl',
+  containerWidth: controlledWidth,
   onContainerWidthChange,
 }: DisplaySectionProps) {
   const { language, setLanguage, t } = useTranslation();
+
+  const [storedWidth, setStoredWidth] = useLocalStorage<ContainerWidth>({
+    key: CONTAINER_WIDTH_KEY,
+    defaultValue: 'xl',
+  });
+
+  const containerWidth = controlledWidth ?? storedWidth;
+
+  const handleWidthChange = (value: ContainerWidth) => {
+    setStoredWidth(value);
+    onContainerWidthChange?.(value);
+  };
 
   return (
     <Stack gap="md">
@@ -75,7 +95,7 @@ export function DisplaySection({
 
           <SegmentedControl
             value={containerWidth}
-            onChange={(value) => onContainerWidthChange?.(value as ContainerWidth)}
+            onChange={(value) => handleWidthChange(value as ContainerWidth)}
             data={CONTAINER_WIDTH_OPTIONS.map((opt) => ({
               value: opt.value,
               label: opt.label,

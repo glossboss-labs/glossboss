@@ -1,10 +1,15 @@
 /**
  * Development Section — branch chip toggle (dev-only).
+ *
+ * Self-contained: reads/writes localStorage directly.
  */
 
 import { Stack, Text, Alert, Badge, Paper, Group, Switch } from '@mantine/core';
+import { useLocalStorage } from '@mantine/hooks';
 import { GitBranch } from 'lucide-react';
 import { useTranslation } from '@/lib/app-language';
+
+const BRANCH_CHIP_KEY = 'glossboss-dev-branch-chip';
 
 export interface DevelopmentSectionProps {
   branchChipEnabled?: boolean;
@@ -12,10 +17,22 @@ export interface DevelopmentSectionProps {
 }
 
 export function DevelopmentSection({
-  branchChipEnabled = true,
+  branchChipEnabled: controlledValue,
   onBranchChipEnabledChange,
 }: DevelopmentSectionProps) {
   const { t } = useTranslation();
+
+  const [storedValue, setStoredValue] = useLocalStorage({
+    key: BRANCH_CHIP_KEY,
+    defaultValue: true,
+  });
+
+  const branchChipEnabled = controlledValue ?? storedValue;
+
+  const handleChange = (enabled: boolean) => {
+    setStoredValue(enabled);
+    onBranchChipEnabledChange?.(enabled);
+  };
 
   return (
     <Stack gap="md">
@@ -53,7 +70,7 @@ export function DevelopmentSection({
             label={t('Show branch badge')}
             description={t('Only visible while running the app in development mode')}
             checked={branchChipEnabled}
-            onChange={(e) => onBranchChipEnabledChange?.(e.currentTarget.checked)}
+            onChange={(e) => handleChange(e.currentTarget.checked)}
             styles={{
               track: {
                 transition: 'background-color 0.2s ease, border-color 0.2s ease',
