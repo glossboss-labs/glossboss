@@ -725,19 +725,17 @@ export function useIndexPageController(options?: IndexPageControllerOptions) {
   }, [pendingDraft]);
 
   const handleDragEnter = useCallback((event: DragEvent) => {
+    // Only intercept external file drags, not text selection drags
+    if (!event.dataTransfer?.types.includes('Files')) return;
     event.preventDefault();
-    event.stopPropagation();
     dragCounterRef.current += 1;
-
-    if (event.dataTransfer?.types.includes('Files')) {
-      setIsDragging(true);
-      setDragError(null);
-    }
+    setIsDragging(true);
+    setDragError(null);
   }, []);
 
   const handleDragLeave = useCallback((event: DragEvent) => {
+    if (!event.dataTransfer?.types.includes('Files')) return;
     event.preventDefault();
-    event.stopPropagation();
     dragCounterRef.current -= 1;
 
     if (dragCounterRef.current === 0) {
@@ -746,15 +744,17 @@ export function useIndexPageController(options?: IndexPageControllerOptions) {
   }, []);
 
   const handleDragOver = useCallback((event: DragEvent) => {
+    // Only intercept external file drags, not text selection drags
+    if (!event.dataTransfer?.types.includes('Files')) return;
     event.preventDefault();
     event.stopPropagation();
-    if (event.dataTransfer) {
-      event.dataTransfer.dropEffect = 'copy';
-    }
+    event.dataTransfer.dropEffect = 'copy';
   }, []);
 
   const handleDrop = useCallback(
     (event: DragEvent) => {
+      // Only intercept external file drops, not text selection drops
+      if (!event.dataTransfer?.types.includes('Files')) return;
       event.preventDefault();
       event.stopPropagation();
 
