@@ -10,6 +10,12 @@ coverage/
 .wrangler/
 package-lock.json
 
+# Crypto material
+*.pem
+*.key
+*.p12
+*.pfx
+
 # Playwright
 /test-results/
 /playwright-report/
