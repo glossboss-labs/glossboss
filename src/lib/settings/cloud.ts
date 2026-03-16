@@ -4,6 +4,9 @@
  * Read/write user settings to Supabase profiles.settings JSONB column.
  * Also provides helpers to collect settings from localStorage and apply
  * cloud settings back to localStorage.
+ *
+ * Credentials are encrypted with AES-256-GCM before storage — the
+ * encryption key is derived server-side and never persisted in the database.
  */
 
 import { getSupabaseClient } from '@/lib/supabase/client';
@@ -19,6 +22,7 @@ import {
   GLOSSARY_ENFORCEMENT_KEY,
 } from '@/components/glossary/constants';
 import { NAV_SKIP_TRANSLATED_KEY } from '@/components/editor/EditorTable';
+import { encryptCredentials, decryptCredentials } from './crypto';
 import type { CloudSettingsPayload, CloudSettingsCredentials } from './types';
 
 const SPEECH_ENABLED_KEY = 'glossboss-speech-enabled';
@@ -52,15 +56,37 @@ export async function readCloudSettings(): Promise<CloudSettingsPayload | null> 
   const payload = data.settings as Record<string, unknown>;
   if (payload.version !== 1) return null;
 
-  return payload as unknown as CloudSettingsPayload;
+  const result = payload as unknown as CloudSettingsPayload;
+
+  // Decrypt credentials if present (encrypted format takes priority)
+  if (result.encryptedCredentials) {
+    const decrypted = await decryptCredentials(result.encryptedCredentials);
+    if (decrypted) {
+      result.credentials = decrypted;
+    }
+    // Remove encrypted blob from the in-memory object — callers use .credentials
+    delete result.encryptedCredentials;
+  }
+  // Legacy: if only plaintext .credentials exists, use it as-is (migration path)
+
+  return result;
 }
 
 /** Write settings to the current user's profiles.settings column. */
 export async function writeCloudSettings(payload: CloudSettingsPayload): Promise<void> {
   const userId = await getUserId();
+
+  // Encrypt credentials before persisting — never write plaintext
+  const toWrite = { ...payload };
+  if (toWrite.credentials && Object.keys(toWrite.credentials).length > 0) {
+    toWrite.encryptedCredentials = await encryptCredentials(toWrite.credentials);
+  }
+  // Strip plaintext credentials from the persisted payload
+  delete toWrite.credentials;
+
   const { error } = await supabase()
     .from('profiles')
-    .update({ settings: payload as unknown as Record<string, unknown> })
+    .update({ settings: toWrite as unknown as Record<string, unknown> })
     .eq('id', userId);
 
   if (error) throw error;

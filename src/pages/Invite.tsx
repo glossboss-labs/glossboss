@@ -107,7 +107,7 @@ export default function Invite() {
               <Text size="lg" fw={600}>
                 {t('Invite accepted')}
               </Text>
-              <Text size="sm" style={{ color: 'var(--gb-text-secondary)' }} ta="center">
+              <Text size="sm" c="dimmed" ta="center">
                 {t('You are now a member of this organization.')}
               </Text>
               <Button component={Link} to="/dashboard">
@@ -124,7 +124,7 @@ export default function Invite() {
               <Text size="lg" fw={600}>
                 {t('Organization invite')}
               </Text>
-              <Text size="sm" style={{ color: 'var(--gb-text-secondary)' }} ta="center">
+              <Text size="sm" c="dimmed" ta="center">
                 {t("You've been invited to join an organization as {{role}}.", {
                   role: invite.role,
                 })}

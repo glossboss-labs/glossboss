@@ -54,6 +54,7 @@ jobs:
           supabase functions deploy feedback-issue --project-ref "$SUPABASE_STAGING_PROJECT_REF" --use-api --no-verify-jwt
           supabase functions deploy polar-checkout --project-ref "$SUPABASE_STAGING_PROJECT_REF" --use-api --no-verify-jwt
           supabase functions deploy polar-webhook --project-ref "$SUPABASE_STAGING_PROJECT_REF" --use-api --no-verify-jwt
+          supabase functions deploy settings-key --project-ref "$SUPABASE_STAGING_PROJECT_REF" --use-api --no-verify-jwt
 
   deploy-production:
     needs: deploy-staging
@@ -91,3 +92,4 @@ jobs:
           supabase functions deploy feedback-issue --project-ref "$SUPABASE_PRODUCTION_PROJECT_REF" --use-api --no-verify-jwt
           supabase functions deploy polar-checkout --project-ref "$SUPABASE_PRODUCTION_PROJECT_REF" --use-api --no-verify-jwt
           supabase functions deploy polar-webhook --project-ref "$SUPABASE_PRODUCTION_PROJECT_REF" --use-api --no-verify-jwt
+          supabase functions deploy settings-key --project-ref "$SUPABASE_PRODUCTION_PROJECT_REF" --use-api --no-verify-jwt

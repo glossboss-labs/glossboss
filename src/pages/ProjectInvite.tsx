@@ -109,7 +109,7 @@ export default function ProjectInvite() {
               <Text size="lg" fw={600}>
                 {t('Invite accepted')}
               </Text>
-              <Text size="sm" style={{ color: 'var(--gb-text-secondary)' }} ta="center">
+              <Text size="sm" c="dimmed" ta="center">
                 {t('You are now a member of this project.')}
               </Text>
               <Button component={Link} to={projectId ? `/projects/${projectId}` : '/dashboard'}>
@@ -126,7 +126,7 @@ export default function ProjectInvite() {
               <Text size="lg" fw={600}>
                 {t('Project invite')}
               </Text>
-              <Text size="sm" style={{ color: 'var(--gb-text-secondary)' }} ta="center">
+              <Text size="sm" c="dimmed" ta="center">
                 {t("You've been invited to join a translation project as {{role}}.", {
                   role: invite.role,
                 })}

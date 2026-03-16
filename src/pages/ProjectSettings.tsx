@@ -293,7 +293,7 @@ export default function ProjectSettings() {
           </Group>
 
           <Group gap="sm" align="center">
-            <Settings size={20} style={{ color: 'var(--gb-text-secondary)' }} />
+            <Settings size={20} c="dimmed" />
             <Title order={3}>{t('Project settings')}</Title>
           </Group>
 

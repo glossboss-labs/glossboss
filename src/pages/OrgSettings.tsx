@@ -278,7 +278,7 @@ export default function OrgSettings() {
           <Group justify="space-between" align="flex-start">
             <div>
               <Title order={3}>{org.name}</Title>
-              <Text size="sm" style={{ color: 'var(--gb-text-secondary)' }}>
+              <Text size="sm" c="dimmed">
                 {org.slug}
                 {org.description && ` — ${org.description}`}
               </Text>
@@ -365,7 +365,7 @@ export default function OrgSettings() {
                               {member.profiles.full_name ?? member.profiles.email}
                             </Text>
                             {member.profiles.full_name && (
-                              <Text size="xs" style={{ color: 'var(--gb-text-secondary)' }}>
+                              <Text size="xs" c="dimmed">
                                 {member.profiles.email}
                               </Text>
                             )}
@@ -433,7 +433,7 @@ export default function OrgSettings() {
                 </Group>
                 {orgProjects.length === 0 ? (
                   <Center py={40}>
-                    <Text size="sm" style={{ color: 'var(--gb-text-secondary)' }}>
+                    <Text size="sm" c="dimmed">
                       {t('No projects in this organization yet')}
                     </Text>
                   </Center>
@@ -466,7 +466,7 @@ export default function OrgSettings() {
                             <Text size="sm" fw={600}>
                               {proj.name}
                             </Text>
-                            <Text size="xs" style={{ color: 'var(--gb-text-secondary)' }}>
+                            <Text size="xs" c="dimmed">
                               {proj.project_languages?.length ?? 0} {t('languages')}
                               {' · '}
                               {proj.stats_total} {t('strings')}
@@ -523,7 +523,7 @@ export default function OrgSettings() {
                   {/* Pending invites list */}
                   {invites.length === 0 ? (
                     <Center py={40}>
-                      <Text size="sm" style={{ color: 'var(--gb-text-secondary)' }}>
+                      <Text size="sm" c="dimmed">
                         {t('No pending invites')}
                       </Text>
                     </Center>
@@ -548,7 +548,7 @@ export default function OrgSettings() {
                                     </Badge>
                                   )}
                                 </Group>
-                                <Text size="xs" style={{ color: 'var(--gb-text-secondary)' }}>
+                                <Text size="xs" c="dimmed">
                                   {t('Expires {{date}}', {
                                     date: new Date(invite.expires_at).toLocaleDateString(),
                                   })}

@@ -17,6 +17,7 @@ import {
   updatePassword,
 } from '@/lib/auth/session';
 import { setGitHubOAuthToken, clearGitHubOAuthToken } from '@/lib/github/token';
+import { clearEncryptionKeyCache } from '@/lib/settings/crypto';
 
 export interface AuthState {
   /** Current session (null if signed out). */
@@ -77,6 +78,7 @@ export const useAuthStore = create<AuthState & AuthActions>()((set) => ({
 
       if (event === 'SIGNED_OUT') {
         clearGitHubOAuthToken();
+        clearEncryptionKeyCache();
       }
     });
 

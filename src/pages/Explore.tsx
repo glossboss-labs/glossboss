@@ -144,7 +144,7 @@ export default function Explore() {
         <Group justify="space-between" mb="xl">
           <div>
             <Title order={2}>{t('Explore')}</Title>
-            <Text size="sm" mt={4} style={{ color: 'var(--gb-text-secondary)' }}>
+            <Text size="sm" mt={4} c="dimmed">
               {t('Public translation projects')}
             </Text>
           </div>
@@ -173,7 +173,7 @@ export default function Explore() {
                 <ThemeIcon size="xl" variant="light" color="blue" radius="xl">
                   <Globe size={24} />
                 </ThemeIcon>
-                <Text size="lg" style={{ color: 'var(--gb-text-secondary)' }}>
+                <Text size="lg" c="dimmed">
                   {t('No public projects yet')}
                 </Text>
               </Stack>
@@ -183,7 +183,7 @@ export default function Explore() {
 
         {!loading && projects.length > 0 && (
           <>
-            <Text size="sm" mb="sm" style={{ color: 'var(--gb-text-secondary)' }}>
+            <Text size="sm" mb="sm" c="dimmed">
               {t('{{projects}} projects', { projects: projects.length })}
             </Text>
 
@@ -233,7 +233,7 @@ export default function Explore() {
             {filtered.length === 0 ? (
               <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
                 <Center py={40}>
-                  <Text size="sm" style={{ color: 'var(--gb-text-secondary)' }}>
+                  <Text size="sm" c="dimmed">
                     {t('No projects match your search')}
                   </Text>
                 </Center>

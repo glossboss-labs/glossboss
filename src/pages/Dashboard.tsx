@@ -10,7 +10,6 @@ import {
   Button,
   Text,
   Center,
-  Loader,
   Alert,
   Stack,
   TextInput,
@@ -20,12 +19,13 @@ import {
 } from '@mantine/core';
 import { motion } from 'motion/react';
 import { Plus, AlertCircle, FolderOpen, Search, Building2 } from 'lucide-react';
-import { sectionVariants, contentVariants, fadeVariants, buttonStates } from '@/lib/motion';
+import { sectionVariants, contentVariants, buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
 import { useProjectsStore } from '@/stores/projects-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { useOrganizationsStore } from '@/stores/organizations-store';
 import { ProjectGrid } from '@/components/projects/ProjectGrid';
+import { ProjectGridSkeleton } from '@/components/projects/ProjectGridSkeleton';
 import { CreateProjectModal } from '@/components/projects/CreateProjectModal';
 import { CreateOrgModal } from '@/components/organizations/CreateOrgModal';
 import { ConfirmModal } from '@/components/ui';
@@ -124,13 +124,7 @@ export default function Dashboard() {
           </motion.div>
         </Group>
 
-        {loading && (
-          <MotionDiv variants={fadeVariants} initial="hidden" animate="visible">
-            <Center py={80}>
-              <Loader size="lg" />
-            </Center>
-          </MotionDiv>
-        )}
+        {loading && <ProjectGridSkeleton />}
 
         {error && (
           <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
@@ -147,10 +141,10 @@ export default function Dashboard() {
                 <ThemeIcon size="xl" variant="light" color="blue" radius="xl">
                   <FolderOpen size={24} />
                 </ThemeIcon>
-                <Text size="lg" style={{ color: 'var(--gb-text-secondary)' }}>
+                <Text size="lg" c="dimmed">
                   {t('No projects yet')}
                 </Text>
-                <Text size="sm" maw={360} ta="center" style={{ color: 'var(--gb-text-tertiary)' }}>
+                <Text size="sm" maw={360} ta="center" c="dimmed">
                   {t(
                     'Create a cloud project from a PO file, a WordPress.org export, or a repository.',
                   )}
@@ -167,7 +161,7 @@ export default function Dashboard() {
 
         {!loading && projects.length > 0 && (
           <>
-            <Text size="sm" mb="sm" style={{ color: 'var(--gb-text-secondary)' }}>
+            <Text size="sm" mb="sm" c="dimmed">
               {t('{{projects}} projects', { projects: projects.length })}
               {' · '}
               {t('{{languages}} languages', { languages: totalLanguages })}
@@ -198,7 +192,7 @@ export default function Dashboard() {
             {filtered.length === 0 ? (
               <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
                 <Center py={40}>
-                  <Text size="sm" style={{ color: 'var(--gb-text-secondary)' }}>
+                  <Text size="sm" c="dimmed">
                     {t('No projects match your search')}
                   </Text>
                 </Center>
@@ -232,7 +226,7 @@ export default function Dashboard() {
                 <ThemeIcon size="xl" variant="light" color="violet" radius="xl">
                   <Building2 size={24} />
                 </ThemeIcon>
-                <Text size="sm" style={{ color: 'var(--gb-text-secondary)' }}>
+                <Text size="sm" c="dimmed">
                   {t('No organizations yet')}
                 </Text>
               </Stack>
@@ -258,7 +252,7 @@ export default function Dashboard() {
                   styles={{
                     root: {
                       '&:hover': {
-                        borderColor: 'var(--mantine-color-violet-5)',
+                        borderColor: 'var(--gb-border-strong)',
                         backgroundColor: 'var(--gb-highlight-row)',
                       },
                     },
@@ -273,18 +267,13 @@ export default function Dashboard() {
                         <Text size="sm" fw={600}>
                           {org.name}
                         </Text>
-                        <Text size="xs" style={{ color: 'var(--gb-text-secondary)' }}>
+                        <Text size="xs" c="dimmed">
                           {org.slug}
                         </Text>
                       </div>
                     </Group>
                     {org.description && (
-                      <Text
-                        size="xs"
-                        style={{ color: 'var(--gb-text-secondary)' }}
-                        truncate
-                        maw={300}
-                      >
+                      <Text size="xs" c="dimmed" truncate maw={300}>
                         {org.description}
                       </Text>
                     )}

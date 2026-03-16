@@ -308,7 +308,7 @@ export default function OrgSettingsPage() {
           </Text>
 
           <Group gap="sm" align="center">
-            <Settings size={20} style={{ color: 'var(--gb-text-secondary)' }} />
+            <Settings size={20} c="dimmed" />
             <Title order={3}>{t('Organization settings')}</Title>
           </Group>
 

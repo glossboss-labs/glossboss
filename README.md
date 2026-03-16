@@ -88,11 +88,12 @@ Edge functions proxy external services and keep server-managed secrets out of th
 
 **Required:**
 
-| Secret             | Purpose                                      |
-| ------------------ | -------------------------------------------- |
-| `ALLOWED_ORIGINS`  | Comma-separated list of allowed CORS origins |
-| `TURNSTILE_SECRET` | Cloudflare Turnstile server secret           |
-| `GITHUB_TOKEN`     | Fine-grained PAT for feedback issue creation |
+| Secret                    | Purpose                                                  |
+| ------------------------- | -------------------------------------------------------- |
+| `ALLOWED_ORIGINS`         | Comma-separated list of allowed CORS origins             |
+| `TURNSTILE_SECRET`        | Cloudflare Turnstile server secret                       |
+| `GITHUB_TOKEN`            | Fine-grained PAT for feedback issue creation             |
+| `SETTINGS_ENCRYPTION_KEY` | Server-side secret for AES-256-GCM credential encryption |
 
 **Optional (translation providers):**
 
@@ -103,6 +104,13 @@ Edge functions proxy external services and keep server-managed secrets out of th
 | `AZURE_TRANSLATOR_REGION`   | Azure region              |
 | `AZURE_TRANSLATOR_ENDPOINT` | Azure endpoint URL        |
 | `GEMINI_API_KEY`            | Google Gemini API key     |
+
+**Optional (billing):**
+
+| Secret                 | Purpose                              |
+| ---------------------- | ------------------------------------ |
+| `POLAR_ACCESS_TOKEN`   | Polar.sh API token for checkout flow |
+| `POLAR_WEBHOOK_SECRET` | Polar webhook signature verification |
 
 **Optional (feedback):**
 
@@ -127,6 +135,7 @@ Edge functions proxy external services and keep server-managed secrets out of th
 - Edge functions reject requests from origins not listed in `ALLOWED_ORIGINS`.
 - Repo sync tokens default to session-only storage and are never sent to GlossBoss servers — they go directly to the GitHub / GitLab API from the browser.
 - Translation provider API keys can optionally be stored in the browser. On shared machines, saved keys should be removed after use.
+- When cloud settings sync is enabled with credential sync, API keys are encrypted with AES-256-GCM using a per-user key derived server-side. The encryption key never lives in the database.
 - Azure Translator endpoint URLs are validated against a domain allowlist to prevent SSRF.
 
 If you find a security issue, please follow `SECURITY.md` instead of opening a public issue. See also `/privacy/` and `NOTICE.md`.

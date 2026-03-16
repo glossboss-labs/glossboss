@@ -44,7 +44,10 @@ export interface CloudSettingsPayload {
   updatedAt: string;
   preferences: CloudSettingsPreferences;
   providers: CloudSettingsProviders;
+  /** @deprecated Legacy plaintext credentials — read for migration, never written. */
   credentials?: CloudSettingsCredentials;
+  /** AES-256-GCM encrypted credentials (base64). */
+  encryptedCredentials?: string;
 }
 
 /** localStorage key controlling whether cloud sync is enabled. */

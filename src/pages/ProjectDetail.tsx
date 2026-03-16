@@ -360,7 +360,7 @@ export default function ProjectDetail() {
           <div>
             <Title order={3}>{project.name}</Title>
             {project.description && (
-              <Text size="sm" mt={4} style={{ color: 'var(--gb-text-secondary)' }}>
+              <Text size="sm" mt={4} c="dimmed">
                 {project.description}
               </Text>
             )}
@@ -389,8 +389,8 @@ export default function ProjectDetail() {
               </Text>
             )}
             <Group gap={6} mt={4} align="center">
-              <VisIcon size={12} style={{ color: 'var(--gb-text-tertiary)' }} />
-              <Text size="xs" style={{ color: 'var(--gb-text-tertiary)' }}>
+              <VisIcon size={12} c="dimmed" />
+              <Text size="xs" c="dimmed">
                 {t(VISIBILITY_LABEL[project.visibility] ?? 'Public')}
                 {' · '}
                 {project.source_format.toUpperCase()}
@@ -482,7 +482,7 @@ export default function ProjectDetail() {
                   <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
                     <Paper withBorder p="md">
                       <Group justify="space-between" align="center" mb={8}>
-                        <Text size="sm" style={{ color: 'var(--gb-text-secondary)' }}>
+                        <Text size="sm" c="dimmed">
                           {t('{{count}} languages', { count: languages.length })}
                           {' · '}
                           {t('{{strings}} total strings', { strings: aggTotal })}
@@ -528,9 +528,7 @@ export default function ProjectDetail() {
                         <ThemeIcon size="xl" variant="light" color="blue" radius="xl">
                           <Languages size={20} />
                         </ThemeIcon>
-                        <Text style={{ color: 'var(--gb-text-secondary)' }}>
-                          {t('No languages yet')}
-                        </Text>
+                        <Text c="dimmed">{t('No languages yet')}</Text>
                       </Stack>
                     </Center>
                   </MotionDiv>
@@ -539,7 +537,7 @@ export default function ProjectDetail() {
                 {languages.length > 0 && filtered.length === 0 && (
                   <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
                     <Center py={40}>
-                      <Text size="sm" style={{ color: 'var(--gb-text-secondary)' }}>
+                      <Text size="sm" c="dimmed">
                         {t('No languages match your search')}
                       </Text>
                     </Center>
@@ -595,11 +593,7 @@ export default function ProjectDetail() {
                                     {lang.locale}
                                   </Text>
                                   {lang.source_filename && (
-                                    <Text
-                                      size="xs"
-                                      truncate
-                                      style={{ color: 'var(--gb-text-secondary)' }}
-                                    >
+                                    <Text size="xs" truncate c="dimmed">
                                       {lang.source_filename}
                                     </Text>
                                   )}
@@ -673,7 +667,7 @@ export default function ProjectDetail() {
                                       )}
                                     </AnimatePresence>
                                   </Group>
-                                  <Text size="xs" style={{ color: 'var(--gb-text-secondary)' }}>
+                                  <Text size="xs" c="dimmed">
                                     {formatRelative(lang.updated_at)}
                                   </Text>
                                 </Group>

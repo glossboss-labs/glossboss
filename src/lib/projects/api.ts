@@ -83,7 +83,7 @@ export async function updateProject(id: string, updates: ProjectUpdate): Promise
 }
 
 export async function deleteProject(id: string): Promise<void> {
-  const { error } = await supabase().from('projects').delete().eq('id', id);
+  const { error } = await supabase().from('projects').delete().eq('id', id).select('id').single();
 
   if (error) throw error;
 }

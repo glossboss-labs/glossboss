@@ -28,6 +28,7 @@ bun run format:check
 bun run typecheck
 bun run build
 bun run test:coverage
+bun run i18n:extract   # if any t() or msgid() calls changed
 ```
 
 ## Commit style
