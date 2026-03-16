@@ -84,7 +84,7 @@ import type { Glossary, GlossaryAnalysisResult } from '@/lib/glossary/types';
 import { useDragGhost } from '@/hooks/use-drag-ghost';
 import { useCollaborationStore } from '@/stores/collaboration-store';
 import { toSpeakLanguageTag } from '@/lib/tts';
-import { SpeakButton } from '@/components/ui';
+import { SpeakButton, CollapsibleSection } from '@/components/ui';
 import { msgid, useTranslation } from '@/lib/app-language';
 import {
   createTranslationMemoryScope,
@@ -1867,8 +1867,6 @@ function EntryDetailsPanel({
   status,
   isModified,
   isMT,
-  isManualEdit,
-  hasGlossaryTerms,
   qaReport = null,
   reviewEntry = {
     status: 'draft',
@@ -1884,8 +1882,6 @@ function EntryDetailsPanel({
   status: TranslationStatus;
   isModified: boolean;
   isMT: boolean;
-  isManualEdit: boolean;
-  hasGlossaryTerms: boolean;
   qaReport?: QAEntryReport | null;
   reviewEntry?: ReviewEntryState;
   translationMemoryScope?: TranslationMemoryScope | null;
@@ -1909,8 +1905,13 @@ function EntryDetailsPanel({
   );
   const flags = entry.flags.filter((f) => f !== 'fuzzy');
 
+  const qaIssueCount = (qaReport?.errorCount ?? 0) + (qaReport?.warningCount ?? 0);
+  const commentCount = entry.translatorComments.length + entry.extractedComments.length;
+  const unresolvedReviewCount = reviewEntry.comments.filter((c) => !c.resolved).length;
+
   return (
-    <Stack gap="sm" data-testid={`entry-details-${entry.id}`}>
+    <Stack gap={4} data-testid={`entry-details-${entry.id}`}>
+      {/* Status badges — always visible */}
       <Group gap="xs" wrap="wrap">
         <Badge color={STATUS_COLORS[status]} variant="light" size="sm">
           {t(STATUS_LABELS[status])}
@@ -1920,29 +1921,9 @@ function EntryDetailsPanel({
             {t('Modified')}
           </Badge>
         )}
-        {isManualEdit && (
-          <Badge color="grape" variant="light" size="sm">
-            {t('Manual edit')}
-          </Badge>
-        )}
         {isMT && (
           <Badge color="blue" variant="light" size="sm">
-            {t('Machine translated')}
-          </Badge>
-        )}
-        {hasGlossaryTerms && (
-          <Badge color="violet" variant="light" size="sm">
-            {t('Glossary match')}
-          </Badge>
-        )}
-        {qaReport && qaReport.errorCount > 0 && (
-          <Badge color="red" variant="light" size="sm">
-            {t('{{count}} QA error(s)', { count: qaReport.errorCount })}
-          </Badge>
-        )}
-        {qaReport && qaReport.warningCount > 0 && (
-          <Badge color="orange" variant="light" size="sm">
-            {t('{{count}} QA warning(s)', { count: qaReport.warningCount })}
+            MT
           </Badge>
         )}
         {entry.lineNumber && (
@@ -1952,6 +1933,7 @@ function EntryDetailsPanel({
         )}
       </Group>
 
+      {/* Context — always visible */}
       <Group align="flex-start" grow>
         <Stack gap={4}>
           <Text size="xs" fw={600} c="dimmed">
@@ -1961,7 +1943,6 @@ function EntryDetailsPanel({
             {entry.msgctxt || t('No context')}
           </Text>
         </Stack>
-
         <Stack gap={4}>
           <Text size="xs" fw={600} c="dimmed">
             {t('Structure')}
@@ -1970,31 +1951,38 @@ function EntryDetailsPanel({
         </Stack>
       </Group>
 
-      <Divider />
-
-      <Stack gap={6}>
-        <Text size="xs" fw={600} c="dimmed">
-          {t('Translation memory')}
-        </Text>
-        <TranslationMemoryPanel entry={entry} scope={translationMemoryScope} />
-      </Stack>
-
-      <Divider />
-
-      <Stack gap={6}>
-        <Text size="xs" fw={600} c="dimmed">
-          {t('QA checks')}
-        </Text>
+      {/* QA Checks — open if issues exist */}
+      <CollapsibleSection
+        title={t('QA checks')}
+        badge={
+          qaIssueCount > 0 ? (
+            <Badge size="xs" variant="light" color={qaReport?.errorCount ? 'red' : 'orange'}>
+              {qaIssueCount}
+            </Badge>
+          ) : null
+        }
+        defaultOpen={qaIssueCount > 0}
+      >
         <QaIssuesPanel report={qaReport} />
-      </Stack>
+      </CollapsibleSection>
 
-      <Divider />
+      {/* Translation Memory — collapsed by default */}
+      <CollapsibleSection title={t('Translation memory')}>
+        <TranslationMemoryPanel entry={entry} scope={translationMemoryScope} />
+      </CollapsibleSection>
 
-      <Stack gap={6}>
-        <Text size="xs" fw={600} c="dimmed">
-          {t('References')}
-        </Text>
-
+      {/* References — collapsed by default, open if active reference */}
+      <CollapsibleSection
+        title={t('References')}
+        badge={
+          parsedRefs.length > 0 ? (
+            <Badge size="xs" variant="light" color="gray">
+              {parsedRefs.length}
+            </Badge>
+          ) : null
+        }
+        defaultOpen={Boolean(entryActiveReference)}
+      >
         {parsedRefs.length === 0 ? (
           <Text size="sm" c="dimmed">
             {t('No source references')}
@@ -2051,126 +2039,126 @@ function EntryDetailsPanel({
             })}
           </Stack>
         )}
-      </Stack>
+      </CollapsibleSection>
 
-      <Divider />
-
-      {mode === 'review' && (
-        <>
-          <Stack gap={6}>
-            <Text size="xs" fw={600} c="dimmed">
-              {t('Review')}
-            </Text>
-            <ReviewPanel entry={entry} reviewEntry={reviewEntry} isRemoteLocked={isRemoteLocked} />
-          </Stack>
-
-          <Divider />
-        </>
-      )}
-
-      <Group align="flex-start" grow>
-        <Stack gap={6}>
-          <Text size="xs" fw={600} c="dimmed">
-            {t('Translator comments')}
-          </Text>
-          {entry.translatorComments.length > 0 ? (
-            <Stack gap={3}>
-              {entry.translatorComments.map((comment, idx) => (
-                <Text key={`${entry.id}-translator-comment-${idx}`} size="sm">
-                  {comment}
-                </Text>
-              ))}
-            </Stack>
-          ) : (
+      {/* Source Preview — collapsed by default */}
+      {projectSlug && (
+        <CollapsibleSection
+          title={t('Source preview')}
+          defaultOpen={Boolean(entryActiveReference && sourceContent)}
+        >
+          {parsedRefs.length > 0 && !entryActiveReference && (
             <Text size="sm" c="dimmed">
-              {t('None')}
+              {t('Select a reference above to load source context.')}
             </Text>
           )}
-        </Stack>
 
-        <Stack gap={6}>
-          <Text size="xs" fw={600} c="dimmed">
-            {t('Extracted comments')}
-          </Text>
-          {entry.extractedComments.length > 0 ? (
-            <Stack gap={3}>
-              {entry.extractedComments.map((comment, idx) => (
-                <Text key={`${entry.id}-extracted-comment-${idx}`} size="sm">
-                  {comment}
-                </Text>
-              ))}
-            </Stack>
-          ) : (
-            <Text size="sm" c="dimmed">
-              {t('None')}
-            </Text>
-          )}
-        </Stack>
-      </Group>
-
-      {flags.length > 0 && (
-        <>
-          <Divider />
-          <Stack gap={6}>
-            <Text size="xs" fw={600} c="dimmed">
-              {t('Flags')}
-            </Text>
-            <Group gap={6} wrap="wrap">
-              {flags.map((flag) => (
-                <Badge key={`${entry.id}-flag-${flag}`} size="xs" variant="light" color="gray">
-                  {flag}
-                </Badge>
-              ))}
+          {entryActiveReference && isLoadingSource && (
+            <Group gap="xs">
+              <Loader size="sm" />
+              <Text size="sm" c="dimmed">
+                {t('Loading source...')}
+              </Text>
             </Group>
-          </Stack>
-        </>
+          )}
+
+          {entryActiveReference && sourceError && !isLoadingSource && (
+            <Text size="sm" c="red">
+              {sourceError}
+            </Text>
+          )}
+
+          {entryActiveReference && sourceContent && !isLoadingSource && (
+            <Paper withBorder radius="md" style={{ overflow: 'hidden' }}>
+              <SourceCodeViewer
+                content={sourceContent}
+                targetLine={entryActiveReference.line}
+                filePath={entryActiveReference.path}
+                maxHeight={280}
+              />
+            </Paper>
+          )}
+
+          {parsedRefs.length === 0 && (
+            <Text size="sm" c="dimmed">
+              {t('No source references for this entry.')}
+            </Text>
+          )}
+        </CollapsibleSection>
       )}
 
-      <Divider />
+      {/* Review — open in review mode */}
+      {mode === 'review' && (
+        <CollapsibleSection
+          title={t('Review')}
+          badge={
+            unresolvedReviewCount > 0 ? (
+              <Badge size="xs" variant="light" color="red">
+                {unresolvedReviewCount}
+              </Badge>
+            ) : null
+          }
+          defaultOpen
+        >
+          <ReviewPanel entry={entry} reviewEntry={reviewEntry} isRemoteLocked={isRemoteLocked} />
+        </CollapsibleSection>
+      )}
 
-      <Stack gap={6}>
-        <Text size="xs" fw={600} c="dimmed">
-          {t('Source preview')}
-        </Text>
-
-        {!projectSlug && (
-          <Text size="sm" c="dimmed">
-            {t('Set a WordPress project in Settings to enable source preview.')}
-          </Text>
-        )}
-
-        {projectSlug && parsedRefs.length > 0 && !entryActiveReference && (
-          <Text size="sm" c="dimmed">
-            {t('Select a reference above to load source context.')}
-          </Text>
-        )}
-
-        {projectSlug && entryActiveReference && isLoadingSource && (
-          <Group gap="xs">
-            <Loader size="sm" />
-            <Text size="sm" c="dimmed">
-              {t('Loading source...')}
-            </Text>
+      {/* Comments — collapsed by default */}
+      {commentCount > 0 && (
+        <CollapsibleSection
+          title={t('Comments')}
+          badge={
+            <Badge size="xs" variant="light" color="gray">
+              {commentCount}
+            </Badge>
+          }
+        >
+          <Group align="flex-start" grow>
+            {entry.translatorComments.length > 0 && (
+              <Stack gap={4}>
+                <Text size="xs" fw={600} c="dimmed">
+                  {t('Translator comments')}
+                </Text>
+                <Stack gap={3}>
+                  {entry.translatorComments.map((comment, idx) => (
+                    <Text key={`${entry.id}-translator-comment-${idx}`} size="sm">
+                      {comment}
+                    </Text>
+                  ))}
+                </Stack>
+              </Stack>
+            )}
+            {entry.extractedComments.length > 0 && (
+              <Stack gap={4}>
+                <Text size="xs" fw={600} c="dimmed">
+                  {t('Extracted comments')}
+                </Text>
+                <Stack gap={3}>
+                  {entry.extractedComments.map((comment, idx) => (
+                    <Text key={`${entry.id}-extracted-comment-${idx}`} size="sm">
+                      {comment}
+                    </Text>
+                  ))}
+                </Stack>
+              </Stack>
+            )}
           </Group>
-        )}
+        </CollapsibleSection>
+      )}
 
-        {projectSlug && entryActiveReference && sourceError && !isLoadingSource && (
-          <Text size="sm" c="red">
-            {sourceError}
-          </Text>
-        )}
-
-        {projectSlug && entryActiveReference && sourceContent && !isLoadingSource && (
-          <Paper withBorder radius="md" style={{ overflow: 'hidden' }}>
-            <SourceCodeViewer
-              content={sourceContent}
-              targetLine={entryActiveReference.line}
-              filePath={entryActiveReference.path}
-              maxHeight={280}
-            />
-          </Paper>
-        )}
-      </Stack>
+      {/* Flags — collapsed by default */}
+      {flags.length > 0 && (
+        <CollapsibleSection title={t('Flags')}>
+          <Group gap={6} wrap="wrap">
+            {flags.map((flag) => (
+              <Badge key={`${entry.id}-flag-${flag}`} size="xs" variant="light" color="gray">
+                {flag}
+              </Badge>
+            ))}
+          </Group>
+        </CollapsibleSection>
+      )}
     </Stack>
   );
 }
@@ -2518,8 +2506,6 @@ const MobileEntryCard = memo(function MobileEntryCard({
           status={status}
           isModified={isModified}
           isMT={isMT}
-          isManualEdit={isManualEdit}
-          hasGlossaryTerms={hasGlossaryTerms}
           qaReport={qaReport ?? null}
           reviewEntry={reviewEntry}
           translationMemoryScope={translationMemoryScope}
@@ -2596,10 +2582,8 @@ export function EditorTable({
   const selectedEntryId = useEditorStore((state) => state.selectedEntryId);
   const dirtyEntryIds = useEditorStore((state) => state.dirtyEntryIds);
   const machineTranslatedIds = useEditorStore((state) => state.machineTranslatedIds);
-  const manualEditIds = useEditorStore((state) => state.manualEditIds);
   const header = useEditorStore((state) => state.header);
   const projectName = useEditorStore((state) => state.projectName);
-  const getGlossaryAnalysis = useEditorStore((state) => state.getGlossaryAnalysis);
   const getQaReport = useEditorStore((state) => state.getQaReport);
   const getReviewEntry = useEditorStore((state) => state.getReviewEntry);
   const selectEntry = useEditorStore((state) => state.selectEntry);
@@ -3101,12 +3085,6 @@ export function EditorTable({
     : null;
   const selectedIsModified = selectedEntry ? dirtyEntryIds.has(selectedEntry.id) : false;
   const selectedIsMT = selectedEntry ? machineTranslatedIds.has(selectedEntry.id) : false;
-  const selectedIsManualEdit = selectedEntry
-    ? manualEditIds.has(selectedEntry.id) && !selectedIsMT
-    : false;
-  const selectedHasGlossaryTerms = selectedEntry
-    ? (getGlossaryAnalysis(selectedEntry.id)?.matchedCount ?? 0) > 0
-    : false;
   const selectedQaReport = selectedEntry ? (getQaReport(selectedEntry.id) ?? null) : null;
   const selectedReviewEntry = selectedEntry ? getReviewEntry(selectedEntry.id) : null;
   const selectedInspectorLabel = (() => {
@@ -3389,8 +3367,6 @@ export function EditorTable({
                                   status={selectedStatus}
                                   isModified={selectedIsModified}
                                   isMT={selectedIsMT}
-                                  isManualEdit={selectedIsManualEdit}
-                                  hasGlossaryTerms={selectedHasGlossaryTerms}
                                   qaReport={selectedQaReport}
                                   reviewEntry={
                                     selectedReviewEntry ?? {
