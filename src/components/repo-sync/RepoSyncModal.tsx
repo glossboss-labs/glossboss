@@ -46,7 +46,7 @@ import {
   isGitHubPersistEnabled,
   setGitHubPersistEnabled,
 } from '@/lib/github';
-import { hasAnyGitHubToken, hasGitHubOAuthToken, clearGitHubOAuthToken } from '@/lib/github/token';
+import { hasAnyGitHubToken, clearGitHubOAuthToken } from '@/lib/github/token';
 import {
   getGitLabSettings,
   saveGitLabSettings,
@@ -65,8 +65,6 @@ import type {
 } from '@/lib/repo-sync/types';
 import { DEFAULT_SYNC_SETTINGS } from '@/lib/repo-sync/types';
 import { useRepoSyncStore } from '@/stores';
-import { useAuth } from '@/hooks/use-auth';
-import { signInWithGitHub } from '@/lib/auth/session';
 import { RepoBrowser } from './RepoBrowser';
 import { CommitPanel } from './CommitPanel';
 import { useTranslation } from '@/lib/app-language';
@@ -95,22 +93,10 @@ function GitHubConnectSection({
   loadingRepos,
 }: GitHubConnectSectionProps) {
   const { t } = useTranslation();
-  const { isAuthenticated, user } = useAuth();
-  const [showPatFallback, setShowPatFallback] = useState(false);
-  const [signingIn, setSigningIn] = useState(false);
-
-  const isGitHubUser = user?.app_metadata?.provider === 'github';
-  const hasOAuth = hasGitHubOAuthToken();
   const hasPat = hasGitHubToken();
 
-  // If connected via OAuth, show connected state
-  if (hasOAuth || hasPat) {
-    const label = hasOAuth
-      ? isGitHubUser && user?.user_metadata?.user_name
-        ? `@${user.user_metadata.user_name}`
-        : 'GitHub'
-      : t('Personal access token');
-
+  // Connected via PAT — show connected state
+  if (hasPat) {
     return (
       <Stack gap="sm">
         <Paper p="sm" withBorder>
@@ -119,21 +105,10 @@ function GitHubConnectSection({
               <Badge size="sm" variant="dot" color="green">
                 {t('Connected')}
               </Badge>
-              <Text size="sm" fw={hasOAuth ? 500 : undefined} c={hasOAuth ? undefined : 'dimmed'}>
-                {label}
+              <Text size="sm" c="dimmed">
+                {t('Personal access token')}
               </Text>
             </Group>
-            <Button
-              variant="subtle"
-              size="compact-sm"
-              onClick={async () => {
-                setSigningIn(true);
-                await signInWithGitHub();
-              }}
-              loading={signingIn}
-            >
-              {t('Switch account')}
-            </Button>
           </Group>
         </Paper>
 
@@ -144,90 +119,52 @@ function GitHubConnectSection({
     );
   }
 
-  // Not connected — show OAuth sign-in primary, PAT fallback
+  // Not connected — PAT setup
   return (
     <Stack gap="sm">
-      {isAuthenticated && isGitHubUser ? (
-        <Alert variant="light" color="blue">
-          <Text size="sm">
-            {t(
-              'You signed in with GitHub but the repo access token has expired. Sign in again to reconnect.',
-            )}
-          </Text>
-        </Alert>
-      ) : null}
-
-      <Button
-        fullWidth
-        leftSection={
-          <svg viewBox="0 0 98 96" width={16} height={16} fill="currentColor">
-            <path
-              fillRule="evenodd"
-              clipRule="evenodd"
-              d="M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z"
-            />
-          </svg>
+      <PasswordInput
+        label={t('Personal access token')}
+        description={
+          <>
+            <Anchor
+              href="https://github.com/settings/personal-access-tokens/new"
+              target="_blank"
+              rel="noopener noreferrer"
+              size="xs"
+            >
+              {t('Create a fine-grained token')}{' '}
+              <ExternalLink size={10} style={{ display: 'inline', verticalAlign: 'middle' }} />
+            </Anchor>
+            <Text component="span" size="xs" c="dimmed">
+              {' — '}
+              {t('select only the repositories you need, with Contents read & write permission.')}
+            </Text>
+            <br />
+            <Text component="span" size="xs" c="dimmed">
+              {t('Private repo access is optional — only grant it if you need it.')}
+            </Text>
+            <br />
+            <Text component="span" size="xs" c="dimmed">
+              {t(
+                'Your token is sent directly to the GitHub API from your browser and is never stored on our servers.',
+              )}
+            </Text>
+          </>
         }
-        loading={signingIn}
-        onClick={async () => {
-          setSigningIn(true);
-          await signInWithGitHub();
-          // OAuth redirect will handle the rest
-        }}
-      >
-        {t('Continue with GitHub')}
+        value={ghToken}
+        onChange={(e) => onGhTokenChange(e.currentTarget.value)}
+        placeholder="github_pat_..."
+      />
+      <Switch
+        label={t('Remember token')}
+        description={t('Store in localStorage (persists across sessions)')}
+        checked={ghPersist}
+        onChange={(e) => onGhPersistChange(e.currentTarget.checked)}
+        size="sm"
+      />
+      <Button onClick={onLoadRepos} loading={loadingRepos} disabled={!ghToken.trim()}>
+        {t('Connect & list repositories')}
       </Button>
-
-      <Divider label={t('or')} labelPosition="center" />
-
-      <UnstyledButton onClick={() => setShowPatFallback(!showPatFallback)}>
-        <Group gap={4}>
-          {showPatFallback ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-          <Text size="sm" c="dimmed">
-            {t('Use a personal access token')}
-          </Text>
-        </Group>
-      </UnstyledButton>
-
-      {showPatFallback && (
-        <Stack gap="sm">
-          <PasswordInput
-            label={t('Personal access token')}
-            description={
-              <>
-                <Anchor
-                  href="https://github.com/settings/tokens/new?description=GlossBoss&scopes=repo"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  size="xs"
-                >
-                  {t('Create a token with repo scope pre-selected')}{' '}
-                  <ExternalLink size={10} style={{ display: 'inline', verticalAlign: 'middle' }} />
-                </Anchor>
-                <br />
-                <Text component="span" size="xs" c="dimmed">
-                  {t(
-                    'Your token is sent directly to the GitHub API from your browser and is never stored on our servers.',
-                  )}
-                </Text>
-              </>
-            }
-            value={ghToken}
-            onChange={(e) => onGhTokenChange(e.currentTarget.value)}
-            placeholder="github_pat_..."
-          />
-          <Switch
-            label={t('Remember token')}
-            description={t('Store in localStorage (persists across sessions)')}
-            checked={ghPersist}
-            onChange={(e) => onGhPersistChange(e.currentTarget.checked)}
-            size="sm"
-          />
-          <Button onClick={onLoadRepos} loading={loadingRepos} disabled={!ghToken.trim()}>
-            {t('Connect & list repositories')}
-          </Button>
-        </Stack>
-      )}
     </Stack>
   );
 }

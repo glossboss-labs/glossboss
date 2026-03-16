@@ -6,34 +6,54 @@
  */
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import {
+  forbiddenOrigin,
+  jsonResponse,
+  methodNotAllowed,
+  optionsResponse,
+  validateRequestOrigin,
+} from '../_shared/http.ts';
 
 const POLAR_API_URL = 'https://api.polar.sh/v1';
 
-Deno.serve(async (req) => {
-  // CORS preflight
+async function handleRequest(req: Request): Promise<Response> {
   if (req.method === 'OPTIONS') {
-    return new Response(null, {
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-      },
-    });
+    return optionsResponse(req);
   }
 
   if (req.method !== 'POST') {
-    return new Response('Method not allowed', { status: 405 });
+    return methodNotAllowed(req);
+  }
+
+  const originValidation = validateRequestOrigin(req);
+  if (originValidation.allowedOrigins.length === 0) {
+    return jsonResponse(
+      req,
+      { ok: false, code: 'SERVER_MISCONFIGURED', message: 'Checkout is not configured correctly.' },
+      { status: 500 },
+    );
+  }
+  if (!originValidation.allowed) {
+    return forbiddenOrigin(req);
   }
 
   const polarAccessToken = Deno.env.get('POLAR_ACCESS_TOKEN');
   if (!polarAccessToken) {
-    return jsonResponse({ error: 'Server configuration error' }, 500);
+    return jsonResponse(
+      req,
+      { ok: false, code: 'SERVER_MISCONFIGURED', message: 'Checkout is not configured correctly.' },
+      { status: 500 },
+    );
   }
 
   // Authenticate the Supabase user
   const authHeader = req.headers.get('authorization');
   if (!authHeader) {
-    return jsonResponse({ error: 'Missing authorization header' }, 401);
+    return jsonResponse(
+      req,
+      { ok: false, code: 'UNAUTHORIZED', message: 'Missing authorization header.' },
+      { status: 401 },
+    );
   }
 
   const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -48,7 +68,11 @@ Deno.serve(async (req) => {
   } = await supabase.auth.getUser();
 
   if (authError || !user) {
-    return jsonResponse({ error: 'Unauthorized' }, 401);
+    return jsonResponse(
+      req,
+      { ok: false, code: 'UNAUTHORIZED', message: 'Unauthorized.' },
+      { status: 401 },
+    );
   }
 
   // Parse request body
@@ -56,15 +80,30 @@ Deno.serve(async (req) => {
   try {
     body = await req.json();
   } catch {
-    return jsonResponse({ error: 'Invalid JSON' }, 400);
+    return jsonResponse(
+      req,
+      { ok: false, code: 'INVALID_PAYLOAD', message: 'Invalid JSON.' },
+      { status: 400 },
+    );
   }
 
   if (!body.productId) {
-    return jsonResponse({ error: 'Missing productId' }, 400);
+    return jsonResponse(
+      req,
+      { ok: false, code: 'INVALID_PAYLOAD', message: 'Missing productId.' },
+      { status: 400 },
+    );
   }
 
-  const successUrl =
-    body.successUrl || `${supabaseUrl.replace('.supabase.co', '.pages.dev')}/settings?tab=billing`;
+  const appUrl = Deno.env.get('APP_URL');
+  if (!appUrl && !body.successUrl) {
+    return jsonResponse(
+      req,
+      { ok: false, code: 'SERVER_MISCONFIGURED', message: 'Checkout is not configured correctly.' },
+      { status: 500 },
+    );
+  }
+  const successUrl = body.successUrl || `${appUrl}/settings?tab=billing`;
 
   // Create Polar checkout session
   const checkoutResponse = await fetch(`${POLAR_API_URL}/checkouts/`, {
@@ -84,20 +123,20 @@ Deno.serve(async (req) => {
   if (!checkoutResponse.ok) {
     const errorText = await checkoutResponse.text();
     console.error('Polar checkout creation failed:', checkoutResponse.status, errorText);
-    return jsonResponse({ error: 'Failed to create checkout session' }, 502);
+    return jsonResponse(
+      req,
+      { ok: false, code: 'CHECKOUT_FAILED', message: 'Failed to create checkout session.' },
+      { status: 502 },
+    );
   }
 
   const checkout = await checkoutResponse.json();
 
-  return jsonResponse({ url: checkout.url });
-});
-
-function jsonResponse(data: unknown, status = 200) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-    },
-  });
+  return jsonResponse(req, { ok: true, url: checkout.url });
 }
+
+if (import.meta.main && typeof Deno !== 'undefined' && typeof Deno.serve === 'function') {
+  Deno.serve(handleRequest);
+}
+
+export { handleRequest };

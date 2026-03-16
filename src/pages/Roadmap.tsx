@@ -210,7 +210,12 @@ export default function Roadmap() {
         }
       } catch (err) {
         if (!cancelled) {
-          setError(err instanceof Error ? err.message : t('Failed to load roadmap'));
+          const msg = err instanceof Error ? err.message : '';
+          setError(
+            msg.includes('Not Found') || msg.includes('SERVER_MISCONFIGURED')
+              ? t('The roadmap is temporarily unavailable. Please try again later.')
+              : msg || t('Failed to load roadmap'),
+          );
           setLoading(false);
         }
       }

@@ -52,6 +52,7 @@ import { useSubscription } from '@/hooks/use-subscription';
 import { useProjectsStore } from '@/stores/projects-store';
 import { formatLimit } from '@/lib/billing/limits';
 import { FeedbackModal } from '@/components/feedback';
+import { AuthPromptModal } from '@/components/auth/AuthPromptModal';
 
 interface AppSidebarProps {
   collapsed: boolean;
@@ -163,6 +164,7 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
   const pathname = location.pathname;
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [authPromptOpen, setAuthPromptOpen] = useState(false);
 
   const displayName = user?.user_metadata?.full_name || user?.email || '';
   const avatarUrl = user?.user_metadata?.avatar_url as string | undefined;
@@ -252,7 +254,7 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
               collapsed={collapsed}
             />
             <NavItem
-              to="/"
+              to="/editor"
               icon={<FileText size={18} />}
               label={t('Local editor')}
               active={pathname === '/'}
@@ -290,48 +292,49 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
             onClick={toggleColorScheme}
           />
 
-          <Divider />
-
           {/* Notifications */}
           {isAuthenticated && (
-            <Popover
-              opened={notificationsOpen}
-              onChange={setNotificationsOpen}
-              position="right-end"
-              width={360}
-              withinPortal
-              shadow="var(--gb-shadow-menu)"
-            >
-              <Popover.Target>
-                <Box>
-                  <NavItem
-                    icon={
-                      <Indicator
-                        size={14}
-                        label={unreadNotifications > 0 ? String(unreadNotifications) : undefined}
-                        disabled={unreadNotifications === 0}
-                        color="red"
-                        offset={2}
-                      >
-                        <Bell size={18} />
-                      </Indicator>
-                    }
-                    label={t('Notifications')}
-                    collapsed={collapsed}
-                    onClick={() => setNotificationsOpen((o) => !o)}
-                  />
-                </Box>
-              </Popover.Target>
-              <Popover.Dropdown
-                p={0}
-                style={{
-                  backgroundColor: 'var(--gb-surface-1)',
-                  borderColor: 'var(--gb-border-subtle)',
-                }}
+            <>
+              <Divider />
+              <Popover
+                opened={notificationsOpen}
+                onChange={setNotificationsOpen}
+                position="right-end"
+                width={360}
+                withinPortal
+                shadow="var(--gb-shadow-menu)"
               >
-                <NotificationDropdown onClose={() => setNotificationsOpen(false)} />
-              </Popover.Dropdown>
-            </Popover>
+                <Popover.Target>
+                  <Box>
+                    <NavItem
+                      icon={
+                        <Indicator
+                          size={14}
+                          label={unreadNotifications > 0 ? String(unreadNotifications) : undefined}
+                          disabled={unreadNotifications === 0}
+                          color="red"
+                          offset={2}
+                        >
+                          <Bell size={18} />
+                        </Indicator>
+                      }
+                      label={t('Notifications')}
+                      collapsed={collapsed}
+                      onClick={() => setNotificationsOpen((o) => !o)}
+                    />
+                  </Box>
+                </Popover.Target>
+                <Popover.Dropdown
+                  p={0}
+                  style={{
+                    backgroundColor: 'var(--gb-surface-1)',
+                    borderColor: 'var(--gb-border-subtle)',
+                  }}
+                >
+                  <NotificationDropdown onClose={() => setNotificationsOpen(false)} />
+                </Popover.Dropdown>
+              </Popover>
+            </>
           )}
 
           <Divider />
@@ -397,16 +400,17 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
             </Stack>
           ) : (
             <NavItem
-              to="/login"
               icon={<LogIn size={18} />}
               label={t('Sign in')}
               collapsed={collapsed}
+              onClick={() => setAuthPromptOpen(true)}
             />
           )}
         </Stack>
       </Stack>
 
       <FeedbackModal opened={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
+      <AuthPromptModal opened={authPromptOpen} onClose={() => setAuthPromptOpen(false)} />
     </>
   );
 }

@@ -99,11 +99,11 @@ function timingSafeEqual(a: string, b: string): boolean {
 // ---------------------------------------------------------------------------
 
 const PRODUCT_TO_PLAN: Record<string, { plan: string; interval: string }> = {
-  'POLAR_PRODUCT_ID': { plan: 'pro', interval: 'month' },
-  'POLAR_PRODUCT_ID': { plan: 'pro', interval: 'year' },
-  'POLAR_PRODUCT_ID': { plan: 'organization', interval: 'month' },
-  'POLAR_PRODUCT_ID': { plan: 'organization', interval: 'year' },
-  'POLAR_PRODUCT_ID': { plan: 'flex', interval: 'month' },
+  'a05ba809-8991-4b7d-b624-a44b92fdf072': { plan: 'pro', interval: 'month' },
+  'b2792805-fbd7-4e6e-b272-f75cef5754bc': { plan: 'pro', interval: 'year' },
+  'b2d90cd3-918a-4ef5-aa7a-6e6459bcbac8': { plan: 'organization', interval: 'month' },
+  '5c1f8bc1-080b-4734-9097-a6cc66290790': { plan: 'organization', interval: 'year' },
+  '2a946d88-730e-484a-a10e-4dc0bfa582b2': { plan: 'flex', interval: 'month' },
 };
 
 // ---------------------------------------------------------------------------

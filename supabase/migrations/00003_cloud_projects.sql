@@ -1,4 +1,4 @@
---
+-- Phase 2.1: Cloud projects — projects, project_entries, project_members
 --
 -- Core tables for cloud-based PO translation projects.
 -- Includes RLS policies, indexes, incremental stats triggers,

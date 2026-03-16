@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { sectionVariants } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
+import { useAuth } from '@/hooks/use-auth';
 import {
   AccountSection,
   TranslationSection,
@@ -32,19 +33,20 @@ import {
   BackupSection,
   BillingSection,
   DevelopmentSection,
+  DeleteAccountSection,
+  DataExportSection,
 } from '@/components/settings';
 
 const MotionDiv = motion.div;
 
-const DEFAULT_TAB = 'account';
-
 export default function Settings() {
   const { t } = useTranslation();
+  const { isAuthenticated } = useAuth();
   const theme = useMantineTheme();
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
   const isDevelopment = import.meta.env.DEV;
   const [searchParams, setSearchParams] = useSearchParams();
-  const activeTab = searchParams.get('tab') || DEFAULT_TAB;
+  const activeTab = searchParams.get('tab') || (isAuthenticated ? 'account' : 'translation');
 
   const handleTabChange = (tab: string | null) => {
     if (tab) {
@@ -73,12 +75,16 @@ export default function Settings() {
             }}
           >
             <Tabs.List>
-              <Tabs.Tab value="account" leftSection={<User size={14} />}>
-                {t('Account')}
-              </Tabs.Tab>
-              <Tabs.Tab value="billing" leftSection={<CreditCard size={14} />}>
-                {t('Billing')}
-              </Tabs.Tab>
+              {isAuthenticated && (
+                <Tabs.Tab value="account" leftSection={<User size={14} />}>
+                  {t('Account')}
+                </Tabs.Tab>
+              )}
+              {isAuthenticated && (
+                <Tabs.Tab value="billing" leftSection={<CreditCard size={14} />}>
+                  {t('Billing')}
+                </Tabs.Tab>
+              )}
               <Tabs.Tab value="translation" leftSection={<Key size={14} />}>
                 {t('Translation')}
               </Tabs.Tab>
@@ -104,13 +110,21 @@ export default function Settings() {
               )}
             </Tabs.List>
 
-            <Tabs.Panel value="account" pt={isMobile ? 'md' : undefined}>
-              <AccountSection />
-            </Tabs.Panel>
+            {isAuthenticated && (
+              <Tabs.Panel value="account" pt={isMobile ? 'md' : undefined}>
+                <Stack gap="md">
+                  <AccountSection />
+                  <DataExportSection />
+                  <DeleteAccountSection />
+                </Stack>
+              </Tabs.Panel>
+            )}
 
-            <Tabs.Panel value="billing" pt={isMobile ? 'md' : undefined}>
-              <BillingSection />
-            </Tabs.Panel>
+            {isAuthenticated && (
+              <Tabs.Panel value="billing" pt={isMobile ? 'md' : undefined}>
+                <BillingSection />
+              </Tabs.Panel>
+            )}
 
             <Tabs.Panel value="translation" pt={isMobile ? 'md' : undefined}>
               <TranslationSection />

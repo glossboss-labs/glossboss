@@ -11,7 +11,9 @@ import { AppShell as MantineAppShell, Burger, Group, Box, useMantineTheme } from
 import { useDisclosure, useLocalStorage, useMediaQuery } from '@mantine/hooks';
 import { useNotifications } from '@/hooks/use-notifications';
 import { AppSidebar } from './AppSidebar';
+import { DevBranchChip } from '@/pages/index/DevBranchChip';
 
+const DEV_BRANCH_CHIP_STORAGE_KEY = 'glossboss-dev-branch-chip';
 const COLLAPSED_KEY = 'gb-sidebar-collapsed';
 const WIDTH_KEY = 'gb-sidebar-width';
 const DEFAULT_WIDTH = 200;
@@ -32,6 +34,12 @@ export function CloudAppShell() {
     defaultValue: DEFAULT_WIDTH,
   });
   const resizingRef = useRef(false);
+  const isDevelopment = import.meta.env.DEV;
+  const [branchChipEnabled] = useLocalStorage<boolean>({
+    key: DEV_BRANCH_CHIP_STORAGE_KEY,
+    defaultValue: true,
+    getInitialValueInEffect: false,
+  });
 
   // Subscribe to notifications at the shell level
   useNotifications();
@@ -145,6 +153,7 @@ export function CloudAppShell() {
         )}
         <Outlet />
       </MantineAppShell.Main>
+      {isDevelopment && branchChipEnabled && <DevBranchChip branch={__GIT_BRANCH__} />}
     </MantineAppShell>
   );
 }

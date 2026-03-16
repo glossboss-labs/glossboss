@@ -1,6 +1,20 @@
 import '@testing-library/jest-dom/vitest';
-import { beforeEach } from 'vitest';
+import { beforeEach, vi } from 'vitest';
 import { LocalStorageAdapter, setStorageAdapter } from '@/lib/cloud';
+
+/** Auto-mock posthog-js so its side effects never run in tests */
+vi.mock('posthog-js', () => ({
+  default: { init: vi.fn(), capture: vi.fn(), identify: vi.fn(), reset: vi.fn() },
+}));
+
+/** Auto-mock analytics wrapper so no tracking runs in tests */
+vi.mock('@/lib/analytics', () => ({
+  initPostHog: vi.fn(),
+  trackPageView: vi.fn(),
+  trackEvent: vi.fn(),
+  identifyUser: vi.fn(),
+  resetAnalytics: vi.fn(),
+}));
 
 function createStorageMock(): Storage {
   const data = new Map<string, string>();

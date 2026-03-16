@@ -19,7 +19,7 @@ import {
   Tooltip,
   Anchor,
 } from '@mantine/core';
-import { Check, AlertCircle, ExternalLink, Languages } from 'lucide-react';
+import { Check, AlertCircle, ExternalLink, Languages, Shield } from 'lucide-react';
 import {
   getDeepLSettings,
   saveDeepLSettings,
@@ -342,6 +342,17 @@ export function TranslationSection({
           {t('Selected provider: {{provider}}', {
             provider: getTranslationProviderLabel(translationProvider),
           })}
+        </Text>
+      </Alert>
+
+      <Alert color="gray" variant="light" icon={<Shield size={16} />}>
+        <Text size="xs">
+          {t(
+            'Translation text is sent to your selected provider for processing. DeepL processes data in the EU. Azure Translator region depends on your configuration. Google Gemini processes data in the US. No translation data is stored by GlossBoss after the response is received.',
+          )}{' '}
+          <Anchor href="/privacy/" target="_blank" size="xs">
+            {t('Privacy Policy')}
+          </Anchor>
         </Text>
       </Alert>
 

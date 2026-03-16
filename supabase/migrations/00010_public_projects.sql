@@ -1,4 +1,4 @@
---
+-- Phase 5: Public projects + Discovery
 --
 -- Adds RLS policies to allow unauthenticated and authenticated users
 -- to read public and unlisted projects (and their languages/entries).

@@ -5,8 +5,16 @@ import { TranslationContext } from './translation-context';
 
 type TranslationValues = Record<string, string | number>;
 
-export function TranslationProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguageState] = useState<AppLanguage>(() => getAppLanguage());
+export function TranslationProvider({
+  children,
+  initialLanguage,
+}: {
+  children: ReactNode;
+  initialLanguage?: AppLanguage;
+}) {
+  const [language, setLanguageState] = useState<AppLanguage>(
+    () => initialLanguage ?? getAppLanguage(),
+  );
 
   useEffect(() => {
     saveAppLanguage(language);

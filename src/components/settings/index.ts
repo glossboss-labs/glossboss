@@ -21,3 +21,7 @@ export type { DevelopmentSectionProps } from './DevelopmentSection';
 export { AccountSection } from './AccountSection';
 
 export { BillingSection } from './BillingSection';
+
+export { DeleteAccountSection } from './DeleteAccountSection';
+
+export { DataExportSection } from './DataExportSection';

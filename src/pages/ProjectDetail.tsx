@@ -432,11 +432,17 @@ export default function ProjectDetail() {
             <Alert variant="light" color="blue">
               <Group justify="space-between" align="center">
                 <Text size="sm">
+                  <Link
+                    to="/signup"
+                    style={{
+                      color: 'var(--mantine-color-blue-6)',
+                      textDecoration: 'none',
+                    }}
+                  >
+                    {t('Sign up')}
+                  </Link>{' '}
                   {t('to save projects to the cloud and collaborate with your team.')}
                 </Text>
-                <Button component={Link} to="/signup" variant="light" size="xs">
-                  {t('Create an account')}
-                </Button>
               </Group>
             </Alert>
           )}

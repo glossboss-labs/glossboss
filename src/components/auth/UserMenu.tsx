@@ -144,6 +144,15 @@ export function UserMenu() {
           </Menu.Item>
           <Menu.Item
             component="a"
+            href="/terms/"
+            target="_blank"
+            rel="noopener noreferrer"
+            leftSection={<Info size={14} />}
+          >
+            {t('Terms')}
+          </Menu.Item>
+          <Menu.Item
+            component="a"
             href="/privacy/"
             target="_blank"
             rel="noopener noreferrer"

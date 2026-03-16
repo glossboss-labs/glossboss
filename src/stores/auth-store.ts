@@ -16,8 +16,9 @@ import {
   resetPasswordForEmail,
   updatePassword,
 } from '@/lib/auth/session';
-import { setGitHubOAuthToken, clearGitHubOAuthToken } from '@/lib/github/token';
+import { clearGitHubOAuthToken } from '@/lib/github/token';
 import { clearEncryptionKeyCache } from '@/lib/settings/crypto';
+import { identifyUser, resetAnalytics } from '@/lib/analytics';
 
 export interface AuthState {
   /** Current session (null if signed out). */
@@ -59,26 +60,22 @@ export const useAuthStore = create<AuthState & AuthActions>()((set) => ({
     // Get initial session
     client.auth.getSession().then(({ data }) => {
       set({ session: data.session, user: data.session?.user ?? null, loading: false });
-      if (data.session?.provider_token && data.session.user?.app_metadata?.provider === 'github') {
-        setGitHubOAuthToken(data.session.provider_token);
-      }
     });
 
     // Listen to auth state changes.
-    // Capture the GitHub OAuth provider_token when signing in — Supabase only
-    // provides it on the initial SIGNED_IN event, not on session refresh.
     const {
       data: { subscription },
     } = client.auth.onAuthStateChange((event, session) => {
       set({ session, user: session?.user ?? null, loading: false });
 
-      if (session?.provider_token && session.user?.app_metadata?.provider === 'github') {
-        setGitHubOAuthToken(session.provider_token);
+      if (session?.user) {
+        identifyUser(session.user.id, { email: session.user.email });
       }
 
       if (event === 'SIGNED_OUT') {
         clearGitHubOAuthToken();
         clearEncryptionKeyCache();
+        resetAnalytics();
       }
     });
 

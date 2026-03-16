@@ -131,6 +131,20 @@ export default function Login() {
           </Stack>
         </form>
       </Paper>
+
+      <Text size="xs" c="dimmed" ta="center" mt="xl">
+        <Anchor href="/terms/" target="_blank" size="xs" c="dimmed">
+          {t('Terms')}
+        </Anchor>
+        {' · '}
+        <Anchor href="/privacy/" target="_blank" size="xs" c="dimmed">
+          {t('Privacy')}
+        </Anchor>
+        {' · '}
+        <Anchor href="/license/" target="_blank" size="xs" c="dimmed">
+          {t('License')}
+        </Anchor>
+      </Text>
     </Container>
   );
 }

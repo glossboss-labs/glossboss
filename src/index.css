@@ -1,3 +1,6 @@
+@import 'tailwindcss';
+@import './theme.css';
+
 /* ----------------------------------------------------------------
  * Typography smoothing (both modes)
  * ---------------------------------------------------------------- */
@@ -151,4 +154,51 @@ body {
  * ---------------------------------------------------------------- */
 .mantine-Paper-root[data-with-border] {
   border-color: var(--gb-border-subtle);
+}
+
+/* ----------------------------------------------------------------
+ * Magic UI / Landing page animations
+ * ---------------------------------------------------------------- */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes shimmer-slide {
+  to {
+    transform: translate(calc(100cqw - 100%), 0);
+  }
+}
+
+@keyframes spin-around {
+  0% {
+    transform: translateZ(0) rotate(0);
+  }
+  15%,
+  35% {
+    transform: translateZ(0) rotate(90deg);
+  }
+  65%,
+  85% {
+    transform: translateZ(0) rotate(270deg);
+  }
+  100% {
+    transform: translateZ(0) rotate(360deg);
+  }
+}
+
+@keyframes shine {
+  from {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  to {
+    background-position: 0% 0%;
+  }
 }

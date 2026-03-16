@@ -81,7 +81,6 @@ export async function signInWithGitHub(): Promise<{ error: AuthError | null }> {
     provider: 'github',
     options: {
       redirectTo: `${window.location.origin}/auth/callback`,
-      scopes: 'repo',
     },
   });
   return { error };
