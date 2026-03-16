@@ -145,9 +145,7 @@ const theme = createTheme({
       defaultProps: { radius: 'md' },
       styles: {
         root: {
-          // Papers blend with the page — no distinct background.
-          // Use withBorder for visual separation instead of background color.
-          backgroundColor: 'transparent',
+          backgroundColor: 'var(--gb-surface-1)',
         },
       },
     }),
@@ -215,7 +213,7 @@ const theme = createTheme({
       },
     },
     Badge: Badge.extend({
-      defaultProps: { radius: 'sm' },
+      defaultProps: { radius: 'xl' },
     }),
     TextInput: {
       defaultProps: { size: 'sm', radius: 'sm' },

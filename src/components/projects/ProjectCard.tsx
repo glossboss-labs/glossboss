@@ -64,8 +64,7 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
       styles={{
         root: {
           '&:hover': {
-            borderColor: 'var(--mantine-color-blue-5)',
-            boxShadow: 'var(--gb-shadow-tooltip)',
+            borderColor: 'var(--gb-border-strong)',
             backgroundColor: 'var(--gb-highlight-row)',
           },
         },

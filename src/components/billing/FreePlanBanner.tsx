@@ -37,8 +37,6 @@ export function FreePlanBanner() {
       style={{
         borderColor: 'var(--mantine-color-blue-4)',
         borderWidth: 1,
-        background:
-          'linear-gradient(135deg, var(--mantine-color-blue-light) 0%, var(--mantine-color-dark-7) 100%)',
       }}
     >
       <Group justify="space-between" align="flex-start" wrap="wrap" gap="md">
