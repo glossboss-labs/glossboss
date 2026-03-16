@@ -272,12 +272,10 @@ describe('editor details and mobile layout', () => {
 
     renderWithMantine(<EditorTable />);
 
-    // Status is now a compact dot (10x10 circle) with tooltip instead of badge text.
-    // Verify the dot is rendered with the correct test ID and color.
-    const statusDot = screen.getByTestId('status-badges-a');
-    expect(statusDot).toBeInTheDocument();
-    expect(statusDot.style.borderRadius).toBe('50%');
-    expect(statusDot.style.backgroundColor).toBe('var(--mantine-color-green-6)');
+    // Status badge shows translation status text; secondary indicators are icon-only.
+    const statusBadges = screen.getByTestId('status-badges-a');
+    expect(statusBadges).toBeInTheDocument();
+    expect(statusBadges.textContent).toContain('Translated');
   });
 
   it('activates source reference from the inspector reference link', async () => {

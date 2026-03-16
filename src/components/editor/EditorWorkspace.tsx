@@ -1,11 +1,11 @@
 /**
  * EditorWorkspace — workspace controls and editor table.
  *
- * Clean layout: compact progress header, single-row toolbar, then the table.
- * No Paper wrapper around toolbars — lets the controls feel integrated.
+ * Clean Paper section with mode toggle, filter toolbar, and translate controls.
+ * Follows the same visual pattern as Settings sections.
  */
 
-import { Stack, Group, Text, Badge, Box, Progress, SegmentedControl } from '@mantine/core';
+import { Stack, Paper, Group, Text, Badge, Divider, SegmentedControl } from '@mantine/core';
 import { motion } from 'motion/react';
 import { Check } from 'lucide-react';
 import {
@@ -15,10 +15,9 @@ import {
   ReviewSummary,
   TranslateToolbar,
 } from '@/components/editor';
-import { sectionVariants, interactiveSpring } from '@/lib/motion';
+import { sectionVariants } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
 import { getActiveTranslationProvider, getTranslationProviderLabel } from '@/lib/translation';
-import { useEditorStore } from '@/stores/editor-store';
 import type { TargetLanguage, SourceLanguage } from '@/lib/deepl/types';
 import type { Glossary } from '@/lib/glossary/types';
 import type { SupportedEncoding } from '@/lib/po';
@@ -110,22 +109,10 @@ export function EditorWorkspace({
   broadcastReviewEvent,
 }: EditorWorkspaceProps) {
   const { t } = useTranslation();
-  const { getStats } = useEditorStore();
-  const stats = getStats();
-  const percentage = stats.total > 0 ? Math.round((stats.translated / stats.total) * 100) : 0;
-
-  // Glossary tooltip content
-  const glossaryLabel = glossary
-    ? `${glossary.entries.length} ${t('terms')} (${glossary.targetLocale})`
-    : null;
-  const providerReady =
-    glossarySyncStatus === 'ready' || deeplGlossaryId
-      ? getTranslationProviderLabel(getActiveTranslationProvider())
-      : null;
 
   return (
     <>
-      <Stack gap="sm">
+      <Stack gap="md">
         <HeaderEditor
           encodingInfo={encodingInfo}
           wordPressProject={
@@ -141,72 +128,60 @@ export function EditorWorkspace({
             currentProjectType && currentProjectSlug ? onRefreshWordPress : undefined
           }
         />
-
-        {/* Compact header: progress + glossary status + mode toggle */}
-        <Group justify="space-between" align="center" wrap="wrap" gap="xs">
-          <Group gap="sm" wrap="nowrap">
-            {/* Progress */}
-            <Group gap={6} wrap="nowrap">
-              <Box style={{ width: 80 }}>
-                <Progress
-                  value={percentage}
-                  size="sm"
-                  radius="xl"
-                  color={percentage === 100 ? 'green' : percentage > 50 ? 'blue' : 'orange'}
-                />
-              </Box>
-              <motion.span
-                key={percentage}
-                initial={{ scale: 1.15 }}
-                animate={{ scale: 1 }}
-                transition={interactiveSpring}
-              >
-                <Text
-                  size="sm"
-                  fw={600}
-                  component="span"
-                  c={percentage === 100 ? 'green' : undefined}
-                  className="gb-tabular-nums"
-                >
-                  {t('{{percentage}}% translated', { percentage })}
-                </Text>
-              </motion.span>
+        <Paper p="md" withBorder>
+          <Stack gap="sm">
+            <Group justify="space-between" align="center" wrap="wrap">
+              <Text size="sm" fw={600}>
+                {workspaceMode === 'edit' ? t('Edit workspace') : t('Review workspace')}
+              </Text>
+              <SegmentedControl
+                size="xs"
+                value={workspaceMode}
+                onChange={(value) => onWorkspaceModeChange(value as WorkspaceMode)}
+                data={[
+                  { label: t('Edit'), value: 'edit' },
+                  { label: t('Review'), value: 'review' },
+                ]}
+              />
             </Group>
 
-            {/* Glossary status (compact) */}
-            {workspaceMode === 'edit' && glossaryLabel && (
-              <Badge color="green" variant="light" size="sm" leftSection={<Check size={10} />}>
-                {glossaryLabel}
-                {providerReady && ` · ${providerReady}`}
-              </Badge>
+            <Divider />
+            <FilterToolbar mode={workspaceMode} />
+
+            {workspaceMode === 'review' && (
+              <>
+                <Divider />
+                <ReviewSummary />
+              </>
             )}
-          </Group>
 
-          <SegmentedControl
-            size="xs"
-            value={workspaceMode}
-            onChange={(value) => onWorkspaceModeChange(value as WorkspaceMode)}
-            data={[
-              { label: t('Edit'), value: 'edit' },
-              { label: t('Review'), value: 'review' },
-            ]}
-          />
-        </Group>
-
-        {/* Single-row toolbar */}
-        <FilterToolbar mode={workspaceMode} />
-
-        {/* Review summary (only in review mode) */}
-        {workspaceMode === 'review' && <ReviewSummary />}
-
-        {/* Translation controls */}
-        <TranslateToolbar
-          onLanguageChange={onLanguageChange}
-          deeplGlossaryId={glossaryEnforcementEnabled ? deeplGlossaryId : null}
-          glossary={glossary}
-          translateEnabled={translateEnabled}
-          mode={workspaceMode}
-        />
+            <Divider />
+            <TranslateToolbar
+              onLanguageChange={onLanguageChange}
+              deeplGlossaryId={glossaryEnforcementEnabled ? deeplGlossaryId : null}
+              glossary={glossary}
+              translateEnabled={translateEnabled}
+              mode={workspaceMode}
+            />
+            {workspaceMode === 'edit' && glossary && (
+              <Group gap="xs">
+                <Badge color="green" variant="light" size="sm" leftSection={<Check size={10} />}>
+                  {t('Glossary: {count} terms ({locale})', {
+                    count: glossary.entries.length,
+                    locale: glossary.targetLocale,
+                  })}
+                </Badge>
+                {glossarySyncStatus === 'ready' || deeplGlossaryId ? (
+                  <Badge color="blue" variant="light" size="sm">
+                    {t('{{provider}} ready', {
+                      provider: getTranslationProviderLabel(getActiveTranslationProvider()),
+                    })}
+                  </Badge>
+                ) : null}
+              </Group>
+            )}
+          </Stack>
+        </Paper>
       </Stack>
 
       <MotionDiv variants={sectionVariants} initial="hidden" animate="visible" key="editor">

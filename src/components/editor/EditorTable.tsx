@@ -1254,48 +1254,19 @@ const StatusBadges = memo(function StatusBadges({
   const { t } = useTranslation();
   const status = getTranslationStatus(entry.msgstr, entry.flags, entry.msgstrPlural);
 
-  // Build a compact tooltip with secondary status info
-  const hints: string[] = [];
-  if (isModified) hints.push(t('Modified'));
-  if (isManualEdit) hints.push(t('Manual edit'));
-  if (hasGlossaryTerms) hints.push(t('Glossary match'));
-  if (isMT) hints.push(t('Machine translated'));
-  if (isReviewEntryLocked) hints.push(t('Locked'));
-  if (showReviewComments && unresolvedCommentCount > 0)
-    hints.push(t('{{count}} comments', { count: unresolvedCommentCount }));
-
-  const dotWithHints = (
-    <Tooltip
-      label={
-        <Stack gap={2}>
-          <Text size="xs" fw={500}>
-            {t(STATUS_LABELS[status])}
-          </Text>
-          {hints.length > 0 && (
-            <Text size="xs" c="dimmed">
-              {hints.join(' · ')}
-            </Text>
-          )}
-        </Stack>
-      }
-      multiline
-    >
-      <Box
-        data-testid={`status-badges-${entry.id}`}
-        style={{
-          width: 10,
-          height: 10,
-          borderRadius: '50%',
-          backgroundColor: `var(--mantine-color-${STATUS_COLORS[status]}-6)`,
-          flexShrink: 0,
-        }}
-      />
-    </Tooltip>
-  );
-
   return (
-    <Group gap={6} wrap="nowrap" align="center">
-      {dotWithHints}
+    <Group
+      data-testid={`status-badges-${entry.id}`}
+      gap={4}
+      wrap="wrap"
+      style={{ maxWidth: '100%', overflowX: 'visible', overflowY: 'visible' }}
+    >
+      {/* Primary: translation status badge with text */}
+      <Badge color={STATUS_COLORS[status]} size="sm" variant="filled" style={{ flexShrink: 0 }}>
+        {t(STATUS_LABELS[status])}
+      </Badge>
+
+      {/* Review status */}
       {showReviewStatus && reviewStatus !== 'draft' && (
         <Badge
           color={REVIEW_STATUS_COLORS[reviewStatus]}
@@ -1305,6 +1276,53 @@ const StatusBadges = memo(function StatusBadges({
         >
           {t(REVIEW_STATUS_LABELS[reviewStatus])}
         </Badge>
+      )}
+
+      {/* Secondary indicators: icon-only with tooltips */}
+      {isReviewEntryLocked && (
+        <Tooltip label={t('Locked')}>
+          <Box style={{ color: 'var(--mantine-color-gray-6)', lineHeight: 0 }}>
+            <ShieldAlert size={14} />
+          </Box>
+        </Tooltip>
+      )}
+      {isModified && (
+        <Tooltip label={t('Modified this session')}>
+          <Box style={{ color: 'var(--mantine-color-orange-6)', lineHeight: 0 }}>
+            <Pencil size={14} />
+          </Box>
+        </Tooltip>
+      )}
+
+      {isManualEdit && (
+        <Tooltip label={t('Manually edited - protected from bulk translation')}>
+          <Box style={{ color: 'var(--mantine-color-gray-6)', lineHeight: 0 }}>
+            <Pencil size={14} />
+          </Box>
+        </Tooltip>
+      )}
+      {hasGlossaryTerms && (
+        <Tooltip label={t('Contains glossary terms')}>
+          <Box style={{ color: 'var(--mantine-color-blue-6)', lineHeight: 0 }}>
+            <FileCode size={14} />
+          </Box>
+        </Tooltip>
+      )}
+      {isMT && (
+        <Tooltip label={t('Machine translated')}>
+          <Box style={{ color: 'var(--mantine-color-blue-6)', lineHeight: 0 }}>
+            <Bot size={14} />
+          </Box>
+        </Tooltip>
+      )}
+      {showReviewComments && unresolvedCommentCount > 0 && (
+        <Tooltip
+          label={t('{{count}} unresolved review comment(s)', { count: unresolvedCommentCount })}
+        >
+          <Box style={{ color: 'var(--mantine-color-red-6)', lineHeight: 0 }}>
+            <MessageSquare size={14} />
+          </Box>
+        </Tooltip>
       )}
     </Group>
   );
