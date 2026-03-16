@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { getUserSubscription } from '@/lib/billing/api';
 import { getPlanLimits } from '@/lib/billing/limits';
@@ -12,11 +12,21 @@ interface UseSubscriptionResult {
 }
 
 export function useSubscription(): UseSubscriptionResult {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const userId = user?.id;
 
   const [subscription, setSubscription] = useState<SubscriptionRow | null>(null);
-  const [loading, setLoading] = useState(Boolean(userId));
+  const [fetched, setFetched] = useState(false);
+  const prevUserId = useRef<string | undefined>(undefined);
+
+  // Reset fetched state when userId changes (synchronous, no effect needed)
+  if (prevUserId.current !== userId) {
+    prevUserId.current = userId;
+    if (!userId) {
+      setFetched(false);
+      setSubscription(null);
+    }
+  }
 
   useEffect(() => {
     if (!userId) return;
@@ -27,18 +37,21 @@ export function useSubscription(): UseSubscriptionResult {
       .then((sub) => {
         if (!cancelled) {
           setSubscription(sub);
-          setLoading(false);
+          setFetched(true);
         }
       })
       .catch((err) => {
         console.error('Failed to fetch subscription:', err);
-        if (!cancelled) setLoading(false);
+        if (!cancelled) setFetched(true);
       });
 
     return () => {
       cancelled = true;
     };
   }, [userId]);
+
+  // Loading while auth is loading OR we have a user but haven't fetched yet
+  const loading = authLoading || (Boolean(userId) && !fetched);
 
   const plan: PlanTier = subscription?.plan ?? 'free';
   const limits = useMemo(() => getPlanLimits(plan), [plan]);

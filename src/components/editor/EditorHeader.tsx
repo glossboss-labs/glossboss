@@ -212,7 +212,7 @@ export function EditorHeader({
                 <Menu.Divider />
                 <Menu.Item
                   leftSection={<Archive size={14} />}
-                  onClick={() => onOpenSettings('transfer')}
+                  onClick={() => onOpenSettings('backup')}
                 >
                   {t('Backup')}
                 </Menu.Item>
