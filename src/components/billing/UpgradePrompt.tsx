@@ -13,9 +13,11 @@ interface UpgradePromptProps {
 }
 
 const RESOURCE_MESSAGES: Record<string, string> = {
-  projects: 'You have reached the project limit on your current plan.',
-  strings: 'You have reached the string limit on your current plan.',
-  members: 'You have reached the member limit on your current plan.',
+  projects:
+    'You have reached the project limit on your plan. This only affects projects you own — you can still collaborate on others.',
+  strings:
+    'You have reached the string limit on your plan. This only affects projects you own — you can still collaborate on others.',
+  members: 'You have reached the member limit on your plan.',
 };
 
 export function UpgradePrompt({ resource, currentPlan }: UpgradePromptProps) {
