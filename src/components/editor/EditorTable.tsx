@@ -3245,9 +3245,9 @@ export function EditorTable({
                       width: inspectorWidth + 24,
                       marginLeft: 'var(--mantine-spacing-md)',
                       position: 'sticky',
-                      top: 16,
-                      height: 'calc(100vh - 32px)',
-                      maxHeight: 'calc(100vh - 32px)',
+                      top: 0,
+                      height: '100vh',
+                      maxHeight: '100vh',
                       alignSelf: 'flex-start',
                     }}
                   >

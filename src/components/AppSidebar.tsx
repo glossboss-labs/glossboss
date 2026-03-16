@@ -279,7 +279,13 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
 
           {/* Notifications */}
           {isAuthenticated && (
-            <NavItem icon={<NotificationBell />} label={t('Notifications')} collapsed={collapsed} />
+            <Box
+              px={collapsed ? 0 : 12}
+              py={4}
+              style={{ display: 'flex', justifyContent: collapsed ? 'center' : 'flex-start' }}
+            >
+              <NotificationBell />
+            </Box>
           )}
 
           <Divider />
