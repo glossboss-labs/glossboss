@@ -21,6 +21,9 @@ import {
   ActionIcon,
   Box,
   Avatar,
+  Skeleton,
+  Popover,
+  Indicator,
   useMantineColorScheme,
   useComputedColorScheme,
 } from '@mantine/core';
@@ -36,11 +39,13 @@ import {
   MessageSquare,
   LogIn,
   LogOut,
+  Bell,
 } from 'lucide-react';
 import { useTranslation } from '@/lib/app-language';
 import { useAuth } from '@/hooks/use-auth';
 import { useAuthStore } from '@/stores/auth-store';
-import { NotificationBell } from '@/components/notifications';
+import { useNotificationsStore } from '@/stores/notifications-store';
+import { NotificationDropdown } from '@/components/notifications/NotificationDropdown';
 import { PlanBadge } from '@/components/billing/PlanBadge';
 import { useSubscription } from '@/hooks/use-subscription';
 import { useProjectsStore } from '@/stores/projects-store';
@@ -149,12 +154,14 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
   const location = useLocation();
   const { user, isAuthenticated } = useAuth();
   const signOut = useAuthStore((s) => s.signOut);
-  const { plan, limits } = useSubscription();
+  const { plan, limits, loading: subLoading } = useSubscription();
   const projects = useProjectsStore((s) => s.projects);
+  const unreadNotifications = useNotificationsStore((s) => s.unreadCount);
   const { toggleColorScheme } = useMantineColorScheme();
   const computedColorScheme = useComputedColorScheme('light');
   const pathname = location.pathname;
   const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
 
   const displayName = user?.user_metadata?.full_name || user?.email || '';
   const avatarUrl = user?.user_metadata?.avatar_url as string | undefined;
@@ -279,13 +286,44 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
 
           {/* Notifications */}
           {isAuthenticated && (
-            <Box
-              px={collapsed ? 0 : 12}
-              py={4}
-              style={{ display: 'flex', justifyContent: collapsed ? 'center' : 'flex-start' }}
+            <Popover
+              opened={notificationsOpen}
+              onChange={setNotificationsOpen}
+              position="right-end"
+              width={360}
+              withinPortal
+              shadow="var(--gb-shadow-menu)"
             >
-              <NotificationBell />
-            </Box>
+              <Popover.Target>
+                <Box>
+                  <NavItem
+                    icon={
+                      <Indicator
+                        size={14}
+                        label={unreadNotifications > 0 ? String(unreadNotifications) : undefined}
+                        disabled={unreadNotifications === 0}
+                        color="red"
+                        offset={2}
+                      >
+                        <Bell size={18} />
+                      </Indicator>
+                    }
+                    label={t('Notifications')}
+                    collapsed={collapsed}
+                    onClick={() => setNotificationsOpen((o) => !o)}
+                  />
+                </Box>
+              </Popover.Target>
+              <Popover.Dropdown
+                p={0}
+                style={{
+                  backgroundColor: 'var(--gb-surface-1)',
+                  borderColor: 'var(--gb-border-subtle)',
+                }}
+              >
+                <NotificationDropdown onClose={() => setNotificationsOpen(false)} />
+              </Popover.Dropdown>
+            </Popover>
           )}
 
           <Divider />
@@ -305,11 +343,15 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
                   >
                     {initials}
                   </Avatar>
-                  <Stack gap={0} style={{ flex: 1, minWidth: 0 }}>
+                  <Stack gap={2} style={{ flex: 1, minWidth: 0 }}>
                     <Text size="xs" fw={500} truncate>
                       {displayName}
                     </Text>
-                    <PlanBadge plan={plan} />
+                    {subLoading ? (
+                      <Skeleton height={16} width={60} radius="xl" />
+                    ) : (
+                      <PlanBadge plan={plan} />
+                    )}
                   </Stack>
                 </Group>
               ) : (
@@ -323,7 +365,7 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
               )}
 
               {/* Usage stats */}
-              {!collapsed && (
+              {!collapsed && !subLoading && (
                 <Box px={12} py={4}>
                   <Text size="xs" c="dimmed" className="gb-tabular-nums">
                     {projects.filter((p) => !p.organization_id).length}/
