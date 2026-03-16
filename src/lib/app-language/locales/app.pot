@@ -137,7 +137,7 @@ msgstr ""
 msgid "Adjust the appearance of the editor to suit your screen and preferences."
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:129
+#: src/components/settings/BillingSection.tsx:313
 msgid "Admin"
 msgstr ""
 
@@ -335,11 +335,11 @@ msgstr ""
 msgid "Bengali"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:145
+#: src/components/settings/BillingSection.tsx:329
 msgid "Billed annually"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:146
+#: src/components/settings/BillingSection.tsx:330
 msgid "Billed monthly"
 msgstr ""
 
@@ -852,6 +852,10 @@ msgstr ""
 msgid "Croatian"
 msgstr ""
 
+#: src/components/settings/BillingSection.tsx:439
+msgid "Current"
+msgstr ""
+
 #: src/components/editor/EditorTable.tsx:1504
 #: src/components/editor/EditorTable.tsx:1679
 #: src/components/editor/ReviewSummary.tsx:26
@@ -859,7 +863,8 @@ msgstr ""
 msgid "Current editor"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:122
+#: src/components/settings/BillingSection.tsx:178
+#: src/components/settings/BillingSection.tsx:306
 msgid "Current plan"
 msgstr ""
 
@@ -1516,6 +1521,10 @@ msgstr ""
 msgid "Failed to send invite"
 msgstr ""
 
+#: src/components/settings/BillingSection.tsx:231
+msgid "Failed to start checkout. Please try again."
+msgstr ""
+
 #: src/pages/ProjectSettings.tsx:242
 msgid "Failed to unlink repository"
 msgstr ""
@@ -1628,6 +1637,10 @@ msgstr ""
 #: src/components/SettingsModal.tsx:1441
 #: src/components/settings/TranslationSection.tsx:419
 msgid "Free API"
+msgstr ""
+
+#: src/components/settings/BillingSection.tsx:430
+msgid "Free plan"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:1448
@@ -2352,7 +2365,7 @@ msgid ""
 " into the active project scope."
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:170
+#: src/components/settings/BillingSection.tsx:359
 msgid "Manage subscription"
 msgstr ""
 
@@ -2431,6 +2444,10 @@ msgstr ""
 msgid "Mongolian"
 msgstr ""
 
+#: src/components/settings/BillingSection.tsx:380
+msgid "Monthly"
+msgstr ""
+
 #: src/components/editor/EditorTable.tsx:3161
 msgid "More info"
 msgstr ""
@@ -2438,6 +2455,10 @@ msgstr ""
 #: src/pages/Explore.tsx:36
 #: src/pages/ProjectDetail.tsx:275
 msgid "Most complete"
+msgstr ""
+
+#: src/components/settings/BillingSection.tsx:123
+msgid "Most popular"
 msgstr ""
 
 #: src/pages/Dashboard.tsx:108
@@ -2475,7 +2496,7 @@ msgstr ""
 msgid "Navigation Settings"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:265
+#: src/components/settings/BillingSection.tsx:372
 msgid "Need more capacity?"
 msgstr ""
 
@@ -2827,6 +2848,10 @@ msgstr ""
 msgid "Organization invite"
 msgstr ""
 
+#: src/components/settings/BillingSection.tsx:257
+msgid "Organization management"
+msgstr ""
+
 #: src/components/organizations/CreateOrgModal.tsx:89
 msgid "Organization name"
 msgstr ""
@@ -3017,10 +3042,6 @@ msgstr ""
 msgid "Polish"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:212
-msgid "Popular"
-msgstr ""
-
 #: src/components/editor/HeaderEditor.tsx:119
 #: src/components/editor/TranslateToolbar.tsx:94
 msgid "Portuguese"
@@ -3058,6 +3079,10 @@ msgstr ""
 #: src/components/SettingsModal.tsx:149
 #: src/components/settings/KeybindsSection.tsx:19
 msgid "Previous field"
+msgstr ""
+
+#: src/components/settings/BillingSection.tsx:258
+msgid "Priority support"
 msgstr ""
 
 #: src/components/auth/UserMenu.tsx:152
@@ -3156,7 +3181,7 @@ msgstr ""
 msgid "Project type"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:183
+#: src/components/settings/BillingSection.tsx:349
 #: src/pages/Dashboard.tsx:117
 #: src/pages/OrgSettings.tsx:339
 #: src/pages/OrgSettingsPage.tsx:351
@@ -3264,6 +3289,11 @@ msgstr ""
 msgid "Ready for export"
 msgstr ""
 
+#: src/components/settings/BillingSection.tsx:245
+#: src/components/settings/BillingSection.tsx:254
+msgid "Real-time collaboration"
+msgstr ""
+
 #: src/components/editor/EditorTable.tsx:1999
 msgid "References"
 msgstr ""
@@ -3344,7 +3374,7 @@ msgstr ""
 msgid "Remove yourself from this project."
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:154
+#: src/components/settings/BillingSection.tsx:338
 msgid "Renews {{date}}"
 msgstr ""
 
@@ -3401,6 +3431,8 @@ msgstr ""
 
 #: src/components/editor/EditorHeader.tsx:275
 #: src/components/repo-sync/RepoSyncModal.tsx:567
+#: src/components/settings/BillingSection.tsx:247
+#: src/components/settings/BillingSection.tsx:256
 msgid "Repository sync"
 msgstr ""
 
@@ -3499,6 +3531,11 @@ msgstr ""
 
 #: src/components/editor/ReviewSummary.tsx:16
 msgid "Review workflow"
+msgstr ""
+
+#: src/components/settings/BillingSection.tsx:246
+#: src/components/settings/BillingSection.tsx:255
+msgid "Review workflows"
 msgstr ""
 
 #: src/components/editor/EditorWorkspace.tsx:135
@@ -3600,8 +3637,12 @@ msgstr ""
 msgid "Save to cloud"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:255
-msgid "Save with annual billing"
+#: src/components/settings/BillingSection.tsx:389
+msgid "Save up to 20% with annual billing"
+msgstr ""
+
+#: src/components/settings/BillingSection.tsx:150
+msgid "Save {{percent}}%"
 msgstr ""
 
 #: src/components/repo-sync/RepoSyncModal.tsx:760
@@ -3870,7 +3911,7 @@ msgstr ""
 msgid "Sign in to manage your account settings and enable cloud sync."
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:53
+#: src/components/settings/BillingSection.tsx:198
 msgid "Sign in to manage your subscription."
 msgstr ""
 
@@ -4040,7 +4081,7 @@ msgstr ""
 msgid "String Inspector"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:184
+#: src/components/settings/BillingSection.tsx:350
 msgid "Strings"
 msgstr ""
 
@@ -4463,12 +4504,24 @@ msgstr ""
 msgid "Unknown error"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:29
+#: src/components/settings/BillingSection.tsx:57
 msgid "Unlimited"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:137
+#: src/components/settings/BillingSection.tsx:321
 msgid "Unlimited access granted manually. No billing required."
+msgstr ""
+
+#: src/components/settings/BillingSection.tsx:251
+msgid "Unlimited projects"
+msgstr ""
+
+#: src/components/settings/BillingSection.tsx:252
+msgid "Unlimited strings"
+msgstr ""
+
+#: src/components/settings/BillingSection.tsx:253
+msgid "Unlimited team members"
 msgstr ""
 
 #: src/pages/ProjectSettings.tsx:566
@@ -4510,6 +4563,10 @@ msgstr ""
 msgid "Update password"
 msgstr ""
 
+#: src/components/settings/BillingSection.tsx:273
+msgid "Update payment"
+msgstr ""
+
 #: src/components/repo-sync/CommitPanel.tsx:201
 msgid "Update translations"
 msgstr ""
@@ -4542,16 +4599,16 @@ msgstr ""
 msgid "Updated translation"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:195
+#: src/components/settings/BillingSection.tsx:178
 msgid "Upgrade"
-msgstr ""
-
-#: src/components/settings/BillingSection.tsx:272
-msgid "Upgrade to Organization"
 msgstr ""
 
 #: src/components/billing/UpgradePrompt.tsx:48
 msgid "Upgrade to {{plan}}"
+msgstr ""
+
+#: src/components/settings/BillingSection.tsx:372
+msgid "Upgrade your plan"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:2174
@@ -4587,10 +4644,6 @@ msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:140
 msgid "Urdu"
-msgstr ""
-
-#: src/components/settings/BillingSection.tsx:180
-msgid "Usage"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:2024
@@ -4838,6 +4891,10 @@ msgstr ""
 msgid "Write a reply to this comment"
 msgstr ""
 
+#: src/components/settings/BillingSection.tsx:381
+msgid "Yearly"
+msgstr ""
+
 #: src/pages/Invite.tsx:111
 msgid "You are now a member of this organization."
 msgstr ""
@@ -4894,13 +4951,13 @@ msgstr ""
 msgid "Your password"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:98
+#: src/components/settings/BillingSection.tsx:268
 msgid ""
 "Your payment is past due. Please update your payment method to avoid service"
 " interruption."
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:108
+#: src/components/settings/BillingSection.tsx:282
 msgid "Your subscription is canceled and will expire on {{date}}."
 msgstr ""
 
@@ -4914,6 +4971,10 @@ msgstr ""
 msgid ""
 "Your token is sent directly to the GitLab API from your browser and is never"
 " stored on our servers."
+msgstr ""
+
+#: src/components/settings/BillingSection.tsx:157
+msgid "billed annually"
 msgstr ""
 
 #: src/components/editor/GlossaryPanel.tsx:319
@@ -4962,13 +5023,12 @@ msgstr ""
 msgid "languages"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:224
-#: src/components/settings/BillingSection.tsx:248
-msgid "members"
+#: src/components/settings/BillingSection.tsx:435
+msgid "member"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:218
-#: src/components/settings/BillingSection.tsx:242
+#: src/components/settings/BillingSection.tsx:140
+#: src/components/settings/BillingSection.tsx:147
 msgid "month"
 msgstr ""
 
@@ -5002,9 +5062,12 @@ msgstr ""
 msgid "plural"
 msgstr ""
 
+#: src/components/settings/BillingSection.tsx:433
+msgid "project"
+msgstr ""
+
 #: src/components/auth/UserMenu.tsx:100
-#: src/components/settings/BillingSection.tsx:222
-#: src/components/settings/BillingSection.tsx:246
+#: src/components/settings/BillingSection.tsx:242
 msgid "projects"
 msgstr ""
 
@@ -5017,12 +5080,16 @@ msgid "skipped"
 msgstr ""
 
 #: src/components/auth/UserMenu.tsx:105
-#: src/components/settings/BillingSection.tsx:223
-#: src/components/settings/BillingSection.tsx:247
+#: src/components/settings/BillingSection.tsx:243
+#: src/components/settings/BillingSection.tsx:434
 #: src/pages/OrgSettings.tsx:475
 #: src/pages/OrgSettingsPage.tsx:672
 #: src/pages/ProjectSettings.tsx:642
 msgid "strings"
+msgstr ""
+
+#: src/components/settings/BillingSection.tsx:244
+msgid "team members"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:2190
@@ -5048,11 +5115,6 @@ msgstr ""
 
 #: src/components/repo-sync/RepoSyncModal.tsx:635
 msgid "with api scope"
-msgstr ""
-
-#: src/components/settings/BillingSection.tsx:255
-#: src/components/settings/BillingSection.tsx:256
-msgid "year"
 msgstr ""
 
 #: src/pages/index/IndexPageBanners.tsx:151

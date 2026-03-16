@@ -1,4 +1,4 @@
-import { getSupabaseClient, invokeSupabaseFunction } from '@/lib/supabase/client';
+import { getSupabaseClient } from '@/lib/supabase/client';
 import type { SubscriptionRow } from './types';
 
 function supabase() {
@@ -10,11 +10,14 @@ export async function createCheckoutSession(
   productId: string,
   successUrl?: string,
 ): Promise<string> {
-  const result = await invokeSupabaseFunction<{ url: string }>('polar-checkout', {
-    productId,
-    successUrl,
+  const client = getSupabaseClient('Billing');
+  const { data, error } = await client.functions.invoke('polar-checkout', {
+    body: { productId, successUrl },
   });
-  return result.url;
+
+  if (error) throw error;
+  if (!data?.url) throw new Error('No checkout URL returned');
+  return data.url;
 }
 
 /** Fetch the current user's personal subscription. */
