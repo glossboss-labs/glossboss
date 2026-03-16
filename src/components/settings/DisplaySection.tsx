@@ -16,18 +16,28 @@ import {
 } from '@/lib/container-width';
 import { APP_LANGUAGE_OPTIONS, useTranslation, type AppLanguage } from '@/lib/app-language';
 
-/**
- * Pixel widths that map to each container option, used to calculate
- * the proportional content area inside a 1920px-wide display preview.
- */
-const CONTENT_PX: Record<ContainerWidth, number> = {
-  md: 980,
-  lg: 1120,
-  xl: 1320,
-  '100%': 1920,
+/** Content width as a fraction of the main area (viewport minus 240px sidebar). */
+const CONTENT_FRACTION: Record<ContainerWidth, number> = {
+  md: 980 / 1680,
+  lg: 1120 / 1680,
+  xl: 1320 / 1680,
+  '100%': 1,
 };
-const DISPLAY_W = 1920;
-const SIDEBAR_RATIO = 240 / DISPLAY_W; // sidebar takes 240px of 1920
+
+/** Skeleton bar — a small rounded rectangle used in the display preview. */
+function Skel({
+  w = '100%',
+  h = 3,
+  color = 'var(--mantine-color-default-border)',
+}: {
+  w?: string | number;
+  h?: number;
+  color?: string;
+}) {
+  return (
+    <Box style={{ width: w, height: h, borderRadius: 2, backgroundColor: color, flexShrink: 0 }} />
+  );
+}
 
 export interface DisplaySectionProps {
   containerWidth?: ContainerWidth;
@@ -118,136 +128,151 @@ export function DisplaySection({
             size="xs"
           />
 
-          {/* Scaled 1920x1080 display preview */}
+          {/* Scaled 16:9 display preview */}
           <Box
             style={{
               position: 'relative',
               width: '100%',
               aspectRatio: '16 / 9',
               borderRadius: 'var(--mantine-radius-md)',
-              border: '2px solid var(--mantine-color-dark-4)',
-              backgroundColor: 'var(--mantine-color-dark-7)',
+              border: '1px solid var(--mantine-color-default-border)',
+              backgroundColor: 'var(--mantine-color-body)',
               overflow: 'hidden',
+              display: 'flex',
             }}
           >
             {/* Sidebar */}
             <Box
               style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: `${SIDEBAR_RATIO * 100}%`,
-                height: '100%',
-                backgroundColor: 'var(--mantine-color-dark-6)',
-                borderRight: '1px solid var(--mantine-color-dark-4)',
+                width: '12.5%',
+                flexShrink: 0,
+                borderRight: '1px solid var(--mantine-color-default-border)',
                 display: 'flex',
                 flexDirection: 'column',
-                padding: '6% 8%',
-                gap: '6%',
+                padding: '3% 2%',
+                gap: 4,
               }}
             >
-              {/* Sidebar skeleton lines */}
-              {[60, 45, 50, 40].map((w, i) => (
-                <Box
-                  key={i}
-                  style={{
-                    width: `${w}%`,
-                    height: 3,
-                    borderRadius: 2,
-                    backgroundColor: 'var(--mantine-color-dark-4)',
-                  }}
-                />
+              <Skel w="70%" />
+              <Box style={{ height: 6 }} />
+              {[55, 40, 48, 42].map((w, i) => (
+                <Skel key={i} w={`${w}%`} h={2} />
               ))}
             </Box>
 
             {/* Main area */}
-            <Box
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: `${SIDEBAR_RATIO * 100}%`,
-                right: 0,
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-              }}
-            >
-              {/* Header bar */}
+            <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+              {/* Top header bar */}
               <Box
                 style={{
-                  height: '8%',
-                  borderBottom: '1px solid var(--mantine-color-dark-4)',
-                  backgroundColor: 'var(--mantine-color-dark-6)',
+                  height: '7%',
+                  borderBottom: '1px solid var(--mantine-color-default-border)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '0 3%',
+                  gap: '2%',
                 }}
-              />
+              >
+                <Skel w="15%" h={3} />
+                <Skel w="8%" h={3} />
+              </Box>
 
-              {/* Content area with centered container */}
+              {/* Content area */}
               <Box
                 style={{
                   flex: 1,
                   display: 'flex',
                   justifyContent: 'center',
-                  padding: '3% 0',
+                  overflow: 'hidden',
                 }}
               >
                 <motion.div
                   initial={false}
-                  animate={{
-                    width: `${(CONTENT_PX[containerWidth] / (DISPLAY_W - 240)) * 100}%`,
-                  }}
-                  transition={{ type: 'spring', stiffness: 260, damping: 26 }}
+                  animate={{ width: `${CONTENT_FRACTION[containerWidth] * 100}%` }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                   style={{
                     height: '100%',
-                    maxWidth: '100%',
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: '4%',
-                    padding: '0 3%',
+                    padding: '2% 2% 0',
                   }}
                 >
-                  {/* Editor table skeleton rows */}
-                  {Array.from({ length: 6 }).map((_, i) => (
+                  {/* File info bar */}
+                  <Box style={{ display: 'flex', gap: '2%', marginBottom: '3%' }}>
+                    <Skel w="25%" h={3} />
+                    <Skel w={16} h={3} color="var(--mantine-color-blue-4)" />
+                  </Box>
+
+                  {/* Toolbar row */}
+                  <Box
+                    style={{
+                      display: 'flex',
+                      gap: '2%',
+                      marginBottom: '3%',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Skel w="35%" h={4} color="var(--mantine-color-default-border)" />
+                    <Box style={{ flex: 1 }} />
+                    <Skel w="8%" h={3} />
+                    <Skel w="8%" h={3} />
+                  </Box>
+
+                  {/* Table header */}
+                  <Box
+                    style={{
+                      display: 'flex',
+                      borderBottom: '1px solid var(--mantine-color-default-border)',
+                      paddingBottom: 2,
+                      marginBottom: 2,
+                      gap: '4%',
+                    }}
+                  >
+                    <Box style={{ width: '8%' }}>
+                      <Skel w="100%" h={2} />
+                    </Box>
+                    <Box style={{ flex: 1 }}>
+                      <Skel w="30%" h={2} />
+                    </Box>
+                    <Box style={{ flex: 1 }}>
+                      <Skel w="35%" h={2} />
+                    </Box>
+                  </Box>
+
+                  {/* Table rows */}
+                  {Array.from({ length: 5 }).map((_, i) => (
                     <Box
                       key={i}
                       style={{
                         display: 'flex',
-                        gap: '3%',
-                        height: '10%',
+                        gap: '4%',
+                        padding: '1.5% 0',
+                        borderBottom: '1px solid var(--mantine-color-default-border)',
+                        opacity: 1 - i * 0.1,
                       }}
                     >
                       <Box
                         style={{
-                          flex: 1,
-                          borderRadius: 2,
-                          backgroundColor:
-                            i === 0 ? 'var(--mantine-color-dark-4)' : 'var(--mantine-color-dark-5)',
+                          width: '8%',
+                          display: 'flex',
+                          alignItems: 'flex-start',
+                          paddingTop: 1,
                         }}
-                      />
-                      <Box
-                        style={{
-                          flex: 1,
-                          borderRadius: 2,
-                          backgroundColor:
-                            i === 0 ? 'var(--mantine-color-dark-4)' : 'var(--mantine-color-dark-5)',
-                        }}
-                      />
+                      >
+                        <Skel w={14} h={3} color="var(--mantine-color-teal-4)" />
+                      </Box>
+                      <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                        <Skel w={`${65 - i * 8}%`} h={2} />
+                        {i === 1 && <Skel w="80%" h={2} />}
+                      </Box>
+                      <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                        <Skel w={`${60 - i * 6}%`} h={2} />
+                        {i === 1 && <Skel w="75%" h={2} />}
+                      </Box>
                     </Box>
                   ))}
                 </motion.div>
               </Box>
-            </Box>
-
-            {/* Width label overlay */}
-            <Box
-              style={{
-                position: 'absolute',
-                bottom: 6,
-                right: 8,
-              }}
-            >
-              <Text size="9px" c="dimmed" fw={500} style={{ userSelect: 'none', opacity: 0.6 }}>
-                {CONTAINER_WIDTH_OPTIONS.find((o) => o.value === containerWidth)?.label}
-              </Text>
             </Box>
           </Box>
         </Stack>
