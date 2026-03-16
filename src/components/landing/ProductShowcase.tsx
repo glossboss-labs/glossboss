@@ -11,7 +11,7 @@ export function ProductShowcase() {
         transition={{ duration: 0.7, ease: 'easeOut' }}
         className="mx-auto max-w-4xl"
       >
-        <div className="relative overflow-hidden rounded-lg border border-border-subtle bg-surface-1">
+        <div className="relative overflow-hidden rounded-lg border border-border-subtle bg-surface-1 shadow-xl">
           {/* Title bar */}
           <div className="flex h-9 items-center gap-2 border-b border-border-subtle px-4">
             <div className="flex gap-1.5">
@@ -59,8 +59,8 @@ export function ProductShowcase() {
                     style={{ opacity: row.o }}
                   >
                     <div className={`h-2 w-2 shrink-0 rounded-full ${row.s}`} />
-                    <div className="h-2.5 rounded bg-surface-3/70" style={{ width: row.sw }} />
-                    <div className="h-2.5 rounded bg-surface-2/50" style={{ width: row.tw }} />
+                    <div className="h-2.5 rounded bg-surface-3" style={{ width: row.sw }} />
+                    <div className="h-2.5 rounded bg-border-subtle" style={{ width: row.tw }} />
                   </div>
                 ))}
               </div>

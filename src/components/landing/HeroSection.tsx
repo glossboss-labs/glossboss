@@ -42,7 +42,7 @@ export function HeroSection() {
         >
           {t('Translate smarter.')}
           <br />
-          <span className="text-text-tertiary">{t('Ship faster.')}</span>
+          <span className="text-text-secondary">{t('Ship faster.')}</span>
         </motion.h1>
 
         {/* Subheadline */}
@@ -62,7 +62,7 @@ export function HeroSection() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.4, delay: 0.5 }}
-          className="mt-4 text-sm text-text-tertiary"
+          className="mt-4 text-sm text-text-secondary"
         >
           {t('Powered by DeepL, Azure Translator & Google Gemini')}
         </motion.p>
@@ -95,7 +95,7 @@ export function HeroSection() {
           transition={{ duration: 0.4, delay: 0.7 }}
           className="mt-5 text-xs text-text-tertiary"
         >
-          {t('No credit card required. Free forever for individuals.')}
+          {t('No credit card required. Free for individuals.')}
         </motion.p>
       </div>
     </section>

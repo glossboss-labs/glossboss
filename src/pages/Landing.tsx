@@ -6,8 +6,10 @@ import {
   HeroSection,
   ProductShowcase,
   SocialProofBar,
+  StatsCounters,
   HowItWorks,
   FeatureGrid,
+  BeforeAfterSlider,
   FormatSection,
   OpenSourceSection,
   PricingSection,
@@ -18,7 +20,13 @@ import {
 
 const SITE_URL = 'https://glossboss.ink';
 
-export default function Landing({ lang }: { lang?: AppLanguage }) {
+export default function Landing({
+  lang,
+  isAuthenticated,
+}: {
+  lang?: AppLanguage;
+  isAuthenticated?: boolean;
+}) {
   const currentLang = lang ?? 'en';
 
   // Set hreflang meta tags for SEO
@@ -27,7 +35,6 @@ export default function Landing({ lang }: { lang?: AppLanguage }) {
     const existing = head.querySelectorAll('link[data-hreflang]');
     existing.forEach((el) => el.remove());
 
-    // x-default → English (root)
     const xDefault = document.createElement('link');
     xDefault.rel = 'alternate';
     xDefault.hreflang = 'x-default';
@@ -35,7 +42,6 @@ export default function Landing({ lang }: { lang?: AppLanguage }) {
     xDefault.setAttribute('data-hreflang', 'true');
     head.appendChild(xDefault);
 
-    // One link per language
     for (const option of APP_LANGUAGE_OPTIONS) {
       const link = document.createElement('link');
       link.rel = 'alternate';
@@ -52,16 +58,18 @@ export default function Landing({ lang }: { lang?: AppLanguage }) {
 
   return (
     <div className="min-h-screen bg-surface-0">
-      <LandingNav currentLang={currentLang} />
+      <LandingNav currentLang={currentLang} isAuthenticated={isAuthenticated} />
       <EarlyBetaBanner />
       <HeroSection />
       <ProductShowcase />
       <SocialProofBar />
-      <HowItWorks />
+      <StatsCounters />
       <FeatureGrid />
+      <BeforeAfterSlider />
+      <HowItWorks />
       <FormatSection />
-      <OpenSourceSection />
       <PricingSection />
+      <OpenSourceSection />
       <FAQSection />
       <FinalCTA />
       <LandingFooter currentLang={currentLang} />

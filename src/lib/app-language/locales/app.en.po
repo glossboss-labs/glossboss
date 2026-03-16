@@ -171,7 +171,7 @@ msgid "Added reply"
 msgstr "Added reply"
 
 #: src/components/SettingsModal.tsx:2327
-#: src/components/settings/DisplaySection.tsx:44
+#: src/components/settings/DisplaySection.tsx:68
 msgid "Adjust the appearance of the editor to suit your screen and preferences."
 msgstr "Adjust the appearance of the editor to suit your screen and preferences."
 
@@ -516,7 +516,7 @@ msgstr "Can I self-host GlossBoss?"
 #: src/components/feedback/FeedbackModal.tsx:481
 #: src/components/projects/AddLanguageModal.tsx:439
 #: src/components/projects/SaveToCloudModal.tsx:158
-#: src/components/settings/BackupSection.tsx:573
+#: src/components/settings/BackupSection.tsx:577
 #: src/components/settings/DeleteAccountSection.tsx:140
 #: src/components/ui/ConfirmModal.tsx:38
 #: src/components/ui/PromptModal.tsx:34
@@ -636,7 +636,7 @@ msgid "Choose visible columns"
 msgstr "Choose visible columns"
 
 #: src/components/SettingsModal.tsx:2623
-#: src/components/settings/BackupSection.tsx:562
+#: src/components/settings/BackupSection.tsx:566
 msgid ""
 "Choose whether to export saved translation credentials or keep the settings "
 "file free of credentials."
@@ -645,7 +645,7 @@ msgstr ""
 "file free of credentials."
 
 #: src/components/SettingsModal.tsx:2620
-#: src/components/settings/BackupSection.tsx:559
+#: src/components/settings/BackupSection.tsx:563
 msgid ""
 "Choose whether to import the saved translation credentials or keep the curre"
 "nt credentials saved in this browser."
@@ -654,7 +654,7 @@ msgstr ""
 "nt credentials saved in this browser."
 
 #: src/components/SettingsModal.tsx:2337
-#: src/components/settings/DisplaySection.tsx:54
+#: src/components/settings/DisplaySection.tsx:78
 msgid "Choose which language GlossBoss uses for its interface."
 msgstr "Choose which language GlossBoss uses for its interface."
 
@@ -706,7 +706,7 @@ msgid "Clear fuzzy selected"
 msgstr "Clear fuzzy selected"
 
 #: src/components/SettingsModal.tsx:2479
-#: src/components/settings/BackupSection.tsx:482
+#: src/components/settings/BackupSection.tsx:486
 msgid "Clear memory"
 msgstr "Clear memory"
 
@@ -723,7 +723,7 @@ msgid "Cleared fuzzy on {{count}} row(s)."
 msgstr "Cleared fuzzy on {{count}} row(s)."
 
 #: src/components/SettingsModal.tsx:1133
-#: src/components/settings/BackupSection.tsx:392
+#: src/components/settings/BackupSection.tsx:396
 msgid "Cleared translation memory for this project."
 msgstr "Cleared translation memory for this project."
 
@@ -744,7 +744,7 @@ msgid "Close QA summary"
 msgstr "Close QA summary"
 
 #: src/components/SettingsModal.tsx:2605
-#: src/components/settings/BackupSection.tsx:544
+#: src/components/settings/BackupSection.tsx:548
 msgid "Close credential prompt"
 msgstr "Close credential prompt"
 
@@ -868,7 +868,7 @@ msgid "Contact (optional)"
 msgstr "Contact (optional)"
 
 #: src/components/SettingsModal.tsx:2370
-#: src/components/settings/DisplaySection.tsx:87
+#: src/components/settings/DisplaySection.tsx:111
 msgid "Container width"
 msgstr "Container width"
 
@@ -896,7 +896,7 @@ msgid "Continue without account"
 msgstr "Continue without account"
 
 #: src/components/SettingsModal.tsx:2373
-#: src/components/settings/DisplaySection.tsx:90
+#: src/components/settings/DisplaySection.tsx:114
 msgid ""
 "Controls the maximum width of the main content area. Use a wider setting on "
 "large monitors, or full width to use all available space."
@@ -1077,8 +1077,8 @@ msgstr "Dark mode"
 
 #: src/components/AppHeader.tsx:115
 #: src/components/AppSidebar.tsx:238
-#: src/components/landing/LandingNav.tsx:68
-#: src/components/landing/LandingNav.tsx:134
+#: src/components/landing/LandingNav.tsx:76
+#: src/components/landing/LandingNav.tsx:150
 #: src/pages/OrgSettings.tsx:274
 msgid "Dashboard"
 msgstr "Dashboard"
@@ -1543,19 +1543,19 @@ msgstr "Expires {{date}}"
 #: src/components/AppHeader.tsx:105
 #: src/components/AppSidebar.tsx:245
 #: src/components/landing/LandingFooter.tsx:17
-#: src/components/landing/LandingNav.tsx:26
+#: src/components/landing/LandingNav.tsx:27
 #: src/pages/Explore.tsx:146
 #: src/pages/ProjectDetail.tsx:330
 msgid "Explore"
 msgstr "Explore"
 
 #: src/components/SettingsModal.tsx:2447
-#: src/components/settings/BackupSection.tsx:450
+#: src/components/settings/BackupSection.tsx:454
 msgid "Export JSON"
 msgstr "Export JSON"
 
 #: src/components/SettingsModal.tsx:2455
-#: src/components/settings/BackupSection.tsx:458
+#: src/components/settings/BackupSection.tsx:462
 msgid "Export TMX"
 msgstr "Export TMX"
 
@@ -1572,7 +1572,7 @@ msgid "Export project"
 msgstr "Export project"
 
 #: src/components/SettingsModal.tsx:2500
-#: src/components/settings/BackupSection.tsx:503
+#: src/components/settings/BackupSection.tsx:507
 msgid "Export settings"
 msgstr "Export settings"
 
@@ -1593,7 +1593,7 @@ msgid "Export the entire cloud project as a ZIP archive. Choose what to include:
 msgstr "Export the entire cloud project as a ZIP archive. Choose what to include:"
 
 #: src/components/SettingsModal.tsx:2652
-#: src/components/settings/BackupSection.tsx:591
+#: src/components/settings/BackupSection.tsx:595
 msgid "Export without credentials"
 msgstr "Export without credentials"
 
@@ -1610,7 +1610,7 @@ msgstr ""
 "a PR. Done."
 
 #: src/components/SettingsModal.tsx:2397
-#: src/components/settings/BackupSection.tsx:400
+#: src/components/settings/BackupSection.tsx:404
 msgid ""
 "Export your saved preferences to a JSON backup file, or restore them into th"
 "is browser. Translation memory is managed separately below."
@@ -1619,7 +1619,7 @@ msgstr ""
 "is browser. Translation memory is managed separately below."
 
 #: src/components/SettingsModal.tsx:2492
-#: src/components/settings/BackupSection.tsx:495
+#: src/components/settings/BackupSection.tsx:499
 msgid ""
 "Exports translation provider preferences, provider-specific settings, glossa"
 "ry options, navigation behavior, display width, and development-only toggles"
@@ -1704,7 +1704,7 @@ msgid "Failed to fetch source"
 msgstr "Failed to fetch source"
 
 #: src/components/SettingsModal.tsx:1113
-#: src/components/settings/BackupSection.tsx:372
+#: src/components/settings/BackupSection.tsx:376
 msgid "Failed to import translation memory."
 msgstr "Failed to import translation memory."
 
@@ -1850,7 +1850,7 @@ msgid "Feature"
 msgstr "Feature"
 
 #: src/components/landing/LandingFooter.tsx:14
-#: src/components/landing/LandingNav.tsx:23
+#: src/components/landing/LandingNav.tsx:24
 msgid "Features"
 msgstr "Features"
 
@@ -2125,8 +2125,8 @@ msgstr "Get started"
 
 #: src/components/billing/WelcomeModal.tsx:136
 #: src/components/landing/FinalCTA.tsx:28
-#: src/components/landing/LandingNav.tsx:82
-#: src/components/landing/LandingNav.tsx:145
+#: src/components/landing/LandingNav.tsx:90
+#: src/components/landing/LandingNav.tsx:161
 #: src/components/settings/BillingSection.tsx:582
 msgid "Get started free"
 msgstr "Get started free"
@@ -2397,27 +2397,27 @@ msgid "Import a translation export by project slug"
 msgstr "Import a translation export by project slug"
 
 #: src/components/SettingsModal.tsx:2668
-#: src/components/settings/BackupSection.tsx:607
+#: src/components/settings/BackupSection.tsx:611
 msgid "Import credentials"
 msgstr "Import credentials"
 
 #: src/components/SettingsModal.tsx:2469
-#: src/components/settings/BackupSection.tsx:472
+#: src/components/settings/BackupSection.tsx:476
 msgid "Import memory"
 msgstr "Import memory"
 
 #: src/components/SettingsModal.tsx:2600
-#: src/components/settings/BackupSection.tsx:539
+#: src/components/settings/BackupSection.tsx:543
 msgid "Import saved credentials?"
 msgstr "Import saved credentials?"
 
 #: src/components/SettingsModal.tsx:2510
-#: src/components/settings/BackupSection.tsx:513
+#: src/components/settings/BackupSection.tsx:517
 msgid "Import settings"
 msgstr "Import settings"
 
 #: src/components/SettingsModal.tsx:1105
-#: src/components/settings/BackupSection.tsx:364
+#: src/components/settings/BackupSection.tsx:368
 msgid "Imported {{count}} translation memory entries."
 msgstr "Imported {{count}} translation memory entries."
 
@@ -2435,17 +2435,17 @@ msgid "Include API credentials in sync"
 msgstr "Include API credentials in sync"
 
 #: src/components/SettingsModal.tsx:2669
-#: src/components/settings/BackupSection.tsx:608
+#: src/components/settings/BackupSection.tsx:612
 msgid "Include credentials"
 msgstr "Include credentials"
 
 #: src/components/SettingsModal.tsx:2601
-#: src/components/settings/BackupSection.tsx:540
+#: src/components/settings/BackupSection.tsx:544
 msgid "Include saved credentials?"
 msgstr "Include saved credentials?"
 
 #: src/components/SettingsModal.tsx:2612
-#: src/components/settings/BackupSection.tsx:551
+#: src/components/settings/BackupSection.tsx:555
 msgid ""
 "Including saved translation credentials will store them in plain text inside"
 " the exported JSON file."
@@ -2475,8 +2475,8 @@ msgstr "Integrates with your favorite tools"
 
 #: src/components/SettingsModal.tsx:2334
 #: src/components/SettingsModal.tsx:2342
-#: src/components/settings/DisplaySection.tsx:51
-#: src/components/settings/DisplaySection.tsx:59
+#: src/components/settings/DisplaySection.tsx:75
+#: src/components/settings/DisplaySection.tsx:83
 msgid "Interface language"
 msgstr "Interface language"
 
@@ -2558,7 +2558,7 @@ msgid "Kazakh"
 msgstr "Kazakh"
 
 #: src/components/SettingsModal.tsx:2651
-#: src/components/settings/BackupSection.tsx:590
+#: src/components/settings/BackupSection.tsx:594
 msgid "Keep current key"
 msgstr "Keep current key"
 
@@ -2726,12 +2726,12 @@ msgid "Load a small example WordPress plugin PO file (Hello Dolly)"
 msgstr "Load a small example WordPress plugin PO file (Hello Dolly)"
 
 #: src/components/SettingsModal.tsx:1125
-#: src/components/settings/BackupSection.tsx:384
+#: src/components/settings/BackupSection.tsx:388
 msgid "Load a translation file before clearing project translation memory."
 msgstr "Load a translation file before clearing project translation memory."
 
 #: src/components/SettingsModal.tsx:2413
-#: src/components/settings/BackupSection.tsx:416
+#: src/components/settings/BackupSection.tsx:420
 msgid ""
 "Load a translation file before managing translation memory so GlossBoss can "
 "scope entries to the active target language."
@@ -2740,7 +2740,7 @@ msgstr ""
 "scope entries to the active target language."
 
 #: src/components/SettingsModal.tsx:1039
-#: src/components/settings/BackupSection.tsx:298
+#: src/components/settings/BackupSection.tsx:302
 msgid ""
 "Load a translation file first so GlossBoss knows which target language to us"
 "e."
@@ -2900,7 +2900,7 @@ msgid "Maltese"
 msgstr "Maltese"
 
 #: src/components/SettingsModal.tsx:2410
-#: src/components/settings/BackupSection.tsx:413
+#: src/components/settings/BackupSection.tsx:417
 msgid ""
 "Manage reusable approved translations for the current project. Import merges"
 " into the active project scope."
@@ -3097,7 +3097,7 @@ msgid "No account found — invite link created in Invites tab."
 msgstr "No account found — invite link created in Invites tab."
 
 #: src/components/SettingsModal.tsx:2431
-#: src/components/settings/BackupSection.tsx:434
+#: src/components/settings/BackupSection.tsx:438
 msgid "No active project"
 msgstr "No active project"
 
@@ -3280,7 +3280,7 @@ msgid "No translation files found in this repository."
 msgstr "No translation files found in this repository."
 
 #: src/components/SettingsModal.tsx:1050
-#: src/components/settings/BackupSection.tsx:309
+#: src/components/settings/BackupSection.tsx:313
 msgid "No translation memory entries are stored for this project yet."
 msgstr "No translation memory entries are stored for this project yet."
 
@@ -3346,7 +3346,7 @@ msgid "One form (no plurals)"
 msgstr "One form (no plurals)"
 
 #: src/components/SettingsModal.tsx:2629
-#: src/components/settings/BackupSection.tsx:568
+#: src/components/settings/BackupSection.tsx:572
 msgid "Only include credentials on personal, trusted devices."
 msgstr "Only include credentials on personal, trusted devices."
 
@@ -3717,7 +3717,7 @@ msgid "Previous field"
 msgstr "Previous field"
 
 #: src/components/landing/LandingFooter.tsx:15
-#: src/components/landing/LandingNav.tsx:24
+#: src/components/landing/LandingNav.tsx:25
 msgid "Pricing"
 msgstr "Pricing"
 
@@ -3805,8 +3805,8 @@ msgstr "Project metadata"
 #: src/components/projects/CreateProjectModal.tsx:523
 #: src/components/projects/ProjectSettingsTab.tsx:80
 #: src/components/projects/SaveToCloudModal.tsx:129
-#: src/components/settings/BackupSection.tsx:423
 #: src/components/settings/BackupSection.tsx:427
+#: src/components/settings/BackupSection.tsx:431
 #: src/pages/ProjectSettings.tsx:354
 msgid "Project name"
 msgstr "Project name"
@@ -3958,7 +3958,7 @@ msgid "Re-run glossary analysis on selected rows"
 msgstr "Re-run glossary analysis on selected rows"
 
 #: src/components/SettingsModal.tsx:2360
-#: src/components/settings/DisplaySection.tsx:77
+#: src/components/settings/DisplaySection.tsx:101
 msgid "Read the translation guide"
 msgstr "Read the translation guide"
 
@@ -4253,7 +4253,7 @@ msgstr "Reviewer — can translate and review"
 
 #: src/components/AppSidebar.tsx:252
 #: src/components/landing/LandingFooter.tsx:16
-#: src/components/landing/LandingNav.tsx:25
+#: src/components/landing/LandingNav.tsx:26
 #: src/pages/Roadmap.tsx:275
 msgid "Roadmap"
 msgstr "Roadmap"
@@ -4524,7 +4524,7 @@ msgid "Settings exported without your saved translation credentials."
 msgstr "Settings exported without your saved translation credentials."
 
 #: src/components/SettingsModal.tsx:2489
-#: src/components/settings/BackupSection.tsx:492
+#: src/components/settings/BackupSection.tsx:496
 msgid "Settings file"
 msgstr "Settings file"
 
@@ -4640,8 +4640,8 @@ msgstr "Showing {{start}}–{{end}} of {{total}} entries"
 #: src/components/auth/UserMenu.tsx:43
 #: src/components/auth/UserMenu.tsx:50
 #: src/components/editor/EmptyState.tsx:188
-#: src/components/landing/LandingNav.tsx:76
-#: src/components/landing/LandingNav.tsx:139
+#: src/components/landing/LandingNav.tsx:84
+#: src/components/landing/LandingNav.tsx:155
 #: src/pages/auth/Login.tsx:125
 #: src/pages/auth/Signup.tsx:95
 msgid "Sign in"
@@ -4969,7 +4969,7 @@ msgstr "Target language code"
 #: src/components/SettingsModal.tsx:2435
 #: src/components/projects/CreateProjectModal.tsx:571
 #: src/components/projects/SaveToCloudModal.tsx:145
-#: src/components/settings/BackupSection.tsx:438
+#: src/components/settings/BackupSection.tsx:442
 msgid "Target: {{language}}"
 msgstr "Target: {{language}}"
 
@@ -5124,7 +5124,7 @@ msgid "This is a preview of the selected voice."
 msgstr "This is a preview of the selected voice."
 
 #: src/components/SettingsModal.tsx:2611
-#: src/components/settings/BackupSection.tsx:550
+#: src/components/settings/BackupSection.tsx:554
 msgid "This settings file contains saved translation credentials in plain text."
 msgstr "This settings file contains saved translation credentials in plain text."
 
@@ -5277,17 +5277,17 @@ msgstr "Translation is unavailable in this deployment."
 #: src/components/SettingsModal.tsx:2406
 #: src/components/editor/EditorTable.tsx:1970
 #: src/components/projects/ExportSection.tsx:204
-#: src/components/settings/BackupSection.tsx:409
+#: src/components/settings/BackupSection.tsx:413
 msgid "Translation memory"
 msgstr "Translation memory"
 
 #: src/components/SettingsModal.tsx:1078
-#: src/components/settings/BackupSection.tsx:337
+#: src/components/settings/BackupSection.tsx:341
 msgid "Translation memory exported as JSON."
 msgstr "Translation memory exported as JSON."
 
 #: src/components/SettingsModal.tsx:1079
-#: src/components/settings/BackupSection.tsx:338
+#: src/components/settings/BackupSection.tsx:342
 msgid "Translation memory exported as TMX."
 msgstr "Translation memory exported as TMX."
 
@@ -5397,12 +5397,12 @@ msgid "Ukrainian"
 msgstr "Ukrainian"
 
 #: src/components/SettingsModal.tsx:1161
-#: src/components/settings/BackupSection.tsx:271
+#: src/components/settings/BackupSection.tsx:275
 msgid "Unable to import the selected settings file."
 msgstr "Unable to import the selected settings file."
 
 #: src/components/SettingsModal.tsx:1171
-#: src/components/settings/BackupSection.tsx:281
+#: src/components/settings/BackupSection.tsx:285
 msgid "Unable to read the selected settings file."
 msgstr "Unable to read the selected settings file."
 
@@ -5544,7 +5544,7 @@ msgstr "Updated review"
 msgid "Updated translation"
 msgstr "Updated translation"
 
-#: src/components/billing/UpgradePrompt.tsx:49
+#: src/components/billing/UpgradePrompt.tsx:51
 #: src/components/settings/BillingSection.tsx:609
 #: src/components/settings/BillingSection.tsx:657
 #: src/components/settings/BillingSection.tsx:690
@@ -5680,7 +5680,7 @@ msgid "Visibility"
 msgstr "Visibility"
 
 #: src/components/SettingsModal.tsx:2358
-#: src/components/settings/DisplaySection.tsx:75
+#: src/components/settings/DisplaySection.tsx:99
 msgid "Want to help translate GlossBoss?"
 msgstr "Want to help translate GlossBoss?"
 
@@ -6060,6 +6060,7 @@ msgstr "fuzzy"
 msgid "just now"
 msgstr "just now"
 
+#: src/components/landing/StatsCounters.tsx:47
 #: src/pages/OrgSettings.tsx:470
 #: src/pages/OrgSettingsPage.tsx:668
 msgid "languages"
@@ -6071,7 +6072,7 @@ msgstr "languages"
 msgid "member"
 msgstr "member"
 
-#: src/components/landing/StatsCounters.tsx:8
+#: src/components/landing/StatsCounters.tsx:46
 msgid "members"
 msgstr "members"
 
@@ -6123,7 +6124,7 @@ msgstr "project"
 msgid "projects"
 msgstr "projects"
 
-#: src/components/landing/StatsCounters.tsx:7
+#: src/components/landing/StatsCounters.tsx:45
 msgid "projects created"
 msgstr "projects created"
 
@@ -6158,7 +6159,7 @@ msgstr "skipped"
 msgid "strings"
 msgstr "strings"
 
-#: src/components/landing/StatsCounters.tsx:6
+#: src/components/landing/StatsCounters.tsx:44
 msgid "strings translated"
 msgstr "strings translated"
 
@@ -6190,10 +6191,6 @@ msgstr ""
 #: src/pages/ProjectSettings.tsx:641
 msgid "translated"
 msgstr "translated"
-
-#: src/components/landing/StatsCounters.tsx:9
-msgid "translation providers"
-msgstr "translation providers"
 
 #: src/components/projects/ProjectCard.tsx:190
 #: src/pages/ProjectDetail.tsx:672
@@ -6302,7 +6299,7 @@ msgid "{{count}} selected"
 msgstr "{{count}} selected"
 
 #: src/components/SettingsModal.tsx:2430
-#: src/components/settings/BackupSection.tsx:433
+#: src/components/settings/BackupSection.tsx:437
 msgid "{{count}} stored entries"
 msgstr "{{count}} stored entries"
 

@@ -754,7 +754,7 @@ export function TranslateToolbar({
                 })
               : t('Consider downloading a backup first.')
         }
-        confirmLabel={msgid('Retranslate All')}
+        confirmLabel={msgid('Retranslate all')}
         confirmColor="orange"
         variant={manualEditCount > 0 && !skipManualEdits ? 'danger' : 'warning'}
       />
@@ -785,7 +785,7 @@ export function TranslateToolbar({
               <Group gap="xs">
                 <WandSparkles size={14} />
                 <Text size="sm" fw={600}>
-                  {t('Machine Translation')}
+                  {t('Machine translation')}
                 </Text>
                 <Badge size="xs" variant="light" color="gray">
                   {providerLabel}
@@ -809,7 +809,7 @@ export function TranslateToolbar({
                 >
                   <Alert color="yellow" icon={<Key size={16} />}>
                     <Text size="sm">
-                      {t('Add your {{provider}} credentials in Settings to enable translations.', {
+                      {t('Add your {{provider}} API key in Settings to enable translation.', {
                         provider: providerLabel,
                       })}
                     </Text>
@@ -965,7 +965,7 @@ export function TranslateToolbar({
                             variant="subtle"
                             color="orange"
                           >
-                            {t('Retranslate All')}
+                            {t('Retranslate all')}
                           </Button>
                         </motion.div>
                       </Tooltip>
@@ -1049,7 +1049,7 @@ export function TranslateToolbar({
                           onClick={handleSelectedAutoTranslate}
                           aria-label={t('Auto translate selected')}
                         >
-                          {t('Auto Translate ({{count}})', {
+                          {t('Auto translate ({{count}})', {
                             count: selectedAutoTranslateEntries.length,
                           })}
                         </Button>
@@ -1077,7 +1077,7 @@ export function TranslateToolbar({
                           onClick={handleGlossaryCheckSelected}
                           aria-label={t('Glossary check selected')}
                         >
-                          {t('Glossary Check')}
+                          {t('Glossary check')}
                         </Button>
                       </Tooltip>
                     </MotionDiv>
@@ -1103,7 +1103,7 @@ export function TranslateToolbar({
                           onClick={handleClearFuzzySelected}
                           aria-label={t('Clear fuzzy selected')}
                         >
-                          {t('Clear Fuzzy ({{count}})', { count: selectedFuzzyCount })}
+                          {t('Clear fuzzy ({{count}})', { count: selectedFuzzyCount })}
                         </Button>
                       </Tooltip>
                     </MotionDiv>
@@ -1129,7 +1129,7 @@ export function TranslateToolbar({
                           onClick={handleMarkFuzzySelected}
                           aria-label={t('Mark fuzzy selected')}
                         >
-                          {t('Mark Fuzzy ({{count}})', { count: selectedNonFuzzyCount })}
+                          {t('Mark fuzzy ({{count}})', { count: selectedNonFuzzyCount })}
                         </Button>
                       </Tooltip>
                     </MotionDiv>

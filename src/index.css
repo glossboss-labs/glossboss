@@ -10,6 +10,21 @@ body {
 }
 
 /* ----------------------------------------------------------------
+ * Pointer cursor on all interactive elements
+ * ---------------------------------------------------------------- */
+button,
+[role='button'],
+a,
+select,
+label[for],
+input[type='checkbox'],
+input[type='radio'],
+input[type='range'],
+summary {
+  cursor: pointer;
+}
+
+/* ----------------------------------------------------------------
  * Smooth light/dark mode crossfade overlay
  * ---------------------------------------------------------------- */
 .theme-transition-overlay {

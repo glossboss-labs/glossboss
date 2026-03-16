@@ -100,7 +100,7 @@ export function TranslateButton({
       ? t('Translate with Glossary')
       : t('Translate with {{provider}}', { provider: providerLabel });
   const tooltipLabel = !apiKeyConfigured
-    ? t('Add your {{provider}} credentials in Settings to enable translation', {
+    ? t('Add your {{provider}} API key in Settings to enable translation', {
         provider: providerLabel,
       })
     : glossaryId

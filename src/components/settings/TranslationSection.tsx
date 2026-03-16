@@ -418,7 +418,7 @@ export function TranslationSection({
 
           <div data-ev-id="ev_a06444cf83">
             <Text size="sm" fw={500} mb={4}>
-              {t('API type')}
+              {t('Service tier')}
             </Text>
             <SegmentedControl
               value={apiType}
@@ -467,7 +467,7 @@ export function TranslationSection({
               loading={isTesting}
               disabled={!apiKey.trim()}
             >
-              {t('Test Connection')}
+              {t('Test connection')}
             </Button>
             <Button onClick={handleSaveApiKey} disabled={!apiKey.trim() || isSaved}>
               {t('Save')}
@@ -612,7 +612,7 @@ export function TranslationSection({
               loading={azureTesting}
               disabled={!azureApiKey.trim() || !azureRegion.trim()}
             >
-              {t('Test Connection')}
+              {t('Test connection')}
             </Button>
             <Button
               onClick={handleSaveAzureSettings}
@@ -754,7 +754,7 @@ export function TranslationSection({
               loading={geminiTesting}
               disabled={!geminiApiKey.trim()}
             >
-              {t('Test Connection')}
+              {t('Test connection')}
             </Button>
             <Button
               onClick={handleSaveGeminiSettings}

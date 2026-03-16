@@ -250,7 +250,7 @@ function KeyboardShortcutsPanel({
       <Divider />
 
       <Text size="sm" fw={500}>
-        {t('Navigation Settings')}
+        {t('Navigation settings')}
       </Text>
 
       <Switch
@@ -1317,7 +1317,7 @@ export function SettingsModal({
               {t('Glossary')}
             </Tabs.Tab>
             <Tabs.Tab value="keybinds" leftSection={<Keyboard size={14} />}>
-              {t('Keyboard Shortcuts')}
+              {t('Keyboard shortcuts')}
             </Tabs.Tab>
             <Tabs.Tab value="display" leftSection={<Monitor size={14} />}>
               {t('Display')}
@@ -1429,7 +1429,7 @@ export function SettingsModal({
 
                   <div data-ev-id="ev_a06444cf83">
                     <Text size="sm" fw={500} mb={4}>
-                      {t('API type')}
+                      {t('Service tier')}
                     </Text>
                     <SegmentedControl
                       value={apiType}
@@ -1480,7 +1480,7 @@ export function SettingsModal({
                       loading={isTesting}
                       disabled={!apiKey.trim()}
                     >
-                      {t('Test Connection')}
+                      {t('Test connection')}
                     </Button>
                     <Button onClick={handleSaveApiKey} disabled={!apiKey.trim() || isSaved}>
                       {t('Save')}
@@ -1629,7 +1629,7 @@ export function SettingsModal({
                       loading={azureTesting}
                       disabled={!azureApiKey.trim() || !azureRegion.trim()}
                     >
-                      {t('Test Connection')}
+                      {t('Test connection')}
                     </Button>
                     <Button
                       onClick={handleSaveAzureSettings}
@@ -1773,7 +1773,7 @@ export function SettingsModal({
                       loading={geminiTesting}
                       disabled={!geminiApiKey.trim()}
                     >
-                      {t('Test Connection')}
+                      {t('Test connection')}
                     </Button>
                     <Button
                       onClick={handleSaveGeminiSettings}
@@ -2129,7 +2129,7 @@ export function SettingsModal({
                     loading={isLoadingGlossary}
                     disabled={!selectedLocale}
                   >
-                    {t('Load Glossary')}
+                    {t('Load glossary')}
                   </Button>
                 ) : (
                   <Group gap="xs">
@@ -2533,7 +2533,7 @@ export function SettingsModal({
               <Stack gap="md">
                 <Alert color="orange" variant="light" icon={<GitBranch size={16} />}>
                   <Text size="sm" fw={600}>
-                    {t('Development Mode Only')}
+                    {t('Development mode only')}
                   </Text>
                   <Text size="sm">
                     {t(

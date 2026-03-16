@@ -251,7 +251,7 @@ export function GlossarySection({
               loading={isLoadingGlossary}
               disabled={!selectedLocale}
             >
-              {t('Load Glossary')}
+              {t('Load glossary')}
             </Button>
           ) : (
             <Group gap="xs">
