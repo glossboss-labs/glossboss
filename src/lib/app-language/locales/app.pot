@@ -2630,7 +2630,7 @@ msgstr ""
 msgid "Load a file with a target language before using translation memory."
 msgstr ""
 
-#: src/components/editor/EmptyState.tsx:157
+#: src/components/editor/EmptyState.tsx:162
 msgid "Load a small example WordPress plugin PO file (Hello Dolly)"
 msgstr ""
 
@@ -2653,7 +2653,7 @@ msgid ""
 "e."
 msgstr ""
 
-#: src/components/editor/EmptyState.tsx:167
+#: src/components/editor/EmptyState.tsx:172
 msgid "Load example PO"
 msgstr ""
 
@@ -3013,7 +3013,7 @@ msgstr ""
 msgid "No credit card required"
 msgstr ""
 
-#: src/components/landing/HeroSection.tsx:157
+#: src/components/landing/HeroSection.tsx:159
 msgid "No credit card required. Free for individuals."
 msgstr ""
 
@@ -3255,7 +3255,7 @@ msgstr ""
 msgid "Open a PR targeting {{branch}}"
 msgstr ""
 
-#: src/components/editor/EmptyState.tsx:145
+#: src/components/editor/EmptyState.tsx:150
 msgid "Open a locale file from a GitHub or GitLab repository"
 msgstr ""
 
@@ -3264,14 +3264,14 @@ msgid "Open files from your repo, translate, and push or create a PR."
 msgstr ""
 
 #: src/components/editor/EditorHeader.tsx:230
-#: src/components/editor/EmptyState.tsx:140
+#: src/components/editor/EmptyState.tsx:145
 #: src/components/editor/WordPressProjectModal.tsx:291
 #: src/components/projects/CreateProjectModal.tsx:430
 msgid "Open from WordPress.org"
 msgstr ""
 
 #: src/components/editor/EditorHeader.tsx:240
-#: src/components/editor/EmptyState.tsx:152
+#: src/components/editor/EmptyState.tsx:157
 #: src/components/projects/CreateProjectModal.tsx:455
 msgid "Open from repository"
 msgstr ""
@@ -3290,7 +3290,7 @@ msgstr ""
 msgid "Open project"
 msgstr ""
 
-#: src/components/landing/HeroSection.tsx:72
+#: src/components/landing/HeroSection.tsx:74
 msgid "Open source & free forever"
 msgstr ""
 
@@ -3302,7 +3302,7 @@ msgstr ""
 msgid "Open the editor to connect this language to a repository via Push settings."
 msgstr ""
 
-#: src/components/editor/EmptyState.tsx:133
+#: src/components/editor/EmptyState.tsx:138
 msgid "Open the latest WordPress.org translation export by project slug"
 msgstr ""
 
@@ -3572,7 +3572,7 @@ msgstr ""
 msgid "Portuguese (Portugal)"
 msgstr ""
 
-#: src/components/landing/HeroSection.tsx:126
+#: src/components/landing/HeroSection.tsx:128
 msgid "Powered by DeepL, Azure Translator & Google Gemini"
 msgstr ""
 
@@ -4242,7 +4242,7 @@ msgstr ""
 msgid "Search projects…"
 msgstr ""
 
-#: src/pages/Roadmap.tsx:336
+#: src/pages/Roadmap.tsx:337
 msgid "Search roadmap…"
 msgstr ""
 
@@ -4448,7 +4448,7 @@ msgstr ""
 msgid "Ship"
 msgstr ""
 
-#: src/components/landing/HeroSection.tsx:104
+#: src/components/landing/HeroSection.tsx:106
 msgid "Ship faster."
 msgstr ""
 
@@ -4508,7 +4508,7 @@ msgstr ""
 #: src/components/AppSidebar.tsx:404
 #: src/components/auth/UserMenu.tsx:43
 #: src/components/auth/UserMenu.tsx:50
-#: src/components/editor/EmptyState.tsx:188
+#: src/components/editor/EmptyState.tsx:193
 #: src/components/landing/LandingNav.tsx:84
 #: src/components/landing/LandingNav.tsx:155
 #: src/pages/auth/Login.tsx:125
@@ -4688,7 +4688,7 @@ msgstr ""
 msgid "Start over"
 msgstr ""
 
-#: src/components/landing/HeroSection.tsx:140
+#: src/components/landing/HeroSection.tsx:142
 msgid "Start translating free"
 msgstr ""
 
@@ -4894,7 +4894,7 @@ msgstr ""
 msgid "The WordPress.org translation export could not be parsed."
 msgstr ""
 
-#: src/components/landing/HeroSection.tsx:114
+#: src/components/landing/HeroSection.tsx:116
 msgid ""
 "The browser-based translation editor with multi-provider AI, real-time colla"
 "boration, and one-click deploys to GitHub."
@@ -5185,7 +5185,7 @@ msgstr ""
 msgid "Try another file"
 msgstr ""
 
-#: src/components/landing/HeroSection.tsx:146
+#: src/components/landing/HeroSection.tsx:148
 msgid "Try the editor"
 msgstr ""
 
@@ -5965,7 +5965,7 @@ msgstr ""
 msgid "terms"
 msgstr ""
 
-#: src/components/editor/EmptyState.tsx:190
+#: src/components/editor/EmptyState.tsx:195
 #: src/pages/ProjectDetail.tsx:444
 msgid ""
 "to save projects to the cloud and collaborate with your team. Collaborators "
