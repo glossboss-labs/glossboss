@@ -30,6 +30,8 @@ import { ProjectGrid } from '@/components/projects/ProjectGrid';
 import { CreateProjectModal } from '@/components/projects/CreateProjectModal';
 import { CreateOrgModal } from '@/components/organizations/CreateOrgModal';
 import { ConfirmModal } from '@/components/ui';
+import { FreePlanBanner } from '@/components/billing/FreePlanBanner';
+import { WelcomeModal } from '@/components/billing/WelcomeModal';
 import type { ProjectWithLanguages } from '@/lib/projects/types';
 
 const MotionDiv = motion.div;
@@ -112,6 +114,7 @@ export default function Dashboard() {
   return (
     <Container size="xl" py="xl">
       <AppHeader />
+      <FreePlanBanner />
       <MotionDiv variants={sectionVariants} initial="hidden" animate="visible">
         <Group justify="space-between" mb="xl">
           <Title order={2}>{t('Projects')}</Title>
@@ -310,6 +313,8 @@ export default function Dashboard() {
         variant="danger"
         loading={deleting}
       />
+
+      <WelcomeModal />
     </Container>
   );
 }

@@ -138,7 +138,7 @@ msgstr ""
 msgid "Adjust the appearance of the editor to suit your screen and preferences."
 msgstr "Pas het uiterlijk van de editor aan je scherm en voorkeuren aan."
 
-#: src/components/settings/BillingSection.tsx:313
+#: src/components/settings/BillingSection.tsx:368
 msgid "Admin"
 msgstr ""
 
@@ -210,7 +210,7 @@ msgid "Arabic (Saudi Arabia)"
 msgstr "Arabisch (Saoedi-Arabië)"
 
 #: src/components/projects/ProjectSettingsTab.tsx:170
-#: src/pages/Dashboard.tsx:305
+#: src/pages/Dashboard.tsx:308
 #: src/pages/ProjectSettings.tsx:771
 msgid ""
 "Are you sure you want to delete \"{{name}}\"? All languages and entries will"
@@ -336,11 +336,12 @@ msgstr "Wit-Russisch"
 msgid "Bengali"
 msgstr "Bengaals"
 
-#: src/components/settings/BillingSection.tsx:329
+#: src/components/settings/BillingSection.tsx:384
 msgid "Billed annually"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:330
+#: src/components/settings/BillingSection.tsx:189
+#: src/components/settings/BillingSection.tsx:385
 msgid "Billed monthly"
 msgstr ""
 
@@ -510,6 +511,10 @@ msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:501
 msgid "Choose the WordPress project type and slug used for source links."
+msgstr ""
+
+#: src/components/settings/BillingSection.tsx:427
+msgid "Choose the plan that fits your translation workflow."
 msgstr ""
 
 #: src/components/editor/FilterToolbar.tsx:558
@@ -797,7 +802,7 @@ msgstr ""
 msgid "Create"
 msgstr ""
 
-#: src/pages/Dashboard.tsx:152
+#: src/pages/Dashboard.tsx:155
 msgid ""
 "Create a cloud project from a PO file, a WordPress.org export, or a reposito"
 "ry."
@@ -835,7 +840,7 @@ msgstr ""
 
 #: src/components/organizations/CreateOrgModal.tsx:80
 #: src/components/organizations/CreateOrgModal.tsx:126
-#: src/pages/Dashboard.tsx:221
+#: src/pages/Dashboard.tsx:224
 msgid "Create organization"
 msgstr ""
 
@@ -859,7 +864,7 @@ msgstr ""
 msgid "Croatian"
 msgstr "Kroatisch"
 
-#: src/components/settings/BillingSection.tsx:439
+#: src/components/billing/WelcomeModal.tsx:77
 msgid "Current"
 msgstr ""
 
@@ -870,8 +875,8 @@ msgstr ""
 msgid "Current editor"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:178
-#: src/components/settings/BillingSection.tsx:306
+#: src/components/settings/BillingSection.tsx:225
+#: src/components/settings/BillingSection.tsx:361
 msgid "Current plan"
 msgstr ""
 
@@ -964,8 +969,8 @@ msgstr ""
 #: src/components/projects/ProjectSettingsTab.tsx:158
 #: src/components/projects/ProjectSettingsTab.tsx:169
 #: src/components/projects/ProjectSettingsTab.tsx:174
-#: src/pages/Dashboard.tsx:304
-#: src/pages/Dashboard.tsx:309
+#: src/pages/Dashboard.tsx:307
+#: src/pages/Dashboard.tsx:312
 #: src/pages/ProjectSettings.tsx:718
 #: src/pages/ProjectSettings.tsx:770
 #: src/pages/ProjectSettings.tsx:775
@@ -1540,7 +1545,7 @@ msgstr ""
 msgid "Failed to send invite"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:231
+#: src/components/settings/BillingSection.tsx:278
 msgid "Failed to start checkout. Please try again."
 msgstr ""
 
@@ -1653,12 +1658,18 @@ msgstr ""
 msgid "Four forms"
 msgstr "Vier vormen"
 
+#: src/components/settings/BillingSection.tsx:161
+msgid "Free"
+msgstr ""
+
 #: src/components/SettingsModal.tsx:1441
 #: src/components/settings/TranslationSection.tsx:419
 msgid "Free API"
 msgstr "Gratis API"
 
-#: src/components/settings/BillingSection.tsx:430
+#: src/components/billing/FreePlanBanner.tsx:51
+#: src/components/billing/WelcomeModal.tsx:74
+#: src/components/settings/BillingSection.tsx:452
 msgid "Free plan"
 msgstr ""
 
@@ -1764,6 +1775,11 @@ msgstr "Duits (Zwitserland)"
 #: src/components/SettingsModal.tsx:1686
 #: src/components/settings/TranslationSection.tsx:656
 msgid "Get API key"
+msgstr ""
+
+#: src/components/billing/WelcomeModal.tsx:136
+#: src/components/settings/BillingSection.tsx:459
+msgid "Get started free"
 msgstr ""
 
 #: src/components/repo-sync/RepoSyncModal.tsx:614
@@ -2140,7 +2156,7 @@ msgstr "Laatst bijgewerkt"
 msgid "Last synced: {{time}}"
 msgstr ""
 
-#: src/pages/Dashboard.tsx:106
+#: src/pages/Dashboard.tsx:108
 #: src/pages/Explore.tsx:33
 #: src/pages/ProjectDetail.tsx:278
 msgid "Last updated"
@@ -2153,7 +2169,7 @@ msgstr ""
 msgid "Latvian"
 msgstr "Lets"
 
-#: src/pages/Dashboard.tsx:109
+#: src/pages/Dashboard.tsx:111
 #: src/pages/Explore.tsx:37
 #: src/pages/ProjectDetail.tsx:276
 msgid "Least complete"
@@ -2398,7 +2414,7 @@ msgid ""
 " into the active project scope."
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:359
+#: src/components/settings/BillingSection.tsx:414
 msgid "Manage subscription"
 msgstr ""
 
@@ -2477,7 +2493,7 @@ msgstr "Deze sessie gewijzigd"
 msgid "Mongolian"
 msgstr "Mongools"
 
-#: src/components/settings/BillingSection.tsx:380
+#: src/components/settings/BillingSection.tsx:438
 msgid "Monthly"
 msgstr ""
 
@@ -2490,11 +2506,12 @@ msgstr "Meer info"
 msgid "Most complete"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:123
+#: src/components/billing/WelcomeModal.tsx:111
+#: src/components/settings/BillingSection.tsx:142
 msgid "Most popular"
 msgstr ""
 
-#: src/pages/Dashboard.tsx:108
+#: src/pages/Dashboard.tsx:110
 #: src/pages/Explore.tsx:35
 #: src/pages/ProjectDetail.tsx:277
 msgid "Most strings"
@@ -2515,7 +2532,7 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
-#: src/pages/Dashboard.tsx:107
+#: src/pages/Dashboard.tsx:109
 #: src/pages/Explore.tsx:34
 msgid "Name A–Z"
 msgstr ""
@@ -2529,7 +2546,7 @@ msgstr "Naam en e-mail van de laatste vertaler"
 msgid "Navigation Settings"
 msgstr "Navigatie-instellingen"
 
-#: src/components/settings/BillingSection.tsx:372
+#: src/components/billing/WelcomeModal.tsx:98
 msgid "Need more capacity?"
 msgstr ""
 
@@ -2568,8 +2585,8 @@ msgstr ""
 #: src/components/projects/CreateProjectModal.tsx:280
 #: src/components/projects/CreateProjectModal.tsx:330
 #: src/components/projects/SaveToCloudModal.tsx:48
-#: src/pages/Dashboard.tsx:120
-#: src/pages/Dashboard.tsx:158
+#: src/pages/Dashboard.tsx:123
+#: src/pages/Dashboard.tsx:161
 msgid "New project"
 msgstr ""
 
@@ -2609,6 +2626,10 @@ msgstr "Geen extra metadatavelden"
 #: src/components/editor/EditorTable.tsx:1965
 msgid "No context"
 msgstr "Geen context"
+
+#: src/components/settings/BillingSection.tsx:195
+msgid "No credit card required"
+msgstr ""
 
 #: src/components/editor/EditorTable.tsx:3467
 msgid "No entries match the current filters."
@@ -2676,7 +2697,7 @@ msgstr ""
 msgid "No notifications"
 msgstr ""
 
-#: src/pages/Dashboard.tsx:234
+#: src/pages/Dashboard.tsx:237
 msgid "No organizations yet"
 msgstr ""
 
@@ -2690,12 +2711,12 @@ msgstr ""
 msgid "No projects in this organization yet"
 msgstr ""
 
-#: src/pages/Dashboard.tsx:200
+#: src/pages/Dashboard.tsx:203
 #: src/pages/Explore.tsx:240
 msgid "No projects match your search"
 msgstr ""
 
-#: src/pages/Dashboard.tsx:149
+#: src/pages/Dashboard.tsx:152
 msgid "No projects yet"
 msgstr ""
 
@@ -2870,6 +2891,7 @@ msgid "Optional description"
 msgstr ""
 
 #: src/components/projects/CreateProjectModal.tsx:507
+#: src/components/settings/BillingSection.tsx:479
 msgid "Organization"
 msgstr ""
 
@@ -2881,7 +2903,7 @@ msgstr ""
 msgid "Organization invite"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:257
+#: src/components/settings/BillingSection.tsx:310
 msgid "Organization management"
 msgstr ""
 
@@ -2898,7 +2920,7 @@ msgstr ""
 msgid "Organization settings"
 msgstr ""
 
-#: src/pages/Dashboard.tsx:214
+#: src/pages/Dashboard.tsx:217
 msgid "Organizations"
 msgstr ""
 
@@ -3117,7 +3139,7 @@ msgstr "Stemvoorbeeld"
 msgid "Previous field"
 msgstr "Vorig veld"
 
-#: src/components/settings/BillingSection.tsx:258
+#: src/components/settings/BillingSection.tsx:311
 msgid "Priority support"
 msgstr ""
 
@@ -3217,8 +3239,9 @@ msgstr ""
 msgid "Project type"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:349
-#: src/pages/Dashboard.tsx:117
+#: src/components/billing/FreePlanBanner.tsx:63
+#: src/components/settings/BillingSection.tsx:404
+#: src/pages/Dashboard.tsx:120
 #: src/pages/OrgSettings.tsx:339
 #: src/pages/OrgSettingsPage.tsx:351
 #: src/pages/ProjectDetail.tsx:333
@@ -3325,8 +3348,9 @@ msgstr "Lees de vertaalhandleiding"
 msgid "Ready for export"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:245
-#: src/components/settings/BillingSection.tsx:254
+#: src/components/billing/WelcomeModal.tsx:128
+#: src/components/settings/BillingSection.tsx:298
+#: src/components/settings/BillingSection.tsx:307
 msgid "Real-time collaboration"
 msgstr ""
 
@@ -3410,7 +3434,7 @@ msgstr ""
 msgid "Remove yourself from this project."
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:338
+#: src/components/settings/BillingSection.tsx:393
 msgid "Renews {{date}}"
 msgstr ""
 
@@ -3467,8 +3491,8 @@ msgstr ""
 
 #: src/components/editor/EditorHeader.tsx:275
 #: src/components/repo-sync/RepoSyncModal.tsx:567
-#: src/components/settings/BillingSection.tsx:247
-#: src/components/settings/BillingSection.tsx:256
+#: src/components/settings/BillingSection.tsx:300
+#: src/components/settings/BillingSection.tsx:309
 msgid "Repository sync"
 msgstr ""
 
@@ -3571,8 +3595,9 @@ msgstr ""
 msgid "Review workflow"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:246
-#: src/components/settings/BillingSection.tsx:255
+#: src/components/billing/WelcomeModal.tsx:129
+#: src/components/settings/BillingSection.tsx:299
+#: src/components/settings/BillingSection.tsx:308
 msgid "Review workflows"
 msgstr ""
 
@@ -3677,11 +3702,11 @@ msgstr ""
 msgid "Save to cloud"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:389
+#: src/components/settings/BillingSection.tsx:444
 msgid "Save up to 20% with annual billing"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:150
+#: src/components/settings/BillingSection.tsx:176
 msgid "Save {{percent}}%"
 msgstr ""
 
@@ -3697,7 +3722,7 @@ msgstr ""
 msgid "Search or type language code..."
 msgstr "Zoek of typ een taalcode..."
 
-#: src/pages/Dashboard.tsx:179
+#: src/pages/Dashboard.tsx:182
 #: src/pages/Explore.tsx:197
 msgid "Search projects…"
 msgstr ""
@@ -3953,7 +3978,7 @@ msgstr ""
 msgid "Sign in to manage your account settings and enable cloud sync."
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:198
+#: src/components/settings/BillingSection.tsx:245
 msgid "Sign in to manage your subscription."
 msgstr ""
 
@@ -4123,7 +4148,8 @@ msgstr ""
 msgid "String Inspector"
 msgstr "Tekst-inspecteur"
 
-#: src/components/settings/BillingSection.tsx:350
+#: src/components/billing/FreePlanBanner.tsx:78
+#: src/components/settings/BillingSection.tsx:405
 msgid "Strings"
 msgstr ""
 
@@ -4554,23 +4580,23 @@ msgstr ""
 msgid "Unknown error"
 msgstr "Onbekende fout"
 
-#: src/components/settings/BillingSection.tsx:57
+#: src/components/settings/BillingSection.tsx:63
 msgid "Unlimited"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:321
+#: src/components/settings/BillingSection.tsx:376
 msgid "Unlimited access granted manually. No billing required."
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:251
+#: src/components/settings/BillingSection.tsx:304
 msgid "Unlimited projects"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:252
+#: src/components/settings/BillingSection.tsx:305
 msgid "Unlimited strings"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:253
+#: src/components/settings/BillingSection.tsx:306
 msgid "Unlimited team members"
 msgstr ""
 
@@ -4613,7 +4639,7 @@ msgstr ""
 msgid "Update password"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:273
+#: src/components/settings/BillingSection.tsx:328
 msgid "Update payment"
 msgstr ""
 
@@ -4651,15 +4677,13 @@ msgstr ""
 msgid "Updated translation"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:178
-msgid "Upgrade"
-msgstr ""
-
 #: src/components/billing/UpgradePrompt.tsx:48
+#: src/components/settings/BillingSection.tsx:472
+#: src/components/settings/BillingSection.tsx:486
 msgid "Upgrade to {{plan}}"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:372
+#: src/components/settings/BillingSection.tsx:425
 msgid "Upgrade your plan"
 msgstr ""
 
@@ -4771,6 +4795,8 @@ msgstr "Alles bekijken"
 msgid "View commit"
 msgstr ""
 
+#: src/components/billing/FreePlanBanner.tsx:101
+#: src/components/billing/WelcomeModal.tsx:144
 #: src/components/projects/CreateProjectModal.tsx:484
 msgid "View plans"
 msgstr ""
@@ -4804,6 +4830,10 @@ msgstr ""
 #: src/pages/ProjectSettings.tsx:463
 msgid "Website"
 msgstr "Website"
+
+#: src/components/billing/WelcomeModal.tsx:58
+msgid "Welcome to GlossBoss"
+msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:143
 msgid "Welsh"
@@ -4952,7 +4982,7 @@ msgstr ""
 msgid "Write a reply to this comment"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:381
+#: src/components/settings/BillingSection.tsx:439
 msgid "Yearly"
 msgstr ""
 
@@ -4992,6 +5022,10 @@ msgstr ""
 msgid "You were added to {{project}}"
 msgstr ""
 
+#: src/components/billing/WelcomeModal.tsx:66
+msgid "You're on the Free plan. Here's what's included:"
+msgstr ""
+
 #: src/components/repo-sync/CommitPanel.tsx:209
 msgid "You're on the default branch — creating a new branch is recommended"
 msgstr ""
@@ -5019,13 +5053,13 @@ msgstr ""
 msgid "Your password"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:268
+#: src/components/settings/BillingSection.tsx:323
 msgid ""
 "Your payment is past due. Please update your payment method to avoid service"
 " interruption."
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:282
+#: src/components/settings/BillingSection.tsx:337
 msgid "Your subscription is canceled and will expire on {{date}}."
 msgstr ""
 
@@ -5041,7 +5075,7 @@ msgid ""
 " stored on our servers."
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:157
+#: src/components/settings/BillingSection.tsx:183
 msgid "billed annually"
 msgstr ""
 
@@ -5091,12 +5125,14 @@ msgstr "zojuist"
 msgid "languages"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:435
+#: src/components/billing/FreePlanBanner.tsx:55
+#: src/components/billing/WelcomeModal.tsx:92
+#: src/components/settings/BillingSection.tsx:291
 msgid "member"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:140
-#: src/components/settings/BillingSection.tsx:147
+#: src/components/settings/BillingSection.tsx:165
+#: src/components/settings/BillingSection.tsx:173
 msgid "month"
 msgstr ""
 
@@ -5130,12 +5166,15 @@ msgstr "overschreven"
 msgid "plural"
 msgstr "meervoud"
 
-#: src/components/settings/BillingSection.tsx:433
+#: src/components/billing/FreePlanBanner.tsx:54
+#: src/components/billing/WelcomeModal.tsx:86
+#: src/components/settings/BillingSection.tsx:289
 msgid "project"
 msgstr ""
 
 #: src/components/auth/UserMenu.tsx:100
-#: src/components/settings/BillingSection.tsx:242
+#: src/components/billing/WelcomeModal.tsx:120
+#: src/components/settings/BillingSection.tsx:295
 msgid "projects"
 msgstr ""
 
@@ -5148,15 +5187,19 @@ msgid "skipped"
 msgstr "overgeslagen"
 
 #: src/components/auth/UserMenu.tsx:105
-#: src/components/settings/BillingSection.tsx:243
-#: src/components/settings/BillingSection.tsx:434
+#: src/components/billing/FreePlanBanner.tsx:55
+#: src/components/billing/WelcomeModal.tsx:89
+#: src/components/billing/WelcomeModal.tsx:123
+#: src/components/settings/BillingSection.tsx:290
+#: src/components/settings/BillingSection.tsx:296
 #: src/pages/OrgSettings.tsx:475
 #: src/pages/OrgSettingsPage.tsx:672
 #: src/pages/ProjectSettings.tsx:642
 msgid "strings"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:244
+#: src/components/billing/WelcomeModal.tsx:126
+#: src/components/settings/BillingSection.tsx:297
 msgid "team members"
 msgstr ""
 
@@ -5362,7 +5405,7 @@ msgstr ""
 msgid "{{filtered}} of {{total}}"
 msgstr "{{filtered}} van {{total}}"
 
-#: src/pages/Dashboard.tsx:171
+#: src/pages/Dashboard.tsx:174
 msgid "{{languages}} languages"
 msgstr ""
 
@@ -5386,7 +5429,7 @@ msgstr ""
 msgid "{{percentage}}% translated"
 msgstr "{{percentage}}% vertaald"
 
-#: src/pages/Dashboard.tsx:169
+#: src/pages/Dashboard.tsx:172
 #: src/pages/Explore.tsx:190
 msgid "{{projects}} projects"
 msgstr ""
@@ -5427,7 +5470,7 @@ msgstr ""
 msgid "{{score}}% match"
 msgstr ""
 
-#: src/pages/Dashboard.tsx:173
+#: src/pages/Dashboard.tsx:176
 msgid "{{strings}} strings"
 msgstr ""
 
