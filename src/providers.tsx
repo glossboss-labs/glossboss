@@ -52,27 +52,27 @@ const resolver: CSSVariablesResolver = () => ({
     '--mantine-color-default-border': '#eaeaea',
   },
   dark: {
-    '--gb-surface-0': '#000000',
-    '--gb-surface-1': '#0a0a0a',
-    '--gb-surface-2': '#111111',
-    '--gb-surface-3': '#1a1a1a',
-    '--gb-border-subtle': '#1a1a1a',
-    '--gb-border-default': '#262626',
-    '--gb-border-strong': '#333333',
+    '--gb-surface-0': '#0a0a0a',
+    '--gb-surface-1': '#141414',
+    '--gb-surface-2': '#1c1c1c',
+    '--gb-surface-3': '#252525',
+    '--gb-border-subtle': '#262626',
+    '--gb-border-default': '#333333',
+    '--gb-border-strong': '#444444',
     '--gb-text-primary': '#ededed',
-    '--gb-text-secondary': '#888888',
-    '--gb-text-tertiary': '#555555',
+    '--gb-text-secondary': '#a1a1a1',
+    '--gb-text-tertiary': '#666666',
     '--gb-glow-focus': 'rgba(0, 112, 243, 0.25)',
-    '--gb-input-bg': '#0a0a0a',
-    '--gb-highlight-row': 'rgba(255, 255, 255, 0.04)',
+    '--gb-input-bg': '#111111',
+    '--gb-highlight-row': 'rgba(255, 255, 255, 0.05)',
     '--gb-highlight-danger': 'rgba(239, 68, 68, 0.06)',
     '--gb-table-stripe': 'rgba(255, 255, 255, 0.02)',
     '--gb-shadow-modal': '0 25px 50px -12px rgba(0,0,0,0.7)',
-    '--gb-shadow-menu': '0 8px 30px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06)',
+    '--gb-shadow-menu': '0 8px 30px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.08)',
     '--gb-shadow-tooltip': '0 4px 12px rgba(0,0,0,0.4)',
-    '--gb-shadow-notification': '0 8px 30px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06)',
-    '--mantine-color-body': '#000000',
-    '--mantine-color-default-border': '#1a1a1a',
+    '--gb-shadow-notification': '0 8px 30px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.08)',
+    '--mantine-color-body': '#0a0a0a',
+    '--mantine-color-default-border': '#262626',
   },
 });
 
@@ -102,14 +102,14 @@ const theme = createTheme({
     ],
     dark: [
       '#ededed', // 0 - primary text
-      '#888888', // 1 - dimmed text
-      '#555555', // 2 - tertiary
+      '#a1a1a1', // 1 - dimmed text
+      '#666666', // 2 - tertiary
       '#444444', // 3 - disabled
-      '#262626', // 4 - default border
-      '#1a1a1a', // 5 - subtle border
-      '#111111', // 6 - component bg
-      '#0a0a0a', // 7 - surface-1
-      '#000000', // 8 - body bg
+      '#333333', // 4 - default border
+      '#262626', // 5 - subtle border
+      '#1c1c1c', // 6 - component bg
+      '#141414', // 7 - surface-1
+      '#0a0a0a', // 8 - body bg
       '#000000', // 9 - deepest
     ],
   },
