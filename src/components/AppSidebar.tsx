@@ -188,7 +188,7 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
             px={collapsed ? 0 : 4}
           >
             <Link
-              to="/dashboard"
+              to="/"
               style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}
             >
               <img
