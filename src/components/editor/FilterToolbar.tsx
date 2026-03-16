@@ -1,7 +1,8 @@
 /**
  * Filter Toolbar Component
  *
- * Unified toolbar with search, tri-state filter chips, and progress indicator.
+ * Single-row toolbar: search, filter dropdown, sort, columns, and progress.
+ * Filters are collapsed into a Popover to reduce visual noise.
  * Filter chips cycle through: neutral -> show only -> don't show -> neutral
  */
 
@@ -21,6 +22,8 @@ import {
   Checkbox,
   Select,
   UnstyledButton,
+  Popover,
+  Divider,
   useMantineTheme,
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
@@ -39,6 +42,7 @@ import {
   ArrowUpDown,
   GripVertical,
   RefreshCw,
+  Filter,
 } from 'lucide-react';
 import {
   useEditorStore,
@@ -58,7 +62,7 @@ import {
   hasActiveProviderCredentials,
   TRANSLATION_USAGE_REFRESH_EVENT,
 } from '@/lib/translation';
-import { badgeVariants, contentVariants, interactiveSpring } from '@/lib/motion';
+import { contentVariants, interactiveSpring } from '@/lib/motion';
 import { useDragGhost } from '@/hooks/use-drag-ghost';
 
 const MotionDiv = motion.div;
@@ -101,7 +105,7 @@ const REVIEW_FILTERS: FilterConfig[] = [
 ];
 
 /** Get tooltip text based on current filter state */
-function getTooltipText(
+function getFilterStateLabel(
   label: string,
   state: FilterState | null,
   t: (key: string, vars?: Record<string, unknown>) => string,
@@ -137,6 +141,51 @@ function getBadgeStyle(state: FilterState | null): {
   return { variant: 'light', style: base };
 }
 
+/** Clickable filter badge used inside the filter dropdown */
+function FilterBadge({
+  filter,
+  count,
+  state,
+  onToggle,
+  t,
+}: {
+  filter: FilterConfig;
+  count: number;
+  state: FilterState | null;
+  onToggle: () => void;
+  t: (key: string, vars?: Record<string, unknown>) => string;
+}) {
+  const Icon = filter.icon;
+  const badgeStyle = getBadgeStyle(state);
+
+  return (
+    <Tooltip
+      label={getFilterStateLabel(t(filter.label), state, t)}
+      position="right"
+      openDelay={400}
+    >
+      <Badge
+        variant={badgeStyle.variant}
+        color={filter.color}
+        size="lg"
+        leftSection={<Icon size={14} />}
+        style={badgeStyle.style}
+        onClick={onToggle}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e: React.KeyboardEvent) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onToggle();
+          }
+        }}
+      >
+        {count} {t(filter.label)}
+      </Badge>
+    </Tooltip>
+  );
+}
+
 export function FilterToolbar({ mode = 'edit' }: { mode?: 'edit' | 'review' }) {
   const { t } = useTranslation();
   const theme = useMantineTheme();
@@ -161,7 +210,8 @@ export function FilterToolbar({ mode = 'edit' }: { mode?: 'edit' | 'review' }) {
 
   const stats = getStats();
   const filteredCount = getFilteredEntries().length;
-  const hasActiveFilters = activeFilters.size > 0 || filterQuery.trim().length > 0;
+  const activeFilterCount = activeFilters.size;
+  const hasActiveFilters = activeFilterCount > 0 || filterQuery.trim().length > 0;
 
   // DeepL usage stats (server-side)
   const [deeplUsage, setDeeplUsage] = useState<UsageStats | null>(null);
@@ -184,8 +234,6 @@ export function FilterToolbar({ mode = 'edit' }: { mode?: 'edit' | 'review' }) {
       dragPointerId.current = null;
 
       if (shouldCommit && dropTargetColumn && dropTargetColumn !== column) {
-        // Compute visible column list (excluding hidden 'approve') to get the
-        // visual drag direction, then map back to the full columnOrder index.
         const visible = columnOrder.filter((c) => c !== 'approve');
         const visibleFrom = visible.indexOf(column);
         const visibleTarget = visible.indexOf(dropTargetColumn);
@@ -301,7 +349,6 @@ export function FilterToolbar({ mode = 'edit' }: { mode?: 'edit' | 'review' }) {
 
   const handleSortChange = (value: string | null) => {
     if (!value) return;
-
     const [field, direction] = value.split(':') as [SortField, SortDirection];
     setSort(field, direction);
   };
@@ -314,358 +361,299 @@ export function FilterToolbar({ mode = 'edit' }: { mode?: 'edit' | 'review' }) {
     signals: t('Signals'),
   };
 
+  // Usage tooltip text
+  const usageTooltip =
+    activeProvider === 'deepl' && deeplUsage
+      ? `${t('DeepL usage:')} ${deeplUsage.characterCount.toLocaleString()} / ${deeplUsage.characterLimit.toLocaleString()}`
+      : activeProvider !== 'deepl' && providerConfigured && localCharCount > 0
+        ? t('{{provider}} session usage: {{count}} characters', {
+            provider: getTranslationProviderLabel(activeProvider),
+            count: localCharCount.toLocaleString(),
+          })
+        : null;
+
   return (
-    <Stack gap="sm">
-      {/* Row 1: Search + Progress */}
-      <Group justify="space-between" align="center" wrap="wrap">
-        <Group gap="sm" wrap="nowrap" style={{ flex: 1, minWidth: 260 }}>
-          <TextInput
-            aria-label={t('Search source, translation, context...')}
-            placeholder={t('Search source, translation, context...')}
-            leftSection={<Search size={16} />}
-            rightSection={
-              localQuery ? (
-                <ActionIcon
-                  size="sm"
-                  variant="subtle"
-                  color="gray"
-                  onClick={handleClearSearch}
-                  aria-label={t('Clear search')}
-                >
-                  <X size={14} />
-                </ActionIcon>
-              ) : null
-            }
-            value={localQuery}
-            onChange={(e) => setLocalQuery(e.currentTarget.value)}
-            style={{ flex: 1, minWidth: 260, maxWidth: 420 }}
-          />
+    <Group justify="space-between" align="center" wrap="wrap" gap="sm">
+      {/* Left: Search + Clear */}
+      <Group gap="sm" wrap="nowrap" style={{ flex: 1, minWidth: 200 }}>
+        <TextInput
+          aria-label={t('Search source, translation, context...')}
+          placeholder={t('Search source, translation, context...')}
+          leftSection={<Search size={16} />}
+          rightSection={
+            localQuery ? (
+              <ActionIcon
+                size="sm"
+                variant="subtle"
+                color="gray"
+                onClick={handleClearSearch}
+                aria-label={t('Clear search')}
+              >
+                <X size={14} />
+              </ActionIcon>
+            ) : null
+          }
+          value={localQuery}
+          onChange={(e) => setLocalQuery(e.currentTarget.value)}
+          style={{ flex: 1, minWidth: 200, maxWidth: 360 }}
+        />
 
-          {/* Clear filters - next to search */}
-          <AnimatePresence>
-            {hasActiveFilters && (
-              <MotionDiv variants={contentVariants} initial="hidden" animate="visible" exit="exit">
-                <UnstyledButton
-                  onClick={clearFilters}
-                  style={{ flexShrink: 0, whiteSpace: 'nowrap' }}
-                >
-                  <Text size="sm" c="blue">
-                    {t('Clear filters')}
-                    {filteredCount !== stats.total && (
-                      <Text span c="dimmed" size="sm">
-                        {' '}
-                        ({t('{{count}} shown', { count: filteredCount })})
-                      </Text>
+        <AnimatePresence>
+          {hasActiveFilters && (
+            <MotionDiv variants={contentVariants} initial="hidden" animate="visible" exit="exit">
+              <UnstyledButton
+                onClick={clearFilters}
+                style={{ flexShrink: 0, whiteSpace: 'nowrap' }}
+              >
+                <Text size="xs" c="blue">
+                  {t('Clear filters')}
+                </Text>
+              </UnstyledButton>
+            </MotionDiv>
+          )}
+        </AnimatePresence>
+      </Group>
+
+      {/* Right: Filters + Sort + Columns + Progress */}
+      <Group
+        gap="xs"
+        wrap={isMobile ? 'wrap' : 'nowrap'}
+        style={{ flexShrink: isMobile ? undefined : 0, ...(isMobile && { width: '100%' }) }}
+      >
+        {/* Filters dropdown */}
+        <Popover position="bottom-start" shadow="md" width={320} withArrow>
+          <Popover.Target>
+            <Button
+              size="xs"
+              variant={activeFilterCount > 0 ? 'light' : 'subtle'}
+              leftSection={<Filter size={14} />}
+              rightSection={
+                activeFilterCount > 0 ? (
+                  <Badge size="xs" variant="filled" color="blue" circle>
+                    {activeFilterCount}
+                  </Badge>
+                ) : null
+              }
+            >
+              {t('Filters')}
+            </Button>
+          </Popover.Target>
+          <Popover.Dropdown>
+            <Stack gap="xs">
+              <Group justify="space-between" align="center">
+                <Text size="xs" fw={600} tt="uppercase" c="dimmed">
+                  {mode === 'review' ? t('Review') : t('Translation')}
+                </Text>
+                {activeFilterCount > 0 && (
+                  <UnstyledButton onClick={clearFilters}>
+                    <Text size="xs" c="blue">
+                      {t('Clear all')}
+                    </Text>
+                  </UnstyledButton>
+                )}
+              </Group>
+
+              <Group gap={6} wrap="wrap">
+                {visibleFilters.map((filter) => {
+                  const filterState = activeFilters.get(filter.id) ?? null;
+                  const count = getFilterCount(filter.id);
+                  if (filter.id === 'modified' && count === 0) return null;
+                  return (
+                    <FilterBadge
+                      key={filter.id}
+                      filter={filter}
+                      count={count}
+                      state={filterState}
+                      onToggle={() => toggleFilter(filter.id)}
+                      t={t}
+                    />
+                  );
+                })}
+              </Group>
+
+              {/* Dynamic filters: MT + Manual edits */}
+              {(stats.machineTranslated > 0 || stats.manualEdits > 0) && (
+                <>
+                  <Divider />
+                  <Group gap={6} wrap="wrap">
+                    {stats.machineTranslated > 0 && (
+                      <FilterBadge
+                        filter={{
+                          id: 'machine-translated',
+                          label: msgid('Machine translated'),
+                          icon: Bot,
+                          color: 'blue',
+                        }}
+                        count={stats.machineTranslated}
+                        state={activeFilters.get('machine-translated') ?? null}
+                        onToggle={() => toggleFilter('machine-translated')}
+                        t={t}
+                      />
                     )}
-                  </Text>
-                </UnstyledButton>
-              </MotionDiv>
-            )}
-          </AnimatePresence>
-        </Group>
+                    {stats.manualEdits > 0 && (
+                      <FilterBadge
+                        filter={{
+                          id: 'manual-edit',
+                          label: msgid('Manual edits'),
+                          icon: Edit3,
+                          color: 'gray',
+                        }}
+                        count={stats.manualEdits}
+                        state={activeFilters.get('manual-edit') ?? null}
+                        onToggle={() => toggleFilter('manual-edit')}
+                        t={t}
+                      />
+                    )}
+                  </Group>
+                </>
+              )}
+            </Stack>
+          </Popover.Dropdown>
+        </Popover>
 
-        {/* Progress indicator */}
-        <Group gap="sm" wrap="nowrap" style={{ flexShrink: 0 }}>
-          <Group gap="xs" wrap="nowrap">
-            <Text size="sm" c="dimmed">
-              {t('{{filtered}} of {{total}}', { filtered: filteredCount, total: stats.total })}
+        {/* Columns menu */}
+        <Menu position="bottom-end" shadow="sm" withArrow>
+          <Menu.Target>
+            <Button
+              size="xs"
+              variant="subtle"
+              leftSection={<Columns3 size={14} />}
+              aria-label={t('Choose visible columns')}
+            >
+              {t('Columns')}
+            </Button>
+          </Menu.Target>
+          <Menu.Dropdown ref={menuDropdownRef}>
+            {availableColumns.map((column) => {
+              const isVisible = visibleColumns.has(column);
+              const disableToggleOff = isVisible && visibleColumnCount === 1;
+              const isDropTarget = dropTargetColumn === column && draggingColumn !== column;
+              return (
+                <Menu.Item
+                  key={column}
+                  closeMenuOnClick={false}
+                  data-column={column}
+                  style={{
+                    backgroundColor: isDropTarget
+                      ? 'var(--mantine-color-blue-light)'
+                      : draggingColumn === column
+                        ? 'var(--mantine-color-gray-light)'
+                        : undefined,
+                    opacity: draggingColumn === column ? 0.3 : 1,
+                    transition: 'background-color 100ms ease, opacity 100ms ease',
+                  }}
+                >
+                  <Group justify="space-between" wrap="nowrap">
+                    <Checkbox
+                      checked={isVisible}
+                      label={columnLabels[column]}
+                      onChange={() => toggleColumnVisibility(column)}
+                      disabled={disableToggleOff}
+                    />
+                    <Group gap={2} wrap="nowrap">
+                      <ActionIcon
+                        size="sm"
+                        variant="subtle"
+                        color="gray"
+                        aria-label={t('Drag {{columnLabel}}', {
+                          columnLabel: columnLabels[column],
+                        })}
+                        onPointerDown={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          dragPointerId.current = e.pointerId;
+                          e.currentTarget.setPointerCapture(e.pointerId);
+                          setDraggingColumn(column);
+                          setDropTargetColumn(null);
+                          const menuItem = e.currentTarget.closest('[data-column]') as HTMLElement;
+                          if (menuItem) {
+                            dragGhost.show(menuItem, e.clientX, e.clientY, columnLabels[column]);
+                          }
+                        }}
+                        onPointerMove={(e) => {
+                          if (dragPointerId.current !== e.pointerId) return;
+                          dragGhost.move(e.clientX, e.clientY);
+                          if (!menuDropdownRef.current) return;
+                          const items = menuDropdownRef.current.querySelectorAll('[data-column]');
+                          for (const item of items) {
+                            const rect = item.getBoundingClientRect();
+                            if (e.clientY >= rect.top && e.clientY <= rect.bottom) {
+                              const col = item.getAttribute('data-column') as TableColumn;
+                              if (col === column) {
+                                setDropTargetColumn(null);
+                                return;
+                              }
+                              if (col) setDropTargetColumn(col);
+                              return;
+                            }
+                          }
+                          setDropTargetColumn(null);
+                        }}
+                        onPointerUp={(e) => finishColumnDrag(e.pointerId, column, true)}
+                        onPointerCancel={(e) => finishColumnDrag(e.pointerId, column, false)}
+                        onLostPointerCapture={(e) => finishColumnDrag(e.pointerId, column, false)}
+                        style={{
+                          cursor: draggingColumn === column ? 'grabbing' : 'grab',
+                          touchAction: 'none',
+                        }}
+                      >
+                        <GripVertical size={12} />
+                      </ActionIcon>
+                    </Group>
+                  </Group>
+                </Menu.Item>
+              );
+            })}
+          </Menu.Dropdown>
+        </Menu>
+
+        {/* Sort */}
+        <Select
+          size="xs"
+          value={sortValue}
+          onChange={handleSortChange}
+          data={sortOptions}
+          leftSection={<ArrowUpDown size={14} />}
+          w={isMobile ? undefined : 200}
+          style={isMobile ? { flex: 1, minWidth: 0 } : undefined}
+          aria-label={t('Sort entries')}
+        />
+
+        {/* Progress */}
+        <Tooltip label={usageTooltip} disabled={!usageTooltip}>
+          <Group gap={6} wrap="nowrap" style={{ flexShrink: 0 }}>
+            <Text size="xs" c="dimmed" className="gb-tabular-nums">
+              {filteredCount}/{stats.total}
             </Text>
-            <Text size="sm" c="dimmed">
-              •
-            </Text>
+            {!isMobile && (
+              <Box style={{ width: 60 }}>
+                <Progress
+                  value={percentage}
+                  size="xs"
+                  radius="xl"
+                  color={percentage === 100 ? 'green' : percentage > 50 ? 'blue' : 'orange'}
+                />
+              </Box>
+            )}
             <motion.span
               key={percentage}
-              initial={{ scale: 1.2, color: 'var(--mantine-color-blue-filled)' }}
-              animate={{
-                scale: 1,
-                color: percentage === 100 ? 'var(--mantine-color-green-filled)' : 'inherit',
-              }}
+              initial={{ scale: 1.15 }}
+              animate={{ scale: 1 }}
               transition={interactiveSpring}
             >
-              <Text size="sm" fw={500} component="span">
-                {t('{{percentage}}% translated', { percentage })}
+              <Text
+                size="xs"
+                fw={500}
+                component="span"
+                c={percentage === 100 ? 'green' : undefined}
+                className="gb-tabular-nums"
+              >
+                {percentage}%
               </Text>
             </motion.span>
           </Group>
-          {!isMobile && (
-            <Box style={{ width: 100 }}>
-              <motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} style={{ originX: 0 }}>
-                <Progress
-                  value={percentage}
-                  size="sm"
-                  radius="xl"
-                  color={percentage === 100 ? 'green' : percentage > 50 ? 'blue' : 'orange'}
-                  animated={percentage < 100}
-                />
-              </motion.div>
-            </Box>
-          )}
-        </Group>
+        </Tooltip>
       </Group>
-
-      {/* Translation provider usage */}
-      {activeProvider === 'deepl' && deeplUsage && (
-        <Text size="xs" c="dimmed" ta="right">
-          {t('DeepL usage:')} {deeplUsage.characterCount.toLocaleString()} /{' '}
-          {deeplUsage.characterLimit.toLocaleString()}
-        </Text>
-      )}
-      {activeProvider !== 'deepl' && providerConfigured && localCharCount > 0 && (
-        <Text size="xs" c="dimmed" ta="right">
-          {t('{{provider}} session usage: {{count}} characters', {
-            provider: getTranslationProviderLabel(activeProvider),
-            count: localCharCount.toLocaleString(),
-          })}
-        </Text>
-      )}
-
-      {/* Row 2: Filter chips */}
-      <Group gap="xs" justify="space-between" align="center" wrap="wrap">
-        <Group gap="xs" wrap="wrap" style={{ minWidth: 0, flex: 1 }}>
-          <AnimatePresence mode="popLayout">
-            {visibleFilters.map((filter) => {
-              const filterState = activeFilters.get(filter.id) ?? null;
-              const count = getFilterCount(filter.id);
-              const Icon = filter.icon;
-              const badgeStyle = getBadgeStyle(filterState);
-
-              // Don't show modified filter if count is 0
-              if (filter.id === 'modified' && count === 0) {
-                return null;
-              }
-
-              return (
-                <MotionDiv
-                  key={filter.id}
-                  layout
-                  variants={badgeVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                >
-                  <Tooltip
-                    label={getTooltipText(t(filter.label), filterState, t)}
-                    position="bottom"
-                    openDelay={400}
-                  >
-                    <Badge
-                      variant={badgeStyle.variant}
-                      color={filter.color}
-                      size="lg"
-                      leftSection={<Icon size={14} />}
-                      style={badgeStyle.style}
-                      onClick={() => toggleFilter(filter.id)}
-                      role="button"
-                      tabIndex={0}
-                      onKeyDown={(e: React.KeyboardEvent) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          e.preventDefault();
-                          toggleFilter(filter.id);
-                        }
-                      }}
-                    >
-                      {count} {t(filter.label)}
-                    </Badge>
-                  </Tooltip>
-                </MotionDiv>
-              );
-            })}
-          </AnimatePresence>
-
-          {/* MT count badge - clickable filter */}
-          <AnimatePresence>
-            {stats.machineTranslated > 0 && (
-              <MotionDiv variants={badgeVariants} initial="hidden" animate="visible" exit="exit">
-                {(() => {
-                  const filterState = activeFilters.get('machine-translated') ?? null;
-                  const badgeStyle = getBadgeStyle(filterState);
-                  return (
-                    <Tooltip label={getTooltipText(t('Machine translated'), filterState, t)}>
-                      <Badge
-                        variant={badgeStyle.variant}
-                        color="blue"
-                        size="lg"
-                        leftSection={<Bot size={14} />}
-                        style={badgeStyle.style}
-                        onClick={() => toggleFilter('machine-translated')}
-                        role="button"
-                        tabIndex={0}
-                        onKeyDown={(e: React.KeyboardEvent) => {
-                          if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            toggleFilter('machine-translated');
-                          }
-                        }}
-                      >
-                        {t('{{count}} MT', { count: stats.machineTranslated })}
-                      </Badge>
-                    </Tooltip>
-                  );
-                })()}
-              </MotionDiv>
-            )}
-          </AnimatePresence>
-
-          {/* Manual edits badge - clickable filter */}
-          <AnimatePresence>
-            {stats.manualEdits > 0 && (
-              <MotionDiv variants={badgeVariants} initial="hidden" animate="visible" exit="exit">
-                {(() => {
-                  const filterState = activeFilters.get('manual-edit') ?? null;
-                  const badgeStyle = getBadgeStyle(filterState);
-                  return (
-                    <Tooltip label={getTooltipText(t('Manual edits'), filterState, t)}>
-                      <Badge
-                        variant={badgeStyle.variant}
-                        color="grape"
-                        size="lg"
-                        leftSection={<Edit3 size={14} />}
-                        style={badgeStyle.style}
-                        onClick={() => toggleFilter('manual-edit')}
-                        role="button"
-                        tabIndex={0}
-                        onKeyDown={(e: React.KeyboardEvent) => {
-                          if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            toggleFilter('manual-edit');
-                          }
-                        }}
-                      >
-                        {t('{{count}} Manual', { count: stats.manualEdits })}
-                      </Badge>
-                    </Tooltip>
-                  );
-                })()}
-              </MotionDiv>
-            )}
-          </AnimatePresence>
-        </Group>
-
-        <Group
-          gap="xs"
-          wrap={isMobile ? 'wrap' : 'nowrap'}
-          style={{
-            flexShrink: isMobile ? undefined : 0,
-            ...(isMobile && { width: '100%' }),
-          }}
-        >
-          <Menu position="bottom-end" shadow="sm" withArrow>
-            <Menu.Target>
-              <Button
-                size="xs"
-                variant="subtle"
-                leftSection={<Columns3 size={14} />}
-                aria-label={t('Choose visible columns')}
-                style={isMobile ? { flex: '1 1 100%' } : undefined}
-              >
-                {t('Columns')}
-              </Button>
-            </Menu.Target>
-            <Menu.Dropdown ref={menuDropdownRef}>
-              {availableColumns.map((column) => {
-                const isVisible = visibleColumns.has(column);
-                const disableToggleOff = isVisible && visibleColumnCount === 1;
-                const isDropTarget = dropTargetColumn === column && draggingColumn !== column;
-                return (
-                  <Menu.Item
-                    key={column}
-                    closeMenuOnClick={false}
-                    data-column={column}
-                    style={{
-                      backgroundColor: isDropTarget
-                        ? 'var(--mantine-color-blue-light)'
-                        : draggingColumn === column
-                          ? 'var(--mantine-color-gray-light)'
-                          : undefined,
-                      opacity: draggingColumn === column ? 0.3 : 1,
-                      transition: 'background-color 100ms ease, opacity 100ms ease',
-                    }}
-                  >
-                    <Group justify="space-between" wrap="nowrap">
-                      <Checkbox
-                        checked={isVisible}
-                        label={columnLabels[column]}
-                        onChange={() => toggleColumnVisibility(column)}
-                        disabled={disableToggleOff}
-                      />
-
-                      <Group gap={2} wrap="nowrap">
-                        <ActionIcon
-                          size="sm"
-                          variant="subtle"
-                          color="gray"
-                          aria-label={t('Drag {{columnLabel}}', {
-                            columnLabel: columnLabels[column],
-                          })}
-                          onPointerDown={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            dragPointerId.current = e.pointerId;
-                            e.currentTarget.setPointerCapture(e.pointerId);
-                            setDraggingColumn(column);
-                            setDropTargetColumn(null);
-                            const menuItem = e.currentTarget.closest(
-                              '[data-column]',
-                            ) as HTMLElement;
-                            if (menuItem) {
-                              dragGhost.show(menuItem, e.clientX, e.clientY, columnLabels[column]);
-                            }
-                          }}
-                          onPointerMove={(e) => {
-                            if (dragPointerId.current !== e.pointerId) return;
-                            dragGhost.move(e.clientX, e.clientY);
-                            if (!menuDropdownRef.current) return;
-
-                            const items = menuDropdownRef.current.querySelectorAll('[data-column]');
-                            for (const item of items) {
-                              const rect = item.getBoundingClientRect();
-                              if (e.clientY >= rect.top && e.clientY <= rect.bottom) {
-                                const col = item.getAttribute('data-column') as TableColumn;
-                                if (col === column) {
-                                  setDropTargetColumn(null);
-                                  return;
-                                }
-
-                                if (col) {
-                                  setDropTargetColumn(col);
-                                }
-                                return;
-                              }
-                            }
-                            setDropTargetColumn(null);
-                          }}
-                          onPointerUp={(e) => {
-                            finishColumnDrag(e.pointerId, column, true);
-                          }}
-                          onPointerCancel={(e) => finishColumnDrag(e.pointerId, column, false)}
-                          onLostPointerCapture={(e) => finishColumnDrag(e.pointerId, column, false)}
-                          style={{
-                            cursor: draggingColumn === column ? 'grabbing' : 'grab',
-                            touchAction: 'none',
-                          }}
-                        >
-                          <GripVertical size={12} />
-                        </ActionIcon>
-                      </Group>
-                    </Group>
-                  </Menu.Item>
-                );
-              })}
-            </Menu.Dropdown>
-          </Menu>
-
-          <Select
-            size="xs"
-            value={sortValue}
-            onChange={handleSortChange}
-            data={sortOptions}
-            leftSection={<ArrowUpDown size={14} />}
-            w={isMobile ? undefined : 220}
-            style={isMobile ? { flex: 1, minWidth: 0 } : undefined}
-            aria-label={t('Sort entries')}
-          />
-        </Group>
-      </Group>
-    </Stack>
+    </Group>
   );
 }

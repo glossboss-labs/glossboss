@@ -192,6 +192,7 @@ msgid "Approve selected"
 msgstr "Approve selected"
 
 #: src/components/editor/EditorTable.tsx:410
+#: src/lib/design-tokens.ts:43
 msgid "Approved"
 msgstr "Approved"
 
@@ -469,7 +470,7 @@ msgstr "Change role"
 msgid "Changed review status from {{from}} to {{to}}"
 msgstr "Changed review status from {{from}} to {{to}}"
 
-#: src/components/editor/FilterToolbar.tsx:100
+#: src/components/editor/FilterToolbar.tsx:104
 msgid "Changed strings"
 msgstr "Changed strings"
 
@@ -528,7 +529,7 @@ msgstr "Choose the WordPress project type and slug used for source links."
 msgid "Choose the plan that fits your translation workflow."
 msgstr "Choose the plan that fits your translation workflow."
 
-#: src/components/editor/FilterToolbar.tsx:558
+#: src/components/editor/FilterToolbar.tsx:521
 msgid "Choose visible columns"
 msgstr "Choose visible columns"
 
@@ -570,6 +571,10 @@ msgstr "Clear Fuzzy ({{count}})"
 msgid "Clear active source reference"
 msgstr "Clear active source reference"
 
+#: src/components/editor/FilterToolbar.tsx:450
+msgid "Clear all"
+msgstr "Clear all"
+
 #: src/pages/index/IndexPageDialogs.tsx:135
 msgid "Clear anyway"
 msgstr "Clear anyway"
@@ -582,7 +587,7 @@ msgstr "Clear editor"
 msgid "Clear editor?"
 msgstr "Clear editor?"
 
-#: src/components/editor/FilterToolbar.tsx:353
+#: src/components/editor/FilterToolbar.tsx:409
 msgid "Clear filters"
 msgstr "Clear filters"
 
@@ -603,7 +608,7 @@ msgstr "Clear fuzzy selected"
 msgid "Clear memory"
 msgstr "Clear memory"
 
-#: src/components/editor/FilterToolbar.tsx:333
+#: src/components/editor/FilterToolbar.tsx:390
 msgid "Clear search"
 msgstr "Clear search"
 
@@ -624,7 +629,7 @@ msgstr "Cleared translation memory for this project."
 msgid "Click to add translation"
 msgstr "Click to add translation"
 
-#: src/components/editor/FilterToolbar.tsx:115
+#: src/components/editor/FilterToolbar.tsx:119
 msgid "Click to show only {{label}}"
 msgstr "Click to show only {{label}}"
 
@@ -663,7 +668,7 @@ msgstr "Close settings"
 msgid "Cloud sync"
 msgstr "Cloud sync"
 
-#: src/components/editor/FilterToolbar.tsx:561
+#: src/components/editor/FilterToolbar.tsx:523
 msgid "Columns"
 msgstr "Columns"
 
@@ -959,7 +964,7 @@ msgstr ""
 "u close the tab. Enable \"Remember API key\" below to persist it across sess"
 "ions — only do this on a personal, trusted device."
 
-#: src/components/editor/FilterToolbar.tsx:409
+#: src/components/editor/FilterToolbar.tsx:367
 msgid "DeepL usage:"
 msgstr "DeepL usage:"
 
@@ -1072,6 +1077,7 @@ msgid "Download as PO"
 msgstr "Download as PO"
 
 #: src/components/editor/EditorTable.tsx:408
+#: src/lib/design-tokens.ts:41
 msgid "Draft"
 msgstr "Draft"
 
@@ -1083,7 +1089,7 @@ msgstr ""
 "Drag and drop your translation file here, or click to browse. Your translati"
 "ons will be saved locally in your browser."
 
-#: src/components/editor/FilterToolbar.tsx:597
+#: src/components/editor/FilterToolbar.tsx:558
 msgid "Drag {{columnLabel}}"
 msgstr "Drag {{columnLabel}}"
 
@@ -1105,7 +1111,7 @@ msgstr "Dutch (Belgium)"
 msgid "Dutch (Netherlands)"
 msgstr "Dutch (Netherlands)"
 
-#: src/components/editor/EditorWorkspace.tsx:142
+#: src/components/editor/EditorWorkspace.tsx:189
 msgid "Edit"
 msgstr "Edit"
 
@@ -1117,10 +1123,6 @@ msgstr "Edit Header"
 #: src/components/editor/EditorHeader.tsx:177
 msgid "Edit gettext translation files with DeepL integration"
 msgstr "Edit gettext translation files with DeepL integration"
-
-#: src/components/editor/EditorWorkspace.tsx:135
-msgid "Edit workspace"
-msgstr "Edit workspace"
 
 #: src/pages/index/IndexPageBanners.tsx:177
 msgid "Editing draft"
@@ -1632,13 +1634,17 @@ msgstr "File does not appear to be a valid WordPress glossary CSV."
 msgid "File downloaded"
 msgstr "File downloaded"
 
-#: src/components/editor/FilterToolbar.tsx:293
+#: src/components/editor/FilterToolbar.tsx:341
 msgid "File order"
 msgstr "File order"
 
 #: src/components/repo-sync/CommitPanel.tsx:182
 msgid "File:"
 msgstr "File:"
+
+#: src/components/editor/FilterToolbar.tsx:438
+msgid "Filters"
+msgstr "Filters"
 
 #: src/components/editor/HeaderEditor.tsx:78
 #: src/components/editor/TranslateToolbar.tsx:82
@@ -1730,7 +1736,8 @@ msgid "From"
 msgstr "From"
 
 #: src/components/editor/EditorTable.tsx:397
-#: src/components/editor/FilterToolbar.tsx:77
+#: src/components/editor/FilterToolbar.tsx:81
+#: src/lib/design-tokens.ts:26
 msgid "Fuzzy"
 msgstr "Fuzzy"
 
@@ -1891,10 +1898,6 @@ msgstr ""
 "Glossary not found in DeepL. This translation was done without glossary. Re-"
 "sync in Settings is recommended."
 
-#: src/components/editor/EditorWorkspace.tsx:163
-msgid "Glossary: {count} terms ({locale})"
-msgstr "Glossary: {count} terms ({locale})"
-
 #: src/components/repo-sync/RepoSyncModal.tsx:735
 msgid "Go to Connect"
 msgstr "Go to Connect"
@@ -1938,7 +1941,7 @@ msgstr "Hide info"
 msgid "Hide technical fields"
 msgstr "Hide technical fields"
 
-#: src/components/editor/FilterToolbar.tsx:113
+#: src/components/editor/FilterToolbar.tsx:117
 msgid "Hiding {{label}} • Click to clear filter"
 msgstr "Hiding {{label}} • Click to clear filter"
 
@@ -1998,6 +2001,7 @@ msgid "Imported {{count}} translation memory entries."
 msgstr "Imported {{count}} translation memory entries."
 
 #: src/components/editor/EditorTable.tsx:409
+#: src/lib/design-tokens.ts:42
 msgid "In review"
 msgstr "In review"
 
@@ -2459,7 +2463,7 @@ msgstr "Manual"
 msgid "Manual edit"
 msgstr "Manual edit"
 
-#: src/components/editor/FilterToolbar.tsx:517
+#: src/components/editor/FilterToolbar.tsx:497
 msgid "Manual edits"
 msgstr "Manual edits"
 
@@ -2514,7 +2518,7 @@ msgstr "Model"
 
 #: src/components/editor/EditorTable.tsx:1275
 #: src/components/editor/EditorTable.tsx:1924
-#: src/components/editor/FilterToolbar.tsx:78
+#: src/components/editor/FilterToolbar.tsx:82
 msgid "Modified"
 msgstr "Modified"
 
@@ -2584,6 +2588,7 @@ msgid "Need more capacity?"
 msgstr "Need more capacity?"
 
 #: src/components/editor/EditorTable.tsx:411
+#: src/lib/design-tokens.ts:44
 msgid "Needs changes"
 msgstr "Needs changes"
 
@@ -3355,7 +3360,7 @@ msgstr "Push to a new branch instead of the default branch"
 msgid "QA checks"
 msgstr "QA checks"
 
-#: src/components/editor/FilterToolbar.tsx:79
+#: src/components/editor/FilterToolbar.tsx:83
 msgid "QA errors"
 msgstr "QA errors"
 
@@ -3363,7 +3368,7 @@ msgstr "QA errors"
 msgid "QA summary before export"
 msgstr "QA summary before export"
 
-#: src/components/editor/FilterToolbar.tsx:80
+#: src/components/editor/FilterToolbar.tsx:84
 msgid "QA warnings"
 msgstr "QA warnings"
 
@@ -3613,8 +3618,9 @@ msgstr "Retry translation"
 
 #: src/components/editor/EditorTable.tsx:130
 #: src/components/editor/EditorTable.tsx:2066
-#: src/components/editor/EditorWorkspace.tsx:143
-#: src/components/editor/FilterToolbar.tsx:311
+#: src/components/editor/EditorWorkspace.tsx:190
+#: src/components/editor/FilterToolbar.tsx:358
+#: src/components/editor/FilterToolbar.tsx:445
 msgid "Review"
 msgstr "Review"
 
@@ -3640,23 +3646,19 @@ msgstr "Review workflow"
 msgid "Review workflows"
 msgstr "Review workflows"
 
-#: src/components/editor/EditorWorkspace.tsx:135
-msgid "Review workspace"
-msgstr "Review workspace"
-
-#: src/components/editor/FilterToolbar.tsx:87
+#: src/components/editor/FilterToolbar.tsx:91
 msgid "Review: approved"
 msgstr "Review: approved"
 
-#: src/components/editor/FilterToolbar.tsx:85
+#: src/components/editor/FilterToolbar.tsx:89
 msgid "Review: draft"
 msgstr "Review: draft"
 
-#: src/components/editor/FilterToolbar.tsx:86
+#: src/components/editor/FilterToolbar.tsx:90
 msgid "Review: in review"
 msgstr "Review: in review"
 
-#: src/components/editor/FilterToolbar.tsx:90
+#: src/components/editor/FilterToolbar.tsx:94
 msgid "Review: needs changes"
 msgstr "Review: needs changes"
 
@@ -3764,8 +3766,8 @@ msgstr "Search or type language code..."
 msgid "Search projects…"
 msgstr "Search projects…"
 
-#: src/components/editor/FilterToolbar.tsx:323
-#: src/components/editor/FilterToolbar.tsx:324
+#: src/components/editor/FilterToolbar.tsx:380
+#: src/components/editor/FilterToolbar.tsx:381
 msgid "Search source, translation, context..."
 msgstr "Search source, translation, context..."
 
@@ -3989,7 +3991,7 @@ msgstr ""
 "Show the current git branch in a small floating badge at the bottom right of"
 " the site."
 
-#: src/components/editor/FilterToolbar.tsx:110
+#: src/components/editor/FilterToolbar.tsx:114
 msgid "Showing only {{label}} • Click to exclude"
 msgstr "Showing only {{label}} • Click to exclude"
 
@@ -4027,7 +4029,7 @@ msgstr "Sign out"
 
 #: src/components/editor/EditorTable.tsx:133
 #: src/components/editor/EditorTable.tsx:2512
-#: src/components/editor/FilterToolbar.tsx:314
+#: src/components/editor/FilterToolbar.tsx:361
 msgid "Signals"
 msgstr "Signals"
 
@@ -4072,7 +4074,7 @@ msgstr "Slovenian"
 msgid "Slug"
 msgstr "Slug"
 
-#: src/components/editor/FilterToolbar.tsx:665
+#: src/components/editor/FilterToolbar.tsx:619
 msgid "Sort entries"
 msgstr "Sort entries"
 
@@ -4082,11 +4084,11 @@ msgstr "Sort entries"
 msgid "Source"
 msgstr "Source"
 
-#: src/components/editor/FilterToolbar.tsx:294
+#: src/components/editor/FilterToolbar.tsx:342
 msgid "Source A-Z"
 msgstr "Source A-Z"
 
-#: src/components/editor/FilterToolbar.tsx:295
+#: src/components/editor/FilterToolbar.tsx:343
 msgid "Source Z-A"
 msgstr "Source Z-A"
 
@@ -4109,7 +4111,7 @@ msgid "Source release"
 msgstr "Source release"
 
 #: src/components/editor/EditorTable.tsx:131
-#: src/components/editor/FilterToolbar.tsx:312
+#: src/components/editor/FilterToolbar.tsx:359
 msgid "Source string"
 msgstr "Source string"
 
@@ -4157,15 +4159,15 @@ msgid "Stable"
 msgstr "Stable"
 
 #: src/components/editor/EditorTable.tsx:129
-#: src/components/editor/FilterToolbar.tsx:310
+#: src/components/editor/FilterToolbar.tsx:357
 msgid "Status"
 msgstr "Status"
 
-#: src/components/editor/FilterToolbar.tsx:299
+#: src/components/editor/FilterToolbar.tsx:347
 msgid "Status: translated first"
 msgstr "Status: translated first"
 
-#: src/components/editor/FilterToolbar.tsx:298
+#: src/components/editor/FilterToolbar.tsx:346
 msgid "Status: untranslated first"
 msgstr "Status: untranslated first"
 
@@ -4451,12 +4453,13 @@ msgid "Translate {{count}} untranslated"
 msgstr "Translate {{count}} untranslated"
 
 #: src/components/editor/EditorTable.tsx:395
-#: src/components/editor/FilterToolbar.tsx:76
+#: src/components/editor/FilterToolbar.tsx:80
+#: src/lib/design-tokens.ts:24
 msgid "Translated"
 msgstr "Translated"
 
 #: src/components/editor/EditorTable.tsx:132
-#: src/components/editor/FilterToolbar.tsx:313
+#: src/components/editor/FilterToolbar.tsx:360
 msgid "Translated string"
 msgstr "Translated string"
 
@@ -4472,16 +4475,17 @@ msgstr "Translating..."
 #: src/components/SettingsModal.tsx:1301
 #: src/components/editor/EditorTable.tsx:2505
 #: src/components/editor/EditorTable.tsx:3379
+#: src/components/editor/FilterToolbar.tsx:445
 #: src/components/glossary/shared.tsx:91
 #: src/pages/Settings.tsx:103
 msgid "Translation"
 msgstr "Translation"
 
-#: src/components/editor/FilterToolbar.tsx:296
+#: src/components/editor/FilterToolbar.tsx:344
 msgid "Translation A-Z"
 msgstr "Translation A-Z"
 
-#: src/components/editor/FilterToolbar.tsx:297
+#: src/components/editor/FilterToolbar.tsx:345
 msgid "Translation Z-A"
 msgstr "Translation Z-A"
 
@@ -4656,7 +4660,7 @@ msgstr "Unlink repository"
 msgid "Unlisted"
 msgstr "Unlisted"
 
-#: src/components/editor/FilterToolbar.tsx:96
+#: src/components/editor/FilterToolbar.tsx:100
 msgid "Unresolved comments"
 msgstr "Unresolved comments"
 
@@ -4669,7 +4673,8 @@ msgid "Unsaved draft found"
 msgstr "Unsaved draft found"
 
 #: src/components/editor/EditorTable.tsx:396
-#: src/components/editor/FilterToolbar.tsx:75
+#: src/components/editor/FilterToolbar.tsx:79
+#: src/lib/design-tokens.ts:25
 msgid "Untranslated"
 msgstr "Untranslated"
 
@@ -4759,7 +4764,7 @@ msgstr "Upload failed"
 msgid "Upload file…"
 msgstr "Upload file…"
 
-#: src/components/editor/FilterToolbar.tsx:81
+#: src/components/editor/FilterToolbar.tsx:85
 msgid "Upstream delta"
 msgstr "Upstream delta"
 
@@ -5262,6 +5267,7 @@ msgid "team members"
 msgstr "team members"
 
 #: src/components/SettingsModal.tsx:2190
+#: src/components/editor/EditorWorkspace.tsx:118
 #: src/components/settings/GlossarySection.tsx:301
 msgid "terms"
 msgstr "terms"
@@ -5293,14 +5299,6 @@ msgstr "{count} modified entries will be restored."
 #: src/components/notifications/NotificationItem.tsx:114
 msgid "{{author}} commented on \"{{msgid}}\""
 msgstr "{{author}} commented on \"{{msgid}}\""
-
-#: src/components/editor/FilterToolbar.tsx:500
-msgid "{{count}} MT"
-msgstr "{{count}} MT"
-
-#: src/components/editor/FilterToolbar.tsx:534
-msgid "{{count}} Manual"
-msgstr "{{count}} Manual"
 
 #: src/components/editor/EditorTable.tsx:746
 #: src/components/editor/EditorTable.tsx:1944
@@ -5395,10 +5393,6 @@ msgstr "{{count}} removed"
 msgid "{{count}} selected"
 msgstr "{{count}} selected"
 
-#: src/components/editor/FilterToolbar.tsx:357
-msgid "{{count}} shown"
-msgstr "{{count}} shown"
-
 #: src/components/SettingsModal.tsx:2430
 #: src/components/settings/BackupSection.tsx:433
 msgid "{{count}} stored entries"
@@ -5459,10 +5453,6 @@ msgstr "{{count}} with updated references"
 msgid "{{file}} is replaced with the filename without extension"
 msgstr "{{file}} is replaced with the filename without extension"
 
-#: src/components/editor/FilterToolbar.tsx:371
-msgid "{{filtered}} of {{total}}"
-msgstr "{{filtered}} of {{total}}"
-
 #: src/pages/Dashboard.tsx:174
 msgid "{{languages}} languages"
 msgstr "{{languages}} languages"
@@ -5483,7 +5473,7 @@ msgstr "{{name}} joined {{org}}"
 msgid "{{name}} joined {{project}}"
 msgstr "{{name}} joined {{project}}"
 
-#: src/components/editor/FilterToolbar.tsx:386
+#: src/components/editor/EditorWorkspace.tsx:170
 msgid "{{percentage}}% translated"
 msgstr "{{percentage}}% translated"
 
@@ -5493,7 +5483,6 @@ msgid "{{projects}} projects"
 msgstr "{{projects}} projects"
 
 #: src/components/SettingsModal.tsx:2225
-#: src/components/editor/EditorWorkspace.tsx:170
 #: src/components/editor/GlossaryPanel.tsx:259
 #: src/components/settings/GlossarySection.tsx:336
 msgid "{{provider}} ready"
@@ -5505,7 +5494,7 @@ msgstr "{{provider}} ready"
 msgid "{{provider}} ready ({{count}} terms)"
 msgstr "{{provider}} ready ({{count}} terms)"
 
-#: src/components/editor/FilterToolbar.tsx:415
+#: src/components/editor/FilterToolbar.tsx:369
 msgid "{{provider}} session usage: {{count}} characters"
 msgstr "{{provider}} session usage: {{count}} characters"
 
