@@ -23,7 +23,7 @@ const jsonExample = `{
 
 function CodeBlock({ title, code }: { title: string; code: string }) {
   return (
-    <div className="overflow-hidden rounded-lg border border-border-subtle bg-surface-0">
+    <div className="overflow-hidden rounded-lg border border-border-subtle bg-surface-0 shadow-sm">
       <div className="flex items-center gap-2 border-b border-border-subtle px-4 py-2.5">
         <div className="h-2.5 w-2.5 rounded-full bg-status-translated" />
         <span className="text-xs font-medium text-text-secondary">{title}</span>

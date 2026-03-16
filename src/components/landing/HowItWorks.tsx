@@ -33,7 +33,7 @@ export function HowItWorks() {
   const { t } = useTranslation();
 
   return (
-    <section className="px-6 py-24">
+    <section className="bg-surface-1 px-6 py-24">
       <div className="mx-auto max-w-4xl">
         <div className="mb-14 text-center">
           <p className="mb-3 text-xs font-medium uppercase tracking-widest text-text-tertiary">

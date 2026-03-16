@@ -8,7 +8,7 @@ const faqs = [
   {
     q: msgid('Is GlossBoss really free?'),
     a: msgid(
-      'The local editor is completely free, forever, with no limits — open any PO, POT, or JSON file and translate without an account. Cloud features like saved projects, team collaboration, and repo sync start with a free tier (1 project, 5,000 strings) and scale from there.',
+      'The local editor is free with no limits — open any PO, POT, or JSON file and translate without an account. Cloud features like saved projects, team collaboration, and repo sync start with a free tier (1 project, 5,000 strings) and scale from there.',
     ),
   },
   {
@@ -20,7 +20,7 @@ const faqs = [
   {
     q: msgid('Which translation providers are supported?'),
     a: msgid(
-      'Three providers: DeepL for highest quality, Azure Translator for enterprise and regional needs, and Google Gemini for AI-powered context-aware translations. You can switch between them mid-session and bring your own API keys or use the shared access included with your plan.',
+      'Three providers: DeepL, Azure Translator, and Google Gemini. You can switch between them mid-session and bring your own API keys or use the shared access included with your plan.',
     ),
   },
   {
@@ -88,7 +88,7 @@ export function FAQSection() {
   const { t } = useTranslation();
 
   return (
-    <section className="border-t border-border-subtle px-6 py-24">
+    <section className="bg-surface-1 px-6 py-24">
       <div className="mx-auto max-w-2xl">
         <h2 className="mb-10 text-center text-2xl font-semibold tracking-tight text-text-primary sm:text-3xl">
           {t('Frequently asked questions')}

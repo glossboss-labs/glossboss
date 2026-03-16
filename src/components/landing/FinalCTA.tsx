@@ -18,7 +18,7 @@ export function FinalCTA() {
           {t('Start translating today')}
         </h2>
         <p className="mx-auto mt-4 max-w-md text-text-secondary">
-          {t('Free forever. Upgrade when you are ready.')}
+          {t('Free for individuals. Upgrade when you need team features.')}
         </p>
         <div className="mt-8">
           <Link

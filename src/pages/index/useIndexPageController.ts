@@ -894,7 +894,8 @@ export function useIndexPageController(options?: IndexPageControllerOptions) {
           {
             severity: 'error',
             code: 'INVALID_SYNTAX',
-            message: error instanceof Error ? error.message : t('Failed to parse POT file'),
+            message:
+              error instanceof Error ? error.message : t('Could not read the translation file'),
           },
         ]);
       }

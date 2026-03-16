@@ -12,3 +12,7 @@ export { FAQSection } from './FAQSection';
 export { FinalCTA } from './FinalCTA';
 export { LandingFooter } from './LandingFooter';
 export { LanguageSwitcher } from './LanguageSwitcher';
+export { BeforeAfterSlider } from './BeforeAfterSlider';
+export { FormatDetector } from './FormatDetector';
+export { StatsCounters } from './StatsCounters';
+export { PlanQuiz } from './PlanQuiz';

@@ -236,7 +236,11 @@ export function BackupSection({
 
   const handleExportClick = useCallback(() => {
     const deepl = getDeepLSettings();
-    if (deepl.apiKey.trim()) {
+    const azure = getAzureSettings();
+    const gemini = getGeminiSettings();
+    const hasCredentials = deepl.apiKey.trim() || azure.apiKey.trim() || gemini.apiKey.trim();
+
+    if (hasCredentials) {
       setCredentialPrompt({ mode: 'export' });
       return;
     }

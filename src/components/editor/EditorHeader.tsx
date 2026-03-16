@@ -139,7 +139,7 @@ export function EditorHeader({
                   style={{ height: 36, display: 'block' }}
                 />
                 <Text size="sm" mt={4} style={{ color: 'var(--gb-text-secondary)' }}>
-                  {t('Edit gettext translation files with DeepL integration')}
+                  {t('Edit translation files with AI-powered translation')}
                 </Text>
               </>
             )}

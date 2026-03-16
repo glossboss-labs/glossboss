@@ -38,7 +38,7 @@ export default function App() {
 
   return (
     <Routes>
-      {/* Landing page (full-bleed, no shell) — redirects authed users to /dashboard */}
+      {/* Landing page (full-bleed, no shell) — shows Dashboard link when authed */}
       <Route path="/" element={<LandingGuard />} />
       {/* Language-specific landing pages — one route per discovered PO locale (except en which is /) */}
       {APP_LANGUAGE_OPTIONS.filter((o) => o.value !== 'en').map((o) => (

@@ -86,7 +86,7 @@ export function EmptyState({
             <Title order={2}>{t('Upload a translation file to start')}</Title>
             <Text ta="center" maw={400} style={{ color: 'var(--gb-text-secondary)' }}>
               {t(
-                'Drag and drop your translation file here, or click to browse. Your translations will be saved locally in your browser.',
+                'Drag and drop a .po, .pot, or .json file — or click to browse. Always free, no account needed.',
               )}
             </Text>
           </Stack>
@@ -187,7 +187,9 @@ export function EmptyState({
                 >
                   {t('Sign in')}
                 </RouterLink>{' '}
-                {t('to save projects to the cloud and collaborate with your team.')}
+                {t(
+                  "to save projects to the cloud and collaborate with your team. Collaborators work under the project owner's plan — no subscription needed to contribute.",
+                )}
               </Text>
             </Group>
           )}

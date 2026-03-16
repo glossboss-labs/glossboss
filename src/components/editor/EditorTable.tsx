@@ -3290,7 +3290,7 @@ export function EditorTable({
                       <Stack gap="sm" pt={2} style={{ height: '100%', minHeight: 0 }}>
                         <Group justify="space-between" align="center">
                           <Text fw={600} size="sm">
-                            {t('String Inspector')}
+                            {t('String inspector')}
                           </Text>
                           <Tooltip
                             label={selectedInspectorLabel}

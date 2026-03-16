@@ -45,7 +45,7 @@ describe('TranslateButton', () => {
     await user.hover(button.parentElement as HTMLElement);
 
     expect(
-      await screen.findByText(/add your deepl credentials in settings to enable translation/i),
+      await screen.findByText(/add your deepl api key in settings to enable translation/i),
     ).toBeInTheDocument();
   });
 
@@ -76,7 +76,7 @@ describe('TranslateButton', () => {
     await user.hover(button.parentElement as HTMLElement);
 
     expect(
-      await screen.findByText(/add your deepl credentials in settings to enable translation/i),
+      await screen.findByText(/add your deepl api key in settings to enable translation/i),
     ).toBeInTheDocument();
   });
 });

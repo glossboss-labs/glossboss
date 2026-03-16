@@ -180,7 +180,7 @@ export function KeybindsSection() {
       <Divider />
 
       <Text size="sm" fw={500}>
-        {t('Navigation Settings')}
+        {t('Navigation settings')}
       </Text>
 
       <Switch

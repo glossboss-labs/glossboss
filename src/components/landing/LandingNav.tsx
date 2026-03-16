@@ -1,14 +1,21 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
-import { useComputedColorScheme } from '@mantine/core';
-import { Menu, X } from 'lucide-react';
+import { useComputedColorScheme, useMantineColorScheme } from '@mantine/core';
+import { Menu, X, Sun, Moon } from 'lucide-react';
 import { useTranslation, type AppLanguage } from '@/lib/app-language';
 import { LanguageSwitcher } from './LanguageSwitcher';
 
-export function LandingNav({ currentLang = 'en' }: { currentLang?: AppLanguage }) {
+export function LandingNav({
+  currentLang = 'en',
+  isAuthenticated,
+}: {
+  currentLang?: AppLanguage;
+  isAuthenticated?: boolean;
+}) {
   const { t } = useTranslation();
-  const colorScheme = useComputedColorScheme('dark');
-  const isDark = colorScheme === 'dark';
+  const computedScheme = useComputedColorScheme('dark');
+  const { toggleColorScheme } = useMantineColorScheme();
+  const isDark = computedScheme === 'dark';
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const logo = isDark ? '/glossboss-combined-light.svg' : '/glossboss-combined-dark.svg';
@@ -54,18 +61,36 @@ export function LandingNav({ currentLang = 'en' }: { currentLang?: AppLanguage }
         {/* Desktop CTAs */}
         <div className="hidden items-center gap-4 md:flex">
           <LanguageSwitcher currentLang={currentLang} size="sm" />
-          <Link
-            to="/login"
-            className="text-sm font-medium text-text-secondary transition-colors hover:text-text-primary"
+          <button
+            onClick={toggleColorScheme}
+            className="flex h-8 w-8 items-center justify-center rounded-md text-text-secondary transition-colors hover:bg-surface-2 hover:text-text-primary"
+            aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
           >
-            {t('Sign in')}
-          </Link>
-          <Link
-            to="/signup"
-            className="rounded-md bg-text-primary px-4 py-2 text-sm font-medium text-surface-0 transition-opacity hover:opacity-90"
-          >
-            {t('Get started free')}
-          </Link>
+            {isDark ? <Sun size={15} /> : <Moon size={15} />}
+          </button>
+          {isAuthenticated ? (
+            <Link
+              to="/dashboard"
+              className="rounded-md bg-text-primary px-4 py-2 text-sm font-medium text-surface-0 transition-opacity hover:opacity-90"
+            >
+              {t('Dashboard')}
+            </Link>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                className="text-sm font-medium text-text-secondary transition-colors hover:text-text-primary"
+              >
+                {t('Sign in')}
+              </Link>
+              <Link
+                to="/signup"
+                className="rounded-md bg-text-primary px-4 py-2 text-sm font-medium text-surface-0 transition-opacity hover:opacity-90"
+              >
+                {t('Get started free')}
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Mobile menu button */}
@@ -108,16 +133,35 @@ export function LandingNav({ currentLang = 'en' }: { currentLang?: AppLanguage }
               ),
             )}
             <div className="flex flex-col gap-3 border-t border-border-subtle pt-4">
-              <LanguageSwitcher currentLang={currentLang} />
-              <Link to="/login" className="text-sm font-medium text-text-secondary">
-                {t('Sign in')}
-              </Link>
-              <Link
-                to="/signup"
-                className="rounded-md bg-text-primary px-4 py-2.5 text-center text-sm font-medium text-surface-0"
-              >
-                {t('Get started free')}
-              </Link>
+              <div className="flex items-center gap-3">
+                <LanguageSwitcher currentLang={currentLang} />
+                <button
+                  onClick={toggleColorScheme}
+                  className="flex h-8 w-8 items-center justify-center rounded-md text-text-secondary hover:bg-surface-2"
+                >
+                  {isDark ? <Sun size={16} /> : <Moon size={16} />}
+                </button>
+              </div>
+              {isAuthenticated ? (
+                <Link
+                  to="/dashboard"
+                  className="rounded-md bg-text-primary px-4 py-2.5 text-center text-sm font-medium text-surface-0"
+                >
+                  {t('Dashboard')}
+                </Link>
+              ) : (
+                <>
+                  <Link to="/login" className="text-sm font-medium text-text-secondary">
+                    {t('Sign in')}
+                  </Link>
+                  <Link
+                    to="/signup"
+                    className="rounded-md bg-text-primary px-4 py-2.5 text-center text-sm font-medium text-surface-0"
+                  >
+                    {t('Get started free')}
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>

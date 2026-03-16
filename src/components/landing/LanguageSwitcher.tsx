@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router';
 import { Globe, ChevronDown } from 'lucide-react';
-import { APP_LANGUAGE_OPTIONS } from '@/lib/app-language';
+import { APP_LANGUAGE_OPTIONS, useTranslation, type AppLanguage } from '@/lib/app-language';
 import { cn } from '@/lib/utils';
 
 function langHref(lang: string): string {
@@ -15,6 +15,7 @@ export function LanguageSwitcher({
   currentLang: string;
   size?: 'sm' | 'base';
 }) {
+  const { setLanguage } = useTranslation();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const currentOption = APP_LANGUAGE_OPTIONS.find((o) => o.value === currentLang);
@@ -51,7 +52,10 @@ export function LanguageSwitcher({
             <Link
               key={option.value}
               to={langHref(option.value)}
-              onClick={() => setOpen(false)}
+              onClick={() => {
+                setLanguage(option.value as AppLanguage);
+                setOpen(false);
+              }}
               className={cn(
                 'flex items-center gap-2 px-3 py-2 text-sm transition-colors hover:bg-surface-2',
                 currentLang === option.value

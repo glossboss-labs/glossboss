@@ -17,6 +17,7 @@ const GITHUB_FETCH_TIMEOUT_MS = 10_000;
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 const DEFAULT_GITHUB_OWNER = 'glossboss-labs';
 const DEFAULT_GITHUB_REPO = 'glossboss';
+const PRIVATE_GITHUB_REPO = 'glossboss-dev';
 
 interface CachedResult {
   data: RoadmapIssue[];
@@ -90,12 +91,11 @@ function toRoadmapIssue(raw: unknown): RoadmapIssue | null {
   };
 }
 
-async function fetchRoadmapIssues(): Promise<RoadmapIssue[]> {
-  const token = Deno.env.get('GITHUB_TOKEN')?.trim();
-  const owner = Deno.env.get('ROADMAP_GITHUB_OWNER')?.trim() || DEFAULT_GITHUB_OWNER;
-  const repo = Deno.env.get('ROADMAP_GITHUB_REPO')?.trim() || DEFAULT_GITHUB_REPO;
-  if (!owner || !repo) throw new Error('GITHUB_OWNER and GITHUB_REPO must be configured.');
-
+async function fetchRepoIssues(
+  owner: string,
+  repo: string,
+  token: string | undefined,
+): Promise<RoadmapIssue[]> {
   const issues: RoadmapIssue[] = [];
   let page = 1;
 
@@ -141,6 +141,29 @@ async function fetchRoadmapIssues(): Promise<RoadmapIssue[]> {
   }
 
   return issues;
+}
+
+async function fetchRoadmapIssues(): Promise<RoadmapIssue[]> {
+  const token = Deno.env.get('GITHUB_TOKEN')?.trim();
+  const owner = Deno.env.get('ROADMAP_GITHUB_OWNER')?.trim() || DEFAULT_GITHUB_OWNER;
+  const repo = Deno.env.get('ROADMAP_GITHUB_REPO')?.trim() || DEFAULT_GITHUB_REPO;
+  if (!owner || !repo) throw new Error('GITHUB_OWNER and GITHUB_REPO must be configured.');
+
+  // Fetch from both public and private repos in parallel
+  const [publicIssues, privateIssues] = await Promise.all([
+    fetchRepoIssues(owner, repo, token),
+    token
+      ? fetchRepoIssues(owner, PRIVATE_GITHUB_REPO, token).catch(() => [] as RoadmapIssue[])
+      : Promise.resolve([] as RoadmapIssue[]),
+  ]);
+
+  // Deduplicate by title (public repo takes priority)
+  const publicTitles = new Set(publicIssues.map((i) => i.title.toLowerCase()));
+  const uniquePrivate = privateIssues
+    .filter((i) => !publicTitles.has(i.title.toLowerCase()))
+    .map((i) => ({ ...i, url: '', labels: [] })); // Strip URLs and labels — private repo is not publicly accessible
+
+  return [...publicIssues, ...uniquePrivate];
 }
 
 async function getCachedOrFetch(): Promise<RoadmapIssue[]> {
@@ -220,4 +243,8 @@ if (import.meta.main && typeof Deno !== 'undefined' && typeof Deno.serve === 'fu
   Deno.serve(handleRequest);
 }
 
-export { handleRequest, toRoadmapIssue, parseGoal, countTasks };
+function resetCache() {
+  cache = null;
+}
+
+export { handleRequest, toRoadmapIssue, parseGoal, countTasks, resetCache };

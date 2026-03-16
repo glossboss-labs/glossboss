@@ -235,13 +235,13 @@ const PRIMARY_FIELDS: Array<{
   },
   {
     key: 'lastTranslator',
-    label: msgid('Last Translator'),
+    label: msgid('Last translator'),
     icon: User,
     description: msgid('Name and email of last translator'),
   },
   {
     key: 'languageTeam',
-    label: msgid('Language Team'),
+    label: msgid('Language team'),
     icon: Users,
     description: msgid('Translation team contact'),
   },
@@ -252,9 +252,9 @@ const SECONDARY_FIELDS: Array<{
   label: string;
 }> = [
   { key: 'potCreationDate', label: msgid('POT Created') },
-  { key: 'poRevisionDate', label: msgid('Last Updated') },
-  { key: 'reportMsgidBugsTo', label: msgid('Report Bugs To') },
-  { key: 'contentType', label: msgid('Content Type') },
+  { key: 'poRevisionDate', label: msgid('Last updated') },
+  { key: 'reportMsgidBugsTo', label: msgid('Report bugs to') },
+  { key: 'contentType', label: msgid('Content type') },
   { key: 'contentTransferEncoding', label: msgid('Encoding') },
   { key: 'mimeVersion', label: msgid('MIME Version') },
   { key: 'xGenerator', label: msgid('Generator') },
@@ -659,7 +659,7 @@ export function HeaderEditor({
           <UnstyledButton
             onClick={() => setIsExpanded(!isExpanded)}
             aria-expanded={isExpanded}
-            aria-label={isExpanded ? t('Hide Header') : t('Edit Header')}
+            aria-label={isExpanded ? t('Hide header') : t('Edit header')}
           >
             <Badge
               component="span"
@@ -668,7 +668,7 @@ export function HeaderEditor({
               size="sm"
               rightSection={isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
             >
-              {isExpanded ? t('Hide Header') : t('Edit Header')}
+              {isExpanded ? t('Hide header') : t('Edit header')}
             </Badge>
           </UnstyledButton>
         </Group>
@@ -754,7 +754,7 @@ export function HeaderEditor({
             <Group gap="xs">
               <Info size={14} />
               <Text size="sm" c="dimmed">
-                {showAllFields ? t('Hide technical fields') : t('Show technical fields')}
+                {showAllFields ? t('Hide advanced fields') : t('Show advanced fields')}
               </Text>
               {showAllFields ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
             </Group>

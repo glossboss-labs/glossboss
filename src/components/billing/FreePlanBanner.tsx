@@ -52,6 +52,9 @@ export function FreePlanBanner() {
               {formatLimit(limits.projects)} {t('project')} &middot; {formatLimit(limits.strings)}{' '}
               {t('strings')} &middot; {formatLimit(limits.members)} {t('member')}
             </Badge>
+            <Text size="xs" c="dimmed">
+              {t('For your own projects — collaborating on others is always free')}
+            </Text>
           </Group>
 
           <Group gap="lg" grow style={{ maxWidth: 400 }}>

@@ -87,7 +87,7 @@ export function CreateOrgModal({ opened, onClose, onCreated }: CreateOrgModalPro
 
         <TextInput
           label={t('Organization name')}
-          placeholder={t('My Team')}
+          placeholder={t('My team')}
           value={name}
           onChange={(e) => handleNameChange(e.currentTarget.value)}
           required
@@ -95,13 +95,13 @@ export function CreateOrgModal({ opened, onClose, onCreated }: CreateOrgModalPro
 
         <TextInput
           label={t('Slug')}
-          description={t('URL-safe identifier (lowercase, numbers, hyphens)')}
+          description={t('Lowercase letters, numbers, and hyphens only')}
           placeholder="my-team"
           value={slug}
           onChange={(e) => handleSlugChange(e.currentTarget.value)}
           error={
             slug.length > 0 && !slugValid
-              ? t('Must be 2–63 chars, lowercase alphanumeric and hyphens')
+              ? t('2–63 characters: letters, numbers, and hyphens')
               : undefined
           }
           required

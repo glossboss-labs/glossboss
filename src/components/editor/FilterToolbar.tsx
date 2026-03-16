@@ -364,7 +364,7 @@ export function FilterToolbar({ mode = 'edit' }: { mode?: 'edit' | 'review' }) {
   // Usage tooltip text
   const usageTooltip =
     activeProvider === 'deepl' && deeplUsage
-      ? `${t('DeepL usage:')} ${deeplUsage.characterCount.toLocaleString()} / ${deeplUsage.characterLimit.toLocaleString()}`
+      ? `${t('Translation usage:')} ${deeplUsage.characterCount.toLocaleString()} / ${deeplUsage.characterLimit.toLocaleString()}`
       : activeProvider !== 'deepl' && providerConfigured && localCharCount > 0
         ? t('{{provider}} session usage: {{count}} characters', {
             provider: getTranslationProviderLabel(activeProvider),

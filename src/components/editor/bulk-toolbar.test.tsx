@@ -327,7 +327,7 @@ describe('editor details and mobile layout', () => {
     expect(screen.getByRole('button', { name: /^approve selected$/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /^unapprove selected$/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /^request changes selected$/i })).toBeInTheDocument();
-    expect(screen.getByText('String Inspector')).toBeInTheDocument();
+    expect(screen.getByText('String inspector')).toBeInTheDocument();
   });
 
   it('uses the native textarea text color for translation editing on mobile', async () => {

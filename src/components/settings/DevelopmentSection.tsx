@@ -38,7 +38,7 @@ export function DevelopmentSection({
     <Stack gap="md">
       <Alert color="orange" variant="light" icon={<GitBranch size={16} />}>
         <Text size="sm" fw={600}>
-          {t('Development Mode Only')}
+          {t('Development mode only')}
         </Text>
         <Text size="sm">
           {t(

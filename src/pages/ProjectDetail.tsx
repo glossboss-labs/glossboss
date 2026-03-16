@@ -441,7 +441,9 @@ export default function ProjectDetail() {
                   >
                     {t('Sign up')}
                   </Link>{' '}
-                  {t('to save projects to the cloud and collaborate with your team.')}
+                  {t(
+                    "to save projects to the cloud and collaborate with your team. Collaborators work under the project owner's plan — no subscription needed to contribute.",
+                  )}
                 </Text>
               </Group>
             </Alert>

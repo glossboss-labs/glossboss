@@ -12,6 +12,7 @@
 
 import { msgid } from '@/lib/app-language';
 import { PLAN_LIMITS, FLEX_PRICING, formatLimit } from './limits';
+import { PLAN_PRICING } from './polar';
 import type { PlanTier } from './types';
 
 export interface PlanCatalogEntry {
@@ -40,8 +41,8 @@ export const PLAN_CATALOG: PlanCatalogEntry[] = [
       msgid(`${formatLimit(FREE.projects)} project`),
       msgid(`${formatLimit(FREE.strings)} strings`),
       msgid(`${formatLimit(FREE.members)} member`),
-      msgid('All translation providers'),
-      msgid('Glossary & TM'),
+      msgid('DeepL, Azure & Gemini'),
+      msgid('Glossary & translation memory'),
       msgid('QA checks'),
     ],
   },
@@ -55,7 +56,7 @@ export const PLAN_CATALOG: PlanCatalogEntry[] = [
       msgid(`${formatLimit(PRO.strings)} strings`),
       msgid(`${formatLimit(PRO.members)} members`),
       msgid('Review workflow'),
-      msgid('GitHub & GitLab sync'),
+      msgid('Push to GitHub & GitLab'),
       msgid('Priority support'),
     ],
   },
@@ -67,7 +68,7 @@ export const PLAN_CATALOG: PlanCatalogEntry[] = [
       msgid('Unlimited projects'),
       msgid('Unlimited strings'),
       msgid('Unlimited members'),
-      msgid('Everything in Pro'),
+      msgid('All Pro features'),
       msgid('Organization management'),
       msgid('Custom billing'),
     ],
@@ -77,10 +78,10 @@ export const PLAN_CATALOG: PlanCatalogEntry[] = [
     name: msgid('Flex'),
     description: msgid('Pay as you go'),
     features: [
-      msgid('Unlimited everything'),
+      msgid('Unlimited projects, strings & members'),
       msgid(`${freeStrings} strings free`),
       msgid('No commitment'),
-      msgid('All features included'),
+      msgid('All Pro features included'),
       msgid('Cancel anytime'),
     ],
   },
@@ -89,4 +90,20 @@ export const PLAN_CATALOG: PlanCatalogEntry[] = [
 /** Look up a single plan entry by tier. */
 export function getPlanCatalogEntry(tier: PlanTier): PlanCatalogEntry | undefined {
   return PLAN_CATALOG.find((p) => p.tier === tier);
+}
+
+/**
+ * Format the monthly display price for a paid tier at a given billing interval.
+ * Returns the string "€X.XX" — use this everywhere prices are shown to avoid
+ * rounding discrepancies between the landing page and billing section.
+ */
+export function formatMonthlyPrice(
+  tier: Exclude<PlanTier, 'free'>,
+  interval: 'month' | 'year',
+): string {
+  if (tier === 'flex') return `€${FLEX_PRICING.pricePerKStrings}`;
+  const pricing = PLAN_PRICING[tier];
+  const monthly = interval === 'year' ? pricing.year / 12 : pricing.month;
+  // Show whole euros when the number is round, otherwise 2 decimal places
+  return Number.isInteger(monthly) ? `€${monthly}` : `€${monthly.toFixed(2)}`;
 }

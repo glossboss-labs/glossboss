@@ -60,6 +60,7 @@ import {
   getFlexMonthlyCost,
 } from '@/lib/billing/limits';
 import { PLAN_PRICING, POLAR_PRODUCT_IDS } from '@/lib/billing/polar';
+import { formatMonthlyPrice } from '@/lib/billing/catalog';
 import { PlanBadge } from '@/components/billing/PlanBadge';
 import type { BillingInterval, PlanTier } from '@/lib/billing/types';
 
@@ -385,10 +386,8 @@ export function BillingSection() {
   const orgMonthly = PLAN_PRICING.organization.month;
   const orgYearly = PLAN_PRICING.organization.year;
 
-  const proDisplayPrice =
-    billingInterval === 'year' ? `€${(proYearly / 12).toFixed(2)}` : `€${proMonthly}`;
-  const orgDisplayPrice =
-    billingInterval === 'year' ? `€${(orgYearly / 12).toFixed(2)}` : `€${orgMonthly}`;
+  const proDisplayPrice = formatMonthlyPrice('pro', billingInterval);
+  const orgDisplayPrice = formatMonthlyPrice('organization', billingInterval);
 
   const proSavings = Math.round((1 - proYearly / (proMonthly * 12)) * 100);
   const orgSavings = Math.round((1 - orgYearly / (orgMonthly * 12)) * 100);

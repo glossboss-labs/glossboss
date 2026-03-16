@@ -133,7 +133,7 @@ export function WordPressRefreshModal({
       }
 
       if (!locale) {
-        throw new Error(t('No POT template was found for the selected release.'));
+        throw new Error(t('No translation template found for this release.'));
       }
 
       const translationExport = await fetchWordPressTranslationFile({
@@ -144,7 +144,7 @@ export function WordPressRefreshModal({
       });
       const parsed = parsePOFileWithDiagnostics(translationExport, `${projectSlug}-${locale}.po`);
       if (!parsed.success || !parsed.file) {
-        throw new Error(t('Neither a POT template nor a usable translation export was found.'));
+        throw new Error(t('No translation files found in this repository.'));
       }
 
       setTemplatePath(t('WordPress.org translation export'));
