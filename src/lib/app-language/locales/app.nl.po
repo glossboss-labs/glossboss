@@ -150,7 +150,7 @@ msgstr "Afrikaans"
 msgid "Albanian"
 msgstr "Albanees"
 
-#: src/pages/Roadmap.tsx:46
+#: src/pages/Roadmap.tsx:49
 msgid "All"
 msgstr ""
 
@@ -340,6 +340,10 @@ msgstr "Wit-Russisch"
 #: src/components/editor/HeaderEditor.tsx:58
 msgid "Bengali"
 msgstr "Bengaals"
+
+#: src/pages/Roadmap.tsx:301
+msgid "Big things are coming"
+msgstr ""
 
 #: src/components/settings/BillingSection.tsx:384
 msgid "Billed annually"
@@ -1053,7 +1057,7 @@ msgstr "Verwijderen en nieuw bestand gebruiken"
 msgid "Discard changes and exit the current field"
 msgstr "Wijzigingen weggooien en huidig veld verlaten"
 
-#: src/pages/Roadmap.tsx:179
+#: src/pages/Roadmap.tsx:182
 msgid "Discuss"
 msgstr ""
 
@@ -1066,7 +1070,7 @@ msgstr "Weergave"
 msgid "Don't have an account?"
 msgstr ""
 
-#: src/pages/Roadmap.tsx:49
+#: src/pages/Roadmap.tsx:52
 msgid "Done"
 msgstr ""
 
@@ -1516,7 +1520,7 @@ msgstr ""
 msgid "Failed to load releases."
 msgstr ""
 
-#: src/pages/Roadmap.tsx:209
+#: src/pages/Roadmap.tsx:213
 msgid "Failed to load roadmap"
 msgstr ""
 
@@ -2002,7 +2006,7 @@ msgstr "Instellingen importeren"
 msgid "Imported {{count}} translation memory entries."
 msgstr ""
 
-#: src/pages/Roadmap.tsx:48
+#: src/pages/Roadmap.tsx:51
 msgid "In progress"
 msgstr ""
 
@@ -2770,12 +2774,8 @@ msgstr ""
 msgid "No review history yet."
 msgstr ""
 
-#: src/pages/Roadmap.tsx:326
+#: src/pages/Roadmap.tsx:343
 msgid "No roadmap items match your search"
-msgstr ""
-
-#: src/pages/Roadmap.tsx:296
-msgid "No roadmap items yet"
 msgstr ""
 
 #: src/components/editor/TranslateToolbar.tsx:664
@@ -3034,11 +3034,11 @@ msgstr ""
 msgid "Placeholder parity"
 msgstr ""
 
-#: src/pages/Roadmap.tsx:47
+#: src/pages/Roadmap.tsx:50
 msgid "Planned"
 msgstr ""
 
-#: src/pages/Roadmap.tsx:267
+#: src/pages/Roadmap.tsx:272
 msgid "Planned features and improvements"
 msgstr ""
 
@@ -3672,7 +3672,7 @@ msgid "Reviewer — can translate and review"
 msgstr ""
 
 #: src/components/AppSidebar.tsx:250
-#: src/pages/Roadmap.tsx:265
+#: src/pages/Roadmap.tsx:270
 msgid "Roadmap"
 msgstr ""
 
@@ -3774,7 +3774,7 @@ msgstr "Zoek of typ een taalcode..."
 msgid "Search projects…"
 msgstr ""
 
-#: src/pages/Roadmap.tsx:314
+#: src/pages/Roadmap.tsx:331
 msgid "Search roadmap…"
 msgstr ""
 
@@ -3953,6 +3953,7 @@ msgstr "Feedback delen"
 
 #: src/components/AppSidebar.tsx:277
 #: src/components/auth/UserMenu.tsx:121
+#: src/pages/Roadmap.tsx:313
 msgid "Share feedback"
 msgstr "Feedback delen"
 
@@ -4876,6 +4877,12 @@ msgstr "Wil je helpen met het vertalen van GlossBoss?"
 msgid "Warning"
 msgstr ""
 
+#: src/pages/Roadmap.tsx:303
+msgid ""
+"We're cooking up new features. Want to help shape what comes next? Tell us w"
+"hat you need."
+msgstr ""
+
 #: src/components/feedback/FeedbackModal.tsx:437
 #: src/pages/OrgSettingsPage.tsx:381
 #: src/pages/OrgSettingsPage.tsx:414
@@ -5264,7 +5271,7 @@ msgstr "overgeslagen"
 msgid "strings"
 msgstr ""
 
-#: src/pages/Roadmap.tsx:145
+#: src/pages/Roadmap.tsx:148
 msgid "tasks"
 msgstr ""
 

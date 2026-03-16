@@ -151,7 +151,7 @@ msgstr "Afrikaans"
 msgid "Albanian"
 msgstr "Albanian"
 
-#: src/pages/Roadmap.tsx:46
+#: src/pages/Roadmap.tsx:49
 msgid "All"
 msgstr "All"
 
@@ -351,6 +351,10 @@ msgstr "Belarusian"
 #: src/components/editor/HeaderEditor.tsx:58
 msgid "Bengali"
 msgstr "Bengali"
+
+#: src/pages/Roadmap.tsx:301
+msgid "Big things are coming"
+msgstr "Big things are coming"
 
 #: src/components/settings/BillingSection.tsx:384
 msgid "Billed annually"
@@ -1067,7 +1071,7 @@ msgstr "Discard and use new file"
 msgid "Discard changes and exit the current field"
 msgstr "Discard changes and exit the current field"
 
-#: src/pages/Roadmap.tsx:179
+#: src/pages/Roadmap.tsx:182
 msgid "Discuss"
 msgstr "Discuss"
 
@@ -1080,7 +1084,7 @@ msgstr "Display"
 msgid "Don't have an account?"
 msgstr "Don't have an account?"
 
-#: src/pages/Roadmap.tsx:49
+#: src/pages/Roadmap.tsx:52
 msgid "Done"
 msgstr "Done"
 
@@ -1536,7 +1540,7 @@ msgstr "Failed to load projects"
 msgid "Failed to load releases."
 msgstr "Failed to load releases."
 
-#: src/pages/Roadmap.tsx:209
+#: src/pages/Roadmap.tsx:213
 msgid "Failed to load roadmap"
 msgstr "Failed to load roadmap"
 
@@ -2027,7 +2031,7 @@ msgstr "Import settings"
 msgid "Imported {{count}} translation memory entries."
 msgstr "Imported {{count}} translation memory entries."
 
-#: src/pages/Roadmap.tsx:48
+#: src/pages/Roadmap.tsx:51
 msgid "In progress"
 msgstr "In progress"
 
@@ -2803,13 +2807,9 @@ msgstr "No review comments yet."
 msgid "No review history yet."
 msgstr "No review history yet."
 
-#: src/pages/Roadmap.tsx:326
+#: src/pages/Roadmap.tsx:343
 msgid "No roadmap items match your search"
 msgstr "No roadmap items match your search"
-
-#: src/pages/Roadmap.tsx:296
-msgid "No roadmap items yet"
-msgstr "No roadmap items yet"
 
 #: src/components/editor/TranslateToolbar.tsx:664
 msgid "No selected fuzzy rows to clear."
@@ -3073,11 +3073,11 @@ msgstr "Personal project"
 msgid "Placeholder parity"
 msgstr "Placeholder parity"
 
-#: src/pages/Roadmap.tsx:47
+#: src/pages/Roadmap.tsx:50
 msgid "Planned"
 msgstr "Planned"
 
-#: src/pages/Roadmap.tsx:267
+#: src/pages/Roadmap.tsx:272
 msgid "Planned features and improvements"
 msgstr "Planned features and improvements"
 
@@ -3711,7 +3711,7 @@ msgid "Reviewer — can translate and review"
 msgstr "Reviewer — can translate and review"
 
 #: src/components/AppSidebar.tsx:250
-#: src/pages/Roadmap.tsx:265
+#: src/pages/Roadmap.tsx:270
 msgid "Roadmap"
 msgstr "Roadmap"
 
@@ -3811,7 +3811,7 @@ msgstr "Search or type language code..."
 msgid "Search projects…"
 msgstr "Search projects…"
 
-#: src/pages/Roadmap.tsx:314
+#: src/pages/Roadmap.tsx:331
 msgid "Search roadmap…"
 msgstr "Search roadmap…"
 
@@ -3992,6 +3992,7 @@ msgstr "Share Feedback"
 
 #: src/components/AppSidebar.tsx:277
 #: src/components/auth/UserMenu.tsx:121
+#: src/pages/Roadmap.tsx:313
 msgid "Share feedback"
 msgstr "Share feedback"
 
@@ -4921,6 +4922,14 @@ msgstr "Want to help translate GlossBoss?"
 msgid "Warning"
 msgstr "Warning"
 
+#: src/pages/Roadmap.tsx:303
+msgid ""
+"We're cooking up new features. Want to help shape what comes next? Tell us w"
+"hat you need."
+msgstr ""
+"We're cooking up new features. Want to help shape what comes next? Tell us w"
+"hat you need."
+
 #: src/components/feedback/FeedbackModal.tsx:437
 #: src/pages/OrgSettingsPage.tsx:381
 #: src/pages/OrgSettingsPage.tsx:414
@@ -5326,7 +5335,7 @@ msgstr "skipped"
 msgid "strings"
 msgstr "strings"
 
-#: src/pages/Roadmap.tsx:145
+#: src/pages/Roadmap.tsx:148
 msgid "tasks"
 msgstr "tasks"
 
