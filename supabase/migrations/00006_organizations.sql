@@ -1,4 +1,4 @@
---
+-- Phase 3.1: Organizations, organization members, and invites
 --
 -- Structure: tables → helper functions → RLS → triggers → alter projects
 

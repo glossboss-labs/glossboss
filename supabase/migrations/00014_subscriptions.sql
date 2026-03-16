@@ -1,4 +1,4 @@
---
+-- Phase 7.2: Subscriptions table for Polar.sh billing
 --
 -- Structure: table → helper functions → RLS → trigger
 

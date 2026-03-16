@@ -170,6 +170,9 @@ describe('feedback issue handler', () => {
     expect(fetchMock.mock.calls[0]?.[0]).toBe(
       'https://challenges.cloudflare.com/turnstile/v0/siteverify',
     );
+    expect(fetchMock.mock.calls[1]?.[0]).toBe(
+      'https://api.github.com/repos/glossboss-labs/glossboss/issues',
+    );
 
     const turnstileInit = fetchMock.mock.calls[0]?.[1] as RequestInit;
     const params = new URLSearchParams(String(turnstileInit.body));

@@ -1,4 +1,4 @@
---
+-- Phase 1: Authentication — profiles table + auto-create trigger
 --
 -- Extends auth.users with a public-facing profile row that is
 -- automatically created on signup. RLS keeps each user's row private.

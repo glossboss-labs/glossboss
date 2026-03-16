@@ -34,6 +34,7 @@ import {
   WandSparkles,
 } from 'lucide-react';
 import { msgid, useTranslation } from '@/lib/app-language';
+import { trackEvent } from '@/lib/analytics';
 import { useEditorStore } from '@/stores';
 import { getEffectiveProjectType, getEffectiveSlug, useSourceStore } from '@/stores/source-store';
 import {
@@ -608,11 +609,19 @@ export function TranslateToolbar({
   );
 
   const handleBulkTranslate = useCallback(() => {
+    trackEvent('batch_translation_triggered', {
+      mode: 'untranslated',
+      count: untranslatedEntries.length,
+    });
     handleTranslate(untranslatedEntries, 'untranslated');
   }, [handleTranslate, untranslatedEntries]);
 
   const handleRetranslateAll = useCallback(() => {
     setConfirmRetranslateOpen(false);
+    trackEvent('batch_translation_triggered', {
+      mode: 'overwrite-all',
+      count: allTranslatableEntries.length,
+    });
     handleTranslate(allTranslatableEntries, 'overwrite-all');
   }, [handleTranslate, allTranslatableEntries]);
 

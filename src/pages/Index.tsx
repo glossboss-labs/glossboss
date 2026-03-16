@@ -7,7 +7,6 @@
 
 import { Box, Container, Stack } from '@mantine/core';
 import { EmptyState, EditorHeader, EditorWorkspace } from '@/components/editor';
-import { DevBranchChip } from './index/DevBranchChip';
 import { IndexPageBanners } from './index/IndexPageBanners';
 import { IndexPageDialogs } from './index/IndexPageDialogs';
 import { IndexPageNotifications } from './index/IndexPageNotifications';
@@ -23,7 +22,6 @@ export default function Index() {
     notificationsProps,
     bannersProps,
     dialogsProps,
-    showBranchChip,
   } = useIndexPageController();
 
   return (
@@ -49,8 +47,6 @@ export default function Index() {
       </Box>
 
       <IndexPageDialogs {...dialogsProps} />
-
-      {showBranchChip && <DevBranchChip branch={__GIT_BRANCH__} />}
     </Box>
   );
 }

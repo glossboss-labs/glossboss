@@ -43,4 +43,11 @@
   /* Aliases */
   --color-primary: var(--color-accent);
   --color-primary-foreground: var(--color-white);
+
+  /* Magic UI animations */
+  --animate-shimmer-slide: shimmer-slide var(--speed) ease-in-out infinite alternate;
+  --animate-spin-around: spin-around calc(var(--speed) * 2) infinite linear;
+  --animate-marquee: marquee var(--duration) infinite linear;
+  --animate-marquee-vertical: marquee-vertical var(--duration) linear infinite;
+  --animate-shine: shine var(--duration) infinite linear;
 }

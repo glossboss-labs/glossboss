@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GlossBoss Privacy</title>
+    <title>GlossBoss Privacy Policy</title>
     <meta
       name="description"
-      content="Privacy details for GlossBoss, including browser storage, feedback submissions, and optional third-party services."
+      content="Privacy policy for GlossBoss — what data we collect, how we use it, and your rights."
     />
     <link rel="icon" type="image/svg+xml" href="/icon.svg" />
     <link rel="icon" type="image/png" href="/icon.png" />
@@ -81,6 +81,12 @@
         letter-spacing: -0.01em;
       }
 
+      h3 {
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin: 20px 0 8px;
+      }
+
       p,
       li {
         font-size: 0.935rem;
@@ -113,6 +119,29 @@
       strong {
         color: var(--text);
       }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 12px 0;
+        font-size: 0.875rem;
+      }
+
+      th,
+      td {
+        text-align: left;
+        padding: 8px 10px;
+        border-bottom: 1px solid var(--border);
+        color: var(--muted);
+      }
+
+      th {
+        color: var(--text);
+        font-weight: 600;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
     </style>
   </head>
   <body>
@@ -122,70 +151,250 @@
           <source srcset="/glossboss-combined-light.svg" media="(prefers-color-scheme: dark)" />
           <img src="/glossboss-combined-dark.svg" alt="GlossBoss" height="28" />
         </picture>
-        <h1>Privacy</h1>
+        <h1>Privacy Policy</h1>
         <p>
-          GlossBoss is designed to keep most work in your browser. This page summarizes the data the
-          app stores locally and the data that is sent to backend services when you use optional
-          cloud features.
+          GlossBoss ("the Service") is operated by GlossBoss Labs. This policy explains what data we
+          collect, why, and how you can control it. We process the minimum data needed to provide
+          the Service and do not sell your personal information.
         </p>
 
-        <h2>Browser storage</h2>
+        <h2>1. Data we collect</h2>
+
+        <h3>Account data</h3>
+        <p>
+          When you create an account, we store your email address, display name, and avatar (from
+          GitHub if you use OAuth). This data is stored in
+          <a href="https://supabase.com" target="_blank" rel="noopener noreferrer">Supabase</a>
+          (hosted in the United States).
+        </p>
+
+        <h3>Project data</h3>
+        <p>
+          Translation projects, entries, glossaries, organization memberships, and related metadata
+          are stored in our Supabase database. This data belongs to you and can be exported or
+          deleted at any time from the Settings page.
+        </p>
+
+        <h3>Browser storage</h3>
         <ul>
           <li>
-            Editor state, draft data, glossary preferences, and some UI settings are stored in your
+            Editor state, draft data, glossary preferences, and UI settings are stored in your
             browser's local storage.
           </li>
           <li>
-            If you enter a personal DeepL API key, it is kept in this browser's session storage by
-            default and cleared when you close all GlossBoss tabs. If you explicitly enable the
-            option to remember the key, it is also stored in local storage on that browser until you
-            clear it.
+            If you enter API keys for translation services, they are kept in session storage by
+            default and cleared when you close all GlossBoss tabs. If you enable "remember key",
+            they are also saved to local storage.
           </li>
         </ul>
 
-        <h2>Feedback submissions</h2>
-        <ul>
-          <li>
-            The feedback form sends your submission to a Supabase Edge Function protected by
-            Cloudflare Turnstile.
-          </li>
-          <li>
-            Submitted data can include the feedback title, details, filename, browser user agent,
-            app version, page URL, and optional contact email.
-          </li>
-          <li>Feedback is converted into a GitHub issue for project triage.</li>
-        </ul>
+        <h3>Analytics</h3>
+        <p>
+          We use <a href="https://posthog.com" target="_blank" rel="noopener noreferrer">PostHog</a>
+          (EU Cloud, hosted in Frankfurt, Germany) for product analytics. PostHog is configured in
+          cookie-less mode — no cookies are set and no personally identifiable information is
+          collected. We track page views and feature usage events to improve the product. We honor
+          the Do Not Track browser setting.
+        </p>
 
-        <h2>Third-party services</h2>
-        <ul>
-          <li>
-            DeepL is used for machine translation and glossary management when you enable
-            translation features.
-          </li>
-          <li>
-            WordPress.org services are used to fetch glossary CSV exports, plugin metadata, and
-            plugin source references.
-          </li>
-          <li>
-            Supabase Edge Functions proxy glossary CSV exports and plugin source lookups. The
-            WordPress.org plugin info API is currently fetched directly from your browser because
-            that endpoint already supports CORS and does not require server-managed secrets.
-          </li>
-        </ul>
+        <h2>2. Third-party services</h2>
+        <p>
+          The Service integrates with third-party providers. Data is shared only as needed to
+          deliver the functionality you use.
+        </p>
 
-        <h2>Your controls</h2>
-        <ul>
-          <li>You can clear saved DeepL credentials from the settings dialog.</li>
-          <li>
-            You can clear glossary caches and local drafts from the app by removing browser storage
-            for this site.
-          </li>
-          <li>You can avoid entering an email address when sending feedback.</li>
-        </ul>
+        <table>
+          <thead>
+            <tr>
+              <th>Service</th>
+              <th>Data shared</th>
+              <th>Purpose</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Supabase</strong></td>
+              <td>Account, projects, translations, settings</td>
+              <td>Authentication, database, backend</td>
+            </tr>
+            <tr>
+              <td><strong>Polar.sh</strong></td>
+              <td>Email, customer ID, payment info</td>
+              <td>Subscription billing</td>
+            </tr>
+            <tr>
+              <td><strong>GitHub</strong></td>
+              <td>Email, name, avatar (via OAuth)</td>
+              <td>Sign-in, feedback issue creation</td>
+            </tr>
+            <tr>
+              <td><strong>DeepL</strong></td>
+              <td>Translation text, glossary terms</td>
+              <td>Machine translation</td>
+            </tr>
+            <tr>
+              <td><strong>Azure Translator</strong></td>
+              <td>Translation text</td>
+              <td>Machine translation</td>
+            </tr>
+            <tr>
+              <td><strong>Google Gemini</strong></td>
+              <td>Translation text, project context, glossary</td>
+              <td>AI-powered translation</td>
+            </tr>
+            <tr>
+              <td><strong>ElevenLabs</strong></td>
+              <td>Text (up to 500 chars), your API key</td>
+              <td>Text-to-speech preview</td>
+            </tr>
+            <tr>
+              <td><strong>Cloudflare Turnstile</strong></td>
+              <td>Browser fingerprint</td>
+              <td>Bot detection on feedback form</td>
+            </tr>
+            <tr>
+              <td><strong>WordPress.org</strong></td>
+              <td>Plugin/theme slug lookups</td>
+              <td>Source file and glossary fetching</td>
+            </tr>
+            <tr>
+              <td><strong>PostHog</strong></td>
+              <td>Page views, feature events (cookie-less)</td>
+              <td>Product analytics</td>
+            </tr>
+          </tbody>
+        </table>
 
         <p>
-          The corresponding source code for this deployment should be available from its operator.
+          Translation providers (DeepL, Azure, Gemini) and text-to-speech (ElevenLabs) are only
+          activated when you explicitly configure them. No data is sent to these services until you
+          use the feature.
         </p>
+
+        <h2>3. Legal basis for processing</h2>
+        <ul>
+          <li>
+            <strong>Contract performance:</strong> Account data, project data, and billing data are
+            processed to deliver the Service you signed up for.
+          </li>
+          <li>
+            <strong>Legitimate interest:</strong> Analytics data is processed to improve the
+            Service. We use cookie-less tracking to minimize privacy impact.
+          </li>
+          <li>
+            <strong>Consent:</strong> Optional integrations (translation providers, TTS, cloud sync
+            of credentials) are only activated when you explicitly enable them.
+          </li>
+        </ul>
+
+        <h2>4. Cross-border data transfers</h2>
+        <ul>
+          <li>
+            <strong>Supabase</strong> hosts our database and authentication in the United States.
+            Supabase complies with SOC 2 Type II.
+          </li>
+          <li><strong>PostHog</strong> analytics data is stored in the EU (Frankfurt, Germany).</li>
+          <li>
+            <strong>Polar.sh</strong> processes billing data. Payment processing is handled by
+            Stripe, which is certified under the EU-US Data Privacy Framework.
+          </li>
+          <li>
+            Translation API calls to DeepL (EU), Azure (region-dependent), and Google Gemini (US)
+            are transient — text is sent for translation and not stored by GlossBoss after the
+            response is received.
+          </li>
+        </ul>
+
+        <h2>5. Data retention</h2>
+        <ul>
+          <li>
+            <strong>Account and project data</strong> is retained for as long as your account is
+            active.
+          </li>
+          <li>
+            <strong>Deleted accounts</strong> are purged immediately. All associated projects,
+            translations, organization memberships, notifications, and subscription records are
+            permanently deleted.
+          </li>
+          <li>
+            <strong>Analytics data</strong> is retained by PostHog according to their data retention
+            policies. No personally identifiable data is included.
+          </li>
+          <li>
+            <strong>Feedback submissions</strong> are stored as GitHub issues and retained
+            indefinitely for product improvement.
+          </li>
+        </ul>
+
+        <h2>6. Your rights</h2>
+        <p>Under GDPR and similar privacy laws, you have the right to:</p>
+        <ul>
+          <li><strong>Access</strong> your data — export all your data as JSON from Settings.</li>
+          <li><strong>Rectification</strong> — update your profile information in Settings.</li>
+          <li>
+            <strong>Erasure</strong> — permanently delete your account and all associated data from
+            Settings.
+          </li>
+          <li>
+            <strong>Data portability</strong> — download a machine-readable export of your data.
+          </li>
+          <li>
+            <strong>Object</strong> — disable analytics by enabling Do Not Track in your browser.
+          </li>
+          <li>
+            <strong>Restrict processing</strong> — disable optional features (cloud sync,
+            translation providers) at any time.
+          </li>
+        </ul>
+
+        <h2>7. Your controls</h2>
+        <ul>
+          <li>Delete your account and all data permanently from Settings.</li>
+          <li>Export all your data as JSON from Settings.</li>
+          <li>Clear saved API credentials from Settings.</li>
+          <li>Disable cloud sync to keep all settings local to your browser.</li>
+          <li>Clear local drafts and caches by removing browser storage for this site.</li>
+          <li>Avoid entering an email address when sending feedback.</li>
+        </ul>
+
+        <h2>8. Cookies</h2>
+        <p>
+          GlossBoss does not use tracking cookies. Authentication state is managed via Supabase's
+          session tokens stored in local storage. Analytics (PostHog) runs in cookie-less mode using
+          in-memory persistence.
+        </p>
+
+        <h2>9. Children</h2>
+        <p>
+          The Service is not directed at children under 16. We do not knowingly collect personal
+          information from children. If you believe a child has provided us with personal data,
+          please contact us.
+        </p>
+
+        <h2>10. Sub-processors</h2>
+        <p>We use the following sub-processors to provide the Service:</p>
+        <ul>
+          <li><strong>Supabase Inc.</strong> — Database, authentication, edge functions (US)</li>
+          <li><strong>Cloudflare Inc.</strong> — Hosting, CDN, DNS, bot protection (Global)</li>
+          <li><strong>Polar.sh</strong> — Subscription billing (EU)</li>
+          <li><strong>PostHog Inc.</strong> — Product analytics (EU — Frankfurt)</li>
+          <li><strong>GitHub Inc.</strong> — OAuth provider, feedback storage (US)</li>
+        </ul>
+
+        <h2>11. Changes to this policy</h2>
+        <p>
+          We may update this policy from time to time. Material changes will be communicated via
+          email or in-app notice at least 14 days before they take effect. The "last updated" date
+          below reflects the most recent revision.
+        </p>
+
+        <h2>Contact</h2>
+        <p>
+          For privacy inquiries, data requests, or concerns:
+          <a href="mailto:privacy@glossboss.ink">privacy@glossboss.ink</a>
+        </p>
+
+        <p><em>Last updated: March 2026</em></p>
       </article>
     </main>
   </body>

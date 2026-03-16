@@ -5,7 +5,11 @@
  * - STATIC IMPORTS ONLY — no React.lazy() or dynamic import().
  * - Import from 'react-router' — NOT 'react-router-dom' (does not exist).
  */
-import { Routes, Route } from 'react-router';
+import { useEffect } from 'react';
+import { Routes, Route, useLocation } from 'react-router';
+import { trackPageView } from '@/lib/analytics';
+import LandingGuard from '@/pages/LandingGuard';
+import { APP_LANGUAGE_OPTIONS } from '@/lib/app-language';
 import Index from '@/pages/Index';
 import Dashboard from '@/pages/Dashboard';
 import Explore from '@/pages/Explore';
@@ -27,8 +31,20 @@ import { AuthGuard } from '@/components/auth/AuthGuard';
 import { CloudAppShell } from '@/components/AppShell';
 
 export default function App() {
+  const location = useLocation();
+  useEffect(() => {
+    trackPageView(location.pathname);
+  }, [location.pathname]);
+
   return (
     <Routes>
+      {/* Landing page (full-bleed, no shell) — redirects authed users to /dashboard */}
+      <Route path="/" element={<LandingGuard />} />
+      {/* Language-specific landing pages — one route per discovered PO locale (except en which is /) */}
+      {APP_LANGUAGE_OPTIONS.filter((o) => o.value !== 'en').map((o) => (
+        <Route key={o.value} path={`/${o.value}`} element={<LandingGuard lang={o.value} />} />
+      ))}
+
       {/* Auth routes (no shell) */}
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
@@ -45,7 +61,6 @@ export default function App() {
         }
       >
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/settings" element={<Settings />} />
         <Route path="/projects/:id/settings" element={<ProjectSettings />} />
         <Route path="/projects/:id/languages/:languageId" element={<ProjectEditor />} />
         <Route path="/orgs/:slug" element={<OrgSettings />} />
@@ -56,7 +71,8 @@ export default function App() {
 
       {/* Public pages with sidebar shell (no auth guard) */}
       <Route element={<CloudAppShell />}>
-        <Route path="/" element={<Index />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/editor" element={<Index />} />
         <Route path="/explore" element={<Explore />} />
         <Route path="/roadmap" element={<Roadmap />} />
         <Route path="/projects/:id" element={<ProjectDetail />} />

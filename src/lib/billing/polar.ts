@@ -11,15 +11,15 @@ export const POLAR_PRODUCT_IDS: Record<
   Partial<Record<BillingInterval, string>>
 > = {
   pro: {
-    month: 'POLAR_PRODUCT_ID',
-    year: 'POLAR_PRODUCT_ID',
+    month: 'a05ba809-8991-4b7d-b624-a44b92fdf072',
+    year: 'b2792805-fbd7-4e6e-b272-f75cef5754bc',
   },
   organization: {
-    month: 'POLAR_PRODUCT_ID',
-    year: 'POLAR_PRODUCT_ID',
+    month: 'b2d90cd3-918a-4ef5-aa7a-6e6459bcbac8',
+    year: '5c1f8bc1-080b-4734-9097-a6cc66290790',
   },
   flex: {
-    month: 'POLAR_PRODUCT_ID',
+    month: '2a946d88-730e-484a-a10e-4dc0bfa582b2',
   },
 };
 

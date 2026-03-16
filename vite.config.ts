@@ -36,7 +36,7 @@ function staticPages(): Plugin {
     configureServer(server) {
       server.middlewares.use((req, _res, next) => {
         const pathname = (req.url ?? '').split('?')[0];
-        if (/^\/(license|translate|privacy)(\/)?$/.test(pathname)) {
+        if (/^\/(license|translate|privacy|terms)(\/)?$/.test(pathname)) {
           const dir = pathname.replace(/\/$/, '');
           const filePath = path.resolve(import.meta.dirname, `public${dir}/index.html`);
           if (existsSync(filePath)) {

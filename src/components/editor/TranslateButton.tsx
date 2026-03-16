@@ -12,6 +12,7 @@ import { ActionIcon, Tooltip, Loader, Popover, Button, Text, Stack, Group } from
 import { useLocalStorage } from '@mantine/hooks';
 import { Languages, AlertCircle, AlertTriangle } from 'lucide-react';
 import { useTranslation } from '@/lib/app-language';
+import { trackEvent } from '@/lib/analytics';
 import {
   formatDeepLError,
   isGlossaryNotFoundError,
@@ -156,6 +157,8 @@ export function TranslateButton({
           throw glossaryError;
         }
       }
+
+      trackEvent('translation_completed', { provider: 'single' });
 
       // If there's existing translation, show confirmation first
       if (hasExistingTranslation) {

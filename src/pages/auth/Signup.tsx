@@ -3,7 +3,7 @@
  */
 
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router';
+import { useNavigate, useSearchParams, Link } from 'react-router';
 import {
   Container,
   Paper,
@@ -22,12 +22,25 @@ import { AlertCircle, CheckCircle } from 'lucide-react';
 import { useTranslation } from '@/lib/app-language';
 import { useAuthStore } from '@/stores/auth-store';
 import { useAuth } from '@/hooks/use-auth';
+import { trackEvent } from '@/lib/analytics';
 import { GithubIcon } from '@/components/auth/GithubIcon';
 
 export default function Signup() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { error } = useAuth();
+
+  // If user came from pricing page with a plan, redirect to checkout after signup
+  const selectedPlan = searchParams.get('plan');
+  const selectedInterval = searchParams.get('interval') || 'month';
+
+  function getPostSignupRedirect(): string {
+    if (selectedPlan && selectedPlan !== 'free') {
+      return `/settings?tab=billing&plan=${selectedPlan}&interval=${selectedInterval}`;
+    }
+    return '/dashboard';
+  }
   const signUpWithEmail = useAuthStore((s) => s.signUpWithEmail);
   const signInWithGitHub = useAuthStore((s) => s.signInWithGitHub);
   const clearError = useAuthStore((s) => s.clearError);
@@ -46,10 +59,11 @@ export default function Signup() {
     setSubmitting(false);
     if (!useAuthStore.getState().error) {
       setSuccess(true);
+      trackEvent('signup_completed', { method: 'email' });
       // If email confirmation is disabled, navigate directly
       const session = useAuthStore.getState().session;
       if (session) {
-        navigate('/');
+        navigate(getPostSignupRedirect());
       }
     }
   };
@@ -128,6 +142,18 @@ export default function Signup() {
                   description={t('Minimum 8 characters, with uppercase, lowercase, and a digit')}
                 />
 
+                <Text size="xs" c="dimmed" ta="center">
+                  {t('By creating an account, you agree to our')}{' '}
+                  <Anchor href="/terms/" target="_blank" size="xs">
+                    {t('Terms of Service')}
+                  </Anchor>{' '}
+                  {t('and')}{' '}
+                  <Anchor href="/privacy/" target="_blank" size="xs">
+                    {t('Privacy Policy')}
+                  </Anchor>
+                  .
+                </Text>
+
                 <Button type="submit" fullWidth loading={submitting}>
                   {t('Create account')}
                 </Button>
@@ -136,6 +162,20 @@ export default function Signup() {
           </>
         )}
       </Paper>
+
+      <Text size="xs" c="dimmed" ta="center" mt="xl">
+        <Anchor href="/terms/" target="_blank" size="xs" c="dimmed">
+          {t('Terms')}
+        </Anchor>
+        {' · '}
+        <Anchor href="/privacy/" target="_blank" size="xs" c="dimmed">
+          {t('Privacy')}
+        </Anchor>
+        {' · '}
+        <Anchor href="/license/" target="_blank" size="xs" c="dimmed">
+          {t('License')}
+        </Anchor>
+      </Text>
     </Container>
   );
 }

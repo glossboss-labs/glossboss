@@ -13,6 +13,7 @@ import type { Glossary } from '@/lib/glossary/types';
 import { batchAnalyzeTranslations, syncGlossaryToDeepL } from '@/lib/glossary';
 import { fetchWPGlossary } from '@/lib/glossary/wp-fetcher';
 import { serializeToI18next } from '@/lib/i18next';
+import { trackEvent } from '@/lib/analytics';
 import {
   mergePotIntoPo,
   serializePOFile,
@@ -60,7 +61,6 @@ import type { IndexPageDialogsProps } from './IndexPageDialogs';
 import type { IndexPageNotificationsProps } from './IndexPageNotifications';
 import type { DownloadInfo, FeedbackInfo, MergeInfo, PendingDraft } from './types';
 
-const DEV_BRANCH_CHIP_STORAGE_KEY = 'glossboss-dev-branch-chip-enabled';
 const SPEECH_ENABLED_KEY = 'glossboss-speech-enabled';
 const TRANSLATE_ENABLED_KEY = 'glossboss-translate-enabled';
 const WORKSPACE_MODE_KEY = 'glossboss-editor-workspace-mode';
@@ -79,7 +79,6 @@ interface IndexPageControllerOptions {
 export function useIndexPageController(options?: IndexPageControllerOptions) {
   const readOnly = options?.readOnly ?? false;
   const { t } = useTranslation();
-  const isDevelopment = import.meta.env.DEV;
   const [errors, setErrors] = useState<ParseIssue[]>([]);
   const [warnings, setWarnings] = useState<ParseIssue[]>([]);
   const [showWarnings, setShowWarnings] = useState(false);
@@ -113,11 +112,6 @@ export function useIndexPageController(options?: IndexPageControllerOptions) {
   const [glossaryEnforcementEnabled] = useState(true);
   const [, setSelectedSourceText] = useState<string | null>(null);
   const settingsNavigate = useNavigate();
-  const [branchChipEnabled] = useLocalStorage<boolean>({
-    key: DEV_BRANCH_CHIP_STORAGE_KEY,
-    defaultValue: true,
-    getInitialValueInEffect: false,
-  });
   const [containerWidth] = useLocalStorage<ContainerWidth>({
     key: CONTAINER_WIDTH_KEY,
     defaultValue: 'xl',
@@ -480,6 +474,7 @@ export function useIndexPageController(options?: IndexPageControllerOptions) {
 
         loadFile(poFile);
         applyDetectedWordPressProject(poFile.header, file.name);
+        trackEvent('file_opened', { format: 'po', entries: poFile.entries.length });
       }
     },
     [applyDetectedWordPressProject, clearUpstreamDeltaEntries, loadFile],
@@ -838,6 +833,10 @@ export function useIndexPageController(options?: IndexPageControllerOptions) {
       document.body.removeChild(anchor);
       URL.revokeObjectURL(url);
 
+      trackEvent('file_exported', {
+        format: downloadFilename.endsWith('.json') ? 'i18next' : 'po',
+        size: blob.size,
+      });
       setDownloadSuccess({
         filename: downloadFilename,
         size: formatFileSize(blob.size),
@@ -1175,7 +1174,6 @@ export function useIndexPageController(options?: IndexPageControllerOptions) {
     notificationsProps,
     bannersProps,
     dialogsProps,
-    showBranchChip: isDevelopment && branchChipEnabled,
     /** Load glossary for a specific locale (used by cloud projects to auto-load). */
     loadGlossaryForLocale: handleGlossaryLoaded,
   };

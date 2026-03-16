@@ -127,7 +127,9 @@ describe('FeedbackModal', () => {
         }),
       );
 
-      expect(onClose).toHaveBeenCalledTimes(1);
+      await waitFor(() => {
+        expect(onClose).toHaveBeenCalledTimes(1);
+      });
       expect(screen.getByPlaceholderText('Short summary of the issue')).toHaveValue('');
       window.history.pushState({}, '', '/');
     },

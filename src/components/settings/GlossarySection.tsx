@@ -74,6 +74,9 @@ export function GlossarySection({
       return initialLocale || '';
     }
   });
+  const [localGlossary, setLocalGlossary] = useState<Glossary | null>(null);
+  // When rendered standalone (Settings page), use locally-loaded glossary as fallback
+  const effectiveGlossary = glossary ?? localGlossary;
   const [isLoadingGlossary, setIsLoadingGlossary] = useState(false);
   const [glossaryError, setGlossaryError] = useState<string | null>(null);
   const [enforcementEnabled, setEnforcementEnabled] = useState<boolean>(() => {
@@ -91,7 +94,7 @@ export function GlossarySection({
 
   // Update locale when initialLocale changes
   useEffect(() => {
-    if (initialLocale && initialLocale !== selectedLocale && !glossary) {
+    if (initialLocale && initialLocale !== selectedLocale && !effectiveGlossary) {
       setSelectedLocale(initialLocale);
     }
   }, [initialLocale]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -131,6 +134,7 @@ export function GlossarySection({
         const result: FetchResult = await fetchWPGlossary(selectedLocale, forceRefresh);
         if (loadTokenRef.current !== token) return;
         if (result.glossary) {
+          setLocalGlossary(result.glossary);
           onGlossaryLoaded?.(result.glossary);
           if (result.error) setGlossaryError(result.error);
         } else {
@@ -153,6 +157,7 @@ export function GlossarySection({
     if (selectedLocale) {
       clearWPGlossaryCache(selectedLocale);
     }
+    setLocalGlossary(null);
     setIsLoadingGlossary(false);
     setHasAttemptedAutoLoad(true); // Prevent auto-load from re-fetching after clear
     onGlossaryCleared?.();
@@ -209,12 +214,18 @@ export function GlossarySection({
 
   // Auto-load glossary from cache on initial mount if we have a locale but no glossary
   useEffect(() => {
-    if (selectedLocale && !glossary && !isLoadingGlossary && !hasAttemptedAutoLoad) {
+    if (selectedLocale && !effectiveGlossary && !isLoadingGlossary && !hasAttemptedAutoLoad) {
       setHasAttemptedAutoLoad(true);
       // Try to load from cache (forceRefresh = false)
       handleLoadGlossary(false);
     }
-  }, [selectedLocale, glossary, isLoadingGlossary, hasAttemptedAutoLoad, handleLoadGlossary]);
+  }, [
+    selectedLocale,
+    effectiveGlossary,
+    isLoadingGlossary,
+    hasAttemptedAutoLoad,
+    handleLoadGlossary,
+  ]);
 
   return (
     <>
@@ -234,7 +245,7 @@ export function GlossarySection({
             style={{ flex: 1 }}
           />
 
-          {!glossary ? (
+          {!effectiveGlossary ? (
             <Button
               onClick={() => handleLoadGlossary(false)}
               loading={isLoadingGlossary}
@@ -291,17 +302,17 @@ export function GlossarySection({
           </Text>
         </Group>
 
-        {glossary && (
+        {effectiveGlossary && (
           <Paper p="md" withBorder>
             <Stack gap="sm">
               {/* Header with stats */}
               <Group justify="space-between">
                 <Group gap="xs">
                   <Badge color="green" variant="light">
-                    {glossary.entries.length} {t('terms')}
+                    {effectiveGlossary.entries.length} {t('terms')}
                   </Badge>
                   <Text size="sm" c="dimmed">
-                    ({glossary.targetLocale})
+                    ({effectiveGlossary.targetLocale})
                   </Text>
                 </Group>
 
@@ -342,7 +353,7 @@ export function GlossarySection({
                         size="compact-xs"
                         variant="subtle"
                         color="gray"
-                        onClick={() => onForceResync?.(glossary)}
+                        onClick={() => onForceResync?.(effectiveGlossary)}
                       >
                         {t('Resync')}
                       </Button>
@@ -357,7 +368,7 @@ export function GlossarySection({
                     <Button
                       size="compact-xs"
                       variant="subtle"
-                      onClick={() => onGlossaryLoaded?.(glossary)}
+                      onClick={() => onGlossaryLoaded?.(effectiveGlossary)}
                     >
                       {t('Retry')}
                     </Button>
@@ -406,7 +417,10 @@ export function GlossarySection({
                     <Text size="xs" fw={500} mb={4}>
                       {t('Terms in selected text:')}
                     </Text>
-                    <GlossaryTermsPreview sourceText={selectedSourceText} glossary={glossary} />
+                    <GlossaryTermsPreview
+                      sourceText={selectedSourceText}
+                      glossary={effectiveGlossary}
+                    />
                   </div>
                 </>
               )}
@@ -416,9 +430,9 @@ export function GlossarySection({
       </Stack>
 
       {/* Glossary viewer modal */}
-      {glossary && (
+      {effectiveGlossary && (
         <GlossaryViewerModal
-          glossary={glossary}
+          glossary={effectiveGlossary}
           opened={viewerOpened}
           onClose={() => setViewerOpened(false)}
         />

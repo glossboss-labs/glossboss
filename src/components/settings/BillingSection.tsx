@@ -6,7 +6,8 @@
  * usage-based calculator shown only when relevant.
  */
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router';
 import {
   Stack,
   Text,
@@ -49,6 +50,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useSubscription } from '@/hooks/use-subscription';
 import { useProjectsStore } from '@/stores/projects-store';
 import { useTranslation } from '@/lib/app-language';
+import { trackEvent } from '@/lib/analytics';
 import { createCheckoutSession } from '@/lib/billing/api';
 import {
   formatLimit,
@@ -301,6 +303,28 @@ export function BillingSection() {
   const [upgrading, setUpgrading] = useState<string | null>(null);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [calcOpen, { toggle: toggleCalc }] = useDisclosure(false);
+  const autoCheckoutRef = useRef(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Auto-checkout when redirected from signup with a plan param
+  const isFreePlan = plan === 'free';
+  useEffect(() => {
+    const paramPlan = searchParams.get('plan') as Exclude<PlanTier, 'free'> | null;
+    const paramInterval = (searchParams.get('interval') as BillingInterval) || 'month';
+    if (paramPlan && !autoCheckoutRef.current && user && !loading && isFreePlan) {
+      autoCheckoutRef.current = true;
+      setBillingInterval(paramInterval);
+      setSearchParams({ tab: 'billing' }, { replace: true });
+      // Trigger checkout after a tick so state has settled
+      const productId =
+        POLAR_PRODUCT_IDS[paramPlan]?.[paramPlan === 'flex' ? 'month' : paramInterval];
+      if (productId) {
+        void createCheckoutSession(productId).then((url) => {
+          window.location.href = url;
+        });
+      }
+    }
+  }, [user, loading, isFreePlan, searchParams, setSearchParams, setBillingInterval]);
 
   if (!user) {
     return (
@@ -325,7 +349,6 @@ export function BillingSection() {
     .filter((p) => !p.organization_id)
     .reduce((sum, p) => sum + (p.stats_total ?? 0), 0);
 
-  const isFreePlan = plan === 'free';
   const isFlexPlan = plan === 'flex';
   const isAdminOverride = subscription !== null && !subscription.polar_subscription_id;
   const isCanceled = subscription?.status === 'canceled';
@@ -338,6 +361,10 @@ export function BillingSection() {
     setCheckoutError(null);
     try {
       const productId = POLAR_PRODUCT_IDS[tier][tier === 'flex' ? 'month' : billingInterval]!;
+      trackEvent('plan_upgrade_initiated', {
+        tier,
+        interval: tier === 'flex' ? 'month' : billingInterval,
+      });
       const url = await createCheckoutSession(productId);
       window.location.href = url;
     } catch (err) {

@@ -1,4 +1,4 @@
---
+-- Phase 6: In-app notifications
 --
 -- Creates a notifications table with RLS, Realtime publication,
 -- and database triggers that create notifications from source events

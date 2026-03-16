@@ -271,6 +271,7 @@ export function FeedbackModal({
         };
 
         const result = await submitFeedbackRequest(payload);
+        void import('@/lib/analytics').then((m) => m.trackEvent('feedback_submitted', { type }));
         onSubmitted?.(result);
         resetForm();
         onClose();

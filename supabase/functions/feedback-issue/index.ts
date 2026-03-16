@@ -37,6 +37,8 @@ const USER_AGENT_MAX_LENGTH = 500;
 const APP_VERSION_MAX_LENGTH = 100;
 const FILENAME_MAX_LENGTH = 200;
 const SUBMITTED_AT_MAX_LENGTH = 100;
+const DEFAULT_GITHUB_OWNER = 'glossboss-labs';
+const DEFAULT_GITHUB_REPO = 'glossboss';
 
 const ipRequestLog = new Map<string, number[]>();
 const globalRequestLog: number[] = [];
@@ -334,8 +336,11 @@ async function createGitHubIssue(
     throw new Error('GITHUB_TOKEN is not configured.');
   }
 
-  const owner = Deno.env.get('GITHUB_OWNER') || 'glossboss-labs';
-  const repo = Deno.env.get('GITHUB_REPO') || 'glossboss';
+  const owner = Deno.env.get('FEEDBACK_GITHUB_OWNER')?.trim() || DEFAULT_GITHUB_OWNER;
+  const repo = Deno.env.get('FEEDBACK_GITHUB_REPO')?.trim() || DEFAULT_GITHUB_REPO;
+  if (!owner || !repo) {
+    throw new Error('GITHUB_OWNER and GITHUB_REPO must be configured.');
+  }
   const url = `https://api.github.com/repos/${owner}/${repo}/issues`;
 
   const requestHeaders = {

@@ -1,10 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { MemoryRouter } from 'react-router';
+import { MemoryRouter, Routes, Route } from 'react-router';
 import { AppProviders } from '@/providers';
 import { clearExamplePoCacheForTests } from '@/lib/example-po';
 import Index from '@/pages/Index';
+import { CloudAppShell } from '@/components/AppShell';
 import { useEditorStore } from '@/stores/editor-store';
 import { useSourceStore } from '@/stores/source-store';
 
@@ -103,7 +104,11 @@ describe('Index feedback and empty state actions', () => {
     const { unmount } = render(
       <MemoryRouter>
         <AppProviders>
-          <Index />
+          <Routes>
+            <Route element={<CloudAppShell />}>
+              <Route path="/" element={<Index />} />
+            </Route>
+          </Routes>
         </AppProviders>
       </MemoryRouter>,
     );
@@ -112,12 +117,16 @@ describe('Index feedback and empty state actions', () => {
 
     unmount();
 
-    localStorage.setItem('glossboss-dev-branch-chip-enabled', 'false');
+    localStorage.setItem('glossboss-dev-branch-chip', 'false');
 
     render(
       <MemoryRouter>
         <AppProviders>
-          <Index />
+          <Routes>
+            <Route element={<CloudAppShell />}>
+              <Route path="/" element={<Index />} />
+            </Route>
+          </Routes>
         </AppProviders>
       </MemoryRouter>,
     );
@@ -129,7 +138,11 @@ describe('Index feedback and empty state actions', () => {
     render(
       <MemoryRouter>
         <AppProviders>
-          <Index />
+          <Routes>
+            <Route element={<CloudAppShell />}>
+              <Route path="/" element={<Index />} />
+            </Route>
+          </Routes>
         </AppProviders>
       </MemoryRouter>,
     );

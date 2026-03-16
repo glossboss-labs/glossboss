@@ -1,4 +1,4 @@
---
+-- Phase 7.4: Plan limit enforcement via RLS
 --
 -- Adds plan-aware checks to project creation, entry insertion, and member addition.
 -- Limits are enforced on the project/org OWNER's plan, not the acting user.

@@ -1,5 +1,5 @@
 /**
- * Roadmap edge function — fetches roadmap-labeled issues from the private
+ * Roadmap edge function — fetches roadmap-labeled issues from the public
  * GitHub repo and returns sanitized, cached data for the public roadmap page.
  */
 
@@ -15,6 +15,8 @@ import {
 
 const GITHUB_FETCH_TIMEOUT_MS = 10_000;
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+const DEFAULT_GITHUB_OWNER = 'glossboss-labs';
+const DEFAULT_GITHUB_REPO = 'glossboss';
 
 interface CachedResult {
   data: RoadmapIssue[];
@@ -89,11 +91,10 @@ function toRoadmapIssue(raw: unknown): RoadmapIssue | null {
 }
 
 async function fetchRoadmapIssues(): Promise<RoadmapIssue[]> {
-  const token = Deno.env.get('GITHUB_TOKEN');
-  if (!token) throw new Error('GITHUB_TOKEN is not configured.');
-
-  const owner = Deno.env.get('GITHUB_OWNER') || 'glossboss-labs';
-  const repo = Deno.env.get('GITHUB_REPO') || 'glossboss';
+  const token = Deno.env.get('GITHUB_TOKEN')?.trim();
+  const owner = Deno.env.get('ROADMAP_GITHUB_OWNER')?.trim() || DEFAULT_GITHUB_OWNER;
+  const repo = Deno.env.get('ROADMAP_GITHUB_REPO')?.trim() || DEFAULT_GITHUB_REPO;
+  if (!owner || !repo) throw new Error('GITHUB_OWNER and GITHUB_REPO must be configured.');
 
   const issues: RoadmapIssue[] = [];
   let page = 1;
@@ -108,7 +109,7 @@ async function fetchRoadmapIssues(): Promise<RoadmapIssue[]> {
       response = await fetchWithTimeout(url, GITHUB_FETCH_TIMEOUT_MS, {
         headers: {
           Accept: 'application/vnd.github+json',
-          Authorization: `Bearer ${token}`,
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
           'User-Agent': 'GlossBoss-Roadmap-Function',
           'X-GitHub-Api-Version': '2022-11-28',
         },

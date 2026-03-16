@@ -1,4 +1,4 @@
---
+-- Phase 3 completion: project-level invites for adding collaborators to projects.
 --
 -- Mirrors the org-level invites pattern but uses project-level roles
 -- (admin|maintainer|reviewer|translator|viewer) and project_members.

@@ -1,4 +1,4 @@
---
+-- Phase 8: Add 'flex' metered plan
 --
 -- Flex is a pay-as-you-go plan billed via Polar metered billing.
 -- All resource limits are unlimited (billing handled externally by Polar).

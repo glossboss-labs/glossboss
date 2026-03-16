@@ -114,11 +114,13 @@ Edge functions proxy external services and keep server-managed secrets out of th
 
 **Optional (feedback):**
 
-| Secret                   | Purpose                           |
-| ------------------------ | --------------------------------- |
-| `GITHUB_OWNER`           | Target GitHub org/user for issues |
-| `GITHUB_REPO`            | Target GitHub repo for issues     |
-| `ALLOW_TURNSTILE_BYPASS` | Allow dev bypass tokens           |
+| Secret                   | Purpose                                      |
+| ------------------------ | -------------------------------------------- |
+| `FEEDBACK_GITHUB_OWNER`  | Override GitHub org/user for feedback issues |
+| `FEEDBACK_GITHUB_REPO`   | Override GitHub repo for feedback issues     |
+| `ROADMAP_GITHUB_OWNER`   | Override GitHub org/user for roadmap issues  |
+| `ROADMAP_GITHUB_REPO`    | Override GitHub repo for roadmap issues      |
+| `ALLOW_TURNSTILE_BYPASS` | Allow dev bypass tokens                      |
 
 **GitHub repository secrets for CI deploy:**
 
