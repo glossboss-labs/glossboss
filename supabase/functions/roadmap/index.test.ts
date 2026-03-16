@@ -151,6 +151,7 @@ describe('roadmap handler', () => {
       number: 10,
       title: 'Private-only feature',
       url: '', // URL stripped for private repo issues
+      labels: [], // Labels stripped for private repo issues
     });
   });
 });

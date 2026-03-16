@@ -161,7 +161,7 @@ async function fetchRoadmapIssues(): Promise<RoadmapIssue[]> {
   const publicTitles = new Set(publicIssues.map((i) => i.title.toLowerCase()));
   const uniquePrivate = privateIssues
     .filter((i) => !publicTitles.has(i.title.toLowerCase()))
-    .map((i) => ({ ...i, url: '' })); // Strip URLs — private repo is not publicly accessible
+    .map((i) => ({ ...i, url: '', labels: [] })); // Strip URLs and labels — private repo is not publicly accessible
 
   return [...publicIssues, ...uniquePrivate];
 }
