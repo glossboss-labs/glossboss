@@ -1,0 +1,345 @@
+/**
+ * Roadmap — public page showing planned, in-progress, and completed features.
+ */
+
+import { useEffect, useMemo, useState } from 'react';
+import {
+  Title,
+  Group,
+  Text,
+  Center,
+  Loader,
+  Alert,
+  Stack,
+  TextInput,
+  SegmentedControl,
+  ThemeIcon,
+  Paper,
+  Badge,
+  Progress,
+  Anchor,
+} from '@mantine/core';
+import { motion } from 'motion/react';
+import {
+  AlertCircle,
+  Search,
+  Map,
+  ExternalLink,
+  ThumbsUp,
+  CheckCircle2,
+  Clock,
+  Circle,
+} from 'lucide-react';
+import {
+  sectionVariants,
+  contentVariants,
+  fadeVariants,
+  staggerContainerVariants,
+} from '@/lib/motion';
+import { useTranslation, msgid } from '@/lib/app-language';
+import { fetchRoadmap } from '@/lib/roadmap/api';
+import { deriveStatus, type RoadmapIssue, type RoadmapStatus } from '@/lib/roadmap/types';
+
+const MotionDiv = motion.div;
+
+const STATUS_LABELS: Record<RoadmapStatus, string> = {
+  all: msgid('All'),
+  planned: msgid('Planned'),
+  'in-progress': msgid('In progress'),
+  done: msgid('Done'),
+};
+
+const STATUS_COLORS: Record<'planned' | 'in-progress' | 'done', string> = {
+  planned: 'gray',
+  'in-progress': 'blue',
+  done: 'teal',
+};
+
+const STATUS_ICONS: Record<'planned' | 'in-progress' | 'done', typeof Circle> = {
+  planned: Circle,
+  'in-progress': Clock,
+  done: CheckCircle2,
+};
+
+function formatRelative(iso: string): string {
+  const diff = Date.now() - new Date(iso).getTime();
+  const mins = Math.floor(diff / 60_000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `${days}d ago`;
+  return new Date(iso).toLocaleDateString();
+}
+
+function extractPhaseLabel(labels: RoadmapIssue['labels']): string | null {
+  const phase = labels.find((l) => l.name.startsWith('phase:'));
+  return phase ? phase.name : null;
+}
+
+function RoadmapCard({ issue }: { issue: RoadmapIssue }) {
+  const { t } = useTranslation();
+  const status = deriveStatus(issue);
+  const StatusIcon = STATUS_ICONS[status];
+  const phaseLabel = extractPhaseLabel(issue.labels);
+  const progressPct =
+    issue.tasksTotal > 0 ? Math.round((issue.tasksDone / issue.tasksTotal) * 100) : 0;
+
+  return (
+    <Paper
+      withBorder
+      p="lg"
+      style={{
+        transition: 'border-color 120ms ease, background-color 120ms ease',
+      }}
+      styles={{
+        root: {
+          '&:hover': {
+            borderColor: 'var(--gb-border-strong)',
+            backgroundColor: 'var(--gb-highlight-row)',
+          },
+        },
+      }}
+    >
+      <Stack gap="sm">
+        <Group justify="space-between" align="flex-start" wrap="nowrap">
+          <Group gap="sm" align="flex-start" wrap="nowrap" style={{ flex: 1, minWidth: 0 }}>
+            <StatusIcon
+              size={18}
+              style={{
+                color: `var(--mantine-color-${STATUS_COLORS[status]}-6)`,
+                flexShrink: 0,
+                marginTop: 2,
+              }}
+            />
+            <Stack gap={4} style={{ flex: 1, minWidth: 0 }}>
+              <Text fw={600} size="md">
+                {issue.title}
+              </Text>
+              {issue.goal && (
+                <Text size="sm" c="dimmed" lineClamp={2}>
+                  {issue.goal}
+                </Text>
+              )}
+            </Stack>
+          </Group>
+
+          <Badge variant="light" color={STATUS_COLORS[status]} size="sm">
+            {t(STATUS_LABELS[status])}
+          </Badge>
+        </Group>
+
+        {issue.tasksTotal > 0 && (
+          <Group gap={8} align="center">
+            <Progress.Root size="sm" style={{ flex: 1 }}>
+              <Progress.Section value={progressPct} color={STATUS_COLORS[status]} />
+            </Progress.Root>
+            <Text
+              size="xs"
+              fw={600}
+              c={progressPct === 100 ? 'teal' : undefined}
+              style={{ minWidth: 60, textAlign: 'right' }}
+              className="gb-tabular-nums"
+            >
+              {issue.tasksDone}/{issue.tasksTotal} {t('tasks')}
+            </Text>
+          </Group>
+        )}
+
+        <Group justify="space-between" wrap="wrap">
+          <Group gap={6}>
+            {phaseLabel && (
+              <Badge variant="light" size="xs" color="grape">
+                {phaseLabel}
+              </Badge>
+            )}
+            {issue.reactions > 0 && (
+              <Badge variant="light" size="xs" color="yellow" leftSection={<ThumbsUp size={10} />}>
+                {issue.reactions}
+              </Badge>
+            )}
+          </Group>
+
+          <Group gap="sm">
+            <Text size="xs" c="dimmed">
+              {formatRelative(issue.updatedAt)}
+            </Text>
+            {issue.url && (
+              <Anchor
+                href={issue.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                size="xs"
+                c="dimmed"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <ExternalLink size={12} />
+                {t('Discuss')}
+              </Anchor>
+            )}
+          </Group>
+        </Group>
+      </Stack>
+    </Paper>
+  );
+}
+
+export default function Roadmap() {
+  const { t } = useTranslation();
+  const [issues, setIssues] = useState<RoadmapIssue[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState<RoadmapStatus>('all');
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      try {
+        const data = await fetchRoadmap();
+        if (!cancelled) {
+          setIssues(data);
+          setLoading(false);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : t('Failed to load roadmap'));
+          setLoading(false);
+        }
+      }
+    }
+
+    void load();
+    return () => {
+      cancelled = true;
+    };
+  }, [t]);
+
+  const filtered = useMemo(() => {
+    let result = issues;
+
+    if (statusFilter !== 'all') {
+      result = result.filter((issue) => deriveStatus(issue) === statusFilter);
+    }
+
+    const q = search.toLowerCase().trim();
+    if (q) {
+      result = result.filter(
+        (issue) => issue.title.toLowerCase().includes(q) || issue.goal.toLowerCase().includes(q),
+      );
+    }
+
+    // Sort: in-progress first, then planned, then done; within each group by issue number
+    const statusOrder: Record<string, number> = { 'in-progress': 0, planned: 1, done: 2 };
+    return result.sort((a, b) => {
+      const sa = statusOrder[deriveStatus(a)] ?? 1;
+      const sb = statusOrder[deriveStatus(b)] ?? 1;
+      if (sa !== sb) return sa - sb;
+      return a.number - b.number;
+    });
+  }, [issues, search, statusFilter]);
+
+  const counts = useMemo(() => {
+    const c = { planned: 0, 'in-progress': 0, done: 0 };
+    for (const issue of issues) {
+      c[deriveStatus(issue)]++;
+    }
+    return c;
+  }, [issues]);
+
+  const segmentData = (Object.keys(STATUS_LABELS) as RoadmapStatus[]).map((key) => ({
+    value: key,
+    label:
+      key === 'all'
+        ? `${t(STATUS_LABELS[key])} (${issues.length})`
+        : `${t(STATUS_LABELS[key])} (${counts[key]})`,
+  }));
+
+  return (
+    <MotionDiv variants={sectionVariants} initial="hidden" animate="visible">
+      <Group justify="space-between" mb="xl">
+        <div>
+          <Title order={2}>{t('Roadmap')}</Title>
+          <Text size="sm" mt={4} c="dimmed">
+            {t('Planned features and improvements')}
+          </Text>
+        </div>
+      </Group>
+
+      {loading && (
+        <MotionDiv variants={fadeVariants} initial="hidden" animate="visible">
+          <Center py={80}>
+            <Loader size="lg" />
+          </Center>
+        </MotionDiv>
+      )}
+
+      {error && (
+        <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
+          <Alert icon={<AlertCircle size={16} />} color="red" variant="light" mb="md">
+            {error}
+          </Alert>
+        </MotionDiv>
+      )}
+
+      {!loading && !error && issues.length === 0 && (
+        <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
+          <Center py={80}>
+            <Stack align="center" gap="md">
+              <ThemeIcon size="xl" variant="light" color="blue" radius="xl">
+                <Map size={24} />
+              </ThemeIcon>
+              <Text size="lg" c="dimmed">
+                {t('No roadmap items yet')}
+              </Text>
+            </Stack>
+          </Center>
+        </MotionDiv>
+      )}
+
+      {!loading && issues.length > 0 && (
+        <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
+          <Stack gap="md">
+            <Group gap="sm">
+              <SegmentedControl
+                value={statusFilter}
+                onChange={(v) => setStatusFilter(v as RoadmapStatus)}
+                data={segmentData}
+                size="xs"
+              />
+              <TextInput
+                placeholder={t('Search roadmap…')}
+                leftSection={<Search size={14} />}
+                value={search}
+                onChange={(e) => setSearch(e.currentTarget.value)}
+                style={{ flex: 1, maxWidth: 280 }}
+                size="sm"
+              />
+            </Group>
+
+            {filtered.length === 0 ? (
+              <Center py={40}>
+                <Text size="sm" c="dimmed">
+                  {t('No roadmap items match your search')}
+                </Text>
+              </Center>
+            ) : (
+              <MotionDiv variants={staggerContainerVariants} initial="hidden" animate="visible">
+                <Stack gap="sm">
+                  {filtered.map((issue) => (
+                    <MotionDiv key={issue.number} variants={contentVariants}>
+                      <RoadmapCard issue={issue} />
+                    </MotionDiv>
+                  ))}
+                </Stack>
+              </MotionDiv>
+            )}
+          </Stack>
+        </MotionDiv>
+      )}
+    </MotionDiv>
+  );
+}

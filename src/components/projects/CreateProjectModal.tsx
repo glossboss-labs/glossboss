@@ -36,6 +36,8 @@ import { RepoSyncModal } from '@/components/repo-sync/RepoSyncModal';
 import { useProjectsStore } from '@/stores/projects-store';
 import { useOrganizationsStore } from '@/stores/organizations-store';
 import { useAuth } from '@/hooks/use-auth';
+import { useSubscription } from '@/hooks/use-subscription';
+import { isAtLimit } from '@/lib/billing/limits';
 import { useNavigate, Link } from 'react-router';
 import { detectLimitError, getLimitErrorMessage } from '@/lib/billing/errors';
 import type { WordPressProjectType } from '@/lib/wp-source/references';
@@ -66,8 +68,14 @@ export function CreateProjectModal({ opened, onClose }: CreateProjectModalProps)
   const navigate = useNavigate();
   const { user } = useAuth();
   const createProject = useProjectsStore((s) => s.createProject);
+  const projects = useProjectsStore((s) => s.projects);
   const organizations = useOrganizationsStore((s) => s.organizations);
+  const { plan } = useSubscription();
   const fileResetRef = useRef<(() => void) | null>(null);
+
+  // Eagerly check project limit so we can warn on step 0
+  const personalProjectCount = projects.filter((p) => !p.organization_id).length;
+  const atProjectLimit = isAtLimit(plan, 'projects', personalProjectCount);
 
   // Stepper
   const [step, setStep] = useState(0);
@@ -337,6 +345,29 @@ export function CreateProjectModal({ opened, onClose }: CreateProjectModalProps)
 
         {step === 0 && (
           <Stack gap="md">
+            {atProjectLimit && (
+              <Alert icon={<Zap size={16} />} color="yellow" variant="light">
+                <Stack gap="xs">
+                  <Text size="sm">
+                    {t(
+                      'You have reached the project limit on your current plan. Upgrade to create more projects.',
+                    )}
+                  </Text>
+                  <Button
+                    component={Link}
+                    to="/settings?tab=billing"
+                    size="xs"
+                    variant="filled"
+                    color="blue"
+                    leftSection={<Zap size={14} />}
+                    onClick={handleClose}
+                  >
+                    {t('View plans')}
+                  </Button>
+                </Stack>
+              </Alert>
+            )}
+
             <Text size="sm" c="dimmed">
               {t('Choose a source to create your cloud project from.')}
             </Text>

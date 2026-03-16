@@ -32,6 +32,7 @@ import {
   Moon,
   LayoutDashboard,
   Globe,
+  Map,
   Settings,
   PanelLeftClose,
   PanelLeft,
@@ -241,6 +242,13 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
               icon={<Globe size={18} />}
               label={t('Explore')}
               active={pathname === '/explore'}
+              collapsed={collapsed}
+            />
+            <NavItem
+              to="/roadmap"
+              icon={<Map size={18} />}
+              label={t('Roadmap')}
+              active={pathname === '/roadmap'}
               collapsed={collapsed}
             />
             <NavItem

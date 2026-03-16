@@ -9,6 +9,7 @@ import { Routes, Route } from 'react-router';
 import Index from '@/pages/Index';
 import Dashboard from '@/pages/Dashboard';
 import Explore from '@/pages/Explore';
+import Roadmap from '@/pages/Roadmap';
 import ProjectDetail from '@/pages/ProjectDetail';
 import ProjectEditor from '@/pages/ProjectEditor';
 import OrgSettings from '@/pages/OrgSettings';
@@ -57,6 +58,7 @@ export default function App() {
       <Route element={<CloudAppShell />}>
         <Route path="/" element={<Index />} />
         <Route path="/explore" element={<Explore />} />
+        <Route path="/roadmap" element={<Roadmap />} />
         <Route path="/projects/:id" element={<ProjectDetail />} />
       </Route>
     </Routes>
