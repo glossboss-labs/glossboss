@@ -113,7 +113,7 @@ msgstr "Accept invite"
 msgid "Account"
 msgstr "Account"
 
-#: src/pages/auth/Signup.tsx:102
+#: src/pages/auth/Signup.tsx:105
 msgid "Account created. Check your email to confirm, or sign in now."
 msgstr "Account created. Check your email to confirm, or sign in now."
 
@@ -183,6 +183,10 @@ msgstr "Admin"
 msgid "Afrikaans"
 msgstr "Afrikaans"
 
+#: src/components/onboarding/RoleStep.tsx:36
+msgid "Agency or studio"
+msgstr "Agency or studio"
+
 #: src/components/editor/HeaderEditor.tsx:50
 msgid "Albanian"
 msgstr "Albanian"
@@ -207,7 +211,7 @@ msgstr "All rights reserved."
 msgid "Allow follow-up questions about this feedback"
 msgstr "Allow follow-up questions about this feedback"
 
-#: src/pages/auth/Signup.tsx:93
+#: src/pages/auth/Signup.tsx:96
 msgid "Already have an account?"
 msgstr "Already have an account?"
 
@@ -266,7 +270,7 @@ msgid "Arabic (Saudi Arabia)"
 msgstr "Arabic (Saudi Arabia)"
 
 #: src/components/projects/ProjectSettingsTab.tsx:170
-#: src/pages/Dashboard.tsx:296
+#: src/pages/Dashboard.tsx:295
 #: src/pages/ProjectSettings.tsx:769
 msgid ""
 "Are you sure you want to delete \"{{name}}\"? All languages and entries will"
@@ -296,6 +300,7 @@ msgid "Armenian"
 msgstr "Armenian"
 
 #: src/components/landing/PricingSection.tsx:70
+#: src/components/onboarding/PlanStep.tsx:93
 #: src/components/settings/BillingSection.tsx:172
 #: src/components/settings/BillingSection.tsx:504
 msgid ""
@@ -306,6 +311,7 @@ msgstr ""
 "oney."
 
 #: src/components/landing/PricingSection.tsx:74
+#: src/components/onboarding/PlanStep.tsx:97
 #: src/components/settings/BillingSection.tsx:179
 #: src/components/settings/BillingSection.tsx:511
 msgid "At {{count}} strings, the Pro plan (€{{price}}/mo) would save you money."
@@ -438,6 +444,10 @@ msgstr "Billed monthly"
 msgid "Billing"
 msgstr "Billing"
 
+#: src/components/onboarding/AttributionStep.tsx:25
+msgid "Blog or article"
+msgstr "Blog or article"
+
 #: src/components/editor/HeaderEditor.tsx:59
 msgid "Bosnian"
 msgstr "Bosnian"
@@ -497,7 +507,7 @@ msgstr "Built for WordPress"
 msgid "Bulgarian"
 msgstr "Bulgarian"
 
-#: src/pages/auth/Signup.tsx:146
+#: src/pages/auth/Signup.tsx:149
 msgid "By creating an account, you agree to our"
 msgstr "By creating an account, you agree to our"
 
@@ -611,7 +621,7 @@ msgid "Choose a new password for your account."
 msgstr "Choose a new password for your account."
 
 #: src/pages/auth/ResetPassword.tsx:98
-#: src/pages/auth/Signup.tsx:137
+#: src/pages/auth/Signup.tsx:140
 msgid "Choose a password"
 msgstr "Choose a password"
 
@@ -657,6 +667,10 @@ msgstr ""
 #: src/components/settings/DisplaySection.tsx:78
 msgid "Choose which language GlossBoss uses for its interface."
 msgstr "Choose which language GlossBoss uses for its interface."
+
+#: src/components/onboarding/PlanStep.tsx:211
+msgid "Choose your plan"
+msgstr "Choose your plan"
 
 #: src/components/SettingsModal.tsx:2147
 #: src/components/editor/GlossaryPanel.tsx:360
@@ -885,9 +899,17 @@ msgstr "Content type"
 msgid "Context"
 msgstr "Context"
 
+#: src/components/onboarding/ProfileStep.tsx:49
+msgid "Continue"
+msgstr "Continue"
+
+#: src/components/onboarding/PlanStep.tsx:293
+msgid "Continue with Free"
+msgstr "Continue with Free"
+
 #: src/components/auth/AuthPromptModal.tsx:49
 #: src/pages/auth/Login.tsx:88
-#: src/pages/auth/Signup.tsx:112
+#: src/pages/auth/Signup.tsx:115
 msgid "Continue with GitHub"
 msgstr "Continue with GitHub"
 
@@ -953,7 +975,7 @@ msgstr "Crafted with care in the Netherlands"
 msgid "Create"
 msgstr "Create"
 
-#: src/pages/Dashboard.tsx:148
+#: src/pages/Dashboard.tsx:147
 msgid ""
 "Create a cloud project from a PO file, a WordPress.org export, or a reposito"
 "ry."
@@ -973,11 +995,11 @@ msgstr "Create a fine-grained token"
 msgid "Create a token"
 msgstr "Create a token"
 
-#: src/pages/auth/Signup.tsx:158
+#: src/pages/auth/Signup.tsx:161
 msgid "Create account"
 msgstr "Create account"
 
-#: src/pages/auth/Signup.tsx:90
+#: src/pages/auth/Signup.tsx:93
 msgid "Create an account"
 msgstr "Create an account"
 
@@ -993,7 +1015,7 @@ msgstr "Create one"
 
 #: src/components/organizations/CreateOrgModal.tsx:80
 #: src/components/organizations/CreateOrgModal.tsx:126
-#: src/pages/Dashboard.tsx:217
+#: src/pages/Dashboard.tsx:216
 msgid "Create organization"
 msgstr "Create organization"
 
@@ -1016,10 +1038,6 @@ msgstr "Create resource"
 #: src/components/editor/HeaderEditor.tsx:66
 msgid "Croatian"
 msgstr "Croatian"
-
-#: src/components/billing/WelcomeModal.tsx:77
-msgid "Current"
-msgstr "Current"
 
 #: src/components/editor/EditorTable.tsx:1500
 #: src/components/editor/EditorTable.tsx:1675
@@ -1141,8 +1159,8 @@ msgstr "Delete organization"
 #: src/components/projects/ProjectSettingsTab.tsx:158
 #: src/components/projects/ProjectSettingsTab.tsx:169
 #: src/components/projects/ProjectSettingsTab.tsx:174
-#: src/pages/Dashboard.tsx:295
-#: src/pages/Dashboard.tsx:300
+#: src/pages/Dashboard.tsx:294
+#: src/pages/Dashboard.tsx:299
 #: src/pages/ProjectSettings.tsx:716
 #: src/pages/ProjectSettings.tsx:768
 #: src/pages/ProjectSettings.tsx:773
@@ -1190,6 +1208,10 @@ msgstr "Detected via {{method}} with {{confidence}} confidence"
 #: src/components/editor/TranslateToolbar.tsx:912
 msgid "Detected: {{target}}"
 msgstr "Detected: {{target}}"
+
+#: src/components/onboarding/RoleStep.tsx:42
+msgid "Developer"
+msgstr "Developer"
 
 #: src/components/SettingsModal.tsx:1330
 #: src/components/editor/WordPressProjectModal.tsx:356
@@ -1364,7 +1386,7 @@ msgstr ""
 #: src/components/feedback/FeedbackModal.tsx:425
 #: src/pages/auth/ForgotPassword.tsx:85
 #: src/pages/auth/Login.tsx:102
-#: src/pages/auth/Signup.tsx:126
+#: src/pages/auth/Signup.tsx:129
 msgid "Email"
 msgstr "Email"
 
@@ -1493,6 +1515,7 @@ msgid "Estimate cost"
 msgstr "Estimate cost"
 
 #: src/components/landing/PricingSection.tsx:82
+#: src/components/onboarding/PlanStep.tsx:105
 #: src/components/settings/BillingSection.tsx:153
 #: src/components/settings/BillingSection.tsx:493
 msgid "Estimated monthly cost"
@@ -1823,6 +1846,10 @@ msgstr "Failed to save project"
 msgid "Failed to send invite"
 msgstr "Failed to send invite"
 
+#: src/components/onboarding/PlanStep.tsx:198
+msgid "Failed to start checkout"
+msgstr "Failed to start checkout"
+
 #: src/components/settings/BillingSection.tsx:373
 msgid "Failed to start checkout. Please try again."
 msgstr "Failed to start checkout. Please try again."
@@ -1914,6 +1941,7 @@ msgid "Finnish"
 msgstr "Finnish"
 
 #: src/components/landing/PricingSection.tsx:79
+#: src/components/onboarding/PlanStep.tsx:102
 #: src/components/settings/BillingSection.tsx:157
 msgid "First {{count}} strings are free"
 msgstr "First {{count}} strings are free"
@@ -1992,7 +2020,6 @@ msgid "Free for individuals. Upgrade when you need team features."
 msgstr "Free for individuals. Upgrade when you need team features."
 
 #: src/components/billing/FreePlanBanner.tsx:49
-#: src/components/billing/WelcomeModal.tsx:74
 msgid "Free plan"
 msgstr "Free plan"
 
@@ -2120,10 +2147,11 @@ msgstr "Get API key"
 
 #: src/components/landing/PricingSection.tsx:218
 #: src/components/landing/PricingSection.tsx:274
+#: src/components/onboarding/PlanStep.tsx:294
+#: src/components/onboarding/PlanStep.tsx:344
 msgid "Get started"
 msgstr "Get started"
 
-#: src/components/billing/WelcomeModal.tsx:136
 #: src/components/landing/FinalCTA.tsx:28
 #: src/components/landing/LandingNav.tsx:90
 #: src/components/landing/LandingNav.tsx:161
@@ -2136,6 +2164,7 @@ msgid "Get started with {{plan}}"
 msgstr "Get started with {{plan}}"
 
 #: src/components/landing/FeatureGrid.tsx:82
+#: src/components/onboarding/AttributionStep.tsx:26
 msgid "GitHub"
 msgstr "GitHub"
 
@@ -2353,6 +2382,10 @@ msgstr "Hiding {{label}} • Click to clear filter"
 msgid "Hindi"
 msgstr "Hindi"
 
+#: src/components/onboarding/AttributionStep.tsx:48
+msgid "How did you hear about us?"
+msgstr "How did you hear about us?"
+
 #: src/components/landing/FAQSection.tsx:27
 msgid "How is this different from Poedit or Crowdin?"
 msgstr "How is this different from Poedit or Crowdin?"
@@ -2370,6 +2403,7 @@ msgid "How plurals work in this language"
 msgstr "How plurals work in this language"
 
 #: src/components/landing/PlanQuiz.tsx:39
+#: src/components/onboarding/RoleStep.tsx:66
 msgid "How will you use GlossBoss?"
 msgstr "How will you use GlossBoss?"
 
@@ -2452,6 +2486,10 @@ msgid ""
 msgstr ""
 "Including saved translation credentials will store them in plain text inside"
 " the exported JSON file."
+
+#: src/components/onboarding/RoleStep.tsx:24
+msgid "Individual translator"
+msgstr "Individual translator"
 
 #: src/components/editor/HeaderEditor.tsx:96
 #: src/components/editor/TranslateToolbar.tsx:86
@@ -2625,7 +2663,7 @@ msgid "Last translator"
 msgstr "Last translator"
 
 #: src/components/editor/HeaderEditor.tsx:255
-#: src/pages/Dashboard.tsx:108
+#: src/pages/Dashboard.tsx:107
 #: src/pages/Explore.tsx:31
 #: src/pages/ProjectDetail.tsx:276
 msgid "Last updated"
@@ -2638,7 +2676,7 @@ msgstr "Last updated"
 msgid "Latvian"
 msgstr "Latvian"
 
-#: src/pages/Dashboard.tsx:111
+#: src/pages/Dashboard.tsx:110
 #: src/pages/Explore.tsx:35
 #: src/pages/ProjectDetail.tsx:274
 msgid "Least complete"
@@ -2675,7 +2713,7 @@ msgstr "Legal"
 #: src/components/auth/UserMenu.tsx:143
 #: src/components/landing/LandingFooter.tsx:32
 #: src/pages/auth/Login.tsx:145
-#: src/pages/auth/Signup.tsx:176
+#: src/pages/auth/Signup.tsx:179
 msgid "License"
 msgstr "License"
 
@@ -2827,6 +2865,10 @@ msgstr "Locale"
 msgid "Locale A–Z"
 msgstr "Locale A–Z"
 
+#: src/components/onboarding/RoleStep.tsx:43
+msgid "Localizing my own project"
+msgstr "Localizing my own project"
+
 #: src/components/editor/ReviewSummary.tsx:32
 msgid "Lock approved strings"
 msgstr "Lock approved strings"
@@ -2912,6 +2954,10 @@ msgstr ""
 msgid "Manage subscription"
 msgstr "Manage subscription"
 
+#: src/components/onboarding/RoleStep.tsx:31
+msgid "Managing a translation team"
+msgstr "Managing a translation team"
+
 #: src/components/landing/BeforeAfterSlider.tsx:7
 msgid "Manual copy-paste between translation tools"
 msgstr "Manual copy-paste between translation tools"
@@ -2960,7 +3006,7 @@ msgid "Members"
 msgstr "Members"
 
 #: src/pages/auth/ResetPassword.tsx:103
-#: src/pages/auth/Signup.tsx:142
+#: src/pages/auth/Signup.tsx:145
 msgid "Minimum 8 characters, with uppercase, lowercase, and a digit"
 msgstr "Minimum 8 characters, with uppercase, lowercase, and a digit"
 
@@ -2983,6 +3029,7 @@ msgid "Mongolian"
 msgstr "Mongolian"
 
 #: src/components/landing/PricingSection.tsx:165
+#: src/components/onboarding/PlanStep.tsx:232
 #: src/components/settings/BillingSection.tsx:553
 msgid "Monthly"
 msgstr "Monthly"
@@ -2996,11 +3043,7 @@ msgstr "More info"
 msgid "Most complete"
 msgstr "Most complete"
 
-#: src/components/billing/WelcomeModal.tsx:111
-msgid "Most popular"
-msgstr "Most popular"
-
-#: src/pages/Dashboard.tsx:110
+#: src/pages/Dashboard.tsx:109
 #: src/pages/Explore.tsx:33
 #: src/pages/ProjectDetail.tsx:275
 msgid "Most strings"
@@ -3017,7 +3060,7 @@ msgstr "My team"
 msgid "Name"
 msgstr "Name"
 
-#: src/pages/Dashboard.tsx:109
+#: src/pages/Dashboard.tsx:108
 #: src/pages/Explore.tsx:32
 msgid "Name A–Z"
 msgstr "Name A–Z"
@@ -3030,10 +3073,6 @@ msgstr "Name and email of last translator"
 #: src/components/settings/KeybindsSection.tsx:183
 msgid "Navigation settings"
 msgstr "Navigation settings"
-
-#: src/components/billing/WelcomeModal.tsx:98
-msgid "Need more capacity?"
-msgstr "Need more capacity?"
 
 #: src/components/editor/EditorTable.tsx:410
 #: src/lib/design-tokens.ts:44
@@ -3067,8 +3106,8 @@ msgstr "New password"
 #: src/components/projects/CreateProjectModal.tsx:288
 #: src/components/projects/CreateProjectModal.tsx:338
 #: src/components/projects/SaveToCloudModal.tsx:48
-#: src/pages/Dashboard.tsx:122
-#: src/pages/Dashboard.tsx:154
+#: src/pages/Dashboard.tsx:121
+#: src/pages/Dashboard.tsx:153
 msgid "New project"
 msgstr "New project"
 
@@ -3187,7 +3226,7 @@ msgstr "No members"
 msgid "No notifications"
 msgstr "No notifications"
 
-#: src/pages/Dashboard.tsx:230
+#: src/pages/Dashboard.tsx:229
 msgid "No organizations yet"
 msgstr "No organizations yet"
 
@@ -3201,12 +3240,12 @@ msgstr "No pending invites"
 msgid "No projects in this organization yet"
 msgstr "No projects in this organization yet"
 
-#: src/pages/Dashboard.tsx:196
+#: src/pages/Dashboard.tsx:195
 #: src/pages/Explore.tsx:237
 msgid "No projects match your search"
 msgstr "No projects match your search"
 
-#: src/pages/Dashboard.tsx:145
+#: src/pages/Dashboard.tsx:144
 msgid "No projects yet"
 msgstr "No projects yet"
 
@@ -3455,9 +3494,13 @@ msgstr "Organization not found"
 msgid "Organization settings"
 msgstr "Organization settings"
 
-#: src/pages/Dashboard.tsx:210
+#: src/pages/Dashboard.tsx:209
 msgid "Organizations"
 msgstr "Organizations"
+
+#: src/components/onboarding/AttributionStep.tsx:27
+msgid "Other"
+msgstr "Other"
 
 #: src/components/landing/PlanQuiz.tsx:52
 msgid "Over 100,000"
@@ -3480,7 +3523,7 @@ msgid "PR title"
 msgstr "PR title"
 
 #: src/pages/auth/Login.tsx:112
-#: src/pages/auth/Signup.tsx:136
+#: src/pages/auth/Signup.tsx:139
 msgid "Password"
 msgstr "Password"
 
@@ -3731,12 +3774,12 @@ msgstr "Priority support"
 #: src/components/landing/FeatureGrid.tsx:92
 #: src/components/landing/LandingFooter.tsx:30
 #: src/pages/auth/Login.tsx:141
-#: src/pages/auth/Signup.tsx:172
+#: src/pages/auth/Signup.tsx:175
 msgid "Privacy"
 msgstr "Privacy"
 
 #: src/components/settings/TranslationSection.tsx:354
-#: src/pages/auth/Signup.tsx:152
+#: src/pages/auth/Signup.tsx:155
 msgid "Privacy Policy"
 msgstr "Privacy Policy"
 
@@ -3846,7 +3889,7 @@ msgstr "Project type"
 
 #: src/components/billing/FreePlanBanner.tsx:64
 #: src/components/settings/BillingSection.tsx:483
-#: src/pages/Dashboard.tsx:119
+#: src/pages/Dashboard.tsx:118
 #: src/pages/OrgSettings.tsx:336
 #: src/pages/OrgSettingsPage.tsx:349
 #: src/pages/ProjectDetail.tsx:330
@@ -3966,11 +4009,19 @@ msgstr "Read the translation guide"
 msgid "Ready for export"
 msgstr "Ready for export"
 
-#: src/components/billing/WelcomeModal.tsx:128
 #: src/components/settings/BillingSection.tsx:605
 #: src/components/settings/BillingSection.tsx:652
 msgid "Real-time collaboration"
 msgstr "Real-time collaboration"
+
+#: src/components/onboarding/PlanStep.tsx:269
+msgid "Recommended"
+msgstr "Recommended"
+
+#: src/components/onboarding/PlanStep.tsx:291
+#: src/components/onboarding/PlanStep.tsx:344
+msgid "Redirecting..."
+msgstr "Redirecting..."
 
 #: src/components/editor/EditorTable.tsx:1976
 msgid "References"
@@ -4219,10 +4270,6 @@ msgstr "Review status changed to {{status}} on \"{{msgid}}\""
 msgid "Review workflow"
 msgstr "Review workflow"
 
-#: src/components/billing/WelcomeModal.tsx:129
-msgid "Review workflows"
-msgstr "Review workflows"
-
 #: src/components/editor/EditorWorkspace.tsx:135
 msgid "Review workspace"
 msgstr "Review workspace"
@@ -4330,6 +4377,7 @@ msgid "Save to cloud"
 msgstr "Save to cloud"
 
 #: src/components/landing/PricingSection.tsx:154
+#: src/components/onboarding/PlanStep.tsx:220
 #: src/components/settings/BillingSection.tsx:558
 msgid "Save up to 20%"
 msgstr "Save up to 20%"
@@ -4347,6 +4395,10 @@ msgstr "Scanning for locale files..."
 msgid "Scattered .po files across your desktop"
 msgstr "Scattered .po files across your desktop"
 
+#: src/components/onboarding/AttributionStep.tsx:22
+msgid "Search engine"
+msgstr "Search engine"
+
 #: src/pages/ProjectDetail.tsx:514
 msgid "Search languages…"
 msgstr "Search languages…"
@@ -4355,7 +4407,7 @@ msgstr "Search languages…"
 msgid "Search or type language code..."
 msgstr "Search or type language code..."
 
-#: src/pages/Dashboard.tsx:175
+#: src/pages/Dashboard.tsx:174
 #: src/pages/Explore.tsx:194
 msgid "Search projects…"
 msgstr "Search projects…"
@@ -4640,7 +4692,7 @@ msgstr "Showing {{start}}–{{end}} of {{total}} entries"
 #: src/components/landing/LandingNav.tsx:84
 #: src/components/landing/LandingNav.tsx:155
 #: src/pages/auth/Login.tsx:125
-#: src/pages/auth/Signup.tsx:95
+#: src/pages/auth/Signup.tsx:98
 msgid "Sign in"
 msgstr "Sign in"
 
@@ -4687,7 +4739,7 @@ msgstr "Signals"
 msgid "Signed in with GitHub"
 msgstr "Signed in with GitHub"
 
-#: src/pages/auth/Callback.tsx:61
+#: src/pages/auth/Callback.tsx:92
 msgid "Signing you in..."
 msgstr "Signing you in..."
 
@@ -4702,6 +4754,14 @@ msgstr "Singular entry"
 #: src/components/editor/HeaderEditor.tsx:200
 msgid "Six forms"
 msgstr "Six forms"
+
+#: src/components/onboarding/AttributionStep.tsx:73
+msgid "Skip"
+msgstr "Skip"
+
+#: src/components/onboarding/ProfileStep.tsx:54
+msgid "Skip for now"
+msgstr "Skip for now"
 
 #: src/components/SettingsModal.tsx:257
 #: src/components/settings/KeybindsSection.tsx:187
@@ -4727,6 +4787,10 @@ msgstr "Slovenian"
 #: src/pages/OrgSettingsPage.tsx:408
 msgid "Slug"
 msgstr "Slug"
+
+#: src/components/onboarding/AttributionStep.tsx:23
+msgid "Social media"
+msgstr "Social media"
 
 #: src/components/editor/FilterToolbar.tsx:619
 msgid "Sort entries"
@@ -4861,6 +4925,7 @@ msgstr "String inspector"
 
 #: src/components/billing/FreePlanBanner.tsx:79
 #: src/components/landing/PricingSection.tsx:87
+#: src/components/onboarding/PlanStep.tsx:110
 #: src/components/settings/BillingSection.tsx:118
 #: src/components/settings/BillingSection.tsx:484
 msgid "Strings"
@@ -4970,6 +5035,10 @@ msgstr "Target language code"
 msgid "Target: {{language}}"
 msgstr "Target: {{language}}"
 
+#: src/components/onboarding/RoleStep.tsx:30
+msgid "Team lead"
+msgstr "Team lead"
+
 #: src/components/editor/HeaderEditor.tsx:136
 msgid "Telugu"
 msgstr "Telugu"
@@ -4985,7 +5054,7 @@ msgstr "Term (EN)"
 #: src/components/auth/UserMenu.tsx:152
 #: src/components/landing/LandingFooter.tsx:31
 #: src/pages/auth/Login.tsx:137
-#: src/pages/auth/Signup.tsx:168
+#: src/pages/auth/Signup.tsx:171
 msgid "Terms"
 msgstr "Terms"
 
@@ -4998,7 +5067,7 @@ msgstr "Terms in selected row:"
 msgid "Terms in selected text:"
 msgstr "Terms in selected text:"
 
-#: src/pages/auth/Signup.tsx:148
+#: src/pages/auth/Signup.tsx:151
 msgid "Terms of Service"
 msgstr "Terms of Service"
 
@@ -5110,6 +5179,10 @@ msgstr ""
 "This format isn't supported yet. GlossBoss works with PO, POT, and i18next J"
 "SON files."
 
+#: src/components/onboarding/AttributionStep.tsx:51
+msgid "This helps us improve how we reach translators like you."
+msgstr "This helps us improve how we reach translators like you."
+
 #: src/pages/Invite.tsx:47
 #: src/pages/ProjectInvite.tsx:48
 msgid "This invite link is invalid or has expired."
@@ -5119,6 +5192,10 @@ msgstr "This invite link is invalid or has expired."
 #: src/components/settings/SpeechSection.tsx:245
 msgid "This is a preview of the selected voice."
 msgstr "This is a preview of the selected voice."
+
+#: src/components/onboarding/ProfileStep.tsx:35
+msgid "This is how your name will appear to collaborators."
+msgstr "This is how your name will appear to collaborators."
 
 #: src/components/SettingsModal.tsx:2611
 #: src/components/settings/BackupSection.tsx:554
@@ -5233,6 +5310,10 @@ msgstr "Translated string"
 #: src/components/editor/TranslateToolbar.tsx:1253
 msgid "Translating"
 msgstr "Translating"
+
+#: src/components/onboarding/RoleStep.tsx:25
+msgid "Translating on my own"
+msgstr "Translating on my own"
 
 #: src/components/editor/TranslateButton.tsx:215
 msgid "Translating..."
@@ -5653,7 +5734,6 @@ msgid "View on GitHub"
 msgstr "View on GitHub"
 
 #: src/components/billing/FreePlanBanner.tsx:102
-#: src/components/billing/WelcomeModal.tsx:144
 #: src/components/projects/CreateProjectModal.tsx:365
 #: src/components/projects/CreateProjectModal.tsx:515
 msgid "View plans"
@@ -5685,6 +5765,10 @@ msgstr "Warning"
 msgid "We recommend"
 msgstr "We recommend"
 
+#: src/components/onboarding/RoleStep.tsx:69
+msgid "We'll tailor your experience based on your answer."
+msgstr "We'll tailor your experience based on your answer."
+
 #: src/pages/Roadmap.tsx:308
 msgid ""
 "We're cooking up new features. Want to help shape what comes next? Tell us w"
@@ -5700,10 +5784,6 @@ msgstr ""
 #: src/pages/ProjectSettings.tsx:461
 msgid "Website"
 msgstr "Website"
-
-#: src/components/billing/WelcomeModal.tsx:58
-msgid "Welcome to GlossBoss"
-msgstr "Welcome to GlossBoss"
 
 #: src/components/editor/HeaderEditor.tsx:143
 msgid "Welsh"
@@ -5728,6 +5808,10 @@ msgstr "What makes the WordPress integration special?"
 #: src/components/feedback/FeedbackModal.tsx:365
 msgid "What should have happened"
 msgstr "What should have happened"
+
+#: src/components/onboarding/ProfileStep.tsx:32
+msgid "What should we call you?"
+msgstr "What should we call you?"
 
 #: src/components/feedback/FeedbackModal.tsx:392
 msgid "What would help?"
@@ -5837,6 +5921,10 @@ msgstr "With a team"
 msgid "Without GlossBoss"
 msgstr "Without GlossBoss"
 
+#: src/components/onboarding/AttributionStep.tsx:24
+msgid "Word of mouth"
+msgstr "Word of mouth"
+
 #: src/components/landing/FeatureGrid.tsx:48
 #: src/pages/ProjectSettings.tsx:408
 #: src/pages/ProjectSettings.tsx:489
@@ -5887,11 +5975,16 @@ msgstr "WordPress.org refresh"
 msgid "WordPress.org translation export"
 msgstr "WordPress.org translation export"
 
+#: src/components/onboarding/RoleStep.tsx:37
+msgid "Working with multiple clients"
+msgstr "Working with multiple clients"
+
 #: src/components/editor/EditorTable.tsx:1581
 msgid "Write a reply to this comment"
 msgstr "Write a reply to this comment"
 
 #: src/components/landing/PricingSection.tsx:176
+#: src/components/onboarding/PlanStep.tsx:244
 #: src/components/settings/BillingSection.tsx:554
 msgid "Yearly"
 msgstr "Yearly"
@@ -5915,6 +6008,10 @@ msgstr "You are now a member of this organization."
 #: src/pages/ProjectInvite.tsx:113
 msgid "You are now a member of this project."
 msgstr "You are now a member of this project."
+
+#: src/components/onboarding/PlanStep.tsx:214
+msgid "You can always change your plan later."
+msgstr "You can always change your plan later."
 
 #: src/components/projects/CreateProjectModal.tsx:352
 msgid ""
@@ -5944,10 +6041,6 @@ msgstr "You were added to {{org}}"
 msgid "You were added to {{project}}"
 msgstr "You were added to {{project}}"
 
-#: src/components/billing/WelcomeModal.tsx:66
-msgid "You're on the Free plan. Here's what's included:"
-msgstr "You're on the Free plan. Here's what's included:"
-
 #: src/components/repo-sync/CommitPanel.tsx:209
 msgid "You're on the default branch — creating a new branch is recommended"
 msgstr "You're on the default branch — creating a new branch is recommended"
@@ -5970,6 +6063,10 @@ msgstr ""
 "Your ElevenLabs API key is kept in this browser tab by default and will be c"
 "leared when you close the tab. Enable \"Remember API key\" below to persist "
 "it across sessions."
+
+#: src/components/onboarding/ProfileStep.tsx:40
+msgid "Your name"
+msgstr "Your name"
 
 #: src/pages/auth/Login.tsx:113
 msgid "Your password"
@@ -6003,7 +6100,7 @@ msgstr ""
 "Your token is sent directly to the GitLab API from your browser and is never"
 " stored on our servers."
 
-#: src/pages/auth/Signup.tsx:150
+#: src/pages/auth/Signup.tsx:153
 msgid "and"
 msgstr "and"
 
@@ -6060,7 +6157,6 @@ msgid "languages"
 msgstr "languages"
 
 #: src/components/billing/FreePlanBanner.tsx:53
-#: src/components/billing/WelcomeModal.tsx:92
 #: src/components/settings/BillingSection.tsx:578
 msgid "member"
 msgstr "member"
@@ -6083,7 +6179,7 @@ msgstr "name@example.com"
 msgid "or"
 msgstr "or"
 
-#: src/pages/auth/Signup.tsx:115
+#: src/pages/auth/Signup.tsx:118
 msgid "or create account with email"
 msgstr "or create account with email"
 
@@ -6105,14 +6201,12 @@ msgid "plural"
 msgstr "plural"
 
 #: src/components/billing/FreePlanBanner.tsx:52
-#: src/components/billing/WelcomeModal.tsx:86
 #: src/components/settings/BillingSection.tsx:576
 msgid "project"
 msgstr "project"
 
 #: src/components/AppSidebar.tsx:383
 #: src/components/auth/UserMenu.tsx:100
-#: src/components/billing/WelcomeModal.tsx:120
 #: src/components/settings/BillingSection.tsx:649
 msgid "projects"
 msgstr "projects"
@@ -6140,8 +6234,6 @@ msgstr "skipped"
 #: src/components/AppSidebar.tsx:388
 #: src/components/auth/UserMenu.tsx:105
 #: src/components/billing/FreePlanBanner.tsx:53
-#: src/components/billing/WelcomeModal.tsx:89
-#: src/components/billing/WelcomeModal.tsx:123
 #: src/components/settings/BillingSection.tsx:577
 #: src/components/settings/BillingSection.tsx:596
 #: src/components/settings/BillingSection.tsx:604
@@ -6160,7 +6252,6 @@ msgstr "strings translated"
 msgid "tasks"
 msgstr "tasks"
 
-#: src/components/billing/WelcomeModal.tsx:126
 #: src/components/settings/BillingSection.tsx:651
 msgid "team members"
 msgstr "team members"
@@ -6351,7 +6442,7 @@ msgstr "{{count}} with updated references"
 msgid "{{file}} is replaced with the filename without extension"
 msgstr "{{file}} is replaced with the filename without extension"
 
-#: src/pages/Dashboard.tsx:167
+#: src/pages/Dashboard.tsx:166
 msgid "{{languages}} languages"
 msgstr "{{languages}} languages"
 
@@ -6371,7 +6462,7 @@ msgstr "{{name}} joined {{org}}"
 msgid "{{name}} joined {{project}}"
 msgstr "{{name}} joined {{project}}"
 
-#: src/pages/Dashboard.tsx:165
+#: src/pages/Dashboard.tsx:164
 #: src/pages/Explore.tsx:187
 msgid "{{projects}} projects"
 msgstr "{{projects}} projects"
@@ -6412,7 +6503,7 @@ msgstr "{{provider}} will include glossary terms in the translation prompt"
 msgid "{{score}}% match"
 msgstr "{{score}}% match"
 
-#: src/pages/Dashboard.tsx:169
+#: src/pages/Dashboard.tsx:168
 msgid "{{strings}} strings"
 msgstr "{{strings}} strings"
 

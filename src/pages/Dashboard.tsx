@@ -21,6 +21,7 @@ import { motion } from 'motion/react';
 import { Plus, AlertCircle, FolderOpen, Search, Building2 } from 'lucide-react';
 import { sectionVariants, contentVariants, buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
+import { trackEvent } from '@/lib/analytics';
 import { useProjectsStore } from '@/stores/projects-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { useOrganizationsStore } from '@/stores/organizations-store';
@@ -30,7 +31,6 @@ import { CreateProjectModal } from '@/components/projects/CreateProjectModal';
 import { CreateOrgModal } from '@/components/organizations/CreateOrgModal';
 import { ConfirmModal } from '@/components/ui';
 import { FreePlanBanner } from '@/components/billing/FreePlanBanner';
-import { WelcomeModal } from '@/components/billing/WelcomeModal';
 import type { ProjectWithLanguages } from '@/lib/projects/types';
 
 const MotionDiv = motion.div;
@@ -75,9 +75,13 @@ export default function Dashboard() {
 
   const handleDeleteConfirmed = async () => {
     if (!confirmDeleteId) return;
+    const projectToDelete = projects.find((p) => p.id === confirmDeleteId);
     setDeleting(true);
     try {
       await deleteProject(confirmDeleteId);
+      trackEvent('project_deleted', {
+        had_translations: (projectToDelete?.stats_translated ?? 0) > 0,
+      });
       setConfirmDeleteId(null);
     } finally {
       setDeleting(false);
@@ -301,8 +305,6 @@ export default function Dashboard() {
         variant="danger"
         loading={deleting}
       />
-
-      <WelcomeModal />
     </>
   );
 }

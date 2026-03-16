@@ -22,6 +22,7 @@ import { AlertCircle, CheckCircle } from 'lucide-react';
 import { useTranslation } from '@/lib/app-language';
 import { useAuthStore } from '@/stores/auth-store';
 import { useAuth } from '@/hooks/use-auth';
+import { savePlanParams } from '@/lib/auth/session';
 import { trackEvent } from '@/lib/analytics';
 import { GithubIcon } from '@/components/auth/GithubIcon';
 
@@ -36,10 +37,11 @@ export default function Signup() {
   const selectedInterval = searchParams.get('interval') || 'month';
 
   function getPostSignupRedirect(): string {
-    if (selectedPlan && selectedPlan !== 'free') {
-      return `/settings?tab=billing&plan=${selectedPlan}&interval=${selectedInterval}`;
-    }
-    return '/dashboard';
+    const params = new URLSearchParams();
+    if (selectedPlan) params.set('plan', selectedPlan);
+    if (selectedInterval) params.set('interval', selectedInterval);
+    const qs = params.toString();
+    return qs ? `/onboarding?${qs}` : '/onboarding';
   }
   const signUpWithEmail = useAuthStore((s) => s.signUpWithEmail);
   const signInWithGitHub = useAuthStore((s) => s.signInWithGitHub);
@@ -70,6 +72,7 @@ export default function Signup() {
 
   const handleGitHubSignup = async () => {
     clearError();
+    savePlanParams(selectedPlan, selectedInterval);
     await signInWithGitHub();
   };
 
