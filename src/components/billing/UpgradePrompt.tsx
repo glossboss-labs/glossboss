@@ -3,6 +3,7 @@ import { Zap } from 'lucide-react';
 import { useTranslation } from '@/lib/app-language';
 import type { PlanTier } from '@/lib/billing/types';
 import { POLAR_PRODUCT_IDS } from '@/lib/billing/polar';
+import { createCheckoutSession } from '@/lib/billing/api';
 
 interface UpgradePromptProps {
   /** The resource that hit the limit. */
@@ -24,10 +25,13 @@ export function UpgradePrompt({ resource, currentPlan }: UpgradePromptProps) {
 
   const productId = POLAR_PRODUCT_IDS[suggestedPlan].month;
 
-  const handleUpgrade = () => {
-    // Open Polar checkout in new tab — the checkout session will be created
-    // server-side in production; for now link to the Polar product page
-    window.open(`https://polar.sh/glossboss/checkout?productId=${productId}`, '_blank');
+  const handleUpgrade = async () => {
+    try {
+      const url = await createCheckoutSession(productId);
+      window.open(url, '_blank');
+    } catch (err) {
+      console.error('Failed to create checkout session:', err);
+    }
   };
 
   return (

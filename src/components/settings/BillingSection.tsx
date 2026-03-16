@@ -8,6 +8,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useSubscription } from '@/hooks/use-subscription';
 import { useProjectsStore } from '@/stores/projects-store';
 import { useTranslation } from '@/lib/app-language';
+import { createCheckoutSession } from '@/lib/billing/api';
 import { formatLimit, PLAN_LIMITS } from '@/lib/billing/limits';
 import { PLAN_PRICING, POLAR_PRODUCT_IDS } from '@/lib/billing/polar';
 import { PlanBadge } from '@/components/billing/PlanBadge';
@@ -70,12 +71,18 @@ export function BillingSection() {
     .reduce((sum, p) => sum + (p.stats_total ?? 0), 0);
 
   const isFreePlan = plan === 'free';
+  const isAdminOverride = subscription !== null && !subscription.polar_subscription_id;
   const isCanceled = subscription?.status === 'canceled';
   const isPastDue = subscription?.status === 'past_due';
 
-  const handleUpgrade = (tier: 'pro' | 'organization') => {
+  const handleUpgrade = async (tier: 'pro' | 'organization') => {
     const productId = POLAR_PRODUCT_IDS[tier].month;
-    window.open(`https://polar.sh/glossboss/checkout?productId=${productId}`, '_blank');
+    try {
+      const url = await createCheckoutSession(productId);
+      window.open(url, '_blank');
+    } catch (err) {
+      console.error('Failed to create checkout session:', err);
+    }
   };
 
   const handleManage = () => {
@@ -115,10 +122,23 @@ export function BillingSection() {
                 {t('Current plan')}
               </Text>
             </Group>
-            <PlanBadge plan={plan} />
+            <Group gap="xs">
+              <PlanBadge plan={plan} />
+              {isAdminOverride && (
+                <Badge variant="light" color="green" size="sm">
+                  {t('Admin')}
+                </Badge>
+              )}
+            </Group>
           </Group>
 
-          {!isFreePlan && subscription && (
+          {isAdminOverride && (
+            <Text size="xs" c="dimmed">
+              {t('Unlimited access granted manually. No billing required.')}
+            </Text>
+          )}
+
+          {!isFreePlan && !isAdminOverride && subscription && (
             <Group gap="xs">
               <Text size="xs" c="dimmed">
                 {subscription.billing_interval === 'year'
@@ -140,7 +160,7 @@ export function BillingSection() {
             </Group>
           )}
 
-          {!isFreePlan && (
+          {!isFreePlan && !isAdminOverride && (
             <Button
               variant="light"
               size="xs"
@@ -166,7 +186,7 @@ export function BillingSection() {
       </Paper>
 
       {/* Upgrade options */}
-      {isFreePlan && (
+      {isFreePlan && !isAdminOverride && (
         <Paper p="md" withBorder>
           <Stack gap="sm">
             <Group gap="xs">

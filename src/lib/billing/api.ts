@@ -1,8 +1,20 @@
-import { getSupabaseClient } from '@/lib/supabase/client';
+import { getSupabaseClient, invokeSupabaseFunction } from '@/lib/supabase/client';
 import type { SubscriptionRow } from './types';
 
 function supabase() {
   return getSupabaseClient('Billing');
+}
+
+/** Create a Polar checkout session and return the checkout URL. */
+export async function createCheckoutSession(
+  productId: string,
+  successUrl?: string,
+): Promise<string> {
+  const result = await invokeSupabaseFunction<{ url: string }>('polar-checkout', {
+    productId,
+    successUrl,
+  });
+  return result.url;
 }
 
 /** Fetch the current user's personal subscription. */

@@ -138,6 +138,10 @@ msgstr ""
 msgid "Adjust the appearance of the editor to suit your screen and preferences."
 msgstr "Pas het uiterlijk van de editor aan je scherm en voorkeuren aan."
 
+#: src/components/settings/BillingSection.tsx:129
+msgid "Admin"
+msgstr ""
+
 #: src/components/editor/HeaderEditor.tsx:49
 msgid "Afrikaans"
 msgstr "Afrikaans"
@@ -332,11 +336,11 @@ msgstr "Wit-Russisch"
 msgid "Bengali"
 msgstr "Bengaals"
 
-#: src/components/settings/BillingSection.tsx:134
+#: src/components/settings/BillingSection.tsx:145
 msgid "Billed annually"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:135
+#: src/components/settings/BillingSection.tsx:146
 msgid "Billed monthly"
 msgstr ""
 
@@ -862,7 +866,7 @@ msgstr "Kroatisch"
 msgid "Current editor"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:124
+#: src/components/settings/BillingSection.tsx:122
 msgid "Current plan"
 msgstr ""
 
@@ -2381,7 +2385,7 @@ msgid ""
 " into the active project scope."
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:159
+#: src/components/settings/BillingSection.tsx:170
 msgid "Manage subscription"
 msgstr ""
 
@@ -2504,7 +2508,7 @@ msgstr "Naam en e-mail van de laatste vertaler"
 msgid "Navigation Settings"
 msgstr "Navigatie-instellingen"
 
-#: src/components/settings/BillingSection.tsx:253
+#: src/components/settings/BillingSection.tsx:265
 msgid "Need more capacity?"
 msgstr ""
 
@@ -3049,7 +3053,7 @@ msgstr ""
 msgid "Polish"
 msgstr "Pools"
 
-#: src/components/settings/BillingSection.tsx:204
+#: src/components/settings/BillingSection.tsx:212
 msgid "Popular"
 msgstr ""
 
@@ -3188,7 +3192,7 @@ msgstr ""
 msgid "Project type"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:173
+#: src/components/settings/BillingSection.tsx:183
 #: src/pages/Dashboard.tsx:117
 #: src/pages/OrgSettings.tsx:339
 #: src/pages/OrgSettingsPage.tsx:351
@@ -3376,7 +3380,7 @@ msgstr ""
 msgid "Remove yourself from this project."
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:143
+#: src/components/settings/BillingSection.tsx:154
 msgid "Renews {{date}}"
 msgstr ""
 
@@ -3636,7 +3640,7 @@ msgstr ""
 msgid "Save to cloud"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:242
+#: src/components/settings/BillingSection.tsx:255
 msgid "Save with annual billing"
 msgstr ""
 
@@ -3908,7 +3912,7 @@ msgstr ""
 msgid "Sign in to manage your account settings and enable cloud sync."
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:60
+#: src/components/settings/BillingSection.tsx:53
 msgid "Sign in to manage your subscription."
 msgstr ""
 
@@ -4078,7 +4082,7 @@ msgstr ""
 msgid "String Inspector"
 msgstr "Tekst-inspecteur"
 
-#: src/components/settings/BillingSection.tsx:178
+#: src/components/settings/BillingSection.tsx:184
 msgid "Strings"
 msgstr ""
 
@@ -4509,8 +4513,12 @@ msgstr ""
 msgid "Unknown error"
 msgstr "Onbekende fout"
 
-#: src/components/settings/BillingSection.tsx:36
+#: src/components/settings/BillingSection.tsx:29
 msgid "Unlimited"
+msgstr ""
+
+#: src/components/settings/BillingSection.tsx:137
+msgid "Unlimited access granted manually. No billing required."
 msgstr ""
 
 #: src/pages/ProjectSettings.tsx:566
@@ -4586,11 +4594,11 @@ msgstr ""
 msgid "Updated translation"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:192
+#: src/components/settings/BillingSection.tsx:195
 msgid "Upgrade"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:261
+#: src/components/settings/BillingSection.tsx:272
 msgid "Upgrade to Organization"
 msgstr ""
 
@@ -4633,7 +4641,7 @@ msgstr ""
 msgid "Urdu"
 msgstr "Urdu"
 
-#: src/components/settings/BillingSection.tsx:169
+#: src/components/settings/BillingSection.tsx:180
 msgid "Usage"
 msgstr ""
 
@@ -4950,13 +4958,13 @@ msgstr ""
 msgid "Your password"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:102
+#: src/components/settings/BillingSection.tsx:98
 msgid ""
 "Your payment is past due. Please update your payment method to avoid service"
 " interruption."
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:110
+#: src/components/settings/BillingSection.tsx:108
 msgid "Your subscription is canceled and will expire on {{date}}."
 msgstr ""
 
@@ -5018,13 +5026,13 @@ msgstr "zojuist"
 msgid "languages"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:216
-#: src/components/settings/BillingSection.tsx:235
+#: src/components/settings/BillingSection.tsx:224
+#: src/components/settings/BillingSection.tsx:248
 msgid "members"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:210
-#: src/components/settings/BillingSection.tsx:229
+#: src/components/settings/BillingSection.tsx:218
+#: src/components/settings/BillingSection.tsx:242
 msgid "month"
 msgstr ""
 
@@ -5058,8 +5066,8 @@ msgstr "overschreven"
 msgid "plural"
 msgstr "meervoud"
 
-#: src/components/settings/BillingSection.tsx:214
-#: src/components/settings/BillingSection.tsx:233
+#: src/components/settings/BillingSection.tsx:222
+#: src/components/settings/BillingSection.tsx:246
 msgid "projects"
 msgstr ""
 
@@ -5071,8 +5079,8 @@ msgstr "enkelvoud"
 msgid "skipped"
 msgstr "overgeslagen"
 
-#: src/components/settings/BillingSection.tsx:215
-#: src/components/settings/BillingSection.tsx:234
+#: src/components/settings/BillingSection.tsx:223
+#: src/components/settings/BillingSection.tsx:247
 #: src/pages/OrgSettings.tsx:475
 #: src/pages/OrgSettingsPage.tsx:672
 #: src/pages/ProjectSettings.tsx:642
@@ -5104,8 +5112,8 @@ msgstr ""
 msgid "with api scope"
 msgstr ""
 
-#: src/components/settings/BillingSection.tsx:242
-#: src/components/settings/BillingSection.tsx:243
+#: src/components/settings/BillingSection.tsx:255
+#: src/components/settings/BillingSection.tsx:256
 msgid "year"
 msgstr ""
 
