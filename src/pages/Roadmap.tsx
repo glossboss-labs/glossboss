@@ -352,7 +352,7 @@ export default function Roadmap() {
                 <MotionDiv variants={staggerContainerVariants} initial="hidden" animate="visible">
                   <Stack gap="sm">
                     {filtered.map((issue) => (
-                      <MotionDiv key={issue.number} variants={contentVariants}>
+                      <MotionDiv key={issue.url || issue.number} variants={contentVariants}>
                         <RoadmapCard issue={issue} />
                       </MotionDiv>
                     ))}
