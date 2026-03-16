@@ -5,7 +5,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router';
 import {
-  Container,
   Stack,
   Group,
   Title,
@@ -69,7 +68,6 @@ import type {
 } from '@/lib/projects/types';
 import { useProjectsStore } from '@/stores/projects-store';
 import { useAuth } from '@/hooks/use-auth';
-import { AppHeader } from '@/components/AppHeader';
 import { AddLanguageModal } from '@/components/projects/AddLanguageModal';
 import { ProjectMembersTab } from '@/components/projects/ProjectMembersTab';
 import { ProjectInvitesTab } from '@/components/projects/ProjectInvitesTab';
@@ -290,7 +288,7 @@ export default function ProjectDetail() {
 
   if (error || !project) {
     return (
-      <Container size="xl" py="xl">
+      <>
         <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
           <Alert icon={<AlertCircle size={16} />} color="red" variant="light">
             {error ?? t('Project not found')}
@@ -304,15 +302,14 @@ export default function ProjectDetail() {
             {isAuthenticated ? t('Back to dashboard') : t('Back to projects')}
           </Button>
         </MotionDiv>
-      </Container>
+      </>
     );
   }
 
   const VisIcon = VISIBILITY_ICON[project.visibility] ?? Globe;
 
   return (
-    <Container size="xl" py="xl">
-      <AppHeader />
+    <>
       <MotionDiv variants={sectionVariants} initial="hidden" animate="visible">
         <Stack gap="lg">
           {/* Breadcrumb */}
@@ -769,6 +766,6 @@ export default function ProjectDetail() {
         variant="warning"
         loading={leaveLoading}
       />
-    </Container>
+    </>
   );
 }

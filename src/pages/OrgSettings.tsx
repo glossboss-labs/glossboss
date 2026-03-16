@@ -8,7 +8,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router';
 import {
-  Container,
   Stack,
   Group,
   Title,
@@ -63,7 +62,6 @@ import type {
   InviteRow,
 } from '@/lib/organizations/types';
 import { useAuth } from '@/hooks/use-auth';
-import { AppHeader } from '@/components/AppHeader';
 import { ConfirmModal, RoleBadge } from '@/components/ui';
 import { listOrgProjects } from '@/lib/projects/api';
 import type { ProjectWithLanguages } from '@/lib/projects/types';
@@ -240,7 +238,7 @@ export default function OrgSettings() {
 
   if (error && !org) {
     return (
-      <Container size="xl" py="xl">
+      <>
         <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
           <Alert icon={<AlertCircle size={16} />} color="red" variant="light">
             {error}
@@ -249,15 +247,14 @@ export default function OrgSettings() {
             {t('Back to dashboard')}
           </Button>
         </MotionDiv>
-      </Container>
+      </>
     );
   }
 
   if (!org) return null;
 
   return (
-    <Container size="xl" py="xl">
-      <AppHeader />
+    <>
       <MotionDiv variants={sectionVariants} initial="hidden" animate="visible">
         <Stack gap="lg">
           {/* Breadcrumb */}
@@ -618,6 +615,6 @@ export default function OrgSettings() {
         variant="warning"
         loading={actionLoading}
       />
-    </Container>
+    </>
   );
 }

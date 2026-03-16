@@ -5,12 +5,11 @@
  * Tab state persisted in the URL via ?tab= search parameter.
  */
 
-import { useSearchParams, Link } from 'react-router';
-import { Container, Stack, Title, Text, Tabs, useMantineTheme } from '@mantine/core';
+import { useSearchParams } from 'react-router';
+import { Stack, Title, Tabs, useMantineTheme, Box } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { motion } from 'motion/react';
 import {
-  ArrowLeft,
   User,
   Key,
   Volume2,
@@ -23,7 +22,6 @@ import {
 } from 'lucide-react';
 import { sectionVariants } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
-import { AppHeader } from '@/components/AppHeader';
 import {
   AccountSection,
   TranslationSection,
@@ -55,27 +53,9 @@ export default function Settings() {
   };
 
   return (
-    <Container size="lg" py="xl">
-      <AppHeader />
+    <Box maw={960}>
       <MotionDiv variants={sectionVariants} initial="hidden" animate="visible">
         <Stack gap="lg">
-          {/* Breadcrumb */}
-          <Text
-            component={Link}
-            to="/dashboard"
-            size="sm"
-            style={{
-              color: 'var(--gb-text-secondary)',
-              textDecoration: 'none',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 4,
-            }}
-          >
-            <ArrowLeft size={14} />
-            {t('Dashboard')}
-          </Text>
-
           <Title order={3}>{t('Settings')}</Title>
 
           <Tabs
@@ -164,6 +144,6 @@ export default function Settings() {
           </Tabs>
         </Stack>
       </MotionDiv>
-    </Container>
+    </Box>
   );
 }

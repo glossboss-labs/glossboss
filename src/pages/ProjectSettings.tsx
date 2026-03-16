@@ -8,7 +8,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams, Link, useNavigate, useSearchParams } from 'react-router';
 import {
-  Container,
+  Box,
   Stack,
   Group,
   Title,
@@ -63,7 +63,6 @@ import type {
 } from '@/lib/projects/types';
 import { useProjectRole } from '@/hooks/use-project-role';
 import { useAuth } from '@/hooks/use-auth';
-import { AppHeader } from '@/components/AppHeader';
 import { ProjectMembersTab } from '@/components/projects/ProjectMembersTab';
 import { ProjectInvitesTab } from '@/components/projects/ProjectInvitesTab';
 import { AddLanguageModal } from '@/components/projects/AddLanguageModal';
@@ -257,22 +256,21 @@ export default function ProjectSettings() {
 
   if (error && !project) {
     return (
-      <Container size="lg" py="xl">
+      <Box maw={960}>
         <Alert icon={<AlertCircle size={16} />} color="red" variant="light">
           {error}
         </Alert>
         <Button component={Link} to="/dashboard" variant="light" mt="md">
           {t('Back to dashboard')}
         </Button>
-      </Container>
+      </Box>
     );
   }
 
   if (!project) return null;
 
   return (
-    <Container size="lg" py="xl">
-      <AppHeader />
+    <Box maw={960}>
       <MotionDiv variants={sectionVariants} initial="hidden" animate="visible">
         <Stack gap="lg">
           {/* Breadcrumb */}
@@ -787,6 +785,6 @@ export default function ProjectSettings() {
         variant="warning"
         loading={leaveLoading}
       />
-    </Container>
+    </Box>
   );
 }

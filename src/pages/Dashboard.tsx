@@ -5,7 +5,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router';
 import {
-  Container,
   Title,
   Group,
   Button,
@@ -24,8 +23,8 @@ import { Plus, AlertCircle, FolderOpen, Search, Building2 } from 'lucide-react';
 import { sectionVariants, contentVariants, fadeVariants, buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
 import { useProjectsStore } from '@/stores/projects-store';
+import { useAuthStore } from '@/stores/auth-store';
 import { useOrganizationsStore } from '@/stores/organizations-store';
-import { AppHeader } from '@/components/AppHeader';
 import { ProjectGrid } from '@/components/projects/ProjectGrid';
 import { CreateProjectModal } from '@/components/projects/CreateProjectModal';
 import { CreateOrgModal } from '@/components/organizations/CreateOrgModal';
@@ -61,6 +60,7 @@ function sortProjects(projects: ProjectWithLanguages[], sort: SortOption): Proje
 export default function Dashboard() {
   const { t } = useTranslation();
   const { projects, loading, error, fetchProjects, deleteProject } = useProjectsStore();
+  const { user } = useAuthStore();
   const { organizations, loading: orgsLoading, fetchOrganizations } = useOrganizationsStore();
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [createOrgModalOpen, setCreateOrgModalOpen] = useState(false);
@@ -112,8 +112,7 @@ export default function Dashboard() {
   ];
 
   return (
-    <Container size="xl" py="xl">
-      <AppHeader />
+    <>
       <FreePlanBanner />
       <MotionDiv variants={sectionVariants} initial="hidden" animate="visible">
         <Group justify="space-between" mb="xl">
@@ -205,7 +204,7 @@ export default function Dashboard() {
                 </Center>
               </MotionDiv>
             ) : (
-              <ProjectGrid projects={filtered} onDelete={setConfirmDeleteId} />
+              <ProjectGrid projects={filtered} onDelete={setConfirmDeleteId} ownerId={user?.id} />
             )}
           </>
         )}
@@ -315,6 +314,6 @@ export default function Dashboard() {
       />
 
       <WelcomeModal />
-    </Container>
+    </>
   );
 }

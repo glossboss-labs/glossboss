@@ -4,7 +4,6 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import {
-  Container,
   Title,
   Group,
   Text,
@@ -21,7 +20,6 @@ import { AlertCircle, Search, Globe } from 'lucide-react';
 import { sectionVariants, contentVariants, fadeVariants } from '@/lib/motion';
 import { useTranslation, msgid } from '@/lib/app-language';
 import { listPublicProjects } from '@/lib/projects/api';
-import { AppHeader } from '@/components/AppHeader';
 import { ProjectGrid } from '@/components/projects/ProjectGrid';
 import type { ProjectWithLanguages } from '@/lib/projects/types';
 
@@ -141,8 +139,7 @@ export default function Explore() {
   }, [projects]);
 
   return (
-    <Container size="xl" py="xl">
-      <AppHeader />
+    <>
       <MotionDiv variants={sectionVariants} initial="hidden" animate="visible">
         <Group justify="space-between" mb="xl">
           <div>
@@ -247,6 +244,6 @@ export default function Explore() {
           </>
         )}
       </MotionDiv>
-    </Container>
+    </>
   );
 }
