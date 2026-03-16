@@ -6,7 +6,7 @@
 
 import { useState } from 'react';
 import { Link } from 'react-router';
-import { Menu, Avatar, ActionIcon, Tooltip, UnstyledButton, Group, Text } from '@mantine/core';
+import { Menu, Avatar, ActionIcon, Tooltip, Group, Text } from '@mantine/core';
 import {
   LogIn,
   LogOut,
@@ -22,12 +22,18 @@ import { buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
 import { useAuth } from '@/hooks/use-auth';
 import { useAuthStore } from '@/stores/auth-store';
+import { useSubscription } from '@/hooks/use-subscription';
+import { useProjectsStore } from '@/stores/projects-store';
+import { formatLimit } from '@/lib/billing/limits';
+import { PlanBadge } from '@/components/billing/PlanBadge';
 import { FeedbackModal } from '@/components/feedback';
 
 export function UserMenu() {
   const { t } = useTranslation();
   const { user, isAuthenticated, loading } = useAuth();
   const signOut = useAuthStore((s) => s.signOut);
+  const { plan, limits } = useSubscription();
+  const projects = useProjectsStore((s) => s.projects);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
 
   if (loading) return null;
@@ -64,13 +70,16 @@ export function UserMenu() {
       <Menu position="bottom-end" withinPortal>
         <Menu.Target>
           <motion.div {...buttonStates}>
-            <UnstyledButton>
-              <Group gap={8}>
-                <Avatar src={avatarUrl} size={34} radius="sm" color="blue">
-                  {initials}
-                </Avatar>
-              </Group>
-            </UnstyledButton>
+            <ActionIcon
+              variant="default"
+              size="lg"
+              radius="sm"
+              style={{ padding: 0, overflow: 'hidden' }}
+            >
+              <Avatar src={avatarUrl} size="100%" radius="sm" color="blue">
+                {initials}
+              </Avatar>
+            </ActionIcon>
           </motion.div>
         </Menu.Target>
 
@@ -81,7 +90,20 @@ export function UserMenu() {
               <Text size="xs" truncate style={{ maxWidth: 180 }}>
                 {displayName}
               </Text>
+              <PlanBadge plan={plan} />
             </Group>
+          </Menu.Label>
+
+          <Menu.Label>
+            <Text size="xs" c="dimmed">
+              {projects.filter((p) => !p.organization_id).length}/{formatLimit(limits.projects)}{' '}
+              {t('projects')} &middot;{' '}
+              {projects
+                .filter((p) => !p.organization_id)
+                .reduce((s, p) => s + (p.stats_total ?? 0), 0)
+                .toLocaleString()}
+              /{formatLimit(limits.strings)} {t('strings')}
+            </Text>
           </Menu.Label>
 
           <Menu.Divider />

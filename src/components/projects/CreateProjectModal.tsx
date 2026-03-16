@@ -23,7 +23,7 @@ import {
   FileButton,
   Alert,
 } from '@mantine/core';
-import { Upload, Globe, GitBranch, AlertCircle, FolderPlus } from 'lucide-react';
+import { Upload, Globe, GitBranch, AlertCircle, FolderPlus, Zap } from 'lucide-react';
 import { useTranslation } from '@/lib/app-language';
 import { msgid } from '@/lib/app-language';
 import type { POFile } from '@/lib/po/types';
@@ -36,7 +36,8 @@ import { RepoSyncModal } from '@/components/repo-sync/RepoSyncModal';
 import { useProjectsStore } from '@/stores/projects-store';
 import { useOrganizationsStore } from '@/stores/organizations-store';
 import { useAuth } from '@/hooks/use-auth';
-import { useNavigate } from 'react-router';
+import { useNavigate, Link } from 'react-router';
+import { detectLimitError, getLimitErrorMessage } from '@/lib/billing/errors';
 import type { WordPressProjectType } from '@/lib/wp-source/references';
 
 const VISIBILITY_OPTIONS = [
@@ -86,6 +87,7 @@ export function CreateProjectModal({ opened, onClose }: CreateProjectModalProps)
   const [organizationId, setOrganizationId] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
+  const [isLimitError, setIsLimitError] = useState(false);
 
   const resetState = useCallback(() => {
     setStep(0);
@@ -292,11 +294,14 @@ export function CreateProjectModal({ opened, onClose }: CreateProjectModalProps)
         void navigate(`/projects/${project.id}`);
       }
     } catch (err) {
-      const message =
-        err && typeof err === 'object' && 'message' in err
+      const limitResource = detectLimitError(err);
+      const message = limitResource
+        ? t(getLimitErrorMessage(limitResource))
+        : err && typeof err === 'object' && 'message' in err
           ? String((err as { message: string }).message)
           : t('Failed to create project');
       setCreateError(message);
+      setIsLimitError(limitResource !== null);
       setCreating(false);
     }
   }, [
@@ -459,8 +464,27 @@ export function CreateProjectModal({ opened, onClose }: CreateProjectModalProps)
         {step === 1 && (
           <Stack gap="md">
             {createError && (
-              <Alert icon={<AlertCircle size={16} />} color="red" variant="light">
-                {createError}
+              <Alert
+                icon={isLimitError ? <Zap size={16} /> : <AlertCircle size={16} />}
+                color={isLimitError ? 'yellow' : 'red'}
+                variant="light"
+              >
+                <Stack gap="xs">
+                  <Text size="sm">{createError}</Text>
+                  {isLimitError && (
+                    <Button
+                      component={Link}
+                      to="/settings?tab=billing"
+                      size="xs"
+                      variant="filled"
+                      color="blue"
+                      leftSection={<Zap size={14} />}
+                      onClick={handleClose}
+                    >
+                      {t('View plans')}
+                    </Button>
+                  )}
+                </Stack>
               </Alert>
             )}
 

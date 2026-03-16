@@ -287,7 +287,7 @@ msgstr ""
 msgid "Azure translation failed"
 msgstr ""
 
-#: src/components/projects/CreateProjectModal.tsx:528
+#: src/components/projects/CreateProjectModal.tsx:552
 msgid "Back"
 msgstr ""
 
@@ -371,12 +371,12 @@ msgstr ""
 
 #: src/components/editor/EditorTable.tsx:3345
 #: src/components/projects/AddLanguageModal.tsx:363
-#: src/components/projects/CreateProjectModal.tsx:380
+#: src/components/projects/CreateProjectModal.tsx:385
 #: src/components/repo-sync/RepoSyncModal.tsx:578
 msgid "Browse"
 msgstr "Bladeren"
 
-#: src/components/projects/CreateProjectModal.tsx:422
+#: src/components/projects/CreateProjectModal.tsx:427
 msgid "Browse a GitHub or GitLab repository"
 msgstr ""
 
@@ -504,7 +504,7 @@ msgstr ""
 msgid "Choose a slug and locale before opening a project."
 msgstr ""
 
-#: src/components/projects/CreateProjectModal.tsx:336
+#: src/components/projects/CreateProjectModal.tsx:341
 msgid "Choose a source to create your cloud project from."
 msgstr ""
 
@@ -667,7 +667,7 @@ msgstr ""
 msgid "Commit prefix"
 msgstr ""
 
-#: src/components/projects/CreateProjectModal.tsx:330
+#: src/components/projects/CreateProjectModal.tsx:335
 msgid "Configure"
 msgstr ""
 
@@ -793,7 +793,7 @@ msgstr ""
 "origin-verzoeken toe. Probeer het bestand te downloaden en direct te uploade"
 "n."
 
-#: src/components/projects/CreateProjectModal.tsx:452
+#: src/components/projects/CreateProjectModal.tsx:457
 msgid "Create"
 msgstr ""
 
@@ -839,7 +839,7 @@ msgstr ""
 msgid "Create organization"
 msgstr ""
 
-#: src/components/projects/CreateProjectModal.tsx:536
+#: src/components/projects/CreateProjectModal.tsx:560
 #: src/pages/OrgSettings.tsx:433
 #: src/pages/OrgSettingsPage.tsx:630
 msgid "Create project"
@@ -1150,7 +1150,7 @@ msgstr ""
 msgid "Empty directory"
 msgstr "Lege map"
 
-#: src/components/projects/CreateProjectModal.tsx:444
+#: src/components/projects/CreateProjectModal.tsx:449
 msgid "Empty project"
 msgstr ""
 
@@ -1383,7 +1383,7 @@ msgstr "Kan geen verbinding maken"
 msgid "Failed to create organization"
 msgstr ""
 
-#: src/components/projects/CreateProjectModal.tsx:298
+#: src/components/projects/CreateProjectModal.tsx:302
 msgid "Failed to create project"
 msgstr ""
 
@@ -1407,7 +1407,7 @@ msgid "Failed to export project."
 msgstr ""
 
 #: src/components/projects/AddLanguageModal.tsx:146
-#: src/components/projects/CreateProjectModal.tsx:186
+#: src/components/projects/CreateProjectModal.tsx:188
 msgid "Failed to fetch WordPress file"
 msgstr ""
 
@@ -1499,9 +1499,9 @@ msgstr "POT-bestand verwerken mislukt"
 #: src/components/projects/AddLanguageModal.tsx:101
 #: src/components/projects/AddLanguageModal.tsx:136
 #: src/components/projects/AddLanguageModal.tsx:163
-#: src/components/projects/CreateProjectModal.tsx:137
-#: src/components/projects/CreateProjectModal.tsx:171
-#: src/components/projects/CreateProjectModal.tsx:204
+#: src/components/projects/CreateProjectModal.tsx:139
+#: src/components/projects/CreateProjectModal.tsx:173
+#: src/components/projects/CreateProjectModal.tsx:206
 #: src/pages/index/IndexPageBanners.tsx:82
 msgid "Failed to parse file"
 msgstr "Kan het bestand niet verwerken"
@@ -1763,7 +1763,7 @@ msgid ""
 "port anyway."
 msgstr ""
 
-#: src/components/auth/UserMenu.tsx:104
+#: src/components/auth/UserMenu.tsx:126
 msgid "GlossBoss v{version}"
 msgstr "GlossBoss v{version}"
 
@@ -1910,11 +1910,11 @@ msgstr ""
 msgid "Icelandic"
 msgstr "IJslands"
 
-#: src/components/projects/CreateProjectModal.tsx:329
+#: src/components/projects/CreateProjectModal.tsx:334
 msgid "Import"
 msgstr ""
 
-#: src/components/projects/CreateProjectModal.tsx:397
+#: src/components/projects/CreateProjectModal.tsx:402
 msgid "Import a translation export by project slug"
 msgstr ""
 
@@ -2170,7 +2170,7 @@ msgstr ""
 msgid "Leave this project"
 msgstr ""
 
-#: src/components/auth/UserMenu.tsx:121
+#: src/components/auth/UserMenu.tsx:143
 msgid "License"
 msgstr "Licentie"
 
@@ -2293,7 +2293,7 @@ msgstr "Bron laden..."
 msgid "Loading..."
 msgstr ""
 
-#: src/components/auth/UserMenu.tsx:90
+#: src/components/auth/UserMenu.tsx:112
 msgid "Local editor"
 msgstr ""
 
@@ -2542,10 +2542,10 @@ msgstr ""
 msgid "New password"
 msgstr ""
 
-#: src/components/projects/CreateProjectModal.tsx:119
-#: src/components/projects/CreateProjectModal.tsx:222
-#: src/components/projects/CreateProjectModal.tsx:278
-#: src/components/projects/CreateProjectModal.tsx:325
+#: src/components/projects/CreateProjectModal.tsx:121
+#: src/components/projects/CreateProjectModal.tsx:224
+#: src/components/projects/CreateProjectModal.tsx:280
+#: src/components/projects/CreateProjectModal.tsx:330
 #: src/components/projects/SaveToCloudModal.tsx:48
 #: src/pages/Dashboard.tsx:120
 #: src/pages/Dashboard.tsx:158
@@ -2806,13 +2806,13 @@ msgstr ""
 #: src/components/editor/EditorHeader.tsx:265
 #: src/components/editor/EmptyState.tsx:140
 #: src/components/editor/WordPressProjectModal.tsx:291
-#: src/components/projects/CreateProjectModal.tsx:394
+#: src/components/projects/CreateProjectModal.tsx:399
 msgid "Open from WordPress.org"
 msgstr ""
 
 #: src/components/editor/EditorHeader.tsx:275
 #: src/components/editor/EmptyState.tsx:152
-#: src/components/projects/CreateProjectModal.tsx:419
+#: src/components/projects/CreateProjectModal.tsx:424
 msgid "Open from repository"
 msgstr ""
 
@@ -2848,7 +2848,7 @@ msgstr ""
 msgid "Optional description"
 msgstr ""
 
-#: src/components/projects/CreateProjectModal.tsx:483
+#: src/components/projects/CreateProjectModal.tsx:507
 msgid "Organization"
 msgstr ""
 
@@ -2946,7 +2946,7 @@ msgstr "Perzisch"
 msgid "Personal access token"
 msgstr ""
 
-#: src/components/projects/CreateProjectModal.tsx:484
+#: src/components/projects/CreateProjectModal.tsx:508
 msgid "Personal project"
 msgstr ""
 
@@ -3096,12 +3096,12 @@ msgstr "Stemvoorbeeld"
 msgid "Previous field"
 msgstr "Vorig veld"
 
-#: src/components/auth/UserMenu.tsx:130
+#: src/components/auth/UserMenu.tsx:152
 #: src/components/feedback/FeedbackModal.tsx:417
 msgid "Privacy"
 msgstr "Privacy"
 
-#: src/components/projects/CreateProjectModal.tsx:43
+#: src/components/projects/CreateProjectModal.tsx:44
 #: src/components/projects/ProjectCard.tsx:37
 #: src/components/projects/ProjectSettingsTab.tsx:97
 #: src/components/projects/SaveToCloudModal.tsx:19
@@ -3150,7 +3150,7 @@ msgstr ""
 
 #: src/components/SettingsModal.tsx:2420
 #: src/components/SettingsModal.tsx:2424
-#: src/components/projects/CreateProjectModal.tsx:468
+#: src/components/projects/CreateProjectModal.tsx:492
 #: src/components/projects/ProjectSettingsTab.tsx:80
 #: src/components/projects/SaveToCloudModal.tsx:129
 #: src/components/settings/BackupSection.tsx:423
@@ -3214,7 +3214,7 @@ msgstr "{{count}} handmatige bewerkingen beschermen tegen bulkvertaling"
 msgid "Provider"
 msgstr "Aanbieder"
 
-#: src/components/projects/CreateProjectModal.tsx:44
+#: src/components/projects/CreateProjectModal.tsx:45
 #: src/components/projects/ProjectCard.tsx:38
 #: src/components/projects/ProjectSettingsTab.tsx:98
 #: src/components/projects/SaveToCloudModal.tsx:20
@@ -3673,8 +3673,8 @@ msgstr "Zoek termen..."
 
 #: src/components/projects/AddLanguageModal.tsx:396
 #: src/components/projects/AddLanguageModal.tsx:427
-#: src/components/projects/CreateProjectModal.tsx:407
-#: src/components/projects/CreateProjectModal.tsx:432
+#: src/components/projects/CreateProjectModal.tsx:412
+#: src/components/projects/CreateProjectModal.tsx:437
 msgid "Select"
 msgstr ""
 
@@ -3782,12 +3782,12 @@ msgstr ""
 msgid "Set new password"
 msgstr ""
 
-#: src/components/projects/CreateProjectModal.tsx:447
+#: src/components/projects/CreateProjectModal.tsx:452
 msgid "Set up a project and add languages later"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:1284
-#: src/components/auth/UserMenu.tsx:93
+#: src/components/auth/UserMenu.tsx:115
 #: src/components/projects/ProjectCard.tsx:126
 #: src/pages/OrgSettings.tsx:316
 #: src/pages/ProjectDetail.tsx:355
@@ -3837,7 +3837,7 @@ msgstr "Instellingen opgeslagen!"
 msgid "Share Feedback"
 msgstr "Feedback delen"
 
-#: src/components/auth/UserMenu.tsx:99
+#: src/components/auth/UserMenu.tsx:121
 msgid "Share feedback"
 msgstr "Feedback delen"
 
@@ -3896,8 +3896,8 @@ msgstr "{{shown}} van {{total}} termen getoond"
 msgid "Showing {{start}}–{{end}} of {{total}} entries"
 msgstr "{{start}}–{{end}} van {{total}} items"
 
-#: src/components/auth/UserMenu.tsx:37
-#: src/components/auth/UserMenu.tsx:44
+#: src/components/auth/UserMenu.tsx:43
+#: src/components/auth/UserMenu.tsx:50
 #: src/components/editor/EmptyState.tsx:188
 #: src/pages/auth/Login.tsx:125
 #: src/pages/auth/Signup.tsx:81
@@ -3916,7 +3916,7 @@ msgstr ""
 msgid "Sign in to manage your subscription."
 msgstr ""
 
-#: src/components/auth/UserMenu.tsx:136
+#: src/components/auth/UserMenu.tsx:158
 msgid "Sign out"
 msgstr ""
 
@@ -3971,7 +3971,7 @@ msgstr ""
 msgid "Sort entries"
 msgstr "Items sorteren"
 
-#: src/components/auth/UserMenu.tsx:112
+#: src/components/auth/UserMenu.tsx:134
 #: src/components/editor/EditorTable.tsx:2498
 #: src/components/projects/AddLanguageModal.tsx:300
 msgid "Source"
@@ -3985,13 +3985,13 @@ msgstr "Bron A-Z"
 msgid "Source Z-A"
 msgstr "Bron Z-A"
 
-#: src/components/projects/CreateProjectModal.tsx:495
+#: src/components/projects/CreateProjectModal.tsx:519
 msgid "Source format"
 msgstr ""
 
 #: src/components/editor/TranslateToolbar.tsx:836
 #: src/components/editor/TranslateToolbar.tsx:878
-#: src/components/projects/CreateProjectModal.tsx:504
+#: src/components/projects/CreateProjectModal.tsx:528
 msgid "Source language"
 msgstr "Brontaal"
 
@@ -4178,7 +4178,7 @@ msgid "Target language code"
 msgstr "Doeltaalcode"
 
 #: src/components/SettingsModal.tsx:2435
-#: src/components/projects/CreateProjectModal.tsx:516
+#: src/components/projects/CreateProjectModal.tsx:540
 #: src/components/projects/SaveToCloudModal.tsx:145
 #: src/components/settings/BackupSection.tsx:438
 msgid "Target: {{language}}"
@@ -4525,7 +4525,7 @@ msgstr ""
 msgid "Unlink repository"
 msgstr ""
 
-#: src/components/projects/CreateProjectModal.tsx:45
+#: src/components/projects/CreateProjectModal.tsx:46
 #: src/components/projects/ProjectCard.tsx:39
 #: src/components/projects/ProjectSettingsTab.tsx:99
 #: src/components/projects/SaveToCloudModal.tsx:21
@@ -4617,7 +4617,7 @@ msgid "Upload a WordPress glossary CSV for the selected language"
 msgstr "Upload een WordPress-glossary CSV voor de geselecteerde taal"
 
 #: src/components/projects/AddLanguageModal.tsx:353
-#: src/components/projects/CreateProjectModal.tsx:358
+#: src/components/projects/CreateProjectModal.tsx:363
 msgid "Upload a file"
 msgstr ""
 
@@ -4718,11 +4718,15 @@ msgstr "Alles bekijken"
 msgid "View commit"
 msgstr ""
 
+#: src/components/projects/CreateProjectModal.tsx:484
+msgid "View plans"
+msgstr ""
+
 #: src/pages/ProjectSettings.tsx:397
 msgid "Viewer — read-only"
 msgstr ""
 
-#: src/components/projects/CreateProjectModal.tsx:475
+#: src/components/projects/CreateProjectModal.tsx:499
 #: src/components/projects/ProjectSettingsTab.tsx:95
 #: src/components/projects/ProjectSettingsTab.tsx:127
 #: src/components/projects/SaveToCloudModal.tsx:136
@@ -5066,6 +5070,7 @@ msgstr "overschreven"
 msgid "plural"
 msgstr "meervoud"
 
+#: src/components/auth/UserMenu.tsx:100
 #: src/components/settings/BillingSection.tsx:222
 #: src/components/settings/BillingSection.tsx:246
 msgid "projects"
@@ -5079,6 +5084,7 @@ msgstr "enkelvoud"
 msgid "skipped"
 msgstr "overgeslagen"
 
+#: src/components/auth/UserMenu.tsx:105
 #: src/components/settings/BillingSection.tsx:223
 #: src/components/settings/BillingSection.tsx:247
 #: src/pages/OrgSettings.tsx:475
@@ -5241,7 +5247,7 @@ msgid "{{count}} terms"
 msgstr "{{count}} termen"
 
 #: src/components/editor/WordPressRefreshModal.tsx:314
-#: src/components/projects/CreateProjectModal.tsx:519
+#: src/components/projects/CreateProjectModal.tsx:543
 #: src/components/projects/SaveToCloudModal.tsx:148
 msgid "{{count}} total entries"
 msgstr ""
