@@ -74,9 +74,10 @@ export function useCloudSettingsSync(): CloudSettingsSyncState {
     activeRef.current = syncEnabled && isAuthenticated && isCloudBackendConfigured();
   }, [syncEnabled, isAuthenticated]);
 
-  // Pull from cloud on mount if sync is enabled
+  // Pull from cloud on mount if sync is enabled OR if cloud has settings
+  // (handles new browser where local flag hasn't been set yet)
   useEffect(() => {
-    if (!syncEnabled || !isAuthenticated || !isCloudBackendConfigured()) return;
+    if (!isAuthenticated || !isCloudBackendConfigured()) return;
 
     let cancelled = false;
 
@@ -88,6 +89,12 @@ export function useCloudSettingsSync(): CloudSettingsSyncState {
         if (cloud) {
           applyCloudSettings(cloud);
           setLastSynced(cloud.updatedAt);
+          // Auto-enable sync locally if cloud has settings but local flag isn't set
+          if (!syncEnabled) {
+            localStorage.setItem(CLOUD_SETTINGS_ENABLED_KEY, 'true');
+            setSyncEnabledState(true);
+            activeRef.current = true;
+          }
         }
         setSyncStatus('idle');
       } catch {
@@ -99,7 +106,8 @@ export function useCloudSettingsSync(): CloudSettingsSyncState {
     return () => {
       cancelled = true;
     };
-  }, [syncEnabled, isAuthenticated]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- syncEnabled intentionally excluded to avoid re-pull loops
+  }, [isAuthenticated]);
 
   // Push to cloud (debounced)
   const pushToCloud = useCallback(async () => {
