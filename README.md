@@ -59,9 +59,9 @@ Run `bun run` to see all available scripts.
 
 ### Frontend — Cloudflare Pages
 
-`.github/workflows/cloudflare-pages.yml` deploys the Vite build to the `glossboss-dev` Cloudflare Pages project: `main` updates the protected dev environment, pull requests get preview branches.
+`.github/workflows/cloudflare-pages.yml` deploys the Vite build to Cloudflare Pages: `main` updates the production environment, pull requests get preview branches. The target project is set via the `CLOUDFLARE_PAGES_PROJECT` secret (falls back to the GitHub repo name).
 
-**Required GitHub repository secrets:** `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`, `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_TURNSTILE_SITE_KEY`
+**Required GitHub repository secrets:** `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_PAGES_PROJECT`, `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_TURNSTILE_SITE_KEY`
 
 ### Database migrations — staging before production
 
@@ -88,12 +88,12 @@ Edge functions proxy external services and keep server-managed secrets out of th
 
 **Required:**
 
-| Secret                    | Purpose                                                  |
-| ------------------------- | -------------------------------------------------------- |
-| `ALLOWED_ORIGINS`         | Comma-separated list of allowed CORS origins             |
-| `TURNSTILE_SECRET`        | Cloudflare Turnstile server secret                       |
-| `GITHUB_TOKEN`            | Fine-grained PAT for feedback issue creation             |
-| `SETTINGS_ENCRYPTION_KEY` | Server-side secret for AES-256-GCM credential encryption |
+| Secret                    | Purpose                                                                                            |
+| ------------------------- | -------------------------------------------------------------------------------------------------- |
+| `ALLOWED_ORIGINS`         | Comma-separated list of allowed CORS origins                                                       |
+| `TURNSTILE_SECRET`        | Cloudflare Turnstile server secret                                                                 |
+| `GITHUB_TOKEN`            | PAT with `repo` scope — used for feedback issues and roadmap (reads both public and private repos) |
+| `SETTINGS_ENCRYPTION_KEY` | Server-side secret for AES-256-GCM credential encryption                                           |
 
 **Optional (translation providers):**
 
