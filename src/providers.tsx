@@ -6,6 +6,10 @@ import {
   Table,
   Modal,
   Menu,
+  Badge,
+  Tabs,
+  SegmentedControl,
+  Progress,
   type CSSVariablesResolver,
 } from '@mantine/core';
 import { TranslationProvider } from '@/lib/app-language';
@@ -16,90 +20,96 @@ import '@mantine/core/styles.css';
 
 /**
  * CSS Variables Resolver
- * Bridges design tokens to Mantine's CSS variable system per color scheme.
  *
- * Dark mode: OLED — true-black base, warm-tinted grays, wide luminance steps.
- * Light mode: Cool-tinted whites with clear surface hierarchy.
+ * Dark mode: true-black OLED base, neutral grays, Vercel-inspired.
+ * Light mode: clean whites with minimal contrast hierarchy.
+ *
+ * Design philosophy: monochrome by default, color only for status/actions.
  */
 const resolver: CSSVariablesResolver = () => ({
   variables: {},
   light: {
-    '--gb-surface-0': '#fafbfc',
-    '--gb-surface-1': '#f3f4f6',
-    '--gb-surface-2': '#ebedf0',
-    '--gb-surface-3': '#e2e5e9',
-    '--gb-border-subtle': '#e5e7eb',
-    '--gb-border-default': '#d1d5db',
-    '--gb-border-strong': '#b8bec6',
-    '--gb-text-primary': '#111827',
-    '--gb-text-secondary': '#4b5563',
-    '--gb-text-tertiary': '#9ca3af',
-    '--gb-glow-focus': 'rgba(59, 130, 246, 0.15)',
-    '--gb-input-bg': '#eef0f3',
-    '--gb-highlight-row': 'rgba(59, 130, 246, 0.06)',
+    '--gb-surface-0': '#ffffff',
+    '--gb-surface-1': '#fafafa',
+    '--gb-surface-2': '#f5f5f5',
+    '--gb-surface-3': '#ebebeb',
+    '--gb-border-subtle': '#eaeaea',
+    '--gb-border-default': '#e0e0e0',
+    '--gb-border-strong': '#cccccc',
+    '--gb-text-primary': '#171717',
+    '--gb-text-secondary': '#666666',
+    '--gb-text-tertiary': '#999999',
+    '--gb-glow-focus': 'rgba(0, 112, 243, 0.15)',
+    '--gb-input-bg': '#ffffff',
+    '--gb-highlight-row': 'rgba(0, 0, 0, 0.03)',
     '--gb-highlight-danger': 'rgba(239, 68, 68, 0.04)',
     '--gb-table-stripe': 'rgba(0, 0, 0, 0.015)',
-    '--gb-shadow-modal': '0 16px 40px -8px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04)',
-    '--gb-shadow-menu': '0 4px 16px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04)',
-    '--gb-shadow-tooltip': '0 2px 8px rgba(0,0,0,0.1)',
-    '--gb-shadow-notification': '0 4px 16px rgba(0,0,0,0.08)',
-    '--mantine-color-body': '#fafbfc',
-    '--mantine-color-default-border': '#e5e7eb',
+    '--gb-shadow-modal': '0 16px 70px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.06)',
+    '--gb-shadow-menu': '0 4px 24px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04)',
+    '--gb-shadow-tooltip': '0 2px 8px rgba(0,0,0,0.08)',
+    '--gb-shadow-notification': '0 4px 24px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04)',
+    '--mantine-color-body': '#ffffff',
+    '--mantine-color-default-border': '#eaeaea',
   },
   dark: {
-    '--gb-surface-0': '#050505',
-    '--gb-surface-1': '#111111',
-    '--gb-surface-2': '#191919',
-    '--gb-surface-3': '#222222',
-    '--gb-border-subtle': '#1c1c1c',
-    '--gb-border-default': '#282828',
-    '--gb-border-strong': '#383838',
-    '--gb-text-primary': '#efefef',
-    '--gb-text-secondary': '#a3a3a3',
-    '--gb-text-tertiary': '#707070',
-    '--gb-glow-focus': 'rgba(59, 130, 246, 0.3)',
+    '--gb-surface-0': '#000000',
+    '--gb-surface-1': '#0a0a0a',
+    '--gb-surface-2': '#111111',
+    '--gb-surface-3': '#1a1a1a',
+    '--gb-border-subtle': '#1a1a1a',
+    '--gb-border-default': '#262626',
+    '--gb-border-strong': '#333333',
+    '--gb-text-primary': '#ededed',
+    '--gb-text-secondary': '#888888',
+    '--gb-text-tertiary': '#555555',
+    '--gb-glow-focus': 'rgba(0, 112, 243, 0.25)',
     '--gb-input-bg': '#0a0a0a',
-    '--gb-highlight-row': 'rgba(59, 130, 246, 0.08)',
+    '--gb-highlight-row': 'rgba(255, 255, 255, 0.04)',
     '--gb-highlight-danger': 'rgba(239, 68, 68, 0.06)',
     '--gb-table-stripe': 'rgba(255, 255, 255, 0.02)',
-    '--gb-shadow-modal': '0 25px 50px -12px rgba(0,0,0,0.6)',
-    '--gb-shadow-menu': '0 8px 30px rgba(0,0,0,0.4)',
-    '--gb-shadow-tooltip': '0 4px 12px rgba(0,0,0,0.3)',
-    '--gb-shadow-notification': '0 8px 30px rgba(0,0,0,0.4)',
-    '--mantine-color-body': '#050505',
-    '--mantine-color-default-border': '#1c1c1c',
+    '--gb-shadow-modal': '0 25px 50px -12px rgba(0,0,0,0.7)',
+    '--gb-shadow-menu': '0 8px 30px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06)',
+    '--gb-shadow-tooltip': '0 4px 12px rgba(0,0,0,0.4)',
+    '--gb-shadow-notification': '0 8px 30px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06)',
+    '--mantine-color-body': '#000000',
+    '--mantine-color-default-border': '#1a1a1a',
   },
 });
 
 /**
- * Mantine theme configuration
- * OLED dark base with Geist typography and premium surface elevation.
- * Light mode uses cool-tinted whites; dark mode uses warm-tinted true-blacks.
+ * Mantine theme — Vercel/Linear-inspired design system.
+ *
+ * Key principles:
+ * - Tight radius (6px default, not round)
+ * - Compact spacing (sm default sizes)
+ * - Flat surfaces (no distinct card backgrounds)
+ * - Monochrome UI, color reserved for status and actions
+ * - Geist font family
  */
 const theme = createTheme({
   colors: {
     blue: [
-      '#eff6ff',
+      '#f0f7ff',
       '#dbeafe',
       '#bfdbfe',
       '#93c5fd',
       '#60a5fa',
-      '#3b82f6',
-      '#2563eb',
+      '#0070f3', // Vercel blue
+      '#0060df',
       '#1d4ed8',
       '#1e40af',
       '#1e3a8a',
     ],
     dark: [
-      '#efefef', // 0 - primary text
-      '#a3a3a3', // 1 - dimmed text
-      '#707070', // 2 - tertiary
-      '#4a4a4a', // 3 - disabled
-      '#282828', // 4 - default border
-      '#1c1c1c', // 5 - subtle border
-      '#191919', // 6 - component bg
-      '#111111', // 7 - surface-1
-      '#050505', // 8 - body bg
+      '#ededed', // 0 - primary text
+      '#888888', // 1 - dimmed text
+      '#555555', // 2 - tertiary
+      '#444444', // 3 - disabled
+      '#262626', // 4 - default border
+      '#1a1a1a', // 5 - subtle border
+      '#111111', // 6 - component bg
+      '#0a0a0a', // 7 - surface-1
+      '#000000', // 8 - body bg
       '#000000', // 9 - deepest
     ],
   },
@@ -108,17 +118,41 @@ const theme = createTheme({
   fontFamilyMonospace: '"Geist Mono Variable", ui-monospace, monospace',
   headings: {
     fontFamily: '"Geist Variable", system-ui, -apple-system, sans-serif',
+    fontWeight: '600',
+  },
+
+  // Tight radius scale: 4, 6, 8, 12, 16
+  radius: {
+    xs: '4px',
+    sm: '6px',
+    md: '8px',
+    lg: '12px',
+    xl: '16px',
   },
   defaultRadius: 'sm',
+
+  // Tighter spacing scale
+  spacing: {
+    xs: '6px',
+    sm: '10px',
+    md: '14px',
+    lg: '20px',
+    xl: '28px',
+  },
+
   components: {
     Paper: Paper.extend({
       defaultProps: { radius: 'md' },
       styles: {
-        root: { backgroundColor: 'var(--gb-surface-1)' },
+        root: {
+          // Papers blend with the page — no distinct background.
+          // Use withBorder for visual separation instead of background color.
+          backgroundColor: 'transparent',
+        },
       },
     }),
     Table: Table.extend({
-      defaultProps: { verticalSpacing: 'sm', horizontalSpacing: 'md' },
+      defaultProps: { verticalSpacing: '10', horizontalSpacing: 'sm' },
       styles: {
         table: {
           '--table-hover-color': 'var(--gb-highlight-row)',
@@ -126,87 +160,120 @@ const theme = createTheme({
         },
         thead: { backgroundColor: 'var(--gb-surface-2)' },
         th: {
-          fontWeight: 600,
-          fontSize: 'var(--mantine-font-size-xs)',
+          fontWeight: 500,
+          fontSize: '12px',
           textTransform: 'uppercase' as const,
           letterSpacing: '0.04em',
-          color: 'var(--gb-text-secondary)',
+          color: 'var(--gb-text-tertiary)',
         },
       },
     }),
     Modal: Modal.extend({
+      defaultProps: { radius: 'md' },
       styles: {
         content: {
           backgroundColor: 'var(--gb-surface-1)',
           boxShadow: 'var(--gb-shadow-modal)',
+          border: '1px solid var(--gb-border-subtle)',
         },
-        header: { backgroundColor: 'var(--gb-surface-1)' },
+        header: {
+          backgroundColor: 'var(--gb-surface-1)',
+        },
         overlay: { backdropFilter: 'blur(4px)' },
       },
     }),
     Menu: Menu.extend({
+      defaultProps: { radius: 'md' },
       styles: {
         dropdown: {
-          backgroundColor: 'var(--gb-surface-2)',
+          backgroundColor: 'var(--gb-surface-1)',
           borderColor: 'var(--gb-border-subtle)',
           boxShadow: 'var(--gb-shadow-menu)',
         },
       },
     }),
     Tooltip: {
+      defaultProps: { radius: 'sm' },
       styles: {
         tooltip: { boxShadow: 'var(--gb-shadow-tooltip)' },
       },
     },
     Notification: {
+      defaultProps: { radius: 'md' },
       styles: {
         root: {
-          backgroundColor: 'var(--gb-surface-2)',
+          backgroundColor: 'var(--gb-surface-1)',
           boxShadow: 'var(--gb-shadow-notification)',
+          border: '1px solid var(--gb-border-subtle)',
         },
       },
     },
     Alert: {
+      defaultProps: { radius: 'md' },
       styles: {
         root: { borderColor: 'var(--gb-border-subtle)' },
       },
     },
+    Badge: Badge.extend({
+      defaultProps: { radius: 'sm' },
+    }),
     TextInput: {
-      defaultProps: { size: 'sm' },
+      defaultProps: { size: 'sm', radius: 'sm' },
       styles: {
         input: {
           backgroundColor: 'var(--gb-input-bg)',
-          borderColor: 'var(--gb-border-subtle)',
+          borderColor: 'var(--gb-border-default)',
+        },
+      },
+    },
+    PasswordInput: {
+      defaultProps: { size: 'sm', radius: 'sm' },
+      styles: {
+        input: {
+          backgroundColor: 'var(--gb-input-bg)',
+          borderColor: 'var(--gb-border-default)',
         },
       },
     },
     Textarea: {
+      defaultProps: { radius: 'sm' },
       styles: {
         input: {
           backgroundColor: 'var(--gb-input-bg)',
-          borderColor: 'var(--gb-border-subtle)',
+          borderColor: 'var(--gb-border-default)',
         },
       },
     },
     Select: {
+      defaultProps: { size: 'sm', radius: 'sm' },
       styles: {
         input: {
           backgroundColor: 'var(--gb-input-bg)',
-          borderColor: 'var(--gb-border-subtle)',
+          borderColor: 'var(--gb-border-default)',
         },
       },
     },
     Button: {
-      defaultProps: { size: 'sm' },
+      defaultProps: { size: 'sm', radius: 'sm' },
       styles: {
-        root: { fontWeight: 600 },
+        root: { fontWeight: 500 },
       },
     },
     ActionIcon: {
+      defaultProps: { radius: 'sm' },
       styles: {
         root: { transition: 'background-color 120ms ease' },
       },
     },
+    Tabs: Tabs.extend({
+      defaultProps: { radius: 'sm' },
+    }),
+    SegmentedControl: SegmentedControl.extend({
+      defaultProps: { radius: 'sm' },
+    }),
+    Progress: Progress.extend({
+      defaultProps: { radius: 'xl' },
+    }),
   },
 });
 

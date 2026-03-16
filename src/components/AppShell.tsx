@@ -25,7 +25,7 @@ export function CloudAppShell() {
   // Subscribe to notifications at the shell level
   useNotifications();
 
-  const navWidth = isMobile ? 260 : collapsed ? 56 : 220;
+  const navWidth = isMobile ? 240 : collapsed ? 52 : 200;
 
   return (
     <MantineAppShell
@@ -34,10 +34,10 @@ export function CloudAppShell() {
         breakpoint: 'sm',
         collapsed: { mobile: !mobileOpened },
       }}
-      padding="md"
+      padding="lg"
       styles={{
         navbar: {
-          backgroundColor: 'var(--gb-surface-0)',
+          backgroundColor: 'var(--mantine-color-body)',
           borderRight: '1px solid var(--gb-border-subtle)',
         },
         main: {
