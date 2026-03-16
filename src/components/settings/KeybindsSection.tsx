@@ -1,13 +1,49 @@
 /**
- * Keybinds Section — keyboard shortcuts table, skip-translated toggle.
+ * Keybinds Section — keyboard shortcuts with platform-aware key caps.
+ *
+ * Detects macOS vs Windows/Linux and shows the appropriate symbols:
+ * Mac: ⌘ ⇧ ⌥ ⌃ ⎋ ⏎ ⇥    Windows/Linux: Ctrl Shift Alt Enter Tab Esc
  */
 
-import { Stack, Text, Group, Paper, Table, Kbd, Switch, Divider } from '@mantine/core';
+import { Stack, Text, Group, Paper, Table, Switch, Divider, Box } from '@mantine/core';
 import { useLocalStorage } from '@mantine/hooks';
 import { NAV_SKIP_TRANSLATED_KEY } from '@/components/editor/EditorTable';
 import { msgid, useTranslation } from '@/lib/app-language';
 
-/** Keyboard shortcut definitions */
+const isMac =
+  typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.platform ?? '');
+
+/** Platform-aware key label mapping */
+function keyLabel(key: string): string {
+  if (isMac) {
+    switch (key) {
+      case 'Mod':
+        return '⌘';
+      case 'Ctrl':
+        return '⌃';
+      case 'Shift':
+        return '⇧';
+      case 'Alt':
+        return '⌥';
+      case 'Enter':
+        return '⏎';
+      case 'Tab':
+        return '⇥';
+      case 'Escape':
+        return '⎋';
+      default:
+        return key;
+    }
+  }
+  switch (key) {
+    case 'Mod':
+      return 'Ctrl';
+    default:
+      return key;
+  }
+}
+
+/** Keyboard shortcut definitions using platform-neutral keys */
 const KEYBINDS: { keys: string[][]; action: string; description?: string }[] = [
   {
     keys: [['Tab']],
@@ -30,10 +66,7 @@ const KEYBINDS: { keys: string[][]; action: string; description?: string }[] = [
     description: msgid('Insert a line break in the translation'),
   },
   {
-    keys: [
-      ['⌘', 'Enter'],
-      ['Ctrl', 'Enter'],
-    ],
+    keys: [['Mod', 'Enter']],
     action: msgid('Next entry'),
     description: msgid('Save and jump to the next translation entry (skips translated by default)'),
   },
@@ -44,26 +77,55 @@ const KEYBINDS: { keys: string[][]; action: string; description?: string }[] = [
   },
 ];
 
-/** Renders a key combination using Mantine Kbd components */
+/** Single key cap styled as a physical keyboard key */
+function KeyCap({ label }: { label: string }) {
+  const isSymbol = label.length === 1 && /[⌘⇧⌥⌃⏎⇥⎋]/.test(label);
+  return (
+    <Box
+      component="kbd"
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minWidth: isSymbol ? 28 : undefined,
+        height: 28,
+        padding: '0 8px',
+        borderRadius: 6,
+        border: '1px solid var(--gb-border-default)',
+        backgroundColor: 'var(--gb-surface-2)',
+        boxShadow: '0 1px 0 var(--gb-border-default)',
+        fontSize: isSymbol ? 16 : 12,
+        fontFamily: isSymbol ? 'inherit' : 'var(--mantine-font-family-monospace)',
+        fontWeight: 500,
+        lineHeight: 1,
+        color: 'var(--gb-text-primary)',
+      }}
+    >
+      {label}
+    </Box>
+  );
+}
+
+/** Renders a key combination as styled key caps */
 function KeyCombo({ keys }: { keys: string[][] }) {
   return (
-    <Group gap={6}>
+    <Group gap={6} wrap="nowrap">
       {keys.map((combo, ci) => (
-        <Group key={ci} gap={4} wrap="nowrap">
+        <Group key={ci} gap={4} wrap="nowrap" align="center">
           {ci > 0 && (
-            <Text size="xs" c="dimmed" aria-hidden="true">
+            <Text size="xs" c="dimmed">
               /
             </Text>
           )}
           {combo.map((key, ki) => (
-            <span key={ki} style={{ display: 'inline-flex', alignItems: 'center', gap: 2 }}>
-              {ki > 0 && (
-                <Text size="xs" c="dimmed" aria-hidden="true">
+            <Group key={ki} gap={3} wrap="nowrap" align="center">
+              {ki > 0 && !isMac && (
+                <Text size="xs" c="dimmed">
                   +
                 </Text>
               )}
-              <Kbd size="sm">{key}</Kbd>
-            </span>
+              <KeyCap label={keyLabel(key)} />
+            </Group>
           ))}
         </Group>
       ))}
@@ -88,7 +150,7 @@ export function KeybindsSection() {
         <Table>
           <Table.Thead>
             <Table.Tr>
-              <Table.Th style={{ width: '35%' }}>{t('Shortcut')}</Table.Th>
+              <Table.Th style={{ width: '30%' }}>{t('Shortcut')}</Table.Th>
               <Table.Th style={{ width: '20%' }}>{t('Action')}</Table.Th>
               <Table.Th>{t('Description')}</Table.Th>
             </Table.Tr>
@@ -124,7 +186,8 @@ export function KeybindsSection() {
       <Switch
         label={t('Skip translated entries')}
         description={t(
-          'When using ⌘/Ctrl+Enter, skip entries that are already translated and jump to the next untranslated or fuzzy entry',
+          'When using {{key}}+Enter, skip entries that are already translated and jump to the next untranslated or fuzzy entry',
+          { key: isMac ? '⌘' : 'Ctrl' },
         )}
         checked={skipTranslated}
         onChange={(e) => setSkipTranslated(e.currentTarget.checked)}
