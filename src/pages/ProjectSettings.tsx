@@ -42,6 +42,7 @@ import {
   Unlink,
   Plus,
   ExternalLink,
+  Bell,
 } from 'lucide-react';
 import { sectionVariants, fadeVariants, buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
@@ -65,6 +66,7 @@ import { useProjectRole } from '@/hooks/use-project-role';
 import { useAuth } from '@/hooks/use-auth';
 import { ProjectMembersTab } from '@/components/projects/ProjectMembersTab';
 import { ProjectInvitesTab } from '@/components/projects/ProjectInvitesTab';
+import { ProjectNotificationsTab } from '@/components/projects/ProjectNotificationsTab';
 import { AddLanguageModal } from '@/components/projects/AddLanguageModal';
 import { ConfirmModal } from '@/components/ui';
 import { useProjectsStore } from '@/stores/projects-store';
@@ -335,6 +337,9 @@ export default function ProjectSettings() {
               </Tabs.Tab>
               <Tabs.Tab value="members" leftSection={<Users size={14} />}>
                 {t('Members')} ({members.length})
+              </Tabs.Tab>
+              <Tabs.Tab value="notifications" leftSection={<Bell size={14} />}>
+                {t('Notifications')}
               </Tabs.Tab>
               <Tabs.Tab value="danger" leftSection={<Trash2 size={14} />} color="red">
                 {t('Danger zone')}
@@ -688,6 +693,11 @@ export default function ProjectSettings() {
                   />
                 )}
               </Stack>
+            </Tabs.Panel>
+
+            {/* Notifications tab */}
+            <Tabs.Panel value="notifications" pt={isMobile ? 'md' : undefined}>
+              <ProjectNotificationsTab projectId={project.id} />
             </Tabs.Panel>
 
             {/* Danger zone tab */}

@@ -8,7 +8,7 @@
  * Reuses WordPressProjectModal and RepoSyncModal for their import flows.
  */
 
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Modal,
   Stepper,
@@ -38,10 +38,13 @@ import { useProjectsStore } from '@/stores/projects-store';
 import { useOrganizationsStore } from '@/stores/organizations-store';
 import { useAuth } from '@/hooks/use-auth';
 import { useSubscription } from '@/hooks/use-subscription';
-import { isAtLimit } from '@/lib/billing/limits';
+import { isAtLimit, getRemainingCapacity, formatLimit, PLAN_LIMITS } from '@/lib/billing/limits';
 import { useNavigate, Link } from 'react-router';
 import { detectLimitError, getLimitErrorMessage } from '@/lib/billing/errors';
+import { getOrgSubscription } from '@/lib/billing/api';
+import type { PlanTier } from '@/lib/billing/types';
 import type { WordPressProjectType } from '@/lib/wp-source/references';
+import { getFlagEmoji } from '@/lib/flags';
 
 const VISIBILITY_OPTIONS = [
   { value: 'private', label: msgid('Private') },
@@ -98,6 +101,22 @@ export function CreateProjectModal({ opened, onClose }: CreateProjectModalProps)
   const [createError, setCreateError] = useState<string | null>(null);
   const [isLimitError, setIsLimitError] = useState(false);
 
+  // Fetch org subscription when an org is selected
+  const [orgPlan, setOrgPlan] = useState<PlanTier | null>(null);
+  useEffect(() => {
+    if (!organizationId) {
+      setOrgPlan(null);
+      return;
+    }
+    let cancelled = false;
+    getOrgSubscription(organizationId).then((sub) => {
+      if (!cancelled) setOrgPlan(sub?.plan ?? 'free');
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [organizationId]);
+
   const resetState = useCallback(() => {
     setStep(0);
     setImportedFile(null);
@@ -110,6 +129,7 @@ export function CreateProjectModal({ opened, onClose }: CreateProjectModalProps)
     setSourceFormat('po');
     setSourceLanguage('');
     setOrganizationId(null);
+    setOrgPlan(null);
     setCreating(false);
     setCreateError(null);
   }, []);
@@ -341,6 +361,18 @@ export function CreateProjectModal({ opened, onClose }: CreateProjectModalProps)
   const targetLanguage = importedFile?.file.header.language ?? null;
   const entryCount = importedFile?.file.entries.length ?? 0;
 
+  // Proactive string-limit check — uses org plan when an org is selected
+  const effectivePlan: PlanTier | null = organizationId ? orgPlan : plan;
+  const currentStringCount = projects
+    .filter((p) => (organizationId ? p.organization_id === organizationId : !p.organization_id))
+    .reduce((sum, p) => sum + p.stats_total, 0);
+  const stringLimit = effectivePlan ? PLAN_LIMITS[effectivePlan].strings : Infinity;
+  const remainingStrings = effectivePlan
+    ? getRemainingCapacity(effectivePlan, 'strings', currentStringCount)
+    : Infinity;
+  const exceedsStringLimit =
+    entryCount > 0 && remainingStrings !== Infinity && entryCount > remainingStrings;
+
   return (
     <>
       <Modal
@@ -530,6 +562,42 @@ export function CreateProjectModal({ opened, onClose }: CreateProjectModalProps)
               </Alert>
             )}
 
+            {exceedsStringLimit && (
+              <Alert icon={<Zap size={16} />} color="yellow" variant="light">
+                <Stack gap="xs">
+                  <Text size="sm">
+                    {remainingStrings === 0
+                      ? t(
+                          'This file has {{count}} strings, but you have reached your plan limit of {{limit}} strings. Upgrade to import this file.',
+                          {
+                            count: entryCount.toLocaleString(),
+                            limit: formatLimit(stringLimit),
+                          },
+                        )
+                      : t(
+                          'This file has {{count}} strings, but you can only add {{remaining}} more on your current plan ({{limit}} total). Upgrade to import this file.',
+                          {
+                            count: entryCount.toLocaleString(),
+                            remaining: remainingStrings.toLocaleString(),
+                            limit: formatLimit(stringLimit),
+                          },
+                        )}
+                  </Text>
+                  <Button
+                    component={Link}
+                    to="/settings?tab=billing"
+                    size="xs"
+                    variant="filled"
+                    color="blue"
+                    leftSection={<Zap size={14} />}
+                    onClick={handleClose}
+                  >
+                    {t('View plans')}
+                  </Button>
+                </Stack>
+              </Alert>
+            )}
+
             <TextInput
               label={t('Project name')}
               value={projectName}
@@ -578,7 +646,7 @@ export function CreateProjectModal({ opened, onClose }: CreateProjectModalProps)
             {importedFile && (
               <Group gap="sm">
                 {targetLanguage && (
-                  <Badge variant="light" color="blue">
+                  <Badge variant="light" color="blue" leftSection={getFlagEmoji(targetLanguage)}>
                     {t('Target: {{language}}', { language: targetLanguage })}
                   </Badge>
                 )}
@@ -597,7 +665,7 @@ export function CreateProjectModal({ opened, onClose }: CreateProjectModalProps)
                 leftSection={<FolderPlus size={16} />}
                 loading={creating}
                 onClick={() => void handleCreate()}
-                disabled={!projectName.trim()}
+                disabled={!projectName.trim() || exceedsStringLimit}
               >
                 {t('Create project')}
               </Button>

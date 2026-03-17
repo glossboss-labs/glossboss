@@ -6,7 +6,7 @@
  * like the plan picker (which needs room for a 3-column grid).
  */
 
-import { Container, Stack, useComputedColorScheme } from '@mantine/core';
+import { Stack, useComputedColorScheme } from '@mantine/core';
 import { cn } from '@/lib/utils';
 
 interface ProgressDotsProps {
@@ -41,20 +41,25 @@ export function OnboardingLayout({ step, totalSteps, wide, children }: Onboardin
   const computedColorScheme = useComputedColorScheme('light');
 
   return (
-    <Container size={wide ? 960 : 520} py={60}>
-      <Stack align="center" gap="lg">
-        <img
-          src={
-            computedColorScheme === 'dark'
-              ? '/glossboss-combined-light.svg'
-              : '/glossboss-combined-dark.svg'
-          }
-          alt="GlossBoss"
-          style={{ height: 32 }}
-        />
-        <ProgressDots current={step} total={totalSteps} />
-        <div className="w-full">{children}</div>
-      </Stack>
-    </Container>
+    <div className="px-4 py-[60px]">
+      <div
+        className="mx-auto transition-[max-width] duration-300 ease-in-out"
+        style={{ maxWidth: wide ? 960 : 520 }}
+      >
+        <Stack align="center" gap="lg">
+          <img
+            src={
+              computedColorScheme === 'dark'
+                ? '/glossboss-combined-light.svg'
+                : '/glossboss-combined-dark.svg'
+            }
+            alt="GlossBoss"
+            style={{ height: 32 }}
+          />
+          <ProgressDots current={step} total={totalSteps} />
+          <div className="w-full">{children}</div>
+        </Stack>
+      </div>
+    </div>
   );
 }

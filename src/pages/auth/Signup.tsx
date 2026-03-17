@@ -25,6 +25,8 @@ import { useAuth } from '@/hooks/use-auth';
 import { savePlanParams } from '@/lib/auth/session';
 import { trackEvent } from '@/lib/analytics';
 import { GithubIcon } from '@/components/auth/GithubIcon';
+import { Confetti } from '@/components/magicui/confetti';
+import { useAuthCaptcha } from '@/hooks/use-auth-captcha';
 
 export default function Signup() {
   const { t } = useTranslation();
@@ -52,12 +54,18 @@ export default function Signup() {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const computedColorScheme = useComputedColorScheme('light');
+  const { containerRef, getCaptchaToken, ready: captchaReady } = useAuthCaptcha();
 
   const handleEmailSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
     clearError();
-    await signUpWithEmail(email, password);
+    try {
+      const captchaToken = await getCaptchaToken();
+      await signUpWithEmail(email, password, captchaToken);
+    } catch {
+      // Captcha failure
+    }
     setSubmitting(false);
     if (!useAuthStore.getState().error) {
       setSuccess(true);
@@ -103,9 +111,12 @@ export default function Signup() {
 
       <Paper withBorder p="xl" mt={30} radius="md">
         {success ? (
-          <Alert icon={<CheckCircle size={16} />} color="green" variant="light">
-            {t('Account created. Check your email to confirm, or sign in now.')}
-          </Alert>
+          <>
+            <Confetti />
+            <Alert icon={<CheckCircle size={16} />} color="green" variant="light">
+              {t('Account created. Check your email to confirm, or sign in now.')}
+            </Alert>
+          </>
         ) : (
           <>
             <Button
@@ -159,7 +170,9 @@ export default function Signup() {
                   .
                 </Text>
 
-                <Button type="submit" fullWidth loading={submitting}>
+                <div ref={containerRef} />
+
+                <Button type="submit" fullWidth loading={submitting} disabled={!captchaReady}>
                   {t('Create account')}
                 </Button>
               </Stack>

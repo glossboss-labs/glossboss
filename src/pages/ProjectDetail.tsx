@@ -71,7 +71,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { AddLanguageModal } from '@/components/projects/AddLanguageModal';
 import { ProjectMembersTab } from '@/components/projects/ProjectMembersTab';
 import { ProjectInvitesTab } from '@/components/projects/ProjectInvitesTab';
-import { ConfirmModal } from '@/components/ui';
+import { ConfirmModal, LanguageFlag } from '@/components/ui';
 
 const MotionDiv = motion.div;
 const MotionSpan = motion.span;
@@ -399,7 +399,10 @@ export default function ProjectDetail() {
                   project.source_language !== project.target_language && (
                     <>
                       {' · '}
-                      {project.source_language} → {project.target_language}
+                      <LanguageFlag code={project.source_language} size="xs" />{' '}
+                      {project.source_language} →{' '}
+                      <LanguageFlag code={project.target_language} size="xs" />{' '}
+                      {project.target_language}
                     </>
                   )}
                 {project.wp_slug && (
@@ -597,9 +600,12 @@ export default function ProjectDetail() {
                             <Group justify="space-between" align="center" wrap="nowrap">
                               <Stack gap={4} style={{ flex: 1, minWidth: 0 }}>
                                 <Group gap="sm" wrap="wrap">
-                                  <Text fw={600} size="sm">
-                                    {lang.locale}
-                                  </Text>
+                                  <Group gap={6} wrap="nowrap">
+                                    <LanguageFlag code={lang.locale} />
+                                    <Text fw={600} size="sm">
+                                      {lang.locale}
+                                    </Text>
+                                  </Group>
                                   {lang.source_filename && (
                                     <Text size="xs" truncate c="dimmed">
                                       {lang.source_filename}

@@ -34,8 +34,8 @@ export interface AuthState {
 export interface AuthActions {
   /** Initialize the auth listener. Call once at app startup. Returns cleanup. */
   initialize: () => () => void;
-  signUpWithEmail: (email: string, password: string) => Promise<void>;
-  signInWithEmail: (email: string, password: string) => Promise<void>;
+  signUpWithEmail: (email: string, password: string, captchaToken?: string) => Promise<void>;
+  signInWithEmail: (email: string, password: string, captchaToken?: string) => Promise<void>;
   signInWithGitHub: () => Promise<void>;
   resetPasswordForEmail: (email: string) => Promise<boolean>;
   updatePassword: (newPassword: string) => Promise<boolean>;
@@ -85,15 +85,15 @@ export const useAuthStore = create<AuthState & AuthActions>()((set) => ({
     };
   },
 
-  signUpWithEmail: async (email, password) => {
+  signUpWithEmail: async (email, password, captchaToken) => {
     set({ error: null });
-    const { error } = await signUpWithEmail(email, password);
+    const { error } = await signUpWithEmail(email, password, captchaToken);
     if (error) set({ error });
   },
 
-  signInWithEmail: async (email, password) => {
+  signInWithEmail: async (email, password, captchaToken) => {
     set({ error: null });
-    const { error } = await signInWithEmail(email, password);
+    const { error } = await signInWithEmail(email, password, captchaToken);
     if (error) set({ error });
   },
 

@@ -24,6 +24,7 @@ import { trackEvent } from '@/lib/analytics';
 import { useAuthStore } from '@/stores/auth-store';
 import { useAuth } from '@/hooks/use-auth';
 import { GithubIcon } from '@/components/auth/GithubIcon';
+import { useAuthCaptcha } from '@/hooks/use-auth-captcha';
 
 export default function Login() {
   const { t } = useTranslation();
@@ -37,17 +38,23 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const computedColorScheme = useComputedColorScheme('light');
+  const { containerRef, getCaptchaToken, ready: captchaReady } = useAuthCaptcha();
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
     clearError();
-    await signInWithEmail(email, password);
+    try {
+      const captchaToken = await getCaptchaToken();
+      await signInWithEmail(email, password, captchaToken);
+    } catch {
+      // Captcha failure — error is already shown via auth store
+    }
     setSubmitting(false);
     // Auth state change listener will update session; navigate after
     if (!useAuthStore.getState().error) {
       trackEvent('login_succeeded', { method: 'email' });
-      navigate('/');
+      navigate('/dashboard');
     }
   };
 
@@ -125,7 +132,9 @@ export default function Login() {
               {t('Forgot password?')}
             </Anchor>
 
-            <Button type="submit" fullWidth loading={submitting}>
+            <div ref={containerRef} />
+
+            <Button type="submit" fullWidth loading={submitting} disabled={!captchaReady}>
               {t('Sign in')}
             </Button>
 

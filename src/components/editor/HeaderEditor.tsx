@@ -43,6 +43,7 @@ import {
 import { useEditorStore, useSourceStore } from '@/stores';
 import type { POHeader } from '@/lib/po/types';
 import { msgid, useTranslation } from '@/lib/app-language';
+import { getFlagEmoji } from '@/lib/flags';
 
 /** Language codes with names - comprehensive list */
 const LANGUAGE_CODES = [
@@ -342,6 +343,11 @@ function LanguageSelector({
               filteredOptions.map((lang) => (
                 <Combobox.Option value={lang.code} key={lang.code}>
                   <Group gap="sm">
+                    {getFlagEmoji(lang.code) && (
+                      <Text size="sm" style={{ lineHeight: 1 }}>
+                        {getFlagEmoji(lang.code)}
+                      </Text>
+                    )}
                     <Text size="sm" fw={500} style={{ width: 50 }}>
                       {lang.code}
                     </Text>
@@ -595,7 +601,11 @@ export function HeaderEditor({
         <Group gap="sm" wrap="wrap" style={{ flex: 1, minWidth: 0 }}>
           <Text fw={500}>{filename}</Text>
           {header.language && (
-            <Badge variant="light" size="sm" leftSection={<Globe size={12} />}>
+            <Badge
+              variant="light"
+              size="sm"
+              leftSection={getFlagEmoji(header.language) ?? <Globe size={12} />}
+            >
               {header.language}
             </Badge>
           )}

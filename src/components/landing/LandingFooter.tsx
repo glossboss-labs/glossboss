@@ -11,8 +11,8 @@ const footerLinks = {
   product: {
     title: msgid('Product'),
     links: [
-      { label: msgid('Features'), href: '#features' },
-      { label: msgid('Pricing'), href: '#pricing' },
+      { label: msgid('Features'), href: '/#features' },
+      { label: msgid('Pricing'), href: '/#pricing' },
       { label: msgid('Roadmap'), href: '/roadmap' },
       { label: msgid('Explore'), href: '/explore' },
     ],
@@ -68,6 +68,13 @@ export function LandingFooter({ currentLang = 'en' }: { currentLang?: AppLanguag
                         className="text-sm text-text-secondary transition-colors hover:text-text-primary"
                         target="_blank"
                         rel="noopener noreferrer"
+                      >
+                        {t(link.label)}
+                      </a>
+                    ) : link.href.includes('#') ? (
+                      <a
+                        href={link.href}
+                        className="text-sm text-text-secondary transition-colors hover:text-text-primary"
                       >
                         {t(link.label)}
                       </a>

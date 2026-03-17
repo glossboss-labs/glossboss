@@ -13,6 +13,7 @@ import {
   Users,
   FileCheck,
   MessageSquare,
+  FileText,
   type LucideIcon,
 } from 'lucide-react';
 import { useTranslation } from '@/lib/app-language';
@@ -29,6 +30,7 @@ import type {
   OrgMemberAddedData,
   ReviewStatusChangedData,
   ReviewCommentAddedData,
+  StringsUpdatedData,
 } from '@/lib/notifications/types';
 
 const iconMap: Record<NotificationType, LucideIcon> = {
@@ -40,6 +42,7 @@ const iconMap: Record<NotificationType, LucideIcon> = {
   org_member_added: Users,
   review_status_changed: FileCheck,
   review_comment_added: MessageSquare,
+  strings_updated: FileText,
 };
 
 function getNotificationLink(n: NotificationRow): string {
@@ -57,6 +60,8 @@ function getNotificationLink(n: NotificationRow): string {
       return `/projects/${d.project_id || ''}`;
     case 'review_status_changed':
     case 'review_comment_added':
+      return `/projects/${d.project_id || ''}/languages/${d.language_id || ''}`;
+    case 'strings_updated':
       return `/projects/${d.project_id || ''}/languages/${d.language_id || ''}`;
     default:
       return '/dashboard';
@@ -114,6 +119,14 @@ function useNotificationMessage(n: NotificationRow): string {
       return t('{{author}} commented on "{{msgid}}"', {
         author: d.comment_author,
         msgid: d.msgid.length > 40 ? d.msgid.slice(0, 40) + '...' : d.msgid,
+      });
+    }
+    case 'strings_updated': {
+      const d = n.data as StringsUpdatedData;
+      return t('{{count}} strings updated in {{project}} ({{locale}})', {
+        count: d.update_count,
+        project: d.project_name,
+        locale: d.locale,
       });
     }
     default:

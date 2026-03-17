@@ -20,6 +20,7 @@ import {
   Download,
   GitBranch,
   CreditCard,
+  Bell,
 } from 'lucide-react';
 import { sectionVariants } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
@@ -38,6 +39,7 @@ import {
   DevelopmentSection,
   DeleteAccountSection,
   DataExportSection,
+  NotificationsSection,
 } from '@/components/settings';
 
 const MotionDiv = motion.div;
@@ -51,10 +53,8 @@ export default function Settings() {
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = searchParams.get('tab') || (isAuthenticated ? 'account' : 'translation');
 
-  // Settings tour — auto-starts on first visit when on the translation tab
-  const { startTour } = useSettingsTour({
-    autoStart: activeTab === 'translation',
-  });
+  // Settings tour — auto-starts on first visit regardless of active tab
+  const { startTour } = useSettingsTour();
 
   // Handle ?tour=settings query param
   const tourTriggered = useRef(false);
@@ -107,6 +107,11 @@ export default function Settings() {
                   {t('Billing')}
                 </Tabs.Tab>
               )}
+              {isAuthenticated && (
+                <Tabs.Tab value="notifications" leftSection={<Bell size={14} />}>
+                  {t('Notifications')}
+                </Tabs.Tab>
+              )}
               <Tabs.Tab value="translation" leftSection={<Key size={14} />}>
                 {t('Translation')}
               </Tabs.Tab>
@@ -157,6 +162,12 @@ export default function Settings() {
             {isAuthenticated && (
               <Tabs.Panel value="billing" pt={isMobile ? 'md' : undefined}>
                 <BillingSection />
+              </Tabs.Panel>
+            )}
+
+            {isAuthenticated && (
+              <Tabs.Panel value="notifications" pt={isMobile ? 'md' : undefined}>
+                <NotificationsSection />
               </Tabs.Panel>
             )}
 

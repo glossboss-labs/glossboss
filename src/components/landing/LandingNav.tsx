@@ -21,8 +21,8 @@ export function LandingNav({
   const logo = isDark ? '/glossboss-combined-light.svg' : '/glossboss-combined-dark.svg';
 
   const navLinks = [
-    { label: t('Features'), href: '#features' },
-    { label: t('Pricing'), href: '#pricing' },
+    { label: t('Features'), href: '/#features' },
+    { label: t('Pricing'), href: '/#pricing' },
     { label: t('Roadmap'), href: '/roadmap' },
     { label: t('Explore'), href: '/explore' },
   ];
@@ -38,7 +38,7 @@ export function LandingNav({
         {/* Desktop nav */}
         <div className="hidden items-center gap-8 md:flex">
           {navLinks.map((link) =>
-            link.href.startsWith('#') ? (
+            link.href.includes('#') ? (
               <a
                 key={link.href}
                 href={link.href}
@@ -112,7 +112,7 @@ export function LandingNav({
         <div className="border-t border-border-subtle bg-surface-0 px-6 pb-6 md:hidden">
           <div className="flex flex-col gap-4 pt-4">
             {navLinks.map((link) =>
-              link.href.startsWith('#') ? (
+              link.href.includes('#') ? (
                 <a
                   key={link.href}
                   href={link.href}

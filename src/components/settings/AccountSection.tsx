@@ -14,15 +14,17 @@ import {
   Switch,
   Button,
   PasswordInput,
+  TextInput,
   Avatar,
   Loader,
   Divider,
 } from '@mantine/core';
-import { Check, AlertCircle, Cloud, RefreshCw, ShieldAlert } from 'lucide-react';
+import { Check, AlertCircle, Cloud, RefreshCw, ShieldAlert, Pencil, X } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { useAuthStore } from '@/stores/auth-store';
 import { useCloudSettingsSync } from '@/hooks/use-cloud-settings-sync';
 import { useTranslation } from '@/lib/app-language';
+import { getSupabaseClient } from '@/lib/supabase/client';
 
 export function AccountSection() {
   const { t } = useTranslation();
@@ -48,6 +50,16 @@ export function AccountSection() {
     message: string;
   } | null>(null);
 
+  // Profile editing state
+  const [editingProfile, setEditingProfile] = useState(false);
+  const [editName, setEditName] = useState('');
+  const [editEmail, setEditEmail] = useState('');
+  const [profileSaving, setProfileSaving] = useState(false);
+  const [profileResult, setProfileResult] = useState<{
+    success: boolean;
+    message: string;
+  } | null>(null);
+
   const displayName = user?.user_metadata?.full_name || user?.email || '';
   const avatarUrl = user?.user_metadata?.avatar_url as string | undefined;
   const initials = displayName
@@ -58,6 +70,64 @@ export function AccountSection() {
     .toUpperCase();
 
   const isGitHubProvider = user?.app_metadata?.provider === 'github';
+  const githubUsername = (user?.user_metadata?.user_name ||
+    user?.user_metadata?.preferred_username) as string | undefined;
+
+  const startEditing = () => {
+    setEditName(user?.user_metadata?.full_name || '');
+    setEditEmail(user?.email || '');
+    setProfileResult(null);
+    setEditingProfile(true);
+  };
+
+  const cancelEditing = () => {
+    setEditingProfile(false);
+    setProfileResult(null);
+  };
+
+  const handleProfileSave = useCallback(async () => {
+    setProfileSaving(true);
+    setProfileResult(null);
+
+    try {
+      const client = getSupabaseClient('Auth');
+      const updates: { email?: string; data?: { full_name: string } } = {};
+
+      const currentName = user?.user_metadata?.full_name || '';
+      const currentEmail = user?.email || '';
+
+      if (editName !== currentName) {
+        updates.data = { full_name: editName };
+      }
+
+      if (editEmail !== currentEmail) {
+        updates.email = editEmail;
+      }
+
+      if (!updates.data && !updates.email) {
+        setProfileResult({ success: true, message: t('No changes to save.') });
+        setProfileSaving(false);
+        return;
+      }
+
+      const { error } = await client.auth.updateUser(updates);
+
+      if (error) {
+        setProfileResult({ success: false, message: error.message });
+      } else {
+        const message =
+          updates.email && editEmail !== currentEmail
+            ? t('Profile updated. Check your new email for a confirmation link.')
+            : t('Profile updated.');
+        setProfileResult({ success: true, message });
+        setEditingProfile(false);
+      }
+    } catch {
+      setProfileResult({ success: false, message: t('Failed to update profile.') });
+    }
+
+    setProfileSaving(false);
+  }, [editName, editEmail, user, t]);
 
   const handlePasswordChange = useCallback(async () => {
     if (!newPassword.trim()) {
@@ -132,25 +202,88 @@ export function AccountSection() {
       {/* Profile section */}
       <Paper p="md" withBorder>
         <Stack gap="sm">
-          <Text size="sm" fw={500}>
-            {t('Profile')}
-          </Text>
-
-          <Group gap="md">
-            <Avatar src={avatarUrl} size="lg" radius="xl" color="blue">
-              {initials}
-            </Avatar>
-            <Stack gap={2}>
-              {displayName && displayName !== user.email && (
-                <Text size="sm" fw={500}>
-                  {displayName}
-                </Text>
-              )}
-              <Text size="sm" c="dimmed">
-                {user.email}
-              </Text>
-            </Stack>
+          <Group justify="space-between">
+            <Text size="sm" fw={500}>
+              {t('Profile')}
+            </Text>
+            {!editingProfile && (
+              <Button
+                variant="subtle"
+                size="xs"
+                leftSection={<Pencil size={14} />}
+                onClick={startEditing}
+              >
+                {t('Edit')}
+              </Button>
+            )}
           </Group>
+
+          {editingProfile ? (
+            <>
+              <Group gap="md" align="flex-start">
+                <Avatar src={avatarUrl} size="lg" radius="xl" color="blue">
+                  {initials}
+                </Avatar>
+                <Stack gap="xs" style={{ flex: 1 }}>
+                  <TextInput
+                    label={t('Display name')}
+                    value={editName}
+                    onChange={(e) => setEditName(e.currentTarget.value)}
+                    placeholder={t('Your name')}
+                  />
+                  <TextInput
+                    label={t('Email')}
+                    value={editEmail}
+                    onChange={(e) => setEditEmail(e.currentTarget.value)}
+                    type="email"
+                    description={
+                      isGitHubProvider
+                        ? t('Changing your email requires confirmation via both addresses.')
+                        : undefined
+                    }
+                  />
+                </Stack>
+              </Group>
+              <Group gap="xs">
+                <Button size="xs" onClick={handleProfileSave} loading={profileSaving}>
+                  {t('Save')}
+                </Button>
+                <Button
+                  size="xs"
+                  variant="subtle"
+                  leftSection={<X size={14} />}
+                  onClick={cancelEditing}
+                >
+                  {t('Cancel')}
+                </Button>
+              </Group>
+            </>
+          ) : (
+            <Group gap="md">
+              <Avatar src={avatarUrl} size="lg" radius="xl" color="blue">
+                {initials}
+              </Avatar>
+              <Stack gap={2}>
+                {displayName && displayName !== user.email && (
+                  <Text size="sm" fw={500}>
+                    {displayName}
+                  </Text>
+                )}
+                <Text size="sm" c="dimmed">
+                  {user.email}
+                </Text>
+              </Stack>
+            </Group>
+          )}
+
+          {profileResult && (
+            <Alert
+              color={profileResult.success ? 'green' : 'red'}
+              icon={profileResult.success ? <Check size={16} /> : <AlertCircle size={16} />}
+            >
+              <Text size="sm">{profileResult.message}</Text>
+            </Alert>
+          )}
         </Stack>
       </Paper>
 
@@ -213,26 +346,77 @@ export function AccountSection() {
           </Text>
 
           {isGitHubProvider ? (
-            <Group gap="xs">
-              <Badge
+            <Group justify="space-between">
+              <Group gap="xs">
+                <Badge
+                  variant="light"
+                  color="gray"
+                  leftSection={
+                    <svg width={14} height={14} viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                    </svg>
+                  }
+                >
+                  GitHub
+                </Badge>
+                <Text size="xs" c="dimmed">
+                  {githubUsername ? (
+                    <>
+                      {t('Connected as')}{' '}
+                      <Text
+                        component="a"
+                        href={`https://github.com/${githubUsername}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        size="xs"
+                        fw={500}
+                        td="underline"
+                        inherit
+                      >
+                        @{githubUsername}
+                      </Text>
+                    </>
+                  ) : (
+                    t('Signed in with GitHub')
+                  )}
+                </Text>
+              </Group>
+              <Button
+                variant="subtle"
+                size="xs"
+                onClick={() => {
+                  void getSupabaseClient('Auth').auth.signInWithOAuth({
+                    provider: 'github',
+                    options: { redirectTo: `${window.location.origin}/auth/callback` },
+                  });
+                }}
+              >
+                {t('Reconnect')}
+              </Button>
+            </Group>
+          ) : (
+            <>
+              <Text size="sm" c="dimmed">
+                {t('No external accounts connected. Signed in with email and password.')}
+              </Text>
+              <Button
                 variant="light"
-                color="gray"
+                size="xs"
                 leftSection={
                   <svg width={14} height={14} viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
                   </svg>
                 }
+                onClick={() => {
+                  void getSupabaseClient('Auth').auth.linkIdentity({
+                    provider: 'github',
+                    options: { redirectTo: `${window.location.origin}/auth/callback` },
+                  });
+                }}
               >
-                GitHub
-              </Badge>
-              <Text size="xs" c="dimmed">
-                {t('Signed in with GitHub')}
-              </Text>
-            </Group>
-          ) : (
-            <Text size="sm" c="dimmed">
-              {t('No external accounts connected. Signed in with email and password.')}
-            </Text>
+                {t('Connect GitHub')}
+              </Button>
+            </>
           )}
         </Stack>
       </Paper>

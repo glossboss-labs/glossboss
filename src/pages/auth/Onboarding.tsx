@@ -19,6 +19,7 @@ import { ProfileStep } from '@/components/onboarding/ProfileStep';
 import { RoleStep } from '@/components/onboarding/RoleStep';
 import { PlanStep } from '@/components/onboarding/PlanStep';
 import { AttributionStep } from '@/components/onboarding/AttributionStep';
+import { Confetti } from '@/components/magicui/confetti';
 
 type Step = 'profile' | 'role' | 'plan' | 'attribution';
 
@@ -118,6 +119,7 @@ export default function Onboarding() {
 
   return (
     <OnboardingLayout step={stepIndex + 1} totalSteps={TOTAL_STEPS} wide={step === 'plan'}>
+      {step === 'profile' && <Confetti />}
       <AnimatePresence mode="wait">
         <motion.div
           key={step}
