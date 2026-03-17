@@ -15,3 +15,5 @@ export { PageLoader } from './PageLoader';
 export { PageError } from './PageError';
 export { CollapsibleSection } from './CollapsibleSection';
 export { LanguageFlag } from './LanguageFlag';
+export { CountryFlag } from './CountryFlag';
+export { renderFlagOption } from './renderFlagOption';
