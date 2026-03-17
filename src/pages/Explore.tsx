@@ -19,6 +19,7 @@ import { motion } from 'motion/react';
 import { AlertCircle, Search, Globe } from 'lucide-react';
 import { sectionVariants, contentVariants, fadeVariants } from '@/lib/motion';
 import { useTranslation, msgid } from '@/lib/app-language';
+import { trackEvent } from '@/lib/analytics';
 import { listPublicProjects } from '@/lib/projects/api';
 import { ProjectGrid } from '@/components/projects/ProjectGrid';
 import type { ProjectWithLanguages } from '@/lib/projects/types';
@@ -239,7 +240,22 @@ export default function Explore() {
                 </Center>
               </MotionDiv>
             ) : (
-              <ProjectGrid projects={filtered} />
+              <div
+                onClick={(e) => {
+                  const link = (e.target as HTMLElement).closest('a[href*="/projects/"]');
+                  if (link) {
+                    const match = link.getAttribute('href')?.match(/\/projects\/([^/]+)/);
+                    if (match) {
+                      const project = filtered.find((p) => p.id === match[1]);
+                      trackEvent('explore_project_opened', {
+                        slug: project?.wp_slug ?? project?.name ?? match[1],
+                      });
+                    }
+                  }
+                }}
+              >
+                <ProjectGrid projects={filtered} />
+              </div>
             )}
           </>
         )}

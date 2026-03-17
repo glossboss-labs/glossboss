@@ -23,3 +23,4 @@ export type { WorkspaceMode, EncodingInfo } from './EditorWorkspace';
 export { EmptyState, type EmptyStateProps } from './EmptyState';
 export { PresenceAvatars } from './PresenceAvatars';
 export { CellLockIndicator } from './CellLockIndicator';
+export { SourceFileIndicator } from './SourceFileUpload';

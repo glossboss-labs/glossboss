@@ -25,9 +25,11 @@ import ProjectInvite from '@/pages/ProjectInvite';
 import Login from '@/pages/auth/Login';
 import Signup from '@/pages/auth/Signup';
 import Callback from '@/pages/auth/Callback';
+import Onboarding from '@/pages/auth/Onboarding';
 import ForgotPassword from '@/pages/auth/ForgotPassword';
 import ResetPassword from '@/pages/auth/ResetPassword';
 import { AuthGuard } from '@/components/auth/AuthGuard';
+import { OnboardingGuard } from '@/components/auth/OnboardingGuard';
 import { CloudAppShell } from '@/components/AppShell';
 
 export default function App() {
@@ -49,6 +51,14 @@ export default function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/auth/callback" element={<Callback />} />
+      <Route
+        path="/onboarding"
+        element={
+          <OnboardingGuard>
+            <Onboarding />
+          </OnboardingGuard>
+        }
+      />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
 

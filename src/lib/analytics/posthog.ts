@@ -1,5 +1,8 @@
 /**
  * PostHog initialization — EU Cloud (Frankfurt), cookie-less mode.
+ * Requests are routed through a first-party reverse proxy at /ingest to
+ * avoid ad-blocker interference. The proxy is a Cloudflare Pages Function
+ * that forwards to eu.i.posthog.com.
  * No-ops silently when VITE_POSTHOG_KEY is not set (local dev).
  */
 
@@ -16,7 +19,8 @@ export async function initPostHog(): Promise<void> {
     try {
       posthogModule = await import('posthog-js');
       posthogModule.default.init(key, {
-        api_host: 'https://eu.i.posthog.com',
+        api_host: '/ingest',
+        ui_host: 'https://eu.posthog.com',
         persistence: 'memory',
         autocapture: true,
         capture_pageview: false,

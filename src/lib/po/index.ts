@@ -50,9 +50,17 @@ export {
 export {
   parseUploadedFile,
   parseFileContent,
+  parseAndApplySourceFile,
   getFileExtension,
   isSupportedExtension,
   type ParsedFileResult,
   type ParseFileOutcome,
   type EncodingInfo,
+  type SourceFileResult,
 } from './parse-file';
+
+// Source file
+export { applySourceFile } from './source-file';
+
+// Key detection
+export { hasKeyBasedMsgids } from './key-detection';

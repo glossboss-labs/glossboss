@@ -26,7 +26,7 @@ const faqs = [
   {
     q: msgid('How is this different from Poedit or Crowdin?'),
     a: msgid(
-      'GlossBoss combines the simplicity of Poedit with the collaboration features of Crowdin — in the browser, with no install required. It supports three AI translation providers instead of one, has deep WordPress integration with source-code context, includes a full review workflow with threaded comments, and is open source.',
+      'GlossBoss combines the simplicity of Poedit with the collaboration features of Crowdin — in the browser, with no install required. It supports three AI translation providers instead of one, has deep WordPress integration with source-code context, includes a full review workflow with threaded comments, syncs directly with GitHub and GitLab, and is open source.',
     ),
   },
   {

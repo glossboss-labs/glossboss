@@ -230,6 +230,26 @@ export function ProductShowcase() {
 
   return (
     <section className="px-6 pb-24">
+      {/* Section intro — guides the eye into the demo */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-50px' }}
+        transition={{ duration: 0.5 }}
+        className="mx-auto mb-8 max-w-2xl text-center"
+      >
+        <p className="mb-3 text-xs font-medium uppercase tracking-widest text-text-tertiary">
+          See it in action
+        </p>
+        <h2 className="text-2xl font-semibold tracking-tight text-text-primary sm:text-3xl">
+          Click translate, watch your strings fill in
+        </h2>
+        <p className="mt-3 text-sm text-text-secondary">
+          Try the interactive demo below. Click the translate icon on any untranslated row, or
+          translate them all at once.
+        </p>
+      </motion.div>
+
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}

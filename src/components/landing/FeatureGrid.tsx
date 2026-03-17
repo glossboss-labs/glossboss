@@ -79,8 +79,10 @@ const secondaryFeatures: SecondaryFeature[] = [
   },
   {
     Icon: GitBranch,
-    name: msgid('GitHub'),
-    description: msgid('Open files from your repo, translate, and push or create a PR.'),
+    name: msgid('Repo Sync'),
+    description: msgid(
+      'Open files from GitHub or GitLab, translate, and create a pull or merge request.',
+    ),
   },
   {
     Icon: Database,

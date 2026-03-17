@@ -42,19 +42,25 @@ import {
   getGitHubSettings,
   saveGitHubSettings,
   clearGitHubSettings,
-  hasGitHubToken,
   isGitHubPersistEnabled,
   setGitHubPersistEnabled,
+  hasAnyGitHubToken,
+  clearGitHubOAuthToken,
+  saveGitHubOAuthToken,
+  getGitHubTokenType,
 } from '@/lib/github';
-import { hasAnyGitHubToken, clearGitHubOAuthToken } from '@/lib/github/token';
 import {
   getGitLabSettings,
   saveGitLabSettings,
   clearGitLabSettings,
-  hasGitLabToken,
   isGitLabPersistEnabled,
   setGitLabPersistEnabled,
+  hasAnyGitLabToken,
+  saveGitLabOAuthToken,
+  clearGitLabOAuthToken,
+  getGitLabTokenType,
 } from '@/lib/gitlab';
+import { startRepoOAuth } from '@/lib/repo-sync/oauth';
 import { createRepoClient } from '@/lib/repo-sync/client';
 import type {
   RepoProviderId,
@@ -68,6 +74,7 @@ import { useRepoSyncStore } from '@/stores';
 import { RepoBrowser } from './RepoBrowser';
 import { CommitPanel } from './CommitPanel';
 import { useTranslation } from '@/lib/app-language';
+import { trackEvent } from '@/lib/analytics';
 
 type ModalTab = 'connect' | 'browse' | 'push';
 
@@ -81,7 +88,11 @@ interface GitHubConnectSectionProps {
   ghPersist: boolean;
   onGhPersistChange: (persist: boolean) => void;
   onLoadRepos: () => void;
+  onOAuthConnect: () => void;
+  oauthLoading: boolean;
+  oauthError: string | null;
   loadingRepos: boolean;
+  onClearToken: () => void;
 }
 
 function GitHubConnectSection({
@@ -90,13 +101,18 @@ function GitHubConnectSection({
   ghPersist,
   onGhPersistChange,
   onLoadRepos,
+  onOAuthConnect,
+  oauthLoading,
+  oauthError,
   loadingRepos,
+  onClearToken,
 }: GitHubConnectSectionProps) {
   const { t } = useTranslation();
-  const hasPat = hasGitHubToken();
+  const [showPat, setShowPat] = useState(false);
+  const tokenType = getGitHubTokenType();
 
-  // Connected via PAT — show connected state
-  if (hasPat) {
+  // Connected — show connected state with auth method
+  if (tokenType) {
     return (
       <Stack gap="sm">
         <Paper p="sm" withBorder>
@@ -106,9 +122,12 @@ function GitHubConnectSection({
                 {t('Connected')}
               </Badge>
               <Text size="sm" c="dimmed">
-                {t('Personal access token')}
+                {tokenType === 'oauth' ? t('GitHub account') : t('Personal access token')}
               </Text>
             </Group>
+            <Button variant="subtle" size="xs" color="red" onClick={onClearToken}>
+              {t('Disconnect')}
+            </Button>
           </Group>
         </Paper>
 
@@ -119,52 +138,234 @@ function GitHubConnectSection({
     );
   }
 
-  // Not connected — PAT setup
+  // Not connected — OAuth + PAT
   return (
     <Stack gap="sm">
-      <PasswordInput
-        label={t('Personal access token')}
-        description={
-          <>
-            <Anchor
-              href="https://github.com/settings/personal-access-tokens/new"
-              target="_blank"
-              rel="noopener noreferrer"
-              size="xs"
-            >
-              {t('Create a fine-grained token')}{' '}
-              <ExternalLink size={10} style={{ display: 'inline', verticalAlign: 'middle' }} />
-            </Anchor>
-            <Text component="span" size="xs" c="dimmed">
-              {' — '}
-              {t('select only the repositories you need, with Contents read & write permission.')}
-            </Text>
-            <br />
-            <Text component="span" size="xs" c="dimmed">
-              {t('Private repo access is optional — only grant it if you need it.')}
-            </Text>
-            <br />
-            <Text component="span" size="xs" c="dimmed">
-              {t(
-                'Your token is sent directly to the GitHub API from your browser and is never stored on our servers.',
-              )}
-            </Text>
-          </>
+      <Button
+        variant="default"
+        leftSection={
+          <svg width={16} height={16} viewBox="0 0 16 16" fill="currentColor">
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
+          </svg>
         }
-        value={ghToken}
-        onChange={(e) => onGhTokenChange(e.currentTarget.value)}
-        placeholder="github_pat_..."
-      />
-      <Switch
-        label={t('Remember token')}
-        description={t('Store in localStorage (persists across sessions)')}
-        checked={ghPersist}
-        onChange={(e) => onGhPersistChange(e.currentTarget.checked)}
-        size="sm"
-      />
-      <Button onClick={onLoadRepos} loading={loadingRepos} disabled={!ghToken.trim()}>
-        {t('Connect & list repositories')}
+        onClick={onOAuthConnect}
+        loading={oauthLoading}
+        fullWidth
+      >
+        {t('Connect with GitHub')}
       </Button>
+
+      {oauthError && (
+        <Alert icon={<AlertCircle size={16} />} color="red" variant="light">
+          {oauthError}
+        </Alert>
+      )}
+
+      {!showPat ? (
+        <Button variant="subtle" size="xs" c="dimmed" onClick={() => setShowPat(true)}>
+          {t('or connect with a personal access token')}
+        </Button>
+      ) : (
+        <>
+          <Divider label={t('or use a personal access token')} labelPosition="center" />
+          <PasswordInput
+            label={t('Personal access token')}
+            description={
+              <>
+                <Anchor
+                  href="https://github.com/settings/personal-access-tokens/new"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  size="xs"
+                >
+                  {t('Create a fine-grained token')}{' '}
+                  <ExternalLink size={10} style={{ display: 'inline', verticalAlign: 'middle' }} />
+                </Anchor>
+                <Text component="span" size="xs" c="dimmed">
+                  {' — '}
+                  {t(
+                    'select only the repositories you need, with Contents read & write permission.',
+                  )}
+                </Text>
+              </>
+            }
+            value={ghToken}
+            onChange={(e) => onGhTokenChange(e.currentTarget.value)}
+            placeholder="github_pat_..."
+          />
+          <Switch
+            label={t('Remember token')}
+            description={t('Store in localStorage (persists across sessions)')}
+            checked={ghPersist}
+            onChange={(e) => onGhPersistChange(e.currentTarget.checked)}
+            size="sm"
+          />
+          <Button onClick={onLoadRepos} loading={loadingRepos} disabled={!ghToken.trim()}>
+            {t('Connect & list repositories')}
+          </Button>
+        </>
+      )}
+    </Stack>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  GitLabConnectSection                                               */
+/* ------------------------------------------------------------------ */
+
+interface GitLabConnectSectionProps {
+  glToken: string;
+  onGlTokenChange: (token: string) => void;
+  glInstanceUrl: string;
+  onGlInstanceUrlChange: (url: string) => void;
+  glPersist: boolean;
+  onGlPersistChange: (persist: boolean) => void;
+  onLoadRepos: () => void;
+  onOAuthConnect: () => void;
+  oauthLoading: boolean;
+  oauthError: string | null;
+  loadingRepos: boolean;
+  onClearToken: () => void;
+}
+
+function GitLabConnectSection({
+  glToken,
+  onGlTokenChange,
+  glInstanceUrl,
+  onGlInstanceUrlChange,
+  glPersist,
+  onGlPersistChange,
+  onLoadRepos,
+  onOAuthConnect,
+  oauthLoading,
+  oauthError,
+  loadingRepos,
+  onClearToken,
+}: GitLabConnectSectionProps) {
+  const { t } = useTranslation();
+  const [showPat, setShowPat] = useState(false);
+  const tokenType = getGitLabTokenType();
+  const isGitLabCom =
+    !glInstanceUrl.trim() || /^https?:\/\/(www\.)?gitlab\.com\/?$/i.test(glInstanceUrl.trim());
+
+  // Connected — show connected state
+  if (tokenType) {
+    return (
+      <Stack gap="sm">
+        <Paper p="sm" withBorder>
+          <Group justify="space-between">
+            <Group gap="xs">
+              <Badge size="sm" variant="dot" color="green">
+                {t('Connected')}
+              </Badge>
+              <Text size="sm" c="dimmed">
+                {tokenType === 'oauth' ? t('GitLab account') : t('Personal access token')}
+              </Text>
+            </Group>
+            <Button variant="subtle" size="xs" color="red" onClick={onClearToken}>
+              {t('Disconnect')}
+            </Button>
+          </Group>
+        </Paper>
+
+        <Button onClick={onLoadRepos} loading={loadingRepos}>
+          {t('Connect & list repositories')}
+        </Button>
+      </Stack>
+    );
+  }
+
+  // Not connected
+  return (
+    <Stack gap="sm">
+      <TextInput
+        label={t('GitLab instance URL')}
+        value={glInstanceUrl}
+        onChange={(e) => onGlInstanceUrlChange(e.currentTarget.value)}
+        placeholder="https://gitlab.com"
+      />
+
+      {/* OAuth is available for gitlab.com only */}
+      {isGitLabCom && (
+        <>
+          <Button
+            variant="default"
+            leftSection={
+              <svg width={16} height={16} viewBox="0 0 32 32" fill="none">
+                <path
+                  d="M31.46 12.78l-.04-.12-4.35-11.35a.84.84 0 00-.8-.54.87.87 0 00-.83.57L21.7 11.41H10.3L6.56 1.34a.85.85 0 00-.83-.57.84.84 0 00-.8.54L.58 12.65l-.04.13a6.03 6.03 0 002 6.77l.01.01.04.03 4.94 3.7 2.45 1.85 1.49 1.13a1 1 0 001.16 0l1.49-1.13 2.45-1.85 4.98-3.73.01-.01a6.03 6.03 0 002-6.77z"
+                  fill="#E24329"
+                />
+                <path
+                  d="M31.46 12.78l-.04-.12a11.35 11.35 0 00-4.56 2.02l-10.86 8.2 6.94 5.24 4.98-3.73.01-.01a6.03 6.03 0 002-6.77l-1.47-4.83z"
+                  fill="#FC6D26"
+                />
+                <path
+                  d="M9.06 28.12l2.45 1.85 1.49 1.13a1 1 0 001.16 0l1.49-1.13 2.45-1.85-6.94-5.24-2.1 5.24z"
+                  fill="#FCA326"
+                />
+                <path
+                  d="M5.14 14.68A11.35 11.35 0 00.58 12.66l-.04.13a6.03 6.03 0 002 6.77l.01.01.04.03 4.94 3.7 2.53-5.38-5-3.24z"
+                  fill="#FC6D26"
+                />
+              </svg>
+            }
+            onClick={onOAuthConnect}
+            loading={oauthLoading}
+            fullWidth
+          >
+            {t('Connect with GitLab')}
+          </Button>
+
+          {oauthError && (
+            <Alert icon={<AlertCircle size={16} />} color="red" variant="light">
+              {oauthError}
+            </Alert>
+          )}
+        </>
+      )}
+
+      {!showPat && isGitLabCom ? (
+        <Button variant="subtle" size="xs" c="dimmed" onClick={() => setShowPat(true)}>
+          {t('or connect with a personal access token')}
+        </Button>
+      ) : (
+        <>
+          {isGitLabCom && (
+            <Divider label={t('or use a personal access token')} labelPosition="center" />
+          )}
+          <PasswordInput
+            label={t('Personal access token')}
+            description={
+              <>
+                <Anchor
+                  href={`${glInstanceUrl.replace(/\/+$/, '') || 'https://gitlab.com'}/-/user_settings/personal_access_tokens?name=GlossBoss&scopes=api`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  size="xs"
+                >
+                  {t('Create a token')}{' '}
+                  <ExternalLink size={10} style={{ display: 'inline', verticalAlign: 'middle' }} />
+                </Anchor>{' '}
+                {t('with api scope')}
+              </>
+            }
+            value={glToken}
+            onChange={(e) => onGlTokenChange(e.currentTarget.value)}
+            placeholder="glpat-..."
+          />
+          <Switch
+            label={t('Remember token')}
+            description={t('Store in localStorage (persists across sessions)')}
+            checked={glPersist}
+            onChange={(e) => onGlPersistChange(e.currentTarget.checked)}
+            size="sm"
+          />
+          <Button onClick={onLoadRepos} loading={loadingRepos} disabled={!glToken.trim()}>
+            {t('Connect & list repositories')}
+          </Button>
+        </>
+      )}
     </Stack>
   );
 }
@@ -204,7 +405,7 @@ export function RepoSyncModal({
   const defaultTab = (): ModalTab => {
     if (initialTab) return initialTab;
     if (connection && serializedContent) return 'push';
-    if (hasAnyGitHubToken() || hasGitLabToken()) return 'browse';
+    if (hasAnyGitHubToken() || hasAnyGitLabToken()) return 'browse';
     return 'connect';
   };
 
@@ -213,7 +414,8 @@ export function RepoSyncModal({
 
   // Provider selection — restore from active connection
   const [provider, setProvider] = useState<RepoProviderId>(
-    () => connection?.provider ?? (hasGitLabToken() && !hasGitHubToken() ? 'gitlab' : 'github'),
+    () =>
+      connection?.provider ?? (hasAnyGitLabToken() && !hasAnyGitHubToken() ? 'gitlab' : 'github'),
   );
 
   // Token inputs
@@ -239,7 +441,11 @@ export function RepoSyncModal({
   const [loadingFile, setLoadingFile] = useState(false);
   const [fileError, setFileError] = useState<string | null>(null);
 
-  const hasToken = provider === 'github' ? hasAnyGitHubToken() : hasGitLabToken();
+  // OAuth state
+  const [oauthLoading, setOauthLoading] = useState(false);
+  const [oauthError, setOauthError] = useState<string | null>(null);
+
+  const hasToken = provider === 'github' ? hasAnyGitHubToken() : hasAnyGitLabToken();
   const autoLoadedRef = useRef(false);
 
   // Refresh token state and set the right tab/provider when modal opens
@@ -264,7 +470,7 @@ export function RepoSyncModal({
   // Auto-load repos when the Browse tab needs them
   useEffect(() => {
     if (!opened || autoLoadedRef.current || loadingRepos) return;
-    const tokenAvailable = provider === 'github' ? hasAnyGitHubToken() : hasGitLabToken();
+    const tokenAvailable = provider === 'github' ? hasAnyGitHubToken() : hasAnyGitLabToken();
     if (tokenAvailable && repos.length === 0) {
       autoLoadedRef.current = true;
       void handleLoadRepos();
@@ -289,6 +495,7 @@ export function RepoSyncModal({
       setGhToken('');
     } else {
       clearGitLabSettings();
+      clearGitLabOAuthToken();
       setGlToken('');
     }
     setRepos([]);
@@ -296,8 +503,10 @@ export function RepoSyncModal({
   }, [provider]);
 
   const handleLoadRepos = useCallback(async () => {
-    // Save PAT settings if a PAT was entered (skip for OAuth-only)
-    if (provider === 'github' ? ghToken.trim() : true) {
+    // Save PAT settings if a PAT was entered (skip for OAuth-only connections)
+    const ghPATEntered = provider === 'github' && ghToken.trim();
+    const glPATEntered = provider === 'gitlab' && glToken.trim();
+    if (ghPATEntered || glPATEntered) {
       handleSaveToken();
     }
     setLoadingRepos(true);
@@ -322,7 +531,30 @@ export function RepoSyncModal({
     } finally {
       setLoadingRepos(false);
     }
-  }, [provider, ghToken, handleSaveToken, connection]);
+  }, [provider, ghToken, glToken, handleSaveToken, connection]);
+
+  const handleOAuthConnect = useCallback(async () => {
+    setOauthLoading(true);
+    setOauthError(null);
+    try {
+      const result = await startRepoOAuth(provider);
+      if (provider === 'github') {
+        saveGitHubOAuthToken(result.token);
+      } else {
+        saveGitLabOAuthToken(result.token);
+      }
+      trackEvent('repo_oauth_connected', { provider });
+      // Auto-load repos after OAuth
+      await handleLoadRepos();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      if (message !== 'OAuth flow was cancelled') {
+        setOauthError(message);
+      }
+    } finally {
+      setOauthLoading(false);
+    }
+  }, [provider, handleLoadRepos]);
 
   /** Auto-scan a repo for locale files on the default branch */
   const handleScanLocaleFiles = useCallback(
@@ -418,6 +650,7 @@ export function RepoSyncModal({
         };
 
         setConnection(conn);
+        trackEvent('repo_connected', { provider });
         onFileLoaded(fileContent.content, path.split('/').pop() ?? path);
         onClose();
       } catch (err) {
@@ -455,6 +688,7 @@ export function RepoSyncModal({
         };
 
         setConnection(conn);
+        trackEvent('repo_connected', { provider });
         onFileLoaded(fileContent.content, path.split('/').pop() ?? path);
         onClose();
       } catch (err) {
@@ -543,77 +777,33 @@ export function RepoSyncModal({
                 ghPersist={ghPersist}
                 onGhPersistChange={setGhPersist}
                 onLoadRepos={() => void handleLoadRepos()}
+                onOAuthConnect={() => void handleOAuthConnect()}
+                oauthLoading={oauthLoading}
+                oauthError={oauthError}
                 loadingRepos={loadingRepos}
+                onClearToken={handleClearToken}
               />
             ) : (
-              <Stack gap="sm">
-                <TextInput
-                  label={t('GitLab instance URL')}
-                  value={glInstanceUrl}
-                  onChange={(e) => setGlInstanceUrl(e.currentTarget.value)}
-                  placeholder="https://gitlab.com"
-                />
-                <PasswordInput
-                  label={t('Personal access token')}
-                  description={
-                    <>
-                      <Anchor
-                        href={`${glInstanceUrl.replace(/\/+$/, '')}/-/user_settings/personal_access_tokens?name=GlossBoss&scopes=api`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        size="xs"
-                      >
-                        {t('Create a token')}{' '}
-                        <ExternalLink
-                          size={10}
-                          style={{ display: 'inline', verticalAlign: 'middle' }}
-                        />
-                      </Anchor>{' '}
-                      {t('with api scope')}
-                      <br />
-                      <Text component="span" size="xs" c="dimmed">
-                        {t(
-                          'Your token is sent directly to the GitLab API from your browser and is never stored on our servers.',
-                        )}
-                      </Text>
-                    </>
-                  }
-                  value={glToken}
-                  onChange={(e) => setGlToken(e.currentTarget.value)}
-                  placeholder="glpat-..."
-                />
-                <Switch
-                  label={t('Remember token')}
-                  description={t('Store in localStorage (persists across sessions)')}
-                  checked={glPersist}
-                  onChange={(e) => setGlPersist(e.currentTarget.checked)}
-                  size="sm"
-                />
-              </Stack>
+              <GitLabConnectSection
+                glToken={glToken}
+                onGlTokenChange={setGlToken}
+                glInstanceUrl={glInstanceUrl}
+                onGlInstanceUrlChange={setGlInstanceUrl}
+                glPersist={glPersist}
+                onGlPersistChange={setGlPersist}
+                onLoadRepos={() => void handleLoadRepos()}
+                onOAuthConnect={() => void handleOAuthConnect()}
+                oauthLoading={oauthLoading}
+                oauthError={oauthError}
+                loadingRepos={loadingRepos}
+                onClearToken={handleClearToken}
+              />
             )}
 
             {repoError && (
               <Alert icon={<AlertCircle size={16} />} color="red" variant="light">
                 {repoError}
               </Alert>
-            )}
-
-            {/* For GitLab, show the connect button here (GitHub uses its own section) */}
-            {provider === 'gitlab' && (
-              <Group>
-                <Button
-                  onClick={() => void handleLoadRepos()}
-                  loading={loadingRepos}
-                  disabled={!glToken.trim()}
-                >
-                  {t('Connect & list repositories')}
-                </Button>
-                {hasToken && (
-                  <Button variant="subtle" color="red" onClick={handleClearToken}>
-                    {t('Clear token')}
-                  </Button>
-                )}
-              </Group>
             )}
           </Stack>
         </Tabs.Panel>

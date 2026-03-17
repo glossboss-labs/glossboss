@@ -171,6 +171,10 @@ export function TranslateButton({
       }
     } catch (err) {
       const errorMessage = formatDeepLError(err);
+      trackEvent('translation_failed', {
+        provider: activeProvider,
+        error_type: err instanceof Error ? err.constructor.name : 'unknown',
+      });
       setError(errorMessage);
       onError?.(errorMessage);
     } finally {

@@ -56,6 +56,7 @@ import {
   type TranslationProviderId,
 } from '@/lib/translation';
 import { useTranslation } from '@/lib/app-language';
+import { trackEvent } from '@/lib/analytics';
 
 interface TranslationConnectionResult {
   success: boolean;
@@ -184,10 +185,17 @@ export function TranslationSection({
     setTestResult(null);
   }, []);
 
-  const handleTranslationProviderChange = useCallback((provider: TranslationProviderId) => {
-    setTranslationProvider(provider);
-    saveActiveTranslationProvider(provider);
-  }, []);
+  const handleTranslationProviderChange = useCallback(
+    (provider: TranslationProviderId) => {
+      trackEvent('translation_provider_changed', {
+        from: translationProvider,
+        to: provider,
+      });
+      setTranslationProvider(provider);
+      saveActiveTranslationProvider(provider);
+    },
+    [translationProvider],
+  );
 
   // Azure handlers
   const handleTestAzureKey = useCallback(async () => {

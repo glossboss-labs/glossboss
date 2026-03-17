@@ -88,6 +88,16 @@ export interface POEntry {
   /** Plural translations (msgstr[0], msgstr[1], etc.) */
   msgstrPlural?: string[];
 
+  /**
+   * Source language text resolved from an uploaded source file.
+   * When present, this is the human-readable source text (e.g. "Save")
+   * while msgid may contain a key (e.g. "button.save").
+   */
+  sourceText?: string;
+
+  /** Plural form of source text from source file */
+  sourceTextPlural?: string;
+
   /** Whether this entry has been modified in the editor */
   isDirty?: boolean;
 }

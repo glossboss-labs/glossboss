@@ -13,7 +13,8 @@ import type {
   GitLabBranchResponse,
   GitLabTreeEntry,
 } from './types';
-import { getGitLabSettings, getGitLabApiUrl } from './settings';
+import { getGitLabApiUrl } from './settings';
+import { resolveGitLabToken } from './token';
 import type {
   RepoBranch,
   RepoTreeEntry,
@@ -26,26 +27,28 @@ import type {
   RepoListEntry,
 } from '../repo-sync/types';
 
-function getToken(): string {
-  const { token } = getGitLabSettings();
-  if (!token.trim()) throw new Error('GitLab token not configured');
-  return token.trim();
-}
-
 /** Encode project path for GitLab API (owner/repo → owner%2Frepo) */
 function projectId(owner: string, repo: string): string {
   return encodeURIComponent(`${owner}/${repo}`);
 }
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const token = getToken();
+  const resolved = resolveGitLabToken();
+  if (!resolved) throw new Error('GitLab token not configured');
+
   const apiBase = getGitLabApiUrl();
+
+  // OAuth tokens use Bearer header; PATs use PRIVATE-TOKEN
+  const authHeader =
+    resolved.type === 'oauth'
+      ? { Authorization: `Bearer ${resolved.token}` }
+      : { 'PRIVATE-TOKEN': resolved.token };
 
   const response = await fetch(`${apiBase}${path}`, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
-      'PRIVATE-TOKEN': token,
+      ...authHeader,
       ...options.headers,
     },
   });

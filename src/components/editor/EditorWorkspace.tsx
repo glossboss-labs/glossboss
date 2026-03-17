@@ -13,6 +13,7 @@ import {
   FilterToolbar,
   HeaderEditor,
   ReviewSummary,
+  SourceFileIndicator,
   TranslateToolbar,
 } from '@/components/editor';
 import { sectionVariants } from '@/lib/motion';
@@ -163,6 +164,7 @@ export function EditorWorkspace({
               translateEnabled={translateEnabled}
               mode={workspaceMode}
             />
+            {workspaceMode === 'edit' && <SourceFileIndicator />}
             {workspaceMode === 'edit' && glossary && (
               <Group gap="xs">
                 <Badge color="green" variant="light" size="sm" leftSection={<Check size={10} />}>

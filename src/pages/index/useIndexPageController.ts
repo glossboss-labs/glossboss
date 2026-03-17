@@ -19,6 +19,8 @@ import {
   serializePOFile,
   parseUploadedFile,
   parseFileContent,
+  parseAndApplySourceFile,
+  hasKeyBasedMsgids,
   isSupportedExtension,
   getFileExtension,
   type POEntry,
@@ -176,8 +178,24 @@ export function useIndexPageController(options?: IndexPageControllerOptions) {
     setQaReports,
     setUpstreamDeltaEntries,
     mergeEntries,
+    sourceFilename,
+    applySourceEntries,
+    clearSourceFile,
   } = useEditorStore();
   const upsertApprovedEntries = useTranslationMemoryStore((state) => state.upsertApprovedEntries);
+
+  const showSourceFileOption = useMemo(() => hasKeyBasedMsgids(entries), [entries]);
+
+  const handleSourceFileUpload = useCallback(
+    async (file: File | null) => {
+      if (!file) return;
+      const result = await parseAndApplySourceFile(file, entries);
+      if (result.ok) {
+        applySourceEntries(result.result.entries, result.result.filename);
+      }
+    },
+    [entries, applySourceEntries],
+  );
 
   const glossaryLocale = header?.language?.toLowerCase().split('_')[0] || '';
   const targetLanguageForMemory = header?.language ?? translateTargetLang ?? null;
@@ -198,6 +216,11 @@ export function useIndexPageController(options?: IndexPageControllerOptions) {
     async (loadedGlossary: Glossary) => {
       setGlossary(loadedGlossary);
       setGlossaryTermCount(loadedGlossary.entries.length);
+
+      trackEvent('glossary_loaded', {
+        provider: getActiveTranslationProvider(),
+        entries_count: loadedGlossary.entries.length,
+      });
 
       if (entries.length > 0) {
         const analyses = batchAnalyzeTranslations(entries, loadedGlossary);
@@ -883,6 +906,11 @@ export function useIndexPageController(options?: IndexPageControllerOptions) {
         const mergeResult = mergePotIntoPo(entries, outcome.result.file.entries);
         mergeEntries(mergeResult.entries);
 
+        trackEvent('file_merge_completed', {
+          new_entries: mergeResult.stats.added,
+          total_entries: mergeResult.entries.length,
+        });
+
         setMergeSuccess({
           potFilename: file.name,
           ...mergeResult.stats,
@@ -1035,6 +1063,10 @@ export function useIndexPageController(options?: IndexPageControllerOptions) {
     onDownload: handleDownload,
     onDownloadAs: handleDownloadAs,
     onPotUpload: handlePotUpload,
+    onSourceFileUpload: readOnly ? undefined : (f) => void handleSourceFileUpload(f),
+    showSourceFileOption,
+    sourceFilename,
+    onSourceFileRemove: readOnly ? undefined : clearSourceFile,
     repoConnection,
     onPushToRepo: readOnly ? undefined : openRepoSyncPush,
     onOpenSettings: handleOpenSettings,

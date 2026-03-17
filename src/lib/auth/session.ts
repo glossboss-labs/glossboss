@@ -48,9 +48,10 @@ export async function signInWithEmail(email: string, password: string): Promise<
 /* ------------------------------------------------------------------ */
 
 const RETURN_PATH_KEY = 'glossboss-oauth-return-path';
+const PLAN_PARAMS_KEY = 'glossboss-plan-params';
 
 /** Paths that should not be restored after OAuth — redirect to dashboard instead. */
-const AUTH_PATHS = new Set(['/login', '/signup', '/auth/callback']);
+const AUTH_PATHS = new Set(['/login', '/signup', '/auth/callback', '/onboarding']);
 
 /** Save the current path so the OAuth callback can redirect back to it. */
 export function saveReturnPath(): void {
@@ -72,6 +73,32 @@ export function consumeReturnPath(): string {
     return path ?? '/dashboard';
   } catch {
     return '/dashboard';
+  }
+}
+
+/** Save plan/interval query params so the OAuth callback can pass them to onboarding. */
+export function savePlanParams(plan: string | null, interval: string | null): void {
+  try {
+    if (plan) {
+      sessionStorage.setItem(
+        PLAN_PARAMS_KEY,
+        JSON.stringify({ plan, interval: interval || 'month' }),
+      );
+    }
+  } catch {
+    // sessionStorage unavailable
+  }
+}
+
+/** Consume saved plan params (reads and deletes). */
+export function consumePlanParams(): { plan: string; interval: string } | null {
+  try {
+    const raw = sessionStorage.getItem(PLAN_PARAMS_KEY);
+    sessionStorage.removeItem(PLAN_PARAMS_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw) as { plan: string; interval: string };
+  } catch {
+    return null;
   }
 }
 

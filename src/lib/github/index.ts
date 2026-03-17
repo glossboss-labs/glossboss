@@ -19,3 +19,11 @@ export {
   setGitHubPersistEnabled,
   type GitHubSettings,
 } from './settings';
+export {
+  resolveGitHubToken,
+  hasAnyGitHubToken,
+  hasGitHubOAuthToken,
+  saveGitHubOAuthToken,
+  clearGitHubOAuthToken,
+  getGitHubTokenType,
+} from './token';

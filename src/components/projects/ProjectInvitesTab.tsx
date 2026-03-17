@@ -21,6 +21,7 @@ import { motion } from 'motion/react';
 import { UserPlus, Trash2, Copy, Check } from 'lucide-react';
 import { buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
+import { trackEvent } from '@/lib/analytics';
 import { createProjectInvite, revokeProjectInvite } from '@/lib/projects/api';
 import type { ProjectRole, ProjectInviteRow } from '@/lib/projects/types';
 import { RoleBadge } from '@/components/ui';
@@ -61,6 +62,7 @@ export function ProjectInvitesTab({
         email: email.trim(),
         role,
       });
+      trackEvent('invite_sent', { role });
       onInvitesChange([invite, ...invites]);
       setEmail('');
     } catch (err) {

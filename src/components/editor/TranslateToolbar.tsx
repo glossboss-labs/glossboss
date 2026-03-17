@@ -401,7 +401,10 @@ export function TranslateToolbar({
               if (shouldTranslateAllForms || !form.trim()) {
                 jobs.push({
                   entryId: entry.id,
-                  text: index === 0 ? entry.msgid : entry.msgidPlural!,
+                  text:
+                    index === 0
+                      ? (entry.sourceText ?? entry.msgid)
+                      : (entry.sourceTextPlural ?? entry.msgidPlural!),
                   isPlural: true,
                   pluralIndex: index,
                 });
@@ -415,7 +418,7 @@ export function TranslateToolbar({
             ) {
               jobs.push({
                 entryId: entry.id,
-                text: entry.msgid,
+                text: entry.sourceText ?? entry.msgid,
                 isPlural: false,
               });
             }
@@ -579,9 +582,17 @@ export function TranslateToolbar({
         }
 
         if (failed > 0) {
+          trackEvent('translation_failed', {
+            provider: activeProvider,
+            error_type: 'batch_partial_failure',
+          });
           setError(t('{{count}} translations failed', { count: failed }));
         }
       } catch (err) {
+        trackEvent('translation_failed', {
+          provider: activeProvider,
+          error_type: err instanceof Error ? err.constructor.name : 'unknown',
+        });
         setError(formatDeepLError(err));
       } finally {
         setIsTranslating(false);
@@ -640,7 +651,10 @@ export function TranslateToolbar({
 
     const analyses = new Map<string, GlossaryAnalysisResult>();
     selectedEntries.forEach((entry) => {
-      analyses.set(entry.id, analyzeTranslation(entry.msgid, entry.msgstr, glossary, entry.id));
+      analyses.set(
+        entry.id,
+        analyzeTranslation(entry.sourceText ?? entry.msgid, entry.msgstr, glossary, entry.id),
+      );
     });
 
     setGlossaryAnalysisBatch(analyses);

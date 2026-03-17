@@ -26,6 +26,7 @@ import {
 import { Upload, Globe, GitBranch, AlertCircle, FolderPlus, Zap } from 'lucide-react';
 import { useTranslation } from '@/lib/app-language';
 import { msgid } from '@/lib/app-language';
+import { trackEvent } from '@/lib/analytics';
 import type { POFile } from '@/lib/po/types';
 import type { FileFormat } from '@/stores/editor-store';
 import { parseUploadedFile, parseFileContent } from '@/lib/po/parse-file';
@@ -278,6 +279,11 @@ export function CreateProjectModal({ opened, onClose }: CreateProjectModalProps)
           file.entries,
         );
 
+        trackEvent('project_created', {
+          source_language: header.language ?? 'unknown',
+          target_languages_count: 1,
+        });
+
         handleClose();
         void navigate(`/projects/${project.id}`);
       } else {
@@ -296,6 +302,11 @@ export function CreateProjectModal({ opened, onClose }: CreateProjectModalProps)
           wp_project_type: null,
           wp_slug: null,
           wp_track: null,
+        });
+
+        trackEvent('project_created', {
+          source_language: sourceLanguage || 'unknown',
+          target_languages_count: 0,
         });
 
         handleClose();

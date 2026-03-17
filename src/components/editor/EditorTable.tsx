@@ -620,67 +620,92 @@ function EditableField({
 }
 
 /**
- * Source text display with plural support (read-only)
+ * Key badge shown when an entry has resolved source text from a source file.
+ * Displays the structural key (msgid) in muted style above the source text.
+ */
+function SourceKeyBadge({ keyText }: { keyText: string }) {
+  return (
+    <Text size="xs" c="dimmed" ff="monospace" style={{ wordBreak: 'break-all' }}>
+      {keyText}
+    </Text>
+  );
+}
+
+/**
+ * Source text display with plural support (read-only).
+ * When a source language file has been applied, shows the resolved source text
+ * prominently with the structural key displayed as muted text above.
  */
 function SourceCell({ entry }: { entry: POEntry }) {
   const { t } = useTranslation();
   const translateSettings = useContext(TranslateSettingsContext);
   const sourceLang = toSpeakLanguageTag(translateSettings.sourceLang);
   const hasPlural = Boolean(entry.msgidPlural);
+  const hasSourceText = Boolean(entry.sourceText);
+
+  // Resolve display text: prefer source file text, fall back to msgid
+  const displayText = entry.sourceText ?? entry.msgid;
+  const displayPlural = entry.sourceTextPlural ?? entry.msgidPlural;
 
   if (hasPlural) {
     return (
       <Stack gap={4}>
+        {hasSourceText && <SourceKeyBadge keyText={entry.msgid} />}
         <Group gap={4} wrap="nowrap" align="flex-start">
           <Badge size="xs" variant="light" color="gray">
             {t('singular')}
           </Badge>
           <Box style={{ flex: 1, minWidth: 0 }}>
-            <HighlightedText>{entry.msgid}</HighlightedText>
+            <HighlightedText>{displayText}</HighlightedText>
           </Box>
           {translateSettings.speechEnabled && (
             <SpeakButton
               kind="source"
               entryId={`${entry.id}-source-0`}
-              text={entry.msgid}
+              text={displayText}
               lang={sourceLang}
             />
           )}
         </Group>
-        <Group gap={4} wrap="nowrap" align="flex-start">
-          <Badge size="xs" variant="light" color="gray">
-            {t('plural')}
-          </Badge>
-          <Box style={{ flex: 1, minWidth: 0 }}>
-            <HighlightedText>{entry.msgidPlural!}</HighlightedText>
-          </Box>
-          {translateSettings.speechEnabled && (
-            <SpeakButton
-              kind="source"
-              entryId={`${entry.id}-source-1`}
-              text={entry.msgidPlural!}
-              lang={sourceLang}
-            />
-          )}
-        </Group>
+        {displayPlural && (
+          <Group gap={4} wrap="nowrap" align="flex-start">
+            <Badge size="xs" variant="light" color="gray">
+              {t('plural')}
+            </Badge>
+            <Box style={{ flex: 1, minWidth: 0 }}>
+              <HighlightedText>{displayPlural}</HighlightedText>
+            </Box>
+            {translateSettings.speechEnabled && (
+              <SpeakButton
+                kind="source"
+                entryId={`${entry.id}-source-1`}
+                text={displayPlural}
+                lang={sourceLang}
+              />
+            )}
+          </Group>
+        )}
       </Stack>
     );
   }
 
   return (
-    <Group gap="xs" wrap="nowrap" align="flex-start">
-      <Box style={{ flex: 1, minWidth: 0 }}>
-        <HighlightedText>{entry.msgid}</HighlightedText>
-      </Box>
-      {translateSettings.speechEnabled && (
-        <SpeakButton
-          kind="source"
-          entryId={`${entry.id}-source`}
-          text={entry.msgid}
-          lang={sourceLang}
-        />
-      )}
-    </Group>
+    <Stack gap={2}>
+      {hasSourceText && <SourceKeyBadge keyText={entry.msgid} />}
+      <Group gap="xs" wrap="nowrap" align="flex-start">
+        <Box style={{ flex: 1, minWidth: 0 }}>
+          <HighlightedText>{displayText}</HighlightedText>
+        </Box>
+        {translateSettings.speechEnabled && (
+          <SpeakButton
+            kind="source"
+            entryId={`${entry.id}-source`}
+            text={displayText}
+            lang={sourceLang}
+          />
+        )}
+      </Group>
+    </Stack>
   );
 }
 
@@ -1058,7 +1083,9 @@ function TranslationCell({
   if (hasPlural) {
     const displayForms = pluralForms.length >= 2 ? pluralForms : ['', ''];
     const sourceTexts = displayForms.map((_, index) =>
-      index === 0 ? entry.msgid : entry.msgidPlural!,
+      index === 0
+        ? (entry.sourceText ?? entry.msgid)
+        : (entry.sourceTextPlural ?? entry.msgidPlural!),
     );
 
     return (
@@ -1162,9 +1189,9 @@ function TranslationCell({
         </Box>
         {translateSettings.translateEnabled &&
           translateSettings.targetLang &&
-          entry.msgid.trim() && (
+          (entry.sourceText ?? entry.msgid).trim() && (
             <TranslateButton
-              text={entry.msgid}
+              text={entry.sourceText ?? entry.msgid}
               currentTranslation={entry.msgstr}
               targetLang={translateSettings.targetLang}
               sourceLang={translateSettings.sourceLang ?? undefined}
@@ -1943,6 +1970,16 @@ function EntryDetailsPanel({
             {entry.msgctxt || t('No context')}
           </Text>
         </Stack>
+        {entry.sourceText && (
+          <Stack gap={4}>
+            <Text size="xs" fw={600} c="dimmed">
+              {t('Key')}
+            </Text>
+            <Text size="sm" ff="monospace" style={{ wordBreak: 'break-all' }}>
+              {entry.msgid}
+            </Text>
+          </Stack>
+        )}
         <Stack gap={4}>
           <Text size="xs" fw={600} c="dimmed">
             {t('Structure')}

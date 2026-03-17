@@ -147,7 +147,6 @@ async function fetchRoadmapIssues(): Promise<RoadmapIssue[]> {
   const token = Deno.env.get('GITHUB_TOKEN')?.trim();
   const owner = Deno.env.get('ROADMAP_GITHUB_OWNER')?.trim() || DEFAULT_GITHUB_OWNER;
   const repo = Deno.env.get('ROADMAP_GITHUB_REPO')?.trim() || DEFAULT_GITHUB_REPO;
-  if (!owner || !repo) throw new Error('GITHUB_OWNER and GITHUB_REPO must be configured.');
 
   // Fetch from both public and private repos in parallel
   const [publicIssues, privateIssues] = await Promise.all([
@@ -215,7 +214,11 @@ async function handleRequest(req: Request): Promise<Response> {
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown roadmap function error';
 
-    if (message.includes('GITHUB_TOKEN')) {
+    if (
+      message.includes('GITHUB_TOKEN') ||
+      message.includes('GITHUB_OWNER') ||
+      message.includes('GITHUB_REPO')
+    ) {
       return jsonResponse(
         req,
         {
