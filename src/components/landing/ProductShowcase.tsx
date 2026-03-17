@@ -160,7 +160,7 @@ function DemoSpeakButton({ text, lang }: { text: string; lang: string }) {
 export function ProductShowcase() {
   const reducedMotion = useReducedMotion();
   const [translatedIds, setTranslatedIds] = useState<Set<number>>(new Set());
-  const [animatingId, setAnimatingId] = useState<number | null>(null);
+  const [animatingIds, setAnimatingIds] = useState<Set<number>>(new Set());
   const [selectedId, setSelectedId] = useState<number>(1);
 
   const untranslatedEntries = useMemo(
@@ -180,26 +180,35 @@ export function ProductShowcase() {
   const allDone = stats.untranslatedLeft === 0;
 
   function handleTranslateRow(id: number) {
-    if (animatingId !== null || translatedIds.has(id)) return;
+    if (animatingIds.has(id) || translatedIds.has(id)) return;
     setSelectedId(id);
-    setAnimatingId(id);
+    setAnimatingIds((prev) => new Set(prev).add(id));
     setTimeout(() => {
       setTranslatedIds((prev) => new Set(prev).add(id));
-      setAnimatingId(null);
+      setAnimatingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
     }, 600);
   }
 
   function handleTranslateAll() {
-    if (animatingId !== null) return;
-    const remaining = untranslatedEntries.filter((e) => !translatedIds.has(e.id));
+    const remaining = untranslatedEntries.filter(
+      (e) => !translatedIds.has(e.id) && !animatingIds.has(e.id),
+    );
     if (remaining.length === 0) return;
     remaining.forEach((entry, offset) => {
       setTimeout(() => {
         setSelectedId(entry.id);
-        setAnimatingId(entry.id);
+        setAnimatingIds((prev) => new Set(prev).add(entry.id));
         setTimeout(() => {
           setTranslatedIds((prev) => new Set(prev).add(entry.id));
-          setAnimatingId(null);
+          setAnimatingIds((prev) => {
+            const next = new Set(prev);
+            next.delete(entry.id);
+            return next;
+          });
         }, 450);
       }, offset * 600);
     });
@@ -207,7 +216,7 @@ export function ProductShowcase() {
 
   function handleReset() {
     setTranslatedIds(new Set());
-    setAnimatingId(null);
+    setAnimatingIds(new Set());
     setSelectedId(1);
   }
 
@@ -221,7 +230,7 @@ export function ProductShowcase() {
   function getTranslation(entry: DemoEntry): string {
     if (reducedMotion) return entry.translation;
     if (entry.initialStatus !== 'untranslated') return entry.translation;
-    if (translatedIds.has(entry.id) || animatingId === entry.id) return entry.translation;
+    if (translatedIds.has(entry.id) || animatingIds.has(entry.id)) return entry.translation;
     return '';
   }
 
@@ -392,7 +401,7 @@ export function ProductShowcase() {
                 {DEMO_ENTRIES.map((entry) => {
                   const status = getStatus(entry);
                   const translation = getTranslation(entry);
-                  const isActive = animatingId === entry.id;
+                  const isActive = animatingIds.has(entry.id);
                   const isSelected = selectedId === entry.id;
                   const isUntranslated =
                     entry.initialStatus === 'untranslated' && !translatedIds.has(entry.id);
@@ -470,7 +479,7 @@ export function ProductShowcase() {
                                 e.stopPropagation();
                                 handleTranslateRow(entry.id);
                               }}
-                              disabled={animatingId !== null}
+                              disabled={animatingIds.has(entry.id)}
                               className="mt-0.5 shrink-0 text-accent transition-colors hover:text-accent/80 disabled:opacity-30"
                               aria-label={`Translate "${entry.source}"`}
                             >

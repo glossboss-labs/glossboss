@@ -1141,8 +1141,8 @@ msgstr "Donkere modus"
 
 #: src/components/AppHeader.tsx:115
 #: src/components/AppSidebar.tsx:238
-#: src/components/landing/LandingNav.tsx:76
-#: src/components/landing/LandingNav.tsx:150
+#: src/components/landing/LandingNav.tsx:75
+#: src/components/landing/LandingNav.tsx:149
 #: src/pages/OrgSettings.tsx:274
 msgid "Dashboard"
 msgstr ""
@@ -1602,6 +1602,7 @@ msgid "Every format, one editor"
 msgstr ""
 
 #: src/components/landing/FeatureGrid.tsx:209
+#: src/components/landing/HeroSection.tsx:84
 msgid "Everything you need to ship translations"
 msgstr ""
 
@@ -1636,7 +1637,6 @@ msgstr ""
 #: src/components/AppHeader.tsx:105
 #: src/components/AppSidebar.tsx:245
 #: src/components/landing/LandingFooter.tsx:17
-#: src/components/landing/LandingNav.tsx:27
 #: src/pages/Explore.tsx:147
 #: src/pages/ProjectDetail.tsx:330
 msgid "Explore"
@@ -2226,8 +2226,8 @@ msgid "Get started"
 msgstr ""
 
 #: src/components/landing/FinalCTA.tsx:28
-#: src/components/landing/LandingNav.tsx:90
-#: src/components/landing/LandingNav.tsx:161
+#: src/components/landing/LandingNav.tsx:89
+#: src/components/landing/LandingNav.tsx:160
 #: src/components/settings/BillingSection.tsx:581
 msgid "Get started free"
 msgstr ""
@@ -2280,13 +2280,6 @@ msgid ""
 "GlossBoss is AGPL-3.0 licensed. Inspect the code, self-host it, or contribut"
 "e. No vendor lock-in — your translations stay in standard PO and JSON format"
 "s."
-msgstr ""
-
-#: src/components/landing/EarlyBetaBanner.tsx:12
-msgid ""
-"GlossBoss is already usable for real translation work, but the product is st"
-"ill in early beta. Expect rapid improvements, a few rough edges, and occasio"
-"nal changes as we tighten up the workflow."
 msgstr ""
 
 #: src/components/landing/FAQSection.tsx:16
@@ -3258,7 +3251,7 @@ msgstr "Geen context"
 msgid "No credit card required"
 msgstr ""
 
-#: src/components/landing/HeroSection.tsx:159
+#: src/components/landing/HeroSection.tsx:164
 msgid "No credit card required. Free for individuals."
 msgstr ""
 
@@ -3879,7 +3872,7 @@ msgstr "Portugees (Brazilië)"
 msgid "Portuguese (Portugal)"
 msgstr "Portugees (Portugal)"
 
-#: src/components/landing/HeroSection.tsx:128
+#: src/components/landing/HeroSection.tsx:133
 msgid "Powered by DeepL, Azure Translator & Google Gemini"
 msgstr ""
 
@@ -4835,10 +4828,6 @@ msgstr "Feedback delen"
 msgid "Ship"
 msgstr ""
 
-#: src/components/landing/HeroSection.tsx:106
-msgid "Ship faster."
-msgstr ""
-
 #: src/components/feedback/FeedbackModal.tsx:343
 msgid "Short summary of the issue"
 msgstr "Korte samenvatting van het probleem"
@@ -4898,8 +4887,8 @@ msgstr "{{start}}–{{end}} van {{total}} items"
 #: src/components/auth/UserMenu.tsx:45
 #: src/components/auth/UserMenu.tsx:52
 #: src/components/editor/EmptyState.tsx:221
-#: src/components/landing/LandingNav.tsx:84
-#: src/components/landing/LandingNav.tsx:155
+#: src/components/landing/LandingNav.tsx:83
+#: src/components/landing/LandingNav.tsx:154
 #: src/pages/auth/Login.tsx:138
 #: src/pages/auth/Signup.tsx:108
 msgid "Sign in"
@@ -5105,7 +5094,7 @@ msgstr ""
 msgid "Start over"
 msgstr ""
 
-#: src/components/landing/HeroSection.tsx:142
+#: src/components/landing/HeroSection.tsx:147
 msgid "Start translating free"
 msgstr ""
 
@@ -5339,7 +5328,7 @@ msgstr "De URL moet beginnen met https://"
 msgid "The WordPress.org translation export could not be parsed."
 msgstr ""
 
-#: src/components/landing/HeroSection.tsx:116
+#: src/components/landing/HeroSection.tsx:121
 msgid ""
 "The browser-based translation platform with multi-provider AI, real-time col"
 "laboration, and one-click deploys to GitHub & GitLab."
@@ -5666,7 +5655,7 @@ msgstr "Pas je zoekopdracht aan of wis een paar filters."
 msgid "Try another file"
 msgstr ""
 
-#: src/components/landing/HeroSection.tsx:148
+#: src/components/landing/HeroSection.tsx:153
 msgid "Try the editor"
 msgstr ""
 
@@ -5906,6 +5895,10 @@ msgstr ""
 #: src/components/editor/HeaderEditor.tsx:141
 msgid "Urdu"
 msgstr "Urdu"
+
+#: src/components/landing/EarlyBetaBanner.tsx:12
+msgid "Usable for real work, improving fast."
+msgstr ""
 
 #: src/components/SettingsModal.tsx:2024
 #: src/components/settings/SpeechSection.tsx:478
