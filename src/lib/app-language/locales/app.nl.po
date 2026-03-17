@@ -110,7 +110,7 @@ msgstr "De API-sleutel is geldig!"
 msgid "Accept invite"
 msgstr ""
 
-#: src/pages/Settings.tsx:104
+#: src/pages/Settings.tsx:102
 msgid "Account"
 msgstr ""
 
@@ -172,12 +172,12 @@ msgid "Added reply"
 msgstr ""
 
 #: src/components/projects/ProjectNotificationsTab.tsx:40
-#: src/components/settings/NotificationsSection.tsx:42
+#: src/components/settings/NotificationsSection.tsx:41
 msgid "Added to a project"
 msgstr ""
 
 #: src/components/projects/ProjectNotificationsTab.tsx:41
-#: src/components/settings/NotificationsSection.tsx:43
+#: src/components/settings/NotificationsSection.tsx:42
 msgid "Added to an organization"
 msgstr ""
 
@@ -412,7 +412,7 @@ msgstr ""
 
 #: src/components/SettingsModal.tsx:1326
 #: src/components/editor/EditorHeader.tsx:246
-#: src/pages/Settings.tsx:145
+#: src/pages/Settings.tsx:143
 msgid "Backup"
 msgstr "Back-up"
 
@@ -450,7 +450,7 @@ msgstr ""
 msgid "Billed monthly"
 msgstr ""
 
-#: src/pages/Settings.tsx:109
+#: src/pages/Settings.tsx:107
 msgid "Billing"
 msgstr ""
 
@@ -1118,7 +1118,7 @@ msgid "Czech"
 msgstr "Tsjechisch"
 
 #: src/components/projects/ProjectNotificationsTab.tsx:67
-#: src/components/settings/NotificationsSection.tsx:59
+#: src/components/settings/NotificationsSection.tsx:58
 msgid "Daily"
 msgstr ""
 
@@ -1263,7 +1263,7 @@ msgstr ""
 #: src/components/SettingsModal.tsx:1330
 #: src/components/editor/WordPressProjectModal.tsx:356
 #: src/components/editor/WordPressRefreshModal.tsx:242
-#: src/pages/Settings.tsx:149
+#: src/pages/Settings.tsx:147
 msgid "Development"
 msgstr "Ontwikkeling"
 
@@ -1295,7 +1295,7 @@ msgid "Discuss"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:1323
-#: src/pages/Settings.tsx:138
+#: src/pages/Settings.tsx:136
 msgid "Display"
 msgstr "Weergave"
 
@@ -1447,7 +1447,7 @@ msgstr ""
 #: src/components/feedback/FeedbackModal.tsx:425
 #: src/components/projects/ProjectNotificationsTab.tsx:58
 #: src/components/settings/AccountSection.tsx:235
-#: src/components/settings/NotificationsSection.tsx:51
+#: src/components/settings/NotificationsSection.tsx:50
 #: src/pages/auth/ForgotPassword.tsx:88
 #: src/pages/auth/Login.tsx:113
 #: src/pages/auth/Signup.tsx:142
@@ -1840,7 +1840,6 @@ msgid "Failed to load organization"
 msgstr ""
 
 #: src/components/projects/ProjectNotificationsTab.tsx:113
-#: src/components/settings/NotificationsSection.tsx:87
 msgid "Failed to load preferences"
 msgstr ""
 
@@ -2315,7 +2314,7 @@ msgstr "GlossBoss v{version}"
 
 #: src/components/SettingsModal.tsx:1317
 #: src/components/editor/GlossaryPanel.tsx:306
-#: src/pages/Settings.tsx:128
+#: src/pages/Settings.tsx:126
 msgid "Glossary"
 msgstr "Glossary"
 
@@ -2446,7 +2445,7 @@ msgid "Hindi"
 msgstr "Hindi"
 
 #: src/components/projects/ProjectNotificationsTab.tsx:66
-#: src/components/settings/NotificationsSection.tsx:58
+#: src/components/settings/NotificationsSection.tsx:57
 msgid "Hourly"
 msgstr ""
 
@@ -2466,7 +2465,7 @@ msgstr ""
 msgid "How many strings do you translate?"
 msgstr ""
 
-#: src/components/settings/NotificationsSection.tsx:218
+#: src/components/settings/NotificationsSection.tsx:211
 msgid ""
 "How often to receive batched notifications about string changes in your proj"
 "ects."
@@ -2545,7 +2544,7 @@ msgid "In review"
 msgstr ""
 
 #: src/components/projects/ProjectNotificationsTab.tsx:57
-#: src/components/settings/NotificationsSection.tsx:50
+#: src/components/settings/NotificationsSection.tsx:49
 msgid "In-app"
 msgstr ""
 
@@ -3465,7 +3464,7 @@ msgid "Nothing to play yet."
 msgstr "Nog niks om af te spelen."
 
 #: src/components/projects/ProjectNotificationsTab.tsx:207
-#: src/components/settings/NotificationsSection.tsx:161
+#: src/components/settings/NotificationsSection.tsx:154
 msgid "Notification"
 msgstr ""
 
@@ -3474,7 +3473,7 @@ msgstr ""
 #: src/components/notifications/NotificationBell.tsx:43
 #: src/components/notifications/NotificationDropdown.tsx:28
 #: src/pages/ProjectSettings.tsx:342
-#: src/pages/Settings.tsx:114
+#: src/pages/Settings.tsx:112
 msgid "Notifications"
 msgstr ""
 
@@ -3487,7 +3486,7 @@ msgid "OK:"
 msgstr "OK:"
 
 #: src/components/projects/ProjectNotificationsTab.tsx:69
-#: src/components/settings/NotificationsSection.tsx:61
+#: src/components/settings/NotificationsSection.tsx:60
 msgid "Off"
 msgstr ""
 
@@ -3592,12 +3591,12 @@ msgid "Organization invite"
 msgstr ""
 
 #: src/components/projects/ProjectNotificationsTab.tsx:37
-#: src/components/settings/NotificationsSection.tsx:39
+#: src/components/settings/NotificationsSection.tsx:38
 msgid "Organization invite accepted"
 msgstr ""
 
 #: src/components/projects/ProjectNotificationsTab.tsx:36
-#: src/components/settings/NotificationsSection.tsx:38
+#: src/components/settings/NotificationsSection.tsx:37
 msgid "Organization invite received"
 msgstr ""
 
@@ -3705,7 +3704,7 @@ msgstr ""
 msgid "Pending invites"
 msgstr ""
 
-#: src/components/settings/NotificationsSection.tsx:232
+#: src/components/settings/NotificationsSection.tsx:225
 msgid "Per-project notification overrides are available in each project's settings."
 msgstr ""
 
@@ -3993,12 +3992,12 @@ msgid "Project invite"
 msgstr ""
 
 #: src/components/projects/ProjectNotificationsTab.tsx:39
-#: src/components/settings/NotificationsSection.tsx:41
+#: src/components/settings/NotificationsSection.tsx:40
 msgid "Project invite accepted"
 msgstr ""
 
 #: src/components/projects/ProjectNotificationsTab.tsx:38
-#: src/components/settings/NotificationsSection.tsx:40
+#: src/components/settings/NotificationsSection.tsx:39
 msgid "Project invite received"
 msgstr ""
 
@@ -4105,7 +4104,7 @@ msgstr "Punjabi"
 #: src/components/editor/EditorHeader.tsx:331
 #: src/components/projects/ProjectNotificationsTab.tsx:59
 #: src/components/repo-sync/RepoSyncModal.tsx:753
-#: src/components/settings/NotificationsSection.tsx:52
+#: src/components/settings/NotificationsSection.tsx:51
 msgid "Push"
 msgstr ""
 
@@ -4436,7 +4435,7 @@ msgid "Review"
 msgstr ""
 
 #: src/components/projects/ProjectNotificationsTab.tsx:43
-#: src/components/settings/NotificationsSection.tsx:45
+#: src/components/settings/NotificationsSection.tsx:44
 msgid "Review comment added"
 msgstr ""
 
@@ -4449,7 +4448,7 @@ msgid "Review issues"
 msgstr ""
 
 #: src/components/projects/ProjectNotificationsTab.tsx:42
-#: src/components/settings/NotificationsSection.tsx:44
+#: src/components/settings/NotificationsSection.tsx:43
 msgid "Review status changed"
 msgstr ""
 
@@ -4764,7 +4763,7 @@ msgstr ""
 #: src/components/projects/ProjectCard.tsx:135
 #: src/pages/OrgSettings.tsx:313
 #: src/pages/ProjectDetail.tsx:352
-#: src/pages/Settings.tsx:85
+#: src/pages/Settings.tsx:83
 msgid "Settings"
 msgstr "Instellingen"
 
@@ -4853,7 +4852,7 @@ msgstr "Korte samenvatting van het verzoek"
 msgid "Shortcut"
 msgstr "Sneltoets"
 
-#: src/pages/Settings.tsx:131
+#: src/pages/Settings.tsx:129
 msgid "Shortcuts"
 msgstr ""
 
@@ -5079,7 +5078,7 @@ msgid "Spanish (Spain)"
 msgstr "Spaans (Spanje)"
 
 #: src/components/SettingsModal.tsx:1304
-#: src/pages/Settings.tsx:121
+#: src/pages/Settings.tsx:119
 msgid "Speech"
 msgstr "Spraak"
 
@@ -5151,7 +5150,7 @@ msgid "String inspector"
 msgstr ""
 
 #: src/components/projects/ProjectNotificationsTab.tsx:262
-#: src/components/settings/NotificationsSection.tsx:215
+#: src/components/settings/NotificationsSection.tsx:208
 msgid "String update digest"
 msgstr ""
 
@@ -5164,7 +5163,7 @@ msgid "Strings"
 msgstr ""
 
 #: src/components/projects/ProjectNotificationsTab.tsx:44
-#: src/components/settings/NotificationsSection.tsx:46
+#: src/components/settings/NotificationsSection.tsx:45
 msgid "Strings updated (digest)"
 msgstr ""
 
@@ -5561,7 +5560,7 @@ msgstr "Bezig met vertalen..."
 #: src/components/editor/EditorTable.tsx:3384
 #: src/components/editor/FilterToolbar.tsx:445
 #: src/components/glossary/shared.tsx:91
-#: src/pages/Settings.tsx:118
+#: src/pages/Settings.tsx:116
 msgid "Translation"
 msgstr "Vertaling"
 
@@ -6033,7 +6032,7 @@ msgid "Website"
 msgstr "Website"
 
 #: src/components/projects/ProjectNotificationsTab.tsx:68
-#: src/components/settings/NotificationsSection.tsx:60
+#: src/components/settings/NotificationsSection.tsx:59
 msgid "Weekly"
 msgstr ""
 
