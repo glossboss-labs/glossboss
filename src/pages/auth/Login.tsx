@@ -20,6 +20,7 @@ import {
 } from '@mantine/core';
 import { AlertCircle } from 'lucide-react';
 import { useTranslation } from '@/lib/app-language';
+import { trackEvent } from '@/lib/analytics';
 import { useAuthStore } from '@/stores/auth-store';
 import { useAuth } from '@/hooks/use-auth';
 import { GithubIcon } from '@/components/auth/GithubIcon';
@@ -45,6 +46,7 @@ export default function Login() {
     setSubmitting(false);
     // Auth state change listener will update session; navigate after
     if (!useAuthStore.getState().error) {
+      trackEvent('login_succeeded', { method: 'email' });
       navigate('/');
     }
   };

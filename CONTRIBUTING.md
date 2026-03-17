@@ -13,7 +13,7 @@ Thanks for helping improve GlossBoss.
 
 ```bash
 bun install --frozen-lockfile
-cp .env.example .env
+cp .env.example .env.local
 ```
 
 Use Bun for all scripts and package management in this repository.

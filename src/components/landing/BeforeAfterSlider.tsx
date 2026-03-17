@@ -14,7 +14,7 @@ const after = [
   msgid('One browser-based editor for all files'),
   msgid('AI translation from 3 providers in one click'),
   msgid('Glossary enforcement keeps terms consistent'),
-  msgid('Push translations to GitHub directly'),
+  msgid('Push translations to GitHub or GitLab directly'),
   msgid('7 automatic QA checks catch errors before shipping'),
 ];
 

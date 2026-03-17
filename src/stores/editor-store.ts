@@ -8,6 +8,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import type { POFile, POEntry, POHeader } from '@/lib/po/types';
+import { applySourceFile as applySourceFileEntries } from '@/lib/po/source-file';
 import { getStorageAdapter } from '@/lib/cloud';
 import type { GlossaryAnalysisResult } from '@/lib/glossary/types';
 import { deriveProjectName } from '@/lib/translation-memory';
@@ -87,6 +88,9 @@ export interface EditorState {
 
   /** All translation entries */
   entries: POEntry[];
+
+  /** Filename of the uploaded source language file (if any) */
+  sourceFilename: string | null;
 
   /** IDs of entries that have been modified */
   dirtyEntryIds: Set<string>;
@@ -310,6 +314,12 @@ export interface EditorActions {
   /** Check if an entry was manually edited */
   isManuallyEdited: (entryId: string) => boolean;
 
+  /** Apply source language entries to populate sourceText on target entries */
+  applySourceEntries: (sourceEntries: POEntry[], sourceFilename: string) => number;
+
+  /** Clear source file data from entries */
+  clearSourceFile: () => void;
+
   /** Merge entries from a POT update, replacing all entries */
   mergeEntries: (mergedEntries: POEntry[]) => void;
 
@@ -345,6 +355,7 @@ const initialState: EditorState = {
   sourceFormat: 'po',
   header: null,
   entries: [],
+  sourceFilename: null,
   dirtyEntryIds: new Set(),
   machineTranslatedIds: new Set(),
   manualEditIds: new Set(),
@@ -499,6 +510,7 @@ function entryMatchesSearch(
   return (
     entry.msgid.toLowerCase().includes(lowerQuery) ||
     entry.msgstr.toLowerCase().includes(lowerQuery) ||
+    (entry.sourceText?.toLowerCase().includes(lowerQuery) ?? false) ||
     (entry.msgctxt?.toLowerCase().includes(lowerQuery) ?? false) ||
     entry.translatorComments.some((c) => c.toLowerCase().includes(lowerQuery)) ||
     entry.extractedComments.some((c) => c.toLowerCase().includes(lowerQuery)) ||
@@ -513,7 +525,7 @@ function entryMatchesSearch(
 
 function getSortText(entry: POEntry, field: SortField): string {
   if (field === 'source') {
-    return entry.msgid.toLowerCase();
+    return (entry.sourceText ?? entry.msgid).toLowerCase();
   }
 
   if (field === 'translation') {
@@ -551,6 +563,7 @@ export const useEditorStore = create<EditorState & EditorActions>()(
           projectName: deriveProjectName(file.header, file.filename),
           filename: file.filename,
           sourceFormat: format,
+          sourceFilename: null,
           header: file.header,
           entries: file.entries,
           dirtyEntryIds: new Set(),
@@ -955,6 +968,24 @@ export const useEditorStore = create<EditorState & EditorActions>()(
 
       clearEditor: () => {
         set(initialState);
+      },
+
+      applySourceEntries: (sourceEntries: POEntry[], sourceFilename: string) => {
+        const entries = [...get().entries];
+        const matched = applySourceFileEntries(entries, sourceEntries);
+        set({ entries, sourceFilename });
+        return matched;
+      },
+
+      clearSourceFile: () => {
+        const entries = get().entries.map((e) => {
+          if (!e.sourceText && !e.sourceTextPlural) return e;
+          const cleaned = { ...e };
+          delete cleaned.sourceText;
+          delete cleaned.sourceTextPlural;
+          return cleaned;
+        });
+        set({ entries, sourceFilename: null });
       },
 
       mergeEntries: (mergedEntries: POEntry[]) => {

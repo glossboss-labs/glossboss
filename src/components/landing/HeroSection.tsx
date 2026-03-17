@@ -114,7 +114,7 @@ export function HeroSection() {
           className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-text-secondary"
         >
           {t(
-            'The browser-based translation editor with multi-provider AI, real-time collaboration, and one-click deploys to GitHub.',
+            'The browser-based translation platform with multi-provider AI, real-time collaboration, and one-click deploys to GitHub & GitLab.',
           )}
         </motion.p>
 

@@ -338,9 +338,6 @@ async function createGitHubIssue(
 
   const owner = Deno.env.get('FEEDBACK_GITHUB_OWNER')?.trim() || DEFAULT_GITHUB_OWNER;
   const repo = Deno.env.get('FEEDBACK_GITHUB_REPO')?.trim() || DEFAULT_GITHUB_REPO;
-  if (!owner || !repo) {
-    throw new Error('GITHUB_OWNER and GITHUB_REPO must be configured.');
-  }
   const url = `https://api.github.com/repos/${owner}/${repo}/issues`;
 
   const requestHeaders = {
@@ -506,7 +503,12 @@ export async function handleFeedbackIssueRequest(req: Request): Promise<Response
 
     const message = error instanceof Error ? error.message : 'Unknown feedback function error';
 
-    if (message.includes('TURNSTILE_SECRET') || message.includes('GITHUB_TOKEN')) {
+    if (
+      message.includes('TURNSTILE_SECRET') ||
+      message.includes('GITHUB_TOKEN') ||
+      message.includes('GITHUB_OWNER') ||
+      message.includes('GITHUB_REPO')
+    ) {
       return jsonResponse(
         req,
         {

@@ -5,6 +5,7 @@
  * Tab state persisted in the URL via ?tab= search parameter.
  */
 
+import { useEffect } from 'react';
 import { useSearchParams } from 'react-router';
 import { Stack, Title, Tabs, useMantineTheme, Box } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
@@ -22,6 +23,7 @@ import {
 } from 'lucide-react';
 import { sectionVariants } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
+import { trackEvent } from '@/lib/analytics';
 import { useAuth } from '@/hooks/use-auth';
 import {
   AccountSection,
@@ -47,6 +49,10 @@ export default function Settings() {
   const isDevelopment = import.meta.env.DEV;
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = searchParams.get('tab') || (isAuthenticated ? 'account' : 'translation');
+
+  useEffect(() => {
+    trackEvent('settings_page_viewed', { section: activeTab });
+  }, [activeTab]);
 
   const handleTabChange = (tab: string | null) => {
     if (tab) {

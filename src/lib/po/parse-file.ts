@@ -6,10 +6,11 @@
  * for reuse in project creation and other import flows.
  */
 
-import type { POFile, ParseIssue } from './types';
+import type { POEntry, POFile, ParseIssue } from './types';
 import { parsePOFileWithDiagnostics } from './parser';
 import { detectAndDecode, type SupportedEncoding } from './encoding';
 import { parseI18nextJSON, isI18nextContent } from '@/lib/i18next';
+import { applySourceFile } from './source-file';
 import type { FileFormat } from '@/stores/editor-store';
 
 export interface EncodingInfo {
@@ -145,4 +146,41 @@ function parsePoContent(
   }
 
   return { ok: true, result: { file: result.file, format: 'po', encoding, warnings } };
+}
+
+// ── Source file helpers ───────────────────────────────────────
+
+export interface SourceFileResult {
+  entries: POEntry[];
+  filename: string;
+  matched: number;
+}
+
+/**
+ * Parse and apply a source language file onto existing target entries.
+ * The source file's values become `sourceText` on matching target entries,
+ * so the editor can display human-readable source text instead of raw keys.
+ *
+ * @returns The number of target entries that were matched, or an error.
+ */
+export async function parseAndApplySourceFile(
+  file: File,
+  targetEntries: POEntry[],
+): Promise<{ ok: true; result: SourceFileResult } | { ok: false; error: string }> {
+  const outcome = await parseUploadedFile(file);
+
+  if (!outcome.ok) {
+    return { ok: false, error: outcome.errors[0]?.message ?? 'Failed to parse source file' };
+  }
+
+  const matched = applySourceFile(targetEntries, outcome.result.file.entries);
+
+  return {
+    ok: true,
+    result: {
+      entries: outcome.result.file.entries,
+      filename: file.name,
+      matched,
+    },
+  };
 }

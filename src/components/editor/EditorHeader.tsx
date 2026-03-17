@@ -33,6 +33,8 @@ import {
   Cloud,
   LayoutDashboard,
   Settings,
+  Languages,
+  X,
 } from 'lucide-react';
 import { sectionVariants, buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
@@ -65,6 +67,15 @@ export interface EditorHeaderProps {
   onDownloadAs: (format: FileFormat) => void;
   onPotUpload: (file: File | null) => void;
 
+  /** Callback when a source language file is selected. */
+  onSourceFileUpload?: (file: File | null) => void;
+  /** Whether entries use key-based msgids (show source file option). */
+  showSourceFileOption?: boolean;
+  /** Filename of the loaded source file (if any). */
+  sourceFilename?: string | null;
+  /** Callback to remove the loaded source file. */
+  onSourceFileRemove?: () => void;
+
   repoConnection: RepoConnection | null;
   onPushToRepo: () => void;
 
@@ -95,6 +106,10 @@ export function EditorHeader({
   hasUnsavedChanges,
   onDownloadAs,
   onPotUpload,
+  onSourceFileUpload,
+  showSourceFileOption,
+  sourceFilename,
+  onSourceFileRemove,
   repoConnection,
   onPushToRepo,
   onOpenSettings,
@@ -209,6 +224,20 @@ export function EditorHeader({
                     </Menu.Item>
                   )}
                 </FileButton>
+                {showSourceFileOption && !sourceFilename && onSourceFileUpload && (
+                  <FileButton onChange={onSourceFileUpload} accept=".po,.pot,.json">
+                    {(props) => (
+                      <Menu.Item leftSection={<Languages size={14} />} {...props}>
+                        {t('Upload source language file…')}
+                      </Menu.Item>
+                    )}
+                  </FileButton>
+                )}
+                {sourceFilename && onSourceFileRemove && (
+                  <Menu.Item leftSection={<X size={14} />} onClick={onSourceFileRemove} color="red">
+                    {t('Remove source file')}
+                  </Menu.Item>
+                )}
                 <Menu.Divider />
                 <Menu.Item
                   leftSection={<Archive size={14} />}

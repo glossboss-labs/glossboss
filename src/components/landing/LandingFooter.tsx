@@ -51,7 +51,7 @@ export function LandingFooter({ currentLang = 'en' }: { currentLang?: AppLanguag
               <span className="text-sm font-semibold text-text-primary">GlossBoss</span>
             </Link>
             <p className="mt-3 text-sm text-text-tertiary">
-              {t('The translation editor for teams that ship.')}
+              {t('The translation platform for teams that ship.')}
             </p>
           </div>
 

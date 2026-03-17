@@ -4,7 +4,7 @@
     <img src="public/glossboss-combined-dark.svg" alt="GlossBoss" height="48" />
   </picture>
   <br />
-  A browser-based translation editor for gettext <code>.po</code> / <code>.pot</code> files and i18next JSON resources.
+  A translation platform for gettext <code>.po</code> / <code>.pot</code> files and i18next JSON resources — edit, translate, and collaborate in the browser.
 </p>
 
 <p align="center">
@@ -17,15 +17,36 @@
 
 ## Features
 
+### Editor
+
 - **Edit** gettext `.po` / `.pot` files and i18next JSON resources in the browser
 - **Translate** entries and batches through [DeepL](https://www.deepl.com/), [Azure Translator](https://azure.microsoft.com/en-us/products/ai-services/ai-translator), or [Gemini](https://ai.google.dev/) — switch providers at any time
-- **Repo sync** — open files directly from GitHub or GitLab, commit changes, and create pull / merge requests without leaving the editor
 - **Translation memory** — reuse approved translations across files with exact and fuzzy matching, import / export as JSON or TMX
 - **QA checks** — catch broken placeholders, mismatched HTML tags, ICU variable drift, glossary conflicts, and more before export
-- **WordPress tooling** — load WordPress.org glossary data, sync it to DeepL glossaries, and inspect plugin source references through proxied SVN lookups
-- **Review workflow** — assign per-entry statuses (draft, in-review, approved, needs-changes), add threaded comments with resolution tracking, lock approved translations from further edits, and view change history
 - **Text-to-speech** — play strings with browser TTS or ElevenLabs BYO cloud voices
 - **Auto-save** local drafts in the browser, including review state
+
+### Collaboration
+
+- **Projects** — group translation files by project, manage target languages, and track progress
+- **Organizations** — create teams, invite members, and manage permissions
+- **Review workflow** — assign per-entry statuses (draft, in-review, approved, needs-changes), add threaded comments with resolution tracking, lock approved translations from further edits, and view change history
+- **Repo sync** — open files directly from GitHub or GitLab, commit changes, and create pull / merge requests without leaving the editor
+- **Explore** — browse and discover public translation projects
+
+### WordPress tooling
+
+- Load WordPress.org glossary data and sync it to DeepL glossaries
+- Inspect plugin source references through proxied SVN lookups
+- Gemini translations include WordPress source file context for improved accuracy
+
+### Platform
+
+- **Dashboard** — overview of projects, recent activity, and quick access
+- **Onboarding** — guided setup flow for new users
+- **Cloud settings sync** — optionally sync settings across devices with AES-256-GCM encrypted credential storage
+- **Billing** — subscription management via Polar.sh
+- **Public roadmap** — vote on and track upcoming features
 
 ## Getting started
 
@@ -60,6 +81,8 @@ Run `bun run` to see all available scripts.
 ### Frontend — Cloudflare Pages
 
 `.github/workflows/cloudflare-pages.yml` deploys the Vite build to Cloudflare Pages: `main` updates the production environment, pull requests get preview branches. The target project is set via the `CLOUDFLARE_PAGES_PROJECT` secret (falls back to the GitHub repo name).
+
+A Cloudflare Pages Function at `functions/ingest/` reverse-proxies PostHog analytics events.
 
 **Required GitHub repository secrets:** `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_PAGES_PROJECT`, `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_TURNSTILE_SITE_KEY`
 

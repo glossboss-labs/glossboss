@@ -20,3 +20,11 @@ export {
   getGitLabApiUrl,
   type GitLabSettings,
 } from './settings';
+export {
+  resolveGitLabToken,
+  hasAnyGitLabToken,
+  hasGitLabOAuthToken,
+  saveGitLabOAuthToken,
+  clearGitLabOAuthToken,
+  getGitLabTokenType,
+} from './token';
