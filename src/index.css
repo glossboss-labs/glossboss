@@ -217,3 +217,63 @@ summary {
     background-position: 0% 0%;
   }
 }
+
+/* ----------------------------------------------------------------
+ * Driver.js tour — theme overrides
+ * ---------------------------------------------------------------- */
+.driver-popover {
+  background-color: var(--mantine-color-body) !important;
+  color: var(--mantine-color-text) !important;
+  border: 1px solid var(--gb-border-subtle) !important;
+  border-radius: var(--mantine-radius-md) !important;
+  box-shadow: var(--mantine-shadow-lg) !important;
+  font-family: var(--mantine-font-family) !important;
+}
+.driver-popover-title {
+  font-size: var(--mantine-font-size-md) !important;
+  font-weight: 600 !important;
+  color: var(--mantine-color-text) !important;
+  font-family: var(--mantine-font-family) !important;
+}
+.driver-popover-description {
+  font-size: var(--mantine-font-size-sm) !important;
+  color: var(--mantine-color-dimmed) !important;
+  font-family: var(--mantine-font-family) !important;
+}
+.driver-popover-progress-text {
+  font-size: var(--mantine-font-size-xs) !important;
+  color: var(--mantine-color-dimmed) !important;
+}
+.driver-popover-prev-btn,
+.driver-popover-next-btn {
+  font-family: var(--mantine-font-family) !important;
+  font-size: var(--mantine-font-size-sm) !important;
+  border-radius: var(--mantine-radius-sm) !important;
+  padding: 4px 12px !important;
+  text-shadow: none !important;
+}
+.driver-popover-next-btn {
+  background-color: var(--mantine-color-blue-6) !important;
+  color: white !important;
+  border: none !important;
+}
+.driver-popover-next-btn:hover {
+  background-color: var(--mantine-color-blue-7) !important;
+}
+.driver-popover-prev-btn {
+  background-color: transparent !important;
+  color: var(--mantine-color-text) !important;
+  border: 1px solid var(--gb-border-default) !important;
+}
+.driver-popover-close-btn {
+  color: var(--mantine-color-dimmed) !important;
+}
+.driver-popover-close-btn:hover {
+  color: var(--mantine-color-text) !important;
+}
+.driver-popover-arrow-side-left,
+.driver-popover-arrow-side-right,
+.driver-popover-arrow-side-top,
+.driver-popover-arrow-side-bottom {
+  border-color: var(--gb-border-subtle) !important;
+}

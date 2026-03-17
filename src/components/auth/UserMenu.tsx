@@ -16,6 +16,7 @@ import {
   Info,
   MessageSquare,
   Home,
+  CircleHelp,
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { buttonStates } from '@/lib/motion';
@@ -27,6 +28,7 @@ import { useProjectsStore } from '@/stores/projects-store';
 import { formatLimit } from '@/lib/billing/limits';
 import { PlanBadge } from '@/components/billing/PlanBadge';
 import { FeedbackModal } from '@/components/feedback';
+import { resetTourCompletion } from '@/hooks/use-editor-tour';
 
 export function UserMenu() {
   const { t } = useTranslation();
@@ -119,6 +121,14 @@ export function UserMenu() {
             onClick={() => setFeedbackOpen(true)}
           >
             {t('Share feedback')}
+          </Menu.Item>
+          <Menu.Item
+            component={Link}
+            to="/?tour=1"
+            leftSection={<CircleHelp size={14} />}
+            onClick={() => resetTourCompletion()}
+          >
+            {t('Take a tour')}
           </Menu.Item>
 
           <Menu.Divider />

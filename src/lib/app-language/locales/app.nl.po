@@ -63,6 +63,10 @@ msgstr ""
 msgid "AI Translation"
 msgstr ""
 
+#: src/hooks/use-editor-tour.ts:107
+msgid "AI translation"
+msgstr ""
+
 #: src/components/landing/BeforeAfterSlider.tsx:15
 msgid "AI translation from 3 providers in one click"
 msgstr ""
@@ -238,7 +242,7 @@ msgstr ""
 msgid "Approve"
 msgstr ""
 
-#: src/components/editor/TranslateToolbar.tsx:1174
+#: src/components/editor/TranslateToolbar.tsx:1175
 msgid "Approve selected"
 msgstr "Selectie goedkeuren"
 
@@ -306,21 +310,21 @@ msgstr ""
 msgid "At {{count}} strings, the Pro plan (€{{price}}/mo) would save you money."
 msgstr ""
 
-#: src/components/editor/TranslateToolbar.tsx:1066
+#: src/components/editor/TranslateToolbar.tsx:1067
 msgid "Auto translate ({{count}})"
 msgstr ""
 
-#: src/components/editor/TranslateToolbar.tsx:1064
+#: src/components/editor/TranslateToolbar.tsx:1065
 msgid "Auto translate selected"
 msgstr "Selectie automatisch vertalen"
 
-#: src/components/editor/TranslateToolbar.tsx:1056
+#: src/components/editor/TranslateToolbar.tsx:1057
 msgid "Auto translate selected rows that are empty or fuzzy"
 msgstr "Geselecteerde rijen automatisch vertalen die leeg of fuzzy zijn"
 
 #: src/components/editor/TranslateToolbar.tsx:74
-#: src/components/editor/TranslateToolbar.tsx:854
-#: src/components/editor/TranslateToolbar.tsx:895
+#: src/components/editor/TranslateToolbar.tsx:855
+#: src/components/editor/TranslateToolbar.tsx:896
 msgid "Auto-detect"
 msgstr "Automatisch detecteren"
 
@@ -359,6 +363,7 @@ msgid "Azure translation failed"
 msgstr ""
 
 #: src/components/projects/CreateProjectModal.tsx:594
+#: src/hooks/use-editor-tour.ts:199
 msgid "Back"
 msgstr ""
 
@@ -505,7 +510,7 @@ msgid "Can I self-host GlossBoss?"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:2634
-#: src/components/editor/TranslateToolbar.tsx:949
+#: src/components/editor/TranslateToolbar.tsx:950
 #: src/components/editor/WordPressProjectModal.tsx:410
 #: src/components/editor/WordPressRefreshModal.tsx:335
 #: src/components/feedback/FeedbackModal.tsx:481
@@ -655,7 +660,7 @@ msgstr ""
 
 #: src/components/SettingsModal.tsx:2147
 #: src/components/editor/GlossaryPanel.tsx:360
-#: src/components/editor/TranslateToolbar.tsx:1037
+#: src/components/editor/TranslateToolbar.tsx:1038
 #: src/components/settings/GlossarySection.tsx:269
 msgid "Clear"
 msgstr "Wissen"
@@ -684,7 +689,7 @@ msgstr "Editor wissen?"
 msgid "Clear filters"
 msgstr "Filters wissen"
 
-#: src/components/editor/TranslateToolbar.tsx:1120
+#: src/components/editor/TranslateToolbar.tsx:1121
 msgid "Clear fuzzy ({{count}})"
 msgstr ""
 
@@ -692,11 +697,11 @@ msgstr ""
 msgid "Clear fuzzy flag"
 msgstr ""
 
-#: src/components/editor/TranslateToolbar.tsx:1111
+#: src/components/editor/TranslateToolbar.tsx:1112
 msgid "Clear fuzzy on selected rows"
 msgstr ""
 
-#: src/components/editor/TranslateToolbar.tsx:1118
+#: src/components/editor/TranslateToolbar.tsx:1119
 msgid "Clear fuzzy selected"
 msgstr ""
 
@@ -716,6 +721,12 @@ msgstr ""
 #: src/components/SettingsModal.tsx:1133
 #: src/components/settings/BackupSection.tsx:396
 msgid "Cleared translation memory for this project."
+msgstr ""
+
+#: src/hooks/use-editor-tour.ts:139
+msgid ""
+"Click any cell to edit your translation. Use the translate button on each ro"
+"w for single-entry AI translation."
 msgstr ""
 
 #: src/components/editor/EditorTable.tsx:429
@@ -1192,8 +1203,8 @@ msgstr "Details"
 msgid "Detected via {{method}} with {{confidence}} confidence"
 msgstr "Gedetecteerd via {{method}} met {{confidence}} zekerheid"
 
-#: src/components/editor/TranslateToolbar.tsx:881
-#: src/components/editor/TranslateToolbar.tsx:926
+#: src/components/editor/TranslateToolbar.tsx:882
+#: src/components/editor/TranslateToolbar.tsx:927
 msgid "Detected: {{target}}"
 msgstr "Gedetecteerd: {{target}}"
 
@@ -1249,6 +1260,7 @@ msgstr ""
 msgid "Don't have an account?"
 msgstr ""
 
+#: src/hooks/use-editor-tour.ts:200
 #: src/pages/Roadmap.tsx:52
 msgid "Done"
 msgstr ""
@@ -1273,7 +1285,7 @@ msgstr ""
 msgid "Draft"
 msgstr ""
 
-#: src/components/editor/EmptyState.tsx:88
+#: src/components/editor/EmptyState.tsx:91
 msgid ""
 "Drag and drop a .po, .pot, or .json file — or click to browse. Always free, "
 "no account needed."
@@ -1311,8 +1323,12 @@ msgstr "Nederlands (België)"
 msgid "Dutch (Netherlands)"
 msgstr "Nederlands (Nederland)"
 
-#: src/components/editor/EditorWorkspace.tsx:143
+#: src/components/editor/EditorWorkspace.tsx:144
 msgid "Edit"
+msgstr ""
+
+#: src/hooks/use-editor-tour.ts:127
+msgid "Edit and review"
 msgstr ""
 
 #: src/components/landing/FormatSection.tsx:49
@@ -1898,6 +1914,10 @@ msgstr "Het bestand lijkt geen geldige WordPress-glossary CSV te zijn."
 msgid "File downloaded"
 msgstr "Bestand gedownload"
 
+#: src/hooks/use-editor-tour.ts:87
+msgid "File menu"
+msgstr ""
+
 #: src/components/editor/FilterToolbar.tsx:341
 msgid "File order"
 msgstr "Bestandsvolgorde"
@@ -2034,8 +2054,8 @@ msgstr "Frans, Portugees (Brazilië)"
 msgid "Frequently asked questions"
 msgstr ""
 
-#: src/components/editor/TranslateToolbar.tsx:848
-#: src/components/editor/TranslateToolbar.tsx:889
+#: src/components/editor/TranslateToolbar.tsx:849
+#: src/components/editor/TranslateToolbar.tsx:890
 msgid "From"
 msgstr "Van"
 
@@ -2206,7 +2226,7 @@ msgid ""
 "als. The entire codebase is open source for inspection."
 msgstr ""
 
-#: src/components/auth/UserMenu.tsx:126
+#: src/components/auth/UserMenu.tsx:136
 msgid "GlossBoss v{version}"
 msgstr "GlossBoss v{version}"
 
@@ -2227,7 +2247,7 @@ msgid ""
 "cement"
 msgstr ""
 
-#: src/components/editor/TranslateToolbar.tsx:1094
+#: src/components/editor/TranslateToolbar.tsx:1095
 msgid "Glossary check"
 msgstr ""
 
@@ -2249,7 +2269,7 @@ msgstr ""
 "Glossary-controle voltooid: {{count}} geselecteerde rij(en) moeten wordengec"
 "ontroleerd."
 
-#: src/components/editor/TranslateToolbar.tsx:1092
+#: src/components/editor/TranslateToolbar.tsx:1093
 msgid "Glossary check selected"
 msgstr "Glossary-controle op selectie"
 
@@ -2283,7 +2303,7 @@ msgstr ""
 "Glossary niet gevonden in DeepL. Deze vertaling is gedaan zonder glossary. O"
 "pnieuw synchroniseren in Instellingen wordt aanbevolen."
 
-#: src/components/editor/EditorWorkspace.tsx:171
+#: src/components/editor/EditorWorkspace.tsx:172
 msgid "Glossary: {count} terms ({locale})"
 msgstr ""
 
@@ -2389,6 +2409,12 @@ msgstr ""
 #: src/components/SettingsModal.tsx:2668
 #: src/components/settings/BackupSection.tsx:611
 msgid "Import credentials"
+msgstr ""
+
+#: src/hooks/use-editor-tour.ts:72
+msgid ""
+"Import from WordPress.org, connect a GitHub or GitLab repository, or try a s"
+"ample file."
 msgstr ""
 
 #: src/components/SettingsModal.tsx:2469
@@ -2604,6 +2630,10 @@ msgstr "Taalcode"
 msgid "Language not found"
 msgstr ""
 
+#: src/hooks/use-editor-tour.ts:98
+msgid "Language settings"
+msgstr ""
+
 #: src/components/editor/HeaderEditor.tsx:244
 msgid "Language team"
 msgstr ""
@@ -2668,7 +2698,7 @@ msgstr ""
 msgid "Legal"
 msgstr ""
 
-#: src/components/auth/UserMenu.tsx:143
+#: src/components/auth/UserMenu.tsx:153
 #: src/components/landing/LandingFooter.tsx:32
 #: src/pages/auth/Login.tsx:147
 #: src/pages/auth/Signup.tsx:179
@@ -2707,7 +2737,7 @@ msgstr "Maak een lijst met stappen die iemand anders kan volgen"
 msgid "Lithuanian"
 msgstr "Litouws"
 
-#: src/components/editor/EmptyState.tsx:124
+#: src/components/editor/EmptyState.tsx:133
 #: src/components/editor/GlossaryPanel.tsx:372
 #: src/pages/index/IndexPageDialogs.tsx:171
 msgid "Load"
@@ -2717,7 +2747,7 @@ msgstr "Laden"
 msgid "Load a file with a target language before using translation memory."
 msgstr ""
 
-#: src/components/editor/EmptyState.tsx:162
+#: src/components/editor/EmptyState.tsx:172
 msgid "Load a small example WordPress plugin PO file (Hello Dolly)"
 msgstr "Laad een klein voorbeeld WordPress-plug-in PO-bestand (Hello Dolly)"
 
@@ -2740,11 +2770,12 @@ msgid ""
 "e."
 msgstr ""
 
-#: src/components/editor/EmptyState.tsx:172
+#: src/components/editor/EmptyState.tsx:182
 msgid "Load example PO"
 msgstr "Voorbeeld-PO laden"
 
 #: src/components/editor/EditorHeader.tsx:254
+#: src/hooks/use-editor-tour.ts:62
 #: src/pages/index/IndexPageDialogs.tsx:168
 msgid "Load from URL"
 msgstr ""
@@ -2802,7 +2833,7 @@ msgid "Loading..."
 msgstr ""
 
 #: src/components/AppSidebar.tsx:259
-#: src/components/auth/UserMenu.tsx:112
+#: src/components/auth/UserMenu.tsx:114
 msgid "Local editor"
 msgstr ""
 
@@ -2931,15 +2962,15 @@ msgstr ""
 msgid "Mark as fuzzy"
 msgstr "Markeren als fuzzy"
 
-#: src/components/editor/TranslateToolbar.tsx:1146
+#: src/components/editor/TranslateToolbar.tsx:1147
 msgid "Mark fuzzy ({{count}})"
 msgstr ""
 
-#: src/components/editor/TranslateToolbar.tsx:1144
+#: src/components/editor/TranslateToolbar.tsx:1145
 msgid "Mark fuzzy selected"
 msgstr ""
 
-#: src/components/editor/TranslateToolbar.tsx:1137
+#: src/components/editor/TranslateToolbar.tsx:1138
 msgid "Mark selected rows as fuzzy"
 msgstr ""
 
@@ -3058,6 +3089,10 @@ msgstr ""
 #: src/pages/Dashboard.tsx:126
 #: src/pages/Dashboard.tsx:158
 msgid "New project"
+msgstr ""
+
+#: src/hooks/use-editor-tour.ts:198
+msgid "Next"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:167
@@ -3347,7 +3382,7 @@ msgstr "Alleen zichtbaar in de ontwikkelingsmodus."
 msgid "Open a PR targeting {{branch}}"
 msgstr ""
 
-#: src/components/editor/EmptyState.tsx:150
+#: src/components/editor/EmptyState.tsx:160
 msgid "Open a locale file from a GitHub or GitLab repository"
 msgstr ""
 
@@ -3358,14 +3393,14 @@ msgid ""
 msgstr ""
 
 #: src/components/editor/EditorHeader.tsx:259
-#: src/components/editor/EmptyState.tsx:145
+#: src/components/editor/EmptyState.tsx:155
 #: src/components/editor/WordPressProjectModal.tsx:291
 #: src/components/projects/CreateProjectModal.tsx:441
 msgid "Open from WordPress.org"
 msgstr ""
 
 #: src/components/editor/EditorHeader.tsx:269
-#: src/components/editor/EmptyState.tsx:157
+#: src/components/editor/EmptyState.tsx:167
 #: src/components/projects/CreateProjectModal.tsx:466
 msgid "Open from repository"
 msgstr ""
@@ -3396,7 +3431,7 @@ msgstr ""
 msgid "Open the editor to connect this language to a repository via Push settings."
 msgstr ""
 
-#: src/components/editor/EmptyState.tsx:138
+#: src/components/editor/EmptyState.tsx:148
 msgid "Open the latest WordPress.org translation export by project slug"
 msgstr ""
 
@@ -3455,7 +3490,7 @@ msgstr ""
 msgid "Over 100,000"
 msgstr ""
 
-#: src/components/editor/EmptyState.tsx:107
+#: src/components/editor/EmptyState.tsx:116
 msgid "PO file URL"
 msgstr "URL van PO-bestand"
 
@@ -3493,9 +3528,13 @@ msgstr ""
 msgid "Passwords do not match."
 msgstr ""
 
-#: src/components/editor/EmptyState.tsx:106
+#: src/components/editor/EmptyState.tsx:115
 msgid "Paste a .po file URL"
 msgstr "Plak de URL van een .po-bestand"
+
+#: src/hooks/use-editor-tour.ts:63
+msgid "Paste a direct link to a translation file to load it instantly."
+msgstr ""
 
 #: src/lib/billing/catalog.ts:79
 msgid "Pay as you go"
@@ -3712,7 +3751,7 @@ msgstr ""
 msgid "Priority support"
 msgstr ""
 
-#: src/components/auth/UserMenu.tsx:161
+#: src/components/auth/UserMenu.tsx:171
 #: src/components/feedback/FeedbackModal.tsx:418
 #: src/components/landing/FeatureGrid.tsx:94
 #: src/components/landing/LandingFooter.tsx:30
@@ -3839,7 +3878,7 @@ msgstr ""
 msgid "Proposed solution"
 msgstr "Voorgestelde oplossing"
 
-#: src/components/editor/TranslateToolbar.tsx:1243
+#: src/components/editor/TranslateToolbar.tsx:1244
 msgid "Protect {{count}} manual edits from bulk translation"
 msgstr "{{count}} handmatige bewerkingen beschermen tegen bulkvertaling"
 
@@ -3928,6 +3967,10 @@ msgstr ""
 msgid "QA warnings"
 msgstr ""
 
+#: src/hooks/use-editor-tour.ts:71
+msgid "Quick open"
+msgstr ""
+
 #: src/components/SettingsModal.tsx:1558
 #: src/components/SettingsModal.tsx:1701
 #: src/components/settings/TranslationSection.tsx:549
@@ -3935,7 +3978,7 @@ msgstr ""
 msgid "Quickstart guide"
 msgstr ""
 
-#: src/components/editor/TranslateToolbar.tsx:1085
+#: src/components/editor/TranslateToolbar.tsx:1086
 msgid "Re-run glossary analysis on selected rows"
 msgstr "Glossary-analyse opnieuw uitvoeren op geselecteerde rijen"
 
@@ -4120,7 +4163,7 @@ msgstr ""
 msgid "Request changes"
 msgstr ""
 
-#: src/components/editor/TranslateToolbar.tsx:1213
+#: src/components/editor/TranslateToolbar.tsx:1214
 msgid "Request changes selected"
 msgstr ""
 
@@ -4165,11 +4208,11 @@ msgid "Resync"
 msgstr "Opnieuw synchroniseren"
 
 #: src/components/editor/TranslateToolbar.tsx:771
-#: src/components/editor/TranslateToolbar.tsx:982
+#: src/components/editor/TranslateToolbar.tsx:983
 msgid "Retranslate all"
 msgstr ""
 
-#: src/components/editor/TranslateToolbar.tsx:969
+#: src/components/editor/TranslateToolbar.tsx:970
 msgid "Retranslate all entries"
 msgstr "Alle items opnieuw vertalen"
 
@@ -4177,7 +4220,7 @@ msgstr "Alle items opnieuw vertalen"
 msgid "Retranslate all entries?"
 msgstr "Alle items opnieuw vertalen?"
 
-#: src/components/editor/TranslateToolbar.tsx:1267
+#: src/components/editor/TranslateToolbar.tsx:1268
 msgid "Retranslating"
 msgstr "Opnieuw aan het vertalen"
 
@@ -4194,7 +4237,7 @@ msgstr "Vertaling opnieuw proberen"
 
 #: src/components/editor/EditorTable.tsx:129
 #: src/components/editor/EditorTable.tsx:2130
-#: src/components/editor/EditorWorkspace.tsx:144
+#: src/components/editor/EditorWorkspace.tsx:145
 #: src/components/editor/FilterToolbar.tsx:358
 #: src/components/editor/FilterToolbar.tsx:445
 #: src/components/landing/FeatureGrid.tsx:77
@@ -4345,8 +4388,18 @@ msgstr ""
 msgid "Scattered .po files across your desktop"
 msgstr ""
 
+#: src/hooks/use-editor-tour.ts:116
+msgid "Search and filter"
+msgstr ""
+
 #: src/components/onboarding/AttributionStep.tsx:22
 msgid "Search engine"
+msgstr ""
+
+#: src/hooks/use-editor-tour.ts:117
+msgid ""
+"Search entries by source text, translation, or context. Filter by status: un"
+"translated, fuzzy, translated."
 msgstr ""
 
 #: src/pages/ProjectDetail.tsx:514
@@ -4411,7 +4464,7 @@ msgstr ""
 msgid "Select a row to inspect context and metadata."
 msgstr "Selecteer een rij om context en metadata te bekijken."
 
-#: src/components/editor/TranslateToolbar.tsx:1022
+#: src/components/editor/TranslateToolbar.tsx:1023
 msgid "Select all filtered"
 msgstr "Alle gefilterde selecteren"
 
@@ -4445,8 +4498,8 @@ msgstr "Selecteer of typ een taalcode..."
 msgid "Select plural form for your language..."
 msgstr "Selecteer de meervoudsvorm voor je taal..."
 
-#: src/components/editor/TranslateToolbar.tsx:871
-#: src/components/editor/TranslateToolbar.tsx:915
+#: src/components/editor/TranslateToolbar.tsx:872
+#: src/components/editor/TranslateToolbar.tsx:916
 msgid "Select target..."
 msgstr "Selecteer doel..."
 
@@ -4499,9 +4552,13 @@ msgstr ""
 msgid "Set up a project and add languages later"
 msgstr ""
 
+#: src/hooks/use-editor-tour.ts:99
+msgid "Set your source and target languages for translation."
+msgstr ""
+
 #: src/components/AppSidebar.tsx:273
 #: src/components/SettingsModal.tsx:1284
-#: src/components/auth/UserMenu.tsx:115
+#: src/components/auth/UserMenu.tsx:117
 #: src/components/projects/ProjectCard.tsx:125
 #: src/pages/OrgSettings.tsx:313
 #: src/pages/ProjectDetail.tsx:352
@@ -4559,7 +4616,7 @@ msgid "Share Feedback"
 msgstr "Feedback delen"
 
 #: src/components/AppSidebar.tsx:279
-#: src/components/auth/UserMenu.tsx:121
+#: src/components/auth/UserMenu.tsx:123
 #: src/pages/Roadmap.tsx:318
 msgid "Share feedback"
 msgstr "Feedback delen"
@@ -4628,9 +4685,9 @@ msgid "Showing {{start}}–{{end}} of {{total}} entries"
 msgstr "{{start}}–{{end}} van {{total}} items"
 
 #: src/components/AppSidebar.tsx:404
-#: src/components/auth/UserMenu.tsx:43
-#: src/components/auth/UserMenu.tsx:50
-#: src/components/editor/EmptyState.tsx:193
+#: src/components/auth/UserMenu.tsx:45
+#: src/components/auth/UserMenu.tsx:52
+#: src/components/editor/EmptyState.tsx:221
 #: src/components/landing/LandingNav.tsx:84
 #: src/components/landing/LandingNav.tsx:155
 #: src/pages/auth/Login.tsx:127
@@ -4663,7 +4720,7 @@ msgid "Sign in with email"
 msgstr ""
 
 #: src/components/AppSidebar.tsx:395
-#: src/components/auth/UserMenu.tsx:167
+#: src/components/auth/UserMenu.tsx:177
 msgid "Sign out"
 msgstr ""
 
@@ -4738,7 +4795,7 @@ msgstr ""
 msgid "Sort entries"
 msgstr "Items sorteren"
 
-#: src/components/auth/UserMenu.tsx:134
+#: src/components/auth/UserMenu.tsx:144
 #: src/components/editor/EditorTable.tsx:2519
 #: src/components/projects/AddLanguageModal.tsx:300
 msgid "Source"
@@ -4756,8 +4813,8 @@ msgstr "Bron Z-A"
 msgid "Source format"
 msgstr ""
 
-#: src/components/editor/TranslateToolbar.tsx:859
-#: src/components/editor/TranslateToolbar.tsx:901
+#: src/components/editor/TranslateToolbar.tsx:860
+#: src/components/editor/TranslateToolbar.tsx:902
 #: src/components/projects/CreateProjectModal.tsx:570
 msgid "Source language"
 msgstr "Brontaal"
@@ -4828,6 +4885,12 @@ msgstr "Spraaksynthese is niet beschikbaar in deze browser."
 msgid "Stable"
 msgstr ""
 
+#: src/hooks/use-editor-tour.ts:52
+msgid ""
+"Start by uploading a .po, .pot, or .json translation file. Drag and drop or "
+"click to browse."
+msgstr ""
+
 #: src/components/landing/PlanQuiz.tsx:289
 msgid "Start over"
 msgstr ""
@@ -4854,6 +4917,7 @@ msgid "Status: untranslated first"
 msgstr "Status: onvertaald eerst"
 
 #: src/components/landing/PlanQuiz.tsx:230
+#: src/hooks/use-editor-tour.ts:201
 msgid "Step {{current}} of {{total}}"
 msgstr ""
 
@@ -4895,7 +4959,7 @@ msgstr ""
 "Inzendingen kunnen een GitHub-issue aanmaken en kunnen je optionele e-mailad"
 "res bevatten voor follow-up. Zie"
 
-#: src/components/editor/TranslateToolbar.tsx:1333
+#: src/components/editor/TranslateToolbar.tsx:1334
 msgid "Successfully translated {{count}} entries"
 msgstr "{{count}} items succesvol vertaald"
 
@@ -4914,6 +4978,12 @@ msgid ""
 "Switch between DeepL, Azure, and Gemini mid-session. Gemini even reads your "
 "plugin source code for context-aware translations that understand where each"
 " string appears in your UI."
+msgstr ""
+
+#: src/hooks/use-editor-tour.ts:128
+msgid ""
+"Switch between editing translations and reviewing them with approval workflo"
+"ws."
 msgstr ""
 
 #: src/components/AppHeader.tsx:49
@@ -4962,12 +5032,17 @@ msgstr ""
 msgid "Syncing..."
 msgstr ""
 
+#: src/components/auth/UserMenu.tsx:131
+#: src/components/editor/EmptyState.tsx:201
+msgid "Take a tour"
+msgstr ""
+
 #: src/components/editor/HeaderEditor.tsx:135
 msgid "Tamil"
 msgstr "Tamil"
 
-#: src/components/editor/TranslateToolbar.tsx:876
-#: src/components/editor/TranslateToolbar.tsx:921
+#: src/components/editor/TranslateToolbar.tsx:877
+#: src/components/editor/TranslateToolbar.tsx:922
 msgid "Target language"
 msgstr "Doeltaal"
 
@@ -4998,7 +5073,7 @@ msgstr ""
 msgid "Term (EN)"
 msgstr "Term (EN)"
 
-#: src/components/auth/UserMenu.tsx:152
+#: src/components/auth/UserMenu.tsx:162
 #: src/components/landing/LandingFooter.tsx:31
 #: src/pages/auth/Login.tsx:139
 #: src/pages/auth/Signup.tsx:171
@@ -5177,8 +5252,8 @@ msgstr ""
 msgid "Title"
 msgstr "Titel"
 
-#: src/components/editor/TranslateToolbar.tsx:865
-#: src/components/editor/TranslateToolbar.tsx:909
+#: src/components/editor/TranslateToolbar.tsx:866
+#: src/components/editor/TranslateToolbar.tsx:910
 msgid "To"
 msgstr "Naar"
 
@@ -5196,6 +5271,10 @@ msgstr ""
 
 #: src/components/landing/HowItWorks.tsx:17
 msgid "Translate"
+msgstr ""
+
+#: src/hooks/use-editor-tour.ts:108
+msgid "Translate all untranslated entries at once with DeepL, Azure, or Gemini."
 msgstr ""
 
 #: src/components/landing/HowItWorks.tsx:18
@@ -5217,7 +5296,7 @@ msgstr ""
 msgid "Translate with {{provider}} + Glossary"
 msgstr ""
 
-#: src/components/editor/TranslateToolbar.tsx:993
+#: src/components/editor/TranslateToolbar.tsx:994
 msgid "Translate {{count}} untranslated"
 msgstr "{{count}} onvertaalde vertalen"
 
@@ -5233,7 +5312,7 @@ msgid "Translated string"
 msgstr "Vertaalde tekst"
 
 #: src/components/editor/TranslateButton.tsx:225
-#: src/components/editor/TranslateToolbar.tsx:1267
+#: src/components/editor/TranslateToolbar.tsx:1268
 msgid "Translating"
 msgstr "Aan het vertalen"
 
@@ -5291,13 +5370,17 @@ msgstr ""
 msgid "Translation memory exported as TMX."
 msgstr ""
 
-#: src/components/editor/TranslateToolbar.tsx:1280
+#: src/components/editor/TranslateToolbar.tsx:1281
 msgid "Translation progress"
 msgstr "Vertaalvoortgang"
 
 #: src/components/SettingsModal.tsx:1348
 #: src/components/settings/TranslationSection.tsx:334
 msgid "Translation provider"
+msgstr ""
+
+#: src/hooks/use-editor-tour.ts:138
+msgid "Translation table"
 msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:246
@@ -5408,7 +5491,7 @@ msgstr "Kan het geselecteerde instellingenbestand niet lezen."
 msgid "Unapprove"
 msgstr ""
 
-#: src/components/editor/TranslateToolbar.tsx:1191
+#: src/components/editor/TranslateToolbar.tsx:1192
 msgid "Unapprove selected"
 msgstr "Selectie afkeuren"
 
@@ -5559,16 +5642,23 @@ msgstr "Upload een WordPress-glossary CSV voor de geselecteerde taal"
 
 #: src/components/projects/AddLanguageModal.tsx:353
 #: src/components/projects/CreateProjectModal.tsx:405
+#: src/hooks/use-editor-tour.ts:51
 msgid "Upload a file"
 msgstr ""
 
-#: src/components/editor/EmptyState.tsx:86
+#: src/components/editor/EmptyState.tsx:89
 msgid "Upload a translation file to start"
 msgstr "Upload een vertaalbestand om te beginnen"
 
 #: src/pages/index/IndexPageBanners.tsx:69
 msgid "Upload failed"
 msgstr "Uploaden mislukt"
+
+#: src/hooks/use-editor-tour.ts:88
+msgid ""
+"Upload files, download translations, update from a POT template, and manage "
+"backups."
+msgstr ""
 
 #: src/components/editor/EditorHeader.tsx:207
 msgid "Upload file…"
@@ -6070,7 +6160,7 @@ msgid "name@example.com"
 msgstr "naam@voorbeeld.nl"
 
 #: src/components/auth/AuthPromptModal.tsx:52
-#: src/components/editor/EmptyState.tsx:129
+#: src/components/editor/EmptyState.tsx:138
 msgid "or"
 msgstr "of"
 
@@ -6097,7 +6187,7 @@ msgstr "of handmatig uploaden"
 msgid "or use a personal access token"
 msgstr ""
 
-#: src/components/editor/TranslateToolbar.tsx:967
+#: src/components/editor/TranslateToolbar.tsx:968
 msgid "overwritten"
 msgstr "overschreven"
 
@@ -6111,7 +6201,7 @@ msgid "project"
 msgstr ""
 
 #: src/components/AppSidebar.tsx:383
-#: src/components/auth/UserMenu.tsx:100
+#: src/components/auth/UserMenu.tsx:102
 #: src/components/settings/BillingSection.tsx:649
 msgid "projects"
 msgstr ""
@@ -6130,12 +6220,12 @@ msgstr ""
 msgid "singular"
 msgstr "enkelvoud"
 
-#: src/components/editor/TranslateToolbar.tsx:967
+#: src/components/editor/TranslateToolbar.tsx:968
 msgid "skipped"
 msgstr "overgeslagen"
 
 #: src/components/AppSidebar.tsx:388
-#: src/components/auth/UserMenu.tsx:105
+#: src/components/auth/UserMenu.tsx:107
 #: src/components/billing/FreePlanBanner.tsx:53
 #: src/components/settings/BillingSection.tsx:577
 #: src/components/settings/BillingSection.tsx:596
@@ -6164,7 +6254,7 @@ msgstr ""
 msgid "terms"
 msgstr "termen"
 
-#: src/components/editor/EmptyState.tsx:195
+#: src/components/editor/EmptyState.tsx:223
 #: src/pages/ProjectDetail.tsx:444
 msgid ""
 "to save projects to the cloud and collaborate with your team. Collaborators "
@@ -6232,7 +6322,7 @@ msgstr "{{count}} items"
 msgid "{{count}} error issue(s)"
 msgstr ""
 
-#: src/components/editor/TranslateToolbar.tsx:1269
+#: src/components/editor/TranslateToolbar.tsx:1270
 msgid "{{count}} failed"
 msgstr "{{count}} mislukt"
 
@@ -6254,7 +6344,7 @@ msgstr ""
 msgid "{{count}} locale files found"
 msgstr ""
 
-#: src/components/editor/TranslateToolbar.tsx:965
+#: src/components/editor/TranslateToolbar.tsx:966
 msgid "{{count}} manual edits will be {{action}}"
 msgstr "{{count}} handmatige bewerkingen worden {{action}}"
 
@@ -6373,7 +6463,7 @@ msgid "{{projects}} projects"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:2225
-#: src/components/editor/EditorWorkspace.tsx:178
+#: src/components/editor/EditorWorkspace.tsx:179
 #: src/components/editor/GlossaryPanel.tsx:259
 #: src/components/settings/GlossarySection.tsx:347
 msgid "{{provider}} ready"

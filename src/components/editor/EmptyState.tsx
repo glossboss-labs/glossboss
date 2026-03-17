@@ -20,7 +20,7 @@ import {
 } from '@mantine/core';
 import { Link as RouterLink } from 'react-router';
 import { motion } from 'motion/react';
-import { FileUp, Globe, GitBranch, Link, Cloud } from 'lucide-react';
+import { FileUp, Globe, GitBranch, Link, Cloud, CircleHelp } from 'lucide-react';
 import { sectionVariants, buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
 import { useAuth } from '@/hooks/use-auth';
@@ -38,6 +38,7 @@ export interface EmptyStateProps {
   onOpenRepoSync: () => void;
   isLoadingExample: boolean;
   onLoadExamplePo: () => void;
+  onStartTour?: () => void;
 }
 
 export function EmptyState({
@@ -50,6 +51,7 @@ export function EmptyState({
   onOpenRepoSync,
   isLoadingExample,
   onLoadExamplePo,
+  onStartTour,
 }: EmptyStateProps) {
   const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
@@ -63,6 +65,7 @@ export function EmptyState({
       style={{ cursor: 'pointer' }}
     >
       <Paper
+        data-tour="upload-area"
         p={{ base: rem(24), sm: rem(80) }}
         withBorder
         style={{
@@ -101,7 +104,13 @@ export function EmptyState({
               .json
             </Badge>
           </Group>
-          <Group gap="xs" w="100%" maw={500} onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+          <Group
+            data-tour="url-input"
+            gap="xs"
+            w="100%"
+            maw={500}
+            onClick={(e: React.MouseEvent) => e.stopPropagation()}
+          >
             <TextInput
               placeholder={t('Paste a .po file URL')}
               aria-label={t('PO file URL')}
@@ -130,6 +139,7 @@ export function EmptyState({
           </Text>
 
           <Group
+            data-tour="quick-open"
             gap="sm"
             wrap="wrap"
             justify="center"
@@ -174,6 +184,24 @@ export function EmptyState({
               </motion.div>
             </Tooltip>
           </Group>
+
+          {onStartTour && (
+            <Group
+              gap={4}
+              onClick={(e: React.MouseEvent) => e.stopPropagation()}
+              style={{ cursor: 'default' }}
+            >
+              <Button
+                variant="subtle"
+                color="gray"
+                size="xs"
+                leftSection={<CircleHelp size={14} />}
+                onClick={onStartTour}
+              >
+                {t('Take a tour')}
+              </Button>
+            </Group>
+          )}
 
           {!isAuthenticated && (
             <Group

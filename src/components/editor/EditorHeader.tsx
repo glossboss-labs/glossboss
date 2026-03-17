@@ -168,7 +168,7 @@ export function EditorHeader({
           {filename && (
             <Menu position="bottom-start" withinPortal>
               <Menu.Target>
-                <motion.div {...buttonStates}>
+                <motion.div {...buttonStates} data-tour="file-menu">
                   <Button
                     variant="subtle"
                     color="gray"

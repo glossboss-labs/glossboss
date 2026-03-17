@@ -836,6 +836,7 @@ export function TranslateToolbar({
 
         {mode === 'edit' && (
           <Group
+            data-tour="language-selectors"
             justify="space-between"
             align={isMobile ? 'stretch' : 'center'}
             wrap="wrap"
@@ -983,7 +984,7 @@ export function TranslateToolbar({
                           </Button>
                         </motion.div>
                       </Tooltip>
-                      <motion.div {...buttonStates}>
+                      <motion.div {...buttonStates} data-tour="bulk-translate">
                         <Button
                           leftSection={<Zap size={16} />}
                           onClick={handleBulkTranslate}

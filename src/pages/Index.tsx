@@ -5,14 +5,18 @@
  * controller hook and page-specific subcomponents.
  */
 
+import { useEffect, useRef } from 'react';
+import { useSearchParams } from 'react-router';
 import { Box, Container, Stack } from '@mantine/core';
 import { EmptyState, EditorHeader, EditorWorkspace } from '@/components/editor';
 import { IndexPageBanners } from './index/IndexPageBanners';
 import { IndexPageDialogs } from './index/IndexPageDialogs';
 import { IndexPageNotifications } from './index/IndexPageNotifications';
 import { useIndexPageController } from './index/useIndexPageController';
+import { useEditorTour } from '@/hooks/use-editor-tour';
 
 export default function Index() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const {
     containerWidth,
     dragAreaProps,
@@ -23,6 +27,19 @@ export default function Index() {
     bannersProps,
     dialogsProps,
   } = useIndexPageController();
+
+  const { startTour } = useEditorTour({ hasFile: !!workspaceProps });
+
+  // Handle ?tour=1 query param (from UserMenu "Take a tour" link)
+  const tourTriggered = useRef(false);
+  useEffect(() => {
+    if (searchParams.get('tour') === '1' && !tourTriggered.current) {
+      tourTriggered.current = true;
+      setSearchParams({}, { replace: true });
+      // Small delay to let the page settle
+      setTimeout(() => startTour(), 400);
+    }
+  }, [searchParams, setSearchParams, startTour]);
 
   return (
     <Box {...dragAreaProps} style={{ minHeight: '100vh', position: 'relative' }}>
@@ -40,7 +57,7 @@ export default function Index() {
             {workspaceProps ? (
               <EditorWorkspace {...workspaceProps} />
             ) : (
-              <EmptyState {...emptyStateProps} />
+              <EmptyState {...emptyStateProps} onStartTour={startTour} />
             )}
           </Stack>
         </Container>

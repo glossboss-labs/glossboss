@@ -52,6 +52,7 @@
     "@mantine/hooks": "^8.3.17",
     "@supabase/supabase-js": "^2.99.1",
     "clsx": "^2.1.1",
+    "driver.js": "^1.4.0",
     "jszip": "^3.10.1",
     "lucide-react": "^0.577.0",
     "motion": "^12.36.0",
