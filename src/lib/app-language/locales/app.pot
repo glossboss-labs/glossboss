@@ -54,7 +54,7 @@ msgstr ""
 msgid "7 automatic QA checks catch errors before shipping"
 msgstr ""
 
-#: src/components/landing/FeatureGrid.tsx:93
+#: src/components/landing/FeatureGrid.tsx:95
 msgid "AGPL-3.0 licensed. No tracking cookies. GDPR compliant."
 msgstr ""
 
@@ -66,7 +66,7 @@ msgstr ""
 msgid "AI translation from 3 providers in one click"
 msgstr ""
 
-#: src/components/landing/FeatureGrid.tsx:210
+#: src/components/landing/FeatureGrid.tsx:212
 msgid ""
 "AI translation, quality checks, team reviews, and direct repo integration — "
 "all in one browser tab."
@@ -1500,11 +1500,11 @@ msgstr ""
 msgid "Every format, one editor"
 msgstr ""
 
-#: src/components/landing/FeatureGrid.tsx:207
+#: src/components/landing/FeatureGrid.tsx:209
 msgid "Everything you need to ship translations"
 msgstr ""
 
-#: src/components/landing/FeatureGrid.tsx:88
+#: src/components/landing/FeatureGrid.tsx:90
 msgid "Exact and fuzzy matching reuses previous work across projects."
 msgstr ""
 
@@ -3680,7 +3680,7 @@ msgstr ""
 
 #: src/components/auth/UserMenu.tsx:161
 #: src/components/feedback/FeedbackModal.tsx:418
-#: src/components/landing/FeatureGrid.tsx:92
+#: src/components/landing/FeatureGrid.tsx:94
 #: src/components/landing/LandingFooter.tsx:30
 #: src/pages/auth/Login.tsx:143
 #: src/pages/auth/Signup.tsx:175
@@ -5212,7 +5212,7 @@ msgstr ""
 msgid "Translation A-Z"
 msgstr ""
 
-#: src/components/landing/FeatureGrid.tsx:87
+#: src/components/landing/FeatureGrid.tsx:89
 msgid "Translation Memory"
 msgstr ""
 
