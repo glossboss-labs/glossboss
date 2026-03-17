@@ -201,7 +201,7 @@ function getSettingsSteps(t: T): DriveStep[] {
       popover: {
         title: t('Glossary settings'),
         description: t(
-          'Load glossaries to enforce consistent terminology across all translations.',
+          'Load glossaries for the local editor here. Cloud projects have glossary settings in Project Settings instead.',
         ),
         side: 'right',
         align: 'center',

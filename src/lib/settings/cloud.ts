@@ -17,10 +17,6 @@ import { getTtsSettings, saveTtsSettings } from '@/lib/tts';
 import { getTranslationProviderSettings, saveActiveTranslationProvider } from '@/lib/translation';
 import { getAppLanguage, saveAppLanguage } from '@/lib/app-language';
 import { CONTAINER_WIDTH_KEY, type ContainerWidth } from '@/lib/container-width';
-import {
-  GLOSSARY_SELECTED_LOCALE_KEY,
-  GLOSSARY_ENFORCEMENT_KEY,
-} from '@/components/glossary/constants';
 import { NAV_SKIP_TRANSLATED_KEY } from '@/components/editor/EditorTable';
 import { encryptCredentials, decryptCredentials } from './crypto';
 import type { CloudSettingsPayload, CloudSettingsCredentials } from './types';
@@ -111,8 +107,6 @@ export function collectLocalSettings(includeCredentials: boolean = false): Cloud
   const translation = getTranslationProviderSettings();
 
   const containerWidth = (localStorage.getItem(CONTAINER_WIDTH_KEY) as ContainerWidth) || 'xl';
-  const glossaryLocale = localStorage.getItem(GLOSSARY_SELECTED_LOCALE_KEY) || '';
-  const glossaryEnforcement = localStorage.getItem(GLOSSARY_ENFORCEMENT_KEY);
   const navSkip = localStorage.getItem(NAV_SKIP_TRANSLATED_KEY);
   const speechEnabled = localStorage.getItem(SPEECH_ENABLED_KEY);
   const translateEnabled = localStorage.getItem(TRANSLATE_ENABLED_KEY);
@@ -123,8 +117,6 @@ export function collectLocalSettings(includeCredentials: boolean = false): Cloud
     preferences: {
       appLanguage: getAppLanguage(),
       containerWidth,
-      glossaryLocale,
-      glossaryEnforcementEnabled: glossaryEnforcement !== 'false',
       navSkipTranslated: navSkip === 'true',
       speechEnabled: speechEnabled !== 'false',
       translateEnabled: translateEnabled !== 'false',
@@ -157,11 +149,9 @@ export function collectLocalSettings(includeCredentials: boolean = false): Cloud
 export function applyCloudSettings(payload: CloudSettingsPayload): void {
   const { preferences, providers, credentials } = payload;
 
-  // Preferences
+  // Preferences (glossary settings excluded — now per-project in DB)
   saveAppLanguage(preferences.appLanguage);
   localStorage.setItem(CONTAINER_WIDTH_KEY, preferences.containerWidth);
-  localStorage.setItem(GLOSSARY_SELECTED_LOCALE_KEY, preferences.glossaryLocale);
-  localStorage.setItem(GLOSSARY_ENFORCEMENT_KEY, String(preferences.glossaryEnforcementEnabled));
   localStorage.setItem(NAV_SKIP_TRANSLATED_KEY, String(preferences.navSkipTranslated));
   localStorage.setItem(SPEECH_ENABLED_KEY, String(preferences.speechEnabled));
   localStorage.setItem(TRANSLATE_ENABLED_KEY, String(preferences.translateEnabled));

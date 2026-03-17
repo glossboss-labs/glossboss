@@ -14,6 +14,8 @@ import type {
   OrgRole,
   InviteRow,
   InviteInsert,
+  OrgSettingsRow,
+  OrgSettingsUpdate,
 } from './types';
 
 function supabase() {
@@ -192,5 +194,42 @@ export async function getInviteByToken(token: string): Promise<InviteRow | null>
     if (error.code === 'PGRST116') return null;
     throw error;
   }
+  return data;
+}
+
+// ── Organization Settings ─────────────────────────────────
+
+export async function getOrgSettings(orgId: string): Promise<OrgSettingsRow | null> {
+  const { data, error } = await supabase()
+    .from('organization_settings')
+    .select('*')
+    .eq('organization_id', orgId)
+    .single();
+
+  if (error) {
+    if (error.code === 'PGRST116') return null;
+    throw error;
+  }
+  return data;
+}
+
+export async function upsertOrgSettings(
+  orgId: string,
+  updates: OrgSettingsUpdate,
+): Promise<OrgSettingsRow> {
+  const { data, error } = await supabase()
+    .from('organization_settings')
+    .upsert(
+      {
+        organization_id: orgId,
+        ...updates,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: 'organization_id' },
+    )
+    .select()
+    .single();
+
+  if (error) throw error;
   return data;
 }

@@ -374,15 +374,37 @@ function GitLabConnectSection({
 /*  RepoSyncModal                                                      */
 /* ------------------------------------------------------------------ */
 
+/** Result returned in 'pick' mode instead of loading file content. */
+export interface RepoFilePickResult {
+  provider: RepoProviderId;
+  owner: string;
+  repo: string;
+  branch: string;
+  filePath: string;
+  defaultBranch: string;
+}
+
 interface RepoSyncModalProps {
   opened: boolean;
   onClose: () => void;
-  /** Called when a file is loaded from a repository */
+  /** Called when a file is loaded from a repository (sync mode). */
   onFileLoaded: (content: string, filename: string) => void;
-  /** Serialized file content for pushing (null when no file loaded) */
+  /** Serialized file content for pushing (null when no file loaded). */
   serializedContent: string | null;
-  /** Initial tab to show */
+  /** Initial tab to show. */
   initialTab?: ModalTab;
+  /**
+   * 'sync' (default) — full repo sync with content loading and push tab.
+   * 'pick' — file picker only: returns repo info + path via onFilePicked, no push tab,
+   *   doesn't touch the Zustand repo store.
+   */
+  mode?: 'sync' | 'pick';
+  /** Called when a file is picked in 'pick' mode. */
+  onFilePicked?: (result: RepoFilePickResult) => void;
+  /** Modal title override (defaults vary by mode). */
+  title?: string;
+  /** File extension filter for auto-scan in 'pick' mode (e.g. '.csv'). */
+  pickFileFilter?: string;
 }
 
 export function RepoSyncModal({
@@ -391,6 +413,10 @@ export function RepoSyncModal({
   onFileLoaded,
   serializedContent,
   initialTab,
+  mode = 'sync',
+  onFilePicked,
+  title: titleOverride,
+  pickFileFilter,
 }: RepoSyncModalProps) {
   const { t } = useTranslation();
   const connection = useRepoSyncStore((s) => s.connection);
@@ -576,34 +602,38 @@ export function RepoSyncModal({
         const client = createRepoClient(provider);
         const files = await client.searchLocaleFiles(scanOwner, scanRepo, scanBranch);
 
-        // Filter out common non-locale JSON files (package.json, tsconfig, etc.)
-        const filtered = files.filter((f) => {
-          const name = f.name.toLowerCase();
-          if (!name.endsWith('.json')) return true;
-          // Skip common config/meta JSON files
-          const skip = [
-            'package.json',
-            'package-lock.json',
-            'tsconfig',
-            'jsconfig',
-            '.eslintrc',
-            '.prettierrc',
-            'composer.json',
-            'manifest.json',
-            'renovate.json',
-            '.babelrc',
-          ];
-          return !skip.some((s) => name.includes(s));
-        });
-
-        setLocaleFiles(filtered);
+        // In pick mode with a file filter, only show matching files
+        if (mode === 'pick' && pickFileFilter) {
+          const ext = pickFileFilter.toLowerCase();
+          setLocaleFiles(files.filter((f) => f.name.toLowerCase().endsWith(ext)));
+        } else {
+          // Filter out common non-locale JSON files (package.json, tsconfig, etc.)
+          const filtered = files.filter((f) => {
+            const name = f.name.toLowerCase();
+            if (!name.endsWith('.json')) return true;
+            const skip = [
+              'package.json',
+              'package-lock.json',
+              'tsconfig',
+              'jsconfig',
+              '.eslintrc',
+              '.prettierrc',
+              'composer.json',
+              'manifest.json',
+              'renovate.json',
+              '.babelrc',
+            ];
+            return !skip.some((s) => name.includes(s));
+          });
+          setLocaleFiles(filtered);
+        }
       } catch (err) {
         setScanError(err instanceof Error ? err.message : String(err));
       } finally {
         setScanningFiles(false);
       }
     },
-    [repos, provider, connection],
+    [repos, provider, connection, mode, pickFileFilter],
   );
 
   const handleRepoSelected = useCallback(
@@ -630,6 +660,20 @@ export function RepoSyncModal({
       const repoName = entry?.name ?? repoFb;
       const branch = entry?.defaultBranch ?? connection?.defaultBranch ?? 'main';
       if (!owner || !repoName) return;
+
+      // Pick mode: return repo info without loading content or touching the store
+      if (mode === 'pick') {
+        onFilePicked?.({
+          provider,
+          owner,
+          repo: repoName,
+          branch,
+          filePath: path,
+          defaultBranch: branch,
+        });
+        onClose();
+        return;
+      }
 
       setLoadingFile(true);
       setFileError(null);
@@ -659,7 +703,17 @@ export function RepoSyncModal({
         setLoadingFile(false);
       }
     },
-    [selectedRepo, repos, provider, connection, setConnection, onFileLoaded, onClose],
+    [
+      selectedRepo,
+      repos,
+      provider,
+      connection,
+      setConnection,
+      onFileLoaded,
+      onClose,
+      mode,
+      onFilePicked,
+    ],
   );
 
   const handleFileSelect = useCallback(
@@ -668,6 +722,13 @@ export function RepoSyncModal({
 
       const [owner, repo] = selectedRepo.split('/');
       if (!owner || !repo) return;
+
+      // Pick mode: return repo info without loading content or touching the store
+      if (mode === 'pick') {
+        onFilePicked?.({ provider, owner, repo, branch, filePath: path, defaultBranch });
+        onClose();
+        return;
+      }
 
       setLoadingFile(true);
       setFileError(null);
@@ -697,7 +758,7 @@ export function RepoSyncModal({
         setLoadingFile(false);
       }
     },
-    [selectedRepo, provider, setConnection, onFileLoaded, onClose],
+    [selectedRepo, provider, setConnection, onFileLoaded, onClose, mode, onFilePicked],
   );
 
   const handleCommitSuccess = useCallback(
@@ -735,7 +796,10 @@ export function RepoSyncModal({
       title={
         <Group gap="xs">
           <GitBranch size={20} />
-          <Text fw={600}>{t('Repository sync')}</Text>
+          <Text fw={600}>
+            {titleOverride ??
+              (mode === 'pick' ? t('Select file from repository') : t('Repository sync'))}
+          </Text>
         </Group>
       }
       size="lg"
@@ -748,7 +812,7 @@ export function RepoSyncModal({
           <Tabs.Tab value="browse" leftSection={<FolderOpen size={14} />} disabled={!hasToken}>
             {t('Browse')}
           </Tabs.Tab>
-          {connection && serializedContent && (
+          {mode !== 'pick' && connection && serializedContent && (
             <Tabs.Tab value="push" leftSection={<Upload size={14} />}>
               {t('Push')}
             </Tabs.Tab>
@@ -1071,8 +1135,8 @@ export function RepoSyncModal({
           </Stack>
         </Tabs.Panel>
 
-        {/* Push tab */}
-        {connection && serializedContent && (
+        {/* Push tab (hidden in pick mode) */}
+        {mode !== 'pick' && connection && serializedContent && (
           <Tabs.Panel value="push" pt="md">
             {client ? (
               <CommitPanel

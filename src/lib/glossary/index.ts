@@ -28,6 +28,13 @@ export {
 } from './analyzer';
 export type { TermAnalysisResult, GlossaryAnalysisResult } from './analyzer';
 
+// Unified glossary loader (for cloud projects)
+export { loadGlossaryForLanguage } from './loader';
+
+// Source-specific fetchers
+export { fetchGlossaryFromUrl } from './url-fetcher';
+export { fetchGlossaryFromRepo } from './repo-fetcher';
+
 // DeepL glossary sync
 export {
   syncGlossaryToDeepL,

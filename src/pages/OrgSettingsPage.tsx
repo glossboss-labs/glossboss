@@ -28,6 +28,7 @@ import {
   CopyButton,
   Tabs,
   Avatar,
+  Divider,
   useMantineTheme,
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
@@ -46,6 +47,7 @@ import {
   Copy,
   Check,
   ExternalLink,
+  Key,
 } from 'lucide-react';
 import { sectionVariants, fadeVariants, buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
@@ -70,6 +72,8 @@ import { listOrgProjects } from '@/lib/projects/api';
 import type { ProjectWithLanguages } from '@/lib/projects/types';
 import { useAuth } from '@/hooks/use-auth';
 import { ConfirmModal, RoleBadge } from '@/components/ui';
+import { OrgTranslationTab } from '@/components/organizations/OrgTranslationTab';
+import { SharedCredentialsTab } from '@/components/organizations/SharedCredentialsTab';
 
 const MotionDiv = motion.div;
 
@@ -347,6 +351,9 @@ export default function OrgSettingsPage() {
               </Tabs.Tab>
               <Tabs.Tab value="projects" leftSection={<FolderOpen size={14} />}>
                 {t('Projects')} ({orgProjects.length})
+              </Tabs.Tab>
+              <Tabs.Tab value="translation" leftSection={<Key size={14} />}>
+                {t('Translation')}
               </Tabs.Tab>
               <Tabs.Tab value="danger" leftSection={<Trash2 size={14} />} color="red">
                 {t('Danger zone')}
@@ -678,6 +685,15 @@ export default function OrgSettingsPage() {
                     ))}
                   </Stack>
                 )}
+              </Stack>
+            </Tabs.Panel>
+
+            {/* Translation + Credentials tab */}
+            <Tabs.Panel value="translation" pt={isMobile ? 'md' : undefined}>
+              <Stack gap="lg">
+                <OrgTranslationTab orgId={org.id} isAdmin={isAdmin} />
+                <Divider label={t('Shared credentials')} labelPosition="center" />
+                <SharedCredentialsTab orgId={org.id} canManage={isAdmin} />
               </Stack>
             </Tabs.Panel>
 

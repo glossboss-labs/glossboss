@@ -43,6 +43,8 @@ import {
   Plus,
   ExternalLink,
   Bell,
+  BookOpen,
+  Key,
 } from 'lucide-react';
 import { sectionVariants, fadeVariants, buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
@@ -68,7 +70,11 @@ import { ProjectMembersTab } from '@/components/projects/ProjectMembersTab';
 import { ProjectInvitesTab } from '@/components/projects/ProjectInvitesTab';
 import { ProjectNotificationsTab } from '@/components/projects/ProjectNotificationsTab';
 import { AddLanguageModal } from '@/components/projects/AddLanguageModal';
+import { ProjectGlossaryTab } from '@/components/projects/ProjectGlossaryTab';
+import { ProjectTranslationTab } from '@/components/projects/ProjectTranslationTab';
 import { ConfirmModal } from '@/components/ui';
+import { getOrgSettings } from '@/lib/organizations/api';
+import type { OrgSettingsRow } from '@/lib/organizations/types';
 import { useProjectsStore } from '@/stores/projects-store';
 
 const MotionDiv = motion.div;
@@ -91,6 +97,7 @@ export default function ProjectSettings() {
   const [languages, setLanguages] = useState<ProjectLanguageRow[]>([]);
   const [members, setMembers] = useState<ProjectMemberWithProfile[]>([]);
   const [invites, setInvites] = useState<ProjectInviteRow[]>([]);
+  const [orgSettings, setOrgSettings] = useState<OrgSettingsRow | null>(null);
 
   // Edit state
   const [editName, setEditName] = useState('');
@@ -138,6 +145,14 @@ export default function ProjectSettings() {
         setEditWebsite(proj.website ?? '');
         setEditVisibility(proj.visibility);
         setEditPublicRole(proj.public_role);
+        // Load org settings if project belongs to an org
+        if (proj.organization_id) {
+          getOrgSettings(proj.organization_id)
+            .then((s) => {
+              if (!cancelled) setOrgSettings(s);
+            })
+            .catch(() => {});
+        }
         setLoading(false);
       } catch (err) {
         if (cancelled) return;
@@ -246,6 +261,10 @@ export default function ProjectSettings() {
     [t],
   );
 
+  const handleLanguageUpdated = useCallback((updated: ProjectLanguageRow) => {
+    setLanguages((prev) => prev.map((l) => (l.id === updated.id ? updated : l)));
+  }, []);
+
   if (loading) {
     return (
       <MotionDiv variants={fadeVariants} initial="hidden" animate="visible">
@@ -334,6 +353,12 @@ export default function ProjectSettings() {
               </Tabs.Tab>
               <Tabs.Tab value="languages" leftSection={<Languages size={14} />}>
                 {t('Languages')} ({languages.length})
+              </Tabs.Tab>
+              <Tabs.Tab value="translation" leftSection={<Key size={14} />}>
+                {t('Translation')}
+              </Tabs.Tab>
+              <Tabs.Tab value="glossary" leftSection={<BookOpen size={14} />}>
+                {t('Glossary')}
               </Tabs.Tab>
               <Tabs.Tab value="members" leftSection={<Users size={14} />}>
                 {t('Members')} ({members.length})
@@ -669,6 +694,27 @@ export default function ProjectSettings() {
                   ))
                 )}
               </Stack>
+            </Tabs.Panel>
+
+            {/* Translation tab */}
+            <Tabs.Panel value="translation" pt={isMobile ? 'md' : undefined}>
+              <ProjectTranslationTab
+                languages={languages}
+                projectId={project.id}
+                orgId={project.organization_id}
+                orgSettings={orgSettings}
+                isManager={isManager}
+                onLanguageUpdated={handleLanguageUpdated}
+              />
+            </Tabs.Panel>
+
+            {/* Glossary tab */}
+            <Tabs.Panel value="glossary" pt={isMobile ? 'md' : undefined}>
+              <ProjectGlossaryTab
+                languages={languages}
+                isManager={isManager}
+                onLanguageUpdated={handleLanguageUpdated}
+              />
             </Tabs.Panel>
 
             {/* Members tab */}

@@ -15,11 +15,13 @@ import type { TtsProviderId } from '@/lib/tts';
 export interface CloudSettingsPreferences {
   appLanguage: AppLanguage;
   containerWidth: ContainerWidth;
-  glossaryLocale: string;
-  glossaryEnforcementEnabled: boolean;
   navSkipTranslated: boolean;
   speechEnabled: boolean;
   translateEnabled: boolean;
+  /** @deprecated Glossary config moved to project_languages DB. Kept for backward-compat reads. */
+  glossaryLocale?: string;
+  /** @deprecated Glossary config moved to project_languages DB. Kept for backward-compat reads. */
+  glossaryEnforcementEnabled?: boolean;
 }
 
 /** Always-synced provider configuration (no API keys). */

@@ -48,8 +48,6 @@ import {
   COMMON_GLOSSARY_LOCALES,
   GLOSSARY_ENFORCEMENT_KEY,
   GLOSSARY_SELECTED_LOCALE_KEY,
-  dismissGlossaryForLocale,
-  undismissGlossaryForLocale,
 } from '@/components/glossary/constants';
 import type { Glossary } from '@/lib/glossary/types';
 import { useTranslation } from '@/lib/app-language';
@@ -192,7 +190,6 @@ export function GlossaryPanel({
         if (result.glossary) {
           setGlossary(result.glossary);
           setFromCache(result.fromCache);
-          undismissGlossaryForLocale(selectedLocale);
           onGlossaryLoaded?.(result.glossary);
           if (result.error) setError(result.error);
         } else {
@@ -212,7 +209,6 @@ export function GlossaryPanel({
   const handleClear = useCallback(() => {
     if (selectedLocale) {
       clearWPGlossaryCache(selectedLocale);
-      dismissGlossaryForLocale(selectedLocale);
     }
     setGlossary(null);
     setError(null);
