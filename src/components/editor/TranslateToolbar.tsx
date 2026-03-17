@@ -19,7 +19,7 @@ import {
   Badge,
   useMantineTheme,
 } from '@mantine/core';
-import { useLocalStorage, useMediaQuery } from '@mantine/hooks';
+import { useMediaQuery } from '@mantine/hooks';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Zap,
@@ -57,19 +57,10 @@ import {
   type TranslationProviderId,
 } from '@/lib/translation';
 import { getReviewEntryState, isReviewLocked } from '@/lib/review';
-import {
-  TRANSLATION_PROVIDER_STORAGE_KEY,
-  type TranslationProviderSettings,
-} from '@/lib/translation/settings';
+import { useTranslationProvider } from '@/hooks/use-translation-provider';
 import { shouldAutoTranslateEntry } from './translate-utils';
 import { getTranslationStatus } from '@/types';
-import { getFlagEmoji } from '@/lib/flags';
-
-/** Prepend flag emoji to a language label if a mapping exists. */
-function withFlag(code: string, label: string): string {
-  const flag = getFlagEmoji(code);
-  return flag ? `${flag} ${label}` : label;
-}
+import { renderFlagOption } from '@/components/ui';
 
 const MotionDiv = motion.div;
 const MotionStack = motion.create(Stack);
@@ -220,14 +211,7 @@ export function TranslateToolbar({
   const [glossaryFallbackNotice, setGlossaryFallbackNotice] = useState<string | null>(null);
   const cancelRef = useRef(false);
   const batchCountRef = useRef(0);
-  const [providerState] = useLocalStorage<TranslationProviderSettings>({
-    key: TRANSLATION_PROVIDER_STORAGE_KEY,
-    defaultValue: {
-      provider: 'deepl',
-      updatedAt: 0,
-    },
-  });
-  const activeProvider = providerState.provider;
+  const activeProvider = useTranslationProvider();
   const projectSlug = useSourceStore((state) => getEffectiveSlug(state));
   const projectType = useSourceStore((state) => getEffectiveProjectType(state));
   const providerLabel = getTranslationProviderLabel(activeProvider);
@@ -858,7 +842,7 @@ export function TranslateToolbar({
                   <Select
                     data={SOURCE_LANGUAGES.map((opt) => ({
                       ...opt,
-                      label: withFlag(opt.value, t(opt.label)),
+                      label: t(opt.label),
                     }))}
                     value={sourceLang}
                     onChange={handleSourceChange}
@@ -869,6 +853,7 @@ export function TranslateToolbar({
                     disabled={!hasApiKey}
                     aria-label={t('Source language')}
                     style={{ flex: 1, minWidth: 0 }}
+                    renderOption={renderFlagOption}
                   />
                 </Group>
                 <Group gap="xs" align="center" wrap="nowrap">
@@ -878,7 +863,7 @@ export function TranslateToolbar({
                   <Select
                     data={TARGET_LANGUAGES.map((opt) => ({
                       ...opt,
-                      label: withFlag(opt.value, t(opt.label)),
+                      label: t(opt.label),
                     }))}
                     value={targetLang}
                     onChange={handleTargetChange}
@@ -889,6 +874,7 @@ export function TranslateToolbar({
                     disabled={!hasApiKey}
                     aria-label={t('Target language')}
                     style={{ flex: 1, minWidth: 0 }}
+                    renderOption={renderFlagOption}
                   />
                   {inferredTarget && (
                     <Badge size="xs" variant="light" color="gray" style={{ flexShrink: 0 }}>
@@ -905,7 +891,7 @@ export function TranslateToolbar({
                 <Select
                   data={SOURCE_LANGUAGES.map((opt) => ({
                     ...opt,
-                    label: withFlag(opt.value, t(opt.label)),
+                    label: t(opt.label),
                   }))}
                   value={sourceLang}
                   onChange={handleSourceChange}
@@ -916,6 +902,7 @@ export function TranslateToolbar({
                   size="xs"
                   disabled={!hasApiKey}
                   aria-label={t('Source language')}
+                  renderOption={renderFlagOption}
                 />
 
                 <Text c="dimmed" size="sm" aria-hidden="true">
@@ -928,7 +915,7 @@ export function TranslateToolbar({
                 <Select
                   data={TARGET_LANGUAGES.map((opt) => ({
                     ...opt,
-                    label: withFlag(opt.value, t(opt.label)),
+                    label: t(opt.label),
                   }))}
                   value={targetLang}
                   onChange={handleTargetChange}
@@ -939,6 +926,7 @@ export function TranslateToolbar({
                   size="xs"
                   disabled={!hasApiKey}
                   aria-label={t('Target language')}
+                  renderOption={renderFlagOption}
                 />
 
                 {inferredTarget && (

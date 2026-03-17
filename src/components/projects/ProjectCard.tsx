@@ -19,7 +19,7 @@ import { MoreVertical, Trash2, Settings, Languages, Lock, Globe, EyeOff } from '
 import { badgeVariants } from '@/lib/motion';
 import { useTranslation, msgid } from '@/lib/app-language';
 import type { ProjectWithLanguages } from '@/lib/projects/types';
-import { getFlagEmoji } from '@/lib/flags';
+import { CountryFlag } from '@/components/ui';
 
 const MotionSpan = motion.span;
 
@@ -80,12 +80,11 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
             {languages.length > 0 && (
               <Group gap={4}>
                 {languages.length <= 5 ? (
-                  <Text size="xs" style={{ letterSpacing: -2 }}>
-                    {languages
-                      .map((l) => getFlagEmoji(l.locale))
-                      .filter(Boolean)
-                      .join('')}
-                  </Text>
+                  <Group gap={4}>
+                    {languages.map((l) => (
+                      <CountryFlag key={l.locale} code={l.locale} size="xs" />
+                    ))}
+                  </Group>
                 ) : (
                   <Languages size={12} style={{ opacity: 0.5 }} />
                 )}

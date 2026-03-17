@@ -44,7 +44,7 @@ import { detectLimitError, getLimitErrorMessage } from '@/lib/billing/errors';
 import { getOrgSubscription } from '@/lib/billing/api';
 import type { PlanTier } from '@/lib/billing/types';
 import type { WordPressProjectType } from '@/lib/wp-source/references';
-import { getFlagEmoji } from '@/lib/flags';
+import { CountryFlag } from '@/components/ui';
 
 const VISIBILITY_OPTIONS = [
   { value: 'private', label: msgid('Private') },
@@ -646,7 +646,11 @@ export function CreateProjectModal({ opened, onClose }: CreateProjectModalProps)
             {importedFile && (
               <Group gap="sm">
                 {targetLanguage && (
-                  <Badge variant="light" color="blue" leftSection={getFlagEmoji(targetLanguage)}>
+                  <Badge
+                    variant="light"
+                    color="blue"
+                    leftSection={<CountryFlag code={targetLanguage} size="xs" />}
+                  >
                     {t('Target: {{language}}', { language: targetLanguage })}
                   </Badge>
                 )}

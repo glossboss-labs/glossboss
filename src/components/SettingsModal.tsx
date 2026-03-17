@@ -108,6 +108,7 @@ import {
   dismissGlossaryForLocale,
   undismissGlossaryForLocale,
 } from '@/components/glossary/constants';
+import { renderFlagOption } from '@/components/ui';
 import type { Glossary } from '@/lib/glossary/types';
 import { NAV_SKIP_TRANSLATED_KEY } from '@/components/editor/EditorTable';
 import { ExportSection } from '@/components/projects/ExportSection';
@@ -2125,6 +2126,7 @@ export function SettingsModal({
                   onChange={(value) => setSelectedLocale(value || '')}
                   searchable
                   style={{ flex: 1 }}
+                  renderOption={renderFlagOption}
                 />
 
                 {!glossary ? (
