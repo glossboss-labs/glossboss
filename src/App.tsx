@@ -10,6 +10,9 @@ import { Routes, Route, useLocation } from 'react-router';
 import { trackPageView } from '@/lib/analytics';
 import LandingGuard from '@/pages/LandingGuard';
 import { APP_LANGUAGE_OPTIONS } from '@/lib/app-language';
+import LicensePage from '@/pages/LicensePage';
+import TermsPage from '@/pages/TermsPage';
+import PrivacyPage from '@/pages/PrivacyPage';
 import Index from '@/pages/Index';
 import Dashboard from '@/pages/Dashboard';
 import Explore from '@/pages/Explore';
@@ -46,6 +49,11 @@ export default function App() {
       {APP_LANGUAGE_OPTIONS.filter((o) => o.value !== 'en').map((o) => (
         <Route key={o.value} path={`/${o.value}`} element={<LandingGuard lang={o.value} />} />
       ))}
+
+      {/* Legal pages (full-bleed, no shell — same look as landing) */}
+      <Route path="/license" element={<LicensePage />} />
+      <Route path="/terms" element={<TermsPage />} />
+      <Route path="/privacy" element={<PrivacyPage />} />
 
       {/* Auth routes (no shell) */}
       <Route path="/login" element={<Login />} />

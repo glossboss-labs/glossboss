@@ -414,7 +414,7 @@ export function FeedbackModal({
               {t(
                 'Submissions may create a GitHub issue and can include your optional contact email for follow-up. See',
               )}{' '}
-              <Text component="a" href="/privacy/" inherit td="underline">
+              <Text component="a" href="/privacy" inherit td="underline">
                 {t('Privacy')}
               </Text>{' '}
               {t('for details.')}

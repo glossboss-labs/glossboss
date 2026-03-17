@@ -27,9 +27,9 @@ const footerLinks = {
   legal: {
     title: msgid('Legal'),
     links: [
-      { label: msgid('Privacy'), href: '/privacy/' },
-      { label: msgid('Terms'), href: '/terms/' },
-      { label: msgid('License'), href: '/license/' },
+      { label: msgid('Privacy'), href: '/privacy' },
+      { label: msgid('Terms'), href: '/terms' },
+      { label: msgid('License'), href: '/license' },
     ],
   },
 };

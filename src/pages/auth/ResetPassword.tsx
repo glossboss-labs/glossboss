@@ -7,6 +7,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import {
+  Anchor,
   Container,
   Paper,
   Title,
@@ -56,15 +57,17 @@ export default function ResetPassword() {
   return (
     <Container size={420} py={80}>
       <Stack align="center" gap={8} mb="md">
-        <img
-          src={
-            computedColorScheme === 'dark'
-              ? '/glossboss-combined-light.svg'
-              : '/glossboss-combined-dark.svg'
-          }
-          alt="GlossBoss"
-          style={{ height: 32 }}
-        />
+        <Anchor onClick={() => navigate(-1)} style={{ display: 'inline-flex', cursor: 'pointer' }}>
+          <img
+            src={
+              computedColorScheme === 'dark'
+                ? '/glossboss-combined-light.svg'
+                : '/glossboss-combined-dark.svg'
+            }
+            alt="GlossBoss"
+            style={{ height: 32 }}
+          />
+        </Anchor>
       </Stack>
       <Title ta="center" style={{ fontWeight: 800 }}>
         {t('Set new password')}

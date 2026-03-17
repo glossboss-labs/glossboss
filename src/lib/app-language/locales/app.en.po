@@ -117,7 +117,7 @@ msgstr "Accept invite"
 msgid "Account"
 msgstr "Account"
 
-#: src/pages/auth/Signup.tsx:105
+#: src/pages/auth/Signup.tsx:107
 msgid "Account created. Check your email to confirm, or sign in now."
 msgstr "Account created. Check your email to confirm, or sign in now."
 
@@ -223,7 +223,7 @@ msgstr ""
 msgid "Allow follow-up questions about this feedback"
 msgstr "Allow follow-up questions about this feedback"
 
-#: src/pages/auth/Signup.tsx:96
+#: src/pages/auth/Signup.tsx:98
 msgid "Already have an account?"
 msgstr "Already have an account?"
 
@@ -412,8 +412,8 @@ msgstr "Back to listing"
 msgid "Back to projects"
 msgstr "Back to projects"
 
-#: src/pages/auth/ForgotPassword.tsx:72
-#: src/pages/auth/ForgotPassword.tsx:100
+#: src/pages/auth/ForgotPassword.tsx:75
+#: src/pages/auth/ForgotPassword.tsx:103
 msgid "Back to sign in"
 msgstr "Back to sign in"
 
@@ -524,7 +524,7 @@ msgstr "Built for WordPress"
 msgid "Bulgarian"
 msgstr "Bulgarian"
 
-#: src/pages/auth/Signup.tsx:149
+#: src/pages/auth/Signup.tsx:151
 msgid "By creating an account, you agree to our"
 msgstr "By creating an account, you agree to our"
 
@@ -607,7 +607,7 @@ msgstr "Changes committed successfully"
 msgid "Check file compatibility"
 msgstr "Check file compatibility"
 
-#: src/pages/auth/ForgotPassword.tsx:68
+#: src/pages/auth/ForgotPassword.tsx:71
 msgid "Check your email for a password reset link."
 msgstr "Check your email for a password reset link."
 
@@ -633,12 +633,12 @@ msgstr "Chinese (Traditional)"
 msgid "Chinese, Japanese, Korean, Vietnamese, Thai, Indonesian"
 msgstr "Chinese, Japanese, Korean, Vietnamese, Thai, Indonesian"
 
-#: src/pages/auth/ResetPassword.tsx:73
+#: src/pages/auth/ResetPassword.tsx:76
 msgid "Choose a new password for your account."
 msgstr "Choose a new password for your account."
 
-#: src/pages/auth/ResetPassword.tsx:98
-#: src/pages/auth/Signup.tsx:140
+#: src/pages/auth/ResetPassword.tsx:101
+#: src/pages/auth/Signup.tsx:142
 msgid "Choose a password"
 msgstr "Choose a password"
 
@@ -871,7 +871,7 @@ msgstr "Confirm"
 msgid "Confirm new password"
 msgstr "Confirm new password"
 
-#: src/pages/auth/ResetPassword.tsx:107
+#: src/pages/auth/ResetPassword.tsx:110
 msgid "Confirm password"
 msgstr "Confirm password"
 
@@ -943,12 +943,12 @@ msgid "Continue with Free"
 msgstr "Continue with Free"
 
 #: src/components/auth/AuthPromptModal.tsx:49
-#: src/pages/auth/Login.tsx:90
-#: src/pages/auth/Signup.tsx:115
+#: src/pages/auth/Login.tsx:92
+#: src/pages/auth/Signup.tsx:117
 msgid "Continue with GitHub"
 msgstr "Continue with GitHub"
 
-#: src/pages/auth/Login.tsx:131
+#: src/pages/auth/Login.tsx:133
 msgid "Continue without account"
 msgstr "Continue without account"
 
@@ -1030,11 +1030,11 @@ msgstr "Create a fine-grained token"
 msgid "Create a token"
 msgstr "Create a token"
 
-#: src/pages/auth/Signup.tsx:161
+#: src/pages/auth/Signup.tsx:163
 msgid "Create account"
 msgstr "Create account"
 
-#: src/pages/auth/Signup.tsx:93
+#: src/pages/auth/Signup.tsx:95
 msgid "Create an account"
 msgstr "Create an account"
 
@@ -1044,7 +1044,7 @@ msgid "Create new branch"
 msgstr "Create new branch"
 
 #: src/components/auth/AuthPromptModal.tsx:61
-#: src/pages/auth/Login.tsx:79
+#: src/pages/auth/Login.tsx:81
 msgid "Create one"
 msgstr "Create one"
 
@@ -1304,7 +1304,7 @@ msgid "Do you need GitHub/GitLab integration?"
 msgstr "Do you need GitHub/GitLab integration?"
 
 #: src/components/auth/AuthPromptModal.tsx:59
-#: src/pages/auth/Login.tsx:77
+#: src/pages/auth/Login.tsx:79
 msgid "Don't have an account?"
 msgstr "Don't have an account?"
 
@@ -1395,7 +1395,7 @@ msgstr ""
 "terface."
 
 #: src/components/editor/HeaderEditor.tsx:662
-#: src/components/editor/HeaderEditor.tsx:671
+#: src/components/editor/HeaderEditor.tsx:672
 msgid "Edit header"
 msgstr "Edit header"
 
@@ -1445,9 +1445,9 @@ msgstr ""
 "xt provider reset."
 
 #: src/components/feedback/FeedbackModal.tsx:425
-#: src/pages/auth/ForgotPassword.tsx:85
-#: src/pages/auth/Login.tsx:104
-#: src/pages/auth/Signup.tsx:129
+#: src/pages/auth/ForgotPassword.tsx:88
+#: src/pages/auth/Login.tsx:106
+#: src/pages/auth/Signup.tsx:131
 msgid "Email"
 msgstr "Email"
 
@@ -1558,11 +1558,11 @@ msgstr "Enter your ElevenLabs API key"
 msgid "Enter your Gemini API key"
 msgstr "Enter your Gemini API key"
 
-#: src/pages/auth/ForgotPassword.tsx:61
+#: src/pages/auth/ForgotPassword.tsx:64
 msgid "Enter your email and we'll send you a reset link."
 msgstr "Enter your email and we'll send you a reset link."
 
-#: src/components/editor/HeaderEditor.tsx:740
+#: src/components/editor/HeaderEditor.tsx:741
 msgid "Enter {{field}}..."
 msgstr "Enter {{field}}..."
 
@@ -2056,7 +2056,7 @@ msgstr "For your own projects — collaborating on others is always free"
 msgid "Force recreate glossary on {{provider}}"
 msgstr "Force recreate glossary on {{provider}}"
 
-#: src/pages/auth/Login.tsx:123
+#: src/pages/auth/Login.tsx:125
 msgid "Forgot password?"
 msgstr "Forgot password?"
 
@@ -2449,12 +2449,12 @@ msgstr "HTML tag parity"
 msgid "Hebrew"
 msgstr "Hebrew"
 
-#: src/components/editor/HeaderEditor.tsx:757
+#: src/components/editor/HeaderEditor.tsx:758
 msgid "Hide advanced fields"
 msgstr "Hide advanced fields"
 
 #: src/components/editor/HeaderEditor.tsx:662
-#: src/components/editor/HeaderEditor.tsx:671
+#: src/components/editor/HeaderEditor.tsx:672
 msgid "Hide header"
 msgstr "Hide header"
 
@@ -2816,8 +2816,8 @@ msgstr "Legal"
 
 #: src/components/auth/UserMenu.tsx:161
 #: src/components/landing/LandingFooter.tsx:32
-#: src/pages/auth/Login.tsx:147
-#: src/pages/auth/Signup.tsx:179
+#: src/pages/auth/Login.tsx:149
+#: src/pages/auth/Signup.tsx:181
 msgid "License"
 msgstr "License"
 
@@ -3114,8 +3114,8 @@ msgstr "Marked {{count}} row(s) as fuzzy."
 msgid "Members"
 msgstr "Members"
 
-#: src/pages/auth/ResetPassword.tsx:103
-#: src/pages/auth/Signup.tsx:145
+#: src/pages/auth/ResetPassword.tsx:106
+#: src/pages/auth/Signup.tsx:147
 msgid "Minimum 8 characters, with uppercase, lowercase, and a digit"
 msgstr "Minimum 8 characters, with uppercase, lowercase, and a digit"
 
@@ -3206,7 +3206,7 @@ msgid "New notification"
 msgstr "New notification"
 
 #: src/components/settings/AccountSection.tsx:168
-#: src/pages/auth/ResetPassword.tsx:97
+#: src/pages/auth/ResetPassword.tsx:100
 msgid "New password"
 msgstr "New password"
 
@@ -3253,7 +3253,7 @@ msgstr "No account found — invite link created in Invites tab."
 msgid "No active project"
 msgstr "No active project"
 
-#: src/components/editor/HeaderEditor.tsx:804
+#: src/components/editor/HeaderEditor.tsx:805
 msgid "No additional metadata fields"
 msgstr "No additional metadata fields"
 
@@ -3639,8 +3639,8 @@ msgstr "PR description"
 msgid "PR title"
 msgstr "PR title"
 
-#: src/pages/auth/Login.tsx:114
-#: src/pages/auth/Signup.tsx:139
+#: src/pages/auth/Login.tsx:116
+#: src/pages/auth/Signup.tsx:141
 msgid "Password"
 msgstr "Password"
 
@@ -3652,12 +3652,12 @@ msgstr "Password must be at least 6 characters."
 msgid "Password updated successfully."
 msgstr "Password updated successfully."
 
-#: src/pages/auth/ResetPassword.tsx:79
+#: src/pages/auth/ResetPassword.tsx:82
 msgid "Password updated. Redirecting..."
 msgstr "Password updated. Redirecting..."
 
 #: src/components/settings/AccountSection.tsx:77
-#: src/pages/auth/ResetPassword.tsx:92
+#: src/pages/auth/ResetPassword.tsx:95
 msgid "Passwords do not match."
 msgstr "Passwords do not match."
 
@@ -3911,13 +3911,13 @@ msgstr "Priority support"
 #: src/components/feedback/FeedbackModal.tsx:418
 #: src/components/landing/FeatureGrid.tsx:94
 #: src/components/landing/LandingFooter.tsx:30
-#: src/pages/auth/Login.tsx:143
-#: src/pages/auth/Signup.tsx:175
+#: src/pages/auth/Login.tsx:145
+#: src/pages/auth/Signup.tsx:177
 msgid "Privacy"
 msgstr "Privacy"
 
 #: src/components/settings/TranslationSection.tsx:363
-#: src/pages/auth/Signup.tsx:155
+#: src/pages/auth/Signup.tsx:157
 msgid "Privacy Policy"
 msgstr "Privacy Policy"
 
@@ -4258,7 +4258,7 @@ msgstr "Reopen"
 msgid "Reopened comment"
 msgstr "Reopened comment"
 
-#: src/pages/auth/ResetPassword.tsx:108
+#: src/pages/auth/ResetPassword.tsx:111
 msgid "Repeat your password"
 msgstr "Repeat your password"
 
@@ -4329,7 +4329,7 @@ msgstr "Request changes selected"
 msgid "Request timed out. Try downloading the file and uploading it directly."
 msgstr "Request timed out. Try downloading the file and uploading it directly."
 
-#: src/pages/auth/ForgotPassword.tsx:58
+#: src/pages/auth/ForgotPassword.tsx:61
 msgid "Reset your password"
 msgstr "Reset your password"
 
@@ -4675,7 +4675,7 @@ msgstr "Selected string"
 msgid "Send feedback"
 msgstr "Send feedback"
 
-#: src/pages/auth/ForgotPassword.tsx:95
+#: src/pages/auth/ForgotPassword.tsx:98
 msgid "Send reset link"
 msgstr "Send reset link"
 
@@ -4703,7 +4703,7 @@ msgstr "Session usage: {{count}} characters"
 msgid "Set a WordPress project slug to browse source files."
 msgstr "Set a WordPress project slug to browse source files."
 
-#: src/pages/auth/ResetPassword.tsx:70
+#: src/pages/auth/ResetPassword.tsx:73
 msgid "Set new password"
 msgstr "Set new password"
 
@@ -4818,7 +4818,7 @@ msgstr "Shortcut"
 msgid "Shortcuts"
 msgstr "Shortcuts"
 
-#: src/components/editor/HeaderEditor.tsx:757
+#: src/components/editor/HeaderEditor.tsx:758
 msgid "Show advanced fields"
 msgstr "Show advanced fields"
 
@@ -4862,12 +4862,12 @@ msgstr "Showing {{start}}–{{end}} of {{total}} entries"
 #: src/components/editor/EmptyState.tsx:221
 #: src/components/landing/LandingNav.tsx:84
 #: src/components/landing/LandingNav.tsx:155
-#: src/pages/auth/Login.tsx:127
-#: src/pages/auth/Signup.tsx:98
+#: src/pages/auth/Login.tsx:129
+#: src/pages/auth/Signup.tsx:100
 msgid "Sign in"
 msgstr "Sign in"
 
-#: src/pages/auth/Login.tsx:74
+#: src/pages/auth/Login.tsx:76
 msgid "Sign in to GlossBoss"
 msgstr "Sign in to GlossBoss"
 
@@ -5257,8 +5257,8 @@ msgstr "Term (EN)"
 
 #: src/components/auth/UserMenu.tsx:170
 #: src/components/landing/LandingFooter.tsx:31
-#: src/pages/auth/Login.tsx:139
-#: src/pages/auth/Signup.tsx:171
+#: src/pages/auth/Login.tsx:141
+#: src/pages/auth/Signup.tsx:173
 msgid "Terms"
 msgstr "Terms"
 
@@ -5271,7 +5271,7 @@ msgstr "Terms in selected row:"
 msgid "Terms in selected text:"
 msgstr "Terms in selected text:"
 
-#: src/pages/auth/Signup.tsx:151
+#: src/pages/auth/Signup.tsx:153
 msgid "Terms of Service"
 msgstr "Terms of Service"
 
@@ -5786,7 +5786,7 @@ msgid "Update from POT…"
 msgstr "Update from POT…"
 
 #: src/components/settings/AccountSection.tsx:193
-#: src/pages/auth/ResetPassword.tsx:116
+#: src/pages/auth/ResetPassword.tsx:119
 msgid "Update password"
 msgstr "Update password"
 
@@ -6293,7 +6293,7 @@ msgstr ""
 msgid "Your name"
 msgstr "Your name"
 
-#: src/pages/auth/Login.tsx:115
+#: src/pages/auth/Login.tsx:117
 msgid "Your password"
 msgstr "Your password"
 
@@ -6309,7 +6309,7 @@ msgstr ""
 msgid "Your subscription is canceled and will expire on {{date}}."
 msgstr "Your subscription is canceled and will expire on {{date}}."
 
-#: src/pages/auth/Signup.tsx:153
+#: src/pages/auth/Signup.tsx:155
 msgid "and"
 msgstr "and"
 
@@ -6393,11 +6393,11 @@ msgstr "or"
 msgid "or connect with a personal access token"
 msgstr "or connect with a personal access token"
 
-#: src/pages/auth/Signup.tsx:118
+#: src/pages/auth/Signup.tsx:120
 msgid "or create account with email"
 msgstr "or create account with email"
 
-#: src/pages/auth/Login.tsx:93
+#: src/pages/auth/Login.tsx:95
 msgid "or sign in with email"
 msgstr "or sign in with email"
 

@@ -60,15 +60,17 @@ export default function Login() {
   return (
     <Container size={420} py={80}>
       <Stack align="center" gap={8} mb="md">
-        <img
-          src={
-            computedColorScheme === 'dark'
-              ? '/glossboss-combined-light.svg'
-              : '/glossboss-combined-dark.svg'
-          }
-          alt="GlossBoss"
-          style={{ height: 32 }}
-        />
+        <Anchor onClick={() => navigate(-1)} style={{ display: 'inline-flex', cursor: 'pointer' }}>
+          <img
+            src={
+              computedColorScheme === 'dark'
+                ? '/glossboss-combined-light.svg'
+                : '/glossboss-combined-dark.svg'
+            }
+            alt="GlossBoss"
+            style={{ height: 32 }}
+          />
+        </Anchor>
       </Stack>
       <Title ta="center" style={{ fontWeight: 800 }}>
         {t('Sign in to GlossBoss')}
@@ -127,7 +129,7 @@ export default function Login() {
               {t('Sign in')}
             </Button>
 
-            <Anchor component={Link} to="/" size="sm" ta="center">
+            <Anchor component={Link} to="/editor" size="sm" ta="center">
               {t('Continue without account')}
             </Anchor>
           </Stack>
@@ -135,15 +137,15 @@ export default function Login() {
       </Paper>
 
       <Text size="xs" c="dimmed" ta="center" mt="xl">
-        <Anchor href="/terms/" target="_blank" size="xs" c="dimmed">
+        <Anchor href="/terms" target="_blank" size="xs" c="dimmed">
           {t('Terms')}
         </Anchor>
         {' · '}
-        <Anchor href="/privacy/" target="_blank" size="xs" c="dimmed">
+        <Anchor href="/privacy" target="_blank" size="xs" c="dimmed">
           {t('Privacy')}
         </Anchor>
         {' · '}
-        <Anchor href="/license/" target="_blank" size="xs" c="dimmed">
+        <Anchor href="/license" target="_blank" size="xs" c="dimmed">
           {t('License')}
         </Anchor>
       </Text>

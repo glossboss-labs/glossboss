@@ -3,7 +3,7 @@
  */
 
 import { useState } from 'react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import {
   Container,
   Paper,
@@ -23,6 +23,7 @@ import { useAuth } from '@/hooks/use-auth';
 
 export default function ForgotPassword() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { error } = useAuth();
   const resetPassword = useAuthStore((s) => s.resetPasswordForEmail);
   const clearError = useAuthStore((s) => s.clearError);
@@ -44,15 +45,17 @@ export default function ForgotPassword() {
   return (
     <Container size={420} py={80}>
       <Stack align="center" gap={8} mb="md">
-        <img
-          src={
-            computedColorScheme === 'dark'
-              ? '/glossboss-combined-light.svg'
-              : '/glossboss-combined-dark.svg'
-          }
-          alt="GlossBoss"
-          style={{ height: 32 }}
-        />
+        <Anchor onClick={() => navigate(-1)} style={{ display: 'inline-flex', cursor: 'pointer' }}>
+          <img
+            src={
+              computedColorScheme === 'dark'
+                ? '/glossboss-combined-light.svg'
+                : '/glossboss-combined-dark.svg'
+            }
+            alt="GlossBoss"
+            style={{ height: 32 }}
+          />
+        </Anchor>
       </Stack>
       <Title ta="center" style={{ fontWeight: 800 }}>
         {t('Reset your password')}

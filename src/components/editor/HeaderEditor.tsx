@@ -660,6 +660,7 @@ export function HeaderEditor({
             onClick={() => setIsExpanded(!isExpanded)}
             aria-expanded={isExpanded}
             aria-label={isExpanded ? t('Hide header') : t('Edit header')}
+            style={{ cursor: 'pointer' }}
           >
             <Badge
               component="span"

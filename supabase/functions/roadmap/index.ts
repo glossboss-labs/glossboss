@@ -145,8 +145,14 @@ async function fetchRepoIssues(
 
 async function fetchRoadmapIssues(): Promise<RoadmapIssue[]> {
   const token = Deno.env.get('GITHUB_TOKEN')?.trim();
-  const owner = Deno.env.get('ROADMAP_GITHUB_OWNER')?.trim() || DEFAULT_GITHUB_OWNER;
-  const repo = Deno.env.get('ROADMAP_GITHUB_REPO')?.trim() || DEFAULT_GITHUB_REPO;
+  const owner =
+    Deno.env.get('ROADMAP_GITHUB_OWNER')?.trim() ||
+    Deno.env.get('GITHUB_OWNER')?.trim() ||
+    DEFAULT_GITHUB_OWNER;
+  const repo =
+    Deno.env.get('ROADMAP_GITHUB_REPO')?.trim() ||
+    Deno.env.get('GITHUB_REPO')?.trim() ||
+    DEFAULT_GITHUB_REPO;
 
   // Fetch from both public and private repos in parallel
   const [publicIssues, privateIssues] = await Promise.all([

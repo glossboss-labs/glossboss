@@ -79,15 +79,17 @@ export default function Signup() {
   return (
     <Container size={420} py={80}>
       <Stack align="center" gap={8} mb="md">
-        <img
-          src={
-            computedColorScheme === 'dark'
-              ? '/glossboss-combined-light.svg'
-              : '/glossboss-combined-dark.svg'
-          }
-          alt="GlossBoss"
-          style={{ height: 32 }}
-        />
+        <Anchor onClick={() => navigate(-1)} style={{ display: 'inline-flex', cursor: 'pointer' }}>
+          <img
+            src={
+              computedColorScheme === 'dark'
+                ? '/glossboss-combined-light.svg'
+                : '/glossboss-combined-dark.svg'
+            }
+            alt="GlossBoss"
+            style={{ height: 32 }}
+          />
+        </Anchor>
       </Stack>
       <Title ta="center" style={{ fontWeight: 800 }}>
         {t('Create an account')}
@@ -147,11 +149,11 @@ export default function Signup() {
 
                 <Text size="xs" c="dimmed" ta="center">
                   {t('By creating an account, you agree to our')}{' '}
-                  <Anchor href="/terms/" target="_blank" size="xs">
+                  <Anchor href="/terms" target="_blank" size="xs">
                     {t('Terms of Service')}
                   </Anchor>{' '}
                   {t('and')}{' '}
-                  <Anchor href="/privacy/" target="_blank" size="xs">
+                  <Anchor href="/privacy" target="_blank" size="xs">
                     {t('Privacy Policy')}
                   </Anchor>
                   .
@@ -167,15 +169,15 @@ export default function Signup() {
       </Paper>
 
       <Text size="xs" c="dimmed" ta="center" mt="xl">
-        <Anchor href="/terms/" target="_blank" size="xs" c="dimmed">
+        <Anchor href="/terms" target="_blank" size="xs" c="dimmed">
           {t('Terms')}
         </Anchor>
         {' · '}
-        <Anchor href="/privacy/" target="_blank" size="xs" c="dimmed">
+        <Anchor href="/privacy" target="_blank" size="xs" c="dimmed">
           {t('Privacy')}
         </Anchor>
         {' · '}
-        <Anchor href="/license/" target="_blank" size="xs" c="dimmed">
+        <Anchor href="/license" target="_blank" size="xs" c="dimmed">
           {t('License')}
         </Anchor>
       </Text>
