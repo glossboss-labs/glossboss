@@ -27,7 +27,7 @@ function getGitBranch() {
 const gitBranch = getGitBranch();
 
 /**
- * Serve static sub-directory pages (e.g. /license/, /privacy/, /translate/)
+ * Serve static sub-directory pages (e.g. /translate/)
  * before Vite's SPA fallback rewrites them to the root index.html.
  */
 function staticPages(): Plugin {
@@ -36,7 +36,7 @@ function staticPages(): Plugin {
     configureServer(server) {
       server.middlewares.use((req, _res, next) => {
         const pathname = (req.url ?? '').split('?')[0];
-        if (/^\/(license|translate|privacy|terms)(\/)?$/.test(pathname)) {
+        if (/^\/(translate)(\/)?$/.test(pathname)) {
           const dir = pathname.replace(/\/$/, '');
           const filePath = path.resolve(import.meta.dirname, `public${dir}/index.html`);
           if (existsSync(filePath)) {

@@ -33,13 +33,29 @@ export interface AuthResult {
   error: AuthError | null;
 }
 
-export async function signUpWithEmail(email: string, password: string): Promise<AuthResult> {
-  const { data, error } = await auth().signUp({ email, password });
+export async function signUpWithEmail(
+  email: string,
+  password: string,
+  captchaToken?: string,
+): Promise<AuthResult> {
+  const { data, error } = await auth().signUp({
+    email,
+    password,
+    options: captchaToken ? { captchaToken } : undefined,
+  });
   return { user: data.user, session: data.session, error };
 }
 
-export async function signInWithEmail(email: string, password: string): Promise<AuthResult> {
-  const { data, error } = await auth().signInWithPassword({ email, password });
+export async function signInWithEmail(
+  email: string,
+  password: string,
+  captchaToken?: string,
+): Promise<AuthResult> {
+  const { data, error } = await auth().signInWithPassword({
+    email,
+    password,
+    options: captchaToken ? { captchaToken } : undefined,
+  });
   return { user: data.user, session: data.session, error };
 }
 

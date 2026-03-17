@@ -13,7 +13,8 @@ export type NotificationType =
   | 'project_member_added'
   | 'org_member_added'
   | 'review_status_changed'
-  | 'review_comment_added';
+  | 'review_comment_added'
+  | 'strings_updated';
 
 export interface NotificationRow {
   id: string;
@@ -89,4 +90,62 @@ export interface ReviewCommentAddedData {
   msgid: string;
   comment_author: string;
   comment_message: string;
+}
+
+export interface StringsUpdatedData {
+  project_id: string;
+  project_name: string;
+  language_id: string;
+  locale: string;
+  update_count: number;
+  updated_by_name: string | null;
+}
+
+// ── Notification preferences ───────────────────────────────
+
+/** Per-type channel toggles. */
+export interface NotificationChannelPrefs {
+  in_app?: boolean;
+  email?: boolean;
+  push?: boolean;
+}
+
+/** All available notification channels. */
+export const NOTIFICATION_CHANNELS = ['in_app', 'email', 'push'] as const;
+export type NotificationChannel = (typeof NOTIFICATION_CHANNELS)[number];
+
+/** Digest frequency for batched string-update notifications. */
+export type DigestFrequency = 'hourly' | 'daily' | 'weekly' | 'off';
+
+/** All notification types that can be configured. */
+export const CONFIGURABLE_TYPES: NotificationType[] = [
+  'org_invite_received',
+  'org_invite_accepted',
+  'project_invite_received',
+  'project_invite_accepted',
+  'project_member_added',
+  'org_member_added',
+  'review_status_changed',
+  'review_comment_added',
+  'strings_updated',
+];
+
+/** Global notification preferences row. */
+export interface NotificationPreferencesRow {
+  user_id: string;
+  preferences: Partial<Record<NotificationType, NotificationChannelPrefs>>;
+  digest_frequency: DigestFrequency;
+  created_at: string;
+  updated_at: string;
+}
+
+/** Per-project notification preferences row. */
+export interface ProjectNotificationPreferencesRow {
+  id: string;
+  user_id: string;
+  project_id: string;
+  preferences: Partial<Record<NotificationType, NotificationChannelPrefs>>;
+  digest_frequency: DigestFrequency | null;
+  created_at: string;
+  updated_at: string;
 }

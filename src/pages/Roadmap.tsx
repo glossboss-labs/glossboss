@@ -359,6 +359,22 @@ export default function Roadmap() {
                   </Stack>
                 </MotionDiv>
               )}
+
+              <Paper withBorder p="md" mt="sm">
+                <Group justify="space-between" align="center" wrap="wrap">
+                  <Text size="sm" c="dimmed">
+                    {t('Missing something? Let us know what you need.')}
+                  </Text>
+                  <Button
+                    variant="light"
+                    size="xs"
+                    leftSection={<MessageSquare size={14} />}
+                    onClick={() => setFeedbackOpen(true)}
+                  >
+                    {t('Share feedback')}
+                  </Button>
+                </Group>
+              </Paper>
             </Stack>
           </MotionDiv>
         )}

@@ -136,6 +136,7 @@ export function EditorWorkspace({
                 {workspaceMode === 'edit' ? t('Edit workspace') : t('Review workspace')}
               </Text>
               <SegmentedControl
+                data-tour="workspace-mode"
                 size="xs"
                 value={workspaceMode}
                 onChange={(value) => onWorkspaceModeChange(value as WorkspaceMode)}
@@ -186,7 +187,13 @@ export function EditorWorkspace({
         </Paper>
       </Stack>
 
-      <MotionDiv variants={sectionVariants} initial="hidden" animate="visible" key="editor">
+      <MotionDiv
+        variants={sectionVariants}
+        initial="hidden"
+        animate="visible"
+        key="editor"
+        data-tour="editor-table"
+      >
         <EditorTable
           targetLang={targetLang}
           sourceLang={sourceLang}

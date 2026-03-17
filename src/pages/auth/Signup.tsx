@@ -25,6 +25,8 @@ import { useAuth } from '@/hooks/use-auth';
 import { savePlanParams } from '@/lib/auth/session';
 import { trackEvent } from '@/lib/analytics';
 import { GithubIcon } from '@/components/auth/GithubIcon';
+import { Confetti } from '@/components/magicui/confetti';
+import { useAuthCaptcha } from '@/hooks/use-auth-captcha';
 
 export default function Signup() {
   const { t } = useTranslation();
@@ -52,12 +54,18 @@ export default function Signup() {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const computedColorScheme = useComputedColorScheme('light');
+  const { containerRef, getCaptchaToken, ready: captchaReady } = useAuthCaptcha();
 
   const handleEmailSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
     clearError();
-    await signUpWithEmail(email, password);
+    try {
+      const captchaToken = await getCaptchaToken();
+      await signUpWithEmail(email, password, captchaToken);
+    } catch {
+      // Captcha failure
+    }
     setSubmitting(false);
     if (!useAuthStore.getState().error) {
       setSuccess(true);
@@ -79,15 +87,17 @@ export default function Signup() {
   return (
     <Container size={420} py={80}>
       <Stack align="center" gap={8} mb="md">
-        <img
-          src={
-            computedColorScheme === 'dark'
-              ? '/glossboss-combined-light.svg'
-              : '/glossboss-combined-dark.svg'
-          }
-          alt="GlossBoss"
-          style={{ height: 32 }}
-        />
+        <Anchor onClick={() => navigate(-1)} style={{ display: 'inline-flex', cursor: 'pointer' }}>
+          <img
+            src={
+              computedColorScheme === 'dark'
+                ? '/glossboss-combined-light.svg'
+                : '/glossboss-combined-dark.svg'
+            }
+            alt="GlossBoss"
+            style={{ height: 32 }}
+          />
+        </Anchor>
       </Stack>
       <Title ta="center" style={{ fontWeight: 800 }}>
         {t('Create an account')}
@@ -101,9 +111,12 @@ export default function Signup() {
 
       <Paper withBorder p="xl" mt={30} radius="md">
         {success ? (
-          <Alert icon={<CheckCircle size={16} />} color="green" variant="light">
-            {t('Account created. Check your email to confirm, or sign in now.')}
-          </Alert>
+          <>
+            <Confetti />
+            <Alert icon={<CheckCircle size={16} />} color="green" variant="light">
+              {t('Account created. Check your email to confirm, or sign in now.')}
+            </Alert>
+          </>
         ) : (
           <>
             <Button
@@ -147,17 +160,19 @@ export default function Signup() {
 
                 <Text size="xs" c="dimmed" ta="center">
                   {t('By creating an account, you agree to our')}{' '}
-                  <Anchor href="/terms/" target="_blank" size="xs">
+                  <Anchor href="/terms" target="_blank" size="xs">
                     {t('Terms of Service')}
                   </Anchor>{' '}
                   {t('and')}{' '}
-                  <Anchor href="/privacy/" target="_blank" size="xs">
+                  <Anchor href="/privacy" target="_blank" size="xs">
                     {t('Privacy Policy')}
                   </Anchor>
                   .
                 </Text>
 
-                <Button type="submit" fullWidth loading={submitting}>
+                <div ref={containerRef} />
+
+                <Button type="submit" fullWidth loading={submitting} disabled={!captchaReady}>
                   {t('Create account')}
                 </Button>
               </Stack>
@@ -167,15 +182,15 @@ export default function Signup() {
       </Paper>
 
       <Text size="xs" c="dimmed" ta="center" mt="xl">
-        <Anchor href="/terms/" target="_blank" size="xs" c="dimmed">
+        <Anchor href="/terms" target="_blank" size="xs" c="dimmed">
           {t('Terms')}
         </Anchor>
         {' · '}
-        <Anchor href="/privacy/" target="_blank" size="xs" c="dimmed">
+        <Anchor href="/privacy" target="_blank" size="xs" c="dimmed">
           {t('Privacy')}
         </Anchor>
         {' · '}
-        <Anchor href="/license/" target="_blank" size="xs" c="dimmed">
+        <Anchor href="/license" target="_blank" size="xs" c="dimmed">
           {t('License')}
         </Anchor>
       </Text>

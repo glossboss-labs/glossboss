@@ -34,7 +34,9 @@ import {
   getTranslationProviderSettings,
   getTranslationProviderLabel,
   TRANSLATION_PROVIDER_CAPABILITIES,
+  hasProviderCredentials,
 } from '@/lib/translation';
+import { syncGlossaryToDeepL } from '@/lib/glossary';
 import { useTranslation } from '@/lib/app-language';
 
 export interface GlossarySectionProps {
@@ -91,6 +93,17 @@ export function GlossarySection({
   const [hasAttemptedAutoLoad, setHasAttemptedAutoLoad] = useState(false);
   const loadTokenRef = useRef(0);
   const csvUploadResetRef = useRef<() => void>(null);
+
+  // Local sync state — used when running standalone (no syncStatus prop)
+  const isStandalone = syncStatus === undefined;
+  const [localSyncStatus, setLocalSyncStatus] = useState<string | null>(null);
+  const [localDeeplGlossaryId, setLocalDeeplGlossaryId] = useState<string | null>(null);
+  const [localGlossaryTermCount, setLocalGlossaryTermCount] = useState<number | undefined>(
+    undefined,
+  );
+  const effectiveSyncStatus = isStandalone ? localSyncStatus : syncStatus;
+  const effectiveDeeplGlossaryId = isStandalone ? localDeeplGlossaryId : deeplGlossaryId;
+  const effectiveGlossaryTermCount = isStandalone ? localGlossaryTermCount : glossaryTermCount;
 
   // Update locale when initialLocale changes
   useEffect(() => {
@@ -206,6 +219,34 @@ export function GlossarySection({
     },
     [selectedLocale, onGlossaryLoaded, t],
   );
+
+  // Standalone sync: when a glossary is loaded and we have provider credentials, auto-sync
+  const handleStandaloneSync = useCallback(async (glossaryToSync: Glossary) => {
+    const provider = getTranslationProviderSettings().provider;
+    const capabilities = TRANSLATION_PROVIDER_CAPABILITIES[provider];
+
+    if (capabilities.nativeGlossary && hasProviderCredentials(provider)) {
+      setLocalSyncStatus('syncing');
+      try {
+        const glossaryId = await syncGlossaryToDeepL(glossaryToSync, setLocalSyncStatus);
+        setLocalDeeplGlossaryId(glossaryId);
+        setLocalGlossaryTermCount(glossaryToSync.entries.length);
+      } catch {
+        setLocalSyncStatus('sync-failed');
+      }
+    } else {
+      setLocalDeeplGlossaryId(null);
+      setLocalSyncStatus('ready');
+      setLocalGlossaryTermCount(glossaryToSync.entries.length);
+    }
+  }, []);
+
+  // Auto-sync when glossary changes in standalone mode
+  useEffect(() => {
+    if (isStandalone && effectiveGlossary) {
+      void handleStandaloneSync(effectiveGlossary);
+    }
+  }, [isStandalone, effectiveGlossary, handleStandaloneSync]);
 
   // Reset auto-load flag when locale changes
   useEffect(() => {
@@ -328,21 +369,21 @@ export function GlossarySection({
 
               {/* Provider sync status */}
               <Group gap="xs">
-                {syncStatus === 'syncing' ? (
+                {effectiveSyncStatus === 'syncing' ? (
                   <>
                     <Loader size={12} />
                     <Text size="xs" c="dimmed">
                       {t('Syncing glossary...')}
                     </Text>
                   </>
-                ) : deeplGlossaryId || syncStatus === 'ready' ? (
+                ) : effectiveDeeplGlossaryId || effectiveSyncStatus === 'ready' ? (
                   <>
                     <Check size={12} color="var(--mantine-color-green-6)" />
                     <Text size="xs" c="green">
-                      {glossaryTermCount != null
+                      {effectiveGlossaryTermCount != null
                         ? t('{{provider}} ready ({{count}} terms)', {
                             provider: getTranslationProviderLabel(translationProvider),
-                            count: glossaryTermCount,
+                            count: effectiveGlossaryTermCount,
                           })
                         : t('{{provider}} ready', {
                             provider: getTranslationProviderLabel(translationProvider),
@@ -353,13 +394,17 @@ export function GlossarySection({
                         size="compact-xs"
                         variant="subtle"
                         color="gray"
-                        onClick={() => onForceResync?.(effectiveGlossary)}
+                        onClick={() =>
+                          isStandalone
+                            ? handleStandaloneSync(effectiveGlossary)
+                            : onForceResync?.(effectiveGlossary)
+                        }
                       >
                         {t('Resync')}
                       </Button>
                     )}
                   </>
-                ) : syncStatus === 'sync-failed' ? (
+                ) : effectiveSyncStatus === 'sync-failed' ? (
                   <>
                     <X size={12} color="var(--mantine-color-red-6)" />
                     <Text size="xs" c="red">
@@ -368,7 +413,11 @@ export function GlossarySection({
                     <Button
                       size="compact-xs"
                       variant="subtle"
-                      onClick={() => onGlossaryLoaded?.(effectiveGlossary)}
+                      onClick={() =>
+                        isStandalone
+                          ? handleStandaloneSync(effectiveGlossary)
+                          : onGlossaryLoaded?.(effectiveGlossary)
+                      }
                     >
                       {t('Retry')}
                     </Button>

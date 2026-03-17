@@ -9,12 +9,22 @@
  * as metadata. Polar's meter (Max aggregation on `strings_count`)
  * uses the peak value per billing period for invoicing.
  *
+ * Each event also includes `_cost` metadata for Polar Cost Insights,
+ * enabling per-customer profit/margin tracking.
+ *
  * Uses the Supabase service role key to bypass RLS for reads.
  */
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const POLAR_API_URL = 'https://api.polar.sh/v1';
+
+/**
+ * Estimated infrastructure cost per 1,000 strings stored per month (USD cents).
+ * Accounts for Supabase database storage, compute, and bandwidth overhead.
+ * Used by Polar Cost Insights for per-customer margin tracking.
+ */
+const COST_PER_1K_STRINGS_CENTS = 0.2;
 
 interface FlexSubscriber {
   user_id: string;
@@ -75,16 +85,24 @@ Deno.serve(async (req) => {
     stringsByUser.set(p.owner_id, current + (p.stats_total ?? 0));
   }
 
-  // 3. Build Polar events
+  // 3. Build Polar events with Cost Insights metadata
   const events = (flexSubs as FlexSubscriber[])
     .filter((s) => s.user_id)
-    .map((s) => ({
-      name: 'strings_stored',
-      externalCustomerId: s.user_id,
-      metadata: {
-        strings_count: stringsByUser.get(s.user_id) ?? 0,
-      },
-    }));
+    .map((s) => {
+      const stringsCount = stringsByUser.get(s.user_id) ?? 0;
+      const costCents = (stringsCount / 1000) * COST_PER_1K_STRINGS_CENTS;
+      return {
+        name: 'strings_stored',
+        externalCustomerId: s.user_id,
+        metadata: {
+          strings_count: stringsCount,
+          _cost: {
+            amount: costCents,
+            currency: 'usd',
+          },
+        },
+      };
+    });
 
   if (events.length === 0) {
     console.log('No events to report');

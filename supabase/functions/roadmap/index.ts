@@ -145,8 +145,14 @@ async function fetchRepoIssues(
 
 async function fetchRoadmapIssues(): Promise<RoadmapIssue[]> {
   const token = Deno.env.get('GITHUB_TOKEN')?.trim();
-  const owner = Deno.env.get('ROADMAP_GITHUB_OWNER')?.trim() || DEFAULT_GITHUB_OWNER;
-  const repo = Deno.env.get('ROADMAP_GITHUB_REPO')?.trim() || DEFAULT_GITHUB_REPO;
+  const owner =
+    Deno.env.get('ROADMAP_GITHUB_OWNER')?.trim() ||
+    Deno.env.get('GITHUB_OWNER')?.trim() ||
+    DEFAULT_GITHUB_OWNER;
+  const repo =
+    Deno.env.get('ROADMAP_GITHUB_REPO')?.trim() ||
+    Deno.env.get('GITHUB_REPO')?.trim() ||
+    DEFAULT_GITHUB_REPO;
 
   // Fetch from both public and private repos in parallel
   const [publicIssues, privateIssues] = await Promise.all([
@@ -160,7 +166,20 @@ async function fetchRoadmapIssues(): Promise<RoadmapIssue[]> {
   const publicTitles = new Set(publicIssues.map((i) => i.title.toLowerCase()));
   const uniquePrivate = privateIssues
     .filter((i) => !publicTitles.has(i.title.toLowerCase()))
-    .map((i) => ({ ...i, url: '', labels: [] })); // Strip URLs and labels — private repo is not publicly accessible
+    .map((i) => ({
+      // Only expose title and state from private repo — everything else is redacted
+      number: i.number,
+      title: i.title,
+      state: i.state,
+      goal: '',
+      tasksTotal: 0,
+      tasksDone: 0,
+      labels: [],
+      reactions: 0,
+      updatedAt: i.updatedAt,
+      createdAt: i.createdAt,
+      url: '',
+    }));
 
   return [...publicIssues, ...uniquePrivate];
 }

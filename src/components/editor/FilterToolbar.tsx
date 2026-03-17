@@ -373,7 +373,7 @@ export function FilterToolbar({ mode = 'edit' }: { mode?: 'edit' | 'review' }) {
         : null;
 
   return (
-    <Group justify="space-between" align="center" wrap="wrap" gap="sm">
+    <Group data-tour="filter-toolbar" justify="space-between" align="center" wrap="wrap" gap="sm">
       {/* Left: Search + Clear */}
       <Group gap="sm" wrap="nowrap" style={{ flex: 1, minWidth: 200 }}>
         <TextInput

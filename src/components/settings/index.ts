@@ -25,3 +25,5 @@ export { BillingSection } from './BillingSection';
 export { DeleteAccountSection } from './DeleteAccountSection';
 
 export { DataExportSection } from './DataExportSection';
+
+export { NotificationsSection } from './NotificationsSection';

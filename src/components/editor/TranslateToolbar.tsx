@@ -63,6 +63,13 @@ import {
 } from '@/lib/translation/settings';
 import { shouldAutoTranslateEntry } from './translate-utils';
 import { getTranslationStatus } from '@/types';
+import { getFlagEmoji } from '@/lib/flags';
+
+/** Prepend flag emoji to a language label if a mapping exists. */
+function withFlag(code: string, label: string): string {
+  const flag = getFlagEmoji(code);
+  return flag ? `${flag} ${label}` : label;
+}
 
 const MotionDiv = motion.div;
 const MotionStack = motion.create(Stack);
@@ -836,6 +843,7 @@ export function TranslateToolbar({
 
         {mode === 'edit' && (
           <Group
+            data-tour="language-selectors"
             justify="space-between"
             align={isMobile ? 'stretch' : 'center'}
             wrap="wrap"
@@ -848,7 +856,10 @@ export function TranslateToolbar({
                     {t('From')}
                   </Text>
                   <Select
-                    data={SOURCE_LANGUAGES.map((opt) => ({ ...opt, label: t(opt.label) }))}
+                    data={SOURCE_LANGUAGES.map((opt) => ({
+                      ...opt,
+                      label: withFlag(opt.value, t(opt.label)),
+                    }))}
                     value={sourceLang}
                     onChange={handleSourceChange}
                     placeholder={t('Auto-detect')}
@@ -865,7 +876,10 @@ export function TranslateToolbar({
                     {t('To')}
                   </Text>
                   <Select
-                    data={TARGET_LANGUAGES.map((opt) => ({ ...opt, label: t(opt.label) }))}
+                    data={TARGET_LANGUAGES.map((opt) => ({
+                      ...opt,
+                      label: withFlag(opt.value, t(opt.label)),
+                    }))}
                     value={targetLang}
                     onChange={handleTargetChange}
                     placeholder={t('Select target...')}
@@ -889,7 +903,10 @@ export function TranslateToolbar({
                   {t('From')}
                 </Text>
                 <Select
-                  data={SOURCE_LANGUAGES.map((opt) => ({ ...opt, label: t(opt.label) }))}
+                  data={SOURCE_LANGUAGES.map((opt) => ({
+                    ...opt,
+                    label: withFlag(opt.value, t(opt.label)),
+                  }))}
                   value={sourceLang}
                   onChange={handleSourceChange}
                   placeholder={t('Auto-detect')}
@@ -909,7 +926,10 @@ export function TranslateToolbar({
                   {t('To')}
                 </Text>
                 <Select
-                  data={TARGET_LANGUAGES.map((opt) => ({ ...opt, label: t(opt.label) }))}
+                  data={TARGET_LANGUAGES.map((opt) => ({
+                    ...opt,
+                    label: withFlag(opt.value, t(opt.label)),
+                  }))}
                   value={targetLang}
                   onChange={handleTargetChange}
                   placeholder={t('Select target...')}
@@ -983,7 +1003,7 @@ export function TranslateToolbar({
                           </Button>
                         </motion.div>
                       </Tooltip>
-                      <motion.div {...buttonStates}>
+                      <motion.div {...buttonStates} data-tour="bulk-translate">
                         <Button
                           leftSection={<Zap size={16} />}
                           onClick={handleBulkTranslate}

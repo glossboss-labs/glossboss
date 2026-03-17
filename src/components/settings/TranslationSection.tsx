@@ -331,6 +331,7 @@ export function TranslationSection({
       />
 
       <Select
+        data-tour="settings-provider"
         label={t('Translation provider')}
         value={translationProvider}
         onChange={(value) => {
@@ -358,7 +359,7 @@ export function TranslationSection({
           {t(
             'Translation text is sent to your selected provider for processing. DeepL processes data in the EU. Azure Translator region depends on your configuration. Google Gemini processes data in the US. No translation data is stored by GlossBoss after the response is received.',
           )}{' '}
-          <Anchor href="/privacy/" target="_blank" size="xs">
+          <Anchor href="/privacy" target="_blank" size="xs">
             {t('Privacy Policy')}
           </Anchor>
         </Text>
@@ -407,6 +408,7 @@ export function TranslationSection({
           />
 
           <PasswordInput
+            data-tour="settings-api-key"
             label={t('API key')}
             placeholder={t('Enter your DeepL API key')}
             value={apiKey}
@@ -574,6 +576,7 @@ export function TranslationSection({
           />
 
           <PasswordInput
+            data-tour="settings-api-key"
             label={t('API key')}
             placeholder={t('Enter your Azure Translator API key')}
             value={azureApiKey}
@@ -715,6 +718,7 @@ export function TranslationSection({
           />
 
           <PasswordInput
+            data-tour="settings-api-key"
             label={t('API key')}
             placeholder={t('Enter your Gemini API key')}
             value={geminiApiKey}

@@ -16,6 +16,7 @@ import {
   Info,
   MessageSquare,
   Home,
+  CircleHelp,
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { buttonStates } from '@/lib/motion';
@@ -27,6 +28,7 @@ import { useProjectsStore } from '@/stores/projects-store';
 import { formatLimit } from '@/lib/billing/limits';
 import { PlanBadge } from '@/components/billing/PlanBadge';
 import { FeedbackModal } from '@/components/feedback';
+import { resetTourCompletion } from '@/hooks/use-editor-tour';
 
 export function UserMenu() {
   const { t } = useTranslation();
@@ -120,6 +122,22 @@ export function UserMenu() {
           >
             {t('Share feedback')}
           </Menu.Item>
+          <Menu.Item
+            component={Link}
+            to="/editor?tour=1"
+            leftSection={<CircleHelp size={14} />}
+            onClick={() => resetTourCompletion()}
+          >
+            {t('Editor tour')}
+          </Menu.Item>
+          <Menu.Item
+            component={Link}
+            to="/settings?tour=settings&tab=translation"
+            leftSection={<CircleHelp size={14} />}
+            onClick={() => resetTourCompletion()}
+          >
+            {t('Settings tour')}
+          </Menu.Item>
 
           <Menu.Divider />
 
@@ -135,7 +153,7 @@ export function UserMenu() {
           </Menu.Item>
           <Menu.Item
             component="a"
-            href="/license/"
+            href="/license"
             target="_blank"
             rel="noopener noreferrer"
             leftSection={<Info size={14} />}
@@ -144,7 +162,7 @@ export function UserMenu() {
           </Menu.Item>
           <Menu.Item
             component="a"
-            href="/terms/"
+            href="/terms"
             target="_blank"
             rel="noopener noreferrer"
             leftSection={<Info size={14} />}
@@ -153,7 +171,7 @@ export function UserMenu() {
           </Menu.Item>
           <Menu.Item
             component="a"
-            href="/privacy/"
+            href="/privacy"
             target="_blank"
             rel="noopener noreferrer"
             leftSection={<Info size={14} />}
