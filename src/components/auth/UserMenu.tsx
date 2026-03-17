@@ -124,11 +124,19 @@ export function UserMenu() {
           </Menu.Item>
           <Menu.Item
             component={Link}
-            to="/?tour=1"
+            to="/editor?tour=1"
             leftSection={<CircleHelp size={14} />}
             onClick={() => resetTourCompletion()}
           >
-            {t('Take a tour')}
+            {t('Editor tour')}
+          </Menu.Item>
+          <Menu.Item
+            component={Link}
+            to="/settings?tour=settings&tab=translation"
+            leftSection={<CircleHelp size={14} />}
+            onClick={() => resetTourCompletion()}
+          >
+            {t('Settings tour')}
           </Menu.Item>
 
           <Menu.Divider />

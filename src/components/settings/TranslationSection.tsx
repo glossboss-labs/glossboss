@@ -331,6 +331,7 @@ export function TranslationSection({
       />
 
       <Select
+        data-tour="settings-provider"
         label={t('Translation provider')}
         value={translationProvider}
         onChange={(value) => {
@@ -407,6 +408,7 @@ export function TranslationSection({
           />
 
           <PasswordInput
+            data-tour="settings-api-key"
             label={t('API key')}
             placeholder={t('Enter your DeepL API key')}
             value={apiKey}
@@ -574,6 +576,7 @@ export function TranslationSection({
           />
 
           <PasswordInput
+            data-tour="settings-api-key"
             label={t('API key')}
             placeholder={t('Enter your Azure Translator API key')}
             value={azureApiKey}
@@ -715,6 +718,7 @@ export function TranslationSection({
           />
 
           <PasswordInput
+            data-tour="settings-api-key"
             label={t('API key')}
             placeholder={t('Enter your Gemini API key')}
             value={geminiApiKey}

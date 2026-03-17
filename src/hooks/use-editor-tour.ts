@@ -1,12 +1,13 @@
 /**
- * useEditorTour — guided tour of the GlossBoss editor using driver.js.
+ * Guided tour hooks using driver.js.
  *
- * Shows a tooltip-based walkthrough for first-time users. Two modes:
- * - Empty editor: highlights upload options
+ * Three tours:
+ * - Empty editor: highlights upload options for first-time visitors
  * - Loaded editor: walks through the full editing workflow
+ * - Settings: guides users through translation provider setup
  *
- * Completion is persisted in localStorage. Re-trigger via the returned
- * `startTour()` callback (wired to the avatar menu and empty state).
+ * Each tour has its own localStorage key. Re-trigger via the returned
+ * `startTour()` callback or by navigating with ?tour=1 / ?tour=settings.
  */
 
 import { useCallback, useEffect, useRef } from 'react';
@@ -14,36 +15,50 @@ import { driver, type Config, type DriveStep } from 'driver.js';
 import 'driver.js/dist/driver.css';
 import { useTranslation } from '@/lib/app-language';
 
-const TOUR_STORAGE_KEY = 'glossboss-editor-tour-completed';
+/* ------------------------------------------------------------------ */
+/*  Persistence helpers                                                */
+/* ------------------------------------------------------------------ */
 
-/** Check if the tour has been completed before. */
-function isTourCompleted(): boolean {
+function isTourDone(key: string): boolean {
   try {
-    return localStorage.getItem(TOUR_STORAGE_KEY) === '1';
+    return localStorage.getItem(key) === '1';
   } catch {
     return false;
   }
 }
 
-/** Mark the tour as completed. */
-function markTourCompleted(): void {
+function markTourDone(key: string): void {
   try {
-    localStorage.setItem(TOUR_STORAGE_KEY, '1');
+    localStorage.setItem(key, '1');
   } catch {
-    // localStorage unavailable — ignore
+    // localStorage unavailable
   }
 }
 
-/** Reset tour completion (for re-triggering). */
-export function resetTourCompletion(): void {
+/** Reset one or all tour completion flags. */
+export function resetTourCompletion(key?: string): void {
   try {
-    localStorage.removeItem(TOUR_STORAGE_KEY);
+    if (key) {
+      localStorage.removeItem(key);
+    } else {
+      localStorage.removeItem(EDITOR_TOUR_KEY);
+      localStorage.removeItem(SETTINGS_TOUR_KEY);
+    }
   } catch {
-    // localStorage unavailable — ignore
+    // localStorage unavailable
   }
 }
 
-function getEmptySteps(t: (key: string, vars?: Record<string, unknown>) => string): DriveStep[] {
+const EDITOR_TOUR_KEY = 'glossboss-editor-tour-completed';
+const SETTINGS_TOUR_KEY = 'glossboss-settings-tour-completed';
+
+/* ------------------------------------------------------------------ */
+/*  Step definitions                                                   */
+/* ------------------------------------------------------------------ */
+
+type T = (key: string, vars?: Record<string, unknown>) => string;
+
+function getEmptySteps(t: T): DriveStep[] {
   return [
     {
       element: '[data-tour="upload-area"]',
@@ -79,7 +94,7 @@ function getEmptySteps(t: (key: string, vars?: Record<string, unknown>) => strin
   ];
 }
 
-function getEditorSteps(t: (key: string, vars?: Record<string, unknown>) => string): DriveStep[] {
+function getEditorSteps(t: T): DriveStep[] {
   return [
     {
       element: '[data-tour="file-menu"]',
@@ -146,85 +161,196 @@ function getEditorSteps(t: (key: string, vars?: Record<string, unknown>) => stri
   ];
 }
 
+function getSettingsSteps(t: T): DriveStep[] {
+  return [
+    {
+      element: '[data-tour="settings-tabs"]',
+      popover: {
+        title: t('Settings tabs'),
+        description: t(
+          'All your preferences in one place. Start with Translation to set up AI-powered translation.',
+        ),
+        side: 'right',
+        align: 'start',
+      },
+    },
+    {
+      element: '[data-tour="settings-provider"]',
+      popover: {
+        title: t('Choose a provider'),
+        description: t(
+          'Pick DeepL, Azure Translator, or Google Gemini. Each has a free tier — bring your own API key.',
+        ),
+        side: 'bottom',
+        align: 'start',
+      },
+    },
+    {
+      element: '[data-tour="settings-api-key"]',
+      popover: {
+        title: t('Enter your API key'),
+        description: t(
+          'Paste your provider API key here. Use "Test connection" to verify it works.',
+        ),
+        side: 'bottom',
+        align: 'start',
+      },
+    },
+    {
+      element: '[data-tour="settings-glossary-tab"]',
+      popover: {
+        title: t('Glossary settings'),
+        description: t(
+          'Load glossaries to enforce consistent terminology across all translations.',
+        ),
+        side: 'right',
+        align: 'center',
+      },
+    },
+    {
+      element: '[data-tour="settings-display-tab"]',
+      popover: {
+        title: t('Display preferences'),
+        description: t(
+          'Customize the editor layout: container width, visible columns, and navigation behavior.',
+        ),
+        side: 'right',
+        align: 'center',
+      },
+    },
+    {
+      element: '[data-tour="settings-backup-tab"]',
+      popover: {
+        title: t('Backup and restore'),
+        description: t(
+          'Export your settings as a JSON file or import from a backup. Manage translation memory here.',
+        ),
+        side: 'right',
+        align: 'center',
+      },
+    },
+  ];
+}
+
+/* ------------------------------------------------------------------ */
+/*  Generic tour runner                                                */
+/* ------------------------------------------------------------------ */
+
+function runTour(
+  steps: DriveStep[],
+  storageKey: string,
+  t: T,
+  driverRef: React.MutableRefObject<ReturnType<typeof driver> | null>,
+): void {
+  if (driverRef.current) {
+    driverRef.current.destroy();
+  }
+
+  const availableSteps = steps.filter((step) => {
+    if (!step.element) return true;
+    const selector = typeof step.element === 'string' ? step.element : null;
+    return selector ? document.querySelector(selector) !== null : true;
+  });
+
+  if (availableSteps.length === 0) return;
+
+  const config: Config = {
+    showProgress: true,
+    animate: true,
+    smoothScroll: true,
+    allowClose: true,
+    stagePadding: 8,
+    stageRadius: 8,
+    popoverOffset: 12,
+    nextBtnText: t('Next'),
+    prevBtnText: t('Back'),
+    doneBtnText: t('Done'),
+    progressText: t('Step {{current}} of {{total}}'),
+    onDestroyed: () => {
+      markTourDone(storageKey);
+      driverRef.current = null;
+    },
+    steps: availableSteps,
+  };
+
+  const d = driver(config);
+  driverRef.current = d;
+  d.drive();
+}
+
+/* ------------------------------------------------------------------ */
+/*  useEditorTour                                                      */
+/* ------------------------------------------------------------------ */
+
 interface UseEditorTourOptions {
-  /** Whether a file is currently loaded in the editor. */
   hasFile: boolean;
-  /** Whether to auto-start the tour on first visit. Default: true. */
   autoStart?: boolean;
 }
 
-interface UseEditorTourReturn {
-  /** Start the tour manually (e.g. from a menu item). */
+interface UseTourReturn {
   startTour: () => void;
-  /** Whether the tour has been completed before. */
   completed: boolean;
 }
 
-export function useEditorTour({
-  hasFile,
-  autoStart = true,
-}: UseEditorTourOptions): UseEditorTourReturn {
+export function useEditorTour({ hasFile, autoStart = true }: UseEditorTourOptions): UseTourReturn {
   const { t } = useTranslation();
   const driverRef = useRef<ReturnType<typeof driver> | null>(null);
   const hasAutoStarted = useRef(false);
-
-  const completed = isTourCompleted();
+  const completed = isTourDone(EDITOR_TOUR_KEY);
 
   const startTour = useCallback(() => {
-    // Destroy previous instance if any
-    if (driverRef.current) {
-      driverRef.current.destroy();
-    }
-
     const steps = hasFile ? getEditorSteps(t) : getEmptySteps(t);
-
-    // Filter to only steps whose elements exist in the DOM
-    const availableSteps = steps.filter((step) => {
-      if (!step.element) return true;
-      const selector = typeof step.element === 'string' ? step.element : null;
-      return selector ? document.querySelector(selector) !== null : true;
-    });
-
-    if (availableSteps.length === 0) return;
-
-    const config: Config = {
-      showProgress: true,
-      animate: true,
-      smoothScroll: true,
-      allowClose: true,
-      stagePadding: 8,
-      stageRadius: 8,
-      popoverOffset: 12,
-      nextBtnText: t('Next'),
-      prevBtnText: t('Back'),
-      doneBtnText: t('Done'),
-      progressText: t('Step {{current}} of {{total}}'),
-      onDestroyed: () => {
-        markTourCompleted();
-        driverRef.current = null;
-      },
-      steps: availableSteps,
-    };
-
-    const d = driver(config);
-    driverRef.current = d;
-    d.drive();
+    runTour(steps, EDITOR_TOUR_KEY, t, driverRef);
   }, [hasFile, t]);
 
-  // Auto-start on first visit when the editor is ready
   useEffect(() => {
     if (!autoStart || completed || hasAutoStarted.current) return;
-
-    // Small delay to let the DOM settle after render
     const timer = setTimeout(() => {
       hasAutoStarted.current = true;
       startTour();
     }, 800);
-
     return () => clearTimeout(timer);
   }, [autoStart, completed, startTour]);
 
-  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (driverRef.current) {
+        driverRef.current.destroy();
+        driverRef.current = null;
+      }
+    };
+  }, []);
+
+  return { startTour, completed };
+}
+
+/* ------------------------------------------------------------------ */
+/*  useSettingsTour                                                     */
+/* ------------------------------------------------------------------ */
+
+interface UseSettingsTourOptions {
+  autoStart?: boolean;
+}
+
+export function useSettingsTour({ autoStart = true }: UseSettingsTourOptions = {}): UseTourReturn {
+  const { t } = useTranslation();
+  const driverRef = useRef<ReturnType<typeof driver> | null>(null);
+  const hasAutoStarted = useRef(false);
+  const completed = isTourDone(SETTINGS_TOUR_KEY);
+
+  const startTour = useCallback(() => {
+    runTour(getSettingsSteps(t), SETTINGS_TOUR_KEY, t, driverRef);
+  }, [t]);
+
+  useEffect(() => {
+    if (!autoStart || completed || hasAutoStarted.current) return;
+    const timer = setTimeout(() => {
+      hasAutoStarted.current = true;
+      startTour();
+    }, 600);
+    return () => clearTimeout(timer);
+  }, [autoStart, completed, startTour]);
+
   useEffect(() => {
     return () => {
       if (driverRef.current) {

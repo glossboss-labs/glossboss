@@ -5,7 +5,7 @@
  * Tab state persisted in the URL via ?tab= search parameter.
  */
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router';
 import { Stack, Title, Tabs, useMantineTheme, Box } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
@@ -25,6 +25,7 @@ import { sectionVariants } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
 import { trackEvent } from '@/lib/analytics';
 import { useAuth } from '@/hooks/use-auth';
+import { useSettingsTour } from '@/hooks/use-editor-tour';
 import {
   AccountSection,
   TranslationSection,
@@ -49,6 +50,21 @@ export default function Settings() {
   const isDevelopment = import.meta.env.DEV;
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = searchParams.get('tab') || (isAuthenticated ? 'account' : 'translation');
+
+  // Settings tour — auto-starts on first visit when on the translation tab
+  const { startTour } = useSettingsTour({
+    autoStart: activeTab === 'translation',
+  });
+
+  // Handle ?tour=settings query param
+  const tourTriggered = useRef(false);
+  useEffect(() => {
+    if (searchParams.get('tour') === 'settings' && !tourTriggered.current) {
+      tourTriggered.current = true;
+      setSearchParams({ tab: 'translation' }, { replace: true });
+      setTimeout(() => startTour(), 400);
+    }
+  }, [searchParams, setSearchParams, startTour]);
 
   useEffect(() => {
     trackEvent('settings_page_viewed', { section: activeTab });
@@ -80,7 +96,7 @@ export default function Settings() {
               panel: { flex: 1, minWidth: 0 },
             }}
           >
-            <Tabs.List>
+            <Tabs.List data-tour="settings-tabs">
               {isAuthenticated && (
                 <Tabs.Tab value="account" leftSection={<User size={14} />}>
                   {t('Account')}
@@ -97,16 +113,28 @@ export default function Settings() {
               <Tabs.Tab value="speech" leftSection={<Volume2 size={14} />}>
                 {t('Speech')}
               </Tabs.Tab>
-              <Tabs.Tab value="glossary" leftSection={<BookOpen size={14} />}>
+              <Tabs.Tab
+                value="glossary"
+                leftSection={<BookOpen size={14} />}
+                data-tour="settings-glossary-tab"
+              >
                 {t('Glossary')}
               </Tabs.Tab>
               <Tabs.Tab value="shortcuts" leftSection={<Keyboard size={14} />}>
                 {t('Shortcuts')}
               </Tabs.Tab>
-              <Tabs.Tab value="display" leftSection={<Monitor size={14} />}>
+              <Tabs.Tab
+                value="display"
+                leftSection={<Monitor size={14} />}
+                data-tour="settings-display-tab"
+              >
                 {t('Display')}
               </Tabs.Tab>
-              <Tabs.Tab value="backup" leftSection={<Download size={14} />}>
+              <Tabs.Tab
+                value="backup"
+                leftSection={<Download size={14} />}
+                data-tour="settings-backup-tab"
+              >
                 {t('Backup')}
               </Tabs.Tab>
               {isDevelopment && (
