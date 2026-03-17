@@ -12,6 +12,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { BorderBeam } from '@/components/magicui/border-beam';
+import { msgid, useTranslation } from '@/lib/app-language';
 
 // ---------------------------------------------------------------------------
 // Demo data
@@ -71,9 +72,9 @@ const STATUS_STYLE = {
 } as const;
 
 const STATUS_LABEL = {
-  translated: 'TRANSLATED',
-  fuzzy: 'FUZZY',
-  untranslated: 'UNTRANSLATED',
+  translated: msgid('TRANSLATED'),
+  fuzzy: msgid('FUZZY'),
+  untranslated: msgid('UNTRANSLATED'),
 } as const;
 
 // ---------------------------------------------------------------------------
@@ -102,6 +103,7 @@ function useReducedMotion() {
 // ---------------------------------------------------------------------------
 
 function DemoSpeakButton({ text, lang }: { text: string; lang: string }) {
+  const { t } = useTranslation();
   const [playing, setPlaying] = useState(false);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
@@ -142,7 +144,9 @@ function DemoSpeakButton({ text, lang }: { text: string; lang: string }) {
       type="button"
       onClick={handleClick}
       className="mt-0.5 shrink-0 text-text-tertiary/40 transition-colors hover:text-text-secondary"
-      aria-label={playing ? 'Stop speaking' : `Listen to "${text.slice(0, 30)}"`}
+      aria-label={
+        playing ? t('Stop speaking') : t('Listen to "{{text}}"', { text: text.slice(0, 30) })
+      }
     >
       {playing ? (
         <Square className="h-3.5 w-3.5 fill-current" />
@@ -158,6 +162,7 @@ function DemoSpeakButton({ text, lang }: { text: string; lang: string }) {
 // ---------------------------------------------------------------------------
 
 export function ProductShowcase() {
+  const { t } = useTranslation();
   const reducedMotion = useReducedMotion();
   const [translatedIds, setTranslatedIds] = useState<Set<number>>(new Set());
   const [animatingIds, setAnimatingIds] = useState<Set<number>>(new Set());
@@ -248,14 +253,15 @@ export function ProductShowcase() {
         className="mx-auto mb-8 max-w-2xl text-center"
       >
         <p className="mb-3 text-xs font-medium uppercase tracking-widest text-text-tertiary">
-          See it in action
+          {t('See it in action')}
         </p>
         <h2 className="text-2xl font-semibold tracking-tight text-text-primary sm:text-3xl">
-          Click translate, watch your strings fill in
+          {t('Click translate, watch your strings fill in')}
         </h2>
         <p className="mt-3 text-sm text-text-secondary">
-          Try the interactive demo below. Click the translate icon on any untranslated row, or
-          translate them all at once.
+          {t(
+            'Try the interactive demo below. Click the translate icon on any untranslated row, or translate them all at once.',
+          )}
         </p>
       </motion.div>
 
@@ -281,7 +287,7 @@ export function ProductShowcase() {
               to="/editor"
               className="flex items-center gap-1 text-[11px] text-text-tertiary transition-colors hover:text-text-secondary"
             >
-              Try it
+              {t('Try it')}
               <ExternalLink className="h-3 w-3" />
             </Link>
           </div>
@@ -292,7 +298,9 @@ export function ProductShowcase() {
             <span className="rounded bg-accent/15 px-1.5 py-0.5 text-[10px] font-semibold text-accent">
               NL
             </span>
-            <span className="ml-auto text-xs text-text-tertiary">{stats.total} entries</span>
+            <span className="ml-auto text-xs text-text-tertiary">
+              {t('{{count}} entries', { count: stats.total })}
+            </span>
           </div>
 
           {/* ── Edit workspace ─────────────────────────────── */}
@@ -302,13 +310,13 @@ export function ProductShowcase() {
               <div className="flex flex-1 items-center gap-1.5 rounded-md border border-border-subtle bg-surface-0 px-2.5 py-1.5 sm:max-w-[280px]">
                 <Search className="h-3.5 w-3.5 text-text-tertiary" />
                 <span className="text-xs text-text-tertiary">
-                  Search source, translation, context...
+                  {t('Search source, translation, context...')}
                 </span>
               </div>
 
               <div className="flex items-center gap-1.5 text-xs text-text-tertiary">
                 <Filter className="h-3 w-3" />
-                <span>Filters</span>
+                <span>{t('Filters')}</span>
               </div>
 
               {/* Progress */}
@@ -332,17 +340,17 @@ export function ProductShowcase() {
 
           {/* ── Translate toolbar ──────────────────────────── */}
           <div className="flex flex-wrap items-center gap-2 border-b border-border-subtle px-4 py-2">
-            <span className="text-xs text-text-tertiary">From</span>
+            <span className="text-xs text-text-tertiary">{t('From')}</span>
             <span className="rounded-md border border-border-subtle bg-surface-1 px-2 py-1 text-xs text-text-secondary">
-              Auto-detect
+              {t('Auto-detect')}
             </span>
             <ArrowRight className="h-3 w-3 text-text-tertiary" />
-            <span className="text-xs text-text-tertiary">To</span>
+            <span className="text-xs text-text-tertiary">{t('To')}</span>
             <span className="rounded-md border border-border-subtle bg-surface-1 px-2 py-1 text-xs text-text-secondary">
-              Dutch
+              {t('Dutch')}
             </span>
             <span className="rounded bg-surface-2 px-1.5 py-0.5 text-[10px] font-medium text-text-tertiary">
-              DETECTED: NL
+              {t('DETECTED: NL')}
             </span>
 
             <div className="ml-auto">
@@ -353,7 +361,7 @@ export function ProductShowcase() {
                   className="flex items-center gap-1.5 rounded-md border border-border-subtle px-3 py-1.5 text-xs font-medium text-text-secondary transition-colors hover:bg-surface-2"
                 >
                   <RotateCcw className="h-3 w-3" />
-                  Reset demo
+                  {t('Reset demo')}
                 </button>
               ) : (
                 <button
@@ -362,7 +370,7 @@ export function ProductShowcase() {
                   className="flex items-center gap-1.5 rounded-md bg-status-translated/15 px-3 py-1.5 text-xs font-medium text-status-translated transition-colors hover:bg-status-translated/25"
                 >
                   <Zap className="h-3 w-3" />
-                  Translate {stats.untranslatedLeft} untranslated
+                  {t('Translate {{count}} untranslated', { count: stats.untranslatedLeft })}
                 </button>
               )}
             </div>
@@ -386,13 +394,13 @@ export function ProductShowcase() {
                     </div>
                   </th>
                   <th className="hidden px-3 py-2.5 text-[11px] font-medium tracking-[0.04em] text-text-tertiary sm:table-cell">
-                    STATUS
+                    {t('STATUS')}
                   </th>
                   <th className="px-3 py-2.5 text-[11px] font-medium tracking-[0.04em] text-text-tertiary">
-                    SOURCE STRING
+                    {t('SOURCE STRING')}
                   </th>
                   <th className="px-3 py-2.5 text-[11px] font-medium tracking-[0.04em] text-text-tertiary">
-                    TRANSLATED STRING
+                    {t('TRANSLATED STRING')}
                   </th>
                 </tr>
               </thead>
@@ -435,7 +443,7 @@ export function ProductShowcase() {
                         <span
                           className={`inline-block rounded-full px-2.5 py-1 text-[10px] font-bold leading-none tracking-wide text-white ${STATUS_STYLE[status]}`}
                         >
-                          {STATUS_LABEL[status]}
+                          {t(STATUS_LABEL[status])}
                         </span>
                       </td>
 
@@ -481,7 +489,7 @@ export function ProductShowcase() {
                               }}
                               disabled={animatingIds.has(entry.id)}
                               className="mt-0.5 shrink-0 text-accent transition-colors hover:text-accent/80 disabled:opacity-30"
-                              aria-label={`Translate "${entry.source}"`}
+                              aria-label={t('Translate "{{text}}"', { text: entry.source })}
                             >
                               <Zap className="h-3.5 w-3.5" />
                             </button>
@@ -500,9 +508,12 @@ export function ProductShowcase() {
           {/* ── Footer ─────────────────────────────────────── */}
           <div className="flex items-center justify-between border-t border-border-subtle px-4 py-1.5">
             <span className="text-[10px] text-text-tertiary">
-              Showing {stats.total} of {stats.total}
+              {t('Showing {{shown}} of {{total}}', {
+                shown: stats.total,
+                total: stats.total,
+              })}
             </span>
-            <span className="text-[10px] text-text-tertiary">Page 1 of 1</span>
+            <span className="text-[10px] text-text-tertiary">{t('Page 1 of 1')}</span>
           </div>
 
           <BorderBeam

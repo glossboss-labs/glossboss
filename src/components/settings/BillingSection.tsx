@@ -218,6 +218,8 @@ function PlanCard({
   upgrading,
   children,
 }: PlanCardProps) {
+  const { t } = useTranslation();
+
   return (
     <Paper
       p="md"
@@ -239,7 +241,7 @@ function PlanCard({
           </Text>
           {isCurrent && (
             <Badge variant="light" color={color} size="xs">
-              Current
+              {t('Current')}
             </Badge>
           )}
         </Group>
@@ -284,7 +286,7 @@ function PlanCard({
           leftSection={isCurrent ? <Check size={14} /> : <Zap size={14} />}
           size="sm"
         >
-          {isCurrent ? 'Current plan' : ctaLabel}
+          {isCurrent ? t('Current plan') : ctaLabel}
         </Button>
       </Stack>
     </Paper>

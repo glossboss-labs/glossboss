@@ -21,7 +21,7 @@ const footerLinks = {
     title: msgid('Resources'),
     links: [
       { label: msgid('Editor'), href: '/editor' },
-      { label: 'GitHub', href: 'https://github.com/glossboss-labs/glossboss' },
+      { label: msgid('GitHub'), href: 'https://github.com/glossboss-labs/glossboss' },
     ],
   },
   legal: {
@@ -95,13 +95,13 @@ export function LandingFooter({ currentLang = 'en' }: { currentLang?: AppLanguag
 
         <div className="mt-16 flex flex-col items-start justify-between gap-4 border-t border-border-subtle pt-8 sm:flex-row sm:items-center">
           <p className="text-sm text-text-tertiary">
-            &copy; {new Date().getFullYear()} GlossBoss Labs. {t('All rights reserved.')}
+            &copy; {new Date().getFullYear()} {t('GlossBoss Labs.')} {t('All rights reserved.')}
           </p>
 
           <LanguageSwitcher currentLang={currentLang} size="base" />
 
           {/* Crawlable language links for SEO (visually hidden) */}
-          <nav aria-label="Language" className="sr-only">
+          <nav aria-label={t('Language')} className="sr-only">
             {APP_LANGUAGE_OPTIONS.map((option) => (
               <Link key={option.value} to={langHref(option.value)}>
                 {option.label}

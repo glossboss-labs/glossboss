@@ -94,7 +94,7 @@ export function getPlanCatalogEntry(tier: PlanTier): PlanCatalogEntry | undefine
 
 /**
  * Format the monthly display price for a paid tier at a given billing interval.
- * Returns the string "€X.XX" — use this everywhere prices are shown to avoid
+ * Returns the string "€X.XX" - use this everywhere prices are shown to avoid
  * rounding discrepancies between the landing page and billing section.
  */
 export function formatMonthlyPrice(
