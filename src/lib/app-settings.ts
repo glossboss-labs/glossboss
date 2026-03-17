@@ -109,8 +109,20 @@ function isContainerWidth(value: unknown): value is ContainerWidth {
   return typeof value === 'string' && VALID_CONTAINER_WIDTHS.includes(value as ContainerWidth);
 }
 
+const VALID_PROVIDERS = new Set<string>([
+  'deepl',
+  'azure',
+  'gemini', // legacy — maps to 'google' on apply
+  'openai',
+  'anthropic',
+  'google',
+  'mistral',
+  'deepseek',
+  'custom',
+]);
+
 function isProvider(value: unknown): value is TranslationProviderId {
-  return value === 'deepl' || value === 'azure' || value === 'gemini';
+  return typeof value === 'string' && VALID_PROVIDERS.has(value);
 }
 
 function parsePreferences(value: unknown): AppSettingsPreferences {

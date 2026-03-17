@@ -13,8 +13,10 @@ import { getSupabaseClient } from '@/lib/supabase/client';
 import { getDeepLSettings, saveDeepLSettings } from '@/lib/deepl';
 import { getAzureSettings, saveAzureSettings } from '@/lib/azure';
 import { getGeminiSettings, saveGeminiSettings } from '@/lib/gemini';
+import { getLlmSettings, saveLlmSettings, LLM_PROVIDERS } from '@/lib/llm';
 import { getTtsSettings, saveTtsSettings } from '@/lib/tts';
 import { getTranslationProviderSettings, saveActiveTranslationProvider } from '@/lib/translation';
+import type { LlmProviderId } from '@/lib/translation/types';
 import { getAppLanguage, saveAppLanguage } from '@/lib/app-language';
 import { CONTAINER_WIDTH_KEY, type ContainerWidth } from '@/lib/container-width';
 import { NAV_SKIP_TRANSLATED_KEY } from '@/components/editor/EditorTable';
@@ -111,6 +113,22 @@ export function collectLocalSettings(includeCredentials: boolean = false): Cloud
   const speechEnabled = localStorage.getItem(SPEECH_ENABLED_KEY);
   const translateEnabled = localStorage.getItem(TRANSLATE_ENABLED_KEY);
 
+  // Collect LLM provider settings
+  const llmSettings: Record<
+    string,
+    { modelId: string; temperature: number; useProjectContext: boolean }
+  > = {};
+  for (const provider of LLM_PROVIDERS) {
+    const s = getLlmSettings(provider.id);
+    if (s.apiKey || s.modelId !== provider.defaultModel || s.useProjectContext) {
+      llmSettings[provider.id] = {
+        modelId: s.modelId,
+        temperature: s.temperature,
+        useProjectContext: s.useProjectContext,
+      };
+    }
+  }
+
   const payload: CloudSettingsPayload = {
     version: 1,
     updatedAt: new Date().toISOString(),
@@ -125,7 +143,9 @@ export function collectLocalSettings(includeCredentials: boolean = false): Cloud
       translationProvider: translation.provider,
       deepl: { apiType: deepl.apiType, formality: deepl.formality },
       azure: { region: azure.region, endpoint: azure.endpoint },
+      // Legacy gemini field for backward compat
       gemini: { modelId: gemini.modelId, useProjectContext: gemini.useProjectContext },
+      llm: Object.keys(llmSettings).length > 0 ? llmSettings : undefined,
     },
   };
 
@@ -175,11 +195,27 @@ export function applyCloudSettings(payload: CloudSettingsPayload): void {
     endpoint: providers.azure.endpoint,
   });
 
-  saveGeminiSettings({
-    apiKey: credentials?.gemini?.apiKey ?? currentGemini.apiKey,
-    modelId: providers.gemini.modelId,
-    useProjectContext: providers.gemini.useProjectContext,
-  });
+  // Legacy Gemini settings (backward compat)
+  if (providers.gemini) {
+    saveGeminiSettings({
+      apiKey: credentials?.gemini?.apiKey ?? currentGemini.apiKey,
+      modelId: providers.gemini.modelId,
+      useProjectContext: providers.gemini.useProjectContext,
+    });
+  }
+
+  // Unified LLM settings
+  if (providers.llm) {
+    for (const [id, settings] of Object.entries(providers.llm)) {
+      if (settings) {
+        saveLlmSettings(id as LlmProviderId, {
+          modelId: settings.modelId,
+          temperature: settings.temperature,
+          useProjectContext: settings.useProjectContext,
+        });
+      }
+    }
+  }
 
   if (credentials?.tts) {
     saveTtsSettings({

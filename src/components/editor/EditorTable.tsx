@@ -91,6 +91,7 @@ import {
   type TranslationMemoryScope,
 } from '@/lib/translation-memory';
 import { QA_RULE_LABELS, type QAEntryReport } from '@/lib/qa';
+import { getTranslationProviderLabel } from '@/lib/translation';
 
 /** localStorage key for skip-translated navigation setting */
 export const NAV_SKIP_TRANSLATED_KEY = 'glossboss-nav-skip-translated';
@@ -731,7 +732,7 @@ function SignalsOverviewCell({
   const qaErrors = qaReport?.errorCount ?? 0;
   const qaWarnings = qaReport?.warningCount ?? 0;
   const hasQaSignals = qaErrors > 0 || qaWarnings > 0;
-  const providerLabel = provider === 'gemini' ? 'Gemini' : provider === 'azure' ? 'Azure' : 'DeepL';
+  const providerLabel = getTranslationProviderLabel(provider);
 
   if (
     !isMT &&
@@ -983,8 +984,7 @@ function TranslationCell({
   const mtProvider = useEditorStore(
     (state) => state.machineTranslationMeta.get(entry.id)?.provider ?? 'deepl',
   );
-  const mtProviderLabel =
-    mtProvider === 'gemini' ? 'Gemini' : mtProvider === 'azure' ? 'Azure' : 'DeepL';
+  const mtProviderLabel = getTranslationProviderLabel(mtProvider);
   const signalsColumnHidden = useEditorStore((state) => !state.visibleColumns.has('signals'));
 
   const remoteLock = useCollaborationStore((s) => s.cellLocks.get(entry.id));
@@ -1045,7 +1045,7 @@ function TranslationCell({
       translatedText: string,
       meta?: {
         usedGlossary?: boolean;
-        provider?: 'deepl' | 'azure' | 'gemini';
+        provider?: string;
         glossaryMode?: 'native' | 'prompt' | 'none';
         contextUsed?: boolean;
       },
@@ -1063,7 +1063,7 @@ function TranslationCell({
       translatedText: string,
       meta?: {
         usedGlossary?: boolean;
-        provider?: 'deepl' | 'azure' | 'gemini';
+        provider?: string;
         glossaryMode?: 'native' | 'prompt' | 'none';
         contextUsed?: boolean;
       },

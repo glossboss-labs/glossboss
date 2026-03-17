@@ -29,7 +29,11 @@ export interface CloudSettingsProviders {
   translationProvider: TranslationProviderId;
   deepl: { apiType: DeepLApiType; formality: DeepLFormality };
   azure: { region: string; endpoint: string };
-  gemini: { modelId: string; useProjectContext: boolean };
+  /** @deprecated Use llm.google instead. Kept for backward-compat reads. */
+  gemini?: { modelId: string; useProjectContext: boolean };
+  llm?: Partial<
+    Record<string, { modelId: string; temperature: number; useProjectContext: boolean }>
+  >;
 }
 
 /** Opt-in only — API keys stored in the cloud. */

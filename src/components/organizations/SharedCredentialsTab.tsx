@@ -29,12 +29,17 @@ import {
   deleteSharedCredential,
 } from '@/lib/shared-credentials/api';
 import type { SharedCredentialRow, SharedCredentialProvider } from '@/lib/shared-credentials/types';
-import { getTranslationProviderLabel } from '@/lib/translation';
+import {
+  ALL_TRANSLATION_PROVIDERS,
+  getTranslationProviderLabel,
+  type TranslationProviderId,
+} from '@/lib/translation';
 
 const PROVIDER_OPTIONS: { value: SharedCredentialProvider; label: string }[] = [
-  { value: 'deepl', label: 'DeepL' },
-  { value: 'azure', label: 'Azure Translator' },
-  { value: 'gemini', label: 'Gemini' },
+  ...ALL_TRANSLATION_PROVIDERS.map((p) => ({
+    value: p as SharedCredentialProvider,
+    label: getTranslationProviderLabel(p),
+  })),
   { value: 'elevenlabs', label: 'ElevenLabs (TTS)' },
 ];
 
@@ -234,9 +239,7 @@ export function SharedCredentialsTab({ orgId, projectId, canManage }: SharedCred
                       <Badge variant="light" size="sm">
                         {cred.provider === 'elevenlabs'
                           ? 'ElevenLabs'
-                          : getTranslationProviderLabel(
-                              cred.provider as 'deepl' | 'azure' | 'gemini',
-                            )}
+                          : getTranslationProviderLabel(cred.provider as TranslationProviderId)}
                       </Badge>
                       <div>
                         <Text size="sm" fw={500}>

@@ -54,23 +54,17 @@ import {
   setAzurePersistEnabled,
 } from '@/lib/azure';
 import {
-  clearGeminiSettings,
-  getDefaultGeminiModel,
-  getGeminiClient,
-  getGeminiSettings,
-  isGeminiPersistEnabled,
-  saveGeminiSettings,
-  setGeminiPersistEnabled,
-} from '@/lib/gemini';
-import {
   getTranslationProviderSettings,
   getTranslationUsage,
   saveActiveTranslationProvider,
   hasProviderCredentials,
   type TranslationProviderId,
 } from '@/lib/translation';
+import { LLM_PROVIDERS } from '@/lib/llm';
 import { useTranslation } from '@/lib/app-language';
 import { trackEvent } from '@/lib/analytics';
+import { LlmProviderCard } from './LlmProviderCard';
+import { CustomProviderCard } from './CustomProviderCard';
 
 interface ConnectionResult {
   success: boolean;
@@ -118,15 +112,6 @@ export function TranslationSection({
   const [azureSaved, setAzureSaved] = useState(false);
   const [azureTestResult, setAzureTestResult] = useState<ConnectionResult | null>(null);
 
-  // ── Gemini state ──
-  const [geminiApiKey, setGeminiApiKey] = useState('');
-  const [geminiModelId, setGeminiModelId] = useState(getDefaultGeminiModel());
-  const [geminiUseProjectContext, setGeminiUseProjectContext] = useState(false);
-  const [geminiPersistKey, setGeminiPersistKey] = useState(() => isGeminiPersistEnabled());
-  const [geminiTesting, setGeminiTesting] = useState(false);
-  const [geminiSaved, setGeminiSaved] = useState(false);
-  const [geminiTestResult, setGeminiTestResult] = useState<ConnectionResult | null>(null);
-
   // Load all settings on mount
   useEffect(() => {
     setDefaultProvider(getTranslationProviderSettings().provider);
@@ -144,13 +129,6 @@ export function TranslationSection({
     setAzureEndpoint(az.endpoint);
     setAzurePersistKey(isAzurePersistEnabled());
     setAzureSaved(Boolean(az.apiKey.trim() && az.region.trim()));
-
-    const gm = getGeminiSettings();
-    setGeminiApiKey(gm.apiKey);
-    setGeminiModelId(gm.modelId);
-    setGeminiUseProjectContext(gm.useProjectContext);
-    setGeminiPersistKey(isGeminiPersistEnabled());
-    setGeminiSaved(Boolean(gm.apiKey.trim()));
   }, []);
 
   const handleSetDefault = useCallback(
@@ -259,62 +237,6 @@ export function TranslationSection({
     setAzureTestResult(null);
   }, []);
 
-  // ── Gemini handlers ──
-  const handleTestGemini = useCallback(async () => {
-    if (!geminiApiKey.trim()) {
-      setGeminiTestResult({ success: false, message: t('Please enter an API key') });
-      return;
-    }
-    setGeminiTesting(true);
-    setGeminiTestResult(null);
-    try {
-      saveGeminiSettings({
-        apiKey: geminiApiKey,
-        modelId: geminiModelId,
-        useProjectContext: geminiUseProjectContext,
-      });
-      await getGeminiClient().testKey();
-      const sessionUsage = getTranslationUsage('gemini');
-      setGeminiTestResult({
-        success: true,
-        message: t('API key is valid!'),
-        usage:
-          sessionUsage.characterCount > 0
-            ? { used: sessionUsage.characterCount, limit: 0 }
-            : undefined,
-      });
-      setGeminiSaved(true);
-    } catch (error) {
-      setGeminiTestResult({
-        success: false,
-        message: error instanceof Error ? error.message : t('Failed to connect'),
-      });
-      setGeminiSaved(false);
-    } finally {
-      setGeminiTesting(false);
-    }
-  }, [geminiApiKey, geminiModelId, geminiUseProjectContext, t]);
-
-  const handleSaveGemini = useCallback(() => {
-    saveGeminiSettings({
-      apiKey: geminiApiKey,
-      modelId: geminiModelId,
-      useProjectContext: geminiUseProjectContext,
-    });
-    setGeminiSaved(true);
-    setGeminiTestResult((c) => c ?? { success: true, message: t('Settings saved!') });
-  }, [geminiApiKey, geminiModelId, geminiUseProjectContext, t]);
-
-  const handleClearGemini = useCallback(() => {
-    clearGeminiSettings();
-    setGeminiApiKey('');
-    setGeminiModelId(getDefaultGeminiModel());
-    setGeminiUseProjectContext(false);
-    setGeminiPersistKey(false);
-    setGeminiSaved(false);
-    setGeminiTestResult(null);
-  }, []);
-
   // ── Provider card header (reusable) ──
   function ProviderCardHeader({
     provider,
@@ -370,7 +292,6 @@ export function TranslationSection({
 
   const deeplConfigured = hasProviderCredentials('deepl');
   const azureConfigured = hasProviderCredentials('azure');
-  const geminiConfigured = hasProviderCredentials('gemini');
 
   return (
     <Stack gap="md">
@@ -386,7 +307,7 @@ export function TranslationSection({
       <Alert color="gray" variant="light" icon={<Shield size={16} />}>
         <Text size="xs">
           {t(
-            'Translation text is sent to your selected provider for processing. DeepL processes data in the EU. Azure Translator region depends on your configuration. Google Gemini processes data in the US. No translation data is stored by GlossBoss after the response is received.',
+            'Translation text is sent to your selected provider for processing. Data processing regions vary by provider. No translation data is stored by GlossBoss after the response is received.',
           )}{' '}
           <Anchor href="/privacy" target="_blank" size="xs">
             {t('Privacy Policy')}
@@ -680,134 +601,25 @@ export function TranslationSection({
         </Collapse>
       </Paper>
 
-      {/* ── Gemini card ── */}
-      <Paper withBorder>
-        <ProviderCardHeader
-          provider="gemini"
-          label={t('Gemini')}
-          configured={geminiConfigured}
-          summary={geminiConfigured ? `${maskKey(geminiApiKey)} · ${geminiModelId}` : undefined}
+      {/* ── LLM provider cards ── */}
+      {LLM_PROVIDERS.map((provider) => (
+        <LlmProviderCard
+          key={provider.id}
+          provider={provider}
+          isDefault={defaultProvider === provider.id}
+          isExpanded={expandedCard === provider.id}
+          onToggle={() => toggleCard(provider.id)}
+          onSetDefault={() => handleSetDefault(provider.id)}
         />
-        <Collapse in={expandedCard === 'gemini'}>
-          <Divider />
-          <Stack gap="sm" p="md">
-            {defaultProvider !== 'gemini' && geminiConfigured && (
-              <Button
-                size="xs"
-                variant="light"
-                leftSection={<Star size={14} />}
-                onClick={() => handleSetDefault('gemini')}
-              >
-                {t('Set as default')}
-              </Button>
-            )}
+      ))}
 
-            <Text size="xs" c="dimmed">
-              {t('Gemini translates with AI and can use project source context.')}{' '}
-              <Anchor href="https://aistudio.google.com/apikey" target="_blank" size="xs">
-                {t('Get API key')} <ExternalLink size={10} />
-              </Anchor>
-            </Text>
-
-            <Switch
-              size="sm"
-              label={t('Remember API key across sessions')}
-              checked={geminiPersistKey}
-              onChange={(e) => {
-                setGeminiPersistKey(e.currentTarget.checked);
-                setGeminiPersistEnabled(e.currentTarget.checked);
-                setGeminiSaved(false);
-              }}
-            />
-
-            <PasswordInput
-              data-tour="settings-api-key"
-              label={t('API key')}
-              placeholder={t('Enter your Gemini API key')}
-              value={geminiApiKey}
-              onChange={(e) => {
-                setGeminiApiKey(e.currentTarget.value);
-                setGeminiSaved(false);
-                setGeminiTestResult(null);
-              }}
-              rightSection={
-                geminiSaved && geminiApiKey ? (
-                  <Tooltip label={t('Key saved')}>
-                    <Check size={16} color="var(--mantine-color-green-6)" />
-                  </Tooltip>
-                ) : null
-              }
-            />
-
-            <TextInput
-              size="sm"
-              label={t('Model')}
-              placeholder={getDefaultGeminiModel()}
-              value={geminiModelId}
-              onChange={(e) => {
-                setGeminiModelId(e.currentTarget.value);
-                setGeminiSaved(false);
-              }}
-            />
-
-            <Switch
-              size="sm"
-              label={t('Use project slug context when available')}
-              description={t(
-                'Gemini can use relevant source excerpts for the current project as extra translation context.',
-              )}
-              checked={geminiUseProjectContext}
-              onChange={(e) => {
-                setGeminiUseProjectContext(e.currentTarget.checked);
-                setGeminiSaved(false);
-              }}
-            />
-
-            <Group>
-              <Button
-                variant="light"
-                size="xs"
-                onClick={handleTestGemini}
-                loading={geminiTesting}
-                disabled={!geminiApiKey.trim()}
-              >
-                {t('Test connection')}
-              </Button>
-              <Button
-                size="xs"
-                onClick={handleSaveGemini}
-                disabled={!geminiApiKey.trim() || geminiSaved}
-              >
-                {t('Save')}
-              </Button>
-              {geminiApiKey && (
-                <Button variant="subtle" color="red" size="xs" onClick={handleClearGemini}>
-                  {t('Remove')}
-                </Button>
-              )}
-            </Group>
-
-            {geminiTestResult && (
-              <Alert
-                size="sm"
-                color={geminiTestResult.success ? 'green' : 'red'}
-                icon={geminiTestResult.success ? <Check size={14} /> : <AlertCircle size={14} />}
-              >
-                <Stack gap="xs">
-                  <Text size="xs">{geminiTestResult.message}</Text>
-                  {geminiTestResult.usage && (
-                    <Text size="xs" c="dimmed">
-                      {t('Session usage: {{count}} characters', {
-                        count: geminiTestResult.usage.used.toLocaleString(),
-                      })}
-                    </Text>
-                  )}
-                </Stack>
-              </Alert>
-            )}
-          </Stack>
-        </Collapse>
-      </Paper>
+      {/* ── Custom endpoint card ── */}
+      <CustomProviderCard
+        isDefault={defaultProvider === 'custom'}
+        isExpanded={expandedCard === 'custom'}
+        onToggle={() => toggleCard('custom')}
+        onSetDefault={() => handleSetDefault('custom')}
+      />
     </Stack>
   );
 }

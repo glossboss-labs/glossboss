@@ -39,7 +39,7 @@ jobs:
 
       - name: Deploy Edge Functions
         run: |
-          for fn in deepl-translate azure-translate gemini-translate tts-elevenlabs \
+          for fn in deepl-translate azure-translate gemini-translate llm-translate tts-elevenlabs \
                     wp-glossary fetch-glossary-url wp-source feedback-issue polar-checkout polar-webhook \
                     settings-key roadmap polar-usage-report account-delete account-export \
                     platform-stats notify-email notify-digest; do

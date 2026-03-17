@@ -54,8 +54,8 @@ import {
   recordTranslationUsage,
   TRANSLATION_USAGE_REFRESH_EVENT,
   translateWithProvider,
-  type TranslationProviderId,
 } from '@/lib/translation';
+import { isLlmProvider } from '@/lib/llm';
 import { getReviewEntryState, isReviewLocked } from '@/lib/review';
 import { useTranslationProvider } from '@/hooks/use-translation-provider';
 import { shouldAutoTranslateEntry } from './translate-utils';
@@ -452,7 +452,8 @@ export function TranslateToolbar({
           markAsMachineTranslated(job.entryId, translated.metadata);
         };
 
-        if (activeProvider === 'gemini') {
+        if (isLlmProvider(activeProvider)) {
+          // LLM providers translate one-at-a-time to support per-entry context
           for (const job of jobs) {
             if (cancelRef.current) break;
 
@@ -463,7 +464,7 @@ export function TranslateToolbar({
                   ? (sourceLang as SourceLanguage)
                   : undefined;
               const entry = entryById.get(job.entryId);
-              const translationResponse = await translateWithProvider('gemini', {
+              const translationResponse = await translateWithProvider(activeProvider, {
                 text: job.text,
                 targetLang: targetLang as TargetLanguage,
                 sourceLang: effectiveSourceLang,
@@ -476,7 +477,7 @@ export function TranslateToolbar({
               if (!translated?.text) {
                 failed += 1;
               } else {
-                recordTranslationUsage('gemini', job.text.length);
+                recordTranslationUsage(activeProvider, job.text.length);
                 applyTranslationResult(job, translated);
                 completed += 1;
               }
@@ -511,18 +512,15 @@ export function TranslateToolbar({
             try {
               let translationResponse;
               try {
-                translationResponse = await translateWithProvider(
-                  activeProvider as Exclude<TranslationProviderId, 'gemini'>,
-                  {
-                    text: texts,
-                    targetLang: targetLang as TargetLanguage,
-                    sourceLang: effectiveSourceLang,
-                    glossary,
-                    deeplGlossaryId: activeProvider === 'deepl' ? activeGlossaryId : undefined,
-                    projectSlug,
-                    projectType,
-                  },
-                );
+                translationResponse = await translateWithProvider(activeProvider, {
+                  text: texts,
+                  targetLang: targetLang as TargetLanguage,
+                  sourceLang: effectiveSourceLang,
+                  glossary,
+                  deeplGlossaryId: activeProvider === 'deepl' ? activeGlossaryId : undefined,
+                  projectSlug,
+                  projectType,
+                });
               } catch (translationError) {
                 if (
                   activeProvider === 'deepl' &&

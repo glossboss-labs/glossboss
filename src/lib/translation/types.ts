@@ -2,7 +2,12 @@ import type { SourceLanguage, TargetLanguage } from '@/lib/deepl/types';
 import type { Glossary, GlossaryEntry } from '@/lib/glossary/types';
 import type { WordPressProjectType } from '@/lib/wp-source';
 
-export type TranslationProviderId = 'deepl' | 'azure' | 'gemini';
+/** Preset LLM-based translation providers. */
+export type LlmProviderId = 'openai' | 'anthropic' | 'google' | 'mistral' | 'deepseek';
+
+/** All translation providers — traditional APIs + LLM + custom endpoints. */
+export type TranslationProviderId = 'deepl' | 'azure' | LlmProviderId | 'custom';
+
 export type TranslationGlossaryMode = 'native' | 'prompt' | 'none';
 
 export interface TranslationContextExcerpt {
@@ -21,6 +26,8 @@ export interface ProviderTranslationRequest {
   references?: string[];
   projectSlug?: string | null;
   projectType?: WordPressProjectType | null;
+  /** Custom instructions from project/org settings, sent to LLM providers. */
+  additionalInstructions?: string;
 }
 
 export interface ProviderTranslationMetadata {

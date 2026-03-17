@@ -6,15 +6,17 @@
  */
 
 import { useState, useCallback, useEffect } from 'react';
-import { Stack, Paper, Text, Select, Switch, Button, Group, Alert } from '@mantine/core';
+import { Stack, Paper, Text, Select, Switch, Button, Group, Alert, Textarea } from '@mantine/core';
 import { Check, AlertCircle, Lock } from 'lucide-react';
 import { useTranslation } from '@/lib/app-language';
 import { getOrgSettings, upsertOrgSettings } from '@/lib/organizations/api';
 import type { OrgSettingsRow } from '@/lib/organizations/types';
-import { getTranslationProviderLabel, hasProviderCredentials } from '@/lib/translation';
+import {
+  ALL_TRANSLATION_PROVIDERS,
+  getTranslationProviderLabel,
+  hasProviderCredentials,
+} from '@/lib/translation';
 import type { TranslationProviderId } from '@/lib/translation/types';
-
-const ALL_PROVIDERS: TranslationProviderId[] = ['deepl', 'azure', 'gemini'];
 
 interface OrgTranslationTabProps {
   orgId: string;
@@ -33,6 +35,7 @@ export function OrgTranslationTab({ orgId, isAdmin }: OrgTranslationTabProps) {
   const [enforceProvider, setEnforceProvider] = useState(false);
   const [defaultGlossaryEnforcement, setDefaultGlossaryEnforcement] = useState(true);
   const [enforceGlossaryEnforcement, setEnforceGlossaryEnforcement] = useState(false);
+  const [translationInstructions, setTranslationInstructions] = useState('');
 
   useEffect(() => {
     let cancelled = false;
@@ -45,6 +48,7 @@ export function OrgTranslationTab({ orgId, isAdmin }: OrgTranslationTabProps) {
           setEnforceProvider(s.enforce_translation_provider);
           setDefaultGlossaryEnforcement(s.default_glossary_enforcement);
           setEnforceGlossaryEnforcement(s.enforce_glossary_enforcement);
+          setTranslationInstructions(s.translation_instructions ?? '');
         }
         setLoading(false);
       })
@@ -60,7 +64,8 @@ export function OrgTranslationTab({ orgId, isAdmin }: OrgTranslationTabProps) {
     defaultProvider !== (settings?.default_translation_provider ?? '') ||
     enforceProvider !== (settings?.enforce_translation_provider ?? false) ||
     defaultGlossaryEnforcement !== (settings?.default_glossary_enforcement ?? true) ||
-    enforceGlossaryEnforcement !== (settings?.enforce_glossary_enforcement ?? false);
+    enforceGlossaryEnforcement !== (settings?.enforce_glossary_enforcement ?? false) ||
+    translationInstructions !== (settings?.translation_instructions ?? '');
 
   const handleSave = useCallback(async () => {
     setSaving(true);
@@ -71,6 +76,7 @@ export function OrgTranslationTab({ orgId, isAdmin }: OrgTranslationTabProps) {
         enforce_translation_provider: enforceProvider,
         default_glossary_enforcement: defaultGlossaryEnforcement,
         enforce_glossary_enforcement: enforceGlossaryEnforcement,
+        translation_instructions: translationInstructions,
       });
       setSettings(updated);
       setResult({ ok: true, msg: t('Organization translation settings saved.') });
@@ -88,6 +94,7 @@ export function OrgTranslationTab({ orgId, isAdmin }: OrgTranslationTabProps) {
     enforceProvider,
     defaultGlossaryEnforcement,
     enforceGlossaryEnforcement,
+    translationInstructions,
     t,
   ]);
 
@@ -101,7 +108,7 @@ export function OrgTranslationTab({ orgId, isAdmin }: OrgTranslationTabProps) {
 
   const providerOptions = [
     { value: '', label: t('None (projects choose their own)') },
-    ...ALL_PROVIDERS.filter((p) => hasProviderCredentials(p)).map((p) => ({
+    ...ALL_TRANSLATION_PROVIDERS.filter((p) => hasProviderCredentials(p)).map((p) => ({
       value: p,
       label: getTranslationProviderLabel(p),
     })),
@@ -181,6 +188,31 @@ export function OrgTranslationTab({ orgId, isAdmin }: OrgTranslationTabProps) {
             </Stack>
           </Paper>
 
+          <Paper withBorder p="md">
+            <Stack gap="sm">
+              <Text size="sm" fw={500}>
+                {t('Translation instructions')}
+              </Text>
+
+              <Textarea
+                label={t('Custom instructions for AI translation')}
+                description={t(
+                  'These instructions are included in every AI translation prompt for all projects in this org. Use them for tone, style, or terminology guidance.',
+                )}
+                placeholder={t(
+                  'e.g. Always use formal register. Prefer British English spellings.',
+                )}
+                value={translationInstructions}
+                onChange={(e) => setTranslationInstructions(e.currentTarget.value)}
+                autosize
+                minRows={2}
+                maxRows={6}
+                maxLength={2000}
+                size="sm"
+              />
+            </Stack>
+          </Paper>
+
           {result && (
             <Alert
               color={result.ok ? 'green' : 'red'}
@@ -220,6 +252,12 @@ export function OrgTranslationTab({ orgId, isAdmin }: OrgTranslationTabProps) {
                 </Text>
               )}
             </Text>
+            {settings?.translation_instructions && (
+              <Text size="sm">
+                <strong>{t('Translation instructions')}:</strong>{' '}
+                {settings.translation_instructions}
+              </Text>
+            )}
           </Stack>
         </Paper>
       )}

@@ -230,7 +230,7 @@ describe('app settings', () => {
     expect(isPersistEnabled()).toBe(true);
     expect(isAzurePersistEnabled()).toBe(true);
     expect(isGeminiPersistEnabled()).toBe(true);
-    expect(getActiveTranslationProvider()).toBe('gemini');
+    expect(getActiveTranslationProvider()).toBe('google');
     expect(applied.deepl.persistKey).toBe(true);
     expect(applied.azure.persistKey).toBe(true);
     expect(applied.gemini.persistKey).toBe(true);

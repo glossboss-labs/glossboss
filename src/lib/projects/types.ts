@@ -89,6 +89,7 @@ export interface ProjectLanguageRow {
   glossary_repo_default_branch: string | null;
   glossary_enforcement: boolean;
   translation_provider: TranslationProviderId | null;
+  translation_instructions: string;
   stats_total: number;
   stats_translated: number;
   stats_fuzzy: number;
@@ -134,6 +135,7 @@ export type ProjectLanguageUpdate = Partial<
     | 'glossary_repo_default_branch'
     | 'glossary_enforcement'
     | 'translation_provider'
+    | 'translation_instructions'
   >
 >;
 

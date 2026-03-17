@@ -12,8 +12,22 @@ const DEFAULT_SETTINGS: TranslationProviderSettings = {
   updatedAt: 0,
 };
 
+const VALID_PROVIDERS = new Set<string>([
+  'deepl',
+  'azure',
+  'openai',
+  'anthropic',
+  'google',
+  'mistral',
+  'deepseek',
+  'custom',
+]);
+
 function isProvider(value: unknown): value is TranslationProviderId {
-  return value === 'deepl' || value === 'azure' || value === 'gemini';
+  if (typeof value !== 'string') return false;
+  // Migrate legacy 'gemini' → 'google'
+  if (value === 'gemini') return true;
+  return VALID_PROVIDERS.has(value);
 }
 
 export function getTranslationProviderSettings(): TranslationProviderSettings {
@@ -28,8 +42,12 @@ export function getTranslationProviderSettings(): TranslationProviderSettings {
       return DEFAULT_SETTINGS;
     }
 
+    // Migrate legacy 'gemini' → 'google'
+    const provider: TranslationProviderId =
+      parsed.provider === 'gemini' ? 'google' : parsed.provider;
+
     return {
-      provider: parsed.provider,
+      provider,
       updatedAt: typeof parsed.updatedAt === 'number' ? parsed.updatedAt : 0,
     };
   } catch {

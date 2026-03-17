@@ -15,21 +15,24 @@ import {
   Badge,
   Radio,
   Divider,
+  Textarea,
 } from '@mantine/core';
 import { Key, AlertCircle, Check } from 'lucide-react';
 import { useTranslation } from '@/lib/app-language';
 import { updateProjectLanguage } from '@/lib/projects/api';
 import type { ProjectLanguageRow } from '@/lib/projects/types';
 import type { TranslationProviderId } from '@/lib/translation/types';
-import { getTranslationProviderLabel, hasProviderCredentials } from '@/lib/translation';
+import {
+  ALL_TRANSLATION_PROVIDERS,
+  getTranslationProviderLabel,
+  hasProviderCredentials,
+} from '@/lib/translation';
 import { getActiveTranslationProvider } from '@/lib/translation/settings';
 import type { OrgSettingsRow } from '@/lib/organizations/types';
 import type { SharedCredentialRow } from '@/lib/shared-credentials/types';
 import { listAvailableCredentials } from '@/lib/shared-credentials/api';
 import { SettingsSourceBadge, type SettingsSource } from '@/components/ui';
 import { SharedCredentialsTab } from '@/components/organizations/SharedCredentialsTab';
-
-const ALL_PROVIDERS: TranslationProviderId[] = ['deepl', 'azure', 'gemini'];
 
 function maskKey(key: string): string {
   if (!key || key.length <= 4) return key ? '****' : '';
@@ -61,6 +64,7 @@ function LanguageTranslationCard({
   const orgDefaultProvider = orgSettings?.default_translation_provider ?? null;
 
   const [provider, setProvider] = useState<string>(language.translation_provider ?? '');
+  const [instructions, setInstructions] = useState(language.translation_instructions ?? '');
   const [saving, setSaving] = useState(false);
   const [result, setResult] = useState<{ ok: boolean; msg: string } | null>(null);
 
@@ -84,7 +88,9 @@ function LanguageTranslationCard({
     }
   }, [language.id]);
 
-  const isDirty = provider !== (language.translation_provider ?? '');
+  const isDirty =
+    provider !== (language.translation_provider ?? '') ||
+    instructions !== (language.translation_instructions ?? '');
 
   // Determine source badge
   let providerSource: SettingsSource = 'personal';
@@ -116,7 +122,7 @@ function LanguageTranslationCard({
           })
         : t('Global default ({{provider}})', { provider: globalLabel }),
     },
-    ...ALL_PROVIDERS.filter((p) => hasProviderCredentials(p)).map((p) => ({
+    ...ALL_TRANSLATION_PROVIDERS.filter((p) => hasProviderCredentials(p)).map((p) => ({
       value: p,
       label: getTranslationProviderLabel(p),
     })),
@@ -129,6 +135,7 @@ function LanguageTranslationCard({
       const translationProvider = provider || null;
       const updated = await updateProjectLanguage(language.id, {
         translation_provider: translationProvider as TranslationProviderId | null,
+        translation_instructions: instructions,
       });
       onUpdated(updated);
       // Save credential choice
@@ -142,7 +149,7 @@ function LanguageTranslationCard({
     } finally {
       setSaving(false);
     }
-  }, [language.id, provider, selectedCredential, onUpdated, t]);
+  }, [language.id, provider, instructions, selectedCredential, onUpdated, t]);
 
   return (
     <Paper withBorder p="md">
@@ -206,6 +213,27 @@ function LanguageTranslationCard({
                 </Radio.Group>
               </>
             )}
+
+            <Textarea
+              size="xs"
+              label={t('Translation instructions')}
+              description={
+                orgSettings?.translation_instructions
+                  ? t('These instructions are combined with org-level instructions.')
+                  : t(
+                      'Custom instructions for AI translation of this language. Included in every LLM translation prompt.',
+                    )
+              }
+              placeholder={t(
+                'e.g. Use casual tone for this gaming app. Prefer du over Sie in German.',
+              )}
+              value={instructions}
+              onChange={(e) => setInstructions(e.currentTarget.value)}
+              autosize
+              minRows={2}
+              maxRows={4}
+              maxLength={2000}
+            />
 
             {result && (
               <Alert

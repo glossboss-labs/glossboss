@@ -62,7 +62,8 @@ const WATCHED_KEYS = [
   'glossboss-translation-provider-settings',
   'glossboss-deepl-settings',
   'glossboss-azure-settings',
-  'glossboss-gemini-settings',
+  'glossboss-gemini-settings', // legacy — triggers sync for migrated users
+  'glossboss-llm-settings',
   'glossboss-tts-settings',
 ];
 
