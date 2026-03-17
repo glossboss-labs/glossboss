@@ -153,7 +153,7 @@ export function UserMenu() {
           </Menu.Item>
           <Menu.Item
             component="a"
-            href="/license/"
+            href="/license"
             target="_blank"
             rel="noopener noreferrer"
             leftSection={<Info size={14} />}
@@ -162,7 +162,7 @@ export function UserMenu() {
           </Menu.Item>
           <Menu.Item
             component="a"
-            href="/terms/"
+            href="/terms"
             target="_blank"
             rel="noopener noreferrer"
             leftSection={<Info size={14} />}
@@ -171,7 +171,7 @@ export function UserMenu() {
           </Menu.Item>
           <Menu.Item
             component="a"
-            href="/privacy/"
+            href="/privacy"
             target="_blank"
             rel="noopener noreferrer"
             leftSection={<Info size={14} />}

@@ -271,9 +271,6 @@ summary {
 .driver-popover-close-btn:hover {
   color: var(--mantine-color-text) !important;
 }
-.driver-popover-arrow-side-left,
-.driver-popover-arrow-side-right,
-.driver-popover-arrow-side-top,
-.driver-popover-arrow-side-bottom {
-  border-color: var(--gb-border-subtle) !important;
+.driver-popover-arrow {
+  display: none !important;
 }
