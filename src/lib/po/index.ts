@@ -29,7 +29,12 @@ export {
 } from './parser';
 
 // Serializer
-export { serializePOFile, exportEntriesToJSON, calculatePOFileSize } from './serializer';
+export {
+  serializePOFile,
+  exportEntriesToJSON,
+  calculatePOFileSize,
+  formatPODate,
+} from './serializer';
 
 // Merge
 export { mergePotIntoPo, type MergeResult } from './merge';

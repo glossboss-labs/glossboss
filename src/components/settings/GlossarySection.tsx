@@ -28,6 +28,8 @@ import {
   COMMON_GLOSSARY_LOCALES,
   GLOSSARY_ENFORCEMENT_KEY,
   GLOSSARY_SELECTED_LOCALE_KEY,
+  dismissGlossaryForLocale,
+  undismissGlossaryForLocale,
 } from '@/components/glossary/constants';
 import type { Glossary } from '@/lib/glossary/types';
 import {
@@ -148,6 +150,7 @@ export function GlossarySection({
         if (loadTokenRef.current !== token) return;
         if (result.glossary) {
           setLocalGlossary(result.glossary);
+          undismissGlossaryForLocale(selectedLocale);
           onGlossaryLoaded?.(result.glossary);
           if (result.error) setGlossaryError(result.error);
         } else {
@@ -169,6 +172,7 @@ export function GlossarySection({
     ++loadTokenRef.current; // invalidate any in-flight load
     if (selectedLocale) {
       clearWPGlossaryCache(selectedLocale);
+      dismissGlossaryForLocale(selectedLocale);
     }
     setLocalGlossary(null);
     setIsLoadingGlossary(false);

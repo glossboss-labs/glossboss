@@ -38,6 +38,7 @@ import { useRepoSyncStore } from '@/stores/repo-sync-store';
 import { useProjectRole } from '@/hooks/use-project-role';
 import { useRepoDbSync } from '@/hooks/use-repo-db-sync';
 import { fetchWPGlossary } from '@/lib/glossary/wp-fetcher';
+import { isGlossaryDismissedForLocale } from '@/components/glossary/constants';
 import type { ReviewEntryState } from '@/lib/review';
 
 export default function ProjectEditor() {
@@ -240,21 +241,31 @@ function ProjectEditorLoaded({
     loadGlossaryForLocale,
   } = useIndexPageController({ readOnly: !isContributor });
 
-  // Auto-load glossary for the project language
+  // Keep a stable ref so the effect only re-runs when the locale changes,
+  // not every time the callback identity shifts (it depends on `entries`).
+  const loadGlossaryRef = useRef(loadGlossaryForLocale);
   useEffect(() => {
-    if (!language.locale || !loadGlossaryForLocale) return;
+    loadGlossaryRef.current = loadGlossaryForLocale;
+  });
+
+  // Auto-load glossary for the project language (once per locale).
+  // Skipped when the user has explicitly dismissed the glossary this session.
+  useEffect(() => {
+    if (!language.locale) return;
+    if (isGlossaryDismissedForLocale(language.locale)) return;
+
     let cancelled = false;
 
     fetchWPGlossary(language.locale).then((result) => {
       if (!cancelled && result.glossary) {
-        void loadGlossaryForLocale(result.glossary);
+        void loadGlossaryRef.current(result.glossary);
       }
     });
 
     return () => {
       cancelled = true;
     };
-  }, [language.locale, loadGlossaryForLocale]);
+  }, [language.locale]);
 
   return (
     <Box style={{ minHeight: '100vh', position: 'relative' }}>

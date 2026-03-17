@@ -82,10 +82,10 @@ msgid ""
 "devices where you sign in to GlossBoss."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1413
-#: src/components/SettingsModal.tsx:1586
-#: src/components/SettingsModal.tsx:1729
-#: src/components/SettingsModal.tsx:1960
+#: src/components/SettingsModal.tsx:1417
+#: src/components/SettingsModal.tsx:1590
+#: src/components/SettingsModal.tsx:1733
+#: src/components/SettingsModal.tsx:1964
 #: src/components/settings/SpeechSection.tsx:417
 #: src/components/settings/TranslationSection.tsx:412
 #: src/components/settings/TranslationSection.tsx:580
@@ -93,10 +93,10 @@ msgstr ""
 msgid "API key"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:560
-#: src/components/SettingsModal.tsx:619
-#: src/components/SettingsModal.tsx:679
-#: src/components/SettingsModal.tsx:759
+#: src/components/SettingsModal.tsx:562
+#: src/components/SettingsModal.tsx:621
+#: src/components/SettingsModal.tsx:681
+#: src/components/SettingsModal.tsx:761
 #: src/components/settings/SpeechSection.tsx:162
 #: src/components/settings/TranslationSection.tsx:156
 #: src/components/settings/TranslationSection.tsx:223
@@ -122,7 +122,7 @@ msgstr ""
 msgid "Account deletion failed. Please try again or contact support."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:224
+#: src/components/SettingsModal.tsx:226
 #: src/components/settings/KeybindsSection.tsx:154
 msgid "Action"
 msgstr ""
@@ -180,7 +180,7 @@ msgstr ""
 msgid "Added to an organization"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2327
+#: src/components/SettingsModal.tsx:2331
 #: src/components/settings/DisplaySection.tsx:68
 msgid "Adjust the appearance of the editor to suit your screen and preferences."
 msgstr ""
@@ -239,7 +239,7 @@ msgstr ""
 msgid "Apply"
 msgstr ""
 
-#: src/components/editor/GlossaryPanel.tsx:415
+#: src/components/editor/GlossaryPanel.tsx:419
 msgid "Apply glossary terms during translation"
 msgstr ""
 
@@ -359,14 +359,14 @@ msgstr ""
 msgid "Azerbaijani"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1529
+#: src/components/SettingsModal.tsx:1533
 #: src/components/settings/TranslationSection.tsx:522
 msgid ""
 "Azure Translator offers 2 million characters/month free. Create a Translator"
 " resource in the Azure portal to get your API key and region."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1565
+#: src/components/SettingsModal.tsx:1569
 #: src/components/settings/TranslationSection.tsx:558
 msgid ""
 "Azure credentials are kept in this browser tab by default. Enable \"Remember"
@@ -386,7 +386,7 @@ msgstr ""
 #: src/pages/OrgSettings.tsx:247
 #: src/pages/OrgSettingsPage.tsx:281
 #: src/pages/ProjectDetail.tsx:302
-#: src/pages/ProjectEditor.tsx:200
+#: src/pages/ProjectEditor.tsx:201
 #: src/pages/ProjectInvite.tsx:100
 #: src/pages/ProjectSettings.tsx:266
 msgid "Back to dashboard"
@@ -409,7 +409,7 @@ msgstr ""
 msgid "Back to sign in"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1326
+#: src/components/SettingsModal.tsx:1330
 #: src/components/editor/EditorHeader.tsx:246
 #: src/pages/Settings.tsx:143
 msgid "Backup"
@@ -465,7 +465,7 @@ msgstr ""
 msgid "Branch name"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2550
+#: src/components/SettingsModal.tsx:2554
 #: src/components/settings/DevelopmentSection.tsx:55
 msgid "Branch status badge"
 msgstr ""
@@ -497,7 +497,7 @@ msgstr ""
 msgid "Browse files manually"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1845
+#: src/components/SettingsModal.tsx:1849
 #: src/components/settings/SpeechSection.tsx:302
 msgid "Browser"
 msgstr ""
@@ -528,7 +528,7 @@ msgstr ""
 msgid "Can I self-host GlossBoss?"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2634
+#: src/components/SettingsModal.tsx:2638
 #: src/components/editor/TranslateToolbar.tsx:969
 #: src/components/editor/WordPressProjectModal.tsx:410
 #: src/components/editor/WordPressRefreshModal.tsx:335
@@ -551,7 +551,7 @@ msgstr ""
 msgid "Cancel custom input"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:172
+#: src/components/SettingsModal.tsx:174
 #: src/components/settings/KeybindsSection.tsx:75
 msgid "Cancel edit"
 msgstr ""
@@ -663,21 +663,21 @@ msgstr ""
 msgid "Choose visible columns"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2623
+#: src/components/SettingsModal.tsx:2627
 #: src/components/settings/BackupSection.tsx:566
 msgid ""
 "Choose whether to export saved translation credentials or keep the settings "
 "file free of credentials."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2620
+#: src/components/SettingsModal.tsx:2624
 #: src/components/settings/BackupSection.tsx:563
 msgid ""
 "Choose whether to import the saved translation credentials or keep the curre"
 "nt credentials saved in this browser."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2337
+#: src/components/SettingsModal.tsx:2341
 #: src/components/settings/DisplaySection.tsx:78
 msgid "Choose which language GlossBoss uses for its interface."
 msgstr ""
@@ -686,10 +686,10 @@ msgstr ""
 msgid "Choose your plan"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2147
-#: src/components/editor/GlossaryPanel.tsx:360
+#: src/components/SettingsModal.tsx:2151
+#: src/components/editor/GlossaryPanel.tsx:364
 #: src/components/editor/TranslateToolbar.tsx:1057
-#: src/components/settings/GlossarySection.tsx:310
+#: src/components/settings/GlossarySection.tsx:314
 msgid "Clear"
 msgstr ""
 
@@ -733,7 +733,7 @@ msgstr ""
 msgid "Clear fuzzy selected"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2479
+#: src/components/SettingsModal.tsx:2483
 #: src/components/settings/BackupSection.tsx:486
 msgid "Clear memory"
 msgstr ""
@@ -746,7 +746,7 @@ msgstr ""
 msgid "Cleared fuzzy on {{count}} row(s)."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1133
+#: src/components/SettingsModal.tsx:1135
 #: src/components/settings/BackupSection.tsx:396
 msgid "Cleared translation memory for this project."
 msgstr ""
@@ -773,7 +773,7 @@ msgstr ""
 msgid "Close QA summary"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2605
+#: src/components/SettingsModal.tsx:2609
 #: src/components/settings/BackupSection.tsx:548
 msgid "Close credential prompt"
 msgstr ""
@@ -792,7 +792,7 @@ msgstr ""
 msgid "Close glossary viewer"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1288
+#: src/components/SettingsModal.tsx:1292
 msgid "Close settings"
 msgstr ""
 
@@ -915,7 +915,7 @@ msgstr ""
 msgid "Contact (optional)"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2370
+#: src/components/SettingsModal.tsx:2374
 #: src/components/settings/DisplaySection.tsx:111
 msgid "Container width"
 msgstr ""
@@ -951,14 +951,14 @@ msgstr ""
 msgid "Continue without account"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2373
+#: src/components/SettingsModal.tsx:2377
 #: src/components/settings/DisplaySection.tsx:114
 msgid ""
 "Controls the maximum width of the main content area. Use a wider setting on "
 "large monitors, or full width to use all available space."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1470
+#: src/components/SettingsModal.tsx:1474
 #: src/components/settings/TranslationSection.tsx:469
 msgid ""
 "Controls the tone of DeepL translations. Not all languages support formality"
@@ -1056,7 +1056,7 @@ msgstr ""
 msgid "Create pull request"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1543
+#: src/components/SettingsModal.tsx:1547
 #: src/components/settings/TranslationSection.tsx:536
 msgid "Create resource"
 msgstr ""
@@ -1152,7 +1152,7 @@ msgstr ""
 msgid "Decline"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1392
+#: src/components/SettingsModal.tsx:1396
 #: src/components/settings/TranslationSection.tsx:390
 msgid ""
 "DeepL API is kept in this browser tab by default and will be cleared when yo"
@@ -1218,7 +1218,7 @@ msgstr ""
 msgid "Describe what you saw"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:225
+#: src/components/SettingsModal.tsx:227
 #: src/components/organizations/CreateOrgModal.tsx:111
 #: src/components/projects/ProjectSettingsTab.tsx:86
 #: src/components/projects/ProjectSettingsTab.tsx:124
@@ -1247,14 +1247,14 @@ msgstr ""
 msgid "Developer"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1330
+#: src/components/SettingsModal.tsx:1334
 #: src/components/editor/WordPressProjectModal.tsx:356
 #: src/components/editor/WordPressRefreshModal.tsx:242
 #: src/pages/Settings.tsx:147
 msgid "Development"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2536
+#: src/components/SettingsModal.tsx:2540
 #: src/components/settings/DevelopmentSection.tsx:41
 msgid "Development mode only"
 msgstr ""
@@ -1267,7 +1267,7 @@ msgstr ""
 msgid "Discard and use new file"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:173
+#: src/components/SettingsModal.tsx:175
 #: src/components/settings/KeybindsSection.tsx:76
 msgid "Discard changes and exit the current field"
 msgstr ""
@@ -1281,7 +1281,7 @@ msgstr ""
 msgid "Discuss"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1323
+#: src/components/SettingsModal.tsx:1327
 #: src/pages/Settings.tsx:136
 msgid "Display"
 msgstr ""
@@ -1422,7 +1422,7 @@ msgstr ""
 msgid "ElevenLabs quota reached."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2031
+#: src/components/SettingsModal.tsx:2035
 #: src/components/settings/SpeechSection.tsx:485
 msgid ""
 "ElevenLabs quota reached. Switch back to Browser playback or wait for the ne"
@@ -1463,12 +1463,12 @@ msgstr ""
 msgid "Empty project"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1339
+#: src/components/SettingsModal.tsx:1343
 #: src/components/settings/TranslationSection.tsx:325
 msgid "Enable machine translation"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1819
+#: src/components/SettingsModal.tsx:1823
 #: src/components/settings/SpeechSection.tsx:276
 msgid "Enable speech playback"
 msgstr ""
@@ -1477,7 +1477,7 @@ msgstr ""
 msgid "Encoding"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1615
+#: src/components/SettingsModal.tsx:1619
 #: src/components/settings/TranslationSection.tsx:609
 msgid "Endpoint"
 msgstr ""
@@ -1521,27 +1521,27 @@ msgstr ""
 msgid "Enter your API key"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1587
+#: src/components/SettingsModal.tsx:1591
 #: src/components/settings/TranslationSection.tsx:581
 msgid "Enter your Azure Translator API key"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1414
+#: src/components/SettingsModal.tsx:1418
 #: src/components/settings/TranslationSection.tsx:413
 msgid "Enter your DeepL API key"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1373
+#: src/components/SettingsModal.tsx:1377
 #: src/components/settings/TranslationSection.tsx:371
 msgid "Enter your DeepL API key to enable machine translation. Get a free key at"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1961
+#: src/components/SettingsModal.tsx:1965
 #: src/components/settings/SpeechSection.tsx:418
 msgid "Enter your ElevenLabs API key"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1730
+#: src/components/SettingsModal.tsx:1734
 #: src/components/settings/TranslationSection.tsx:723
 msgid "Enter your Gemini API key"
 msgstr ""
@@ -1625,12 +1625,12 @@ msgstr ""
 msgid "Explore"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2447
+#: src/components/SettingsModal.tsx:2451
 #: src/components/settings/BackupSection.tsx:454
 msgid "Export JSON"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2455
+#: src/components/SettingsModal.tsx:2459
 #: src/components/settings/BackupSection.tsx:462
 msgid "Export TMX"
 msgstr ""
@@ -1647,7 +1647,7 @@ msgstr ""
 msgid "Export project"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2500
+#: src/components/SettingsModal.tsx:2504
 #: src/components/settings/BackupSection.tsx:507
 msgid "Export settings"
 msgstr ""
@@ -1666,7 +1666,7 @@ msgstr ""
 msgid "Export the entire cloud project as a ZIP archive. Choose what to include:"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2652
+#: src/components/SettingsModal.tsx:2656
 #: src/components/settings/BackupSection.tsx:595
 msgid "Export without credentials"
 msgstr ""
@@ -1681,7 +1681,7 @@ msgid ""
 "a PR. Done."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2397
+#: src/components/SettingsModal.tsx:2401
 #: src/components/settings/BackupSection.tsx:404
 msgid ""
 "Export your saved preferences to a JSON backup file, or restore them into th"
@@ -1694,7 +1694,7 @@ msgid ""
 "ion memory here."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2492
+#: src/components/SettingsModal.tsx:2496
 #: src/components/settings/BackupSection.tsx:499
 msgid ""
 "Exports translation provider preferences, provider-specific settings, glossa"
@@ -1728,10 +1728,10 @@ msgstr ""
 msgid "Failed to compare releases."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:567
-#: src/components/SettingsModal.tsx:629
-#: src/components/SettingsModal.tsx:689
-#: src/components/SettingsModal.tsx:771
+#: src/components/SettingsModal.tsx:569
+#: src/components/SettingsModal.tsx:631
+#: src/components/SettingsModal.tsx:691
+#: src/components/SettingsModal.tsx:773
 #: src/components/settings/SpeechSection.tsx:174
 #: src/components/settings/TranslationSection.tsx:163
 #: src/components/settings/TranslationSection.tsx:233
@@ -1775,7 +1775,7 @@ msgstr ""
 msgid "Failed to fetch source"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1113
+#: src/components/SettingsModal.tsx:1115
 #: src/components/settings/BackupSection.tsx:376
 msgid "Failed to import translation memory."
 msgstr ""
@@ -1806,9 +1806,9 @@ msgstr ""
 msgid "Failed to load file."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1196
-#: src/components/editor/GlossaryPanel.tsx:195
-#: src/components/settings/GlossarySection.tsx:154
+#: src/components/SettingsModal.tsx:1199
+#: src/components/editor/GlossaryPanel.tsx:198
+#: src/components/settings/GlossarySection.tsx:157
 msgid "Failed to load glossary"
 msgstr ""
 
@@ -1827,7 +1827,7 @@ msgid "Failed to load preferences"
 msgstr ""
 
 #: src/pages/ProjectDetail.tsx:196
-#: src/pages/ProjectEditor.tsx:162
+#: src/pages/ProjectEditor.tsx:163
 #: src/pages/ProjectSettings.tsx:144
 msgid "Failed to load project"
 msgstr ""
@@ -1870,8 +1870,8 @@ msgstr ""
 msgid "Failed to parse file"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1257
-#: src/components/settings/GlossarySection.tsx:215
+#: src/components/SettingsModal.tsx:1261
+#: src/components/settings/GlossarySection.tsx:219
 msgid "Failed to read the file."
 msgstr ""
 
@@ -1970,8 +1970,8 @@ msgstr ""
 msgid "File browser"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1231
-#: src/components/settings/GlossarySection.tsx:189
+#: src/components/SettingsModal.tsx:1235
+#: src/components/settings/GlossarySection.tsx:193
 msgid "File does not appear to be a valid WordPress glossary CSV."
 msgstr ""
 
@@ -2036,7 +2036,7 @@ msgstr ""
 msgid "For your own projects — collaborating on others is always free"
 msgstr ""
 
-#: src/components/editor/GlossaryPanel.tsx:263
+#: src/components/editor/GlossaryPanel.tsx:267
 msgid "Force recreate glossary on {{provider}}"
 msgstr ""
 
@@ -2044,12 +2044,12 @@ msgstr ""
 msgid "Forgot password?"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1464
+#: src/components/SettingsModal.tsx:1468
 #: src/components/settings/TranslationSection.tsx:463
 msgid "Formal"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1454
+#: src/components/SettingsModal.tsx:1458
 #: src/components/settings/TranslationSection.tsx:453
 msgid "Formality"
 msgstr ""
@@ -2071,7 +2071,7 @@ msgstr ""
 msgid "Free"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1441
+#: src/components/SettingsModal.tsx:1445
 #: src/components/settings/TranslationSection.tsx:440
 msgid "Free API"
 msgstr ""
@@ -2084,7 +2084,7 @@ msgstr ""
 msgid "Free plan"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1448
+#: src/components/SettingsModal.tsx:1452
 #: src/components/settings/TranslationSection.tsx:447
 msgid "Free: 500,000 chars/month • Pro: Pay per use"
 msgstr ""
@@ -2146,14 +2146,14 @@ msgstr ""
 msgid "Galician"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1708
+#: src/components/SettingsModal.tsx:1712
 #: src/components/settings/TranslationSection.tsx:700
 msgid ""
 "Gemini credentials are kept in this browser tab by default. Enable \"Remembe"
 "r API key\" only on a personal, trusted device."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1672
+#: src/components/SettingsModal.tsx:1676
 #: src/components/settings/TranslationSection.tsx:664
 msgid ""
 "Gemini translates with AI and can optionally use project source context from"
@@ -2196,7 +2196,7 @@ msgstr ""
 msgid "German (Switzerland)"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1686
+#: src/components/SettingsModal.tsx:1690
 #: src/components/settings/TranslationSection.tsx:678
 msgid "Get API key"
 msgstr ""
@@ -2288,8 +2288,8 @@ msgstr ""
 msgid "GlossBoss v{version}"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1317
-#: src/components/editor/GlossaryPanel.tsx:306
+#: src/components/SettingsModal.tsx:1321
+#: src/components/editor/GlossaryPanel.tsx:310
 #: src/pages/Settings.tsx:126
 msgid "Glossary"
 msgstr ""
@@ -2298,8 +2298,8 @@ msgstr ""
 msgid "Glossary & translation memory"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2275
-#: src/components/settings/GlossarySection.tsx:442
+#: src/components/SettingsModal.tsx:2279
+#: src/components/settings/GlossarySection.tsx:446
 msgid ""
 "Glossary analysis is active but {{provider}} does not support glossary enfor"
 "cement"
@@ -2333,7 +2333,7 @@ msgstr ""
 msgid "Glossary enforcement keeps terms consistent"
 msgstr ""
 
-#: src/components/editor/GlossaryPanel.tsx:435
+#: src/components/editor/GlossaryPanel.tsx:439
 msgid ""
 "Glossary loaded for analysis — {{provider}} does not support glossary enforc"
 "ement"
@@ -2469,7 +2469,7 @@ msgstr ""
 msgid "Import a translation export by project slug"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2668
+#: src/components/SettingsModal.tsx:2672
 #: src/components/settings/BackupSection.tsx:611
 msgid "Import credentials"
 msgstr ""
@@ -2480,22 +2480,22 @@ msgid ""
 "ample file."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2469
+#: src/components/SettingsModal.tsx:2473
 #: src/components/settings/BackupSection.tsx:476
 msgid "Import memory"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2600
+#: src/components/SettingsModal.tsx:2604
 #: src/components/settings/BackupSection.tsx:543
 msgid "Import saved credentials?"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2510
+#: src/components/SettingsModal.tsx:2514
 #: src/components/settings/BackupSection.tsx:517
 msgid "Import settings"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1105
+#: src/components/SettingsModal.tsx:1107
 #: src/components/settings/BackupSection.tsx:368
 msgid "Imported {{count}} translation memory entries."
 msgstr ""
@@ -2518,17 +2518,17 @@ msgstr ""
 msgid "Include API credentials in sync"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2669
+#: src/components/SettingsModal.tsx:2673
 #: src/components/settings/BackupSection.tsx:612
 msgid "Include credentials"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2601
+#: src/components/SettingsModal.tsx:2605
 #: src/components/settings/BackupSection.tsx:544
 msgid "Include saved credentials?"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2612
+#: src/components/SettingsModal.tsx:2616
 #: src/components/settings/BackupSection.tsx:555
 msgid ""
 "Including saved translation credentials will store them in plain text inside"
@@ -2545,7 +2545,7 @@ msgstr ""
 msgid "Indonesian"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1463
+#: src/components/SettingsModal.tsx:1467
 #: src/components/settings/TranslationSection.tsx:462
 msgid "Informal"
 msgstr ""
@@ -2554,7 +2554,7 @@ msgstr ""
 msgid "Inherit from global"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:160
+#: src/components/SettingsModal.tsx:162
 #: src/components/settings/KeybindsSection.tsx:66
 msgid "Insert a line break in the translation"
 msgstr ""
@@ -2563,8 +2563,8 @@ msgstr ""
 msgid "Integrates with your favorite tools"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2334
-#: src/components/SettingsModal.tsx:2342
+#: src/components/SettingsModal.tsx:2338
+#: src/components/SettingsModal.tsx:2346
 #: src/components/settings/DisplaySection.tsx:75
 #: src/components/settings/DisplaySection.tsx:83
 msgid "Interface language"
@@ -2647,7 +2647,7 @@ msgstr ""
 msgid "Kazakh"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2651
+#: src/components/SettingsModal.tsx:2655
 #: src/components/settings/BackupSection.tsx:594
 msgid "Keep current key"
 msgstr ""
@@ -2660,10 +2660,10 @@ msgstr ""
 msgid "Key"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1423
-#: src/components/SettingsModal.tsx:1596
-#: src/components/SettingsModal.tsx:1739
-#: src/components/SettingsModal.tsx:1970
+#: src/components/SettingsModal.tsx:1427
+#: src/components/SettingsModal.tsx:1600
+#: src/components/SettingsModal.tsx:1743
+#: src/components/SettingsModal.tsx:1974
 #: src/components/settings/SpeechSection.tsx:427
 #: src/components/settings/TranslationSection.tsx:422
 #: src/components/settings/TranslationSection.tsx:590
@@ -2671,11 +2671,11 @@ msgstr ""
 msgid "Key saved"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1320
+#: src/components/SettingsModal.tsx:1324
 msgid "Keyboard shortcuts"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:216
+#: src/components/SettingsModal.tsx:218
 #: src/components/settings/KeybindsSection.tsx:146
 msgid "Keyboard shortcuts available when editing translations."
 msgstr ""
@@ -2686,10 +2686,10 @@ msgstr ""
 msgid "Korean"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2117
-#: src/components/editor/GlossaryPanel.tsx:384
+#: src/components/SettingsModal.tsx:2121
+#: src/components/editor/GlossaryPanel.tsx:388
 #: src/components/editor/HeaderEditor.tsx:221
-#: src/components/settings/GlossarySection.tsx:280
+#: src/components/settings/GlossarySection.tsx:284
 #: src/pages/Explore.tsx:215
 msgid "Language"
 msgstr ""
@@ -2698,7 +2698,7 @@ msgstr ""
 msgid "Language code"
 msgstr ""
 
-#: src/pages/ProjectEditor.tsx:80
+#: src/pages/ProjectEditor.tsx:81
 msgid "Language not found"
 msgstr ""
 
@@ -2810,7 +2810,7 @@ msgid "Lithuanian"
 msgstr ""
 
 #: src/components/editor/EmptyState.tsx:133
-#: src/components/editor/GlossaryPanel.tsx:372
+#: src/components/editor/GlossaryPanel.tsx:376
 #: src/pages/index/IndexPageDialogs.tsx:171
 msgid "Load"
 msgstr ""
@@ -2823,19 +2823,19 @@ msgstr ""
 msgid "Load a small example WordPress plugin PO file (Hello Dolly)"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1125
+#: src/components/SettingsModal.tsx:1127
 #: src/components/settings/BackupSection.tsx:388
 msgid "Load a translation file before clearing project translation memory."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2413
+#: src/components/SettingsModal.tsx:2417
 #: src/components/settings/BackupSection.tsx:420
 msgid ""
 "Load a translation file before managing translation memory so GlossBoss can "
 "scope entries to the active target language."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1039
+#: src/components/SettingsModal.tsx:1041
 #: src/components/settings/BackupSection.tsx:302
 msgid ""
 "Load a translation file first so GlossBoss knows which target language to us"
@@ -2863,20 +2863,20 @@ msgstr ""
 msgid "Load glossaries to enforce consistent terminology across all translations."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2132
-#: src/components/settings/GlossarySection.tsx:295
+#: src/components/SettingsModal.tsx:2136
+#: src/components/settings/GlossarySection.tsx:299
 msgid "Load glossary"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2110
-#: src/components/settings/GlossarySection.tsx:275
+#: src/components/SettingsModal.tsx:2114
+#: src/components/settings/GlossarySection.tsx:279
 msgid ""
 "Load the official WordPress translation glossary to ensure consistent termin"
 "ology."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2045
-#: src/components/SettingsModal.tsx:2074
+#: src/components/SettingsModal.tsx:2049
+#: src/components/SettingsModal.tsx:2078
 #: src/components/settings/SpeechSection.tsx:499
 #: src/components/settings/SpeechSection.tsx:528
 msgid "Load voices by testing your key"
@@ -2995,7 +2995,7 @@ msgstr ""
 msgid "Maltese"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2410
+#: src/components/SettingsModal.tsx:2414
 #: src/components/settings/BackupSection.tsx:417
 msgid ""
 "Manage reusable approved translations for the current project. Import merges"
@@ -3066,7 +3066,7 @@ msgstr ""
 msgid "Missing something? Let us know what you need."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1747
+#: src/components/SettingsModal.tsx:1751
 #: src/components/settings/TranslationSection.tsx:740
 msgid "Model"
 msgstr ""
@@ -3125,7 +3125,7 @@ msgstr ""
 msgid "Name and email of last translator"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:253
+#: src/components/SettingsModal.tsx:255
 #: src/components/settings/KeybindsSection.tsx:183
 msgid "Navigation settings"
 msgstr ""
@@ -3143,7 +3143,7 @@ msgstr ""
 msgid "Nepali"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:159
+#: src/components/SettingsModal.tsx:161
 #: src/components/settings/KeybindsSection.tsx:65
 msgid "New line"
 msgstr ""
@@ -3171,13 +3171,13 @@ msgstr ""
 msgid "Next"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:167
+#: src/components/SettingsModal.tsx:169
 #: src/components/settings/KeybindsSection.tsx:70
 msgid "Next entry"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:144
-#: src/components/SettingsModal.tsx:154
+#: src/components/SettingsModal.tsx:146
+#: src/components/SettingsModal.tsx:156
 #: src/components/settings/KeybindsSection.tsx:50
 #: src/components/settings/KeybindsSection.tsx:60
 msgid "Next field"
@@ -3195,7 +3195,7 @@ msgstr ""
 msgid "No account found — invite link created in Invites tab."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2431
+#: src/components/SettingsModal.tsx:2435
 #: src/components/settings/BackupSection.tsx:438
 msgid "No active project"
 msgstr ""
@@ -3244,8 +3244,8 @@ msgstr ""
 msgid "No files found"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1239
-#: src/components/settings/GlossarySection.tsx:197
+#: src/components/SettingsModal.tsx:1243
+#: src/components/settings/GlossarySection.tsx:201
 msgid "No glossary entries found in the uploaded file."
 msgstr ""
 
@@ -3382,7 +3382,7 @@ msgstr ""
 msgid "No translation files found in this repository."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1050
+#: src/components/SettingsModal.tsx:1052
 #: src/components/settings/BackupSection.tsx:313
 msgid "No translation memory entries are stored for this project yet."
 msgstr ""
@@ -3409,7 +3409,7 @@ msgstr ""
 msgid "Norwegian Nynorsk"
 msgstr ""
 
-#: src/components/editor/GlossaryPanel.tsx:327
+#: src/components/editor/GlossaryPanel.tsx:331
 msgid "Not loaded"
 msgstr ""
 
@@ -3460,12 +3460,12 @@ msgstr ""
 msgid "One form (no plurals)"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2629
+#: src/components/SettingsModal.tsx:2633
 #: src/components/settings/BackupSection.tsx:572
 msgid "Only include credentials on personal, trusted devices."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2566
+#: src/components/SettingsModal.tsx:2570
 #: src/components/settings/DevelopmentSection.tsx:71
 msgid "Only visible while running the app in development mode"
 msgstr ""
@@ -3728,7 +3728,7 @@ msgstr ""
 msgid "Play source"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1826
+#: src/components/SettingsModal.tsx:1830
 #: src/components/settings/SpeechSection.tsx:283
 msgid ""
 "Play strings with either browser voices or ElevenLabs. Browser playback stay"
@@ -3741,7 +3741,7 @@ msgstr ""
 msgid "Play translation"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1854
+#: src/components/SettingsModal.tsx:1858
 #: src/components/settings/SpeechSection.tsx:311
 msgid "Playback rate"
 msgstr ""
@@ -3766,16 +3766,16 @@ msgstr ""
 msgid "Please enter a new password."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:546
-#: src/components/SettingsModal.tsx:661
-#: src/components/SettingsModal.tsx:737
+#: src/components/SettingsModal.tsx:548
+#: src/components/SettingsModal.tsx:663
+#: src/components/SettingsModal.tsx:739
 #: src/components/settings/SpeechSection.tsx:140
 #: src/components/settings/TranslationSection.tsx:142
 #: src/components/settings/TranslationSection.tsx:266
 msgid "Please enter an API key"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:601
+#: src/components/SettingsModal.tsx:603
 #: src/components/settings/TranslationSection.tsx:205
 msgid "Please enter an API key and region"
 msgstr ""
@@ -3850,10 +3850,10 @@ msgstr ""
 msgid "Preview diff"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1890
-#: src/components/SettingsModal.tsx:1918
-#: src/components/SettingsModal.tsx:2059
-#: src/components/SettingsModal.tsx:2088
+#: src/components/SettingsModal.tsx:1894
+#: src/components/SettingsModal.tsx:1922
+#: src/components/SettingsModal.tsx:2063
+#: src/components/SettingsModal.tsx:2092
 #: src/components/settings/SpeechSection.tsx:347
 #: src/components/settings/SpeechSection.tsx:375
 #: src/components/settings/SpeechSection.tsx:513
@@ -3861,7 +3861,7 @@ msgstr ""
 msgid "Preview voice"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:149
+#: src/components/SettingsModal.tsx:151
 #: src/components/settings/KeybindsSection.tsx:55
 msgid "Previous field"
 msgstr ""
@@ -3904,7 +3904,7 @@ msgstr ""
 msgid "Pro"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1442
+#: src/components/SettingsModal.tsx:1446
 #: src/components/settings/TranslationSection.tsx:441
 msgid "Pro API"
 msgstr ""
@@ -3964,8 +3964,8 @@ msgstr ""
 msgid "Project metadata"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2420
 #: src/components/SettingsModal.tsx:2424
+#: src/components/SettingsModal.tsx:2428
 #: src/components/projects/CreateProjectModal.tsx:602
 #: src/components/projects/ProjectSettingsTab.tsx:80
 #: src/components/projects/SaveToCloudModal.tsx:129
@@ -3981,8 +3981,8 @@ msgstr ""
 
 #: src/pages/ProjectDetail.tsx:173
 #: src/pages/ProjectDetail.tsx:294
-#: src/pages/ProjectEditor.tsx:74
-#: src/pages/ProjectEditor.tsx:197
+#: src/pages/ProjectEditor.tsx:75
+#: src/pages/ProjectEditor.tsx:198
 #: src/pages/ProjectSettings.tsx:128
 msgid "Project not found"
 msgstr ""
@@ -4025,7 +4025,7 @@ msgstr ""
 msgid "Protect {{count}} manual edits from bulk translation"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1835
+#: src/components/SettingsModal.tsx:1839
 #: src/components/repo-sync/RepoSyncModal.tsx:762
 #: src/components/settings/SpeechSection.tsx:292
 msgid "Provider"
@@ -4116,8 +4116,8 @@ msgstr ""
 msgid "Quick open"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1558
-#: src/components/SettingsModal.tsx:1701
+#: src/components/SettingsModal.tsx:1562
+#: src/components/SettingsModal.tsx:1705
 #: src/components/settings/TranslationSection.tsx:551
 #: src/components/settings/TranslationSection.tsx:693
 msgid "Quickstart guide"
@@ -4127,7 +4127,7 @@ msgstr ""
 msgid "Re-run glossary analysis on selected rows"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2360
+#: src/components/SettingsModal.tsx:2364
 #: src/components/settings/DisplaySection.tsx:101
 msgid "Read the translation guide"
 msgstr ""
@@ -4163,12 +4163,12 @@ msgstr ""
 msgid "Refresh"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2136
+#: src/components/SettingsModal.tsx:2140
 #: src/components/editor/EditorHeader.tsx:264
-#: src/components/editor/GlossaryPanel.tsx:338
 #: src/components/editor/GlossaryPanel.tsx:342
+#: src/components/editor/GlossaryPanel.tsx:346
 #: src/components/editor/WordPressRefreshModal.tsx:198
-#: src/components/settings/GlossarySection.tsx:299
+#: src/components/settings/GlossarySection.tsx:303
 msgid "Refresh from WordPress.org"
 msgstr ""
 
@@ -4176,7 +4176,7 @@ msgstr ""
 msgid "Refresh glossary after applying this update"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1604
+#: src/components/SettingsModal.tsx:1608
 #: src/components/settings/TranslationSection.tsx:598
 msgid "Region"
 msgstr ""
@@ -4193,10 +4193,10 @@ msgstr ""
 msgid "Release {{release}}"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1399
-#: src/components/SettingsModal.tsx:1572
-#: src/components/SettingsModal.tsx:1715
-#: src/components/SettingsModal.tsx:1946
+#: src/components/SettingsModal.tsx:1403
+#: src/components/SettingsModal.tsx:1576
+#: src/components/SettingsModal.tsx:1719
+#: src/components/SettingsModal.tsx:1950
 #: src/components/settings/SpeechSection.tsx:403
 #: src/components/settings/TranslationSection.tsx:397
 #: src/components/settings/TranslationSection.tsx:565
@@ -4215,10 +4215,10 @@ msgstr ""
 msgid "Remove"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1490
-#: src/components/SettingsModal.tsx:1642
-#: src/components/SettingsModal.tsx:1786
-#: src/components/SettingsModal.tsx:1994
+#: src/components/SettingsModal.tsx:1494
+#: src/components/SettingsModal.tsx:1646
+#: src/components/SettingsModal.tsx:1790
+#: src/components/SettingsModal.tsx:1998
 #: src/components/settings/SpeechSection.tsx:448
 #: src/components/settings/TranslationSection.tsx:487
 #: src/components/settings/TranslationSection.tsx:636
@@ -4348,9 +4348,9 @@ msgstr ""
 msgid "Restore draft"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2237
-#: src/components/editor/GlossaryPanel.tsx:272
-#: src/components/settings/GlossarySection.tsx:403
+#: src/components/SettingsModal.tsx:2241
+#: src/components/editor/GlossaryPanel.tsx:276
+#: src/components/settings/GlossarySection.tsx:407
 msgid "Resync"
 msgstr ""
 
@@ -4371,9 +4371,9 @@ msgstr ""
 msgid "Retranslating"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2252
-#: src/components/editor/GlossaryPanel.tsx:286
-#: src/components/settings/GlossarySection.tsx:422
+#: src/components/SettingsModal.tsx:2256
+#: src/components/editor/GlossaryPanel.tsx:290
+#: src/components/settings/GlossarySection.tsx:426
 msgid "Retry"
 msgstr ""
 
@@ -4478,11 +4478,11 @@ msgstr ""
 msgid "Russian, Ukrainian, Serbian, Croatian"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1486
-#: src/components/SettingsModal.tsx:1638
-#: src/components/SettingsModal.tsx:1782
-#: src/components/SettingsModal.tsx:1931
-#: src/components/SettingsModal.tsx:1990
+#: src/components/SettingsModal.tsx:1490
+#: src/components/SettingsModal.tsx:1642
+#: src/components/SettingsModal.tsx:1786
+#: src/components/SettingsModal.tsx:1935
+#: src/components/SettingsModal.tsx:1994
 #: src/components/settings/AccountSection.tsx:249
 #: src/components/settings/SpeechSection.tsx:388
 #: src/components/settings/SpeechSection.tsx:444
@@ -4492,7 +4492,7 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:168
+#: src/components/SettingsModal.tsx:170
 #: src/components/settings/KeybindsSection.tsx:71
 msgid "Save and jump to the next translation entry (skips translated by default)"
 msgstr ""
@@ -4503,14 +4503,14 @@ msgstr ""
 msgid "Save changes"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:145
-#: src/components/SettingsModal.tsx:155
+#: src/components/SettingsModal.tsx:147
+#: src/components/SettingsModal.tsx:157
 #: src/components/settings/KeybindsSection.tsx:51
 #: src/components/settings/KeybindsSection.tsx:61
 msgid "Save current field and move to the next translation field"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:150
+#: src/components/SettingsModal.tsx:152
 #: src/components/settings/KeybindsSection.tsx:56
 msgid "Save current field and move to the previous translation field"
 msgstr ""
@@ -4641,12 +4641,12 @@ msgstr ""
 msgid "Select language"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2118
-#: src/components/settings/GlossarySection.tsx:281
+#: src/components/SettingsModal.tsx:2122
+#: src/components/settings/GlossarySection.tsx:285
 msgid "Select locale"
 msgstr ""
 
-#: src/components/editor/GlossaryPanel.tsx:388
+#: src/components/editor/GlossaryPanel.tsx:392
 msgid "Select or type locale..."
 msgstr ""
 
@@ -4659,7 +4659,7 @@ msgstr ""
 msgid "Select target..."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1364
+#: src/components/SettingsModal.tsx:1368
 #: src/components/settings/TranslationSection.tsx:351
 msgid "Selected provider: {{provider}}"
 msgstr ""
@@ -4684,13 +4684,13 @@ msgstr ""
 msgid "Serbian (Latin)"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1432
+#: src/components/SettingsModal.tsx:1436
 #: src/components/settings/TranslationSection.tsx:431
 msgid "Service tier"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1658
-#: src/components/SettingsModal.tsx:1802
+#: src/components/SettingsModal.tsx:1662
+#: src/components/SettingsModal.tsx:1806
 #: src/components/settings/TranslationSection.tsx:650
 #: src/components/settings/TranslationSection.tsx:793
 msgid "Session usage: {{count}} characters"
@@ -4713,7 +4713,7 @@ msgid "Set your source and target languages for translation."
 msgstr ""
 
 #: src/components/AppSidebar.tsx:273
-#: src/components/SettingsModal.tsx:1284
+#: src/components/SettingsModal.tsx:1288
 #: src/components/auth/UserMenu.tsx:117
 #: src/components/projects/ProjectCard.tsx:135
 #: src/pages/OrgSettings.tsx:313
@@ -4722,37 +4722,37 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:927
+#: src/components/SettingsModal.tsx:929
 #: src/components/settings/BackupSection.tsx:182
 msgid "Settings exported with your saved translation credentials."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:928
+#: src/components/SettingsModal.tsx:930
 #: src/components/settings/BackupSection.tsx:183
 msgid "Settings exported without your saved translation credentials."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2489
+#: src/components/SettingsModal.tsx:2493
 #: src/components/settings/BackupSection.tsx:496
 msgid "Settings file"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1009
+#: src/components/SettingsModal.tsx:1011
 #: src/components/settings/BackupSection.tsx:223
 msgid ""
 "Settings imported without changing your current saved translation credential"
 "s."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1008
+#: src/components/SettingsModal.tsx:1010
 #: src/components/settings/BackupSection.tsx:222
 msgid "Settings imported, including your saved translation credentials."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:579
-#: src/components/SettingsModal.tsx:644
-#: src/components/SettingsModal.tsx:704
-#: src/components/SettingsModal.tsx:812
+#: src/components/SettingsModal.tsx:581
+#: src/components/SettingsModal.tsx:646
+#: src/components/SettingsModal.tsx:706
+#: src/components/SettingsModal.tsx:814
 #: src/components/settings/SpeechSection.tsx:215
 #: src/components/settings/TranslationSection.tsx:175
 #: src/components/settings/TranslationSection.tsx:248
@@ -4798,7 +4798,7 @@ msgstr ""
 msgid "Short summary of the request"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:223
+#: src/components/SettingsModal.tsx:225
 #: src/components/settings/KeybindsSection.tsx:153
 msgid "Shortcut"
 msgstr ""
@@ -4815,7 +4815,7 @@ msgstr ""
 msgid "Show all {{count}} lines"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2565
+#: src/components/SettingsModal.tsx:2569
 #: src/components/settings/DevelopmentSection.tsx:70
 msgid "Show branch badge"
 msgstr ""
@@ -4824,7 +4824,7 @@ msgstr ""
 msgid "Show context only"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2553
+#: src/components/SettingsModal.tsx:2557
 #: src/components/settings/DevelopmentSection.tsx:58
 msgid ""
 "Show the current git branch in a small floating badge at the bottom right of"
@@ -4921,7 +4921,7 @@ msgstr ""
 msgid "Skip for now"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:257
+#: src/components/SettingsModal.tsx:259
 #: src/components/settings/KeybindsSection.tsx:187
 msgid "Skip translated entries"
 msgstr ""
@@ -4997,8 +4997,8 @@ msgid ""
 "u"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1875
-#: src/components/SettingsModal.tsx:2044
+#: src/components/SettingsModal.tsx:1879
+#: src/components/SettingsModal.tsx:2048
 #: src/components/settings/SpeechSection.tsx:332
 #: src/components/settings/SpeechSection.tsx:498
 msgid "Source voice"
@@ -5026,7 +5026,7 @@ msgstr ""
 msgid "Spanish (Spain)"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1304
+#: src/components/SettingsModal.tsx:1308
 #: src/pages/Settings.tsx:119
 msgid "Speech"
 msgstr ""
@@ -5165,9 +5165,9 @@ msgstr ""
 msgid "Sync error"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2245
-#: src/components/editor/GlossaryPanel.tsx:283
-#: src/components/settings/GlossarySection.tsx:411
+#: src/components/SettingsModal.tsx:2249
+#: src/components/editor/GlossaryPanel.tsx:287
+#: src/components/settings/GlossarySection.tsx:415
 msgid "Sync failed"
 msgstr ""
 
@@ -5189,9 +5189,9 @@ msgstr ""
 msgid "Synced"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2213
-#: src/components/editor/GlossaryPanel.tsx:245
-#: src/components/settings/GlossarySection.tsx:376
+#: src/components/SettingsModal.tsx:2217
+#: src/components/editor/GlossaryPanel.tsx:249
+#: src/components/settings/GlossarySection.tsx:380
 msgid "Syncing glossary..."
 msgstr ""
 
@@ -5216,7 +5216,7 @@ msgstr ""
 msgid "Target language code"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2435
+#: src/components/SettingsModal.tsx:2439
 #: src/components/projects/CreateProjectModal.tsx:650
 #: src/components/projects/SaveToCloudModal.tsx:145
 #: src/components/settings/BackupSection.tsx:442
@@ -5246,12 +5246,12 @@ msgstr ""
 msgid "Terms"
 msgstr ""
 
-#: src/components/editor/GlossaryPanel.tsx:459
+#: src/components/editor/GlossaryPanel.tsx:463
 msgid "Terms in selected row:"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2300
-#: src/components/settings/GlossarySection.tsx:467
+#: src/components/SettingsModal.tsx:2304
+#: src/components/settings/GlossarySection.tsx:471
 msgid "Terms in selected text:"
 msgstr ""
 
@@ -5259,10 +5259,10 @@ msgstr ""
 msgid "Terms of Service"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1483
-#: src/components/SettingsModal.tsx:1632
-#: src/components/SettingsModal.tsx:1776
-#: src/components/SettingsModal.tsx:1984
+#: src/components/SettingsModal.tsx:1487
+#: src/components/SettingsModal.tsx:1636
+#: src/components/SettingsModal.tsx:1780
+#: src/components/SettingsModal.tsx:1988
 #: src/components/settings/SpeechSection.tsx:441
 #: src/components/settings/TranslationSection.tsx:480
 #: src/components/settings/TranslationSection.tsx:626
@@ -5338,7 +5338,7 @@ msgstr ""
 msgid "Theme"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2539
+#: src/components/SettingsModal.tsx:2543
 #: src/components/settings/DevelopmentSection.tsx:44
 msgid ""
 "These tools only appear while running the app locally in development and are"
@@ -5372,7 +5372,7 @@ msgstr ""
 msgid "This invite link is invalid or has expired."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:842
+#: src/components/SettingsModal.tsx:844
 #: src/components/settings/SpeechSection.tsx:245
 msgid "This is a preview of the selected voice."
 msgstr ""
@@ -5381,7 +5381,7 @@ msgstr ""
 msgid "This is how your name will appear to collaborators."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2611
+#: src/components/SettingsModal.tsx:2615
 #: src/components/settings/BackupSection.tsx:554
 msgid "This settings file contains saved translation credentials in plain text."
 msgstr ""
@@ -5498,7 +5498,7 @@ msgstr ""
 msgid "Translating..."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1301
+#: src/components/SettingsModal.tsx:1305
 #: src/components/editor/EditorTable.tsx:2526
 #: src/components/editor/EditorTable.tsx:3384
 #: src/components/editor/FilterToolbar.tsx:445
@@ -5527,19 +5527,19 @@ msgstr ""
 msgid "Translation is unavailable in this deployment."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2406
+#: src/components/SettingsModal.tsx:2410
 #: src/components/editor/EditorTable.tsx:2007
 #: src/components/projects/ExportSection.tsx:204
 #: src/components/settings/BackupSection.tsx:413
 msgid "Translation memory"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1078
+#: src/components/SettingsModal.tsx:1080
 #: src/components/settings/BackupSection.tsx:341
 msgid "Translation memory exported as JSON."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1079
+#: src/components/SettingsModal.tsx:1081
 #: src/components/settings/BackupSection.tsx:342
 msgid "Translation memory exported as TMX."
 msgstr ""
@@ -5548,7 +5548,7 @@ msgstr ""
 msgid "Translation progress"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1348
+#: src/components/SettingsModal.tsx:1352
 #: src/components/settings/TranslationSection.tsx:335
 msgid "Translation provider"
 msgstr ""
@@ -5577,14 +5577,14 @@ msgstr ""
 msgid "Translation usage:"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1903
-#: src/components/SettingsModal.tsx:2073
+#: src/components/SettingsModal.tsx:1907
+#: src/components/SettingsModal.tsx:2077
 #: src/components/settings/SpeechSection.tsx:360
 #: src/components/settings/SpeechSection.tsx:527
 msgid "Translation voice"
 msgstr ""
 
-#: src/components/editor/GlossaryPanel.tsx:442
+#: src/components/editor/GlossaryPanel.tsx:446
 msgid "Translations without glossary enforcement"
 msgstr ""
 
@@ -5639,7 +5639,7 @@ msgstr ""
 msgid "Type DELETE to confirm"
 msgstr ""
 
-#: src/components/editor/GlossaryPanel.tsx:393
+#: src/components/editor/GlossaryPanel.tsx:397
 msgid "Type a custom locale code"
 msgstr ""
 
@@ -5649,12 +5649,12 @@ msgstr ""
 msgid "Ukrainian"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1161
+#: src/components/SettingsModal.tsx:1163
 #: src/components/settings/BackupSection.tsx:275
 msgid "Unable to import the selected settings file."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1171
+#: src/components/SettingsModal.tsx:1173
 #: src/components/settings/BackupSection.tsx:285
 msgid "Unable to read the selected settings file."
 msgstr ""
@@ -5678,9 +5678,9 @@ msgstr ""
 msgid "Unknown"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1200
-#: src/components/editor/GlossaryPanel.tsx:199
-#: src/components/settings/GlossarySection.tsx:158
+#: src/components/SettingsModal.tsx:1203
+#: src/components/editor/GlossaryPanel.tsx:202
+#: src/components/settings/GlossarySection.tsx:161
 #: src/pages/index/useIndexPageController.ts:663
 msgid "Unknown error"
 msgstr ""
@@ -5800,13 +5800,13 @@ msgstr ""
 msgid "Upgrade to {{plan}}"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2174
-#: src/components/settings/GlossarySection.tsx:337
+#: src/components/SettingsModal.tsx:2178
+#: src/components/settings/GlossarySection.tsx:341
 msgid "Upload CSV"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2179
-#: src/components/settings/GlossarySection.tsx:342
+#: src/components/SettingsModal.tsx:2183
+#: src/components/settings/GlossarySection.tsx:346
 msgid "Upload a WordPress glossary CSV for the selected language"
 msgstr ""
 
@@ -5850,14 +5850,14 @@ msgstr ""
 msgid "Usable for real work, improving fast."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2024
+#: src/components/SettingsModal.tsx:2028
 #: src/components/settings/SpeechSection.tsx:478
 msgid ""
 "Usage is above 90%. ElevenLabs playback will stop once the provider quota is"
 " exhausted."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:484
+#: src/components/SettingsModal.tsx:486
 #: src/components/settings/SpeechSection.tsx:87
 msgid "Usage loaded from the last successful check."
 msgstr ""
@@ -5866,8 +5866,8 @@ msgstr ""
 msgid "Use \"{{code}}\" as custom code"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1876
-#: src/components/SettingsModal.tsx:1904
+#: src/components/SettingsModal.tsx:1880
+#: src/components/SettingsModal.tsx:1908
 #: src/components/settings/SpeechSection.tsx:333
 #: src/components/settings/SpeechSection.tsx:361
 msgid "Use browser default"
@@ -5877,12 +5877,12 @@ msgstr ""
 msgid "Use case"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2262
-#: src/components/settings/GlossarySection.tsx:432
+#: src/components/SettingsModal.tsx:2266
+#: src/components/settings/GlossarySection.tsx:436
 msgid "Use glossary for translations"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1758
+#: src/components/SettingsModal.tsx:1762
 #: src/components/settings/TranslationSection.tsx:751
 msgid "Use project slug context when available"
 msgstr ""
@@ -5907,9 +5907,9 @@ msgstr ""
 msgid "Vietnamese"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2203
-#: src/components/editor/GlossaryPanel.tsx:403
-#: src/components/settings/GlossarySection.tsx:366
+#: src/components/SettingsModal.tsx:2207
+#: src/components/editor/GlossaryPanel.tsx:407
+#: src/components/settings/GlossarySection.tsx:370
 msgid "View All"
 msgstr ""
 
@@ -5941,7 +5941,7 @@ msgstr ""
 msgid "Visibility"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2358
+#: src/components/SettingsModal.tsx:2362
 #: src/components/settings/DisplaySection.tsx:99
 msgid "Want to help translate GlossBoss?"
 msgstr ""
@@ -6013,41 +6013,41 @@ msgstr ""
 msgid "When disabled, all settings are stored locally in this browser only."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1820
+#: src/components/SettingsModal.tsx:1824
 #: src/components/settings/SpeechSection.tsx:277
 msgid "When disabled, all speak buttons are hidden from the editor."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1340
+#: src/components/SettingsModal.tsx:1344
 #: src/components/settings/TranslationSection.tsx:326
 msgid ""
 "When disabled, all translate buttons and the bulk translation toolbar are hi"
 "dden."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1759
+#: src/components/SettingsModal.tsx:1763
 #: src/components/settings/TranslationSection.tsx:752
 msgid ""
 "When enabled, Gemini can use relevant WordPress plugin source excerpts for t"
 "he current project slug as extra translation context."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1573
+#: src/components/SettingsModal.tsx:1577
 #: src/components/settings/TranslationSection.tsx:566
 msgid ""
 "When enabled, your Azure key is stored in localStorage and survives browser "
 "restarts."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1716
+#: src/components/SettingsModal.tsx:1720
 #: src/components/settings/TranslationSection.tsx:708
 msgid ""
 "When enabled, your Gemini key is stored in localStorage and survives browser"
 " restarts."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1400
-#: src/components/SettingsModal.tsx:1947
+#: src/components/SettingsModal.tsx:1404
+#: src/components/SettingsModal.tsx:1951
 #: src/components/settings/SpeechSection.tsx:404
 #: src/components/settings/TranslationSection.tsx:398
 msgid ""
@@ -6067,7 +6067,7 @@ msgid ""
 "to the next untranslated or fuzzy entry"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:258
+#: src/components/SettingsModal.tsx:260
 msgid ""
 "When using ⌘/Ctrl+Enter, skip entries that are already translated and jump t"
 "o the next untranslated or fuzzy entry"
@@ -6223,7 +6223,7 @@ msgstr ""
 msgid "You've been invited to join an organization as {{role}}."
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1939
+#: src/components/SettingsModal.tsx:1943
 #: src/components/settings/SpeechSection.tsx:396
 msgid ""
 "Your ElevenLabs API key is kept in this browser tab by default and will be c"
@@ -6259,12 +6259,12 @@ msgstr ""
 msgid "billed annually"
 msgstr ""
 
-#: src/components/editor/GlossaryPanel.tsx:319
+#: src/components/editor/GlossaryPanel.tsx:323
 msgid "cached"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1516
-#: src/components/SettingsModal.tsx:2017
+#: src/components/SettingsModal.tsx:1520
+#: src/components/SettingsModal.tsx:2021
 #: src/components/settings/SpeechSection.tsx:471
 #: src/components/settings/TranslationSection.tsx:509
 msgid "characters"
@@ -6278,7 +6278,7 @@ msgstr ""
 msgid "default"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:1605
+#: src/components/SettingsModal.tsx:1609
 #: src/components/settings/TranslationSection.tsx:599
 msgid "e.g. westeurope"
 msgstr ""
@@ -6342,8 +6342,8 @@ msgstr ""
 msgid "or sign in with email"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2159
-#: src/components/settings/GlossarySection.tsx:322
+#: src/components/SettingsModal.tsx:2163
+#: src/components/settings/GlossarySection.tsx:326
 msgid "or upload manually"
 msgstr ""
 
@@ -6414,8 +6414,8 @@ msgstr ""
 msgid "team members"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2190
-#: src/components/settings/GlossarySection.tsx:353
+#: src/components/SettingsModal.tsx:2194
+#: src/components/settings/GlossarySection.tsx:357
 msgid "terms"
 msgstr ""
 
@@ -6542,7 +6542,7 @@ msgstr ""
 msgid "{{count}} selected"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2430
+#: src/components/SettingsModal.tsx:2434
 #: src/components/settings/BackupSection.tsx:437
 msgid "{{count}} stored entries"
 msgstr ""
@@ -6551,7 +6551,7 @@ msgstr ""
 msgid "{{count}} strings updated in {{project}} ({{locale}})"
 msgstr ""
 
-#: src/components/editor/GlossaryPanel.tsx:312
+#: src/components/editor/GlossaryPanel.tsx:316
 #: src/components/glossary/shared.tsx:56
 msgid "{{count}} terms"
 msgstr ""
@@ -6631,16 +6631,16 @@ msgstr ""
 msgid "{{projects}} projects"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2225
+#: src/components/SettingsModal.tsx:2229
 #: src/components/editor/EditorWorkspace.tsx:179
-#: src/components/editor/GlossaryPanel.tsx:259
-#: src/components/settings/GlossarySection.tsx:388
+#: src/components/editor/GlossaryPanel.tsx:263
+#: src/components/settings/GlossarySection.tsx:392
 msgid "{{provider}} ready"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2221
-#: src/components/editor/GlossaryPanel.tsx:255
-#: src/components/settings/GlossarySection.tsx:384
+#: src/components/SettingsModal.tsx:2225
+#: src/components/editor/GlossaryPanel.tsx:259
+#: src/components/settings/GlossarySection.tsx:388
 msgid "{{provider}} ready ({{count}} terms)"
 msgstr ""
 
@@ -6648,18 +6648,18 @@ msgstr ""
 msgid "{{provider}} session usage: {{count}} characters"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2265
-#: src/components/settings/GlossarySection.tsx:435
+#: src/components/SettingsModal.tsx:2269
+#: src/components/settings/GlossarySection.tsx:439
 msgid "{{provider}} will enforce glossary terms in machine translations"
 msgstr ""
 
-#: src/components/editor/GlossaryPanel.tsx:423
+#: src/components/editor/GlossaryPanel.tsx:427
 msgid "{{provider}} will enforce glossary terms in translations"
 msgstr ""
 
-#: src/components/SettingsModal.tsx:2269
-#: src/components/editor/GlossaryPanel.tsx:428
-#: src/components/settings/GlossarySection.tsx:439
+#: src/components/SettingsModal.tsx:2273
+#: src/components/editor/GlossaryPanel.tsx:432
+#: src/components/settings/GlossarySection.tsx:443
 msgid "{{provider}} will include glossary terms in the translation prompt"
 msgstr ""
 

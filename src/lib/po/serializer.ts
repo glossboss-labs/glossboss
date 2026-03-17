@@ -19,7 +19,7 @@ import type { POFile, POEntry, POHeader, SerializeOptions } from './types';
 /**
  * Format a date as PO-Revision-Date format: "YYYY-MM-DD HH:MM+ZZZZ"
  */
-function formatPODate(date: Date): string {
+export function formatPODate(date: Date): string {
   const pad = (n: number) => n.toString().padStart(2, '0');
 
   const year = date.getFullYear();

@@ -3,6 +3,50 @@ import { getFlagEmoji } from '@/lib/flags';
 export const GLOSSARY_SELECTED_LOCALE_KEY = 'glossboss-selected-glossary-locale';
 export const GLOSSARY_ENFORCEMENT_KEY = 'glossboss-glossary-enforcement';
 
+/**
+ * SessionStorage key tracking locales where the user explicitly dismissed the
+ * auto-loaded glossary.  Stored as a JSON array of locale strings.
+ * Lives in sessionStorage so dismissal resets on next browser session.
+ */
+export const GLOSSARY_DISMISSED_KEY = 'glossboss-glossary-dismissed';
+
+/** Mark a locale as dismissed so the cloud-project auto-load skips it. */
+export function dismissGlossaryForLocale(locale: string): void {
+  try {
+    const raw = sessionStorage.getItem(GLOSSARY_DISMISSED_KEY);
+    const dismissed: string[] = raw ? (JSON.parse(raw) as string[]) : [];
+    if (!dismissed.includes(locale)) {
+      dismissed.push(locale);
+      sessionStorage.setItem(GLOSSARY_DISMISSED_KEY, JSON.stringify(dismissed));
+    }
+  } catch {
+    /* best-effort */
+  }
+}
+
+/** Remove a locale from the dismissed list (e.g. when the user manually loads). */
+export function undismissGlossaryForLocale(locale: string): void {
+  try {
+    const raw = sessionStorage.getItem(GLOSSARY_DISMISSED_KEY);
+    if (!raw) return;
+    const dismissed: string[] = (JSON.parse(raw) as string[]).filter((l) => l !== locale);
+    sessionStorage.setItem(GLOSSARY_DISMISSED_KEY, JSON.stringify(dismissed));
+  } catch {
+    /* best-effort */
+  }
+}
+
+/** Check whether the user dismissed auto-load for a locale this session. */
+export function isGlossaryDismissedForLocale(locale: string): boolean {
+  try {
+    const raw = sessionStorage.getItem(GLOSSARY_DISMISSED_KEY);
+    if (!raw) return false;
+    return (JSON.parse(raw) as string[]).includes(locale);
+  } catch {
+    return false;
+  }
+}
+
 /** Prepend flag emoji to a locale label if available. */
 function flagLabel(code: string, label: string): string {
   const flag = getFlagEmoji(code);

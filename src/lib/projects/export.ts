@@ -105,7 +105,7 @@ export async function exportProject(
       } else {
         const content = serializePOFile(
           { filename, header: header ?? {}, entries: poEntries, charset: 'UTF-8' },
-          { updateRevisionDate: false },
+          { updateRevisionDate: true },
         );
         zip.file(`translations/${filename}`, content);
       }

@@ -105,6 +105,8 @@ import {
   COMMON_GLOSSARY_LOCALES,
   GLOSSARY_ENFORCEMENT_KEY,
   GLOSSARY_SELECTED_LOCALE_KEY,
+  dismissGlossaryForLocale,
+  undismissGlossaryForLocale,
 } from '@/components/glossary/constants';
 import type { Glossary } from '@/lib/glossary/types';
 import { NAV_SKIP_TRANSLATED_KEY } from '@/components/editor/EditorTable';
@@ -1190,6 +1192,7 @@ export function SettingsModal({
         const result: FetchResult = await fetchWPGlossary(selectedLocale, forceRefresh);
         if (loadTokenRef.current !== token) return;
         if (result.glossary) {
+          undismissGlossaryForLocale(selectedLocale);
           onGlossaryLoaded?.(result.glossary);
           if (result.error) setGlossaryError(result.error);
         } else {
@@ -1211,6 +1214,7 @@ export function SettingsModal({
     ++loadTokenRef.current; // invalidate any in-flight load
     if (selectedLocale) {
       clearWPGlossaryCache(selectedLocale);
+      dismissGlossaryForLocale(selectedLocale);
     }
     setIsLoadingGlossary(false);
     setHasAttemptedAutoLoad(true); // Prevent auto-load from re-fetching after clear

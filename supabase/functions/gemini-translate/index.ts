@@ -143,7 +143,9 @@ function buildInstruction(payload: GeminiPayload, strictGlossary: boolean): stri
   const lines: string[] = [
     'You are translating software localization strings.',
     'Return JSON only.',
-    'Preserve placeholders, HTML, Markdown, punctuation, and newline structure.',
+    'Preserve printf placeholders (%s, %d, %1$s), template variables ({{name}}), ICU syntax ({count,plural,...}), HTML tags, and Markdown exactly as they appear.',
+    "Match the source string's leading/trailing whitespace and newlines.",
+    'Keep the same terminal punctuation as the source (. ! ? … : ;).',
     'Do not add explanations inside translated strings.',
     `Translate into ${payload.targetLang}.`,
   ];

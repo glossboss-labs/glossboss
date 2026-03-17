@@ -12,6 +12,7 @@
  */
 
 import type { POEntry, POHeader } from '@/lib/po/types';
+import { formatPODate } from '@/lib/po';
 import type { MachineTranslationMeta } from '@/stores/editor-store';
 import type { ReviewEntryState } from '@/lib/review';
 import {
@@ -195,6 +196,11 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       // Sync project metadata (project-level fields only)
       const projectUpdate = editorStateToProjectUpdate(state);
       await updateProject(this.projectId, projectUpdate);
+
+      // Update PO-Revision-Date in the header before saving
+      if (state.header) {
+        state.header.poRevisionDate = formatPODate(new Date());
+      }
 
       // Sync language metadata
       const languageUpdate = editorStateToLanguageUpdate(state);
