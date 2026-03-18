@@ -4,6 +4,9 @@
  * Renders API key input, model selector, temperature slider, project context
  * toggle, and test/save/clear buttons. Used for all preset LLM providers
  * (OpenAI, Claude, Gemini, Mistral, DeepSeek) in TranslationSection.
+ *
+ * When an API key is saved, the model dropdown auto-populates with all
+ * models available from the provider's API (via the list-models edge function).
  */
 
 import { useState, useCallback, useEffect } from 'react';
@@ -33,7 +36,10 @@ import {
   isLlmPersistEnabled,
   setLlmPersistEnabled,
   getLlmClient,
+  fetchProviderModels,
+  clearModelCache,
   type LlmProviderMeta,
+  type RemoteModel,
 } from '@/lib/llm';
 import { getTranslationUsage, type TranslationProviderId } from '@/lib/translation';
 import { useTranslation } from '@/lib/app-language';
@@ -74,6 +80,29 @@ export function LlmProviderCard({
   const [testing, setTesting] = useState(false);
   const [saved, setSaved] = useState(false);
   const [testResult, setTestResult] = useState<ConnectionResult | null>(null);
+  const [remoteModels, setRemoteModels] = useState<RemoteModel[]>([]);
+  const [loadingModels, setLoadingModels] = useState(false);
+
+  // Fetch models from provider API when we have an API key
+  const loadRemoteModels = useCallback(
+    async (key: string) => {
+      if (!key.trim()) {
+        setRemoteModels([]);
+        return;
+      }
+      setLoadingModels(true);
+      try {
+        const models = await fetchProviderModels(provider.id, key);
+        setRemoteModels(models);
+      } catch {
+        // Silently fall back to static presets
+        setRemoteModels([]);
+      } finally {
+        setLoadingModels(false);
+      }
+    },
+    [provider.id],
+  );
 
   useEffect(() => {
     const settings = getLlmSettings(provider.id);
@@ -83,7 +112,11 @@ export function LlmProviderCard({
     setUseProjectContext(settings.useProjectContext);
     setPersistKey(isLlmPersistEnabled());
     setSaved(Boolean(settings.apiKey.trim()));
-  }, [provider.id]);
+    // Auto-fetch models if key is already saved
+    if (settings.apiKey.trim()) {
+      loadRemoteModels(settings.apiKey);
+    }
+  }, [provider.id, loadRemoteModels]);
 
   const handleTest = useCallback(async () => {
     if (!apiKey.trim()) {
@@ -105,6 +138,9 @@ export function LlmProviderCard({
             : undefined,
       });
       setSaved(true);
+      // Fetch available models now that the key is validated
+      clearModelCache(provider.id);
+      loadRemoteModels(apiKey);
     } catch (error) {
       setTestResult({
         success: false,
@@ -114,7 +150,7 @@ export function LlmProviderCard({
     } finally {
       setTesting(false);
     }
-  }, [apiKey, modelId, temperature, useProjectContext, provider.id, t]);
+  }, [apiKey, modelId, temperature, useProjectContext, provider.id, t, loadRemoteModels]);
 
   const handleSave = useCallback(() => {
     saveLlmSettings(provider.id, { apiKey, modelId, temperature, useProjectContext });
@@ -124,6 +160,7 @@ export function LlmProviderCard({
 
   const handleClear = useCallback(() => {
     clearLlmSettings(provider.id);
+    clearModelCache(provider.id);
     setApiKey('');
     setModelId(provider.defaultModel);
     setTemperature(provider.defaultTemperature);
@@ -131,13 +168,29 @@ export function LlmProviderCard({
     setPersistKey(false);
     setSaved(false);
     setTestResult(null);
+    setRemoteModels([]);
   }, [provider.id, provider.defaultModel, provider.defaultTemperature]);
 
   const configured = Boolean(apiKey.trim());
 
-  // Model options: presets + current value (if not in presets)
-  const modelOptions = provider.models.map((m) => ({ value: m.id, label: m.label }));
-  const currentModelInPresets = provider.models.some((m) => m.id === modelId);
+  // Model options: remote models (if loaded) merged with static presets
+  const modelOptions = (() => {
+    const presets = provider.models.map((m) => ({ value: m.id, label: m.label }));
+    if (remoteModels.length === 0) return presets;
+
+    // Use remote models as the full list, but prefer preset labels where they exist
+    const presetLabels = new Map(provider.models.map((m) => [m.id, m.label]));
+    const remote = remoteModels.map((m) => ({
+      value: m.id,
+      label: presetLabels.get(m.id) ?? m.name,
+    }));
+
+    // Ensure preset models appear first (as recommended), then remaining remote models
+    const remoteIds = new Set(remote.map((m) => m.value));
+    const presetOnly = presets.filter((p) => !remoteIds.has(p.value));
+    return [...presetOnly, ...remote];
+  })();
+  const currentModelInOptions = modelOptions.some((m) => m.value === modelId);
 
   return (
     <Paper withBorder>
@@ -231,9 +284,10 @@ export function LlmProviderCard({
             <Select
               size="sm"
               label={t('Model')}
+              description={loadingModels ? t('Loading models…') : undefined}
               data={modelOptions}
-              value={currentModelInPresets ? modelId : null}
-              placeholder={currentModelInPresets ? undefined : modelId || provider.defaultModel}
+              value={currentModelInOptions ? modelId : null}
+              placeholder={currentModelInOptions ? undefined : modelId || provider.defaultModel}
               onChange={(v) => {
                 setModelId(v ?? provider.defaultModel);
                 setSaved(false);

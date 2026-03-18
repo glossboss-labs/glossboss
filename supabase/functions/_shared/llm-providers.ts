@@ -20,7 +20,7 @@ export interface LlmProviderDef {
 export const LLM_PROVIDERS: Record<string, LlmProviderDef> = {
   openai: {
     sdk: 'openai',
-    defaultModel: 'gpt-4.1-mini',
+    defaultModel: 'gpt-5.4-mini',
   },
   anthropic: {
     sdk: 'anthropic',
@@ -28,7 +28,7 @@ export const LLM_PROVIDERS: Record<string, LlmProviderDef> = {
   },
   google: {
     sdk: 'google',
-    defaultModel: 'gemini-2.5-flash',
+    defaultModel: 'gemini-3.1-flash-lite-preview',
   },
   mistral: {
     sdk: 'mistral',
@@ -57,7 +57,7 @@ export function resolveProvider(providerId: string, customBaseURL?: string): Llm
     return {
       sdk: 'openai',
       baseURL: customBaseURL,
-      defaultModel: 'gpt-4o-mini',
+      defaultModel: 'gpt-5.4-mini',
     };
   }
 
