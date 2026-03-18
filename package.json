@@ -5,21 +5,21 @@
   "author": "Toine Rademacher and Bjorn Lammers",
   "license": "AGPL-3.0-only",
   "repository": "https://github.com/glossboss-labs/glossboss.git",
-  "packageManager": "bun@1.3.8",
+  "packageManager": "pnpm@10.32.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "sync:uncodixfy": "bun scripts/sync-uncodixfy.ts",
-    "cf:deploy:check-env": "bun -e \"const required=['VITE_SUPABASE_URL','VITE_SUPABASE_ANON_KEY','VITE_TURNSTILE_SITE_KEY']; const env=typeof Bun!=='undefined'?Bun.env:process.env; const missing=required.filter((name)=>!(env[name]||'').trim()); if(missing.length){console.error('Missing required env vars for Cloudflare deploy: '+missing.join(', ')); process.exit(1);} \"",
-    "cf:project:create": "bunx wrangler pages project create glossboss --production-branch main",
-    "cf:deploy": "bun run cf:deploy:check-env && bun run build && bunx wrangler pages deploy dist --project-name glossboss --branch main --commit-dirty=true",
-    "cf:deploy:staging": "bun run cf:deploy:check-env && bun run build && bunx wrangler pages deploy dist --project-name glossboss-dev --branch main --commit-dirty=true",
-    "cf:deploy:preview": "bun run cf:deploy:check-env && bun run build && bunx wrangler pages deploy dist --project-name glossboss-dev --branch preview --commit-dirty=true",
-    "supabase:start": "bunx supabase start",
-    "supabase:stop": "bunx supabase stop",
-    "supabase:db:reset": "bunx supabase db reset --local --no-seed",
-    "supabase:db:lint": "bunx supabase db lint --local --fail-on error",
+    "sync:uncodixfy": "tsx scripts/sync-uncodixfy.ts",
+    "cf:deploy:check-env": "node -e \"const required=['VITE_SUPABASE_URL','VITE_SUPABASE_ANON_KEY','VITE_TURNSTILE_SITE_KEY']; const env=process.env; const missing=required.filter((name)=>!(env[name]||'').trim()); if(missing.length){console.error('Missing required env vars for Cloudflare deploy: '+missing.join(', ')); process.exit(1);}\"",
+    "cf:project:create": "pnpx wrangler pages project create glossboss --production-branch main",
+    "cf:deploy": "pnpm run cf:deploy:check-env && pnpm run build && pnpx wrangler pages deploy dist --project-name glossboss --branch main --commit-dirty=true",
+    "cf:deploy:staging": "pnpm run cf:deploy:check-env && pnpm run build && pnpx wrangler pages deploy dist --project-name glossboss-dev --branch main --commit-dirty=true",
+    "cf:deploy:preview": "pnpm run cf:deploy:check-env && pnpm run build && pnpx wrangler pages deploy dist --project-name glossboss-dev --branch preview --commit-dirty=true",
+    "supabase:start": "pnpx supabase start",
+    "supabase:stop": "pnpx supabase stop",
+    "supabase:db:reset": "pnpx supabase db reset --local --no-seed",
+    "supabase:db:lint": "pnpx supabase db lint --local --fail-on error",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
@@ -28,9 +28,9 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "preview": "vite preview",
-    "i18n:extract": "bun scripts/extract-i18n.ts",
-    "i18n:add-lang": "bun scripts/add-language.ts",
-    "i18n:sync-en": "bun scripts/sync-en-strings.ts",
+    "i18n:extract": "tsx scripts/extract-i18n.ts",
+    "i18n:add-lang": "tsx scripts/add-language.ts",
+    "i18n:sync-en": "tsx scripts/sync-en-strings.ts",
     "test:e2e": "playwright test",
     "test:e2e:report": "playwright show-report",
     "prepare": "husky"
@@ -92,9 +92,17 @@
     "prettier": "^3.8.1",
     "supabase": "^2.81.2",
     "tailwindcss": "^4.2.1",
+    "tsx": "^4.21.0",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.57.1",
     "vite": "^7.3.1",
     "vitest": "^4.1.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@swc/core",
+      "esbuild",
+      "supabase"
+    ]
   }
 }

@@ -4,10 +4,10 @@
  * Creates the PO catalog, populates it via i18n:extract, updates the
  * i18n-issues workflow config, and prints an edit link.
  *
- * Usage: bun scripts/add-language.ts <lang> [--assignee <user>...]
- *        bun scripts/add-language.ts de
- *        bun scripts/add-language.ts fr --assignee octocat
- *        bun scripts/add-language.ts ja --assignee user1 --assignee user2
+ * Usage: pnpm run i18n:add-lang <lang> [--assignee <user>...]
+ *        pnpm run i18n:add-lang de
+ *        pnpm run i18n:add-lang fr -- --assignee octocat
+ *        pnpm run i18n:add-lang ja -- --assignee user1 --assignee user2
  */
 
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
@@ -96,7 +96,7 @@ const lang = langArg?.toLowerCase().replace(/_/g, '-').split('-')[0];
 
 if (!lang) {
   die(
-    'Usage: bun scripts/add-language.ts <lang> [--assignee <user>...]\n         Example: bun scripts/add-language.ts de --assignee octocat',
+    'Usage: pnpm run i18n:add-lang <lang> [-- --assignee <user>...]\n         Example: pnpm run i18n:add-lang de -- --assignee octocat',
   );
 }
 
@@ -120,7 +120,7 @@ if (existsSync(poPath)) {
     process.exit(0);
   }
   die(
-    `${poFilename} already exists — nothing to do\n         To add assignees: bun run i18n:add-lang ${lang} --assignee <user>`,
+    `${poFilename} already exists — nothing to do\n         To add assignees: pnpm run i18n:add-lang ${lang} -- --assignee <user>`,
   );
 }
 
@@ -128,7 +128,7 @@ if (existsSync(poPath)) {
 const potPath = resolve(localesDir, 'app.pot');
 if (!existsSync(potPath)) {
   console.log(`  No app.pot found — running i18n:extract first...\n`);
-  execSync('bun run i18n:extract', { cwd: rootDir, stdio: 'inherit' });
+  execSync('pnpm run i18n:extract', { cwd: rootDir, stdio: 'inherit' });
 }
 
 const potContent = readFileSync(potPath, 'utf-8');
@@ -154,7 +154,7 @@ console.log(
 
 // Re-run the extractor so it merges properly and keeps everything in sync
 console.log(`  Running i18n:extract to sync...\n`);
-execSync('bun run i18n:extract', { cwd: rootDir, stdio: 'inherit' });
+execSync('pnpm run i18n:extract', { cwd: rootDir, stdio: 'inherit' });
 
 // Update the i18n-issues workflow config
 updateIssuesWorkflow(lang, name, assignees);

@@ -9,12 +9,12 @@ Only non-obvious, repo-specific constraints belong here. If you can infer it fro
 ## Commands
 
 ```
-bun run lint
-bun run format:check          # fix with: bun run format
-bun run typecheck
-bun run build
-bun run test:coverage
-bun run i18n:extract           # after any t() or msgid() changes
+pnpm run lint
+pnpm run format:check          # fix with: pnpm run format
+pnpm run typecheck
+pnpm run build
+pnpm run test:coverage
+pnpm run i18n:extract           # after any t() or msgid() changes
 ```
 
 Run all six before committing any non-trivial change. If any step fails, fix it before committing. If a step is skipped, explain why. **Do not push code that breaks CI.**
@@ -23,9 +23,9 @@ Run all six before committing any non-trivial change. If any step fails, fix it 
 
 **Always:**
 
-- Use `bun` / `bunx` — never `npm`, `npx`, or npm lockfiles.
+- Use `pnpm` / `pnpx` — never `npm`, `npx`, `bun`, or npm lockfiles.
 - Conventional Commits (`feat:`, `fix:`, `docs:`, `chore:`, etc.). CI validates all PR commits via commitlint. The PR title is **not** validated.
-- Wrap user-facing strings with `t()` (inside hooks) or `msgid()` (module scope). Run `bun run i18n:extract` and commit PO/POT diffs in the same commit.
+- Wrap user-facing strings with `t()` (inside hooks) or `msgid()` (module scope). Run `pnpm run i18n:extract` and commit PO/POT diffs in the same commit.
 - `React.lazy()` for route-level code splitting in `src/App.tsx` — all `lazy()` calls at module scope (React 19 requirement). First-paint routes (Landing, Login, Signup) stay eagerly imported.
 - One `<BrowserRouter>` in `src/main.tsx`, `<Routes>` + `<Route>` in `src/App.tsx`.
 - Import from `react-router` — not `react-router-dom` (the package does not exist in this repo).
@@ -45,7 +45,7 @@ Run all six before committing any non-trivial change. If any step fails, fix it 
 
 ## i18n
 
-The most common CI failure. Run `bun run i18n:extract` whenever you touch files containing `t()` or `msgid()` calls — even if you only moved lines.
+The most common CI failure. Run `pnpm run i18n:extract` whenever you touch files containing `t()` or `msgid()` calls — even if you only moved lines.
 
 - `t('...')` from `useTranslation()` for strings inside React components.
 - `msgid('...')` from `@/lib/app-language` for strings at module scope (identity function that marks for extraction).

@@ -12,23 +12,23 @@ Thanks for helping improve GlossBoss.
 ## Setup
 
 ```bash
-bun install --frozen-lockfile
+pnpm install --frozen-lockfile
 cp .env.example .env.local
 ```
 
-Use Bun for all scripts and package management in this repository.
+Use pnpm for all scripts and package management in this repository.
 
 ## Before opening a pull request
 
 Run the full local check suite:
 
 ```bash
-bun run lint
-bun run format:check
-bun run typecheck
-bun run build
-bun run test:coverage
-bun run i18n:extract   # if any t() or msgid() calls changed
+pnpm run lint
+pnpm run format:check
+pnpm run typecheck
+pnpm run build
+pnpm run test:coverage
+pnpm run i18n:extract   # if any t() or msgid() calls changed
 ```
 
 ## Commit style
@@ -86,7 +86,7 @@ To change the wording of an existing English string, edit `msgstr` in `app.en.po
 the old text) and run:
 
 ```bash
-bun run i18n:sync-en
+pnpm run i18n:sync-en
 ```
 
 This renames the string in all `t()`/`msgid()` source calls, updates `msgid` in every PO file, and
@@ -96,14 +96,14 @@ re-runs the extractor. CI fails if pending renames are not applied.
 
 1. Use `t('Your new string')` in React components (inside hooks) or `msgid('Your new string')` for
    strings defined at module scope (data arrays, default parameters) that are later passed to `t()`.
-2. Run `bun run i18n:extract` — this generates `app.pot` and merges into all `app.*.po` files
+2. Run `pnpm run i18n:extract` — this generates `app.pot` and merges into all `app.*.po` files
    automatically. English entries get `msgstr = msgid`; other languages get empty `msgstr`.
 3. Commit the updated PO/POT files alongside your code changes.
 4. CI will fail if you forget to run the extractor.
 
 Important:
 
-- Run `bun run i18n:extract` after changing user-facing strings.
+- Run `pnpm run i18n:extract` after changing user-facing strings.
 - Also run it after moving code around existing `t()` / `msgid()` calls if the touched files are in
   the app catalog. The extractor updates source reference comments in `app.pot` and `app.*.po`,
   and CI checks those files with `git diff --exit-code`.
@@ -111,7 +111,7 @@ Important:
 ### Adding a new app language
 
 ```bash
-bun run i18n:add-lang de
+pnpm run i18n:add-lang de
 ```
 
 This creates `app.de.po`, populates it from the POT template, updates the i18n-issues workflow, and
