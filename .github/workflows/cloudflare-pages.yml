@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
   workflow_dispatch:
 
 concurrency:
@@ -15,37 +12,11 @@ concurrency:
 
 permissions:
   contents: read
-  pull-requests: write
 
 jobs:
-  detect-changes:
-    name: Detect Changes
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    timeout-minutes: 2
-    outputs:
-      frontend: ${{ steps.filter.outputs.frontend }}
-    steps:
-      - uses: actions/checkout@v6
-
-      - uses: dorny/paths-filter@v3
-        id: filter
-        with:
-          filters: |
-            frontend:
-              - 'src/**'
-              - 'public/**'
-              - 'index.html'
-              - 'vite.config.ts'
-              - 'tsconfig*.json'
-              - 'package.json'
-              - 'pnpm-lock.yaml'
-
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: detect-changes
-    if: always() && (github.event_name == 'push' || github.event_name == 'workflow_dispatch' || needs.detect-changes.outputs.frontend == 'true')
 
     steps:
       - name: Checkout
@@ -64,7 +35,6 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Validate Vite env for deploy
-        if: github.event_name != 'pull_request'
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
@@ -84,134 +54,8 @@ jobs:
         run: pnpm run build
 
       - name: Deploy to Cloudflare Pages
-        id: deploy
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           PAGES_PROJECT: ${{ secrets.CLOUDFLARE_PAGES_PROJECT || github.event.repository.name }}
-        run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            DEPLOY_BRANCH="${{ github.head_ref }}"
-          else
-            DEPLOY_BRANCH="${{ github.ref_name }}"
-          fi
-
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            DEPLOY_OUTPUT="$(pnpx wrangler pages deploy dist --project-name "$PAGES_PROJECT" --branch "$DEPLOY_BRANCH" 2>&1 | tee /dev/stderr)"
-            set +e
-            DEPLOY_URL="$(printf '%s\n' "$DEPLOY_OUTPUT" | grep -Eo 'https://[^[:space:]]+\.pages\.dev' | tail -n1)"
-            DEPLOY_URL_STATUS=$?
-            set -e
-
-            if [ "$DEPLOY_URL_STATUS" -gt 1 ]; then
-              echo "::error::Failed to parse Cloudflare Pages deploy output (grep exit status: $DEPLOY_URL_STATUS)."
-              exit 1
-            fi
-
-            if [ -z "$DEPLOY_URL" ]; then
-              echo "::error::Failed to detect a Cloudflare Pages URL from wrangler output."
-              exit 1
-            fi
-
-            if ! [[ "$DEPLOY_URL" =~ ^https://[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?(\.[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?)*\.pages\.dev$ ]]; then
-              echo "::error::Failed to detect a valid Cloudflare Pages URL from wrangler output."
-              exit 1
-            fi
-
-            echo "preview_url=$DEPLOY_URL" >> "$GITHUB_OUTPUT"
-          else
-            pnpx wrangler pages deploy dist --project-name "$PAGES_PROJECT" --branch "$DEPLOY_BRANCH"
-          fi
-
-      - name: Comment PR with preview link
-        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && steps.deploy.outputs.preview_url != ''
-        uses: actions/github-script@v8
-        env:
-          PREVIEW_URL: ${{ steps.deploy.outputs.preview_url }}
-        with:
-          script: |
-            const marker = '<!-- cloudflare-pages-preview-link -->'
-            const body = [
-              marker,
-              `🚀 Preview deployment is ready: [${process.env.PREVIEW_URL}](${process.env.PREVIEW_URL})`,
-            ].join('\n')
-
-            let existingComment
-
-            for await (const { data: comments } of github.paginate.iterator(github.rest.issues.listComments, {
-              ...context.repo,
-              issue_number: context.issue.number,
-              per_page: 100,
-            })) {
-              existingComment = comments.find((comment) => {
-                return comment.user?.login === 'github-actions[bot]' && comment.body?.includes(marker)
-              })
-
-              if (existingComment) {
-                break
-              }
-            }
-
-            if (existingComment) {
-              await github.rest.issues.updateComment({
-                ...context.repo,
-                comment_id: existingComment.id,
-                body,
-              })
-              return
-            }
-
-            await github.rest.issues.createComment({
-              ...context.repo,
-              issue_number: context.issue.number,
-              body,
-            })
-
-  skip-comment:
-    name: Skip Comment
-    needs: detect-changes
-    if: github.event_name == 'pull_request' && needs.detect-changes.outputs.frontend == 'false'
-    runs-on: ubuntu-latest
-    timeout-minutes: 2
-
-    steps:
-      - name: Comment PR with skip notice
-        uses: actions/github-script@v8
-        with:
-          script: |
-            const marker = '<!-- cloudflare-pages-preview-link -->'
-            const body = [
-              marker,
-              'No frontend changes — preview deploy skipped.',
-            ].join('\n')
-
-            let existingComment
-
-            for await (const { data: comments } of github.paginate.iterator(github.rest.issues.listComments, {
-              ...context.repo,
-              issue_number: context.issue.number,
-              per_page: 100,
-            })) {
-              existingComment = comments.find((comment) => {
-                return comment.user?.login === 'github-actions[bot]' && comment.body?.includes(marker)
-              })
-
-              if (existingComment) {
-                break
-              }
-            }
-
-            if (existingComment) {
-              await github.rest.issues.updateComment({
-                ...context.repo,
-                comment_id: existingComment.id,
-                body,
-              })
-              return
-            }
-
-            await github.rest.issues.createComment({
-              ...context.repo,
-              issue_number: context.issue.number,
-              body,
-            })
+        run: pnpx wrangler pages deploy dist --project-name "$PAGES_PROJECT" --branch "${{ github.ref_name }}"
