@@ -273,7 +273,9 @@ export function GlossarySection({
     <>
       <Stack gap="md">
         <Text size="sm" c="dimmed">
-          {t('Load the official WordPress translation glossary to ensure consistent terminology.')}
+          {t(
+            'Glossaries ensure consistent translations for key terms. Load one from WordPress.org or upload your own CSV. Cloud projects have their own glossary settings in Project Settings.',
+          )}
         </Text>
 
         <Group align="flex-end" gap="sm">

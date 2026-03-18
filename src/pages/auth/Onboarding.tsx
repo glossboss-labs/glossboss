@@ -112,7 +112,7 @@ export default function Onboarding() {
         duration_seconds: durationSeconds,
       });
 
-      navigate('/settings?tab=translation&tour=settings', { replace: true });
+      navigate('/dashboard?welcome=1', { replace: true });
     },
     [navigate, role, selectedPlan],
   );

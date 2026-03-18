@@ -9,7 +9,7 @@
  * dropdown menu to duplicate these.
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router';
 import {
   Stack,
@@ -24,6 +24,7 @@ import {
   Skeleton,
   Popover,
   Indicator,
+  Progress,
   useMantineColorScheme,
   useComputedColorScheme,
 } from '@mantine/core';
@@ -54,6 +55,11 @@ import { PlanBadge } from '@/components/billing/PlanBadge';
 import { useSubscription } from '@/hooks/use-subscription';
 import { useProjects } from '@/lib/projects/queries';
 import { formatLimit } from '@/lib/billing/limits';
+import { getTranslationProviderLabel, hasProviderCredentials } from '@/lib/translation';
+import { VALID_PROVIDER_IDS, type TranslationProviderId } from '@/lib/translation/types';
+import { getTranslationUsage, TRANSLATION_USAGE_REFRESH_EVENT } from '@/lib/translation/usage';
+import { getDeepLClient } from '@/lib/deepl';
+import type { UsageStats as DeepLUsageStats } from '@/lib/deepl/types';
 import { FeedbackModal } from '@/components/feedback';
 import { AuthPromptModal } from '@/components/auth/AuthPromptModal';
 import { GlossBossLogo } from '@/components/ui/GlossBossLogo';
@@ -182,6 +188,184 @@ function NavItem({
   }
 
   return button;
+}
+
+/** A single usage row with label, value, bar, and tooltip. */
+function UsageRow({
+  label,
+  current,
+  limit,
+  tooltip,
+  color = 'blue',
+}: {
+  label: string;
+  current: number;
+  limit: number;
+  tooltip: string;
+  color?: string;
+}) {
+  const isUnlimited = limit === Infinity;
+  const pct = isUnlimited
+    ? Math.min(current > 0 ? 8 : 0, 100)
+    : Math.min(100, (current / limit) * 100);
+  const barColor = !isUnlimited && pct >= 90 ? 'red' : !isUnlimited && pct >= 70 ? 'yellow' : color;
+
+  return (
+    <Tooltip label={tooltip} position="right" withArrow multiline w={240}>
+      <Box>
+        <Group justify="space-between" mb={2}>
+          <Text size="xs" c="dimmed">
+            {label}
+          </Text>
+          <Text size="xs" c="dimmed" className="gb-tabular-nums">
+            {current.toLocaleString()}/{isUnlimited ? '∞' : limit.toLocaleString()}
+          </Text>
+        </Group>
+        <Progress value={pct} size={4} radius="xl" color={barColor} />
+      </Box>
+    </Tooltip>
+  );
+}
+
+/** Provider usage row — real quota for DeepL, session stats for others. */
+function ProviderUsageRow({
+  provider,
+  deeplUsage,
+  t,
+}: {
+  provider: TranslationProviderId;
+  deeplUsage: DeepLUsageStats | null;
+  t: (key: string, vars?: Record<string, unknown>) => string;
+}) {
+  const label = getTranslationProviderLabel(provider);
+  const session = getTranslationUsage(provider);
+
+  // DeepL: real server-side quota
+  if (provider === 'deepl' && deeplUsage) {
+    return (
+      <UsageRow
+        label={label}
+        current={deeplUsage.characterCount}
+        limit={deeplUsage.characterLimit}
+        tooltip={t('{{used}} of {{limit}} characters this billing period', {
+          used: deeplUsage.characterCount.toLocaleString(),
+          limit: deeplUsage.characterLimit.toLocaleString(),
+        })}
+        color="violet"
+      />
+    );
+  }
+
+  // Other providers: session-based tracking
+  const hasData = session.characterCount > 0 || session.tokenCount > 0;
+  const stat =
+    session.tokenCount > 0
+      ? `${session.tokenCount.toLocaleString()} tok`
+      : hasData
+        ? `${session.characterCount.toLocaleString()} chars`
+        : t('ready');
+  const tip =
+    session.tokenCount > 0
+      ? t('{{tokens}} tokens · {{chars}} chars · {{count}} requests', {
+          tokens: session.tokenCount.toLocaleString(),
+          chars: session.characterCount.toLocaleString(),
+          count: session.translationCount,
+        })
+      : hasData
+        ? t('{{chars}} characters · {{count}} requests', {
+            chars: session.characterCount.toLocaleString(),
+            count: session.translationCount,
+          })
+        : t('Configured — no usage this session');
+
+  return (
+    <Tooltip label={tip} position="right" withArrow multiline w={260}>
+      <Box>
+        <Group justify="space-between" mb={2}>
+          <Text size="xs" c="dimmed">
+            {label}
+          </Text>
+          <Text size="xs" c="dimmed" className="gb-tabular-nums">
+            {stat}
+          </Text>
+        </Group>
+        <Progress value={hasData ? 8 : 0} size={4} radius="xl" color="violet" />
+      </Box>
+    </Tooltip>
+  );
+}
+
+/** Usage bars for the sidebar bottom section. */
+function SidebarUsageBars({
+  projects,
+  limits,
+  t,
+}: {
+  projects: { organization_id: string | null; stats_total: number }[];
+  limits: { projects: number; strings: number };
+  t: (key: string, vars?: Record<string, unknown>) => string;
+}) {
+  const projectCount = projects.length;
+  const stringCount = projects.reduce((s, p) => s + (p.stats_total ?? 0), 0);
+
+  const configuredProviders = VALID_PROVIDER_IDS.filter((id) => hasProviderCredentials(id));
+
+  // DeepL server-side quota
+  const [deeplUsage, setDeeplUsage] = useState<DeepLUsageStats | null>(null);
+  const [, setUsageTick] = useState(0);
+  const deeplConfigured = configuredProviders.includes('deepl');
+
+  useEffect(() => {
+    if (!deeplConfigured) return;
+    const fetchUsage = () => {
+      getDeepLClient()
+        .getUsage()
+        .then(setDeeplUsage)
+        .catch(() => {});
+    };
+    fetchUsage();
+    window.addEventListener(TRANSLATION_USAGE_REFRESH_EVENT, fetchUsage);
+    return () => window.removeEventListener(TRANSLATION_USAGE_REFRESH_EVENT, fetchUsage);
+  }, [deeplConfigured]);
+
+  useEffect(() => {
+    const refresh = () => setUsageTick((n) => n + 1);
+    window.addEventListener(TRANSLATION_USAGE_REFRESH_EVENT, refresh);
+    return () => window.removeEventListener(TRANSLATION_USAGE_REFRESH_EVENT, refresh);
+  }, []);
+
+  return (
+    <Stack gap="xs" px={12} py={8}>
+      <UsageRow
+        label={t('Projects')}
+        current={projectCount}
+        limit={limits.projects}
+        tooltip={t('{{count}} of {{limit}} projects', {
+          count: projectCount,
+          limit: formatLimit(limits.projects),
+        })}
+        color="blue"
+      />
+      <UsageRow
+        label={t('Strings')}
+        current={stringCount}
+        limit={limits.strings}
+        tooltip={t('{{count}} of {{limit}} strings stored', {
+          count: stringCount.toLocaleString(),
+          limit: formatLimit(limits.strings),
+        })}
+        color="teal"
+      />
+      {configuredProviders.map((provider) => (
+        <ProviderUsageRow
+          key={provider}
+          provider={provider}
+          deeplUsage={provider === 'deepl' ? deeplUsage : null}
+          t={t}
+        />
+      ))}
+    </Stack>
+  );
 }
 
 export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
@@ -388,32 +572,53 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
           {/* User section */}
           {isAuthenticated ? (
             <Stack gap={2}>
-              {/* User profile */}
+              {/* Clickable user profile — links to account settings */}
               {!collapsed ? (
-                <Group gap="sm" px={12} py={8} wrap="nowrap">
-                  <Avatar
-                    src={getSizedAvatarUrl(avatarUrl, 26)}
-                    size="sm"
-                    radius="xl"
-                    color="blue"
-                    style={{ flexShrink: 0 }}
-                  >
-                    {initials}
-                  </Avatar>
-                  <Stack gap={2} style={{ flex: 1, minWidth: 0 }}>
-                    <Text size="xs" fw={500} truncate>
-                      {displayName}
-                    </Text>
-                    {subLoading ? (
-                      <Skeleton height={16} width={60} radius="xl" />
-                    ) : (
-                      <PlanBadge plan={plan} />
-                    )}
-                  </Stack>
-                </Group>
+                <UnstyledButton
+                  component={Link}
+                  to="/settings?tab=account"
+                  px={12}
+                  py={8}
+                  style={{
+                    borderRadius: 'var(--mantine-radius-sm)',
+                    transition: 'background-color 120ms ease',
+                    '&:hover': { backgroundColor: 'var(--mantine-color-default-hover)' },
+                  }}
+                  styles={{
+                    root: {
+                      '&:hover': { backgroundColor: 'var(--mantine-color-default-hover)' },
+                    },
+                  }}
+                >
+                  <Group gap="sm" wrap="nowrap">
+                    <Avatar
+                      src={getSizedAvatarUrl(avatarUrl, 26)}
+                      size="sm"
+                      radius="xl"
+                      color="blue"
+                      style={{ flexShrink: 0 }}
+                    >
+                      {initials}
+                    </Avatar>
+                    <Stack gap={2} style={{ flex: 1, minWidth: 0 }}>
+                      <Text size="xs" fw={500} truncate>
+                        {displayName}
+                      </Text>
+                      {subLoading ? (
+                        <Skeleton height={16} width={60} radius="xl" />
+                      ) : (
+                        <PlanBadge plan={plan} />
+                      )}
+                    </Stack>
+                  </Group>
+                </UnstyledButton>
               ) : (
                 <Tooltip label={displayName} position="right">
-                  <Box style={{ display: 'flex', justifyContent: 'center', padding: '4px 0' }}>
+                  <UnstyledButton
+                    component={Link}
+                    to="/settings?tab=account"
+                    style={{ display: 'flex', justifyContent: 'center', padding: '4px 0' }}
+                  >
                     <Avatar
                       src={getSizedAvatarUrl(avatarUrl, 26)}
                       size="sm"
@@ -422,23 +627,13 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
                     >
                       {initials}
                     </Avatar>
-                  </Box>
+                  </UnstyledButton>
                 </Tooltip>
               )}
 
-              {/* Usage stats */}
+              {/* Usage bars */}
               {!collapsed && !subLoading && (
-                <Box px={12} py={4}>
-                  <Text size="xs" c="dimmed" className="gb-tabular-nums">
-                    {projects.filter((p) => !p.organization_id).length}/
-                    {formatLimit(limits.projects)} {t('projects')} &middot;{' '}
-                    {projects
-                      .filter((p) => !p.organization_id)
-                      .reduce((s, p) => s + (p.stats_total ?? 0), 0)
-                      .toLocaleString()}
-                    /{formatLimit(limits.strings)} {t('strings')}
-                  </Text>
-                </Box>
+                <SidebarUsageBars projects={projects} limits={limits} t={t} />
               )}
 
               <NavItem

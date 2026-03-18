@@ -64,8 +64,17 @@ export interface ProviderTranslation {
   metadata: ProviderTranslationMetadata;
 }
 
+/** Token usage returned by LLM providers (from AI SDK). */
+export interface ProviderTokenUsage {
+  promptTokens: number;
+  completionTokens: number;
+  totalTokens: number;
+}
+
 export interface ProviderTranslationResponse {
   translations: ProviderTranslation[];
+  /** Token usage from LLM providers (not available for DeepL/Azure). */
+  usage?: ProviderTokenUsage;
 }
 
 export interface TranslationProviderCapabilities {

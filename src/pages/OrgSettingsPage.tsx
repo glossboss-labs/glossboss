@@ -378,6 +378,13 @@ export default function OrgSettingsPage() {
                       <AnimatedTabPanel tabKey={activeTab}>
                         <Box pt={isMobile ? 'md' : undefined}>
                           {/* General tab */}
+                          {activeTab === 'general' && (
+                            <>
+                              <Text size="sm" c="dimmed" mb="md">
+                                {t('Basic information about your organization.')}
+                              </Text>
+                            </>
+                          )}
                           {activeTab === 'general' &&
                             (isAdmin ? (
                               <Paper withBorder p="md">
@@ -470,6 +477,11 @@ export default function OrgSettingsPage() {
                           {/* Members tab */}
                           {activeTab === 'members' && (
                             <Stack gap="lg">
+                              <Text size="sm" c="dimmed">
+                                {t(
+                                  "Manage your organization's members. Roles: Owner (full control, cannot be removed), Admin (manage members and settings), Member (access organization projects).",
+                                )}
+                              </Text>
                               {/* Invite form (admin only) */}
                               {isAdmin && (
                                 <Paper withBorder p="md">
@@ -778,6 +790,11 @@ export default function OrgSettingsPage() {
                           {/* Translation + Credentials tab */}
                           {activeTab === 'translation' && (
                             <Stack gap="lg">
+                              <Text size="sm" c="dimmed">
+                                {t(
+                                  'Organization-wide translation defaults. These apply to all projects unless overridden at the project level.',
+                                )}
+                              </Text>
                               <OrgTranslationTab orgId={org.id} isAdmin={isAdmin} />
                               <Divider label={t('Shared credentials')} labelPosition="center" />
                               <SharedCredentialsTab orgId={org.id} canManage={isAdmin} />

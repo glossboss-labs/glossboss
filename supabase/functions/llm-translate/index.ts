@@ -114,9 +114,11 @@ async function translateWithLlm(
 
   // Try structured output first, fall back to raw text parsing
   let result: TranslationResult | null = null;
+  let tokenUsage: { promptTokens: number; completionTokens: number; totalTokens: number } | null =
+    null;
 
   try {
-    const { object } = await generateText({
+    const { object, usage } = await generateText({
       model,
       system: systemPrompt,
       prompt: userPrompt,
@@ -127,13 +129,16 @@ async function translateWithLlm(
     if (object && Array.isArray(object.translations)) {
       result = object;
     }
+    if (usage) {
+      tokenUsage = usage;
+    }
   } catch {
     // Structured output not supported — fall back to raw text
   }
 
   // Fallback: generate raw text and parse JSON from it
   if (!result) {
-    const { text: rawText } = await generateText({
+    const { text: rawText, usage } = await generateText({
       model,
       system: systemPrompt + '\n\nRespond with ONLY a JSON object, no markdown or explanation.',
       prompt: userPrompt,
@@ -141,6 +146,9 @@ async function translateWithLlm(
       maxRetries: 1,
     });
     result = extractJsonFromText(rawText);
+    if (usage) {
+      tokenUsage = usage;
+    }
   }
 
   if (!result || !Array.isArray(result.translations)) {
@@ -157,6 +165,7 @@ async function translateWithLlm(
         ? t.usedGlossaryTerms.filter((term): term is string => typeof term === 'string')
         : [],
     })),
+    usage: tokenUsage,
   };
 }
 
@@ -367,6 +376,7 @@ export async function handleLlmTranslateRequest(req: Request): Promise<Response>
           warnings: translation.warnings ?? [],
         },
       })),
+      usage: result.usage ?? undefined,
     });
   } catch (error) {
     if (error instanceof SyntaxError) {

@@ -4,7 +4,9 @@
  */
 
 import { useState, useCallback, useEffect } from 'react';
+import { Link } from 'react-router';
 import {
+  Anchor,
   Stack,
   Paper,
   Group,
@@ -302,9 +304,11 @@ export function ProjectTranslationTab({
   return (
     <Stack gap="md">
       <Text size="sm" c="dimmed">
-        {t(
-          'Override the translation provider per language. Configure API keys in the global Settings page.',
-        )}
+        {t('Override the translation provider per language. Configure API keys in')}{' '}
+        <Anchor component={Link} to="/settings?tab=translation" size="sm">
+          {t('Settings → Translation')}
+        </Anchor>
+        .
       </Text>
       {languages.map((lang) => (
         <LanguageTranslationCard

@@ -15,6 +15,7 @@ export {
 } from './settings';
 export type {
   LlmProviderId,
+  ProviderTokenUsage,
   ProviderTranslation,
   ProviderTranslationMetadata,
   ProviderTranslationRequest,

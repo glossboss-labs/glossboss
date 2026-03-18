@@ -70,7 +70,7 @@ function getEmptySteps(t: T): DriveStep[] {
       popover: {
         title: t('Upload a file'),
         description: t(
-          'Start by uploading a .po, .pot, or .json translation file. Drag and drop or click to browse.',
+          'Drop a translation file here to get started. Works with .po, .pot, and .json — the standard formats for WordPress, React, and most i18n frameworks.',
         ),
         side: 'bottom',
         align: 'center',
@@ -125,7 +125,9 @@ function getEditorSteps(t: T): DriveStep[] {
       element: '[data-tour="bulk-translate"]',
       popover: {
         title: t('AI translation'),
-        description: t('Translate all untranslated entries at once with DeepL, Azure, or Gemini.'),
+        description: t(
+          "Translate all entries at once using AI. You'll need a free API key from any provider — head to Settings to set one up.",
+        ),
         side: 'bottom',
         align: 'center',
       },

@@ -21,7 +21,9 @@ import {
   SPEECH_ENABLED_KEY,
   TRANSLATE_ENABLED_KEY,
   WORKSPACE_MODE_KEY,
+  API_KEY_SETUP_PROMPTED_KEY,
 } from '@/lib/constants/storage-keys';
+import { hasProviderCredentials } from '@/lib/translation';
 import type { IndexPageBannersProps } from './IndexPageBanners';
 import type { IndexPageDialogsProps } from './IndexPageDialogs';
 import type { IndexPageNotificationsProps } from './IndexPageNotifications';
@@ -183,6 +185,33 @@ export function useIndexPageController(options?: IndexPageControllerOptions) {
     [settingsNavigate],
   );
 
+  // One-time nudge: when a file is first loaded and no provider has an API key,
+  // auto-navigate to translation settings so the user can set one up.
+  const hasPromptedApiKey = useRef(false);
+  useEffect(() => {
+    if (!filename || hasPromptedApiKey.current || readOnly) return;
+    try {
+      if (localStorage.getItem(API_KEY_SETUP_PROMPTED_KEY)) return;
+    } catch {
+      return;
+    }
+    const anyConfigured =
+      hasProviderCredentials('deepl') ||
+      hasProviderCredentials('azure') ||
+      hasProviderCredentials('google');
+    if (!anyConfigured) {
+      hasPromptedApiKey.current = true;
+      try {
+        localStorage.setItem(API_KEY_SETUP_PROMPTED_KEY, '1');
+      } catch {
+        // Ignore storage errors
+      }
+      // Short delay to let the editor render before navigating
+      const timer = setTimeout(() => handleOpenSettings('translation'), 600);
+      return () => clearTimeout(timer);
+    }
+  }, [filename, readOnly, handleOpenSettings]);
+
   const handleDiscardDraft = useCallback(() => {
     if (fileLoader.pendingDraft) {
       deleteDraft(fileLoader.pendingDraft.filename);
@@ -304,6 +333,7 @@ export function useIndexPageController(options?: IndexPageControllerOptions) {
         speechEnabled,
         onEntrySelect: handleEntrySelect,
         readOnly,
+        onOpenSettings: handleOpenSettings,
       }
     : null;
 

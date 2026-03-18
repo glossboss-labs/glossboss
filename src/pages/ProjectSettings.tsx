@@ -381,6 +381,11 @@ export default function ProjectSettings() {
                         {/* General tab */}
                         {activeTab === 'general' && (
                           <Stack gap="lg">
+                            <Text size="sm" c="dimmed">
+                              {t(
+                                'Basic information about your project. The visibility setting controls who can see and contribute.',
+                              )}
+                            </Text>
                             <Paper withBorder p="md">
                               <Text size="sm" fw={500} mb="sm">
                                 {t('Project details')}
@@ -648,6 +653,11 @@ export default function ProjectSettings() {
                         {/* Languages tab */}
                         {activeTab === 'languages' && (
                           <Stack gap="md">
+                            <Text size="sm" c="dimmed">
+                              {t(
+                                'Each language is a translation target. Add languages here, then open them in the editor to translate.',
+                              )}
+                            </Text>
                             {isManager && (
                               <Group justify="flex-end">
                                 <motion.div {...buttonStates}>
@@ -664,7 +674,9 @@ export default function ProjectSettings() {
                               <Paper withBorder p="md">
                                 <Center py={20}>
                                   <Text size="sm" c="dimmed">
-                                    {t('No languages yet')}
+                                    {t(
+                                      'No languages yet. Add your first language to start translating this project.',
+                                    )}
                                   </Text>
                                 </Center>
                               </Paper>
@@ -737,6 +749,11 @@ export default function ProjectSettings() {
                         {/* Members tab */}
                         {activeTab === 'members' && (
                           <Stack gap="lg">
+                            <Text size="sm" c="dimmed">
+                              {t(
+                                'Manage who has access. Roles: Admin (full control), Manager (settings + invites), Translator (translate), Reviewer (translate + approve), Viewer (read-only).',
+                              )}
+                            </Text>
                             <ProjectMembersTab
                               projectId={project.id}
                               members={members}
