@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: GlossBoss UI\n"
-"PO-Revision-Date: 2026-03-10 07:09+0100\n"
+"PO-Revision-Date: 2026-03-19 00:52+0100\n"
 "Language: nl\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 ""
@@ -1542,7 +1542,7 @@ msgstr "Huidige editor"
 
 #: src/components/AppErrorBoundary.tsx:70
 msgid "Current path"
-msgstr ""
+msgstr "Huidige pad"
 
 #: src/components/settings/BillingSection.tsx:289
 #: src/components/settings/BillingSection.tsx:442
@@ -2170,7 +2170,7 @@ msgstr "Fout"
 
 #: src/components/AppErrorBoundary.tsx:71
 msgid "Error details"
-msgstr ""
+msgstr "Foutdetails"
 
 #: src/components/editor/TranslateButton.tsx:230
 #: src/components/editor/TranslateButton.tsx:251
@@ -3182,12 +3182,12 @@ msgstr "Glossary: {count} termen ({locale})"
 
 #: src/pages/NotFoundPage.tsx:50
 msgid "Go back"
-msgstr ""
+msgstr "Terug"
 
 #: src/components/AppErrorBoundary.tsx:62
 #: src/pages/NotFoundPage.tsx:24
 msgid "Go home"
-msgstr ""
+msgstr "Naar home"
 
 #: src/components/repo-sync/RepoSyncModal.tsx:926
 msgid "Go to Connect"
@@ -4683,11 +4683,11 @@ msgstr "Pagina 1 van 1"
 
 #: src/pages/NotFoundPage.tsx:39
 msgid "Page not found"
-msgstr ""
+msgstr "Pagina niet gevonden"
 
 #: src/pages/NotFoundPage.tsx:16
 msgid "Page not found - GlossBoss"
-msgstr ""
+msgstr "Pagina niet gevonden - GlossBoss"
 
 #: src/pages/PrivacyPage.tsx:88
 msgid "Page views"
@@ -5372,7 +5372,7 @@ msgstr "Release {{release}}"
 
 #: src/components/AppErrorBoundary.tsx:81
 msgid "Reload page"
-msgstr ""
+msgstr "Pagina opnieuw laden"
 
 #: src/components/settings/CustomProviderCard.tsx:185
 #: src/components/settings/LlmProviderCard.tsx:256
@@ -5506,7 +5506,7 @@ msgstr ""
 
 #: src/pages/NotFoundPage.tsx:43
 msgid "Requested path"
-msgstr ""
+msgstr "Gevraagde pad"
 
 #: src/pages/TermsPage.tsx:71
 msgid "Resell access to the Service without written permission."
@@ -6241,11 +6241,11 @@ msgstr "Sociale media"
 
 #: src/components/AppErrorBoundary.tsx:67
 msgid "Something went wrong"
-msgstr ""
+msgstr "Er is iets misgegaan"
 
 #: src/components/AppErrorBoundary.tsx:54
 msgid "Something went wrong - GlossBoss"
-msgstr ""
+msgstr "Er is iets misgegaan - GlossBoss"
 
 #: src/components/editor/FilterToolbar.tsx:619
 msgid "Sort entries"
@@ -6710,6 +6710,8 @@ msgid ""
 "The app ran into an unexpected error while loading this page. Reload and try"
 " again."
 msgstr ""
+"De app is een onverwachte fout tegengekomen tijdens het laden van deze pagin"
+"a. Laad de pagina opnieuw en probeer het nog eens."
 
 #: src/pages/LicensePage.tsx:48
 msgid "The full license text for this deployment is available in the local"
@@ -7303,7 +7305,7 @@ msgstr ""
 
 #: src/components/AppErrorBoundary.tsx:66
 msgid "Unexpected error"
-msgstr ""
+msgstr "Onverwachte fout"
 
 #: src/components/editor/EditorInspector.tsx:242
 #: src/components/editor/EditorInspector.tsx:243
@@ -7664,6 +7666,8 @@ msgid ""
 "We couldn't find the page you requested. It may have moved, the link may be "
 "out of date, or the URL may be mistyped."
 msgstr ""
+"We konden de pagina die je zocht niet vinden. Misschien is de pagina verplaa"
+"tst, is de link verouderd of is de URL verkeerd getypt."
 
 #: src/pages/PrivacyPage.tsx:110
 msgid "We honor the"
