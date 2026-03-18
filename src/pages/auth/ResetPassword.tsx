@@ -19,6 +19,9 @@ import {
   useComputedColorScheme,
 } from '@mantine/core';
 import { AlertCircle, CheckCircle } from 'lucide-react';
+import { motion } from 'motion/react';
+import { contentVariants } from '@/lib/motion';
+import { AnimatedStateSwitch } from '@/components/ui';
 import { useTranslation } from '@/lib/app-language';
 import { useAuthStore } from '@/stores/auth-store';
 import { useAuth } from '@/hooks/use-auth';
@@ -56,72 +59,79 @@ export default function ResetPassword() {
 
   return (
     <Container size={420} py={80}>
-      <Stack align="center" gap={8} mb="md">
-        <Anchor onClick={() => navigate(-1)} style={{ display: 'inline-flex', cursor: 'pointer' }}>
-          <img
-            src={
-              computedColorScheme === 'dark'
-                ? '/glossboss-combined-light.svg'
-                : '/glossboss-combined-dark.svg'
-            }
-            alt="GlossBoss"
-            style={{ height: 32 }}
-          />
-        </Anchor>
-      </Stack>
-      <Title ta="center" style={{ fontWeight: 800 }}>
-        {t('Set new password')}
-      </Title>
-      <Text c="dimmed" size="sm" ta="center" mt={5}>
-        {t('Choose a new password for your account.')}
-      </Text>
+      <motion.div variants={contentVariants} initial="hidden" animate="visible">
+        <Stack align="center" gap={8} mb="md">
+          <Anchor
+            onClick={() => navigate(-1)}
+            style={{ display: 'inline-flex', cursor: 'pointer' }}
+          >
+            <img
+              src={
+                computedColorScheme === 'dark'
+                  ? '/glossboss-combined-light.svg'
+                  : '/glossboss-combined-dark.svg'
+              }
+              alt="GlossBoss"
+              style={{ height: 32 }}
+            />
+          </Anchor>
+        </Stack>
+        <Title ta="center" style={{ fontWeight: 800 }}>
+          {t('Set new password')}
+        </Title>
+        <Text c="dimmed" size="sm" ta="center" mt={5}>
+          {t('Choose a new password for your account.')}
+        </Text>
 
-      <Paper withBorder p="xl" mt={30} radius="md">
-        {done ? (
-          <Alert icon={<CheckCircle size={16} />} color="green" variant="light">
-            {t('Password updated. Redirecting...')}
-          </Alert>
-        ) : (
-          <form onSubmit={handleSubmit}>
-            <Stack>
-              {error && (
-                <Alert icon={<AlertCircle size={16} />} color="red" variant="light">
-                  {error.message}
-                </Alert>
-              )}
+        <Paper withBorder p="xl" mt={30} radius="md">
+          <AnimatedStateSwitch stateKey={done ? 'success' : 'form'}>
+            {done ? (
+              <Alert icon={<CheckCircle size={16} />} color="green" variant="light">
+                {t('Password updated. Redirecting...')}
+              </Alert>
+            ) : (
+              <form onSubmit={handleSubmit}>
+                <Stack>
+                  {error && (
+                    <Alert icon={<AlertCircle size={16} />} color="red" variant="light">
+                      {error.message}
+                    </Alert>
+                  )}
 
-              {mismatch && (
-                <Alert icon={<AlertCircle size={16} />} color="red" variant="light">
-                  {t('Passwords do not match.')}
-                </Alert>
-              )}
+                  {mismatch && (
+                    <Alert icon={<AlertCircle size={16} />} color="red" variant="light">
+                      {t('Passwords do not match.')}
+                    </Alert>
+                  )}
 
-              <PasswordInput
-                label={t('New password')}
-                placeholder={t('Choose a password')}
-                required
-                value={password}
-                onChange={(e) => setPassword(e.currentTarget.value)}
-                autoComplete="new-password"
-                description={t('Minimum 8 characters, with uppercase, lowercase, and a digit')}
-              />
+                  <PasswordInput
+                    label={t('New password')}
+                    placeholder={t('Choose a password')}
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.currentTarget.value)}
+                    autoComplete="new-password"
+                    description={t('Minimum 8 characters, with uppercase, lowercase, and a digit')}
+                  />
 
-              <PasswordInput
-                label={t('Confirm password')}
-                placeholder={t('Repeat your password')}
-                required
-                value={confirm}
-                onChange={(e) => setConfirm(e.currentTarget.value)}
-                autoComplete="new-password"
-              />
+                  <PasswordInput
+                    label={t('Confirm password')}
+                    placeholder={t('Repeat your password')}
+                    required
+                    value={confirm}
+                    onChange={(e) => setConfirm(e.currentTarget.value)}
+                    autoComplete="new-password"
+                  />
 
-              <Button type="submit" fullWidth loading={submitting}>
-                {t('Update password')}
-              </Button>
-            </Stack>
-          </form>
-        )}
-      </Paper>
+                  <Button type="submit" fullWidth loading={submitting}>
+                    {t('Update password')}
+                  </Button>
+                </Stack>
+              </form>
+            )}
+          </AnimatedStateSwitch>
+        </Paper>
+      </motion.div>
     </Container>
   );
 }

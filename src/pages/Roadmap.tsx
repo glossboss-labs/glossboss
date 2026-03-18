@@ -33,11 +33,12 @@ import {
   Circle,
 } from 'lucide-react';
 import {
-  sectionVariants,
+  staggerPageVariants,
   contentVariants,
   fadeVariants,
   staggerContainerVariants,
 } from '@/lib/motion';
+import { AnimatedStateSwitch } from '@/components/ui';
 import { useTranslation, msgid } from '@/lib/app-language';
 import { formatRelative } from '@/lib/utils/date';
 import { useRoadmapItems } from '@/lib/roadmap/queries';
@@ -232,117 +233,119 @@ export default function Roadmap() {
         : `${t(STATUS_LABELS[key])} (${counts[key]})`,
   }));
 
+  const stateKey = loading ? 'loading' : error ? 'error' : issues.length === 0 ? 'empty' : 'data';
+
   return (
     <>
-      <MotionDiv variants={sectionVariants} initial="hidden" animate="visible">
-        <Group justify="space-between" mb="xl">
-          <div>
-            <Title order={2}>{t('Roadmap')}</Title>
-            <Text size="sm" mt={4} c="dimmed">
-              {t('Planned features and improvements')}
-            </Text>
-          </div>
-        </Group>
+      <MotionDiv variants={staggerPageVariants} initial="hidden" animate="visible">
+        {/* Header */}
+        <MotionDiv variants={fadeVariants}>
+          <Group justify="space-between" mb="xl">
+            <div>
+              <Title order={2}>{t('Roadmap')}</Title>
+              <Text size="sm" mt={4} c="dimmed">
+                {t('Planned features and improvements')}
+              </Text>
+            </div>
+          </Group>
+        </MotionDiv>
 
-        {loading && (
-          <MotionDiv variants={fadeVariants} initial="hidden" animate="visible">
-            <Center py={80}>
-              <Loader size="lg" />
-            </Center>
-          </MotionDiv>
-        )}
+        {/* Content — animated state transitions */}
+        <MotionDiv variants={fadeVariants}>
+          <AnimatedStateSwitch stateKey={stateKey}>
+            {loading && (
+              <Center py={80}>
+                <Loader size="lg" />
+              </Center>
+            )}
 
-        {error && (
-          <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
-            <Alert icon={<AlertCircle size={16} />} color="red" variant="light" mb="md">
-              {error}
-            </Alert>
-          </MotionDiv>
-        )}
+            {error && (
+              <Alert icon={<AlertCircle size={16} />} color="red" variant="light" mb="md">
+                {error}
+              </Alert>
+            )}
 
-        {!loading && !error && issues.length === 0 && (
-          <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
-            <Center py={60}>
-              <Stack align="center" gap="lg" maw={420}>
-                <ThemeIcon size={64} variant="light" color="blue" radius="xl">
-                  <Sparkles size={32} />
-                </ThemeIcon>
-                <Stack align="center" gap={4}>
-                  <Title order={3}>{t('Big things are coming')}</Title>
-                  <Text size="sm" c="dimmed" ta="center">
-                    {t(
-                      "We're cooking up new features. Want to help shape what comes next? Tell us what you need.",
-                    )}
-                  </Text>
-                </Stack>
-                <Button
-                  variant="light"
-                  leftSection={<MessageSquare size={16} />}
-                  onClick={() => setFeedbackOpen(true)}
-                >
-                  {t('Share feedback')}
-                </Button>
-              </Stack>
-            </Center>
-          </MotionDiv>
-        )}
-
-        {!loading && issues.length > 0 && (
-          <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
-            <Stack gap="md">
-              <Stack gap="sm">
-                <SegmentedControl
-                  value={statusFilter}
-                  onChange={(v) => setStatusFilter(v as RoadmapStatus)}
-                  data={segmentData}
-                  size="xs"
-                  fullWidth
-                />
-                <TextInput
-                  placeholder={t('Search roadmap…')}
-                  leftSection={<Search size={14} />}
-                  value={search}
-                  onChange={(e) => setSearch(e.currentTarget.value)}
-                  size="sm"
-                />
-              </Stack>
-
-              {filtered.length === 0 ? (
-                <Center py={40}>
-                  <Text size="sm" c="dimmed">
-                    {t('No roadmap items match your search')}
-                  </Text>
-                </Center>
-              ) : (
-                <MotionDiv variants={staggerContainerVariants} initial="hidden" animate="visible">
-                  <Stack gap="sm">
-                    {filtered.map((issue) => (
-                      <MotionDiv key={issue.url || issue.number} variants={contentVariants}>
-                        <RoadmapCard issue={issue} />
-                      </MotionDiv>
-                    ))}
+            {!loading && !error && issues.length === 0 && (
+              <Center py={60}>
+                <Stack align="center" gap="lg" maw={420}>
+                  <ThemeIcon size={64} variant="light" color="blue" radius="xl">
+                    <Sparkles size={32} />
+                  </ThemeIcon>
+                  <Stack align="center" gap={4}>
+                    <Title order={3}>{t('Big things are coming')}</Title>
+                    <Text size="sm" c="dimmed" ta="center">
+                      {t(
+                        "We're cooking up new features. Want to help shape what comes next? Tell us what you need.",
+                      )}
+                    </Text>
                   </Stack>
-                </MotionDiv>
-              )}
-
-              <Paper withBorder p="md" mt="sm">
-                <Group justify="space-between" align="center" wrap="wrap">
-                  <Text size="sm" c="dimmed">
-                    {t('Missing something? Let us know what you need.')}
-                  </Text>
                   <Button
                     variant="light"
-                    size="xs"
-                    leftSection={<MessageSquare size={14} />}
+                    leftSection={<MessageSquare size={16} />}
                     onClick={() => setFeedbackOpen(true)}
                   >
                     {t('Share feedback')}
                   </Button>
-                </Group>
-              </Paper>
-            </Stack>
-          </MotionDiv>
-        )}
+                </Stack>
+              </Center>
+            )}
+
+            {!loading && issues.length > 0 && (
+              <Stack gap="md">
+                <Stack gap="sm">
+                  <SegmentedControl
+                    value={statusFilter}
+                    onChange={(v) => setStatusFilter(v as RoadmapStatus)}
+                    data={segmentData}
+                    size="xs"
+                    fullWidth
+                  />
+                  <TextInput
+                    placeholder={t('Search roadmap…')}
+                    leftSection={<Search size={14} />}
+                    value={search}
+                    onChange={(e) => setSearch(e.currentTarget.value)}
+                    size="sm"
+                  />
+                </Stack>
+
+                {filtered.length === 0 ? (
+                  <Center py={40}>
+                    <Text size="sm" c="dimmed">
+                      {t('No roadmap items match your search')}
+                    </Text>
+                  </Center>
+                ) : (
+                  <MotionDiv variants={staggerContainerVariants} initial="hidden" animate="visible">
+                    <Stack gap="sm">
+                      {filtered.map((issue) => (
+                        <MotionDiv key={issue.url || issue.number} variants={contentVariants}>
+                          <RoadmapCard issue={issue} />
+                        </MotionDiv>
+                      ))}
+                    </Stack>
+                  </MotionDiv>
+                )}
+
+                <Paper withBorder p="md" mt="sm">
+                  <Group justify="space-between" align="center" wrap="wrap">
+                    <Text size="sm" c="dimmed">
+                      {t('Missing something? Let us know what you need.')}
+                    </Text>
+                    <Button
+                      variant="light"
+                      size="xs"
+                      leftSection={<MessageSquare size={14} />}
+                      onClick={() => setFeedbackOpen(true)}
+                    >
+                      {t('Share feedback')}
+                    </Button>
+                  </Group>
+                </Paper>
+              </Stack>
+            )}
+          </AnimatedStateSwitch>
+        </MotionDiv>
       </MotionDiv>
 
       <FeedbackModal opened={feedbackOpen} onClose={() => setFeedbackOpen(false)} />

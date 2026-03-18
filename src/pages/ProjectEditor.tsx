@@ -11,8 +11,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useParams, Link } from 'react-router';
 import { Box, Container, Stack, Group, Text, Button, Center, Loader, Alert } from '@mantine/core';
 import { ArrowLeft, AlertCircle } from 'lucide-react';
-import { motion } from 'motion/react';
-import { fadeVariants } from '@/lib/motion';
+import { AnimatedStateSwitch } from '@/components/ui';
 import { useTranslation } from '@/lib/app-language';
 import { EditorHeader, EditorWorkspace, EmptyState, PresenceAvatars } from '@/components/editor';
 import { useRealtimeChannel } from '@/hooks/use-realtime-channel';
@@ -183,33 +182,28 @@ export default function ProjectEditor() {
     };
   }, [id, languageId, loadFile, setProjectName, restoreReviewEntries, t]);
 
-  // Loading state
-  if (loading) {
-    return (
-      <motion.div variants={fadeVariants} initial="hidden" animate="visible">
+  const stateKey = loading ? 'loading' : error || !project || !language ? 'error' : 'editor';
+
+  return (
+    <AnimatedStateSwitch stateKey={stateKey}>
+      {loading ? (
         <Center py={80}>
           <Loader size="lg" />
         </Center>
-      </motion.div>
-    );
-  }
-
-  // Error state
-  if (error || !project || !language) {
-    return (
-      <Container size="xl" py="xl">
-        <Alert icon={<AlertCircle size={16} />} color="red" variant="light">
-          {error ?? t('Project not found')}
-        </Alert>
-        <Button component={Link} to="/dashboard" variant="light" mt="md">
-          {t('Back to dashboard')}
-        </Button>
-      </Container>
-    );
-  }
-
-  // Data loaded — render the full editor using the same controller as Index
-  return <ProjectEditorLoaded project={project} language={language} />;
+      ) : error || !project || !language ? (
+        <Container size="xl" py="xl">
+          <Alert icon={<AlertCircle size={16} />} color="red" variant="light">
+            {error ?? t('Project not found')}
+          </Alert>
+          <Button component={Link} to="/dashboard" variant="light" mt="md">
+            {t('Back to dashboard')}
+          </Button>
+        </Container>
+      ) : (
+        <ProjectEditorLoaded project={project} language={language} />
+      )}
+    </AnimatedStateSwitch>
+  );
 }
 
 /**

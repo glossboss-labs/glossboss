@@ -11,8 +11,6 @@
 
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router';
-import { motion } from 'motion/react';
-import { ambientEnter } from '@/lib/motion';
 import {
   Stack,
   Tooltip,
@@ -290,24 +288,18 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
                 </Group>
               )}
               <Stack gap={2}>
-                {recentProjects.map((rp, i) => (
-                  <motion.div
+                {recentProjects.map((rp) => (
+                  <NavItem
                     key={rp.id}
-                    initial={{ opacity: 0, x: -8 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ ...ambientEnter, delay: i * 0.05 }}
-                  >
-                    <NavItem
-                      to={rp.path}
-                      icon={<FolderOpen size={16} />}
-                      label={rp.name}
-                      active={
-                        pathname === `/projects/${rp.id}` ||
-                        pathname.startsWith(`/projects/${rp.id}/`)
-                      }
-                      collapsed={collapsed}
-                    />
-                  </motion.div>
+                    to={rp.path}
+                    icon={<FolderOpen size={16} />}
+                    label={rp.name}
+                    active={
+                      pathname === `/projects/${rp.id}` ||
+                      pathname.startsWith(`/projects/${rp.id}/`)
+                    }
+                    collapsed={collapsed}
+                  />
                 ))}
               </Stack>
             </>

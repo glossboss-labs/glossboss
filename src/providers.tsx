@@ -13,6 +13,7 @@ import {
   type CSSVariablesResolver,
 } from '@mantine/core';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { MotionConfig } from 'motion/react';
 // import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { TranslationProvider } from '@/lib/app-language';
 import { useAuthStore } from '@/stores/auth-store';
@@ -297,7 +298,9 @@ export function AppProviders({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <MantineProvider theme={theme} defaultColorScheme="auto" cssVariablesResolver={resolver}>
-        <TranslationProvider>{children}</TranslationProvider>
+        <MotionConfig reducedMotion="user">
+          <TranslationProvider>{children}</TranslationProvider>
+        </MotionConfig>
       </MantineProvider>
     </QueryClientProvider>
   );

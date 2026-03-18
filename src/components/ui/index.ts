@@ -19,3 +19,6 @@ export { GlossBossLogo } from './GlossBossLogo';
 export { ModalActionButtons, type ModalActionButtonsProps } from './ModalActionButtons';
 export { renderFlagOption } from './renderFlagOption';
 export { SettingsSourceBadge, type SettingsSource } from './SettingsSourceBadge';
+export { AnimatedOutlet } from './AnimatedOutlet';
+export { AnimatedTabPanel } from './AnimatedTabPanel';
+export { AnimatedStateSwitch } from './AnimatedStateSwitch';

@@ -13,7 +13,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
 
   if (loading) {
     return (
-      <Center h="100vh">
+      <Center py={80}>
         <Loader size="lg" />
       </Center>
     );

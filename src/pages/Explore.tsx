@@ -20,7 +20,8 @@ import {
 } from '@mantine/core';
 import { motion, useInView, useMotionValue, useSpring } from 'motion/react';
 import { AlertCircle, Search, Globe, Languages, FileText, Users, TrendingUp } from 'lucide-react';
-import { sectionVariants, contentVariants, fadeVariants } from '@/lib/motion';
+import { staggerPageVariants, fadeVariants } from '@/lib/motion';
+import { AnimatedStateSwitch } from '@/components/ui';
 import { useTranslation, msgid } from '@/lib/app-language';
 import { sortProjects, type ProjectSortOption } from '@/lib/utils/sorting';
 import { trackEvent } from '@/lib/analytics';
@@ -218,27 +219,31 @@ export default function Explore() {
       .sort((a, b) => a.label.localeCompare(b.label));
   }, [projects]);
 
+  const stateKey = loading ? 'loading' : error ? 'error' : projects.length === 0 ? 'empty' : 'data';
+
   return (
     <>
-      <MotionDiv variants={sectionVariants} initial="hidden" animate="visible">
+      <MotionDiv variants={staggerPageVariants} initial="hidden" animate="visible">
         {/* Hero header */}
-        <Stack gap={4} mb="xl">
-          <Group gap="sm" align="center">
-            <ThemeIcon variant="light" color="blue" size="xl" radius="xl">
-              <Globe size={22} />
-            </ThemeIcon>
-            <div>
-              <Title order={2}>{t('Explore')}</Title>
-              <Text size="sm" c="dimmed">
-                {t('Discover and contribute to public translation projects')}
-              </Text>
-            </div>
-          </Group>
-        </Stack>
+        <MotionDiv variants={fadeVariants}>
+          <Stack gap={4} mb="xl">
+            <Group gap="sm" align="center">
+              <ThemeIcon variant="light" color="blue" size="xl" radius="xl">
+                <Globe size={22} />
+              </ThemeIcon>
+              <div>
+                <Title order={2}>{t('Explore')}</Title>
+                <Text size="sm" c="dimmed">
+                  {t('Discover and contribute to public translation projects')}
+                </Text>
+              </div>
+            </Group>
+          </Stack>
+        </MotionDiv>
 
         {/* Platform stats counters */}
         {platformStats && (platformStats.totalStrings > 0 || platformStats.totalProjects > 0) && (
-          <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
+          <MotionDiv variants={fadeVariants}>
             <SimpleGrid cols={{ base: 2, sm: 4 }} spacing="md" mb="xl">
               <AnimatedStat
                 value={platformStats.totalStrings}
@@ -264,153 +269,146 @@ export default function Explore() {
           </MotionDiv>
         )}
 
-        {loading && (
-          <MotionDiv variants={fadeVariants} initial="hidden" animate="visible">
-            <Center py={80}>
-              <Loader size="lg" />
-            </Center>
-          </MotionDiv>
-        )}
+        {/* Content — animated state transitions */}
+        <MotionDiv variants={fadeVariants}>
+          <AnimatedStateSwitch stateKey={stateKey}>
+            {loading && (
+              <Center py={80}>
+                <Loader size="lg" />
+              </Center>
+            )}
 
-        {error && (
-          <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
-            <Alert icon={<AlertCircle size={16} />} color="red" variant="light" mb="md">
-              {error}
-            </Alert>
-          </MotionDiv>
-        )}
+            {error && (
+              <Alert icon={<AlertCircle size={16} />} color="red" variant="light" mb="md">
+                {error}
+              </Alert>
+            )}
 
-        {!loading && !error && projects.length === 0 && (
-          <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
-            <Center py={80}>
-              <Stack align="center" gap="md">
-                <ThemeIcon size="xl" variant="light" color="blue" radius="xl">
-                  <Globe size={24} />
-                </ThemeIcon>
-                <Text size="lg" c="dimmed">
-                  {t('No public projects yet')}
-                </Text>
-              </Stack>
-            </Center>
-          </MotionDiv>
-        )}
+            {!loading && !error && projects.length === 0 && (
+              <Center py={80}>
+                <Stack align="center" gap="md">
+                  <ThemeIcon size="xl" variant="light" color="blue" radius="xl">
+                    <Globe size={24} />
+                  </ThemeIcon>
+                  <Text size="lg" c="dimmed">
+                    {t('No public projects yet')}
+                  </Text>
+                </Stack>
+              </Center>
+            )}
 
-        {!loading && projects.length > 0 && (
-          <>
-            {/* Community summary bar */}
-            <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
-              <Paper withBorder p="md" radius="md" mb="lg">
-                <Group justify="space-between" wrap="wrap" gap="md">
-                  <Group gap="lg">
-                    <Group gap={6}>
-                      <Globe size={14} style={{ opacity: 0.5 }} />
-                      <Text size="sm" fw={500}>
-                        {t('{{count}} projects', { count: projects.length })}
-                      </Text>
+            {!loading && projects.length > 0 && (
+              <>
+                {/* Community summary bar */}
+                <Paper withBorder p="md" radius="md" mb="lg">
+                  <Group justify="space-between" wrap="wrap" gap="md">
+                    <Group gap="lg">
+                      <Group gap={6}>
+                        <Globe size={14} style={{ opacity: 0.5 }} />
+                        <Text size="sm" fw={500}>
+                          {t('{{count}} projects', { count: projects.length })}
+                        </Text>
+                      </Group>
+                      <Group gap={6}>
+                        <FileText size={14} style={{ opacity: 0.5 }} />
+                        <Text size="sm" c="dimmed">
+                          {t('{{count}} strings', {
+                            count: projectStats.totalStrings.toLocaleString(),
+                          })}
+                        </Text>
+                      </Group>
+                      <Group gap={6}>
+                        <Languages size={14} style={{ opacity: 0.5 }} />
+                        <Text size="sm" c="dimmed">
+                          {t('{{count}} languages', { count: projectStats.totalLanguages })}
+                        </Text>
+                      </Group>
                     </Group>
-                    <Group gap={6}>
-                      <FileText size={14} style={{ opacity: 0.5 }} />
+                    <Group gap={8}>
+                      <TrendingUp size={14} style={{ opacity: 0.5 }} />
                       <Text size="sm" c="dimmed">
-                        {t('{{count}} strings', {
-                          count: projectStats.totalStrings.toLocaleString(),
-                        })}
+                        {t('{{pct}}% translated', { pct: projectStats.avgCompletion })}
                       </Text>
-                    </Group>
-                    <Group gap={6}>
-                      <Languages size={14} style={{ opacity: 0.5 }} />
-                      <Text size="sm" c="dimmed">
-                        {t('{{count}} languages', { count: projectStats.totalLanguages })}
-                      </Text>
+                      <Progress
+                        value={projectStats.avgCompletion}
+                        size="sm"
+                        color="blue"
+                        style={{ width: 80 }}
+                        radius="xl"
+                      />
                     </Group>
                   </Group>
-                  <Group gap={8}>
-                    <TrendingUp size={14} style={{ opacity: 0.5 }} />
-                    <Text size="sm" c="dimmed">
-                      {t('{{pct}}% translated', { pct: projectStats.avgCompletion })}
-                    </Text>
-                    <Progress
-                      value={projectStats.avgCompletion}
-                      size="sm"
-                      color="blue"
-                      style={{ width: 80 }}
-                      radius="xl"
-                    />
-                  </Group>
-                </Group>
-              </Paper>
-            </MotionDiv>
+                </Paper>
 
-            {/* Search + filters */}
-            <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
-              <Group mb="md" gap="sm" wrap="wrap">
-                <TextInput
-                  placeholder={t('Search projects…')}
-                  leftSection={<Search size={14} />}
-                  value={search}
-                  onChange={(e) => setSearch(e.currentTarget.value)}
-                  style={{ flex: '1 1 200px', minWidth: 0 }}
-                />
-                <Select
-                  data={formatOptions}
-                  value={formatFilter}
-                  onChange={setFormatFilter}
-                  placeholder={t('Format')}
-                  clearable
-                  style={{ flex: '0 1 auto' }}
-                  size="sm"
-                />
-                {languageOptions.length > 0 && (
+                {/* Search + filters */}
+                <Group mb="md" gap="sm" wrap="wrap">
+                  <TextInput
+                    placeholder={t('Search projects…')}
+                    leftSection={<Search size={14} />}
+                    value={search}
+                    onChange={(e) => setSearch(e.currentTarget.value)}
+                    style={{ flex: '1 1 200px', minWidth: 0 }}
+                  />
                   <Select
-                    data={languageOptions}
-                    value={languageFilter}
-                    onChange={setLanguageFilter}
-                    placeholder={t('Language')}
+                    data={formatOptions}
+                    value={formatFilter}
+                    onChange={setFormatFilter}
+                    placeholder={t('Format')}
                     clearable
-                    searchable
-                    renderOption={renderFlagOption}
                     style={{ flex: '0 1 auto' }}
                     size="sm"
                   />
-                )}
-                <Select
-                  data={sortOptions}
-                  value={sort}
-                  onChange={(v) => setSort((v as SortOption) || 'updated')}
-                  style={{ flex: '0 1 auto' }}
-                  size="sm"
-                  allowDeselect={false}
-                />
-              </Group>
-            </MotionDiv>
+                  {languageOptions.length > 0 && (
+                    <Select
+                      data={languageOptions}
+                      value={languageFilter}
+                      onChange={setLanguageFilter}
+                      placeholder={t('Language')}
+                      clearable
+                      searchable
+                      renderOption={renderFlagOption}
+                      style={{ flex: '0 1 auto' }}
+                      size="sm"
+                    />
+                  )}
+                  <Select
+                    data={sortOptions}
+                    value={sort}
+                    onChange={(v) => setSort((v as SortOption) || 'updated')}
+                    style={{ flex: '0 1 auto' }}
+                    size="sm"
+                    allowDeselect={false}
+                  />
+                </Group>
 
-            {filtered.length === 0 ? (
-              <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
-                <Center py={40}>
-                  <Text size="sm" c="dimmed">
-                    {t('No projects match your search')}
-                  </Text>
-                </Center>
-              </MotionDiv>
-            ) : (
-              <div
-                onClick={(e) => {
-                  const link = (e.target as HTMLElement).closest('a[href*="/projects/"]');
-                  if (link) {
-                    const match = link.getAttribute('href')?.match(/\/projects\/([^/]+)/);
-                    if (match) {
-                      const project = filtered.find((p) => p.id === match[1]);
-                      trackEvent('explore_project_opened', {
-                        slug: project?.wp_slug ?? project?.name ?? match[1],
-                      });
-                    }
-                  }
-                }}
-              >
-                <ProjectGrid projects={filtered} />
-              </div>
+                {filtered.length === 0 ? (
+                  <Center py={40}>
+                    <Text size="sm" c="dimmed">
+                      {t('No projects match your search')}
+                    </Text>
+                  </Center>
+                ) : (
+                  <div
+                    onClick={(e) => {
+                      const link = (e.target as HTMLElement).closest('a[href*="/projects/"]');
+                      if (link) {
+                        const match = link.getAttribute('href')?.match(/\/projects\/([^/]+)/);
+                        if (match) {
+                          const project = filtered.find((p) => p.id === match[1]);
+                          trackEvent('explore_project_opened', {
+                            slug: project?.wp_slug ?? project?.name ?? match[1],
+                          });
+                        }
+                      }
+                    }}
+                  >
+                    <ProjectGrid projects={filtered} />
+                  </div>
+                )}
+              </>
             )}
-          </>
-        )}
+          </AnimatedStateSwitch>
+        </MotionDiv>
       </MotionDiv>
     </>
   );

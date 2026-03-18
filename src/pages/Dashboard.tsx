@@ -19,7 +19,14 @@ import {
 } from '@mantine/core';
 import { motion } from 'motion/react';
 import { Plus, AlertCircle, FolderOpen, Search, Building2 } from 'lucide-react';
-import { sectionVariants, contentVariants, buttonStates } from '@/lib/motion';
+import {
+  staggerPageVariants,
+  staggerContainerVariants,
+  contentVariants,
+  fadeVariants,
+  buttonStates,
+} from '@/lib/motion';
+import { AnimatedStateSwitch } from '@/components/ui';
 import { useTranslation } from '@/lib/app-language';
 import { sortProjects, type ProjectSortOption } from '@/lib/utils/sorting';
 import { trackEvent } from '@/lib/analytics';
@@ -42,7 +49,7 @@ type SortOption = ProjectSortOption;
 /** Memoized organization list item to avoid re-renders when sibling items change. */
 const OrgCard = memo(function OrgCard({ org }: { org: OrganizationRow }) {
   return (
-    <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
+    <MotionDiv variants={contentVariants}>
       <Paper
         component={Link}
         to={`/orgs/${org.slug}`}
@@ -141,136 +148,156 @@ export default function Dashboard() {
     { value: 'least-complete', label: t('Least complete') },
   ];
 
+  const projectStateKey = loading
+    ? 'loading'
+    : error
+      ? 'error'
+      : projects.length === 0
+        ? 'empty'
+        : 'data';
+  const orgStateKey = orgsLoading ? 'loading' : organizations.length === 0 ? 'empty' : 'data';
+
   return (
     <>
       <FreePlanBanner />
-      <MotionDiv variants={sectionVariants} initial="hidden" animate="visible">
-        <Group justify="space-between" mb="xl" wrap="wrap">
-          <Title order={2}>{t('Projects')}</Title>
-          <motion.div {...buttonStates}>
-            <Button leftSection={<Plus size={16} />} onClick={() => setCreateModalOpen(true)}>
-              {t('New project')}
-            </Button>
-          </motion.div>
-        </Group>
+      <MotionDiv variants={staggerPageVariants} initial="hidden" animate="visible">
+        {/* Projects header */}
+        <MotionDiv variants={fadeVariants}>
+          <Group justify="space-between" mb="xl" wrap="wrap">
+            <Title order={2}>{t('Projects')}</Title>
+            <motion.div {...buttonStates}>
+              <Button leftSection={<Plus size={16} />} onClick={() => setCreateModalOpen(true)}>
+                {t('New project')}
+              </Button>
+            </motion.div>
+          </Group>
+        </MotionDiv>
 
-        {loading && <ProjectGridSkeleton />}
+        {/* Projects content — animated state transitions */}
+        <MotionDiv variants={fadeVariants}>
+          <AnimatedStateSwitch stateKey={projectStateKey}>
+            {loading && <ProjectGridSkeleton />}
 
-        {error && (
-          <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
-            <Alert icon={<AlertCircle size={16} />} color="red" variant="light" mb="md">
-              {error}
-            </Alert>
-          </MotionDiv>
-        )}
-
-        {!loading && !error && projects.length === 0 && (
-          <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
-            <Center py={80}>
-              <Stack align="center" gap="md">
-                <ThemeIcon size="xl" variant="light" color="blue" radius="xl">
-                  <FolderOpen size={24} />
-                </ThemeIcon>
-                <Text size="lg" c="dimmed">
-                  {t('No projects yet')}
-                </Text>
-                <Text size="sm" maw={360} ta="center" c="dimmed">
-                  {t(
-                    'Create a cloud project from a PO file, a WordPress.org export, or a repository.',
-                  )}
-                </Text>
-                <motion.div {...buttonStates}>
-                  <Button variant="light" onClick={() => setCreateModalOpen(true)}>
-                    {t('New project')}
-                  </Button>
-                </motion.div>
-              </Stack>
-            </Center>
-          </MotionDiv>
-        )}
-
-        {!loading && projects.length > 0 && (
-          <>
-            <Text size="sm" mb="sm" c="dimmed">
-              {t('{{projects}} projects', { projects: projects.length })}
-              {' · '}
-              {t('{{languages}} languages', { languages: totalLanguages })}
-              {' · '}
-              {t('{{strings}} strings', { strings: totalStrings })}
-            </Text>
-
-            <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
-              <Group mb="md" gap="sm" wrap="wrap">
-                <TextInput
-                  placeholder={t('Search projects…')}
-                  leftSection={<Search size={14} />}
-                  value={search}
-                  onChange={(e) => setSearch(e.currentTarget.value)}
-                  style={{ flex: '1 1 200px', minWidth: 0 }}
-                />
-                <Select
-                  data={sortOptions}
-                  value={sort}
-                  onChange={handleSortChange}
-                  style={{ flex: '0 1 auto' }}
-                  size="sm"
-                  allowDeselect={false}
-                />
-              </Group>
-            </MotionDiv>
-
-            {filtered.length === 0 ? (
-              <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
-                <Center py={40}>
-                  <Text size="sm" c="dimmed">
-                    {t('No projects match your search')}
-                  </Text>
-                </Center>
-              </MotionDiv>
-            ) : (
-              <ProjectGrid projects={filtered} onDelete={setConfirmDeleteId} ownerId={user?.id} />
+            {error && (
+              <Alert icon={<AlertCircle size={16} />} color="red" variant="light" mb="md">
+                {error}
+              </Alert>
             )}
-          </>
-        )}
-      </MotionDiv>
 
-      {/* Organizations section */}
-      <MotionDiv variants={sectionVariants} initial="hidden" animate="visible">
-        <Group justify="space-between" mb="md" mt="xl" wrap="wrap">
-          <Title order={3}>{t('Organizations')}</Title>
-          <motion.div {...buttonStates}>
-            <Button
-              variant="light"
-              leftSection={<Plus size={16} />}
-              onClick={() => setCreateOrgModalOpen(true)}
-            >
-              {t('Create organization')}
-            </Button>
-          </motion.div>
-        </Group>
+            {!loading && !error && projects.length === 0 && (
+              <Center py={80}>
+                <Stack align="center" gap="md">
+                  <ThemeIcon size="xl" variant="light" color="blue" radius="xl">
+                    <FolderOpen size={24} />
+                  </ThemeIcon>
+                  <Text size="lg" c="dimmed">
+                    {t('No projects yet')}
+                  </Text>
+                  <Text size="sm" maw={360} ta="center" c="dimmed">
+                    {t(
+                      'Create a cloud project from a PO file, a WordPress.org export, or a repository.',
+                    )}
+                  </Text>
+                  <motion.div {...buttonStates}>
+                    <Button variant="light" onClick={() => setCreateModalOpen(true)}>
+                      {t('New project')}
+                    </Button>
+                  </motion.div>
+                </Stack>
+              </Center>
+            )}
 
-        {!orgsLoading && organizations.length === 0 && (
-          <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
-            <Center py={40}>
-              <Stack align="center" gap="sm">
-                <ThemeIcon size="xl" variant="light" color="violet" radius="xl">
-                  <Building2 size={24} />
-                </ThemeIcon>
-                <Text size="sm" c="dimmed">
-                  {t('No organizations yet')}
+            {!loading && projects.length > 0 && (
+              <>
+                <Text size="sm" mb="sm" c="dimmed">
+                  {t('{{projects}} projects', { projects: projects.length })}
+                  {' · '}
+                  {t('{{languages}} languages', { languages: totalLanguages })}
+                  {' · '}
+                  {t('{{strings}} strings', { strings: totalStrings })}
                 </Text>
-              </Stack>
-            </Center>
-          </MotionDiv>
-        )}
 
-        {organizations.length > 0 && (
-          <Stack gap="sm">
-            {organizations.map((org) => (
-              <OrgCard key={org.id} org={org} />
-            ))}
-          </Stack>
-        )}
+                <Group mb="md" gap="sm" wrap="wrap">
+                  <TextInput
+                    placeholder={t('Search projects…')}
+                    leftSection={<Search size={14} />}
+                    value={search}
+                    onChange={(e) => setSearch(e.currentTarget.value)}
+                    style={{ flex: '1 1 200px', minWidth: 0 }}
+                  />
+                  <Select
+                    data={sortOptions}
+                    value={sort}
+                    onChange={handleSortChange}
+                    style={{ flex: '0 1 auto' }}
+                    size="sm"
+                    allowDeselect={false}
+                  />
+                </Group>
+
+                {filtered.length === 0 ? (
+                  <Center py={40}>
+                    <Text size="sm" c="dimmed">
+                      {t('No projects match your search')}
+                    </Text>
+                  </Center>
+                ) : (
+                  <ProjectGrid
+                    projects={filtered}
+                    onDelete={setConfirmDeleteId}
+                    ownerId={user?.id}
+                  />
+                )}
+              </>
+            )}
+          </AnimatedStateSwitch>
+        </MotionDiv>
+
+        {/* Organizations header */}
+        <MotionDiv variants={fadeVariants}>
+          <Group justify="space-between" mb="md" mt="xl" wrap="wrap">
+            <Title order={3}>{t('Organizations')}</Title>
+            <motion.div {...buttonStates}>
+              <Button
+                variant="light"
+                leftSection={<Plus size={16} />}
+                onClick={() => setCreateOrgModalOpen(true)}
+              >
+                {t('Create organization')}
+              </Button>
+            </motion.div>
+          </Group>
+        </MotionDiv>
+
+        {/* Organizations content */}
+        <MotionDiv variants={fadeVariants}>
+          <AnimatedStateSwitch stateKey={orgStateKey}>
+            {orgsLoading && null}
+
+            {!orgsLoading && organizations.length === 0 && (
+              <Center py={40}>
+                <Stack align="center" gap="sm">
+                  <ThemeIcon size="xl" variant="light" color="violet" radius="xl">
+                    <Building2 size={24} />
+                  </ThemeIcon>
+                  <Text size="sm" c="dimmed">
+                    {t('No organizations yet')}
+                  </Text>
+                </Stack>
+              </Center>
+            )}
+
+            {organizations.length > 0 && (
+              <MotionDiv variants={staggerContainerVariants} initial="hidden" animate="visible">
+                <Stack gap="sm">
+                  {organizations.map((org) => (
+                    <OrgCard key={org.id} org={org} />
+                  ))}
+                </Stack>
+              </MotionDiv>
+            )}
+          </AnimatedStateSwitch>
+        </MotionDiv>
       </MotionDiv>
 
       <CreateProjectModal opened={createModalOpen} onClose={() => setCreateModalOpen(false)} />

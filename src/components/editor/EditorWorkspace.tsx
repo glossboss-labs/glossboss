@@ -6,7 +6,6 @@
  */
 
 import { Stack, Paper, Group, Text, Badge, Divider, SegmentedControl } from '@mantine/core';
-import { motion } from 'motion/react';
 import { Check } from 'lucide-react';
 import {
   EditorTable,
@@ -16,14 +15,11 @@ import {
   SourceFileIndicator,
   TranslateToolbar,
 } from '@/components/editor';
-import { sectionVariants } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
 import { getActiveTranslationProvider, getTranslationProviderLabel } from '@/lib/translation';
 import type { TargetLanguage, SourceLanguage } from '@/lib/deepl/types';
 import type { Glossary } from '@/lib/glossary/types';
 import type { SupportedEncoding } from '@/lib/po';
-
-const MotionDiv = motion.div;
 
 export type WorkspaceMode = 'edit' | 'review';
 
@@ -187,13 +183,7 @@ export function EditorWorkspace({
         </Paper>
       </Stack>
 
-      <MotionDiv
-        variants={sectionVariants}
-        initial="hidden"
-        animate="visible"
-        key="editor"
-        data-tour="editor-table"
-      >
+      <div data-tour="editor-table">
         <EditorTable
           targetLang={targetLang}
           sourceLang={sourceLang}
@@ -210,7 +200,7 @@ export function EditorWorkspace({
           broadcastUnlock={broadcastUnlock}
           broadcastReviewEvent={broadcastReviewEvent}
         />
-      </MotionDiv>
+      </div>
     </>
   );
 }

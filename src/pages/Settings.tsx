@@ -22,11 +22,12 @@ import {
   CreditCard,
   Bell,
 } from 'lucide-react';
-import { sectionVariants } from '@/lib/motion';
+import { staggerPageVariants, fadeVariants } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
 import { trackEvent } from '@/lib/analytics';
 import { useAuth } from '@/hooks/use-auth';
 import { useSettingsTour } from '@/hooks/use-editor-tour';
+import { AnimatedTabPanel } from '@/components/ui';
 import {
   AccountSection,
   TranslationSection,
@@ -78,129 +79,102 @@ export default function Settings() {
 
   return (
     <Box maw={960}>
-      <MotionDiv variants={sectionVariants} initial="hidden" animate="visible">
+      <MotionDiv variants={staggerPageVariants} initial="hidden" animate="visible">
         <Stack gap="lg">
-          <Title order={3}>{t('Settings')}</Title>
+          <MotionDiv variants={fadeVariants}>
+            <Title order={3}>{t('Settings')}</Title>
+          </MotionDiv>
 
-          <Tabs
-            value={activeTab}
-            onChange={handleTabChange}
-            orientation={isMobile ? 'horizontal' : 'vertical'}
-            variant="pills"
-            classNames={{ tab: 'gb-tab-left-align' }}
-            styles={{
-              root: isMobile ? undefined : { display: 'flex', gap: 'var(--mantine-spacing-xl)' },
-              list: isMobile
-                ? { overflowX: 'auto', flexWrap: 'nowrap' }
-                : { minWidth: 200, flexShrink: 0 },
-              panel: { flex: 1, minWidth: 0 },
-            }}
-          >
-            <Tabs.List data-tour="settings-tabs">
-              {isAuthenticated && (
-                <Tabs.Tab value="account" leftSection={<User size={14} />}>
-                  {t('Account')}
+          <Box style={isMobile ? undefined : { display: 'flex', gap: 'var(--mantine-spacing-xl)' }}>
+            <Tabs
+              value={activeTab}
+              onChange={handleTabChange}
+              orientation={isMobile ? 'horizontal' : 'vertical'}
+              variant="pills"
+              classNames={{ tab: 'gb-tab-left-align' }}
+              styles={{
+                list: isMobile
+                  ? { overflowX: 'auto', flexWrap: 'nowrap' }
+                  : { minWidth: 200, flexShrink: 0 },
+              }}
+            >
+              <Tabs.List data-tour="settings-tabs">
+                {isAuthenticated && (
+                  <Tabs.Tab value="account" leftSection={<User size={14} />}>
+                    {t('Account')}
+                  </Tabs.Tab>
+                )}
+                {isAuthenticated && (
+                  <Tabs.Tab value="billing" leftSection={<CreditCard size={14} />}>
+                    {t('Billing')}
+                  </Tabs.Tab>
+                )}
+                {isAuthenticated && (
+                  <Tabs.Tab value="notifications" leftSection={<Bell size={14} />}>
+                    {t('Notifications')}
+                  </Tabs.Tab>
+                )}
+                <Tabs.Tab value="translation" leftSection={<Key size={14} />}>
+                  {t('Translation')}
                 </Tabs.Tab>
-              )}
-              {isAuthenticated && (
-                <Tabs.Tab value="billing" leftSection={<CreditCard size={14} />}>
-                  {t('Billing')}
+                <Tabs.Tab value="speech" leftSection={<Volume2 size={14} />}>
+                  {t('Speech')}
                 </Tabs.Tab>
-              )}
-              {isAuthenticated && (
-                <Tabs.Tab value="notifications" leftSection={<Bell size={14} />}>
-                  {t('Notifications')}
+                <Tabs.Tab
+                  value="glossary"
+                  leftSection={<BookOpen size={14} />}
+                  data-tour="settings-glossary-tab"
+                >
+                  {t('Glossary')}
                 </Tabs.Tab>
-              )}
-              <Tabs.Tab value="translation" leftSection={<Key size={14} />}>
-                {t('Translation')}
-              </Tabs.Tab>
-              <Tabs.Tab value="speech" leftSection={<Volume2 size={14} />}>
-                {t('Speech')}
-              </Tabs.Tab>
-              <Tabs.Tab
-                value="glossary"
-                leftSection={<BookOpen size={14} />}
-                data-tour="settings-glossary-tab"
-              >
-                {t('Glossary')}
-              </Tabs.Tab>
-              <Tabs.Tab value="shortcuts" leftSection={<Keyboard size={14} />}>
-                {t('Shortcuts')}
-              </Tabs.Tab>
-              <Tabs.Tab
-                value="display"
-                leftSection={<Monitor size={14} />}
-                data-tour="settings-display-tab"
-              >
-                {t('Display')}
-              </Tabs.Tab>
-              <Tabs.Tab
-                value="backup"
-                leftSection={<Download size={14} />}
-                data-tour="settings-backup-tab"
-              >
-                {t('Backup')}
-              </Tabs.Tab>
-              {isDevelopment && (
-                <Tabs.Tab value="development" leftSection={<GitBranch size={14} />}>
-                  {t('Development')}
+                <Tabs.Tab value="shortcuts" leftSection={<Keyboard size={14} />}>
+                  {t('Shortcuts')}
                 </Tabs.Tab>
-              )}
-            </Tabs.List>
+                <Tabs.Tab
+                  value="display"
+                  leftSection={<Monitor size={14} />}
+                  data-tour="settings-display-tab"
+                >
+                  {t('Display')}
+                </Tabs.Tab>
+                <Tabs.Tab
+                  value="backup"
+                  leftSection={<Download size={14} />}
+                  data-tour="settings-backup-tab"
+                >
+                  {t('Backup')}
+                </Tabs.Tab>
+                {isDevelopment && (
+                  <Tabs.Tab value="development" leftSection={<GitBranch size={14} />}>
+                    {t('Development')}
+                  </Tabs.Tab>
+                )}
+              </Tabs.List>
+            </Tabs>
 
-            {isAuthenticated && (
-              <Tabs.Panel value="account" pt={isMobile ? 'md' : undefined}>
-                <Stack gap="md">
-                  <AccountSection />
-                  <DataExportSection />
-                  <DeleteAccountSection />
-                </Stack>
-              </Tabs.Panel>
-            )}
-
-            {isAuthenticated && (
-              <Tabs.Panel value="billing" pt={isMobile ? 'md' : undefined}>
-                <BillingSection />
-              </Tabs.Panel>
-            )}
-
-            {isAuthenticated && (
-              <Tabs.Panel value="notifications" pt={isMobile ? 'md' : undefined}>
-                <NotificationsSection />
-              </Tabs.Panel>
-            )}
-
-            <Tabs.Panel value="translation" pt={isMobile ? 'md' : undefined}>
-              <TranslationSection />
-            </Tabs.Panel>
-
-            <Tabs.Panel value="speech" pt={isMobile ? 'md' : undefined}>
-              <SpeechSection />
-            </Tabs.Panel>
-
-            <Tabs.Panel value="glossary" pt={isMobile ? 'md' : undefined}>
-              <GlossarySection />
-            </Tabs.Panel>
-
-            <Tabs.Panel value="shortcuts" pt={isMobile ? 'md' : undefined}>
-              <KeybindsSection />
-            </Tabs.Panel>
-
-            <Tabs.Panel value="display" pt={isMobile ? 'md' : undefined}>
-              <DisplaySection />
-            </Tabs.Panel>
-
-            <Tabs.Panel value="backup" pt={isMobile ? 'md' : undefined}>
-              <BackupSection />
-            </Tabs.Panel>
-
-            {isDevelopment && (
-              <Tabs.Panel value="development" pt={isMobile ? 'md' : undefined}>
-                <DevelopmentSection />
-              </Tabs.Panel>
-            )}
-          </Tabs>
+            <Box style={{ flex: 1, minWidth: 0 }}>
+              <AnimatedTabPanel tabKey={activeTab}>
+                <Box pt={isMobile ? 'md' : undefined}>
+                  {activeTab === 'account' && isAuthenticated && (
+                    <Stack gap="md">
+                      <AccountSection />
+                      <DataExportSection />
+                      <DeleteAccountSection />
+                    </Stack>
+                  )}
+                  {activeTab === 'billing' && isAuthenticated && <BillingSection />}
+                  {activeTab === 'notifications' && isAuthenticated && <NotificationsSection />}
+                  {activeTab === 'translation' && <TranslationSection />}
+                  {activeTab === 'speech' && <SpeechSection />}
+                  {activeTab === 'glossary' && <GlossarySection />}
+                  {activeTab === 'shortcuts' && <KeybindsSection />}
+                  {activeTab === 'display' && <DisplaySection />}
+                  {activeTab === 'backup' && <BackupSection />}
+                  {activeTab === 'development' && isDevelopment && <DevelopmentSection />}
+                </Box>
+              </AnimatedTabPanel>
+            </Box>
+          </Box>
         </Stack>
       </MotionDiv>
     </Box>

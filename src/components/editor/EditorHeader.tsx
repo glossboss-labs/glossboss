@@ -28,7 +28,7 @@ import {
   Languages,
   X,
 } from 'lucide-react';
-import { sectionVariants, buttonStates } from '@/lib/motion';
+import { fadeVariants, buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
 import type { FileFormat } from '@/stores';
 import type { RepoConnection } from '@/lib/repo-sync/types';
@@ -119,7 +119,7 @@ export function EditorHeader({
   const { isAuthenticated } = useAuth();
 
   return (
-    <MotionDiv variants={sectionVariants} initial="hidden" animate="visible">
+    <MotionDiv variants={fadeVariants} initial="hidden" animate="visible">
       <Group justify="space-between" align={filename ? 'center' : 'flex-start'}>
         {/* Left: logo + File menu */}
         <Group gap="sm" align="center">

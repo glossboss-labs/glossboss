@@ -49,7 +49,13 @@ import {
   ExternalLink,
   Key,
 } from 'lucide-react';
-import { sectionVariants, fadeVariants, buttonStates } from '@/lib/motion';
+import {
+  staggerPageVariants,
+  contentVariants,
+  fadeVariants,
+  staggerContainerVariants,
+  buttonStates,
+} from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
 import {
   getOrganizationBySlug,
@@ -71,7 +77,7 @@ import type {
 import { listOrgProjects } from '@/lib/projects/api';
 import type { ProjectWithLanguages } from '@/lib/projects/types';
 import { useAuth } from '@/hooks/use-auth';
-import { ConfirmModal, RoleBadge } from '@/components/ui';
+import { AnimatedStateSwitch, AnimatedTabPanel, ConfirmModal, RoleBadge } from '@/components/ui';
 import { OrgTranslationTab } from '@/components/organizations/OrgTranslationTab';
 import { SharedCredentialsTab } from '@/components/organizations/SharedCredentialsTab';
 
@@ -265,520 +271,616 @@ export default function OrgSettingsPage() {
     }
   }, [myMembership, navigate, t]);
 
-  if (loading) {
-    return (
-      <MotionDiv variants={fadeVariants} initial="hidden" animate="visible">
-        <Center py={80}>
-          <Loader size="lg" />
-        </Center>
-      </MotionDiv>
-    );
-  }
-
-  if (error && !org) {
-    return (
-      <Box maw={960}>
-        <Alert icon={<AlertCircle size={16} />} color="red" variant="light">
-          {error}
-        </Alert>
-        <Button component={Link} to="/dashboard" variant="light" mt="md">
-          {t('Back to dashboard')}
-        </Button>
-      </Box>
-    );
-  }
-
-  if (!org) return null;
+  const stateKey = loading ? 'loading' : error && !org ? 'error' : 'data';
 
   return (
     <Box maw={960}>
-      <MotionDiv variants={sectionVariants} initial="hidden" animate="visible">
-        <Stack gap="lg">
-          {/* Breadcrumb */}
-          <Text
-            component={Link}
-            to={`/orgs/${org.slug}`}
-            size="sm"
-            style={{
-              color: 'var(--gb-text-secondary)',
-              textDecoration: 'none',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 4,
-            }}
-          >
-            <ArrowLeft size={14} />
-            {org.name}
-          </Text>
+      <AnimatedStateSwitch stateKey={stateKey}>
+        {loading && (
+          <Center py={80}>
+            <Loader size="lg" />
+          </Center>
+        )}
 
-          <Group gap="sm" align="center">
-            <Settings size={20} c="dimmed" />
-            <Title order={3}>{t('Organization settings')}</Title>
-          </Group>
-
-          {error && (
-            <Alert
-              icon={<AlertCircle size={16} />}
-              color="red"
-              variant="light"
-              withCloseButton
-              onClose={() => setError(null)}
-            >
+        {error && !org && (
+          <>
+            <Alert icon={<AlertCircle size={16} />} color="red" variant="light">
               {error}
             </Alert>
-          )}
-
-          <Tabs
-            value={activeTab}
-            onChange={handleTabChange}
-            orientation={isMobile ? 'horizontal' : 'vertical'}
-            variant="pills"
-            classNames={{ tab: 'gb-tab-left-align' }}
-            styles={{
-              root: isMobile ? undefined : { display: 'flex', gap: 'var(--mantine-spacing-xl)' },
-              list: isMobile
-                ? { overflowX: 'auto', flexWrap: 'nowrap' }
-                : { minWidth: 180, flexShrink: 0 },
-              panel: { flex: 1, minWidth: 0 },
-            }}
-          >
-            <Tabs.List>
-              <Tabs.Tab value="general" leftSection={<Settings size={14} />}>
-                {t('General')}
-              </Tabs.Tab>
-              <Tabs.Tab value="members" leftSection={<Users size={14} />}>
-                {t('Members')} ({members.length})
-              </Tabs.Tab>
-              <Tabs.Tab value="projects" leftSection={<FolderOpen size={14} />}>
-                {t('Projects')} ({orgProjects.length})
-              </Tabs.Tab>
-              <Tabs.Tab value="translation" leftSection={<Key size={14} />}>
-                {t('Translation')}
-              </Tabs.Tab>
-              <Tabs.Tab value="danger" leftSection={<Trash2 size={14} />} color="red">
-                {t('Danger zone')}
-              </Tabs.Tab>
-            </Tabs.List>
-
-            {/* General tab */}
-            <Tabs.Panel value="general" pt={isMobile ? 'md' : undefined}>
-              {isAdmin ? (
-                <Paper withBorder p="md">
-                  <Text size="sm" fw={500} mb="sm">
-                    {t('Organization details')}
-                  </Text>
-                  <Stack gap="sm">
-                    <TextInput
-                      label={t('Name')}
-                      value={editOrgName}
-                      onChange={(e) => setEditOrgName(e.currentTarget.value)}
-                      maw={400}
-                    />
-                    <TextInput label={t('Slug')} value={org.slug} disabled maw={400} />
-                    <Textarea
-                      label={t('Description')}
-                      value={editOrgDescription}
-                      onChange={(e) => setEditOrgDescription(e.currentTarget.value)}
-                      autosize
-                      minRows={2}
-                      maxRows={4}
-                      maw={400}
-                    />
-                    <TextInput
-                      label={t('Website')}
-                      placeholder="https://example.com"
-                      value={editOrgWebsite}
-                      onChange={(e) => setEditOrgWebsite(e.currentTarget.value)}
-                      leftSection={<ExternalLink size={14} />}
-                      maw={400}
-                    />
-                    <div>
-                      <motion.div {...buttonStates}>
-                        <Button
-                          onClick={() => void handleSaveOrg()}
-                          loading={saving}
-                          disabled={!editOrgName.trim()}
-                        >
-                          {t('Save changes')}
-                        </Button>
-                      </motion.div>
-                    </div>
-                  </Stack>
-                </Paper>
-              ) : (
-                <Paper withBorder p="md">
-                  <Stack gap="xs">
-                    <Text size="sm">
-                      <strong>{t('Name')}:</strong> {org.name}
-                    </Text>
-                    <Text size="sm">
-                      <strong>{t('Slug')}:</strong> {org.slug}
-                    </Text>
-                    <Text size="sm">
-                      <strong>{t('Description')}:</strong> {org.description || '—'}
-                    </Text>
-                    <Text size="sm">
-                      <strong>{t('Website')}:</strong>{' '}
-                      {org.website ? (
-                        <Text
-                          component="a"
-                          href={
-                            org.website.startsWith('http') ? org.website : `https://${org.website}`
-                          }
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          size="sm"
-                          style={{
-                            color: 'var(--mantine-color-blue-6)',
-                            textDecoration: 'none',
-                          }}
-                        >
-                          {org.website.replace(/^https?:\/\//, '')}
-                        </Text>
-                      ) : (
-                        '—'
-                      )}
-                    </Text>
-                  </Stack>
-                </Paper>
-              )}
-            </Tabs.Panel>
-
-            {/* Members tab */}
-            <Tabs.Panel value="members" pt={isMobile ? 'md' : undefined}>
-              <Stack gap="lg">
-                {/* Invite form (admin only) */}
-                {isAdmin && (
-                  <Paper withBorder p="md">
-                    <Text size="sm" fw={500} mb="sm">
-                      {t('Invite a team member')}
-                    </Text>
-                    <Group gap="sm" align="end">
-                      <TextInput
-                        placeholder={t('Email address')}
-                        value={inviteEmail}
-                        onChange={(e) => setInviteEmail(e.currentTarget.value)}
-                        style={{ flex: 1 }}
-                        type="email"
-                      />
-                      <Select
-                        data={ROLE_OPTIONS}
-                        value={inviteRole}
-                        onChange={(v) => setInviteRole((v as 'admin' | 'member') || 'member')}
-                        w={120}
-                        allowDeselect={false}
-                      />
-                      <motion.div {...buttonStates}>
-                        <Button
-                          leftSection={<UserPlus size={16} />}
-                          onClick={() => void handleInvite()}
-                          loading={inviting}
-                          disabled={!inviteEmail.trim()}
-                        >
-                          {t('Invite')}
-                        </Button>
-                      </motion.div>
-                    </Group>
-                  </Paper>
-                )}
-
-                {/* Member list */}
-                <Stack gap="sm">
-                  {members.map((member) => {
-                    const canModify =
-                      isAdmin && member.role !== 'owner' && member.user_id !== user?.id;
-                    return (
-                      <Paper key={member.id} withBorder p="sm">
-                        <Group justify="space-between" align="center" wrap="nowrap">
-                          <Group gap="sm">
-                            <Avatar
-                              src={member.profiles.avatar_url}
-                              alt={member.profiles.full_name ?? member.profiles.email}
-                              size="sm"
-                              radius="xl"
-                            >
-                              {(member.profiles.full_name ??
-                                member.profiles.email)[0]?.toUpperCase()}
-                            </Avatar>
-                            <div>
-                              <Text size="sm" fw={500}>
-                                {member.profiles.full_name ?? member.profiles.email}
-                              </Text>
-                              {member.profiles.full_name && (
-                                <Text size="xs" c="dimmed">
-                                  {member.profiles.email}
-                                </Text>
-                              )}
-                            </div>
-                          </Group>
-                          <Group gap="sm">
-                            <RoleBadge role={member.role} />
-                            {canModify && (
-                              <Menu position="bottom-end" withinPortal>
-                                <Menu.Target>
-                                  <ActionIcon variant="subtle" size="sm" color="gray">
-                                    <MoreVertical size={14} />
-                                  </ActionIcon>
-                                </Menu.Target>
-                                <Menu.Dropdown>
-                                  {member.role !== 'admin' && (
-                                    <Menu.Item
-                                      leftSection={<Shield size={14} />}
-                                      onClick={() => void handleUpdateRole(member.id, 'admin')}
-                                    >
-                                      {t('Make admin')}
-                                    </Menu.Item>
-                                  )}
-                                  {member.role !== 'member' && (
-                                    <Menu.Item
-                                      leftSection={<Users size={14} />}
-                                      onClick={() => void handleUpdateRole(member.id, 'member')}
-                                    >
-                                      {t('Make member')}
-                                    </Menu.Item>
-                                  )}
-                                  <Menu.Divider />
-                                  <Menu.Item
-                                    color="red"
-                                    leftSection={<Trash2 size={14} />}
-                                    onClick={() => void handleRemoveMember(member.id)}
-                                  >
-                                    {t('Remove')}
-                                  </Menu.Item>
-                                </Menu.Dropdown>
-                              </Menu>
-                            )}
-                          </Group>
-                        </Group>
-                      </Paper>
-                    );
-                  })}
-                </Stack>
-
-                {/* Pending invites */}
-                {isAdmin && invites.length > 0 && (
-                  <>
-                    <Text size="sm" fw={500} mt="md">
-                      {t('Pending invites')}
-                    </Text>
-                    <Stack gap="sm">
-                      {invites.map((invite) => {
-                        const expired = new Date(invite.expires_at) < new Date();
-                        const inviteUrl = `${window.location.origin}/invite/${invite.token}`;
-
-                        return (
-                          <Paper key={invite.id} withBorder p="sm">
-                            <Group justify="space-between" align="center" wrap="nowrap">
-                              <div>
-                                <Group gap="xs">
-                                  <Text size="sm" fw={500}>
-                                    {invite.email}
-                                  </Text>
-                                  <RoleBadge role={invite.role} />
-                                  {expired && (
-                                    <Badge variant="light" size="xs" color="red">
-                                      {t('Expired')}
-                                    </Badge>
-                                  )}
-                                </Group>
-                                <Text size="xs" c="dimmed">
-                                  {t('Expires {{date}}', {
-                                    date: new Date(invite.expires_at).toLocaleDateString(),
-                                  })}
-                                </Text>
-                              </div>
-                              <Group gap="xs">
-                                <CopyButton value={inviteUrl}>
-                                  {({ copied, copy }) => (
-                                    <Tooltip label={copied ? t('Copied') : t('Copy invite link')}>
-                                      <ActionIcon
-                                        variant="subtle"
-                                        size="sm"
-                                        color={copied ? 'teal' : 'gray'}
-                                        onClick={copy}
-                                      >
-                                        {copied ? <Check size={14} /> : <Copy size={14} />}
-                                      </ActionIcon>
-                                    </Tooltip>
-                                  )}
-                                </CopyButton>
-                                <ActionIcon
-                                  variant="subtle"
-                                  size="sm"
-                                  color="red"
-                                  onClick={() => void handleRevokeInvite(invite.id)}
-                                >
-                                  <Trash2 size={14} />
-                                </ActionIcon>
-                              </Group>
-                            </Group>
-                          </Paper>
-                        );
-                      })}
-                    </Stack>
-                  </>
-                )}
-              </Stack>
-            </Tabs.Panel>
-
-            {/* Projects tab */}
-            <Tabs.Panel value="projects" pt={isMobile ? 'md' : undefined}>
-              <Stack gap="md">
-                <Group justify="flex-end">
-                  <motion.div {...buttonStates}>
-                    <Button
-                      component={Link}
-                      to="/dashboard"
-                      variant="light"
-                      leftSection={<FolderOpen size={14} />}
-                    >
-                      {t('Create project')}
-                    </Button>
-                  </motion.div>
-                </Group>
-                {orgProjects.length === 0 ? (
-                  <Center py={40}>
-                    <Text size="sm" c="dimmed">
-                      {t('No projects in this organization yet')}
-                    </Text>
-                  </Center>
-                ) : (
-                  <Stack gap="sm">
-                    {orgProjects.map((proj) => (
-                      <Paper
-                        key={proj.id}
-                        component={Link}
-                        to={`/projects/${proj.id}`}
-                        withBorder
-                        p="sm"
-                        style={{
-                          textDecoration: 'none',
-                          color: 'inherit',
-                          cursor: 'pointer',
-                          transition: 'border-color 120ms ease, background-color 120ms ease',
-                        }}
-                        styles={{
-                          root: {
-                            '&:hover': {
-                              borderColor: 'var(--mantine-color-blue-5)',
-                              backgroundColor: 'var(--gb-highlight-row)',
-                            },
-                          },
-                        }}
-                      >
-                        <Group justify="space-between" align="center">
-                          <div>
-                            <Text size="sm" fw={600}>
-                              {proj.name}
-                            </Text>
-                            <Text size="xs" c="dimmed">
-                              {proj.project_languages?.length ?? 0} {t('languages')}
-                              {' · '}
-                              {proj.stats_total} {t('strings')}
-                            </Text>
-                          </div>
-                          <Badge variant="light" size="xs">
-                            {proj.visibility}
-                          </Badge>
-                        </Group>
-                      </Paper>
-                    ))}
-                  </Stack>
-                )}
-              </Stack>
-            </Tabs.Panel>
-
-            {/* Translation + Credentials tab */}
-            <Tabs.Panel value="translation" pt={isMobile ? 'md' : undefined}>
-              <Stack gap="lg">
-                <OrgTranslationTab orgId={org.id} isAdmin={isAdmin} />
-                <Divider label={t('Shared credentials')} labelPosition="center" />
-                <SharedCredentialsTab orgId={org.id} canManage={isAdmin} />
-              </Stack>
-            </Tabs.Panel>
-
-            {/* Danger zone tab */}
-            <Tabs.Panel value="danger" pt={isMobile ? 'md' : undefined}>
-              <Stack gap="md">
-                {isOwner && (
-                  <Paper withBorder p="md" style={{ borderColor: 'var(--mantine-color-red-4)' }}>
-                    <Group justify="space-between" align="center">
-                      <div>
-                        <Text size="sm" fw={500}>
-                          {t('Delete this organization')}
-                        </Text>
-                        <Text size="xs" c="dimmed">
-                          {t(
-                            'Permanently delete this organization and all its data. This cannot be undone.',
-                          )}
-                        </Text>
-                      </div>
-                      <motion.div {...buttonStates}>
-                        <Button
-                          color="red"
-                          variant="outline"
-                          leftSection={<Trash2 size={14} />}
-                          onClick={() => setConfirmDeleteOpen(true)}
-                        >
-                          {t('Delete organization')}
-                        </Button>
-                      </motion.div>
-                    </Group>
-                  </Paper>
-                )}
-
-                <Paper withBorder p="md" style={{ borderColor: 'var(--mantine-color-orange-4)' }}>
-                  <Group justify="space-between" align="center">
-                    <div>
-                      <Text size="sm" fw={500}>
-                        {t('Leave this organization')}
-                      </Text>
-                      <Text size="xs" c="dimmed">
-                        {t('Remove yourself from this organization.')}
-                      </Text>
-                    </div>
-                    <motion.div {...buttonStates}>
-                      <Button
-                        color="orange"
-                        variant="outline"
-                        leftSection={<LogOut size={14} />}
-                        onClick={() => setConfirmLeaveOpen(true)}
-                      >
-                        {t('Leave organization')}
-                      </Button>
-                    </motion.div>
-                  </Group>
-                </Paper>
-              </Stack>
-            </Tabs.Panel>
-          </Tabs>
-        </Stack>
-      </MotionDiv>
-
-      <ConfirmModal
-        opened={confirmDeleteOpen}
-        onClose={() => setConfirmDeleteOpen(false)}
-        onConfirm={() => void handleDeleteOrg()}
-        title={t('Delete organization')}
-        message={t(
-          'Are you sure you want to delete "{{name}}"? All members, invites, and associated data will be permanently removed.',
-          { name: org.name },
+            <Button component={Link} to="/dashboard" variant="light" mt="md">
+              {t('Back to dashboard')}
+            </Button>
+          </>
         )}
-        confirmLabel={t('Delete organization')}
-        variant="danger"
-        loading={actionLoading}
-      />
 
-      <ConfirmModal
-        opened={confirmLeaveOpen}
-        onClose={() => setConfirmLeaveOpen(false)}
-        onConfirm={() => void handleLeaveOrg()}
-        title={t('Leave organization')}
-        message={t('Are you sure you want to leave "{{name}}"?', { name: org.name })}
-        confirmLabel={t('Leave organization')}
-        variant="warning"
-        loading={actionLoading}
-      />
+        {!loading && org && (
+          <>
+            <MotionDiv variants={staggerPageVariants} initial="hidden" animate="visible">
+              <Stack gap="lg">
+                {/* Breadcrumb */}
+                <MotionDiv variants={fadeVariants}>
+                  <Text
+                    component={Link}
+                    to={`/orgs/${org.slug}`}
+                    size="sm"
+                    style={{
+                      color: 'var(--gb-text-secondary)',
+                      textDecoration: 'none',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 4,
+                    }}
+                  >
+                    <ArrowLeft size={14} />
+                    {org.name}
+                  </Text>
+                </MotionDiv>
+
+                {/* Title */}
+                <MotionDiv variants={fadeVariants}>
+                  <Group gap="sm" align="center">
+                    <Settings size={20} c="dimmed" />
+                    <Title order={3}>{t('Organization settings')}</Title>
+                  </Group>
+                </MotionDiv>
+
+                {error && (
+                  <Alert
+                    icon={<AlertCircle size={16} />}
+                    color="red"
+                    variant="light"
+                    withCloseButton
+                    onClose={() => setError(null)}
+                  >
+                    {error}
+                  </Alert>
+                )}
+
+                {/* Tabs */}
+                <MotionDiv variants={fadeVariants}>
+                  <Box
+                    style={
+                      isMobile ? undefined : { display: 'flex', gap: 'var(--mantine-spacing-xl)' }
+                    }
+                  >
+                    <Tabs
+                      value={activeTab}
+                      onChange={handleTabChange}
+                      orientation={isMobile ? 'horizontal' : 'vertical'}
+                      variant="pills"
+                      classNames={{ tab: 'gb-tab-left-align' }}
+                      styles={{
+                        list: isMobile
+                          ? { overflowX: 'auto', flexWrap: 'nowrap' }
+                          : { minWidth: 180, flexShrink: 0 },
+                      }}
+                    >
+                      <Tabs.List>
+                        <Tabs.Tab value="general" leftSection={<Settings size={14} />}>
+                          {t('General')}
+                        </Tabs.Tab>
+                        <Tabs.Tab value="members" leftSection={<Users size={14} />}>
+                          {t('Members')} ({members.length})
+                        </Tabs.Tab>
+                        <Tabs.Tab value="projects" leftSection={<FolderOpen size={14} />}>
+                          {t('Projects')} ({orgProjects.length})
+                        </Tabs.Tab>
+                        <Tabs.Tab value="translation" leftSection={<Key size={14} />}>
+                          {t('Translation')}
+                        </Tabs.Tab>
+                        <Tabs.Tab value="danger" leftSection={<Trash2 size={14} />} color="red">
+                          {t('Danger zone')}
+                        </Tabs.Tab>
+                      </Tabs.List>
+                    </Tabs>
+
+                    <Box style={{ flex: 1, minWidth: 0 }}>
+                      <AnimatedTabPanel tabKey={activeTab}>
+                        <Box pt={isMobile ? 'md' : undefined}>
+                          {/* General tab */}
+                          {activeTab === 'general' &&
+                            (isAdmin ? (
+                              <Paper withBorder p="md">
+                                <Text size="sm" fw={500} mb="sm">
+                                  {t('Organization details')}
+                                </Text>
+                                <Stack gap="sm">
+                                  <TextInput
+                                    label={t('Name')}
+                                    value={editOrgName}
+                                    onChange={(e) => setEditOrgName(e.currentTarget.value)}
+                                    maw={400}
+                                  />
+                                  <TextInput
+                                    label={t('Slug')}
+                                    value={org.slug}
+                                    disabled
+                                    maw={400}
+                                  />
+                                  <Textarea
+                                    label={t('Description')}
+                                    value={editOrgDescription}
+                                    onChange={(e) => setEditOrgDescription(e.currentTarget.value)}
+                                    autosize
+                                    minRows={2}
+                                    maxRows={4}
+                                    maw={400}
+                                  />
+                                  <TextInput
+                                    label={t('Website')}
+                                    placeholder="https://example.com"
+                                    value={editOrgWebsite}
+                                    onChange={(e) => setEditOrgWebsite(e.currentTarget.value)}
+                                    leftSection={<ExternalLink size={14} />}
+                                    maw={400}
+                                  />
+                                  <div>
+                                    <motion.div {...buttonStates}>
+                                      <Button
+                                        onClick={() => void handleSaveOrg()}
+                                        loading={saving}
+                                        disabled={!editOrgName.trim()}
+                                      >
+                                        {t('Save changes')}
+                                      </Button>
+                                    </motion.div>
+                                  </div>
+                                </Stack>
+                              </Paper>
+                            ) : (
+                              <Paper withBorder p="md">
+                                <Stack gap="xs">
+                                  <Text size="sm">
+                                    <strong>{t('Name')}:</strong> {org.name}
+                                  </Text>
+                                  <Text size="sm">
+                                    <strong>{t('Slug')}:</strong> {org.slug}
+                                  </Text>
+                                  <Text size="sm">
+                                    <strong>{t('Description')}:</strong> {org.description || '—'}
+                                  </Text>
+                                  <Text size="sm">
+                                    <strong>{t('Website')}:</strong>{' '}
+                                    {org.website ? (
+                                      <Text
+                                        component="a"
+                                        href={
+                                          org.website.startsWith('http')
+                                            ? org.website
+                                            : `https://${org.website}`
+                                        }
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        size="sm"
+                                        style={{
+                                          color: 'var(--mantine-color-blue-6)',
+                                          textDecoration: 'none',
+                                        }}
+                                      >
+                                        {org.website.replace(/^https?:\/\//, '')}
+                                      </Text>
+                                    ) : (
+                                      '—'
+                                    )}
+                                  </Text>
+                                </Stack>
+                              </Paper>
+                            ))}
+
+                          {/* Members tab */}
+                          {activeTab === 'members' && (
+                            <Stack gap="lg">
+                              {/* Invite form (admin only) */}
+                              {isAdmin && (
+                                <Paper withBorder p="md">
+                                  <Text size="sm" fw={500} mb="sm">
+                                    {t('Invite a team member')}
+                                  </Text>
+                                  <Group gap="sm" align="end">
+                                    <TextInput
+                                      placeholder={t('Email address')}
+                                      value={inviteEmail}
+                                      onChange={(e) => setInviteEmail(e.currentTarget.value)}
+                                      style={{ flex: 1 }}
+                                      type="email"
+                                    />
+                                    <Select
+                                      data={ROLE_OPTIONS}
+                                      value={inviteRole}
+                                      onChange={(v) =>
+                                        setInviteRole((v as 'admin' | 'member') || 'member')
+                                      }
+                                      w={120}
+                                      allowDeselect={false}
+                                    />
+                                    <motion.div {...buttonStates}>
+                                      <Button
+                                        leftSection={<UserPlus size={16} />}
+                                        onClick={() => void handleInvite()}
+                                        loading={inviting}
+                                        disabled={!inviteEmail.trim()}
+                                      >
+                                        {t('Invite')}
+                                      </Button>
+                                    </motion.div>
+                                  </Group>
+                                </Paper>
+                              )}
+
+                              {/* Member list */}
+                              <MotionDiv
+                                variants={staggerContainerVariants}
+                                initial="hidden"
+                                animate="visible"
+                              >
+                                <Stack gap="sm">
+                                  {members.map((member) => {
+                                    const canModify =
+                                      isAdmin &&
+                                      member.role !== 'owner' &&
+                                      member.user_id !== user?.id;
+                                    return (
+                                      <MotionDiv key={member.id} variants={contentVariants}>
+                                        <Paper withBorder p="sm">
+                                          <Group
+                                            justify="space-between"
+                                            align="center"
+                                            wrap="nowrap"
+                                          >
+                                            <Group gap="sm">
+                                              <Avatar
+                                                src={member.profiles.avatar_url}
+                                                alt={
+                                                  member.profiles.full_name ?? member.profiles.email
+                                                }
+                                                size="sm"
+                                                radius="xl"
+                                              >
+                                                {(member.profiles.full_name ??
+                                                  member.profiles.email)[0]?.toUpperCase()}
+                                              </Avatar>
+                                              <div>
+                                                <Text size="sm" fw={500}>
+                                                  {member.profiles.full_name ??
+                                                    member.profiles.email}
+                                                </Text>
+                                                {member.profiles.full_name && (
+                                                  <Text size="xs" c="dimmed">
+                                                    {member.profiles.email}
+                                                  </Text>
+                                                )}
+                                              </div>
+                                            </Group>
+                                            <Group gap="sm">
+                                              <RoleBadge role={member.role} />
+                                              {canModify && (
+                                                <Menu position="bottom-end" withinPortal>
+                                                  <Menu.Target>
+                                                    <ActionIcon
+                                                      variant="subtle"
+                                                      size="sm"
+                                                      color="gray"
+                                                    >
+                                                      <MoreVertical size={14} />
+                                                    </ActionIcon>
+                                                  </Menu.Target>
+                                                  <Menu.Dropdown>
+                                                    {member.role !== 'admin' && (
+                                                      <Menu.Item
+                                                        leftSection={<Shield size={14} />}
+                                                        onClick={() =>
+                                                          void handleUpdateRole(member.id, 'admin')
+                                                        }
+                                                      >
+                                                        {t('Make admin')}
+                                                      </Menu.Item>
+                                                    )}
+                                                    {member.role !== 'member' && (
+                                                      <Menu.Item
+                                                        leftSection={<Users size={14} />}
+                                                        onClick={() =>
+                                                          void handleUpdateRole(member.id, 'member')
+                                                        }
+                                                      >
+                                                        {t('Make member')}
+                                                      </Menu.Item>
+                                                    )}
+                                                    <Menu.Divider />
+                                                    <Menu.Item
+                                                      color="red"
+                                                      leftSection={<Trash2 size={14} />}
+                                                      onClick={() =>
+                                                        void handleRemoveMember(member.id)
+                                                      }
+                                                    >
+                                                      {t('Remove')}
+                                                    </Menu.Item>
+                                                  </Menu.Dropdown>
+                                                </Menu>
+                                              )}
+                                            </Group>
+                                          </Group>
+                                        </Paper>
+                                      </MotionDiv>
+                                    );
+                                  })}
+                                </Stack>
+                              </MotionDiv>
+
+                              {/* Pending invites */}
+                              {isAdmin && invites.length > 0 && (
+                                <>
+                                  <Text size="sm" fw={500} mt="md">
+                                    {t('Pending invites')}
+                                  </Text>
+                                  <MotionDiv
+                                    variants={staggerContainerVariants}
+                                    initial="hidden"
+                                    animate="visible"
+                                  >
+                                    <Stack gap="sm">
+                                      {invites.map((invite) => {
+                                        const expired = new Date(invite.expires_at) < new Date();
+                                        const inviteUrl = `${window.location.origin}/invite/${invite.token}`;
+
+                                        return (
+                                          <MotionDiv key={invite.id} variants={contentVariants}>
+                                            <Paper withBorder p="sm">
+                                              <Group
+                                                justify="space-between"
+                                                align="center"
+                                                wrap="nowrap"
+                                              >
+                                                <div>
+                                                  <Group gap="xs">
+                                                    <Text size="sm" fw={500}>
+                                                      {invite.email}
+                                                    </Text>
+                                                    <RoleBadge role={invite.role} />
+                                                    {expired && (
+                                                      <Badge variant="light" size="xs" color="red">
+                                                        {t('Expired')}
+                                                      </Badge>
+                                                    )}
+                                                  </Group>
+                                                  <Text size="xs" c="dimmed">
+                                                    {t('Expires {{date}}', {
+                                                      date: new Date(
+                                                        invite.expires_at,
+                                                      ).toLocaleDateString(),
+                                                    })}
+                                                  </Text>
+                                                </div>
+                                                <Group gap="xs">
+                                                  <CopyButton value={inviteUrl}>
+                                                    {({ copied, copy }) => (
+                                                      <Tooltip
+                                                        label={
+                                                          copied
+                                                            ? t('Copied')
+                                                            : t('Copy invite link')
+                                                        }
+                                                      >
+                                                        <ActionIcon
+                                                          variant="subtle"
+                                                          size="sm"
+                                                          color={copied ? 'teal' : 'gray'}
+                                                          onClick={copy}
+                                                        >
+                                                          {copied ? (
+                                                            <Check size={14} />
+                                                          ) : (
+                                                            <Copy size={14} />
+                                                          )}
+                                                        </ActionIcon>
+                                                      </Tooltip>
+                                                    )}
+                                                  </CopyButton>
+                                                  <ActionIcon
+                                                    variant="subtle"
+                                                    size="sm"
+                                                    color="red"
+                                                    onClick={() =>
+                                                      void handleRevokeInvite(invite.id)
+                                                    }
+                                                  >
+                                                    <Trash2 size={14} />
+                                                  </ActionIcon>
+                                                </Group>
+                                              </Group>
+                                            </Paper>
+                                          </MotionDiv>
+                                        );
+                                      })}
+                                    </Stack>
+                                  </MotionDiv>
+                                </>
+                              )}
+                            </Stack>
+                          )}
+
+                          {/* Projects tab */}
+                          {activeTab === 'projects' && (
+                            <Stack gap="md">
+                              <Group justify="flex-end">
+                                <motion.div {...buttonStates}>
+                                  <Button
+                                    component={Link}
+                                    to="/dashboard"
+                                    variant="light"
+                                    leftSection={<FolderOpen size={14} />}
+                                  >
+                                    {t('Create project')}
+                                  </Button>
+                                </motion.div>
+                              </Group>
+                              {orgProjects.length === 0 ? (
+                                <Center py={40}>
+                                  <Text size="sm" c="dimmed">
+                                    {t('No projects in this organization yet')}
+                                  </Text>
+                                </Center>
+                              ) : (
+                                <MotionDiv
+                                  variants={staggerContainerVariants}
+                                  initial="hidden"
+                                  animate="visible"
+                                >
+                                  <Stack gap="sm">
+                                    {orgProjects.map((proj) => (
+                                      <MotionDiv key={proj.id} variants={contentVariants}>
+                                        <Paper
+                                          component={Link}
+                                          to={`/projects/${proj.id}`}
+                                          withBorder
+                                          p="sm"
+                                          style={{
+                                            textDecoration: 'none',
+                                            color: 'inherit',
+                                            cursor: 'pointer',
+                                            transition:
+                                              'border-color 120ms ease, background-color 120ms ease',
+                                          }}
+                                          styles={{
+                                            root: {
+                                              '&:hover': {
+                                                borderColor: 'var(--mantine-color-blue-5)',
+                                                backgroundColor: 'var(--gb-highlight-row)',
+                                              },
+                                            },
+                                          }}
+                                        >
+                                          <Group justify="space-between" align="center">
+                                            <div>
+                                              <Text size="sm" fw={600}>
+                                                {proj.name}
+                                              </Text>
+                                              <Text size="xs" c="dimmed">
+                                                {proj.project_languages?.length ?? 0}{' '}
+                                                {t('languages')}
+                                                {' · '}
+                                                {proj.stats_total} {t('strings')}
+                                              </Text>
+                                            </div>
+                                            <Badge variant="light" size="xs">
+                                              {proj.visibility}
+                                            </Badge>
+                                          </Group>
+                                        </Paper>
+                                      </MotionDiv>
+                                    ))}
+                                  </Stack>
+                                </MotionDiv>
+                              )}
+                            </Stack>
+                          )}
+
+                          {/* Translation + Credentials tab */}
+                          {activeTab === 'translation' && (
+                            <Stack gap="lg">
+                              <OrgTranslationTab orgId={org.id} isAdmin={isAdmin} />
+                              <Divider label={t('Shared credentials')} labelPosition="center" />
+                              <SharedCredentialsTab orgId={org.id} canManage={isAdmin} />
+                            </Stack>
+                          )}
+
+                          {/* Danger zone tab */}
+                          {activeTab === 'danger' && (
+                            <Stack gap="md">
+                              {isOwner && (
+                                <Paper
+                                  withBorder
+                                  p="md"
+                                  style={{ borderColor: 'var(--mantine-color-red-4)' }}
+                                >
+                                  <Group justify="space-between" align="center">
+                                    <div>
+                                      <Text size="sm" fw={500}>
+                                        {t('Delete this organization')}
+                                      </Text>
+                                      <Text size="xs" c="dimmed">
+                                        {t(
+                                          'Permanently delete this organization and all its data. This cannot be undone.',
+                                        )}
+                                      </Text>
+                                    </div>
+                                    <motion.div {...buttonStates}>
+                                      <Button
+                                        color="red"
+                                        variant="outline"
+                                        leftSection={<Trash2 size={14} />}
+                                        onClick={() => setConfirmDeleteOpen(true)}
+                                      >
+                                        {t('Delete organization')}
+                                      </Button>
+                                    </motion.div>
+                                  </Group>
+                                </Paper>
+                              )}
+
+                              <Paper
+                                withBorder
+                                p="md"
+                                style={{ borderColor: 'var(--mantine-color-orange-4)' }}
+                              >
+                                <Group justify="space-between" align="center">
+                                  <div>
+                                    <Text size="sm" fw={500}>
+                                      {t('Leave this organization')}
+                                    </Text>
+                                    <Text size="xs" c="dimmed">
+                                      {t('Remove yourself from this organization.')}
+                                    </Text>
+                                  </div>
+                                  <motion.div {...buttonStates}>
+                                    <Button
+                                      color="orange"
+                                      variant="outline"
+                                      leftSection={<LogOut size={14} />}
+                                      onClick={() => setConfirmLeaveOpen(true)}
+                                    >
+                                      {t('Leave organization')}
+                                    </Button>
+                                  </motion.div>
+                                </Group>
+                              </Paper>
+                            </Stack>
+                          )}
+                        </Box>
+                      </AnimatedTabPanel>
+                    </Box>
+                  </Box>
+                </MotionDiv>
+              </Stack>
+            </MotionDiv>
+
+            <ConfirmModal
+              opened={confirmDeleteOpen}
+              onClose={() => setConfirmDeleteOpen(false)}
+              onConfirm={() => void handleDeleteOrg()}
+              title={t('Delete organization')}
+              message={t(
+                'Are you sure you want to delete "{{name}}"? All members, invites, and associated data will be permanently removed.',
+                { name: org.name },
+              )}
+              confirmLabel={t('Delete organization')}
+              variant="danger"
+              loading={actionLoading}
+            />
+
+            <ConfirmModal
+              opened={confirmLeaveOpen}
+              onClose={() => setConfirmLeaveOpen(false)}
+              onConfirm={() => void handleLeaveOrg()}
+              title={t('Leave organization')}
+              message={t('Are you sure you want to leave "{{name}}"?', { name: org.name })}
+              confirmLabel={t('Leave organization')}
+              variant="warning"
+              loading={actionLoading}
+            />
+          </>
+        )}
+      </AnimatedStateSwitch>
     </Box>
   );
 }
