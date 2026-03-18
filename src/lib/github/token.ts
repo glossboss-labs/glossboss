@@ -9,8 +9,9 @@
  */
 
 import { getGitHubSettings } from './settings';
+import { GITHUB_OAUTH_TOKEN_KEY } from '@/lib/constants/storage-keys';
 
-const OAUTH_TOKEN_KEY = 'glossboss-github-oauth-token';
+const OAUTH_TOKEN_KEY = GITHUB_OAUTH_TOKEN_KEY;
 
 // ── OAuth token storage ────────────────────────────────────
 

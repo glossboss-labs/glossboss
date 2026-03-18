@@ -15,9 +15,11 @@ import {
   Tooltip,
 } from '@mantine/core';
 import { motion, AnimatePresence } from 'motion/react';
-import { MoreVertical, Trash2, Settings, Languages, Lock, Globe, EyeOff } from 'lucide-react';
+import { MoreVertical, Trash2, Settings, Languages, Globe } from 'lucide-react';
 import { badgeVariants } from '@/lib/motion';
-import { useTranslation, msgid } from '@/lib/app-language';
+import { useTranslation } from '@/lib/app-language';
+import { VISIBILITY_ICON, VISIBILITY_LABEL } from '@/lib/constants/visibility';
+import { formatRelative } from '@/lib/utils/date';
 import type { ProjectWithLanguages } from '@/lib/projects/types';
 import { CountryFlag } from '@/components/ui';
 
@@ -27,18 +29,6 @@ interface ProjectCardProps {
   project: ProjectWithLanguages;
   onDelete?: (id: string) => void;
 }
-
-const VISIBILITY_ICON = {
-  private: Lock,
-  public: Globe,
-  unlisted: EyeOff,
-} as const;
-
-const VISIBILITY_LABEL: Record<string, string> = {
-  private: msgid('Private'),
-  public: msgid('Public'),
-  unlisted: msgid('Unlisted'),
-};
 
 export function ProjectCard({ project, onDelete }: ProjectCardProps) {
   const { t } = useTranslation();
@@ -209,16 +199,4 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
       </Stack>
     </Paper>
   );
-}
-
-function formatRelative(iso: string): string {
-  const diff = Date.now() - new Date(iso).getTime();
-  const mins = Math.floor(diff / 60_000);
-  if (mins < 1) return 'just now';
-  if (mins < 60) return `${mins}m ago`;
-  const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days < 30) return `${days}d ago`;
-  return new Date(iso).toLocaleDateString();
 }

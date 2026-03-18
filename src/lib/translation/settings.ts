@@ -1,6 +1,8 @@
 import type { TranslationProviderId } from './types';
+import { LEGACY_PROVIDER_ALIASES, VALID_PROVIDER_SET } from './types';
+import { TRANSLATION_PROVIDER_SETTINGS_KEY } from '@/lib/constants/storage-keys';
 
-export const TRANSLATION_PROVIDER_STORAGE_KEY = 'glossboss-translation-provider-settings';
+export const TRANSLATION_PROVIDER_STORAGE_KEY = TRANSLATION_PROVIDER_SETTINGS_KEY;
 
 export interface TranslationProviderSettings {
   provider: TranslationProviderId;
@@ -12,22 +14,10 @@ const DEFAULT_SETTINGS: TranslationProviderSettings = {
   updatedAt: 0,
 };
 
-const VALID_PROVIDERS = new Set<string>([
-  'deepl',
-  'azure',
-  'openai',
-  'anthropic',
-  'google',
-  'mistral',
-  'deepseek',
-  'custom',
-]);
-
 function isProvider(value: unknown): value is TranslationProviderId {
   if (typeof value !== 'string') return false;
-  // Migrate legacy 'gemini' → 'google'
-  if (value === 'gemini') return true;
-  return VALID_PROVIDERS.has(value);
+  if (value in LEGACY_PROVIDER_ALIASES) return true;
+  return VALID_PROVIDER_SET.has(value);
 }
 
 export function getTranslationProviderSettings(): TranslationProviderSettings {
@@ -42,9 +32,9 @@ export function getTranslationProviderSettings(): TranslationProviderSettings {
       return DEFAULT_SETTINGS;
     }
 
-    // Migrate legacy 'gemini' → 'google'
+    // Migrate legacy aliases (e.g. 'gemini' → 'google')
     const provider: TranslationProviderId =
-      parsed.provider === 'gemini' ? 'google' : parsed.provider;
+      LEGACY_PROVIDER_ALIASES[parsed.provider] ?? parsed.provider;
 
     return {
       provider,

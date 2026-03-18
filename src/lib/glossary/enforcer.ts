@@ -6,6 +6,7 @@
  */
 
 import type { Glossary, GlossaryEntry } from './types';
+import { checkWordBoundaries } from './text-utils';
 
 /** Result of applying glossary to a translation */
 export interface EnforcementResult {
@@ -35,15 +36,7 @@ function findTermInText(
   let index = lowerText.indexOf(lowerTerm);
 
   while (index !== -1) {
-    // Check word boundaries
-    const before = index > 0 ? lowerText[index - 1]! : ' ';
-    const after =
-      index + lowerTerm.length < lowerText.length ? lowerText[index + lowerTerm.length]! : ' ';
-
-    const isWordBoundaryBefore = /[\s,.!?;:()[\]{}"'<>\-/]/.test(before);
-    const isWordBoundaryAfter = /[\s,.!?;:()[\]{}"'<>\-/]/.test(after);
-
-    if (isWordBoundaryBefore && isWordBoundaryAfter) {
+    if (checkWordBoundaries(lowerText, index, index + lowerTerm.length)) {
       return {
         found: true,
         index,

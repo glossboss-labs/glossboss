@@ -5,10 +5,11 @@
  */
 
 import { useState, useEffect } from 'react';
-import { Modal, Stack, TextInput, Group, Button } from '@mantine/core';
+import { Modal, Stack, TextInput } from '@mantine/core';
 import { motion, AnimatePresence } from 'motion/react';
-import { contentVariants, buttonStates } from '@/lib/motion';
-import { msgid, useTranslation } from '@/lib/app-language';
+import { contentVariants } from '@/lib/motion';
+import { msgid } from '@/lib/app-language';
+import { ModalActionButtons } from './ModalActionButtons';
 
 const MotionStack = motion.create(Stack);
 
@@ -33,7 +34,6 @@ export function PromptModal({
   submitLabel = msgid('OK'),
   cancelLabel = msgid('Cancel'),
 }: PromptModalProps) {
-  const { t } = useTranslation();
   const [value, setValue] = useState('');
 
   useEffect(() => {
@@ -71,18 +71,13 @@ export function PromptModal({
               data-autofocus
             />
 
-            <Group justify="flex-end" gap="sm">
-              <motion.div {...buttonStates}>
-                <Button variant="default" onClick={onClose}>
-                  {t(cancelLabel)}
-                </Button>
-              </motion.div>
-              <motion.div {...buttonStates}>
-                <Button onClick={handleSubmit} disabled={!value.trim()}>
-                  {t(submitLabel)}
-                </Button>
-              </motion.div>
-            </Group>
+            <ModalActionButtons
+              cancelLabel={cancelLabel}
+              confirmLabel={submitLabel}
+              onCancel={onClose}
+              onConfirm={handleSubmit}
+              confirmDisabled={!value.trim()}
+            />
           </MotionStack>
         )}
       </AnimatePresence>

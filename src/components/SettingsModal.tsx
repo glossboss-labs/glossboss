@@ -108,7 +108,7 @@ import {
 } from '@/components/glossary/constants';
 import { renderFlagOption } from '@/components/ui';
 import type { Glossary } from '@/lib/glossary/types';
-import { NAV_SKIP_TRANSLATED_KEY } from '@/components/editor/EditorTable';
+import { NAV_SKIP_TRANSLATED_KEY } from '@/lib/constants/storage-keys';
 import { ExportSection } from '@/components/projects/ExportSection';
 import { CONTAINER_WIDTH_OPTIONS, type ContainerWidth } from '@/lib/container-width';
 import {
@@ -722,8 +722,8 @@ export function SettingsModal({
       const voices = await getElevenLabsClient().listVoices();
       setElevenLabsVoices(voices);
       if (voices.length > 0) {
-        setSourceElevenLabsVoiceId((current) => current ?? voices[0].voiceId);
-        setTranslationElevenLabsVoiceId((current) => current ?? voices[0].voiceId);
+        setSourceElevenLabsVoiceId((current) => current ?? voices[0]!.voiceId);
+        setTranslationElevenLabsVoiceId((current) => current ?? voices[0]!.voiceId);
       }
       primeElevenLabsVoices(voices);
     } catch (error) {

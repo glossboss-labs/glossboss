@@ -32,9 +32,7 @@ import {
   MoreVertical,
   Trash2,
   Languages,
-  Lock,
   Globe,
-  EyeOff,
   Search,
   GitBranch,
   Users,
@@ -51,7 +49,10 @@ import {
   buttonStates,
   fadeVariants,
 } from '@/lib/motion';
-import { useTranslation, msgid } from '@/lib/app-language';
+import { useTranslation } from '@/lib/app-language';
+import { VISIBILITY_ICON, VISIBILITY_LABEL } from '@/lib/constants/visibility';
+import { formatRelative } from '@/lib/utils/date';
+import { sortLanguages, type LangSortOption } from '@/lib/utils/sorting';
 import {
   getProject,
   getProjectLanguages,
@@ -71,65 +72,10 @@ import { useAuth } from '@/hooks/use-auth';
 import { AddLanguageModal } from '@/components/projects/AddLanguageModal';
 import { ProjectMembersTab } from '@/components/projects/ProjectMembersTab';
 import { ProjectInvitesTab } from '@/components/projects/ProjectInvitesTab';
-import { ConfirmModal, LanguageFlag } from '@/components/ui';
+import { ConfirmModal, CountryFlag } from '@/components/ui';
 
 const MotionDiv = motion.div;
 const MotionSpan = motion.span;
-
-type LangSortOption = 'locale' | 'most-complete' | 'least-complete' | 'most-strings' | 'updated';
-
-const VISIBILITY_ICON = {
-  private: Lock,
-  public: Globe,
-  unlisted: EyeOff,
-} as const;
-
-const VISIBILITY_LABEL: Record<string, string> = {
-  private: msgid('Private'),
-  public: msgid('Public'),
-  unlisted: msgid('Unlisted'),
-};
-
-function sortLanguages(
-  languages: ProjectLanguageRow[],
-  sort: LangSortOption,
-): ProjectLanguageRow[] {
-  const sorted = [...languages];
-  switch (sort) {
-    case 'locale':
-      return sorted.sort((a, b) => a.locale.localeCompare(b.locale));
-    case 'most-complete': {
-      const pct = (l: ProjectLanguageRow) =>
-        l.stats_total > 0 ? l.stats_translated / l.stats_total : 0;
-      return sorted.sort((a, b) => pct(b) - pct(a));
-    }
-    case 'least-complete': {
-      const pct = (l: ProjectLanguageRow) =>
-        l.stats_total > 0 ? l.stats_translated / l.stats_total : 0;
-      return sorted.sort((a, b) => pct(a) - pct(b));
-    }
-    case 'most-strings':
-      return sorted.sort((a, b) => b.stats_total - a.stats_total);
-    case 'updated':
-      return sorted.sort(
-        (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
-      );
-    default:
-      return sorted;
-  }
-}
-
-function formatRelative(iso: string): string {
-  const diff = Date.now() - new Date(iso).getTime();
-  const mins = Math.floor(diff / 60_000);
-  if (mins < 1) return 'just now';
-  if (mins < 60) return `${mins}m ago`;
-  const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days < 30) return `${days}d ago`;
-  return new Date(iso).toLocaleDateString();
-}
 
 export default function ProjectDetail() {
   const { id } = useParams<{ id: string }>();
@@ -269,7 +215,7 @@ export default function ProjectDetail() {
   const aggFuzzyPct = aggTotal > 0 ? Math.round((aggFuzzy / aggTotal) * 100) : 0;
 
   const sortOptions = [
-    { value: 'locale', label: t('Locale A–Z') },
+    { value: 'locale', label: t('Locale A\u2013Z') },
     { value: 'most-complete', label: t('Most complete') },
     { value: 'least-complete', label: t('Least complete') },
     { value: 'most-strings', label: t('Most strings') },
@@ -392,22 +338,22 @@ export default function ProjectDetail() {
               <VisIcon size={12} c="dimmed" />
               <Text size="xs" c="dimmed">
                 {t(VISIBILITY_LABEL[project.visibility] ?? 'Public')}
-                {' · '}
+                {' \u00b7 '}
                 {project.source_format.toUpperCase()}
                 {project.source_language &&
                   project.target_language &&
                   project.source_language !== project.target_language && (
                     <>
-                      {' · '}
-                      <LanguageFlag code={project.source_language} size="xs" />{' '}
-                      {project.source_language} →{' '}
-                      <LanguageFlag code={project.target_language} size="xs" />{' '}
+                      {' \u00b7 '}
+                      <CountryFlag code={project.source_language} size="xs" />{' '}
+                      {project.source_language} \u2192{' '}
+                      <CountryFlag code={project.target_language} size="xs" />{' '}
                       {project.target_language}
                     </>
                   )}
                 {project.wp_slug && (
                   <>
-                    {' · '}
+                    {' \u00b7 '}
                     {t('{{type}} / {{slug}}', {
                       type: project.wp_project_type,
                       slug: project.wp_slug,
@@ -445,7 +391,7 @@ export default function ProjectDetail() {
                     {t('Sign up')}
                   </Link>{' '}
                   {t(
-                    "to save projects to the cloud and collaborate with your team. Collaborators work under the project owner's plan — no subscription needed to contribute.",
+                    "to save projects to the cloud and collaborate with your team. Collaborators work under the project owner's plan \u2014 no subscription needed to contribute.",
                   )}
                 </Text>
               </Group>
@@ -495,7 +441,7 @@ export default function ProjectDetail() {
                       <Group justify="space-between" align="center" mb={8}>
                         <Text size="sm" c="dimmed">
                           {t('{{count}} languages', { count: languages.length })}
-                          {' · '}
+                          {' \u00b7 '}
                           {t('{{strings}} total strings', { strings: aggTotal })}
                         </Text>
                         <Text size="sm" fw={600} c={aggPct === 100 ? 'teal' : undefined}>
@@ -514,7 +460,7 @@ export default function ProjectDetail() {
                   <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
                     <Group gap="sm">
                       <TextInput
-                        placeholder={t('Search languages…')}
+                        placeholder={t('Search languages\u2026')}
                         leftSection={<Search size={14} />}
                         value={search}
                         onChange={(e) => setSearch(e.currentTarget.value)}
@@ -601,7 +547,7 @@ export default function ProjectDetail() {
                               <Stack gap={4} style={{ flex: 1, minWidth: 0 }}>
                                 <Group gap="sm" wrap="wrap">
                                   <Group gap={6} wrap="nowrap">
-                                    <LanguageFlag code={lang.locale} />
+                                    <CountryFlag code={lang.locale} />
                                     <Text fw={600} size="sm">
                                       {lang.locale}
                                     </Text>

@@ -119,10 +119,10 @@ export default function ProjectEditor() {
         const mtMeta = new Map<string, MachineTranslationMeta>();
         const mtIds = new Set<string>();
         for (let i = 0; i < dbEntries.length; i++) {
-          const meta = dbEntryToMTMeta(dbEntries[i]);
+          const meta = dbEntryToMTMeta(dbEntries[i]!);
           if (meta) {
-            mtMeta.set(poEntries[i].id, meta);
-            mtIds.add(poEntries[i].id);
+            mtMeta.set(poEntries[i]!.id, meta);
+            mtIds.add(poEntries[i]!.id);
           }
         }
         if (mtMeta.size > 0) {
@@ -135,9 +135,9 @@ export default function ProjectEditor() {
         // Restore review entries
         const reviewMap = new Map<string, ReviewEntryState>();
         for (let i = 0; i < dbEntries.length; i++) {
-          const review = dbEntryToReviewState(dbEntries[i]);
+          const review = dbEntryToReviewState(dbEntries[i]!);
           if (review.status !== 'draft' || review.comments.length > 0) {
-            reviewMap.set(poEntries[i].id, review);
+            reviewMap.set(poEntries[i]!.id, review);
           }
         }
         if (reviewMap.size > 0) {

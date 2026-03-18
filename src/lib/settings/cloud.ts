@@ -18,13 +18,15 @@ import { getTtsSettings, saveTtsSettings } from '@/lib/tts';
 import { getTranslationProviderSettings, saveActiveTranslationProvider } from '@/lib/translation';
 import type { LlmProviderId } from '@/lib/translation/types';
 import { getAppLanguage, saveAppLanguage } from '@/lib/app-language';
-import { CONTAINER_WIDTH_KEY, type ContainerWidth } from '@/lib/container-width';
-import { NAV_SKIP_TRANSLATED_KEY } from '@/components/editor/EditorTable';
+import { type ContainerWidth } from '@/lib/container-width';
+import {
+  CONTAINER_WIDTH_KEY,
+  NAV_SKIP_TRANSLATED_KEY,
+  SPEECH_ENABLED_KEY,
+  TRANSLATE_ENABLED_KEY,
+} from '@/lib/constants/storage-keys';
 import { encryptCredentials, decryptCredentials } from './crypto';
 import type { CloudSettingsPayload, CloudSettingsCredentials } from './types';
-
-const SPEECH_ENABLED_KEY = 'glossboss-speech-enabled';
-const TRANSLATE_ENABLED_KEY = 'glossboss-translate-enabled';
 
 function supabase() {
   return getSupabaseClient('Settings');

@@ -1,6 +1,7 @@
 import type { TranslationProviderId } from './types';
+import { TRANSLATION_USAGE_KEY } from '@/lib/constants/storage-keys';
 
-const STORAGE_KEY = 'glossboss-translation-usage';
+const STORAGE_KEY = TRANSLATION_USAGE_KEY;
 
 /** Event name dispatched after usage changes, consumed by FilterToolbar and others. */
 export const TRANSLATION_USAGE_REFRESH_EVENT = 'translation-usage-refresh';

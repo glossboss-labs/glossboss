@@ -18,11 +18,12 @@ import {
   saveGeminiSettings,
   setGeminiPersistEnabled,
 } from '@/lib/gemini';
+import { getTranslationProviderSettings, saveActiveTranslationProvider } from '@/lib/translation';
 import {
-  getTranslationProviderSettings,
-  saveActiveTranslationProvider,
+  LEGACY_PROVIDER_ALIASES,
+  VALID_PROVIDER_SET,
   type TranslationProviderId,
-} from '@/lib/translation';
+} from '@/lib/translation/types';
 import { CONTAINER_WIDTH_OPTIONS, type ContainerWidth } from '@/lib/container-width';
 
 const APP_SETTINGS_SCHEMA = 'glossboss-settings';
@@ -109,20 +110,10 @@ function isContainerWidth(value: unknown): value is ContainerWidth {
   return typeof value === 'string' && VALID_CONTAINER_WIDTHS.includes(value as ContainerWidth);
 }
 
-const VALID_PROVIDERS = new Set<string>([
-  'deepl',
-  'azure',
-  'gemini', // legacy — maps to 'google' on apply
-  'openai',
-  'anthropic',
-  'google',
-  'mistral',
-  'deepseek',
-  'custom',
-]);
-
 function isProvider(value: unknown): value is TranslationProviderId {
-  return typeof value === 'string' && VALID_PROVIDERS.has(value);
+  if (typeof value !== 'string') return false;
+  if (value in LEGACY_PROVIDER_ALIASES) return true;
+  return VALID_PROVIDER_SET.has(value);
 }
 
 function parsePreferences(value: unknown): AppSettingsPreferences {

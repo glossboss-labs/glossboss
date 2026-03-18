@@ -49,8 +49,13 @@ export function resetTourCompletion(key?: string): void {
   }
 }
 
-const EDITOR_TOUR_KEY = 'glossboss-editor-tour-completed';
-const SETTINGS_TOUR_KEY = 'glossboss-settings-tour-completed';
+import {
+  EDITOR_TOUR_KEY as _EDITOR_TOUR_KEY,
+  SETTINGS_TOUR_KEY as _SETTINGS_TOUR_KEY,
+} from '@/lib/constants/storage-keys';
+
+const EDITOR_TOUR_KEY = _EDITOR_TOUR_KEY;
+const SETTINGS_TOUR_KEY = _SETTINGS_TOUR_KEY;
 
 /* ------------------------------------------------------------------ */
 /*  Step definitions                                                   */

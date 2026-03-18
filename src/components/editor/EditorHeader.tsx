@@ -7,15 +7,7 @@
  */
 
 import type { MutableRefObject, RefObject } from 'react';
-import {
-  Text,
-  Group,
-  Button,
-  FileButton,
-  Tooltip,
-  Menu,
-  useComputedColorScheme,
-} from '@mantine/core';
+import { Text, Group, Button, FileButton, Tooltip, Menu } from '@mantine/core';
 import { Link as RouterLink } from 'react-router';
 import { motion, AnimatePresence } from 'motion/react';
 import {
@@ -41,6 +33,7 @@ import { useTranslation } from '@/lib/app-language';
 import type { FileFormat } from '@/stores';
 import type { RepoConnection } from '@/lib/repo-sync/types';
 import { useAuth } from '@/hooks/use-auth';
+import { GlossBossLogo } from '@/components/ui/GlossBossLogo';
 
 const MotionDiv = motion.div;
 
@@ -124,7 +117,6 @@ export function EditorHeader({
 }: EditorHeaderProps) {
   const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
-  const computedColorScheme = useComputedColorScheme('light');
 
   return (
     <MotionDiv variants={sectionVariants} initial="hidden" animate="visible">
@@ -133,26 +125,10 @@ export function EditorHeader({
         <Group gap="sm" align="center">
           <div data-ev-id="ev_c00be328c4">
             {filename ? (
-              <img
-                src={
-                  computedColorScheme === 'dark'
-                    ? '/glossboss-combined-light.svg'
-                    : '/glossboss-combined-dark.svg'
-                }
-                alt="GlossBoss"
-                style={{ height: 28, display: 'block' }}
-              />
+              <GlossBossLogo size={28} />
             ) : (
               <>
-                <img
-                  src={
-                    computedColorScheme === 'dark'
-                      ? '/glossboss-combined-light.svg'
-                      : '/glossboss-combined-dark.svg'
-                  }
-                  alt="GlossBoss"
-                  style={{ height: 36, display: 'block' }}
-                />
+                <GlossBossLogo size={36} />
                 <Text size="sm" mt={4} style={{ color: 'var(--gb-text-secondary)' }}>
                   {t('Edit translation files with AI-powered translation')}
                 </Text>

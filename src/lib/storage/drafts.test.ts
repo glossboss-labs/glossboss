@@ -160,7 +160,7 @@ describe('drafts', () => {
       const all = getAllDrafts();
       expect(all).toHaveLength(2);
       // b.po has a newer savedAt so should be first
-      expect(all[0].filename).toBe('b.po');
+      expect(all[0]!.filename).toBe('b.po');
     });
   });
 

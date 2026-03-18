@@ -10,9 +10,10 @@
 import type { Glossary } from './types';
 import { parseGlossaryCSV, isValidGlossaryCSV } from './csv-parser';
 import { invokeSupabaseFunction, readSupabaseFunctionError } from '@/lib/supabase/client';
+import { WP_GLOSSARY_CACHE_PREFIX } from '@/lib/constants/storage-keys';
 
 /** Cache key prefix for localStorage */
-const CACHE_KEY_PREFIX = 'glossboss-wp-glossary-';
+const CACHE_KEY_PREFIX = WP_GLOSSARY_CACHE_PREFIX;
 
 /** Cache TTL in milliseconds (24 hours) */
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;

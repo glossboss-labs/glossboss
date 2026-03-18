@@ -43,6 +43,7 @@ import {
   Bell,
 } from 'lucide-react';
 import { useTranslation } from '@/lib/app-language';
+import { getInitials } from '@/lib/utils/avatar';
 import { useAuth } from '@/hooks/use-auth';
 import { useAuthStore } from '@/stores/auth-store';
 import { useNotificationsStore } from '@/stores/notifications-store';
@@ -53,6 +54,7 @@ import { useProjectsStore } from '@/stores/projects-store';
 import { formatLimit } from '@/lib/billing/limits';
 import { FeedbackModal } from '@/components/feedback';
 import { AuthPromptModal } from '@/components/auth/AuthPromptModal';
+import { GlossBossLogo } from '@/components/ui/GlossBossLogo';
 
 interface AppSidebarProps {
   collapsed: boolean;
@@ -168,12 +170,7 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
 
   const displayName = user?.user_metadata?.full_name || user?.email || '';
   const avatarUrl = user?.user_metadata?.avatar_url as string | undefined;
-  const initials = displayName
-    .split(/\s+/)
-    .map((w: string) => w[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
+  const initials = getInitials(displayName);
 
   return (
     <>
@@ -191,26 +188,7 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
               to="/"
               style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}
             >
-              <img
-                src={
-                  computedColorScheme === 'dark'
-                    ? collapsed
-                      ? '/glossboss-icon-light.svg'
-                      : '/glossboss-combined-light.svg'
-                    : collapsed
-                      ? '/glossboss-icon-dark.svg'
-                      : '/glossboss-combined-dark.svg'
-                }
-                alt="GlossBoss"
-                style={{ height: collapsed ? 24 : 24, display: 'block' }}
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src =
-                    computedColorScheme === 'dark'
-                      ? '/glossboss-combined-light.svg'
-                      : '/glossboss-combined-dark.svg';
-                  (e.target as HTMLImageElement).style.height = '20px';
-                }}
-              />
+              <GlossBossLogo size={24} variant={collapsed ? 'icon' : 'full'} />
             </Link>
             {!collapsed && (
               <Tooltip label={t('Collapse sidebar')} position="right">

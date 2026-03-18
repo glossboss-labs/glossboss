@@ -1,5 +1,7 @@
+import { CONTAINER_WIDTH_KEY as _CONTAINER_WIDTH_KEY } from '@/lib/constants/storage-keys';
+
 /** localStorage key for persisting the container width preference */
-export const CONTAINER_WIDTH_KEY = 'glossboss-container-width';
+export const CONTAINER_WIDTH_KEY = _CONTAINER_WIDTH_KEY;
 
 /** Available container width options */
 export const CONTAINER_WIDTH_OPTIONS = [

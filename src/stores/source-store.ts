@@ -4,6 +4,7 @@
 
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
+import { SOURCE_STORE_KEY } from '@/lib/constants/storage-keys';
 import type {
   ParsedReference,
   WordPressPluginTranslationTrack,
@@ -60,7 +61,7 @@ export interface SourceActions {
   clearSource: () => void;
 }
 
-const STORAGE_KEY = 'glossboss-source-store';
+const STORAGE_KEY = SOURCE_STORE_KEY;
 const STORAGE_VERSION = 2;
 
 const initialState: SourceState = {

@@ -21,6 +21,7 @@ import {
 import { motion } from 'motion/react';
 import { buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
+import { getInitials } from '@/lib/utils/avatar';
 import { useAuth } from '@/hooks/use-auth';
 import { useAuthStore } from '@/stores/auth-store';
 import { useSubscription } from '@/hooks/use-subscription';
@@ -60,12 +61,7 @@ export function UserMenu() {
 
   const displayName = user?.user_metadata?.full_name || user?.email || '';
   const avatarUrl = user?.user_metadata?.avatar_url;
-  const initials = displayName
-    .split(/\s+/)
-    .map((w: string) => w[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
+  const initials = getInitials(displayName);
 
   return (
     <>

@@ -21,6 +21,7 @@ import { motion } from 'motion/react';
 import { Plus, AlertCircle, FolderOpen, Search, Building2 } from 'lucide-react';
 import { sectionVariants, contentVariants, buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
+import { sortProjects, type ProjectSortOption } from '@/lib/utils/sorting';
 import { trackEvent } from '@/lib/analytics';
 import { useProjectsStore } from '@/stores/projects-store';
 import { useAuthStore } from '@/stores/auth-store';
@@ -31,31 +32,10 @@ import { CreateProjectModal } from '@/components/projects/CreateProjectModal';
 import { CreateOrgModal } from '@/components/organizations/CreateOrgModal';
 import { ConfirmModal } from '@/components/ui';
 import { FreePlanBanner } from '@/components/billing/FreePlanBanner';
-import type { ProjectWithLanguages } from '@/lib/projects/types';
 
 const MotionDiv = motion.div;
 
-type SortOption = 'updated' | 'name' | 'most-strings' | 'least-complete';
-
-function sortProjects(projects: ProjectWithLanguages[], sort: SortOption): ProjectWithLanguages[] {
-  const sorted = [...projects];
-  switch (sort) {
-    case 'name':
-      return sorted.sort((a, b) => a.name.localeCompare(b.name));
-    case 'most-strings':
-      return sorted.sort((a, b) => b.stats_total - a.stats_total);
-    case 'least-complete': {
-      const pct = (p: ProjectWithLanguages) =>
-        p.stats_total > 0 ? p.stats_translated / p.stats_total : 0;
-      return sorted.sort((a, b) => pct(a) - pct(b));
-    }
-    case 'updated':
-    default:
-      return sorted.sort(
-        (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
-      );
-  }
-}
+type SortOption = ProjectSortOption;
 
 export default function Dashboard() {
   const { t } = useTranslation();

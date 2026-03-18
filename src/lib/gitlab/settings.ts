@@ -5,8 +5,8 @@
  * Follows the same session/localStorage pattern as other providers.
  */
 
-const STORAGE_KEY = 'glossboss-gitlab-settings';
-const PERSIST_KEY = 'glossboss-gitlab-persist';
+import { createPersistenceManager } from '@/lib/settings/storage-persistence';
+import { GITLAB_SETTINGS_KEY, GITLAB_PERSIST_KEY } from '@/lib/constants/storage-keys';
 
 export interface GitLabSettings {
   /** GitLab Personal Access Token */
@@ -23,74 +23,31 @@ const DEFAULT_SETTINGS: GitLabSettings = {
   updatedAt: 0,
 };
 
+const manager = createPersistenceManager<GitLabSettings>({
+  storageKey: GITLAB_SETTINGS_KEY,
+  persistKey: GITLAB_PERSIST_KEY,
+  defaults: DEFAULT_SETTINGS,
+  label: 'GitLab Settings',
+});
+
 export function isGitLabPersistEnabled(): boolean {
-  try {
-    return localStorage.getItem(PERSIST_KEY) === 'true';
-  } catch {
-    return false;
-  }
+  return manager.isPersistEnabled();
 }
 
 export function setGitLabPersistEnabled(enabled: boolean): void {
-  try {
-    if (enabled) {
-      const session = sessionStorage.getItem(STORAGE_KEY);
-      if (session) {
-        localStorage.setItem(STORAGE_KEY, session);
-        sessionStorage.removeItem(STORAGE_KEY);
-      }
-      localStorage.setItem(PERSIST_KEY, 'true');
-    } else {
-      const local = localStorage.getItem(STORAGE_KEY);
-      if (local) {
-        sessionStorage.setItem(STORAGE_KEY, local);
-        localStorage.removeItem(STORAGE_KEY);
-      }
-      localStorage.removeItem(PERSIST_KEY);
-    }
-  } catch {
-    // Ignore storage errors
-  }
-}
-
-function getStore(): Storage {
-  return isGitLabPersistEnabled() ? localStorage : sessionStorage;
+  manager.setPersistEnabled(enabled);
 }
 
 export function getGitLabSettings(): GitLabSettings {
-  try {
-    const stored = getStore().getItem(STORAGE_KEY);
-    if (stored) {
-      return { ...DEFAULT_SETTINGS, ...JSON.parse(stored) };
-    }
-  } catch {
-    // Fall through to default
-  }
-  return DEFAULT_SETTINGS;
+  return manager.get();
 }
 
 export function saveGitLabSettings(settings: Partial<GitLabSettings>): void {
-  try {
-    const current = getGitLabSettings();
-    const updated: GitLabSettings = {
-      ...current,
-      ...settings,
-      updatedAt: Date.now(),
-    };
-    getStore().setItem(STORAGE_KEY, JSON.stringify(updated));
-  } catch {
-    // Ignore storage errors
-  }
+  manager.save(settings);
 }
 
 export function clearGitLabSettings(): void {
-  try {
-    localStorage.removeItem(STORAGE_KEY);
-    sessionStorage.removeItem(STORAGE_KEY);
-    localStorage.removeItem(PERSIST_KEY);
-  } catch {
-    // Ignore storage errors
-  }
+  manager.clear();
 }
 
 export function hasGitLabToken(): boolean {

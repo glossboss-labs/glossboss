@@ -62,10 +62,11 @@ import type { IndexPageBannersProps } from './IndexPageBanners';
 import type { IndexPageDialogsProps } from './IndexPageDialogs';
 import type { IndexPageNotificationsProps } from './IndexPageNotifications';
 import type { DownloadInfo, FeedbackInfo, MergeInfo, PendingDraft } from './types';
-
-const SPEECH_ENABLED_KEY = 'glossboss-speech-enabled';
-const TRANSLATE_ENABLED_KEY = 'glossboss-translate-enabled';
-const WORKSPACE_MODE_KEY = 'glossboss-editor-workspace-mode';
+import {
+  SPEECH_ENABLED_KEY,
+  TRANSLATE_ENABLED_KEY,
+  WORKSPACE_MODE_KEY,
+} from '@/lib/constants/storage-keys';
 
 function formatFileSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
@@ -790,7 +791,7 @@ export function useIndexPageController(options?: IndexPageControllerOptions) {
         return;
       }
 
-      const file = files[0];
+      const file = files[0]!;
       const ext = getFileExtension(file.name);
 
       if (!isSupportedExtension(ext)) {

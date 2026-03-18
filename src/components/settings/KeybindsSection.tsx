@@ -7,7 +7,7 @@
 
 import { Stack, Text, Group, Paper, Table, Switch, Divider, Box } from '@mantine/core';
 import { useLocalStorage } from '@mantine/hooks';
-import { NAV_SKIP_TRANSLATED_KEY } from '@/components/editor/EditorTable';
+import { NAV_SKIP_TRANSLATED_KEY } from '@/lib/constants/storage-keys';
 import { msgid, useTranslation } from '@/lib/app-language';
 
 const isMac =

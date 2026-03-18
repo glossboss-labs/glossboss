@@ -8,6 +8,26 @@ export type LlmProviderId = 'openai' | 'anthropic' | 'google' | 'mistral' | 'dee
 /** All translation providers — traditional APIs + LLM + custom endpoints. */
 export type TranslationProviderId = 'deepl' | 'azure' | LlmProviderId | 'custom';
 
+/** Canonical list of valid provider IDs (single source of truth). */
+export const VALID_PROVIDER_IDS = [
+  'deepl',
+  'azure',
+  'google',
+  'openai',
+  'anthropic',
+  'mistral',
+  'deepseek',
+  'custom',
+] as const satisfies readonly TranslationProviderId[];
+
+/** Set form for O(1) membership checks. */
+export const VALID_PROVIDER_SET = new Set<string>(VALID_PROVIDER_IDS);
+
+/** Legacy provider names that should be migrated to a canonical ID. */
+export const LEGACY_PROVIDER_ALIASES: Record<string, TranslationProviderId> = {
+  gemini: 'google',
+};
+
 export type TranslationGlossaryMode = 'native' | 'prompt' | 'none';
 
 export interface TranslationContextExcerpt {

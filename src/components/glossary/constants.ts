@@ -1,5 +1,7 @@
-export const GLOSSARY_SELECTED_LOCALE_KEY = 'glossboss-selected-glossary-locale';
-export const GLOSSARY_ENFORCEMENT_KEY = 'glossboss-glossary-enforcement';
+export {
+  GLOSSARY_SELECTED_LOCALE_KEY,
+  GLOSSARY_ENFORCEMENT_KEY,
+} from '@/lib/constants/storage-keys';
 
 export const COMMON_GLOSSARY_LOCALES = [
   { value: 'ar', label: 'Arabic (ar)' },

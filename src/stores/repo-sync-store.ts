@@ -8,6 +8,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import type { RepoConnection, RepoProviderId, RepoSyncSettings } from '@/lib/repo-sync/types';
+import { REPO_SYNC_STORE_KEY } from '@/lib/constants/storage-keys';
 import { DEFAULT_SYNC_SETTINGS } from '@/lib/repo-sync/types';
 
 /** Sync operation status */
@@ -59,7 +60,7 @@ export interface RepoSyncActions {
   getProviderLabel: () => string;
 }
 
-const STORAGE_KEY = 'glossboss-repo-sync';
+const STORAGE_KEY = REPO_SYNC_STORE_KEY;
 
 export const REPO_PROVIDER_LABELS: Record<RepoProviderId, string> = {
   github: 'GitHub',

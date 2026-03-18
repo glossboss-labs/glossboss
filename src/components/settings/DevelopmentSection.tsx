@@ -8,8 +8,9 @@ import { Stack, Text, Alert, Badge, Paper, Group, Switch } from '@mantine/core';
 import { useLocalStorage } from '@mantine/hooks';
 import { GitBranch } from 'lucide-react';
 import { useTranslation } from '@/lib/app-language';
+import { DEV_BRANCH_CHIP_KEY } from '@/lib/constants/storage-keys';
 
-const BRANCH_CHIP_KEY = 'glossboss-dev-branch-chip';
+const BRANCH_CHIP_KEY = DEV_BRANCH_CHIP_KEY;
 
 export interface DevelopmentSectionProps {
   branchChipEnabled?: boolean;

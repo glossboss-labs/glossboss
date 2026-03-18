@@ -7,11 +7,13 @@
 
 import type { LlmProviderId } from '@/lib/translation/types';
 import { getLlmDefaultModel } from './providers';
-
-const STORAGE_KEY = 'glossboss-llm-settings';
-const PERSIST_KEY = 'glossboss-llm-persist';
-const LEGACY_GEMINI_KEY = 'glossboss-gemini-settings';
-const LEGACY_GEMINI_PERSIST_KEY = 'glossboss-gemini-persist';
+import { createPersistenceManager } from '@/lib/settings/storage-persistence';
+import {
+  LLM_SETTINGS_KEY,
+  LLM_PERSIST_KEY,
+  GEMINI_SETTINGS_KEY,
+  GEMINI_PERSIST_KEY,
+} from '@/lib/constants/storage-keys';
 
 export interface LlmProviderSettings {
   apiKey: string;
@@ -31,6 +33,12 @@ type LlmSettingsStore = Partial<Record<LlmProviderId, LlmProviderSettings>> & {
   custom?: CustomProviderSettings;
 };
 
+// Wrapper type so the persistence manager can treat the store as a single object.
+interface LlmStoreWrapper {
+  store: LlmSettingsStore;
+  updatedAt: number;
+}
+
 const DEFAULT_TEMPERATURE = 0.2;
 
 function defaultSettings(provider: LlmProviderId): LlmProviderSettings {
@@ -43,41 +51,42 @@ function defaultSettings(provider: LlmProviderId): LlmProviderSettings {
   };
 }
 
-// ── Persistence toggle ─────────────────────────────────────
+// ── Persistence manager (handles persist toggle + storage) ───
 
-export function isLlmPersistEnabled(): boolean {
-  try {
-    return localStorage.getItem(PERSIST_KEY) === 'true';
-  } catch {
-    return false;
-  }
-}
-
-export function setLlmPersistEnabled(enabled: boolean): void {
-  try {
-    if (enabled) {
-      const session = sessionStorage.getItem(STORAGE_KEY);
-      if (session) {
-        localStorage.setItem(STORAGE_KEY, session);
-        sessionStorage.removeItem(STORAGE_KEY);
-      }
-      localStorage.setItem(PERSIST_KEY, 'true');
-      return;
+const manager = createPersistenceManager<LlmStoreWrapper>({
+  storageKey: LLM_SETTINGS_KEY,
+  persistKey: LLM_PERSIST_KEY,
+  defaults: { store: {}, updatedAt: 0 },
+  label: 'LLM Settings',
+  parse: (raw) => {
+    // The storage format is a flat LlmSettingsStore (not wrapped).
+    // We wrap it for the manager but store it flat for backward compat.
+    if (typeof raw === 'object' && raw !== null) {
+      return { store: raw as unknown as LlmSettingsStore, updatedAt: 0 };
     }
+    return { store: {}, updatedAt: 0 };
+  },
+});
 
-    const local = localStorage.getItem(STORAGE_KEY);
-    if (local) {
-      sessionStorage.setItem(STORAGE_KEY, local);
-      localStorage.removeItem(STORAGE_KEY);
-    }
-    localStorage.removeItem(PERSIST_KEY);
+// Override the manager's save to write flat (not wrapped) for backward compat.
+function saveStoreRaw(store: LlmSettingsStore): void {
+  try {
+    const storage = manager.isPersistEnabled() ? localStorage : sessionStorage;
+    storage.setItem(LLM_SETTINGS_KEY, JSON.stringify(store));
+    manager.invalidateCache();
   } catch {
     // Ignore storage errors.
   }
 }
 
-function getStore(): Storage {
-  return isLlmPersistEnabled() ? localStorage : sessionStorage;
+// ── Persistence toggle ─────────────────────────────────────
+
+export function isLlmPersistEnabled(): boolean {
+  return manager.isPersistEnabled();
+}
+
+export function setLlmPersistEnabled(enabled: boolean): void {
+  manager.setPersistEnabled(enabled);
 }
 
 // ── Migration from legacy Gemini settings ──────────────────
@@ -90,21 +99,14 @@ function migrateGeminiSettings(): void {
 
   try {
     // Check if legacy Gemini settings exist
-    const legacyPersist = localStorage.getItem(LEGACY_GEMINI_PERSIST_KEY) === 'true';
+    const legacyPersist = localStorage.getItem(GEMINI_PERSIST_KEY) === 'true';
     const legacyStore = legacyPersist ? localStorage : sessionStorage;
-    const legacyRaw = legacyStore.getItem(LEGACY_GEMINI_KEY);
+    const legacyRaw = legacyStore.getItem(GEMINI_SETTINGS_KEY);
     if (!legacyRaw) return;
 
     // Check if we've already migrated (google entry exists)
-    const currentRaw = getStore().getItem(STORAGE_KEY);
-    if (currentRaw) {
-      try {
-        const current = JSON.parse(currentRaw) as LlmSettingsStore;
-        if (current.google) return; // Already migrated
-      } catch {
-        // Parse error — proceed with migration
-      }
-    }
+    const currentStore = loadStore();
+    if (currentStore.google) return;
 
     const legacy = JSON.parse(legacyRaw);
     const googleSettings: LlmProviderSettings = {
@@ -121,7 +123,7 @@ function migrateGeminiSettings(): void {
     // Write migrated settings
     const store = loadStore();
     store.google = googleSettings;
-    saveStore(store);
+    saveStoreRaw(store);
 
     // Migrate persist setting
     if (legacyPersist) {
@@ -136,22 +138,7 @@ function migrateGeminiSettings(): void {
 
 function loadStore(): LlmSettingsStore {
   migrateGeminiSettings();
-  try {
-    const stored = getStore().getItem(STORAGE_KEY);
-    if (!stored) return {};
-    const parsed = JSON.parse(stored);
-    return typeof parsed === 'object' && parsed !== null ? parsed : {};
-  } catch {
-    return {};
-  }
-}
-
-function saveStore(store: LlmSettingsStore): void {
-  try {
-    getStore().setItem(STORAGE_KEY, JSON.stringify(store));
-  } catch {
-    // Ignore storage errors.
-  }
+  return manager.get().store;
 }
 
 // ── Public API ─────────────────────────────────────────────
@@ -187,13 +174,13 @@ export function saveLlmSettings(
     ...settings,
     updatedAt: Date.now(),
   };
-  saveStore(store);
+  saveStoreRaw(store);
 }
 
 export function clearLlmSettings(provider: LlmProviderId): void {
   const store = loadStore();
   delete store[provider];
-  saveStore(store);
+  saveStoreRaw(store);
 }
 
 export function hasLlmApiKey(provider: LlmProviderId): boolean {
@@ -243,13 +230,13 @@ export function saveCustomSettings(settings: Partial<CustomProviderSettings>): v
     ...settings,
     updatedAt: Date.now(),
   };
-  saveStore(store);
+  saveStoreRaw(store);
 }
 
 export function clearCustomSettings(): void {
   const store = loadStore();
   delete (store as Record<string, unknown>).custom;
-  saveStore(store);
+  saveStoreRaw(store);
 }
 
 export function hasCustomApiKey(): boolean {

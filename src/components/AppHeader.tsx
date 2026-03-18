@@ -25,6 +25,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useNotifications } from '@/hooks/use-notifications';
 import { UserMenu } from '@/components/auth/UserMenu';
 import { NotificationBell } from '@/components/notifications';
+import { GlossBossLogo } from '@/components/ui/GlossBossLogo';
 
 const MotionDiv = motion.div;
 
@@ -60,7 +61,6 @@ export function AppHeader({ actions }: AppHeaderProps) {
   const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
   const theme = useMantineTheme();
-  const computedColorScheme = useComputedColorScheme('light');
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
 
   // Subscribe to notifications when authenticated
@@ -78,15 +78,7 @@ export function AppHeader({ actions }: AppHeaderProps) {
             textDecoration: 'none',
           }}
         >
-          <img
-            src={
-              computedColorScheme === 'dark'
-                ? '/glossboss-combined-light.svg'
-                : '/glossboss-combined-dark.svg'
-            }
-            alt="GlossBoss"
-            style={{ height: 28, display: 'block' }}
-          />
+          <GlossBossLogo size={28} />
         </Link>
 
         {/* Right: actions + nav + controls */}

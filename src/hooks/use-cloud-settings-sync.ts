@@ -22,6 +22,19 @@ import {
 } from '@/lib/settings/cloud';
 import type { CloudSettingsPayload } from '@/lib/settings/types';
 import { CLOUD_SETTINGS_ENABLED_KEY, CLOUD_CREDENTIAL_SYNC_KEY } from '@/lib/settings/types';
+import {
+  APP_LANGUAGE_KEY,
+  CONTAINER_WIDTH_KEY,
+  NAV_SKIP_TRANSLATED_KEY,
+  SPEECH_ENABLED_KEY,
+  TRANSLATE_ENABLED_KEY,
+  TRANSLATION_PROVIDER_SETTINGS_KEY,
+  DEEPL_SETTINGS_KEY,
+  AZURE_SETTINGS_KEY,
+  GEMINI_SETTINGS_KEY,
+  LLM_SETTINGS_KEY,
+  TTS_SETTINGS_KEY,
+} from '@/lib/constants/storage-keys';
 
 export type CloudSyncStatus = 'idle' | 'syncing' | 'error';
 
@@ -54,17 +67,17 @@ const DEBOUNCE_MS = 2000;
 
 /** localStorage keys we watch for changes. */
 const WATCHED_KEYS = [
-  'glossboss-app-language',
-  'glossboss-container-width',
-  'glossboss-nav-skip-translated',
-  'glossboss-speech-enabled',
-  'glossboss-translate-enabled',
-  'glossboss-translation-provider-settings',
-  'glossboss-deepl-settings',
-  'glossboss-azure-settings',
-  'glossboss-gemini-settings', // legacy — triggers sync for migrated users
-  'glossboss-llm-settings',
-  'glossboss-tts-settings',
+  APP_LANGUAGE_KEY,
+  CONTAINER_WIDTH_KEY,
+  NAV_SKIP_TRANSLATED_KEY,
+  SPEECH_ENABLED_KEY,
+  TRANSLATE_ENABLED_KEY,
+  TRANSLATION_PROVIDER_SETTINGS_KEY,
+  DEEPL_SETTINGS_KEY,
+  AZURE_SETTINGS_KEY,
+  GEMINI_SETTINGS_KEY, // legacy — triggers sync for migrated users
+  LLM_SETTINGS_KEY,
+  TTS_SETTINGS_KEY,
 ];
 
 export function useCloudSettingsSync(): CloudSettingsSyncState {

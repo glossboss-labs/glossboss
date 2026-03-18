@@ -19,6 +19,7 @@ import type {
   ParseErrorCode,
   ValidationResult,
 } from './types';
+import { hashString } from '@/lib/utils/hash';
 
 // ============================================================================
 // Constants
@@ -66,19 +67,6 @@ const KNOWN_FLAGS: Set<string> = new Set([
 export function generateEntryId(entry: Partial<POEntry>, index: number): string {
   const base = entry.msgctxt ? `${entry.msgctxt}\x04${entry.msgid}` : entry.msgid || '';
   return `${index}-${hashString(base)}`;
-}
-
-/**
- * Simple string hash for ID generation
- */
-function hashString(str: string): string {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash = hash & hash;
-  }
-  return Math.abs(hash).toString(36);
 }
 
 /**

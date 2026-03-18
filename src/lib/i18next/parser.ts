@@ -8,15 +8,13 @@
 import type { POEntry, POFile, POHeader } from '@/lib/po/types';
 import type { I18nextResource } from './types';
 import { PLURAL_SUFFIXES } from './types';
+import { hashString } from '@/lib/utils/hash';
 
 /**
  * Generate a stable ID for an entry based on its key
  */
 function generateEntryId(key: string, index: number): string {
-  const hash = key.split('').reduce((acc, char) => {
-    return ((acc << 5) - acc + char.charCodeAt(0)) | 0;
-  }, 0);
-  return `${index}-${Math.abs(hash).toString(16).padStart(8, '0')}`;
+  return `${index}-${hashString(key)}`;
 }
 
 /**

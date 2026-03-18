@@ -28,8 +28,8 @@ describe('applySourceFile', () => {
     const matched = applySourceFile(target, source);
 
     expect(matched).toBe(2);
-    expect(target[0].sourceText).toBe('Save');
-    expect(target[1].sourceText).toBe('Cancel');
+    expect(target[0]!.sourceText).toBe('Save');
+    expect(target[1]!.sourceText).toBe('Cancel');
   });
 
   it('handles partial matches', () => {
@@ -42,8 +42,8 @@ describe('applySourceFile', () => {
     const matched = applySourceFile(target, source);
 
     expect(matched).toBe(1);
-    expect(target[0].sourceText).toBe('Save');
-    expect(target[1].sourceText).toBeUndefined();
+    expect(target[0]!.sourceText).toBe('Save');
+    expect(target[1]!.sourceText).toBeUndefined();
   });
 
   it('respects msgctxt for disambiguation', () => {
@@ -59,8 +59,8 @@ describe('applySourceFile', () => {
     const matched = applySourceFile(target, source);
 
     expect(matched).toBe(2);
-    expect(target[0].sourceText).toBe('Page Title');
-    expect(target[1].sourceText).toBe('Dialog Title');
+    expect(target[0]!.sourceText).toBe('Page Title');
+    expect(target[1]!.sourceText).toBe('Dialog Title');
   });
 
   it('skips entries where source msgstr is empty', () => {
@@ -70,7 +70,7 @@ describe('applySourceFile', () => {
     const matched = applySourceFile(target, source);
 
     expect(matched).toBe(0);
-    expect(target[0].sourceText).toBeUndefined();
+    expect(target[0]!.sourceText).toBeUndefined();
   });
 
   it('handles plural source text', () => {
@@ -94,8 +94,8 @@ describe('applySourceFile', () => {
     const matched = applySourceFile(target, source);
 
     expect(matched).toBe(1);
-    expect(target[0].sourceText).toBe('1 item');
-    expect(target[0].sourceTextPlural).toBe('%d items');
+    expect(target[0]!.sourceText).toBe('1 item');
+    expect(target[0]!.sourceTextPlural).toBe('%d items');
   });
 
   it('returns 0 when no entries match', () => {

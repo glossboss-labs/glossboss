@@ -92,11 +92,17 @@ import {
 } from '@/lib/translation-memory';
 import { QA_RULE_LABELS, type QAEntryReport } from '@/lib/qa';
 import { getTranslationProviderLabel } from '@/lib/translation';
+import {
+  NAV_SKIP_TRANSLATED_KEY as _NAV_SKIP_TRANSLATED_KEY,
+  INSPECTOR_WIDTH_KEY as _INSPECTOR_WIDTH_KEY,
+  INSPECTOR_OPEN_KEY as _INSPECTOR_OPEN_KEY,
+  COLUMN_WIDTHS_KEY,
+  ROWS_PER_PAGE_KEY,
+} from '@/lib/constants/storage-keys';
 
-/** localStorage key for skip-translated navigation setting */
-export const NAV_SKIP_TRANSLATED_KEY = 'glossboss-nav-skip-translated';
-const INSPECTOR_WIDTH_KEY = 'glossboss-inspector-width';
-const INSPECTOR_OPEN_KEY = 'glossboss-inspector-open';
+const NAV_SKIP_TRANSLATED_KEY = _NAV_SKIP_TRANSLATED_KEY;
+const INSPECTOR_WIDTH_KEY = _INSPECTOR_WIDTH_KEY;
+const INSPECTOR_OPEN_KEY = _INSPECTOR_OPEN_KEY;
 const INSPECTOR_DEFAULT_WIDTH = 500;
 const INSPECTOR_MIN_WIDTH = 380;
 const INSPECTOR_MAX_WIDTH = 780;
@@ -2671,7 +2677,7 @@ export function EditorTable({
 
   // Column widths (proportional) with localStorage persistence
   const [columnWidths, setColumnWidths] = useLocalStorage<number[]>({
-    key: 'po-editor-column-widths',
+    key: COLUMN_WIDTHS_KEY,
     defaultValue: DEFAULT_COLUMN_WIDTHS,
   });
 
@@ -2831,7 +2837,7 @@ export function EditorTable({
 
   // Pagination state with localStorage persistence
   const [rowsPerPage, setRowsPerPage] = useLocalStorage<string>({
-    key: 'po-editor-rows-per-page',
+    key: ROWS_PER_PAGE_KEY,
     defaultValue: '50',
   });
   const [inspectorWidth, setInspectorWidth] = useLocalStorage<number>({

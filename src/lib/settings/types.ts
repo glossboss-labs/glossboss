@@ -56,8 +56,13 @@ export interface CloudSettingsPayload {
   encryptedCredentials?: string;
 }
 
+import {
+  CLOUD_SETTINGS_ENABLED_KEY as _CLOUD_SETTINGS_ENABLED_KEY,
+  CLOUD_CREDENTIAL_SYNC_KEY as _CLOUD_CREDENTIAL_SYNC_KEY,
+} from '@/lib/constants/storage-keys';
+
 /** localStorage key controlling whether cloud sync is enabled. */
-export const CLOUD_SETTINGS_ENABLED_KEY = 'glossboss-cloud-settings-enabled';
+export const CLOUD_SETTINGS_ENABLED_KEY = _CLOUD_SETTINGS_ENABLED_KEY;
 
 /** localStorage key controlling whether credentials are included in sync. */
-export const CLOUD_CREDENTIAL_SYNC_KEY = 'glossboss-cloud-credential-sync';
+export const CLOUD_CREDENTIAL_SYNC_KEY = _CLOUD_CREDENTIAL_SYNC_KEY;

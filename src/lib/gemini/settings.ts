@@ -1,5 +1,6 @@
-const STORAGE_KEY = 'glossboss-gemini-settings';
-const PERSIST_KEY = 'glossboss-gemini-persist';
+import { createPersistenceManager } from '@/lib/settings/storage-persistence';
+import { GEMINI_SETTINGS_KEY, GEMINI_PERSIST_KEY } from '@/lib/constants/storage-keys';
+
 const DEFAULT_MODEL = 'gemini-flash-lite-latest';
 
 export interface GeminiSettings {
@@ -16,85 +17,40 @@ const DEFAULT_SETTINGS: GeminiSettings = {
   updatedAt: 0,
 };
 
+const manager = createPersistenceManager<GeminiSettings>({
+  storageKey: GEMINI_SETTINGS_KEY,
+  persistKey: GEMINI_PERSIST_KEY,
+  defaults: DEFAULT_SETTINGS,
+  label: 'Gemini Settings',
+  parse: (raw) => ({
+    apiKey: typeof raw.apiKey === 'string' ? (raw.apiKey as string) : '',
+    modelId:
+      typeof raw.modelId === 'string' && (raw.modelId as string).trim()
+        ? (raw.modelId as string).trim()
+        : DEFAULT_MODEL,
+    useProjectContext: Boolean(raw.useProjectContext),
+    updatedAt: typeof raw.updatedAt === 'number' ? (raw.updatedAt as number) : 0,
+  }),
+});
+
 export function isGeminiPersistEnabled(): boolean {
-  try {
-    return localStorage.getItem(PERSIST_KEY) === 'true';
-  } catch {
-    return false;
-  }
+  return manager.isPersistEnabled();
 }
 
 export function setGeminiPersistEnabled(enabled: boolean): void {
-  try {
-    if (enabled) {
-      const session = sessionStorage.getItem(STORAGE_KEY);
-      if (session) {
-        localStorage.setItem(STORAGE_KEY, session);
-        sessionStorage.removeItem(STORAGE_KEY);
-      }
-      localStorage.setItem(PERSIST_KEY, 'true');
-      return;
-    }
-
-    const local = localStorage.getItem(STORAGE_KEY);
-    if (local) {
-      sessionStorage.setItem(STORAGE_KEY, local);
-      localStorage.removeItem(STORAGE_KEY);
-    }
-    localStorage.removeItem(PERSIST_KEY);
-  } catch {
-    // Ignore storage errors.
-  }
-}
-
-function getStore(): Storage {
-  return isGeminiPersistEnabled() ? localStorage : sessionStorage;
+  manager.setPersistEnabled(enabled);
 }
 
 export function getGeminiSettings(): GeminiSettings {
-  try {
-    const stored = getStore().getItem(STORAGE_KEY);
-    if (!stored) {
-      return DEFAULT_SETTINGS;
-    }
-
-    const parsed = JSON.parse(stored);
-    return {
-      ...DEFAULT_SETTINGS,
-      apiKey: typeof parsed.apiKey === 'string' ? parsed.apiKey : '',
-      modelId:
-        typeof parsed.modelId === 'string' && parsed.modelId.trim()
-          ? parsed.modelId.trim()
-          : DEFAULT_MODEL,
-      useProjectContext: Boolean(parsed.useProjectContext),
-      updatedAt: typeof parsed.updatedAt === 'number' ? parsed.updatedAt : 0,
-    };
-  } catch {
-    return DEFAULT_SETTINGS;
-  }
+  return manager.get();
 }
 
 export function saveGeminiSettings(settings: Partial<GeminiSettings>): void {
-  try {
-    const next: GeminiSettings = {
-      ...getGeminiSettings(),
-      ...settings,
-      updatedAt: Date.now(),
-    };
-    getStore().setItem(STORAGE_KEY, JSON.stringify(next));
-  } catch {
-    // Ignore storage errors.
-  }
+  manager.save(settings);
 }
 
 export function clearGeminiSettings(): void {
-  try {
-    localStorage.removeItem(STORAGE_KEY);
-    sessionStorage.removeItem(STORAGE_KEY);
-    localStorage.removeItem(PERSIST_KEY);
-  } catch {
-    // Ignore storage errors.
-  }
+  manager.clear();
 }
 
 export function hasGeminiApiKey(): boolean {

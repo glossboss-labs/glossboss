@@ -5,7 +5,7 @@
  */
 
 export * from './types';
-export { findGlossaryMatches, applyGlossaryToTranslation, getGlossarySuggestions } from './matcher';
+export { findGlossaryMatches, getGlossarySuggestions } from './matcher';
 
 // WordPress.org CSV-based glossary fetching
 export { parseGlossaryCSV, isValidGlossaryCSV } from './csv-parser';

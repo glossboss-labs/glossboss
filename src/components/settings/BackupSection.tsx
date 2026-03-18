@@ -41,6 +41,11 @@ import { getGeminiSettings, isGeminiPersistEnabled } from '@/lib/gemini';
 import { getTranslationProviderSettings, type TranslationProviderId } from '@/lib/translation';
 import { ExportSection } from '@/components/projects/ExportSection';
 import type { ContainerWidth } from '@/lib/container-width';
+import {
+  GLOSSARY_SELECTED_LOCALE_KEY,
+  GLOSSARY_ENFORCEMENT_KEY,
+  NAV_SKIP_TRANSLATED_KEY,
+} from '@/lib/constants/storage-keys';
 
 export interface BackupSectionProps {
   /** Cloud project ID -- enables project export */
@@ -112,18 +117,17 @@ export function BackupSection({
       let navSkipTranslated = true;
 
       try {
-        glossaryLocale = localStorage.getItem('glossboss-selected-glossary-locale') ?? '';
+        glossaryLocale = localStorage.getItem(GLOSSARY_SELECTED_LOCALE_KEY) ?? '';
       } catch {
         /* ignore */
       }
       try {
-        glossaryEnforcementEnabled =
-          localStorage.getItem('glossboss-glossary-enforcement') !== 'false';
+        glossaryEnforcementEnabled = localStorage.getItem(GLOSSARY_ENFORCEMENT_KEY) !== 'false';
       } catch {
         /* ignore */
       }
       try {
-        const raw = localStorage.getItem('glossboss-nav-skip-translated');
+        const raw = localStorage.getItem(NAV_SKIP_TRANSLATED_KEY);
         navSkipTranslated = raw === null ? true : JSON.parse(raw) !== false;
       } catch {
         /* ignore */
@@ -207,7 +211,7 @@ export function BackupSection({
       // If glossary locale changed, clear existing glossary
       const nextGlossaryLocale = applied.preferences.glossaryLocale;
       try {
-        const currentLocale = localStorage.getItem('glossboss-selected-glossary-locale') ?? '';
+        const currentLocale = localStorage.getItem(GLOSSARY_SELECTED_LOCALE_KEY) ?? '';
         if (nextGlossaryLocale !== currentLocale) {
           onGlossaryCleared?.();
         }

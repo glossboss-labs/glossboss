@@ -5,8 +5,10 @@
  * Used by Zustand persist middleware and for manual state management.
  */
 
+import { EDITOR_STATE_KEY } from '@/lib/constants/storage-keys';
+
 /** Storage key for editor state */
-export const STORAGE_KEY = 'po-editor-state';
+export const STORAGE_KEY = EDITOR_STATE_KEY;
 
 /** Storage version for migration support */
 export const STORAGE_VERSION = 1;
