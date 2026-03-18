@@ -43,10 +43,17 @@ export function useRealtimeChannel(
   const avatarUrl = (user?.user_metadata?.avatar_url as string) ?? null;
 
   const isConnected = useCollaborationStore((s) => s.channelConnected);
+
+  // Store actions are accessed via getState() rather than selectors because they
+  // are only called from event handlers (Presence sync, Broadcast callbacks), not
+  // during render. This avoids unnecessary re-renders when unrelated store state
+  // changes, and is the recommended Zustand pattern for event-driven callbacks.
   const { setChannelConnected, syncPresence, handleUserLeave, lockCell, unlockCell, reset } =
     useCollaborationStore.getState();
 
-  // Apply remote entry updates directly to the editor store
+  // Apply remote entry updates directly to the editor store.
+  // Uses getState() inside the callback — correct because this runs from a
+  // Broadcast event handler, not during React render.
   const applyRemoteEntryUpdate = useCallback((event: EntryUpdatedEvent) => {
     const store = useEditorStore.getState();
     const entry = store.entries.find((e) => e.id === event.entryId);
@@ -66,7 +73,7 @@ export function useRealtimeChannel(
     });
   }, []);
 
-  // Apply remote review events
+  // Apply remote review events (same getState() rationale as above)
   const applyRemoteReviewEvent = useCallback((event: ReviewBroadcastEvent) => {
     const store = useEditorStore.getState();
 

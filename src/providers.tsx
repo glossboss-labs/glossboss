@@ -15,9 +15,6 @@ import {
 import { TranslationProvider } from '@/lib/app-language';
 import { useAuthStore } from '@/stores/auth-store';
 
-// Import Mantine styles
-import '@mantine/core/styles.css';
-
 /**
  * CSS Variables Resolver
  *

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { getUserSubscription } from '@/lib/billing/api';
 import { getPlanLimits } from '@/lib/billing/limits';
@@ -42,10 +42,13 @@ export function useSubscription(): UseSubscriptionResult {
 
   const [subscription, setSubscription] = useState<SubscriptionRow | null>(null);
   const [fetched, setFetched] = useState(false);
-  const prevUserId = useRef<string | undefined>(undefined);
 
-  if (prevUserId.current !== userId) {
-    prevUserId.current = userId;
+  // Track previous userId so we can reset state during render when the user
+  // changes, following React's "adjusting state during rendering" pattern.
+  // This avoids the lint-unfriendly pattern of calling setState inside an effect.
+  const [prevUserId, setPrevUserId] = useState<string | undefined>(undefined);
+  if (prevUserId !== userId) {
+    setPrevUserId(userId);
     if (!userId) {
       setFetched(false);
       setSubscription(null);

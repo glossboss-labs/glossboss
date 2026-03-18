@@ -284,38 +284,45 @@ function runTour(
 }
 
 /* ------------------------------------------------------------------ */
-/*  useEditorTour                                                      */
+/*  useTour — shared factory                                           */
 /* ------------------------------------------------------------------ */
-
-interface UseEditorTourOptions {
-  hasFile: boolean;
-  autoStart?: boolean;
-}
 
 interface UseTourReturn {
   startTour: () => void;
   completed: boolean;
 }
 
-export function useEditorTour({ hasFile, autoStart = true }: UseEditorTourOptions): UseTourReturn {
+/**
+ * Generic tour hook. Handles auto-start, cleanup, and completion tracking.
+ *
+ * @param storageKey  localStorage key that tracks completion
+ * @param getSteps    function that returns the DriveStep[] for this tour
+ * @param autoStart   whether to start the tour automatically on mount
+ * @param delay       delay in ms before auto-starting (default 800)
+ */
+function useTour(
+  storageKey: string,
+  getSteps: (t: T) => DriveStep[],
+  autoStart: boolean,
+  delay = 800,
+): UseTourReturn {
   const { t } = useTranslation();
   const driverRef = useRef<ReturnType<typeof driver> | null>(null);
   const hasAutoStarted = useRef(false);
-  const completed = isTourDone(EDITOR_TOUR_KEY);
+  const completed = isTourDone(storageKey);
 
   const startTour = useCallback(() => {
-    const steps = hasFile ? getEditorSteps(t) : getEmptySteps(t);
-    runTour(steps, EDITOR_TOUR_KEY, t, driverRef);
-  }, [hasFile, t]);
+    runTour(getSteps(t), storageKey, t, driverRef);
+  }, [getSteps, storageKey, t]);
 
   useEffect(() => {
     if (!autoStart || completed || hasAutoStarted.current) return;
     const timer = setTimeout(() => {
       hasAutoStarted.current = true;
       startTour();
-    }, 800);
+    }, delay);
     return () => clearTimeout(timer);
-  }, [autoStart, completed, startTour]);
+  }, [autoStart, completed, delay, startTour]);
 
   useEffect(() => {
     return () => {
@@ -327,6 +334,24 @@ export function useEditorTour({ hasFile, autoStart = true }: UseEditorTourOption
   }, []);
 
   return { startTour, completed };
+}
+
+/* ------------------------------------------------------------------ */
+/*  useEditorTour                                                      */
+/* ------------------------------------------------------------------ */
+
+interface UseEditorTourOptions {
+  hasFile: boolean;
+  autoStart?: boolean;
+}
+
+export function useEditorTour({ hasFile, autoStart = true }: UseEditorTourOptions): UseTourReturn {
+  const getSteps = useCallback(
+    (t: T) => (hasFile ? getEditorSteps(t) : getEmptySteps(t)),
+    [hasFile],
+  );
+
+  return useTour(EDITOR_TOUR_KEY, getSteps, autoStart, 800);
 }
 
 /* ------------------------------------------------------------------ */
@@ -338,32 +363,5 @@ interface UseSettingsTourOptions {
 }
 
 export function useSettingsTour({ autoStart = true }: UseSettingsTourOptions = {}): UseTourReturn {
-  const { t } = useTranslation();
-  const driverRef = useRef<ReturnType<typeof driver> | null>(null);
-  const hasAutoStarted = useRef(false);
-  const completed = isTourDone(SETTINGS_TOUR_KEY);
-
-  const startTour = useCallback(() => {
-    runTour(getSettingsSteps(t), SETTINGS_TOUR_KEY, t, driverRef);
-  }, [t]);
-
-  useEffect(() => {
-    if (!autoStart || completed || hasAutoStarted.current) return;
-    const timer = setTimeout(() => {
-      hasAutoStarted.current = true;
-      startTour();
-    }, 600);
-    return () => clearTimeout(timer);
-  }, [autoStart, completed, startTour]);
-
-  useEffect(() => {
-    return () => {
-      if (driverRef.current) {
-        driverRef.current.destroy();
-        driverRef.current = null;
-      }
-    };
-  }, []);
-
-  return { startTour, completed };
+  return useTour(SETTINGS_TOUR_KEY, getSettingsSteps, autoStart, 600);
 }

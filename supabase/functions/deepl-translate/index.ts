@@ -7,15 +7,9 @@
 
 import {
   fetchWithTimeout,
-  forbiddenOrigin,
-  isAbortError,
+  handleJsonPost,
   jsonResponse,
-  methodNotAllowed,
-  optionsResponse,
-  parseJsonBody,
-  requireJsonRequest,
-  sanitizeUpstreamError,
-  validateRequestOrigin,
+  proxyUpstreamError,
 } from '../_shared/http.ts';
 import {
   isNonEmptyString,
@@ -32,7 +26,7 @@ const MAX_GLOSSARY_NAME_LENGTH = 120;
 const MAX_GLOSSARY_TERM_LENGTH = 250;
 const MAX_GLOSSARY_ID_LENGTH = 128;
 const GLOSSARY_ID_RE = /^[a-zA-Z0-9-]{1,128}$/;
-const DEEPL_USER_API_KEY_RE = /^[A-Za-z0-9._:-]{20,128}$/;
+const DEEPL_USER_API_KEY_RE = /^[A-Za-z0-9._:-]{20,512}$/;
 
 type ApiType = 'free' | 'pro';
 type Action =
@@ -223,254 +217,143 @@ async function sendDeepLRequest(
   });
 }
 
-async function proxyDeepLError(
-  req: Request,
-  response: Response,
-  fallback: string,
-): Promise<Response> {
-  const errorText = await response.text().catch(() => '');
-  return jsonResponse(
-    req,
-    {
-      ok: false,
-      code: 'UPSTREAM_ERROR',
-      message: sanitizeUpstreamError(errorText, fallback),
-    },
-    { status: response.status },
-  );
-}
-
-export async function handleDeepLTranslateRequest(req: Request): Promise<Response> {
-  if (req.method === 'OPTIONS') {
-    return optionsResponse(req);
+export const handleDeepLTranslateRequest = handleJsonPost('DeepL', async (req, body) => {
+  const action = parseAction(body.action);
+  if (!action) {
+    return jsonResponse(
+      req,
+      { ok: false, code: 'INVALID_ACTION', message: 'Unsupported DeepL action.' },
+      { status: 400 },
+    );
   }
 
-  if (req.method !== 'POST') {
-    return methodNotAllowed(req);
+  const apiType = parseApiType(body.apiType);
+  if (!apiType) {
+    return jsonResponse(
+      req,
+      {
+        ok: false,
+        code: 'INVALID_PAYLOAD',
+        message: 'Field "apiType" must be either "free" or "pro".',
+      },
+      { status: 400 },
+    );
   }
 
-  if (!validateRequestOrigin(req).allowed) {
-    return forbiddenOrigin(req);
+  const userApiKey = isNonEmptyString(body.userApiKey) ? trimAndLimit(body.userApiKey, 512) : '';
+  if (userApiKey && !DEEPL_USER_API_KEY_RE.test(userApiKey)) {
+    return jsonResponse(
+      req,
+      {
+        ok: false,
+        code: 'INVALID_PAYLOAD',
+        message: 'Field "userApiKey" must look like a valid DeepL API key.',
+      },
+      { status: 400 },
+    );
   }
 
-  const jsonError = requireJsonRequest(req);
-  if (jsonError) {
-    return jsonError;
+  const apiKey = userApiKey || Deno.env.get('DEEPL_KEY') || '';
+
+  if (!apiKey) {
+    return jsonResponse(
+      req,
+      {
+        ok: false,
+        code: 'MISSING_API_KEY',
+        message: 'No API key configured. Add your DeepL API key in Settings.',
+      },
+      { status: 400 },
+    );
   }
 
-  try {
-    const body = await parseJsonBody(req);
-    if (!isObject(body)) {
-      return jsonResponse(
-        req,
-        { ok: false, code: 'INVALID_PAYLOAD', message: 'Request body must be a JSON object.' },
-        { status: 400 },
-      );
-    }
+  const baseUrl = getApiBaseUrl(apiType);
 
-    const action = parseAction(body.action);
-    if (!action) {
-      return jsonResponse(
-        req,
-        { ok: false, code: 'INVALID_ACTION', message: 'Unsupported DeepL action.' },
-        { status: 400 },
-      );
-    }
-
-    const apiType = parseApiType(body.apiType);
-    if (!apiType) {
+  if (action === 'translate') {
+    const payload = parseTranslatePayload(body);
+    if (!payload) {
       return jsonResponse(
         req,
         {
           ok: false,
           code: 'INVALID_PAYLOAD',
-          message: 'Field "apiType" must be either "free" or "pro".',
+          message: 'Provide 1-50 texts and valid DeepL language codes.',
         },
         { status: 400 },
       );
     }
 
-    const userApiKey = isNonEmptyString(body.userApiKey) ? trimAndLimit(body.userApiKey, 128) : '';
-    if (userApiKey && !DEEPL_USER_API_KEY_RE.test(userApiKey)) {
-      return jsonResponse(
-        req,
-        {
-          ok: false,
-          code: 'INVALID_PAYLOAD',
-          message: 'Field "userApiKey" must look like a valid DeepL API key.',
-        },
-        { status: 400 },
-      );
-    }
+    const translateBody: Record<string, unknown> = {
+      text: payload.text,
+      target_lang: payload.targetLang,
+    };
 
-    const apiKey = userApiKey || Deno.env.get('DEEPL_KEY') || '';
+    if (payload.sourceLang) translateBody.source_lang = payload.sourceLang;
+    if (payload.formality) translateBody.formality = payload.formality;
+    if (payload.glossaryId) translateBody.glossary_id = payload.glossaryId;
+    if (payload.tagHandling) translateBody.tag_handling = payload.tagHandling;
 
-    if (!apiKey) {
-      return jsonResponse(
-        req,
-        {
-          ok: false,
-          code: 'MISSING_API_KEY',
-          message: 'No API key configured. Add your DeepL API key in Settings.',
-        },
-        { status: 400 },
-      );
-    }
+    const response = await sendDeepLRequest(`${baseUrl}/translate`, apiKey, {
+      method: 'POST',
+      body: JSON.stringify(translateBody),
+    });
 
-    const baseUrl = getApiBaseUrl(apiType);
-
-    if (action === 'translate') {
-      const payload = parseTranslatePayload(body);
-      if (!payload) {
-        return jsonResponse(
-          req,
-          {
-            ok: false,
-            code: 'INVALID_PAYLOAD',
-            message: 'Provide 1-50 texts and valid DeepL language codes.',
-          },
-          { status: 400 },
-        );
-      }
-
-      const translateBody: Record<string, unknown> = {
-        text: payload.text,
-        target_lang: payload.targetLang,
-      };
-
-      if (payload.sourceLang) translateBody.source_lang = payload.sourceLang;
-      if (payload.formality) translateBody.formality = payload.formality;
-      if (payload.glossaryId) translateBody.glossary_id = payload.glossaryId;
-      if (payload.tagHandling) translateBody.tag_handling = payload.tagHandling;
-
-      const response = await sendDeepLRequest(`${baseUrl}/translate`, apiKey, {
-        method: 'POST',
-        body: JSON.stringify(translateBody),
-      });
-
-      if (!response.ok) {
-        return await proxyDeepLError(req, response, 'DeepL translation request failed.');
-      }
-
-      return jsonResponse(req, await response.json());
-    }
-
-    if (action === 'usage') {
-      const response = await sendDeepLRequest(`${baseUrl}/usage`, apiKey);
-      if (!response.ok) {
-        return await proxyDeepLError(req, response, 'Failed to fetch DeepL usage.');
-      }
-
-      const data = await response.json();
-      return jsonResponse(req, {
-        characterCount: data.character_count,
-        characterLimit: data.character_limit,
-      });
-    }
-
-    if (action === 'createGlossary') {
-      const payload = parseCreateGlossaryPayload(body);
-      if (!payload) {
-        return jsonResponse(
-          req,
-          {
-            ok: false,
-            code: 'INVALID_PAYLOAD',
-            message: 'Provide a glossary name, valid language codes, and valid glossary entries.',
-          },
-          { status: 400 },
-        );
-      }
-
-      const entriesTsv = entriesToTSV(payload.entries);
-      if (!entriesTsv) {
-        return jsonResponse(
-          req,
-          { ok: false, code: 'INVALID_PAYLOAD', message: 'No valid glossary entries provided.' },
-          { status: 400 },
-        );
-      }
-
-      const response = await sendDeepLRequest(`${baseUrl}/glossaries`, apiKey, {
-        method: 'POST',
-        body: JSON.stringify({
-          name: payload.name,
-          source_lang: payload.sourceLang,
-          target_lang: payload.targetLang,
-          entries: entriesTsv,
-          entries_format: 'tsv',
-        }),
-      });
-
-      if (!response.ok) {
-        return await proxyDeepLError(req, response, 'Failed to create glossary.');
-      }
-
-      const data = await response.json();
-      return jsonResponse(req, {
-        glossaryId: data.glossary_id,
-        name: data.name,
-        sourceLang: data.source_lang,
-        targetLang: data.target_lang,
-        entryCount: data.entry_count,
-        creationTime: data.creation_time,
-      });
-    }
-
-    if (action === 'listGlossaries') {
-      const response = await sendDeepLRequest(`${baseUrl}/glossaries`, apiKey);
-      if (!response.ok) {
-        return await proxyDeepLError(req, response, 'Failed to list glossaries.');
-      }
-
-      const data = await response.json();
-      const glossaries = (Array.isArray(data.glossaries) ? data.glossaries : []).map(
-        (glossary: Record<string, unknown>) => ({
-          glossaryId: glossary.glossary_id,
-          name: glossary.name,
-          sourceLang: glossary.source_lang,
-          targetLang: glossary.target_lang,
-          entryCount: glossary.entry_count,
-          creationTime: glossary.creation_time,
-        }),
-      );
-
-      return jsonResponse(req, { glossaries });
-    }
-
-    if (action === 'deleteGlossary') {
-      const glossaryId = parseGlossaryId(body.glossaryId);
-      if (!glossaryId) {
-        return jsonResponse(
-          req,
-          { ok: false, code: 'INVALID_PAYLOAD', message: 'Provide a valid glossaryId.' },
-          { status: 400 },
-        );
-      }
-
-      const response = await sendDeepLRequest(`${baseUrl}/glossaries/${glossaryId}`, apiKey, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok && response.status !== 404) {
-        return await proxyDeepLError(req, response, 'Failed to delete glossary.');
-      }
-
-      return jsonResponse(req, { success: true });
-    }
-
-    const glossaryId = parseGlossaryId(body.glossaryId);
-    if (!glossaryId) {
-      return jsonResponse(
-        req,
-        { ok: false, code: 'INVALID_PAYLOAD', message: 'Provide a valid glossaryId.' },
-        { status: 400 },
-      );
-    }
-
-    const response = await sendDeepLRequest(`${baseUrl}/glossaries/${glossaryId}`, apiKey);
     if (!response.ok) {
-      return await proxyDeepLError(req, response, 'Failed to fetch glossary details.');
+      return await proxyUpstreamError(req, response, 'DeepL translation request failed.');
+    }
+
+    return jsonResponse(req, await response.json());
+  }
+
+  if (action === 'usage') {
+    const response = await sendDeepLRequest(`${baseUrl}/usage`, apiKey);
+    if (!response.ok) {
+      return await proxyUpstreamError(req, response, 'Failed to fetch DeepL usage.');
+    }
+
+    const data = await response.json();
+    return jsonResponse(req, {
+      characterCount: data.character_count,
+      characterLimit: data.character_limit,
+    });
+  }
+
+  if (action === 'createGlossary') {
+    const payload = parseCreateGlossaryPayload(body);
+    if (!payload) {
+      return jsonResponse(
+        req,
+        {
+          ok: false,
+          code: 'INVALID_PAYLOAD',
+          message: 'Provide a glossary name, valid language codes, and valid glossary entries.',
+        },
+        { status: 400 },
+      );
+    }
+
+    const entriesTsv = entriesToTSV(payload.entries);
+    if (!entriesTsv) {
+      return jsonResponse(
+        req,
+        { ok: false, code: 'INVALID_PAYLOAD', message: 'No valid glossary entries provided.' },
+        { status: 400 },
+      );
+    }
+
+    const response = await sendDeepLRequest(`${baseUrl}/glossaries`, apiKey, {
+      method: 'POST',
+      body: JSON.stringify({
+        name: payload.name,
+        source_lang: payload.sourceLang,
+        target_lang: payload.targetLang,
+        entries: entriesTsv,
+        entries_format: 'tsv',
+      }),
+    });
+
+    if (!response.ok) {
+      return await proxyUpstreamError(req, response, 'Failed to create glossary.');
     }
 
     const data = await response.json();
@@ -482,22 +365,74 @@ export async function handleDeepLTranslateRequest(req: Request): Promise<Respons
       entryCount: data.entry_count,
       creationTime: data.creation_time,
     });
-  } catch (error) {
-    if (error instanceof SyntaxError) {
+  }
+
+  if (action === 'listGlossaries') {
+    const response = await sendDeepLRequest(`${baseUrl}/glossaries`, apiKey);
+    if (!response.ok) {
+      return await proxyUpstreamError(req, response, 'Failed to list glossaries.');
+    }
+
+    const data = await response.json();
+    const glossaries = (Array.isArray(data.glossaries) ? data.glossaries : []).map(
+      (glossary: Record<string, unknown>) => ({
+        glossaryId: glossary.glossary_id,
+        name: glossary.name,
+        sourceLang: glossary.source_lang,
+        targetLang: glossary.target_lang,
+        entryCount: glossary.entry_count,
+        creationTime: glossary.creation_time,
+      }),
+    );
+
+    return jsonResponse(req, { glossaries });
+  }
+
+  if (action === 'deleteGlossary') {
+    const glossaryId = parseGlossaryId(body.glossaryId);
+    if (!glossaryId) {
       return jsonResponse(
         req,
-        { ok: false, code: 'INVALID_PAYLOAD', message: 'Request body is not valid JSON.' },
+        { ok: false, code: 'INVALID_PAYLOAD', message: 'Provide a valid glossaryId.' },
         { status: 400 },
       );
     }
 
-    const message = isAbortError(error)
-      ? 'DeepL request timed out.'
-      : 'DeepL proxy request failed.';
+    const response = await sendDeepLRequest(`${baseUrl}/glossaries/${glossaryId}`, apiKey, {
+      method: 'DELETE',
+    });
 
-    return jsonResponse(req, { ok: false, code: 'INTERNAL_ERROR', message }, { status: 500 });
+    if (!response.ok && response.status !== 404) {
+      return await proxyUpstreamError(req, response, 'Failed to delete glossary.');
+    }
+
+    return jsonResponse(req, { success: true });
   }
-}
+
+  const glossaryId = parseGlossaryId(body.glossaryId);
+  if (!glossaryId) {
+    return jsonResponse(
+      req,
+      { ok: false, code: 'INVALID_PAYLOAD', message: 'Provide a valid glossaryId.' },
+      { status: 400 },
+    );
+  }
+
+  const response = await sendDeepLRequest(`${baseUrl}/glossaries/${glossaryId}`, apiKey);
+  if (!response.ok) {
+    return await proxyUpstreamError(req, response, 'Failed to fetch glossary details.');
+  }
+
+  const data = await response.json();
+  return jsonResponse(req, {
+    glossaryId: data.glossary_id,
+    name: data.name,
+    sourceLang: data.source_lang,
+    targetLang: data.target_lang,
+    entryCount: data.entry_count,
+    creationTime: data.creation_time,
+  });
+});
 
 if (import.meta.main && typeof Deno !== 'undefined' && typeof Deno.serve === 'function') {
   Deno.serve(handleDeepLTranslateRequest);

@@ -1,14 +1,8 @@
 import {
   fetchWithTimeout,
-  forbiddenOrigin,
-  isAbortError,
+  handleJsonPost,
   jsonResponse,
-  methodNotAllowed,
-  optionsResponse,
-  parseJsonBody,
-  requireJsonRequest,
   sanitizeUpstreamError,
-  validateRequestOrigin,
 } from '../_shared/http.ts';
 import {
   isNonEmptyString,
@@ -293,113 +287,69 @@ async function generateGeminiResponse(
   return parseModelJson(responseText);
 }
 
-export async function handleGeminiTranslateRequest(req: Request): Promise<Response> {
-  if (req.method === 'OPTIONS') {
-    return optionsResponse(req);
+export const handleGeminiTranslateRequest = handleJsonPost('Gemini', async (req, body) => {
+  const payload = parseGeminiPayload(body);
+  if (!payload) {
+    return jsonResponse(
+      req,
+      {
+        ok: false,
+        code: 'INVALID_PAYLOAD',
+        message: 'Provide 1-25 texts, a valid target language, and valid Gemini settings.',
+      },
+      { status: 400 },
+    );
   }
 
-  if (req.method !== 'POST') {
-    return methodNotAllowed(req);
+  const apiKey = payload.userApiKey || Deno.env.get('GEMINI_API_KEY') || '';
+  if (!apiKey) {
+    return jsonResponse(
+      req,
+      {
+        ok: false,
+        code: 'MISSING_API_KEY',
+        message: 'Add your Gemini API key in Settings.',
+      },
+      { status: 400 },
+    );
   }
 
-  if (!validateRequestOrigin(req).allowed) {
-    return forbiddenOrigin(req);
-  }
+  const modelId = payload.modelId || DEFAULT_MODEL;
+  let result = await generateGeminiResponse(apiKey, modelId, payload, false);
 
-  const jsonError = requireJsonRequest(req);
-  if (jsonError) {
-    return jsonError;
-  }
-
-  try {
-    const body = await parseJsonBody(req);
-    if (!isObject(body)) {
-      return jsonResponse(
-        req,
-        { ok: false, code: 'INVALID_PAYLOAD', message: 'Request body must be a JSON object.' },
-        { status: 400 },
-      );
-    }
-
-    const payload = parseGeminiPayload(body);
-    if (!payload) {
-      return jsonResponse(
-        req,
-        {
-          ok: false,
-          code: 'INVALID_PAYLOAD',
-          message: 'Provide 1-25 texts, a valid target language, and valid Gemini settings.',
-        },
-        { status: 400 },
-      );
-    }
-
-    const apiKey = payload.userApiKey || Deno.env.get('GEMINI_API_KEY') || '';
-    if (!apiKey) {
+  const missingTerms = findMissingGlossaryTerms(result.translations, payload.glossaryEntries);
+  if (missingTerms.length > 0) {
+    result = await generateGeminiResponse(apiKey, modelId, payload, true);
+    const retriedMissingTerms = findMissingGlossaryTerms(
+      result.translations,
+      payload.glossaryEntries,
+    );
+    if (retriedMissingTerms.length > 0) {
       return jsonResponse(
         req,
         {
           ok: false,
-          code: 'MISSING_API_KEY',
-          message: 'Add your Gemini API key in Settings.',
+          code: 'GLOSSARY_VALIDATION_FAILED',
+          message: `Gemini response missed required glossary terms: ${retriedMissingTerms.join(', ')}`,
         },
-        { status: 400 },
+        { status: 422 },
       );
     }
-
-    const modelId = payload.modelId || DEFAULT_MODEL;
-    let result = await generateGeminiResponse(apiKey, modelId, payload, false);
-
-    const missingTerms = findMissingGlossaryTerms(result.translations, payload.glossaryEntries);
-    if (missingTerms.length > 0) {
-      result = await generateGeminiResponse(apiKey, modelId, payload, true);
-      const retriedMissingTerms = findMissingGlossaryTerms(
-        result.translations,
-        payload.glossaryEntries,
-      );
-      if (retriedMissingTerms.length > 0) {
-        return jsonResponse(
-          req,
-          {
-            ok: false,
-            code: 'GLOSSARY_VALIDATION_FAILED',
-            message: `Gemini response missed required glossary terms: ${retriedMissingTerms.join(', ')}`,
-          },
-          { status: 422 },
-        );
-      }
-    }
-
-    return jsonResponse(req, {
-      translations: result.translations.map((translation) => ({
-        text: translation.text,
-        metadata: {
-          provider: 'gemini',
-          usedGlossary: payload.glossaryEntries.length > 0,
-          glossaryMode: payload.glossaryEntries.length > 0 ? 'prompt' : 'none',
-          contextUsed: payload.contextExcerpts.length > 0,
-          warnings: translation.warnings ?? [],
-        },
-      })),
-    });
-  } catch (error) {
-    if (error instanceof SyntaxError) {
-      return jsonResponse(
-        req,
-        { ok: false, code: 'INVALID_PAYLOAD', message: 'Request body is not valid JSON.' },
-        { status: 400 },
-      );
-    }
-
-    const message = isAbortError(error)
-      ? 'Gemini translation request timed out.'
-      : error instanceof Error
-        ? error.message
-        : 'Gemini translation proxy failed.';
-
-    return jsonResponse(req, { ok: false, code: 'INTERNAL_ERROR', message }, { status: 500 });
   }
-}
+
+  return jsonResponse(req, {
+    translations: result.translations.map((translation) => ({
+      text: translation.text,
+      metadata: {
+        provider: 'gemini',
+        usedGlossary: payload.glossaryEntries.length > 0,
+        glossaryMode: payload.glossaryEntries.length > 0 ? 'prompt' : 'none',
+        contextUsed: payload.contextExcerpts.length > 0,
+        warnings: translation.warnings ?? [],
+      },
+    })),
+  });
+});
 
 if (import.meta.main && typeof Deno !== 'undefined' && typeof Deno.serve === 'function') {
   Deno.serve(handleGeminiTranslateRequest);
