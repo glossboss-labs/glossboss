@@ -269,7 +269,7 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
               to="/editor"
               icon={<FileText size={18} />}
               label={t('Local editor')}
-              active={pathname === '/'}
+              active={pathname === '/editor'}
               collapsed={collapsed}
             />
           </Stack>
