@@ -1516,7 +1516,7 @@ msgstr "Current"
 msgid "Current editor"
 msgstr "Current editor"
 
-#: src/components/AppErrorBoundary.tsx:70
+#: src/components/AppErrorBoundary.tsx:72
 msgid "Current path"
 msgstr "Current path"
 
@@ -2136,7 +2136,7 @@ msgstr "Erasure"
 msgid "Error"
 msgstr "Error"
 
-#: src/components/AppErrorBoundary.tsx:71
+#: src/components/AppErrorBoundary.tsx:73
 msgid "Error details"
 msgstr "Error details"
 
@@ -5321,7 +5321,7 @@ msgstr "Release to load your translation file"
 msgid "Release {{release}}"
 msgstr "Release {{release}}"
 
-#: src/components/AppErrorBoundary.tsx:81
+#: src/components/AppErrorBoundary.tsx:83
 msgid "Reload page"
 msgstr "Reload page"
 

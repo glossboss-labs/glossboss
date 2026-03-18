@@ -1458,7 +1458,7 @@ msgstr ""
 msgid "Current editor"
 msgstr ""
 
-#: src/components/AppErrorBoundary.tsx:70
+#: src/components/AppErrorBoundary.tsx:72
 msgid "Current path"
 msgstr ""
 
@@ -2057,7 +2057,7 @@ msgstr ""
 msgid "Error"
 msgstr ""
 
-#: src/components/AppErrorBoundary.tsx:71
+#: src/components/AppErrorBoundary.tsx:73
 msgid "Error details"
 msgstr ""
 
@@ -5103,7 +5103,7 @@ msgstr ""
 msgid "Release {{release}}"
 msgstr ""
 
-#: src/components/AppErrorBoundary.tsx:81
+#: src/components/AppErrorBoundary.tsx:83
 msgid "Reload page"
 msgstr ""
 
