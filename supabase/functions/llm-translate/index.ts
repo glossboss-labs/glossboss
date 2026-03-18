@@ -63,6 +63,41 @@ function createModel(
 
 // ── Translation core ───────────────────────────────────────
 
+const translationSchema = z.object({
+  translations: z.array(
+    z.object({
+      text: z.string(),
+      warnings: z.array(z.string()).optional(),
+      usedGlossaryTerms: z.array(z.string()).optional(),
+    }),
+  ),
+});
+
+type TranslationResult = z.infer<typeof translationSchema>;
+
+/**
+ * Extract JSON from raw LLM text output — handles markdown code fences,
+ * leading prose, and other common wrapping patterns.
+ */
+function extractJsonFromText(raw: string): TranslationResult | null {
+  // Strip markdown code fences
+  const fenced = raw.match(/```(?:json)?\s*([\s\S]*?)```/);
+  const candidate = fenced ? fenced[1].trim() : raw.trim();
+
+  // Find the first { and last } to extract JSON object
+  const start = candidate.indexOf('{');
+  const end = candidate.lastIndexOf('}');
+  if (start === -1 || end === -1 || end <= start) return null;
+
+  try {
+    const parsed = JSON.parse(candidate.slice(start, end + 1));
+    const result = translationSchema.safeParse(parsed);
+    return result.success ? result.data : null;
+  } catch {
+    return null;
+  }
+}
+
 async function translateWithLlm(
   providerDef: LlmProviderDef,
   payload: LlmTranslatePayload,
@@ -77,31 +112,43 @@ async function translateWithLlm(
   const systemPrompt = buildInstruction(payload, strictGlossary);
   const userPrompt = buildUserPayload(payload);
 
-  const { object } = await generateText({
-    model,
-    system: systemPrompt,
-    prompt: userPrompt,
-    temperature: payload.temperature ?? DEFAULT_TEMPERATURE,
-    output: Output.object({
-      schema: z.object({
-        translations: z.array(
-          z.object({
-            text: z.string(),
-            warnings: z.array(z.string()).optional(),
-            usedGlossaryTerms: z.array(z.string()).optional(),
-          }),
-        ),
-      }),
-    }),
-    maxRetries: 1,
-  });
+  // Try structured output first, fall back to raw text parsing
+  let result: TranslationResult | null = null;
 
-  if (!object || !Array.isArray(object.translations)) {
+  try {
+    const { object } = await generateText({
+      model,
+      system: systemPrompt,
+      prompt: userPrompt,
+      temperature: payload.temperature ?? DEFAULT_TEMPERATURE,
+      output: Output.object({ schema: translationSchema }),
+      maxRetries: 1,
+    });
+    if (object && Array.isArray(object.translations)) {
+      result = object;
+    }
+  } catch {
+    // Structured output not supported — fall back to raw text
+  }
+
+  // Fallback: generate raw text and parse JSON from it
+  if (!result) {
+    const { text: rawText } = await generateText({
+      model,
+      system: systemPrompt + '\n\nRespond with ONLY a JSON object, no markdown or explanation.',
+      prompt: userPrompt,
+      temperature: payload.temperature ?? DEFAULT_TEMPERATURE,
+      maxRetries: 1,
+    });
+    result = extractJsonFromText(rawText);
+  }
+
+  if (!result || !Array.isArray(result.translations)) {
     throw new Error('LLM response did not include translations.');
   }
 
   return {
-    translations: object.translations.map((t) => ({
+    translations: result.translations.map((t) => ({
       text: typeof t.text === 'string' ? t.text : '',
       warnings: Array.isArray(t.warnings)
         ? t.warnings.filter((w): w is string => typeof w === 'string')
