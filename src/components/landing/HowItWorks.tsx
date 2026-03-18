@@ -16,7 +16,7 @@ const steps = [
     Icon: Sparkles,
     title: msgid('Translate'),
     description: msgid(
-      'Translate with AI from DeepL, Azure, or Gemini. Review with your team. Run QA checks.',
+      'Translate with AI from DeepL, OpenAI, Claude, Gemini, and more. Review with your team. Run QA checks.',
     ),
   },
   {

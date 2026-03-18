@@ -1,0 +1,21 @@
+{
+  "name": "GlossBoss",
+  "short_name": "GlossBoss",
+  "description": "Open-source translation platform with AI translation, real-time collaboration, and one-click deploys.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#050505",
+  "theme_color": "#050505",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { APP_LANGUAGE_OPTIONS, type AppLanguage } from '@/lib/app-language';
+import { useTranslation, msgid, type AppLanguage } from '@/lib/app-language';
 import {
   EarlyBetaBanner,
   LandingNav,
@@ -18,7 +18,11 @@ import {
   LandingFooter,
 } from '@/components/landing';
 
-const SITE_URL = 'https://glossboss.ink';
+const META_TITLE = msgid('GlossBoss — Open-Source Translation Platform');
+const META_DESCRIPTION = msgid(
+  'Free, open-source translation editor for PO, POT, and i18next JSON files. AI translation from DeepL, OpenAI, Claude, Gemini, Mistral, DeepSeek & Azure with real-time collaboration and GitHub/GitLab sync.',
+);
+const DEFAULT_TITLE = 'GlossBoss — Open-Source Translation Platform';
 
 export default function Landing({
   lang,
@@ -28,33 +32,17 @@ export default function Landing({
   isAuthenticated?: boolean;
 }) {
   const currentLang = lang ?? 'en';
+  const { t } = useTranslation();
 
-  // Set hreflang meta tags for SEO
+  // Update document meta tags with translated strings for SEO (Googlebot executes JS)
   useEffect(() => {
-    const head = document.head;
-    const existing = head.querySelectorAll('link[data-hreflang]');
-    existing.forEach((el) => el.remove());
-
-    const xDefault = document.createElement('link');
-    xDefault.rel = 'alternate';
-    xDefault.hreflang = 'x-default';
-    xDefault.href = SITE_URL + '/';
-    xDefault.setAttribute('data-hreflang', 'true');
-    head.appendChild(xDefault);
-
-    for (const option of APP_LANGUAGE_OPTIONS) {
-      const link = document.createElement('link');
-      link.rel = 'alternate';
-      link.hreflang = option.value;
-      link.href = option.value === 'en' ? SITE_URL + '/' : `${SITE_URL}/${option.value}`;
-      link.setAttribute('data-hreflang', 'true');
-      head.appendChild(link);
-    }
-
+    document.title = t(META_TITLE);
+    const desc = document.querySelector('meta[name="description"]');
+    if (desc) desc.setAttribute('content', t(META_DESCRIPTION));
     return () => {
-      head.querySelectorAll('link[data-hreflang]').forEach((el) => el.remove());
+      document.title = DEFAULT_TITLE;
     };
-  }, []);
+  }, [currentLang, t]);
 
   return (
     <div className="min-h-screen bg-surface-0">

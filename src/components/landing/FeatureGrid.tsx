@@ -37,9 +37,9 @@ const primaryFeatures: PrimaryFeature[] = [
     id: 'ai',
     Icon: Languages,
     name: msgid('AI Translation'),
-    description: msgid('Three AI providers, one click'),
+    description: msgid('Seven AI providers, one click'),
     detail: msgid(
-      'Switch between DeepL, Azure, and Gemini mid-session. Gemini even reads your plugin source code for context-aware translations that understand where each string appears in your UI.',
+      'Switch between DeepL, OpenAI, Claude, Gemini, Mistral, DeepSeek, and Azure mid-session. LLM providers read your plugin source code for context-aware translations that understand where each string appears in your UI.',
     ),
   },
   {

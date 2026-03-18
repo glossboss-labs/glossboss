@@ -130,7 +130,7 @@ export function HeroSection() {
           transition={{ duration: 0.4, delay: 0.5 }}
           className="mt-4 text-sm text-text-secondary"
         >
-          {t('Powered by DeepL, Azure Translator & Google Gemini')}
+          {t('Powered by DeepL, OpenAI, Claude, Gemini, Mistral, DeepSeek & Azure')}
         </motion.p>
 
         {/* CTAs */}
