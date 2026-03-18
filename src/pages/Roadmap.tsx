@@ -2,7 +2,7 @@
  * Roadmap — public page showing planned, in-progress, and completed features.
  */
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Title,
   Group,
@@ -40,7 +40,7 @@ import {
 } from '@/lib/motion';
 import { useTranslation, msgid } from '@/lib/app-language';
 import { formatRelative } from '@/lib/utils/date';
-import { fetchRoadmap } from '@/lib/roadmap/api';
+import { useRoadmapItems } from '@/lib/roadmap/queries';
 import { FeedbackModal } from '@/components/feedback';
 import { deriveStatus, type RoadmapIssue, type RoadmapStatus } from '@/lib/roadmap/types';
 
@@ -180,41 +180,19 @@ function RoadmapCard({ issue }: { issue: RoadmapIssue }) {
 
 export default function Roadmap() {
   const { t } = useTranslation();
-  const [issues, setIssues] = useState<RoadmapIssue[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: issues = [], isLoading: loading, error: queryError } = useRoadmapItems();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<RoadmapStatus>('all');
   const [feedbackOpen, setFeedbackOpen] = useState(false);
 
-  useEffect(() => {
-    let cancelled = false;
-
-    async function load() {
-      try {
-        const data = await fetchRoadmap();
-        if (!cancelled) {
-          setIssues(data);
-          setLoading(false);
-        }
-      } catch (err) {
-        if (!cancelled) {
-          const msg = err instanceof Error ? err.message : '';
-          setError(
-            msg.includes('Not Found') || msg.includes('SERVER_MISCONFIGURED')
-              ? t('The roadmap is temporarily unavailable. Please try again later.')
-              : msg || t('Failed to load roadmap'),
-          );
-          setLoading(false);
-        }
-      }
-    }
-
-    void load();
-    return () => {
-      cancelled = true;
-    };
-  }, [t]);
+  const error = queryError
+    ? (() => {
+        const msg = (queryError as Error).message ?? '';
+        return msg.includes('Not Found') || msg.includes('SERVER_MISCONFIGURED')
+          ? t('The roadmap is temporarily unavailable. Please try again later.')
+          : msg || t('Failed to load roadmap');
+      })()
+    : null;
 
   const filtered = useMemo(() => {
     let result = issues;

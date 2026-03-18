@@ -315,10 +315,28 @@ export const handleGeminiTranslateRequest = handleJsonPost('Gemini', async (req,
   }
 
   const modelId = payload.modelId || DEFAULT_MODEL;
+
+  // ── Glossary-aware two-pass translation ──────────────────
+  //
+  // Pass 1: translate with glossary hints (non-strict). The prompt asks the
+  //         model to use the glossary, but does not insist on exact matches.
+  //
+  // Validation: after pass 1 we check whether every glossary target term
+  //             appears somewhere in the combined translation output.
+  //
+  // Pass 2 (conditional): if any glossary terms were missed, we retry with
+  //         strictGlossary=true, which makes the prompt mandatory ("must use
+  //         the required target term exactly"). This intentional retry doubles
+  //         the API cost for that request but significantly improves glossary
+  //         adherence for the majority of edge cases.
+  //
+  // If pass 2 still misses terms, the request fails with GLOSSARY_VALIDATION_FAILED.
+  // ─────────────────────────────────────────────────────────
   let result = await generateGeminiResponse(apiKey, modelId, payload, false);
 
   const missingTerms = findMissingGlossaryTerms(result.translations, payload.glossaryEntries);
   if (missingTerms.length > 0) {
+    // Retry with strict glossary enforcement (see comment above).
     result = await generateGeminiResponse(apiKey, modelId, payload, true);
     const retriedMissingTerms = findMissingGlossaryTerms(
       result.translations,

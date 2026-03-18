@@ -25,7 +25,7 @@ import { getInitials } from '@/lib/utils/avatar';
 import { useAuth } from '@/hooks/use-auth';
 import { useAuthStore } from '@/stores/auth-store';
 import { useSubscription } from '@/hooks/use-subscription';
-import { useProjectsStore } from '@/stores/projects-store';
+import { useProjects } from '@/lib/projects/queries';
 import { formatLimit } from '@/lib/billing/limits';
 import { PlanBadge } from '@/components/billing/PlanBadge';
 import { FeedbackModal } from '@/components/feedback';
@@ -36,7 +36,7 @@ export function UserMenu() {
   const { user, isAuthenticated, loading } = useAuth();
   const signOut = useAuthStore((s) => s.signOut);
   const { plan, limits } = useSubscription();
-  const projects = useProjectsStore((s) => s.projects);
+  const { data: projects = [] } = useProjects();
   const [feedbackOpen, setFeedbackOpen] = useState(false);
 
   if (loading) return null;

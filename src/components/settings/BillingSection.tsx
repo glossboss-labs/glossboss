@@ -48,7 +48,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { useSubscription } from '@/hooks/use-subscription';
-import { useProjectsStore } from '@/stores/projects-store';
+import { useProjects } from '@/lib/projects/queries';
 import { useTranslation } from '@/lib/app-language';
 import { trackEvent } from '@/lib/analytics';
 import { createCheckoutSession } from '@/lib/billing/api';
@@ -301,7 +301,7 @@ export function BillingSection() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { subscription, plan, limits, loading } = useSubscription();
-  const projects = useProjectsStore((s) => s.projects);
+  const { data: projects = [] } = useProjects();
   const [billingInterval, setBillingInterval] = useState<BillingInterval>('year');
   const [upgrading, setUpgrading] = useState<string | null>(null);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);

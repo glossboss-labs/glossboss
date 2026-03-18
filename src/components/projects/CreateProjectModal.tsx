@@ -34,8 +34,8 @@ import { fetchWordPressTranslationFile } from '@/lib/wp-source';
 import type { WordPressProjectOpenRequest } from '@/components/editor/WordPressProjectModal';
 import { WordPressProjectModal } from '@/components/editor/WordPressProjectModal';
 import { RepoSyncModal } from '@/components/repo-sync/RepoSyncModal';
-import { useProjectsStore } from '@/stores/projects-store';
-import { useOrganizationsStore } from '@/stores/organizations-store';
+import { useProjects, useCreateProject } from '@/lib/projects/queries';
+import { useOrganizations } from '@/lib/organizations/queries';
 import { useAuth } from '@/hooks/use-auth';
 import { useSubscription } from '@/hooks/use-subscription';
 import { isAtLimit, getRemainingCapacity, formatLimit, PLAN_LIMITS } from '@/lib/billing/limits';
@@ -71,9 +71,9 @@ export function CreateProjectModal({ opened, onClose }: CreateProjectModalProps)
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const createProject = useProjectsStore((s) => s.createProject);
-  const projects = useProjectsStore((s) => s.projects);
-  const organizations = useOrganizationsStore((s) => s.organizations);
+  const createProjectMutation = useCreateProject();
+  const { data: projects = [] } = useProjects();
+  const { data: organizations = [] } = useOrganizations();
   const { plan } = useSubscription();
   const fileResetRef = useRef<(() => void) | null>(null);
 
@@ -267,8 +267,8 @@ export function CreateProjectModal({ opened, onClose }: CreateProjectModalProps)
         const header = file.header;
         const locale = header.language ?? 'unknown';
 
-        const { project } = await createProject(
-          {
+        const { project } = await createProjectMutation.mutateAsync({
+          insert: {
             owner_id: user.id,
             organization_id: organizationId,
             name: projectName.trim() || importedFile.originalFilename,
@@ -283,8 +283,8 @@ export function CreateProjectModal({ opened, onClose }: CreateProjectModalProps)
             wp_slug: importedFile.wpSlug ?? null,
             wp_track: importedFile.wpTrack ?? null,
           },
-          {
-            project_id: '', // will be set by store
+          languageInsert: {
+            project_id: '', // will be set by mutation
             locale,
             source_filename: importedFile.originalFilename,
             po_header: header as Record<string, string>,
@@ -296,8 +296,8 @@ export function CreateProjectModal({ opened, onClose }: CreateProjectModalProps)
             repo_file_path: null,
             repo_default_branch: null,
           },
-          file.entries,
-        );
+          entries: file.entries,
+        });
 
         trackEvent('project_created', {
           source_language: header.language ?? 'unknown',
@@ -308,20 +308,22 @@ export function CreateProjectModal({ opened, onClose }: CreateProjectModalProps)
         void navigate(`/projects/${project.id}`);
       } else {
         // Empty project — no language or entries
-        const { project } = await createProject({
-          owner_id: user.id,
-          organization_id: organizationId,
-          name: projectName.trim() || t('New project'),
-          description: '',
-          visibility: visibility as 'private' | 'public' | 'unlisted',
-          source_language: sourceLanguage || null,
-          target_language: null,
-          source_format: sourceFormat as 'po' | 'i18next',
-          source_filename: null,
-          po_header: null,
-          wp_project_type: null,
-          wp_slug: null,
-          wp_track: null,
+        const { project } = await createProjectMutation.mutateAsync({
+          insert: {
+            owner_id: user.id,
+            organization_id: organizationId,
+            name: projectName.trim() || t('New project'),
+            description: '',
+            visibility: visibility as 'private' | 'public' | 'unlisted',
+            source_language: sourceLanguage || null,
+            target_language: null,
+            source_format: sourceFormat as 'po' | 'i18next',
+            source_filename: null,
+            po_header: null,
+            wp_project_type: null,
+            wp_slug: null,
+            wp_track: null,
+          },
         });
 
         trackEvent('project_created', {
@@ -344,7 +346,7 @@ export function CreateProjectModal({ opened, onClose }: CreateProjectModalProps)
       setCreating(false);
     }
   }, [
-    createProject,
+    createProjectMutation,
     handleClose,
     importedFile,
     navigate,

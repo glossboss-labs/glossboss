@@ -75,7 +75,7 @@ import { ProjectTranslationTab } from '@/components/projects/ProjectTranslationT
 import { ConfirmModal } from '@/components/ui';
 import { getOrgSettings } from '@/lib/organizations/api';
 import type { OrgSettingsRow } from '@/lib/organizations/types';
-import { useProjectsStore } from '@/stores/projects-store';
+import { useDeleteLanguage } from '@/lib/projects/queries';
 
 const MotionDiv = motion.div;
 
@@ -89,7 +89,7 @@ export default function ProjectSettings() {
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = searchParams.get('tab') || 'general';
   const { isAdmin, isManager } = useProjectRole(id);
-  const deleteLanguage = useProjectsStore((s) => s.deleteLanguage);
+  const deleteLanguageMutation = useDeleteLanguage();
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -218,14 +218,15 @@ export default function ProjectSettings() {
 
   const handleDeleteLanguage = useCallback(
     async (languageId: string) => {
+      if (!id) return;
       try {
-        await deleteLanguage(languageId);
+        await deleteLanguageMutation.mutateAsync({ languageId, projectId: id });
         setLanguages((prev) => prev.filter((l) => l.id !== languageId));
       } catch (err) {
         setError(err instanceof Error ? err.message : t('Failed to delete language'));
       }
     },
-    [deleteLanguage, t],
+    [deleteLanguageMutation, id, t],
   );
 
   const handleUnlinkRepo = useCallback(

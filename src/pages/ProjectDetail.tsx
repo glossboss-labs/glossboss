@@ -53,21 +53,17 @@ import { useTranslation } from '@/lib/app-language';
 import { VISIBILITY_ICON, VISIBILITY_LABEL } from '@/lib/constants/visibility';
 import { formatRelative } from '@/lib/utils/date';
 import { sortLanguages, type LangSortOption } from '@/lib/utils/sorting';
+import { useQueryClient } from '@tanstack/react-query';
+import { removeProjectMember, joinPublicProject } from '@/lib/projects/api';
+import type { ProjectMemberWithProfile, ProjectInviteRow } from '@/lib/projects/types';
 import {
-  getProject,
-  getProjectLanguages,
-  listProjectMembers,
-  listProjectInvites,
-  removeProjectMember,
-  joinPublicProject,
-} from '@/lib/projects/api';
-import type {
-  ProjectRow,
-  ProjectLanguageRow,
-  ProjectMemberWithProfile,
-  ProjectInviteRow,
-} from '@/lib/projects/types';
-import { useProjectsStore } from '@/stores/projects-store';
+  projectKeys,
+  useProject,
+  useProjectLanguages,
+  useProjectMembers,
+  useProjectInvites,
+  useDeleteLanguage,
+} from '@/lib/projects/queries';
 import { useAuth } from '@/hooks/use-auth';
 import { AddLanguageModal } from '@/components/projects/AddLanguageModal';
 import { ProjectMembersTab } from '@/components/projects/ProjectMembersTab';
@@ -82,16 +78,36 @@ export default function ProjectDetail() {
   const { t } = useTranslation();
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const deleteLanguage = useProjectsStore((s) => s.deleteLanguage);
+  const deleteLanguageMutation = useDeleteLanguage();
+  const queryClient = useQueryClient();
 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [project, setProject] = useState<ProjectRow | null>(null);
-  const [languages, setLanguages] = useState<ProjectLanguageRow[]>([]);
+  // TanStack Query for project data
+  const { data: project = null, isLoading: projectLoading, error: projectError } = useProject(id);
+  const { data: languages = [], isLoading: languagesLoading } = useProjectLanguages(id);
+  const { data: fetchedMembers = [] } = useProjectMembers(id);
+  const { data: fetchedInvites = [] } = useProjectInvites(id);
+
+  // Local state for optimistic updates from child tabs
   const [members, setMembers] = useState<ProjectMemberWithProfile[]>([]);
   const [invites, setInvites] = useState<ProjectInviteRow[]>([]);
+
+  // Sync fetched data to local state for child tab mutations
+  useEffect(() => {
+    if (fetchedMembers.length > 0 || !projectLoading) setMembers(fetchedMembers);
+  }, [fetchedMembers, projectLoading]);
+
+  useEffect(() => {
+    if (fetchedInvites.length > 0 || !projectLoading) setInvites(fetchedInvites);
+  }, [fetchedInvites, projectLoading]);
+
+  const loading = projectLoading || languagesLoading;
+  const queryErrorMessage = projectError
+    ? ((projectError as Error).message ?? t('Failed to load project'))
+    : null;
+  const [localError, setError] = useState<string | null>(null);
+  const error = localError || queryErrorMessage;
+
   const [addModalOpen, setAddModalOpen] = useState(false);
-  const [refreshKey, setRefreshKey] = useState(0);
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<LangSortOption>('locale');
   const [confirmLeaveOpen, setConfirmLeaveOpen] = useState(false);
@@ -107,64 +123,21 @@ export default function ProjectDetail() {
   const canManage = myMembership?.role === 'admin' || myMembership?.role === 'maintainer';
   const isMember = Boolean(myMembership);
 
-  useEffect(() => {
-    if (!id) return;
-    let cancelled = false;
-
-    async function load() {
-      try {
-        const [proj, langs] = await Promise.all([getProject(id!), getProjectLanguages(id!)]);
-        if (cancelled) return;
-        if (!proj) {
-          setError(t('Project not found'));
-          setLoading(false);
-          return;
-        }
-
-        // Members/invites only loadable by project members
-        let mems: ProjectMemberWithProfile[] = [];
-        let invs: ProjectInviteRow[] = [];
-        try {
-          mems = await listProjectMembers(id!);
-          invs = await listProjectInvites(id!).catch(() => [] as ProjectInviteRow[]);
-        } catch {
-          // Non-members may not be able to list invites; that's fine
-        }
-
-        if (cancelled) return;
-        setProject(proj);
-        setLanguages(langs);
-        setMembers(mems);
-        setInvites(invs);
-        setLoading(false);
-      } catch (err) {
-        if (cancelled) return;
-        setError(err instanceof Error ? err.message : t('Failed to load project'));
-        setLoading(false);
-      }
-    }
-
-    void load();
-    return () => {
-      cancelled = true;
-    };
-  }, [id, t, refreshKey]);
-
   const handleDeleteLanguage = useCallback(
     async (languageId: string) => {
+      if (!id) return;
       try {
-        await deleteLanguage(languageId);
-        setLanguages((prev) => prev.filter((l) => l.id !== languageId));
+        await deleteLanguageMutation.mutateAsync({ languageId, projectId: id });
       } catch (err) {
         setError(err instanceof Error ? err.message : t('Failed to delete language'));
       }
     },
-    [deleteLanguage, t],
+    [deleteLanguageMutation, id, t],
   );
 
   const handleLanguageAdded = useCallback(() => {
     setAddModalOpen(false);
-    setRefreshKey((k) => k + 1);
+    // TanStack Query will auto-refetch via invalidation from useAddLanguage mutation
   }, []);
 
   const handleLeaveProject = useCallback(async () => {
@@ -185,13 +158,13 @@ export default function ProjectDetail() {
     setJoinLoading(true);
     try {
       await joinPublicProject(id, user.id, project?.public_role ?? 'viewer');
-      setRefreshKey((k) => k + 1);
+      void queryClient.invalidateQueries({ queryKey: projectKeys.members(id) });
     } catch (err) {
       setError(err instanceof Error ? err.message : t('Failed to join project'));
     } finally {
       setJoinLoading(false);
     }
-  }, [user, id, project?.public_role, t]);
+  }, [user, id, project?.public_role, t, queryClient]);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();

@@ -30,7 +30,7 @@ import { fetchWordPressTranslationFile } from '@/lib/wp-source';
 import type { WordPressProjectOpenRequest } from '@/components/editor/WordPressProjectModal';
 import { WordPressProjectModal } from '@/components/editor/WordPressProjectModal';
 import { RepoSyncModal } from '@/components/repo-sync/RepoSyncModal';
-import { useProjectsStore } from '@/stores/projects-store';
+import { useAddLanguage } from '@/lib/projects/queries';
 import { syncProjectEntries } from '@/lib/projects/api';
 import type { ProjectLanguageRow } from '@/lib/projects/types';
 
@@ -54,7 +54,7 @@ export function AddLanguageModal({
   onLanguageAdded,
 }: AddLanguageModalProps) {
   const { t } = useTranslation();
-  const addLanguage = useProjectsStore((s) => s.addLanguage);
+  const addLanguageMutation = useAddLanguage();
   const fileResetRef = useRef<(() => void) | null>(null);
 
   const [locale, setLocale] = useState('');
@@ -183,9 +183,9 @@ export function AddLanguageModal({
 
     try {
       if (sourceType === 'clone' && cloneSourceId) {
-        await addLanguage(
+        await addLanguageMutation.mutateAsync({
           projectId,
-          {
+          languageInsert: {
             project_id: projectId,
             locale: locale.trim(),
             source_filename: null,
@@ -198,38 +198,44 @@ export function AddLanguageModal({
             repo_file_path: null,
             repo_default_branch: null,
           },
-          cloneSourceId,
-        );
+          sourceLanguageId: cloneSourceId,
+        });
       } else if (importedFile) {
-        const languageId = await addLanguage(projectId, {
-          project_id: projectId,
-          locale: locale.trim(),
-          source_filename: importedFilename,
-          po_header: importedFile.header as Record<string, string>,
-          wp_locale: null,
-          repo_provider: null,
-          repo_owner: null,
-          repo_name: null,
-          repo_branch: null,
-          repo_file_path: null,
-          repo_default_branch: null,
+        const languageId = await addLanguageMutation.mutateAsync({
+          projectId,
+          languageInsert: {
+            project_id: projectId,
+            locale: locale.trim(),
+            source_filename: importedFilename,
+            po_header: importedFile.header as Record<string, string>,
+            wp_locale: null,
+            repo_provider: null,
+            repo_owner: null,
+            repo_name: null,
+            repo_branch: null,
+            repo_file_path: null,
+            repo_default_branch: null,
+          },
         });
         // Sync imported entries
         await syncProjectEntries(languageId, projectId, importedFile.entries, new Map(), new Map());
       } else {
         // Empty language
-        await addLanguage(projectId, {
-          project_id: projectId,
-          locale: locale.trim(),
-          source_filename: null,
-          po_header: null,
-          wp_locale: null,
-          repo_provider: null,
-          repo_owner: null,
-          repo_name: null,
-          repo_branch: null,
-          repo_file_path: null,
-          repo_default_branch: null,
+        await addLanguageMutation.mutateAsync({
+          projectId,
+          languageInsert: {
+            project_id: projectId,
+            locale: locale.trim(),
+            source_filename: null,
+            po_header: null,
+            wp_locale: null,
+            repo_provider: null,
+            repo_owner: null,
+            repo_name: null,
+            repo_branch: null,
+            repo_file_path: null,
+            repo_default_branch: null,
+          },
         });
       }
 
@@ -244,7 +250,7 @@ export function AddLanguageModal({
       setCreating(false);
     }
   }, [
-    addLanguage,
+    addLanguageMutation,
     cloneSourceId,
     handleClose,
     importedFile,
