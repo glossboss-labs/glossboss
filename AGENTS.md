@@ -53,6 +53,12 @@ The most common CI failure. Run `pnpm run i18n:extract` whenever you touch files
 - PO files live in `src/lib/app-language/locales/`. English auto-fills `msgstr = msgid`; other languages get empty `msgstr`.
 - Line-number shifts count — refactoring code that contains `t()` calls requires re-extraction even if no strings changed.
 
+## Data fetching and state
+
+- **Server state**: TanStack Query (`@tanstack/react-query`). Query definitions live in `src/lib/<domain>/queries.ts` files (organizations, projects, billing, roadmap, notifications). Use `useQuery` / `useMutation` — do not roll custom fetch-and-setState patterns for server data.
+- **Client state**: Zustand stores in `src/stores/`. The editor store uses the slice pattern (`StateCreator` with `createEditorEntriesSlice`, `createEditorSelectionSlice`, `createEditorReviewSlice`) composed into a single store.
+- **Provider settings**: Each provider (DeepL, Azure, Gemini, GitHub, GitLab, LLM, TTS) uses the shared `PersistenceManager` from `src/lib/settings/storage-persistence.ts`. Settings live in sessionStorage by default with opt-in migration to localStorage. Do not add bespoke persistence logic — use `createPersistenceManager()`.
+
 ## Architecture traps
 
 - Frontend production builds require env vars: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_TURNSTILE_SITE_KEY`.

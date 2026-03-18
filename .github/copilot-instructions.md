@@ -9,15 +9,16 @@ Only non-obvious, repo-specific constraints belong here. If you can infer it fro
 ## Commands
 
 ```
-pnpm run lint
-pnpm run format:check          # fix with: pnpm run format
-pnpm run typecheck
-pnpm run build
-pnpm run test:coverage
+vp check                        # lint + format + typecheck in one command
+vp check --fix                  # auto-fix lint and format issues
+vp build
+vp test --coverage
 pnpm run i18n:extract           # after any t() or msgid() changes
 ```
 
-Run all six before committing any non-trivial change. If any step fails, fix it before committing. If a step is skipped, explain why. **Do not push code that breaks CI.**
+Run all four before committing any non-trivial change. If any step fails, fix it before committing. If a step is skipped, explain why. **Do not push code that breaks CI.**
+
+Vite+ (`vp`) is the unified toolchain — it bundles Vite 8, Vitest, Oxlint, and Oxfmt. Config is in `vite.config.ts`.
 
 ## Boundaries
 
@@ -26,12 +27,13 @@ Run all six before committing any non-trivial change. If any step fails, fix it 
 - Use `pnpm` / `pnpx` — never `npm`, `npx`, `bun`, or npm lockfiles.
 - Conventional Commits (`feat:`, `fix:`, `docs:`, `chore:`, etc.). CI validates all PR commits via commitlint. The PR title is **not** validated.
 - Wrap user-facing strings with `t()` (inside hooks) or `msgid()` (module scope). Run `pnpm run i18n:extract` and commit PO/POT diffs in the same commit.
-- Static imports only in routing. One `<BrowserRouter>` in `src/main.tsx`, `<Routes>` + `<Route>` in `src/App.tsx`.
+- `React.lazy()` for route-level code splitting in `src/App.tsx` — all `lazy()` calls at module scope (React 19 requirement). First-paint routes (Landing, Login, Signup) stay eagerly imported.
+- One `<BrowserRouter>` in `src/main.tsx`, `<Routes>` + `<Route>` in `src/App.tsx`.
 - Import from `react-router` — not `react-router-dom` (the package does not exist in this repo).
 
 **Never:**
 
-- `React.lazy()`, `useRoutes()`, or dynamic route imports.
+- `useRoutes()` or dynamic route imports (except `React.lazy()` at module scope in `App.tsx`).
 - Hand-edit `app.pot` — it is generated.
 - Commit `.env` files or secrets.
 
@@ -50,6 +52,12 @@ The most common CI failure. Run `pnpm run i18n:extract` whenever you touch files
 - `msgid('...')` from `@/lib/app-language` for strings at module scope (identity function that marks for extraction).
 - PO files live in `src/lib/app-language/locales/`. English auto-fills `msgstr = msgid`; other languages get empty `msgstr`.
 - Line-number shifts count — refactoring code that contains `t()` calls requires re-extraction even if no strings changed.
+
+## Data fetching and state
+
+- **Server state**: TanStack Query (`@tanstack/react-query`). Query definitions live in `src/lib/<domain>/queries.ts` files (organizations, projects, billing, roadmap, notifications). Use `useQuery` / `useMutation` — do not roll custom fetch-and-setState patterns for server data.
+- **Client state**: Zustand stores in `src/stores/`. The editor store uses the slice pattern (`StateCreator` with `createEditorEntriesSlice`, `createEditorSelectionSlice`, `createEditorReviewSlice`) composed into a single store.
+- **Provider settings**: Each provider (DeepL, Azure, Gemini, GitHub, GitLab, LLM, TTS) uses the shared `PersistenceManager` from `src/lib/settings/storage-persistence.ts`. Settings live in sessionStorage by default with opt-in migration to localStorage. Do not add bespoke persistence logic — use `createPersistenceManager()`.
 
 ## Architecture traps
 

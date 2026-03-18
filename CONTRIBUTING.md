@@ -20,16 +20,16 @@ Use pnpm for all scripts and package management in this repository.
 
 ## Before opening a pull request
 
-Run the full local check suite:
+Run the full local check suite. The project uses [Vite+](https://vite.dev/) (`vp`) as the unified toolchain for linting (Oxlint), formatting (Oxfmt), type checking, building, and testing.
 
 ```bash
-pnpm run lint
-pnpm run format:check
-pnpm run typecheck
-pnpm run build
-pnpm run test:coverage
-pnpm run i18n:extract   # if any t() or msgid() calls changed
+vp check                        # lint + format + typecheck in one command
+vp build
+vp test --coverage
+pnpm run i18n:extract           # if any t() or msgid() calls changed
 ```
+
+Use `vp check --fix` to auto-fix lint and format issues.
 
 ## Commit style
 
@@ -43,7 +43,8 @@ Examples:
 
 ## Tooling
 
-- `pre-commit` runs `lint-staged`
+- Vite+ (`vp`) — unified dev server, build, lint (Oxlint), format (Oxfmt), and test runner
+- `pre-commit` runs `lint-staged` (which invokes `vp lint --fix` and `vp fmt --write`)
 - `commit-msg` runs `commitlint`
 - CI runs lint, format check, typecheck, tests, and build
 
