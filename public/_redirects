@@ -1,0 +1,3 @@
+# Redirect Cloudflare Pages preview domain to the real domain
+https://glossboss.pages.dev/* https://glossboss.ink/:splat 301
+https://*.glossboss.pages.dev/* https://glossboss.ink/:splat 301
