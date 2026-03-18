@@ -42,6 +42,7 @@ import { TranslationProviderOverride } from '@/hooks/use-translation-provider';
 import { getOrgSettings } from '@/lib/organizations/api';
 import type { OrgSettingsRow } from '@/lib/organizations/types';
 import type { ReviewEntryState } from '@/lib/review';
+import { recordRecentProject } from '@/hooks/use-recent-projects';
 
 export default function ProjectEditor() {
   const { id, languageId } = useParams<{ id: string; languageId: string }>();
@@ -87,6 +88,7 @@ export default function ProjectEditor() {
 
         setProject(proj);
         setLanguage(lang);
+        recordRecentProject(proj.id, proj.name);
 
         const poEntries = dbEntries.map((row, i) => dbEntryToPOEntry(row, i));
         const poHeader = dbLanguageToHeader(lang);

@@ -112,7 +112,7 @@ msgid "/mo"
 msgstr ""
 
 #: src/components/projects/ProjectCard.tsx:84
-#: src/pages/ProjectDetail.tsx:379
+#: src/pages/ProjectDetail.tsx:385
 msgid "1 language"
 msgstr "1 taal"
 
@@ -382,7 +382,7 @@ msgstr "Opmerking toevoegen"
 
 #: src/components/projects/AddLanguageModal.tsx:275
 #: src/components/projects/AddLanguageModal.tsx:453
-#: src/pages/ProjectDetail.tsx:405
+#: src/pages/ProjectDetail.tsx:411
 #: src/pages/ProjectSettings.tsx:642
 msgid "Add language"
 msgstr "Taal toevoegen"
@@ -534,7 +534,7 @@ msgstr ""
 msgid "Approve"
 msgstr "Goedkeuren"
 
-#: src/components/editor/TranslateToolbar.tsx:870
+#: src/components/editor/TranslateToolbar.tsx:871
 msgid "Approve selected"
 msgstr "Selectie goedkeuren"
 
@@ -581,7 +581,7 @@ msgstr ""
 
 #: src/pages/OrgSettings.tsx:613
 #: src/pages/OrgSettingsPage.tsx:777
-#: src/pages/ProjectDetail.tsx:691
+#: src/pages/ProjectDetail.tsx:697
 #: src/pages/ProjectSettings.tsx:840
 msgid "Are you sure you want to leave \"{{name}}\"?"
 msgstr "Weet je zeker dat je \"{{name}}\" wilt verlaten?"
@@ -620,15 +620,15 @@ msgstr ""
 msgid "Authentication, database, backend"
 msgstr ""
 
-#: src/components/editor/TranslateToolbar.tsx:785
+#: src/components/editor/TranslateToolbar.tsx:786
 msgid "Auto translate ({{count}})"
 msgstr "Automatisch vertalen ({{count}})"
 
-#: src/components/editor/TranslateToolbar.tsx:783
+#: src/components/editor/TranslateToolbar.tsx:784
 msgid "Auto translate selected"
 msgstr "Selectie automatisch vertalen"
 
-#: src/components/editor/TranslateToolbar.tsx:775
+#: src/components/editor/TranslateToolbar.tsx:776
 msgid "Auto translate selected rows that are empty or fuzzy"
 msgstr "Geselecteerde rijen automatisch vertalen die leeg of fuzzy zijn"
 
@@ -688,8 +688,8 @@ msgstr "Terug"
 #: src/pages/Invite.tsx:98
 #: src/pages/OrgSettings.tsx:247
 #: src/pages/OrgSettingsPage.tsx:285
-#: src/pages/ProjectDetail.tsx:221
-#: src/pages/ProjectEditor.tsx:203
+#: src/pages/ProjectDetail.tsx:227
+#: src/pages/ProjectEditor.tsx:205
 #: src/pages/ProjectInvite.tsx:100
 #: src/pages/ProjectSettings.tsx:286
 msgid "Back to dashboard"
@@ -703,7 +703,7 @@ msgstr "Terug naar gedetecteerde bestanden"
 msgid "Back to listing"
 msgstr "Terug naar lijst"
 
-#: src/pages/ProjectDetail.tsx:221
+#: src/pages/ProjectDetail.tsx:227
 msgid "Back to projects"
 msgstr "Terug naar projecten"
 
@@ -845,7 +845,7 @@ msgstr "Door {{actor}}"
 msgid "Can I self-host GlossBoss?"
 msgstr "Kan ik GlossBoss zelf hosten?"
 
-#: src/components/editor/TranslateToolbar.tsx:672
+#: src/components/editor/TranslateToolbar.tsx:673
 #: src/components/editor/WordPressProjectModal.tsx:410
 #: src/components/editor/WordPressRefreshModal.tsx:335
 #: src/components/feedback/FeedbackModal.tsx:481
@@ -1009,7 +1009,7 @@ msgid "Choose your plan"
 msgstr "Kies je abonnement"
 
 #: src/components/editor/GlossaryPanel.tsx:361
-#: src/components/editor/TranslateToolbar.tsx:756
+#: src/components/editor/TranslateToolbar.tsx:757
 #: src/components/projects/ProjectGlossaryTab.tsx:422
 #: src/components/settings/GlossarySection.tsx:312
 msgid "Clear"
@@ -1039,7 +1039,7 @@ msgstr "Editor wissen?"
 msgid "Clear filters"
 msgstr "Filters wissen"
 
-#: src/components/editor/TranslateToolbar.tsx:821
+#: src/components/editor/TranslateToolbar.tsx:822
 msgid "Clear fuzzy ({{count}})"
 msgstr "Fuzzy wissen ({{count}})"
 
@@ -1047,11 +1047,11 @@ msgstr "Fuzzy wissen ({{count}})"
 msgid "Clear fuzzy flag"
 msgstr "Fuzzy markering wissen"
 
-#: src/components/editor/TranslateToolbar.tsx:812
+#: src/components/editor/TranslateToolbar.tsx:813
 msgid "Clear fuzzy on selected rows"
 msgstr "Fuzzy wissen op geselecteerde rijen"
 
-#: src/components/editor/TranslateToolbar.tsx:819
+#: src/components/editor/TranslateToolbar.tsx:820
 msgid "Clear fuzzy selected"
 msgstr "Fuzzy wissen selectie"
 
@@ -1071,7 +1071,7 @@ msgstr ""
 msgid "Clear search"
 msgstr "Zoekopdracht wissen"
 
-#: src/components/editor/TranslateToolbar.tsx:560
+#: src/components/editor/TranslateToolbar.tsx:561
 msgid "Cleared fuzzy on {{count}} row(s)."
 msgstr "Fuzzy gewist op {{count}} rij(en)."
 
@@ -1157,7 +1157,7 @@ msgstr "Samenwerken in real-time"
 msgid "Collaboration"
 msgstr "Samenwerking"
 
-#: src/components/AppSidebar.tsx:221
+#: src/components/AppSidebar.tsx:225
 msgid "Collapse sidebar"
 msgstr "Zijbalk inklappen"
 
@@ -1535,12 +1535,12 @@ msgid "Danish"
 msgstr "Deens"
 
 #: src/components/AppHeader.tsx:43
-#: src/components/AppSidebar.tsx:295
+#: src/components/AppSidebar.tsx:329
 msgid "Dark mode"
 msgstr "Donkere modus"
 
 #: src/components/AppHeader.tsx:107
-#: src/components/AppSidebar.tsx:243
+#: src/components/AppSidebar.tsx:247
 #: src/components/landing/LandingNav.tsx:75
 #: src/components/landing/LandingNav.tsx:149
 #: src/pages/OrgSettings.tsx:274
@@ -1591,7 +1591,7 @@ msgid "Default provider"
 msgstr ""
 
 #: src/components/projects/ProjectCard.tsx:136
-#: src/pages/ProjectDetail.tsx:630
+#: src/pages/ProjectDetail.tsx:636
 msgid "Delete"
 msgstr "Verwijderen"
 
@@ -2090,7 +2090,7 @@ msgstr "Exacte en fuzzy matching hergebruikt eerder werk over projecten heen."
 msgid "Exact match"
 msgstr "Exacte match"
 
-#: src/components/AppSidebar.tsx:228
+#: src/components/AppSidebar.tsx:232
 msgid "Expand sidebar"
 msgstr "Zijbalk uitklappen"
 
@@ -2111,10 +2111,10 @@ msgid "Expires {{date}}"
 msgstr "Verloopt op {{date}}"
 
 #: src/components/AppHeader.tsx:97
-#: src/components/AppSidebar.tsx:250
+#: src/components/AppSidebar.tsx:254
 #: src/components/landing/LandingFooter.tsx:17
 #: src/pages/Explore.tsx:223
-#: src/pages/ProjectDetail.tsx:249
+#: src/pages/ProjectDetail.tsx:255
 msgid "Explore"
 msgstr "Ontdek"
 
@@ -2262,7 +2262,7 @@ msgstr "Kan het project niet aanmaken"
 msgid "Failed to delete credential."
 msgstr ""
 
-#: src/pages/ProjectDetail.tsx:132
+#: src/pages/ProjectDetail.tsx:138
 #: src/pages/ProjectSettings.tsx:226
 msgid "Failed to delete language"
 msgstr "Kan de taal niet verwijderen"
@@ -2298,7 +2298,7 @@ msgstr "Kan het vertaalgeheugen niet importeren."
 msgid "Failed to initialize verification."
 msgstr "Kan de verificatie niet starten."
 
-#: src/pages/ProjectDetail.tsx:163
+#: src/pages/ProjectDetail.tsx:169
 msgid "Failed to join project"
 msgstr "Kan niet deelnemen aan het project"
 
@@ -2307,7 +2307,7 @@ msgstr "Kan niet deelnemen aan het project"
 msgid "Failed to leave organization"
 msgstr "Kan de organisatie niet verlaten"
 
-#: src/pages/ProjectDetail.tsx:151
+#: src/pages/ProjectDetail.tsx:157
 #: src/pages/ProjectSettings.tsx:214
 msgid "Failed to leave project"
 msgstr "Kan het project niet verlaten"
@@ -2347,8 +2347,8 @@ msgstr "Kan de organisatie niet laden"
 msgid "Failed to load preferences"
 msgstr "Kan de voorkeuren niet laden"
 
-#: src/pages/ProjectDetail.tsx:105
-#: src/pages/ProjectEditor.tsx:165
+#: src/pages/ProjectDetail.tsx:111
+#: src/pages/ProjectEditor.tsx:167
 #: src/pages/ProjectSettings.tsx:159
 msgid "Failed to load project"
 msgstr "Kan het project niet laden"
@@ -3272,7 +3272,7 @@ msgid "Invite accepted"
 msgstr "Uitnodiging geaccepteerd"
 
 #: src/pages/OrgSettings.tsx:340
-#: src/pages/ProjectDetail.tsx:389
+#: src/pages/ProjectDetail.tsx:395
 msgid "Invites"
 msgstr "Uitnodigingen"
 
@@ -3308,7 +3308,7 @@ msgstr "Italiaans (Zwitserland)"
 msgid "Japanese"
 msgstr "Japans"
 
-#: src/pages/ProjectDetail.tsx:259
+#: src/pages/ProjectDetail.tsx:265
 msgid "Join as {{role}}"
 msgstr "Deelnemen als {{role}}"
 
@@ -3383,7 +3383,7 @@ msgstr "Taal"
 msgid "Language code"
 msgstr "Taalcode"
 
-#: src/pages/ProjectEditor.tsx:83
+#: src/pages/ProjectEditor.tsx:84
 msgid "Language not found"
 msgstr "Taal niet gevonden"
 
@@ -3410,7 +3410,7 @@ msgstr "Laatste vertaler"
 #: src/components/editor/HeaderEditor.tsx:257
 #: src/pages/Dashboard.tsx:137
 #: src/pages/Explore.tsx:37
-#: src/pages/ProjectDetail.tsx:195
+#: src/pages/ProjectDetail.tsx:201
 msgid "Last updated"
 msgstr "Laatst bijgewerkt"
 
@@ -3428,7 +3428,7 @@ msgstr "Lets"
 
 #: src/pages/Dashboard.tsx:140
 #: src/pages/Explore.tsx:41
-#: src/pages/ProjectDetail.tsx:193
+#: src/pages/ProjectDetail.tsx:199
 msgid "Least complete"
 msgstr "Minst compleet"
 
@@ -3440,8 +3440,8 @@ msgstr "Minst compleet"
 msgid "Leave organization"
 msgstr "Organisatie verlaten"
 
-#: src/pages/ProjectDetail.tsx:690
-#: src/pages/ProjectDetail.tsx:692
+#: src/pages/ProjectDetail.tsx:696
+#: src/pages/ProjectDetail.tsx:698
 #: src/pages/ProjectSettings.tsx:797
 #: src/pages/ProjectSettings.tsx:839
 #: src/pages/ProjectSettings.tsx:841
@@ -3473,7 +3473,7 @@ msgid "License"
 msgstr "Licentie"
 
 #: src/components/AppHeader.tsx:43
-#: src/components/AppSidebar.tsx:295
+#: src/components/AppSidebar.tsx:329
 msgid "Light mode"
 msgstr "Lichte modus"
 
@@ -3619,7 +3619,7 @@ msgstr "Bron laden..."
 msgid "Loading..."
 msgstr "Laden..."
 
-#: src/components/AppSidebar.tsx:264
+#: src/components/AppSidebar.tsx:268
 #: src/components/auth/UserMenu.tsx:110
 msgid "Local editor"
 msgstr "Lokale editor"
@@ -3630,7 +3630,7 @@ msgstr "Lokale editor"
 msgid "Locale"
 msgstr "Locale"
 
-#: src/pages/ProjectDetail.tsx:191
+#: src/pages/ProjectDetail.tsx:197
 msgid "Locale A–Z"
 msgstr "Locale A–Z"
 
@@ -3752,25 +3752,25 @@ msgstr "Markeer alles als gelezen"
 msgid "Mark as fuzzy"
 msgstr "Markeren als fuzzy"
 
-#: src/components/editor/TranslateToolbar.tsx:847
+#: src/components/editor/TranslateToolbar.tsx:848
 msgid "Mark fuzzy ({{count}})"
 msgstr "Fuzzy markeren ({{count}})"
 
-#: src/components/editor/TranslateToolbar.tsx:845
+#: src/components/editor/TranslateToolbar.tsx:846
 msgid "Mark fuzzy selected"
 msgstr "Fuzzy markeren selectie"
 
-#: src/components/editor/TranslateToolbar.tsx:838
+#: src/components/editor/TranslateToolbar.tsx:839
 msgid "Mark selected rows as fuzzy"
 msgstr "Geselecteerde rijen als fuzzy markeren"
 
-#: src/components/editor/TranslateToolbar.tsx:569
+#: src/components/editor/TranslateToolbar.tsx:570
 msgid "Marked {{count}} row(s) as fuzzy."
 msgstr "{{count}} rij(en) als fuzzy gemarkeerd."
 
 #: src/pages/OrgSettings.tsx:333
 #: src/pages/OrgSettingsPage.tsx:350
-#: src/pages/ProjectDetail.tsx:384
+#: src/pages/ProjectDetail.tsx:390
 #: src/pages/ProjectSettings.tsx:365
 msgid "Members"
 msgstr "Leden"
@@ -3813,13 +3813,13 @@ msgid "More info"
 msgstr "Meer info"
 
 #: src/pages/Explore.tsx:40
-#: src/pages/ProjectDetail.tsx:192
+#: src/pages/ProjectDetail.tsx:198
 msgid "Most complete"
 msgstr "Meest compleet"
 
 #: src/pages/Dashboard.tsx:139
 #: src/pages/Explore.tsx:39
-#: src/pages/ProjectDetail.tsx:194
+#: src/pages/ProjectDetail.tsx:200
 msgid "Most strings"
 msgstr "Meeste strings"
 
@@ -3974,11 +3974,11 @@ msgstr "Geen glossarytermen in de geselecteerde tekst"
 msgid "No languages in this project yet."
 msgstr "Nog geen talen in dit project."
 
-#: src/pages/ProjectDetail.tsx:471
+#: src/pages/ProjectDetail.tsx:477
 msgid "No languages match your search"
 msgstr "Geen talen komen overeen met je zoekopdracht"
 
-#: src/pages/ProjectDetail.tsx:461
+#: src/pages/ProjectDetail.tsx:467
 #: src/pages/ProjectSettings.tsx:651
 msgid "No languages yet"
 msgstr "Nog geen talen"
@@ -4070,11 +4070,11 @@ msgstr "Nog geen reviewgeschiedenis."
 msgid "No roadmap items match your search"
 msgstr "Geen roadmap items komen overeen met je zoekopdracht"
 
-#: src/components/editor/TranslateToolbar.tsx:561
+#: src/components/editor/TranslateToolbar.tsx:562
 msgid "No selected fuzzy rows to clear."
 msgstr "Geen geselecteerde fuzzy rijen om te wissen."
 
-#: src/components/editor/TranslateToolbar.tsx:570
+#: src/components/editor/TranslateToolbar.tsx:571
 msgid "No selected rows available to mark as fuzzy."
 msgstr "Geen geselecteerde rijen beschikbaar om als fuzzy te markeren."
 
@@ -4172,7 +4172,7 @@ msgstr "Nog niks om af te spelen."
 msgid "Notification"
 msgstr "Melding"
 
-#: src/components/AppSidebar.tsx:329
+#: src/components/AppSidebar.tsx:363
 #: src/components/notifications/NotificationBell.tsx:29
 #: src/components/notifications/NotificationBell.tsx:43
 #: src/components/notifications/NotificationDropdown.tsx:28
@@ -4839,9 +4839,9 @@ msgstr "Projectnaam"
 msgid "Project name and version"
 msgstr "Projectnaam en versie"
 
-#: src/pages/ProjectDetail.tsx:213
-#: src/pages/ProjectEditor.tsx:77
-#: src/pages/ProjectEditor.tsx:200
+#: src/pages/ProjectDetail.tsx:219
+#: src/pages/ProjectEditor.tsx:78
+#: src/pages/ProjectEditor.tsx:202
 #: src/pages/ProjectSettings.tsx:135
 msgid "Project not found"
 msgstr "Project niet gevonden"
@@ -4880,7 +4880,7 @@ msgstr "Projecttype"
 #: src/pages/Dashboard.tsx:148
 #: src/pages/OrgSettings.tsx:336
 #: src/pages/OrgSettingsPage.tsx:353
-#: src/pages/ProjectDetail.tsx:249
+#: src/pages/ProjectDetail.tsx:255
 msgid "Projects"
 msgstr "Projecten"
 
@@ -5018,6 +5018,10 @@ msgstr "Klaar voor export"
 #: src/components/settings/BillingSection.tsx:654
 msgid "Real-time collaboration"
 msgstr "Real-time samenwerking"
+
+#: src/components/AppSidebar.tsx:282
+msgid "Recent"
+msgstr ""
 
 #: src/components/onboarding/PlanStep.tsx:273
 msgid "Recommended"
@@ -5194,7 +5198,7 @@ msgstr "Repository:"
 msgid "Request changes"
 msgstr "Wijzigingen aanvragen"
 
-#: src/components/editor/TranslateToolbar.tsx:909
+#: src/components/editor/TranslateToolbar.tsx:910
 msgid "Request changes selected"
 msgstr "Wijzigingen aanvragen selectie"
 
@@ -5250,11 +5254,11 @@ msgid "Resync"
 msgstr "Opnieuw synchroniseren"
 
 #: src/components/editor/BatchTranslateControls.tsx:89
-#: src/components/editor/TranslateToolbar.tsx:705
+#: src/components/editor/TranslateToolbar.tsx:706
 msgid "Retranslate all"
 msgstr "Alles opnieuw vertalen"
 
-#: src/components/editor/TranslateToolbar.tsx:692
+#: src/components/editor/TranslateToolbar.tsx:693
 msgid "Retranslate all entries"
 msgstr "Alle items opnieuw vertalen"
 
@@ -5340,7 +5344,7 @@ msgstr "Naam reviewer"
 msgid "Reviewer — can translate and review"
 msgstr "Reviewer — kan vertalen en controleren"
 
-#: src/components/AppSidebar.tsx:257
+#: src/components/AppSidebar.tsx:261
 #: src/components/landing/LandingFooter.tsx:16
 #: src/components/landing/LandingNav.tsx:26
 #: src/pages/Roadmap.tsx:242
@@ -5460,7 +5464,7 @@ msgstr ""
 "Zoek items op brontekst, vertaling of context. Filter op status: onvertaald,"
 " fuzzy, vertaald."
 
-#: src/pages/ProjectDetail.tsx:436
+#: src/pages/ProjectDetail.tsx:442
 msgid "Search languages…"
 msgstr "Talen zoeken…"
 
@@ -5530,7 +5534,7 @@ msgstr "Selecteer een repository"
 msgid "Select a row to inspect context and metadata."
 msgstr "Selecteer een rij om context en metadata te bekijken."
 
-#: src/components/editor/TranslateToolbar.tsx:741
+#: src/components/editor/TranslateToolbar.tsx:742
 msgid "Select all filtered"
 msgstr "Alle gefilterde selecteren"
 
@@ -5642,12 +5646,12 @@ msgstr "Project instellen en later talen toevoegen"
 msgid "Set your source and target languages for translation."
 msgstr "Stel je bron- en doeltalen in voor vertaling."
 
-#: src/components/AppSidebar.tsx:278
+#: src/components/AppSidebar.tsx:312
 #: src/components/SettingsModal.tsx:84
 #: src/components/auth/UserMenu.tsx:113
 #: src/components/projects/ProjectCard.tsx:125
 #: src/pages/OrgSettings.tsx:313
-#: src/pages/ProjectDetail.tsx:271
+#: src/pages/ProjectDetail.tsx:277
 #: src/pages/Settings.tsx:83
 msgid "Settings"
 msgstr "Instellingen"
@@ -5712,7 +5716,7 @@ msgstr ""
 msgid "Share Feedback"
 msgstr "Feedback delen"
 
-#: src/components/AppSidebar.tsx:284
+#: src/components/AppSidebar.tsx:318
 #: src/components/auth/UserMenu.tsx:119
 #: src/pages/Roadmap.tsx:285
 #: src/pages/Roadmap.tsx:341
@@ -5783,7 +5787,7 @@ msgstr "{{shown}} van {{total}} termen getoond"
 msgid "Showing {{start}}--{{end}} of {{total}} entries"
 msgstr ""
 
-#: src/components/AppSidebar.tsx:417
+#: src/components/AppSidebar.tsx:451
 #: src/components/auth/UserMenu.tsx:46
 #: src/components/auth/UserMenu.tsx:53
 #: src/components/editor/EmptyState.tsx:221
@@ -5820,12 +5824,12 @@ msgstr "Log in op je GlossBoss account om deze functie te gebruiken."
 msgid "Sign in with email"
 msgstr "Inloggen met e-mail"
 
-#: src/components/AppSidebar.tsx:408
+#: src/components/AppSidebar.tsx:442
 #: src/components/auth/UserMenu.tsx:181
 msgid "Sign out"
 msgstr "Uitloggen"
 
-#: src/pages/ProjectDetail.tsx:364
+#: src/pages/ProjectDetail.tsx:370
 msgid "Sign up"
 msgstr "Aanmelden"
 
@@ -6134,13 +6138,13 @@ msgstr ""
 "dkeuringsworkflows."
 
 #: src/components/AppHeader.tsx:50
-#: src/components/AppSidebar.tsx:297
+#: src/components/AppSidebar.tsx:331
 #: src/components/landing/LandingNav.tsx:66
 msgid "Switch to dark mode"
 msgstr "Schakel naar donkere modus"
 
 #: src/components/AppHeader.tsx:50
-#: src/components/AppSidebar.tsx:297
+#: src/components/AppSidebar.tsx:331
 #: src/components/landing/LandingNav.tsx:66
 msgid "Switch to light mode"
 msgstr "Schakel naar lichte modus"
@@ -6607,7 +6611,7 @@ msgstr "Vertalen met {{provider}}"
 msgid "Translate with {{provider}} + Glossary"
 msgstr "Vertalen met {{provider}} + Glossary"
 
-#: src/components/editor/TranslateToolbar.tsx:716
+#: src/components/editor/TranslateToolbar.tsx:717
 #: src/components/landing/ProductShowcase.tsx:373
 msgid "Translate {{count}} untranslated"
 msgstr "{{count}} onvertaalde vertalen"
@@ -6866,7 +6870,7 @@ msgstr "Kan het geselecteerde instellingenbestand niet lezen."
 msgid "Unapprove"
 msgstr "Afkeuren"
 
-#: src/components/editor/TranslateToolbar.tsx:887
+#: src/components/editor/TranslateToolbar.tsx:888
 msgid "Unapprove selected"
 msgstr "Selectie afkeuren"
 
@@ -7691,7 +7695,7 @@ msgstr "gecacht"
 msgid "characters"
 msgstr "tekens"
 
-#: src/pages/ProjectDetail.tsx:421
+#: src/pages/ProjectDetail.tsx:427
 msgid "complete"
 msgstr "voltooid"
 
@@ -7730,7 +7734,7 @@ msgid "for details."
 msgstr "voor details."
 
 #: src/components/projects/ProjectCard.tsx:175
-#: src/pages/ProjectDetail.tsx:582
+#: src/pages/ProjectDetail.tsx:588
 msgid "fuzzy"
 msgstr "fuzzy"
 
@@ -7812,7 +7816,7 @@ msgstr "of gebruik een personal access token"
 msgid "organization"
 msgstr ""
 
-#: src/components/editor/TranslateToolbar.tsx:690
+#: src/components/editor/TranslateToolbar.tsx:691
 msgid "overwritten"
 msgstr "overschreven"
 
@@ -7832,7 +7836,7 @@ msgstr ""
 msgid "project"
 msgstr "project"
 
-#: src/components/AppSidebar.tsx:396
+#: src/components/AppSidebar.tsx:430
 #: src/components/auth/UserMenu.tsx:98
 #: src/components/settings/BillingSection.tsx:651
 #: src/pages/Explore.tsx:242
@@ -7855,11 +7859,11 @@ msgstr ""
 msgid "singular"
 msgstr "enkelvoud"
 
-#: src/components/editor/TranslateToolbar.tsx:690
+#: src/components/editor/TranslateToolbar.tsx:691
 msgid "skipped"
 msgstr "overgeslagen"
 
-#: src/components/AppSidebar.tsx:401
+#: src/components/AppSidebar.tsx:435
 #: src/components/auth/UserMenu.tsx:103
 #: src/components/billing/FreePlanBanner.tsx:53
 #: src/components/settings/BillingSection.tsx:579
@@ -7896,7 +7900,7 @@ msgid "terms loaded"
 msgstr ""
 
 #: src/components/editor/EmptyState.tsx:223
-#: src/pages/ProjectDetail.tsx:366
+#: src/pages/ProjectDetail.tsx:372
 msgid ""
 "to save projects to the cloud and collaborate with your team. Collaborators "
 "work under the project owner's plan — no subscription needed to contribute."
@@ -7906,13 +7910,13 @@ msgstr ""
 "dig om bij te dragen."
 
 #: src/components/projects/ProjectCard.tsx:163
-#: src/pages/ProjectDetail.tsx:570
+#: src/pages/ProjectDetail.tsx:576
 #: src/pages/ProjectSettings.tsx:672
 msgid "translated"
 msgstr "vertaald"
 
 #: src/components/projects/ProjectCard.tsx:190
-#: src/pages/ProjectDetail.tsx:597
+#: src/pages/ProjectDetail.tsx:603
 msgid "untranslated"
 msgstr "onvertaald"
 
@@ -7981,8 +7985,8 @@ msgstr "{{count}} uur geleden"
 
 #: src/components/projects/ProjectCard.tsx:85
 #: src/pages/Explore.tsx:314
-#: src/pages/ProjectDetail.tsx:380
-#: src/pages/ProjectDetail.tsx:416
+#: src/pages/ProjectDetail.tsx:386
+#: src/pages/ProjectDetail.tsx:422
 msgid "{{count}} languages"
 msgstr "{{count}} talen"
 
@@ -7990,7 +7994,7 @@ msgstr "{{count}} talen"
 msgid "{{count}} locale files found"
 msgstr "{{count}} locale bestanden gevonden"
 
-#: src/components/editor/TranslateToolbar.tsx:688
+#: src/components/editor/TranslateToolbar.tsx:689
 msgid "{{count}} manual edits will be {{action}}"
 msgstr "{{count}} handmatige bewerkingen worden {{action}}"
 
@@ -8054,7 +8058,7 @@ msgstr "{{count}} totale items"
 msgid "{{count}} total issues"
 msgstr "{{count}} totale problemen"
 
-#: src/components/editor/TranslateToolbar.tsx:472
+#: src/components/editor/TranslateToolbar.tsx:473
 msgid "{{count}} translations failed"
 msgstr "{{count}} vertalingen mislukt"
 
@@ -8167,13 +8171,13 @@ msgstr "{{score}}% match"
 msgid "{{strings}} strings"
 msgstr "{{strings}} strings"
 
-#: src/pages/ProjectDetail.tsx:418
+#: src/pages/ProjectDetail.tsx:424
 msgid "{{strings}} total strings"
 msgstr "{{strings}} totale strings"
 
 #: src/components/editor/HeaderEditor.tsx:617
 #: src/components/editor/WordPressRefreshModal.tsx:218
-#: src/pages/ProjectDetail.tsx:330
+#: src/pages/ProjectDetail.tsx:336
 msgid "{{type}} / {{slug}}"
 msgstr "{{type}} / {{slug}}"
 
