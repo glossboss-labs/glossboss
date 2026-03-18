@@ -14,6 +14,7 @@ import { BookOpen, Search } from 'lucide-react';
 import { findGlossaryMatches } from '@/lib/glossary/matcher';
 import type { Glossary } from '@/lib/glossary/types';
 import { useTranslation } from '@/lib/app-language';
+import { createFuseSearch, fuzzyFilter } from '@/lib/utils/fuzzy-search';
 
 export function GlossaryViewerModal({
   glossary,
@@ -27,19 +28,20 @@ export function GlossaryViewerModal({
   const { t } = useTranslation();
   const [search, setSearch] = useState('');
 
-  const filteredEntries = useMemo(() => {
-    if (!search.trim()) {
-      return glossary.entries;
-    }
-    const query = search.toLowerCase();
-    return glossary.entries.filter(
-      (entry) =>
-        entry.term.toLowerCase().includes(query) ||
-        entry.translation.toLowerCase().includes(query) ||
-        entry.partOfSpeech?.toLowerCase().includes(query) ||
-        entry.comment?.toLowerCase().includes(query),
-    );
-  }, [glossary.entries, search]);
+  const glossaryFuse = useMemo(
+    () => createFuseSearch(glossary.entries, ['term', 'translation', 'partOfSpeech', 'comment']),
+    [glossary.entries],
+  );
+  const filteredEntries = useMemo(
+    () =>
+      fuzzyFilter(glossaryFuse, glossary.entries, search, [
+        'term',
+        'translation',
+        'partOfSpeech',
+        'comment',
+      ]),
+    [glossaryFuse, glossary.entries, search],
+  );
 
   return (
     <Modal

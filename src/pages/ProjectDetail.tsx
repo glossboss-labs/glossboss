@@ -66,6 +66,7 @@ import {
 } from '@/lib/projects/queries';
 import { useAuth } from '@/hooks/use-auth';
 import { recordRecentProject } from '@/hooks/use-recent-projects';
+import { createFuseSearch, fuzzyFilter } from '@/lib/utils/fuzzy-search';
 import { AddLanguageModal } from '@/components/projects/AddLanguageModal';
 import { ProjectMembersTab } from '@/components/projects/ProjectMembersTab';
 import { ProjectInvitesTab } from '@/components/projects/ProjectInvitesTab';
@@ -174,17 +175,11 @@ export default function ProjectDetail() {
     }
   }, [user, id, project?.public_role, t, queryClient]);
 
-  const filtered = useMemo(() => {
-    const q = search.toLowerCase().trim();
-    const base = q
-      ? languages.filter(
-          (l) =>
-            l.locale.toLowerCase().includes(q) ||
-            (l.wp_locale && l.wp_locale.toLowerCase().includes(q)),
-        )
-      : languages;
-    return sortLanguages(base, sort);
-  }, [languages, search, sort]);
+  const langFuse = useMemo(() => createFuseSearch(languages, ['locale', 'wp_locale']), [languages]);
+  const filtered = useMemo(
+    () => sortLanguages(fuzzyFilter(langFuse, languages, search, ['locale', 'wp_locale']), sort),
+    [langFuse, languages, search, sort],
+  );
 
   const aggTotal = useMemo(() => languages.reduce((s, l) => s + l.stats_total, 0), [languages]);
   const aggTranslated = useMemo(
