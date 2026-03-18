@@ -7,6 +7,7 @@
 
 import { Avatar, Group, Tooltip } from '@mantine/core';
 import { useCollaborationStore } from '@/stores/collaboration-store';
+import { getSizedAvatarUrl } from '@/lib/utils/avatar';
 
 export function PresenceAvatars() {
   const onlineUsers = useCollaborationStore((s) => s.onlineUsers);
@@ -21,7 +22,7 @@ export function PresenceAvatars() {
       {users.map((user) => (
         <Tooltip key={user.userId} label={user.displayName} position="bottom">
           <Avatar
-            src={user.avatarUrl}
+            src={getSizedAvatarUrl(user.avatarUrl, 28)}
             alt={user.displayName}
             size={28}
             radius="xl"

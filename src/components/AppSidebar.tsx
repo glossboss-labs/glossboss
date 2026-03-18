@@ -43,7 +43,7 @@ import {
   Bell,
 } from 'lucide-react';
 import { useTranslation } from '@/lib/app-language';
-import { getInitials } from '@/lib/utils/avatar';
+import { getInitials, getSizedAvatarUrl } from '@/lib/utils/avatar';
 import { useAuth } from '@/hooks/use-auth';
 import { useAuthStore } from '@/stores/auth-store';
 import { useNotificationsStore } from '@/stores/notifications-store';
@@ -354,7 +354,7 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
               {!collapsed ? (
                 <Group gap="sm" px={12} py={8} wrap="nowrap">
                   <Avatar
-                    src={avatarUrl}
+                    src={getSizedAvatarUrl(avatarUrl, 26)}
                     size="sm"
                     radius="xl"
                     color="blue"
@@ -376,7 +376,12 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
               ) : (
                 <Tooltip label={displayName} position="right">
                   <Box style={{ display: 'flex', justifyContent: 'center', padding: '4px 0' }}>
-                    <Avatar src={avatarUrl} size="sm" radius="xl" color="blue">
+                    <Avatar
+                      src={getSizedAvatarUrl(avatarUrl, 26)}
+                      size="sm"
+                      radius="xl"
+                      color="blue"
+                    >
                       {initials}
                     </Avatar>
                   </Box>

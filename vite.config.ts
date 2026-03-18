@@ -27,6 +27,35 @@ function getGitBranch() {
 const gitBranch = getGitBranch();
 
 /**
+ * Inject a <link rel="preload"> for the Geist latin font into the built HTML.
+ * Breaks the critical chain: Navigation → CSS → font → render.
+ */
+function fontPreload(): Plugin {
+  let fontFileName = '';
+
+  return {
+    name: 'font-preload',
+    apply: 'build',
+    generateBundle(_options, bundle) {
+      for (const name of Object.keys(bundle)) {
+        if (/geist-latin-wght-normal-.*\.woff2$/.test(name)) {
+          fontFileName = name;
+          break;
+        }
+      }
+    },
+    transformIndexHtml: {
+      order: 'post',
+      handler(html) {
+        if (!fontFileName) return html;
+        const tag = `<link rel="preload" href="/${fontFileName}" as="font" type="font/woff2" crossorigin>`;
+        return html.replace('</head>', `  ${tag}\n  </head>`);
+      },
+    },
+  };
+}
+
+/**
  * Serve static sub-directory pages (e.g. /translate/)
  * before Vite's SPA fallback rewrites them to the root index.html.
  */
@@ -66,7 +95,7 @@ export default defineConfig({
     },
     dedupe: ['react', 'react-dom', 'react-router'],
   },
-  plugins: [staticPages(), tailwindcss(), react()],
+  plugins: [staticPages(), fontPreload(), tailwindcss(), react()],
   define: {
     __APP_VERSION__: JSON.stringify(appVersion),
     __GIT_BRANCH__: JSON.stringify(gitBranch),
