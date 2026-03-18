@@ -13,7 +13,7 @@ import {
   type CSSVariablesResolver,
 } from '@mantine/core';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+// import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { TranslationProvider } from '@/lib/app-language';
 import { useAuthStore } from '@/stores/auth-store';
 
@@ -299,7 +299,6 @@ export function AppProviders({ children }: { children: ReactNode }) {
       <MantineProvider theme={theme} defaultColorScheme="auto" cssVariablesResolver={resolver}>
         <TranslationProvider>{children}</TranslationProvider>
       </MantineProvider>
-      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
 }

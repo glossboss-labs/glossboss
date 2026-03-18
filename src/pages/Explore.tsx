@@ -27,7 +27,9 @@ import { trackEvent } from '@/lib/analytics';
 import { listPublicProjects } from '@/lib/projects/api';
 import { invokeSupabaseFunction } from '@/lib/supabase/client';
 import { ProjectGrid } from '@/components/projects/ProjectGrid';
+import { renderFlagOption } from '@/components/ui/renderFlagOption';
 import type { ProjectWithLanguages } from '@/lib/projects/types';
+import { createFuseSearch, fuzzyFilter } from '@/lib/utils/fuzzy-search';
 
 const MotionDiv = motion.div;
 
@@ -166,18 +168,13 @@ export default function Explore() {
 
   const projectStats = useProjectStats(projects);
 
-  const filtered = useMemo(() => {
-    let result = projects;
+  const exploreFuse = useMemo(
+    () => createFuseSearch(projects, ['name', 'description', 'wp_slug']),
+    [projects],
+  );
 
-    const q = search.toLowerCase().trim();
-    if (q) {
-      result = result.filter(
-        (p) =>
-          p.name.toLowerCase().includes(q) ||
-          (p.description && p.description.toLowerCase().includes(q)) ||
-          (p.wp_slug && p.wp_slug.toLowerCase().includes(q)),
-      );
-    }
+  const filtered = useMemo(() => {
+    let result = fuzzyFilter(exploreFuse, projects, search, ['name', 'description', 'wp_slug']);
 
     if (formatFilter) {
       result = result.filter((p) => p.source_format === formatFilter);
@@ -188,7 +185,7 @@ export default function Explore() {
     }
 
     return sortProjects(result, sort);
-  }, [projects, search, sort, formatFilter, languageFilter]);
+  }, [exploreFuse, projects, search, sort, formatFilter, languageFilter]);
 
   const sortOptions = (Object.keys(SORT_LABELS) as SortOption[]).map((k) => ({
     value: k,
@@ -207,7 +204,18 @@ export default function Explore() {
         locales.add(l.locale);
       }
     }
-    return [...locales].sort().map((l) => ({ value: l, label: l }));
+    const dn = new Intl.DisplayNames(['en'], { type: 'language' });
+    return [...locales]
+      .map((l) => {
+        let name: string;
+        try {
+          name = dn.of(l.replace(/_/g, '-')) ?? l;
+        } catch {
+          name = l;
+        }
+        return { value: l, label: `${name} (${l})` };
+      })
+      .sort((a, b) => a.label.localeCompare(b.label));
   }, [projects]);
 
   return (
@@ -359,6 +367,7 @@ export default function Explore() {
                     placeholder={t('Language')}
                     clearable
                     searchable
+                    renderOption={renderFlagOption}
                     style={{ flex: '0 1 auto' }}
                     size="sm"
                   />
