@@ -11,6 +11,8 @@
 
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router';
+import { motion, AnimatePresence } from 'motion/react';
+import { contentVariants, staggerContainerVariants, ambientEnter } from '@/lib/motion';
 import {
   Stack,
   Tooltip,
@@ -272,34 +274,50 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
           </Stack>
 
           {/* Recent projects */}
-          {isAuthenticated && recentProjects.length > 0 && (
-            <>
-              <Divider mt="sm" />
-              {!collapsed && (
-                <Group gap={6} px={12} pt={6} pb={2}>
-                  <History size={12} style={{ color: 'var(--gb-text-tertiary)' }} />
-                  <Text size="xs" fw={500} c="dimmed">
-                    {t('Recent')}
-                  </Text>
-                </Group>
-              )}
-              <Stack gap={2}>
-                {recentProjects.map((rp) => (
-                  <NavItem
-                    key={rp.id}
-                    to={`/projects/${rp.id}`}
-                    icon={<FolderOpen size={16} />}
-                    label={rp.name}
-                    active={
-                      pathname === `/projects/${rp.id}` ||
-                      pathname.startsWith(`/projects/${rp.id}/`)
-                    }
-                    collapsed={collapsed}
-                  />
-                ))}
-              </Stack>
-            </>
-          )}
+          <AnimatePresence>
+            {isAuthenticated && recentProjects.length > 0 && (
+              <motion.div
+                key="recent-projects"
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                variants={contentVariants}
+              >
+                <Divider mt="sm" />
+                {!collapsed && (
+                  <Group gap={6} px={12} pt={6} pb={2}>
+                    <History size={12} style={{ color: 'var(--gb-text-tertiary)' }} />
+                    <Text size="xs" fw={500} c="dimmed">
+                      {t('Recent')}
+                    </Text>
+                  </Group>
+                )}
+                <motion.div variants={staggerContainerVariants} initial="hidden" animate="visible">
+                  <Stack gap={2}>
+                    {recentProjects.map((rp, i) => (
+                      <motion.div
+                        key={rp.id}
+                        variants={contentVariants}
+                        custom={i}
+                        transition={{ ...ambientEnter, delay: i * 0.04 }}
+                      >
+                        <NavItem
+                          to={rp.path}
+                          icon={<FolderOpen size={16} />}
+                          label={rp.name}
+                          active={
+                            pathname === `/projects/${rp.id}` ||
+                            pathname.startsWith(`/projects/${rp.id}/`)
+                          }
+                          collapsed={collapsed}
+                        />
+                      </motion.div>
+                    ))}
+                  </Stack>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </Stack>
 
         {/* Bottom section */}
