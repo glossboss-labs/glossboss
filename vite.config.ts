@@ -79,6 +79,8 @@ export default defineConfig({
           vendor: ['react', 'react-dom', 'react-router'],
           ui: ['@mantine/core', '@mantine/hooks'],
           motion: ['motion'],
+          supabase: ['@supabase/supabase-js'],
+          icons: ['lucide-react'],
         },
       },
     },
