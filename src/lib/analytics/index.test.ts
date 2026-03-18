@@ -3,8 +3,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const analyticsMocks = vi.hoisted(() => {
   const posthogClient = {
     capture: vi.fn(),
-    identify: vi.fn(),
-    reset: vi.fn(),
   };
 
   return {
@@ -54,16 +52,11 @@ describe('analytics wrapper', () => {
     });
   });
 
-  it('identifies and resets through the deferred PostHog helper', async () => {
+  it('does not export identifyUser or resetAnalytics', async () => {
     const analytics = await import('./index');
 
-    analytics.identifyUser('user-123', { email: 'user@example.com' });
-    analytics.resetAnalytics();
-
-    expect(analyticsMocks.posthogClient.identify).toHaveBeenCalledWith('user-123', {
-      email: 'user@example.com',
-    });
-    expect(analyticsMocks.posthogClient.reset).toHaveBeenCalled();
+    expect(analytics).not.toHaveProperty('identifyUser');
+    expect(analytics).not.toHaveProperty('resetAnalytics');
   });
 
   it('re-exports the initializer', async () => {
@@ -80,12 +73,8 @@ describe('analytics wrapper', () => {
 
     analytics.trackEvent('signup_started');
     analytics.trackPageView('/dashboard');
-    analytics.identifyUser('user-123');
-    analytics.resetAnalytics();
 
     expect(analyticsMocks.withPostHog).not.toHaveBeenCalled();
     expect(analyticsMocks.posthogClient.capture).not.toHaveBeenCalled();
-    expect(analyticsMocks.posthogClient.identify).not.toHaveBeenCalled();
-    expect(analyticsMocks.posthogClient.reset).not.toHaveBeenCalled();
   });
 });

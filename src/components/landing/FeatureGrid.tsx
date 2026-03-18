@@ -92,7 +92,9 @@ const secondaryFeatures: SecondaryFeature[] = [
   {
     Icon: Lock,
     name: msgid('Privacy'),
-    description: msgid('AGPL-3.0 licensed. No tracking cookies. GDPR compliant.'),
+    description: msgid(
+      'AGPL-3.0 licensed. No cookies, no personal data collected. GDPR compliant.',
+    ),
   },
 ];
 

@@ -147,7 +147,13 @@ export function TranslateButton({
         }
       }
 
-      trackEvent('translation_completed', { provider: 'single' });
+      trackEvent('translation_completed', {
+        provider: activeProvider,
+        mode: 'single',
+        source_lang: sourceLang ?? 'auto',
+        target_lang: targetLang,
+        had_glossary: Boolean(glossaryId || glossary),
+      });
 
       // If there's existing translation, show confirmation first
       if (hasExistingTranslation) {

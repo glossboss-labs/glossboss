@@ -33,19 +33,19 @@ msgstr "(hosted in the United States)."
 msgid "+{{count}} more"
 msgstr "+{{count}} more"
 
-#: src/pages/PrivacyPage.tsx:355
+#: src/pages/PrivacyPage.tsx:354
 msgid "- Database, authentication, edge functions (US)"
 msgstr "- Database, authentication, edge functions (US)"
 
-#: src/pages/PrivacyPage.tsx:359
+#: src/pages/PrivacyPage.tsx:358
 msgid "- Hosting, CDN, DNS, bot protection, analytics proxy (Global)"
 msgstr "- Hosting, CDN, DNS, bot protection, analytics proxy (Global)"
 
-#: src/pages/PrivacyPage.tsx:371
+#: src/pages/PrivacyPage.tsx:370
 msgid "- OAuth provider, feedback storage (US)"
 msgstr "- OAuth provider, feedback storage (US)"
 
-#: src/pages/PrivacyPage.tsx:105
+#: src/pages/PrivacyPage.tsx:99
 msgid ""
 "- PostHog automatically records clicks on interactive elements (buttons, lin"
 "ks) to help us understand how the interface is used. No form input values or"
@@ -55,11 +55,11 @@ msgstr ""
 "ks) to help us understand how the interface is used. No form input values or"
 " text content are captured."
 
-#: src/pages/PrivacyPage.tsx:367
+#: src/pages/PrivacyPage.tsx:366
 msgid "- Product analytics (EU - Frankfurt)"
 msgstr "- Product analytics (EU - Frankfurt)"
 
-#: src/pages/PrivacyPage.tsx:363
+#: src/pages/PrivacyPage.tsx:362
 msgid "- Subscription billing (EU)"
 msgstr "- Subscription billing (EU)"
 
@@ -67,49 +67,41 @@ msgstr "- Subscription billing (EU)"
 msgid ""
 "- actions like opening files, running translations, exporting, creating proj"
 "ects, and changing settings. These events include technical metadata (e.g. f"
-"ile entry count, translation mode) but not the content of your translations."
+"ile entry count, translation provider, language pair) but never the content "
+"of your translations or any personal data."
 msgstr ""
 "- actions like opening files, running translations, exporting, creating proj"
 "ects, and changing settings. These events include technical metadata (e.g. f"
-"ile entry count, translation mode) but not the content of your translations."
+"ile entry count, translation provider, language pair) but never the content "
+"of your translations or any personal data."
 
-#: src/pages/PrivacyPage.tsx:310
+#: src/pages/PrivacyPage.tsx:309
 msgid "- disable analytics by enabling Do Not Track in your browser."
 msgstr "- disable analytics by enabling Do Not Track in your browser."
 
-#: src/pages/PrivacyPage.tsx:314
+#: src/pages/PrivacyPage.tsx:313
 msgid "- disable optional features (cloud sync, translation providers) at any time."
 msgstr "- disable optional features (cloud sync, translation providers) at any time."
 
-#: src/pages/PrivacyPage.tsx:306
+#: src/pages/PrivacyPage.tsx:305
 msgid "- download a machine-readable export of your data."
 msgstr "- download a machine-readable export of your data."
 
-#: src/pages/PrivacyPage.tsx:294
+#: src/pages/PrivacyPage.tsx:293
 msgid "- export all your data as JSON from Settings."
 msgstr "- export all your data as JSON from Settings."
 
-#: src/pages/PrivacyPage.tsx:99
-msgid ""
-"- if you are signed in, your user ID and email address are linked to your an"
-"alytics session so we can understand usage patterns. You can opt out by enab"
-"ling Do Not Track in your browser."
-msgstr ""
-"- if you are signed in, your user ID and email address are linked to your an"
-"alytics session so we can understand usage patterns. You can opt out by enab"
-"ling Do Not Track in your browser."
-
-#: src/pages/PrivacyPage.tsx:302
+#: src/pages/PrivacyPage.tsx:301
 msgid "- permanently delete your account and all associated data from Settings."
 msgstr "- permanently delete your account and all associated data from Settings."
 
-#: src/pages/PrivacyPage.tsx:298
+#: src/pages/PrivacyPage.tsx:297
 msgid "- update your profile information in Settings."
 msgstr "- update your profile information in Settings."
 
 #: src/pages/PrivacyPage.tsx:89
-msgid "- which pages you visit and how you navigate the app."
-msgstr "- which pages you visit and how you navigate the app."
+msgid "- which pages are visited and how users navigate the app."
+msgstr "- which pages are visited and how users navigate the app."
 
 #: src/pages/index/IndexPageBanners.tsx:121
 msgid "...and {{count}} more warnings"
@@ -144,7 +136,7 @@ msgstr "1. Data we collect"
 msgid "1. The Service"
 msgstr "1. The Service"
 
-#: src/pages/PrivacyPage.tsx:349
+#: src/pages/PrivacyPage.tsx:348
 msgid "10. Sub-processors"
 msgstr "10. Sub-processors"
 
@@ -156,7 +148,7 @@ msgstr "10. Termination"
 msgid "100 rows"
 msgstr "100 rows"
 
-#: src/pages/PrivacyPage.tsx:376
+#: src/pages/PrivacyPage.tsx:375
 msgid "11. Changes to this policy"
 msgstr "11. Changes to this policy"
 
@@ -176,7 +168,7 @@ msgstr "13. Governing law"
 msgid "2. Accounts"
 msgstr "2. Accounts"
 
-#: src/pages/PrivacyPage.tsx:118
+#: src/pages/PrivacyPage.tsx:117
 msgid "2. Third-party services"
 msgstr "2. Third-party services"
 
@@ -196,11 +188,11 @@ msgstr "2–63 characters: letters, numbers, and hyphens"
 msgid "3. Acceptable use"
 msgstr "3. Acceptable use"
 
-#: src/pages/PrivacyPage.tsx:211
+#: src/pages/PrivacyPage.tsx:210
 msgid "3. Legal basis for processing"
 msgstr "3. Legal basis for processing"
 
-#: src/pages/PrivacyPage.tsx:235
+#: src/pages/PrivacyPage.tsx:234
 msgid "4. Cross-border data transfers"
 msgstr "4. Cross-border data transfers"
 
@@ -216,7 +208,7 @@ msgstr "5,000 – 100,000"
 msgid "5. Billing and subscriptions"
 msgstr "5. Billing and subscriptions"
 
-#: src/pages/PrivacyPage.tsx:262
+#: src/pages/PrivacyPage.tsx:261
 msgid "5. Data retention"
 msgstr "5. Data retention"
 
@@ -232,7 +224,7 @@ msgstr "500 rows"
 msgid "6. Refunds"
 msgstr "6. Refunds"
 
-#: src/pages/PrivacyPage.tsx:288
+#: src/pages/PrivacyPage.tsx:287
 msgid "6. Your rights"
 msgstr "6. Your rights"
 
@@ -244,11 +236,11 @@ msgstr "7 automatic QA checks catch errors before shipping"
 msgid "7. Data handling"
 msgstr "7. Data handling"
 
-#: src/pages/PrivacyPage.tsx:319
+#: src/pages/PrivacyPage.tsx:318
 msgid "7. Your controls"
 msgstr "7. Your controls"
 
-#: src/pages/PrivacyPage.tsx:331
+#: src/pages/PrivacyPage.tsx:330
 msgid "8. Cookies"
 msgstr "8. Cookies"
 
@@ -256,7 +248,7 @@ msgstr "8. Cookies"
 msgid "8. Service availability"
 msgstr "8. Service availability"
 
-#: src/pages/PrivacyPage.tsx:340
+#: src/pages/PrivacyPage.tsx:339
 msgid "9. Children"
 msgstr "9. Children"
 
@@ -265,8 +257,8 @@ msgid "9. Limitation of liability"
 msgstr "9. Limitation of liability"
 
 #: src/components/landing/FeatureGrid.tsx:95
-msgid "AGPL-3.0 licensed. No tracking cookies. GDPR compliant."
-msgstr "AGPL-3.0 licensed. No tracking cookies. GDPR compliant."
+msgid "AGPL-3.0 licensed. No cookies, no personal data collected. GDPR compliant."
+msgstr "AGPL-3.0 licensed. No cookies, no personal data collected. GDPR compliant."
 
 #: src/pages/LicensePage.tsx:20
 msgid "AGPL-3.0-only"
@@ -292,7 +284,7 @@ msgstr ""
 "AI translation, quality checks, team reviews, and direct repo integration — "
 "all in one browser tab."
 
-#: src/pages/PrivacyPage.tsx:172
+#: src/pages/PrivacyPage.tsx:171
 msgid "AI-powered translation"
 msgstr "AI-powered translation"
 
@@ -342,7 +334,7 @@ msgstr "API key to use"
 msgid "Accept invite"
 msgstr "Accept invite"
 
-#: src/pages/PrivacyPage.tsx:293
+#: src/pages/PrivacyPage.tsx:292
 msgid "Access"
 msgstr "Access"
 
@@ -350,7 +342,7 @@ msgstr "Access"
 msgid "Account"
 msgstr "Account"
 
-#: src/pages/PrivacyPage.tsx:266
+#: src/pages/PrivacyPage.tsx:265
 msgid "Account and project data"
 msgstr "Account and project data"
 
@@ -362,7 +354,7 @@ msgstr "Account created. Check your email to confirm, or sign in now."
 msgid "Account data"
 msgstr "Account data"
 
-#: src/pages/PrivacyPage.tsx:216
+#: src/pages/PrivacyPage.tsx:215
 msgid ""
 "Account data, project data, and billing data are processed to deliver the Se"
 "rvice you signed up for."
@@ -375,7 +367,7 @@ msgstr ""
 msgid "Account deletion failed. Please try again or contact support."
 msgstr "Account deletion failed. Please try again or contact support."
 
-#: src/pages/PrivacyPage.tsx:144
+#: src/pages/PrivacyPage.tsx:143
 msgid "Account, projects, translations, settings"
 msgstr "Account, projects, translations, settings"
 
@@ -430,7 +422,7 @@ msgstr "Add shared credential"
 msgid "Add your {{provider}} API key in Settings to enable translation"
 msgstr "Add your {{provider}} API key in Settings to enable translation"
 
-#: src/components/editor/TranslateToolbar.tsx:815
+#: src/components/editor/TranslateToolbar.tsx:839
 msgid "Add your {{provider}} API key in Settings to enable translation."
 msgstr "Add your {{provider}} API key in Settings to enable translation."
 
@@ -517,17 +509,27 @@ msgstr "Already have an account?"
 msgid "Analytics"
 msgstr "Analytics"
 
-#: src/pages/PrivacyPage.tsx:276
+#: src/pages/PrivacyPage.tsx:275
 msgid "Analytics data"
 msgstr "Analytics data"
 
-#: src/pages/PrivacyPage.tsx:222
+#: src/pages/PrivacyPage.tsx:193
 msgid ""
-"Analytics data is processed to improve the Service. We use cookie-less track"
-"ing to minimize privacy impact."
+"Anonymous page views, feature events (cookie-less, via first-party proxy, no"
+" personal data)"
 msgstr ""
-"Analytics data is processed to improve the Service. We use cookie-less track"
-"ing to minimize privacy impact."
+"Anonymous page views, feature events (cookie-less, via first-party proxy, no"
+" personal data)"
+
+#: src/pages/PrivacyPage.tsx:221
+msgid ""
+"Anonymous, aggregate analytics data is processed to improve the Service. No "
+"personal data is collected for analytics — we use cookie-less tracking with "
+"no user identification."
+msgstr ""
+"Anonymous, aggregate analytics data is processed to improve the Service. No "
+"personal data is collected for analytics — we use cookie-less tracking with "
+"no user identification."
 
 #: src/components/projects/ExportSection.tsx:199
 msgid "App settings"
@@ -557,7 +559,7 @@ msgstr ""
 msgid "Approve"
 msgstr "Approve"
 
-#: src/components/editor/TranslateToolbar.tsx:1180
+#: src/components/editor/TranslateToolbar.tsx:1204
 msgid "Approve selected"
 msgstr "Approve selected"
 
@@ -639,25 +641,25 @@ msgstr ""
 "Attempt to gain unauthorized access to the Service, other accounts, or relat"
 "ed systems."
 
-#: src/pages/PrivacyPage.tsx:145
+#: src/pages/PrivacyPage.tsx:144
 msgid "Authentication, database, backend"
 msgstr "Authentication, database, backend"
 
-#: src/components/editor/TranslateToolbar.tsx:1072
+#: src/components/editor/TranslateToolbar.tsx:1096
 msgid "Auto translate ({{count}})"
 msgstr "Auto translate ({{count}})"
 
-#: src/components/editor/TranslateToolbar.tsx:1070
+#: src/components/editor/TranslateToolbar.tsx:1094
 msgid "Auto translate selected"
 msgstr "Auto translate selected"
 
-#: src/components/editor/TranslateToolbar.tsx:1062
+#: src/components/editor/TranslateToolbar.tsx:1086
 msgid "Auto translate selected rows that are empty or fuzzy"
 msgstr "Auto translate selected rows that are empty or fuzzy"
 
 #: src/components/editor/TranslateToolbar.tsx:72
-#: src/components/editor/TranslateToolbar.tsx:847
-#: src/components/editor/TranslateToolbar.tsx:896
+#: src/components/editor/TranslateToolbar.tsx:871
+#: src/components/editor/TranslateToolbar.tsx:920
 #: src/components/landing/ProductShowcase.tsx:345
 msgid "Auto-detect"
 msgstr "Auto-detect"
@@ -674,7 +676,7 @@ msgstr "Auto-loads the WordPress.org glossary for locale \"{{locale}}\"."
 msgid "Auto-saved {age}"
 msgstr "Auto-saved {age}"
 
-#: src/pages/PrivacyPage.tsx:104
+#: src/pages/PrivacyPage.tsx:98
 msgid "Autocapture"
 msgstr "Autocapture"
 
@@ -682,7 +684,7 @@ msgstr "Autocapture"
 msgid "Automatically open a PR after committing"
 msgstr "Automatically open a PR after committing"
 
-#: src/pages/PrivacyPage.tsx:327
+#: src/pages/PrivacyPage.tsx:326
 msgid "Avoid entering an email address when sending feedback."
 msgstr "Avoid entering an email address when sending feedback."
 
@@ -691,7 +693,7 @@ msgid "Azerbaijani"
 msgstr "Azerbaijani"
 
 #: src/components/settings/TranslationSection.tsx:478
-#: src/pages/PrivacyPage.tsx:164
+#: src/pages/PrivacyPage.tsx:163
 msgid "Azure Translator"
 msgstr "Azure Translator"
 
@@ -807,7 +809,7 @@ msgstr "Blog or article"
 msgid "Bosnian"
 msgstr "Bosnian"
 
-#: src/pages/PrivacyPage.tsx:184
+#: src/pages/PrivacyPage.tsx:183
 msgid "Bot detection on feedback form"
 msgstr "Bot detection on feedback form"
 
@@ -852,7 +854,7 @@ msgstr "Browse files manually"
 msgid "Browser"
 msgstr "Browser"
 
-#: src/pages/PrivacyPage.tsx:183
+#: src/pages/PrivacyPage.tsx:182
 msgid "Browser fingerprint"
 msgstr "Browser fingerprint"
 
@@ -887,7 +889,7 @@ msgid "Can I self-host GlossBoss?"
 msgstr "Can I self-host GlossBoss?"
 
 #: src/components/SettingsModal.tsx:2636
-#: src/components/editor/TranslateToolbar.tsx:955
+#: src/components/editor/TranslateToolbar.tsx:979
 #: src/components/editor/WordPressProjectModal.tsx:410
 #: src/components/editor/WordPressRefreshModal.tsx:335
 #: src/components/feedback/FeedbackModal.tsx:481
@@ -1056,7 +1058,7 @@ msgstr "Choose your plan"
 
 #: src/components/SettingsModal.tsx:2149
 #: src/components/editor/GlossaryPanel.tsx:361
-#: src/components/editor/TranslateToolbar.tsx:1043
+#: src/components/editor/TranslateToolbar.tsx:1067
 #: src/components/projects/ProjectGlossaryTab.tsx:422
 #: src/components/settings/GlossarySection.tsx:312
 msgid "Clear"
@@ -1086,7 +1088,7 @@ msgstr "Clear editor?"
 msgid "Clear filters"
 msgstr "Clear filters"
 
-#: src/components/editor/TranslateToolbar.tsx:1126
+#: src/components/editor/TranslateToolbar.tsx:1150
 msgid "Clear fuzzy ({{count}})"
 msgstr "Clear fuzzy ({{count}})"
 
@@ -1094,15 +1096,15 @@ msgstr "Clear fuzzy ({{count}})"
 msgid "Clear fuzzy flag"
 msgstr "Clear fuzzy flag"
 
-#: src/components/editor/TranslateToolbar.tsx:1117
+#: src/components/editor/TranslateToolbar.tsx:1141
 msgid "Clear fuzzy on selected rows"
 msgstr "Clear fuzzy on selected rows"
 
-#: src/components/editor/TranslateToolbar.tsx:1124
+#: src/components/editor/TranslateToolbar.tsx:1148
 msgid "Clear fuzzy selected"
 msgstr "Clear fuzzy selected"
 
-#: src/pages/PrivacyPage.tsx:326
+#: src/pages/PrivacyPage.tsx:325
 msgid "Clear local drafts and caches by removing browser storage for this site."
 msgstr "Clear local drafts and caches by removing browser storage for this site."
 
@@ -1111,7 +1113,7 @@ msgstr "Clear local drafts and caches by removing browser storage for this site.
 msgid "Clear memory"
 msgstr "Clear memory"
 
-#: src/pages/PrivacyPage.tsx:324
+#: src/pages/PrivacyPage.tsx:323
 msgid "Clear saved API credentials from Settings."
 msgstr "Clear saved API credentials from Settings."
 
@@ -1119,7 +1121,7 @@ msgstr "Clear saved API credentials from Settings."
 msgid "Clear search"
 msgstr "Clear search"
 
-#: src/components/editor/TranslateToolbar.tsx:675
+#: src/components/editor/TranslateToolbar.tsx:699
 msgid "Cleared fuzzy on {{count}} row(s)."
 msgstr "Cleared fuzzy on {{count}} row(s)."
 
@@ -1191,11 +1193,11 @@ msgstr "Cloud settings last updated: {{time}}"
 msgid "Cloud sync"
 msgstr "Cloud sync"
 
-#: src/pages/PrivacyPage.tsx:358
+#: src/pages/PrivacyPage.tsx:357
 msgid "Cloudflare Inc."
 msgstr "Cloudflare Inc."
 
-#: src/pages/PrivacyPage.tsx:181
+#: src/pages/PrivacyPage.tsx:180
 msgid "Cloudflare Turnstile"
 msgstr "Cloudflare Turnstile"
 
@@ -1328,15 +1330,15 @@ msgstr "Connected accounts"
 msgid "Connected as"
 msgstr "Connected as"
 
-#: src/pages/PrivacyPage.tsx:227
+#: src/pages/PrivacyPage.tsx:226
 msgid "Consent:"
 msgstr "Consent:"
 
-#: src/components/editor/TranslateToolbar.tsx:758
+#: src/components/editor/TranslateToolbar.tsx:782
 msgid "Consider downloading a backup first."
 msgstr "Consider downloading a backup first."
 
-#: src/pages/PrivacyPage.tsx:385
+#: src/pages/PrivacyPage.tsx:384
 #: src/pages/TermsPage.tsx:260
 msgid "Contact"
 msgstr "Contact"
@@ -1381,7 +1383,7 @@ msgstr "Continue with GitHub"
 msgid "Continue without account"
 msgstr "Continue without account"
 
-#: src/pages/PrivacyPage.tsx:215
+#: src/pages/PrivacyPage.tsx:214
 msgid "Contract performance:"
 msgstr "Contract performance:"
 
@@ -1623,11 +1625,11 @@ msgstr "Data export failed. Please try again."
 msgid "Data exported successfully."
 msgstr "Data exported successfully."
 
-#: src/pages/PrivacyPage.tsx:305
+#: src/pages/PrivacyPage.tsx:304
 msgid "Data portability"
 msgstr "Data portability"
 
-#: src/pages/PrivacyPage.tsx:134
+#: src/pages/PrivacyPage.tsx:133
 msgid "Data shared"
 msgstr "Data shared"
 
@@ -1637,7 +1639,7 @@ msgid "Decline"
 msgstr "Decline"
 
 #: src/components/settings/TranslationSection.tsx:326
-#: src/pages/PrivacyPage.tsx:158
+#: src/pages/PrivacyPage.tsx:157
 msgid "DeepL"
 msgstr "DeepL"
 
@@ -1717,11 +1719,11 @@ msgstr "Delete this project"
 msgid "Delete your account"
 msgstr "Delete your account"
 
-#: src/pages/PrivacyPage.tsx:322
+#: src/pages/PrivacyPage.tsx:321
 msgid "Delete your account and all data permanently from Settings."
 msgstr "Delete your account and all data permanently from Settings."
 
-#: src/pages/PrivacyPage.tsx:270
+#: src/pages/PrivacyPage.tsx:269
 msgid "Deleted accounts"
 msgstr "Deleted accounts"
 
@@ -1749,8 +1751,8 @@ msgstr "Details"
 msgid "Detected via {{method}} with {{confidence}} confidence"
 msgstr "Detected via {{method}} with {{confidence}} confidence"
 
-#: src/components/editor/TranslateToolbar.tsx:879
-#: src/components/editor/TranslateToolbar.tsx:932
+#: src/components/editor/TranslateToolbar.tsx:903
+#: src/components/editor/TranslateToolbar.tsx:956
 msgid "Detected: {{target}}"
 msgstr "Detected: {{target}}"
 
@@ -1774,7 +1776,7 @@ msgstr "Development mode only"
 msgid "Directory listing is unavailable."
 msgstr "Directory listing is unavailable."
 
-#: src/pages/PrivacyPage.tsx:325
+#: src/pages/PrivacyPage.tsx:324
 msgid "Disable cloud sync to keep all settings local to your browser."
 msgstr "Disable cloud sync to keep all settings local to your browser."
 
@@ -1814,7 +1816,7 @@ msgstr "Display name"
 msgid "Display preferences"
 msgstr "Display preferences"
 
-#: src/pages/PrivacyPage.tsx:111
+#: src/pages/PrivacyPage.tsx:110
 msgid "Do Not Track"
 msgstr "Do Not Track"
 
@@ -1960,7 +1962,7 @@ msgstr ""
 msgid "Editor tour"
 msgstr "Editor tour"
 
-#: src/pages/PrivacyPage.tsx:175
+#: src/pages/PrivacyPage.tsx:174
 msgid "ElevenLabs"
 msgstr "ElevenLabs"
 
@@ -1998,11 +2000,11 @@ msgstr "Email address"
 msgid "Email files back and forth for review"
 msgstr "Email files back and forth for review"
 
-#: src/pages/PrivacyPage.tsx:149
+#: src/pages/PrivacyPage.tsx:148
 msgid "Email, customer ID, payment info"
 msgstr "Email, customer ID, payment info"
 
-#: src/pages/PrivacyPage.tsx:154
+#: src/pages/PrivacyPage.tsx:153
 msgid "Email, name, avatar (via OAuth)"
 msgstr "Email, name, avatar (via OAuth)"
 
@@ -2129,7 +2131,7 @@ msgstr "Enter your email and we'll send you a reset link."
 msgid "Enter {{field}}..."
 msgstr "Enter {{field}}..."
 
-#: src/pages/PrivacyPage.tsx:301
+#: src/pages/PrivacyPage.tsx:300
 msgid "Erasure"
 msgstr "Erasure"
 
@@ -2137,8 +2139,8 @@ msgstr "Erasure"
 msgid "Error"
 msgstr "Error"
 
-#: src/components/editor/TranslateButton.tsx:224
-#: src/components/editor/TranslateButton.tsx:245
+#: src/components/editor/TranslateButton.tsx:230
+#: src/components/editor/TranslateButton.tsx:251
 msgid "Error: {{error}}. Click to retry."
 msgstr "Error: {{error}}. Click to retry."
 
@@ -2214,7 +2216,7 @@ msgstr "Export JSON"
 msgid "Export TMX"
 msgstr "Export TMX"
 
-#: src/pages/PrivacyPage.tsx:323
+#: src/pages/PrivacyPage.tsx:322
 msgid "Export all your data as JSON from Settings."
 msgstr "Export all your data as JSON from Settings."
 
@@ -2590,7 +2592,7 @@ msgstr "Feedback failed"
 msgid "Feedback is unavailable in this deployment."
 msgstr "Feedback is unavailable in this deployment."
 
-#: src/pages/PrivacyPage.tsx:282
+#: src/pages/PrivacyPage.tsx:281
 msgid "Feedback submissions"
 msgstr "Feedback submissions"
 
@@ -2673,7 +2675,7 @@ msgstr "For clients"
 msgid "For individuals"
 msgstr "For individuals"
 
-#: src/pages/PrivacyPage.tsx:388
+#: src/pages/PrivacyPage.tsx:387
 msgid "For privacy inquiries, data requests, or concerns:"
 msgstr "For privacy inquiries, data requests, or concerns:"
 
@@ -2775,8 +2777,8 @@ msgstr "French, Portuguese (Brazil)"
 msgid "Frequently asked questions"
 msgstr "Frequently asked questions"
 
-#: src/components/editor/TranslateToolbar.tsx:838
-#: src/components/editor/TranslateToolbar.tsx:887
+#: src/components/editor/TranslateToolbar.tsx:862
+#: src/components/editor/TranslateToolbar.tsx:911
 #: src/components/landing/ProductShowcase.tsx:343
 msgid "From"
 msgstr "From"
@@ -2894,11 +2896,11 @@ msgstr "Get started with {{plan}}"
 #: src/components/landing/LandingFooter.tsx:24
 #: src/components/onboarding/AttributionStep.tsx:26
 #: src/components/settings/AccountSection.tsx:388
-#: src/pages/PrivacyPage.tsx:153
+#: src/pages/PrivacyPage.tsx:152
 msgid "GitHub"
 msgstr "GitHub"
 
-#: src/pages/PrivacyPage.tsx:370
+#: src/pages/PrivacyPage.tsx:369
 msgid "GitHub Inc."
 msgstr "GitHub Inc."
 
@@ -2961,7 +2963,7 @@ msgstr ""
 "urce-code context, includes a full review workflow with threaded comments, s"
 "yncs directly with GitHub and GitLab, and is open source."
 
-#: src/pages/PrivacyPage.tsx:334
+#: src/pages/PrivacyPage.tsx:333
 msgid ""
 "GlossBoss does not use tracking cookies. Authentication state is managed via"
 " Supabase's session tokens stored in local storage. Analytics (PostHog) runs"
@@ -3029,15 +3031,17 @@ msgstr "GlossBoss supports this format!"
 
 #: src/components/landing/FAQSection.tsx:34
 msgid ""
-"GlossBoss uses no tracking cookies and is fully GDPR compliant. Files opened"
-" in the local editor are processed entirely in your browser and never sent t"
-"o our servers. Cloud projects are stored in Supabase with encrypted credenti"
-"als. The entire codebase is open source for inspection."
+"GlossBoss uses no cookies and collects no personal data for analytics — not "
+"even your email or IP address. Files opened in the local editor are processe"
+"d entirely in your browser and never sent to our servers. Cloud projects are"
+" stored in Supabase with encrypted credentials. The entire codebase is open "
+"source for inspection."
 msgstr ""
-"GlossBoss uses no tracking cookies and is fully GDPR compliant. Files opened"
-" in the local editor are processed entirely in your browser and never sent t"
-"o our servers. Cloud projects are stored in Supabase with encrypted credenti"
-"als. The entire codebase is open source for inspection."
+"GlossBoss uses no cookies and collects no personal data for analytics — not "
+"even your email or IP address. Files opened in the local editor are processe"
+"d entirely in your browser and never sent to our servers. Cloud projects are"
+" stored in Supabase with encrypted credentials. The entire codebase is open "
+"source for inspection."
 
 #: src/components/auth/UserMenu.tsx:144
 msgid "GlossBoss v{version}"
@@ -3072,23 +3076,23 @@ msgstr ""
 "Glossary analysis is active but {{provider}} does not support glossary enfor"
 "cement"
 
-#: src/components/editor/TranslateToolbar.tsx:1100
+#: src/components/editor/TranslateToolbar.tsx:1124
 msgid "Glossary check"
 msgstr "Glossary check"
 
-#: src/components/editor/TranslateToolbar.tsx:660
+#: src/components/editor/TranslateToolbar.tsx:684
 msgid "Glossary check complete: all selected rows match glossary terms."
 msgstr "Glossary check complete: all selected rows match glossary terms."
 
-#: src/components/editor/TranslateToolbar.tsx:655
+#: src/components/editor/TranslateToolbar.tsx:679
 msgid "Glossary check complete: no glossary terms found in selected rows."
 msgstr "Glossary check complete: no glossary terms found in selected rows."
 
-#: src/components/editor/TranslateToolbar.tsx:665
+#: src/components/editor/TranslateToolbar.tsx:689
 msgid "Glossary check complete: {{count}} selected row(s) need review."
 msgstr "Glossary check complete: {{count}} selected row(s) need review."
 
-#: src/components/editor/TranslateToolbar.tsx:1098
+#: src/components/editor/TranslateToolbar.tsx:1122
 msgid "Glossary check selected"
 msgstr "Glossary check selected"
 
@@ -3157,7 +3161,7 @@ msgstr "Go to dashboard"
 msgid "Go to project"
 msgstr "Go to project"
 
-#: src/pages/PrivacyPage.tsx:170
+#: src/pages/PrivacyPage.tsx:169
 msgid "Google Gemini"
 msgstr "Google Gemini"
 
@@ -3486,7 +3490,7 @@ msgstr "Kazakh"
 msgid "Keep current key"
 msgstr "Keep current key"
 
-#: src/components/editor/TranslateButton.tsx:312
+#: src/components/editor/TranslateButton.tsx:318
 msgid "Keep original"
 msgstr "Keep original"
 
@@ -3578,7 +3582,7 @@ msgstr "Last translator"
 msgid "Last updated"
 msgstr "Last updated"
 
-#: src/pages/PrivacyPage.tsx:397
+#: src/pages/PrivacyPage.tsx:396
 #: src/pages/TermsPage.tsx:273
 msgid "Last updated: March 2026"
 msgstr "Last updated: March 2026"
@@ -3624,7 +3628,7 @@ msgstr "Leave this project"
 msgid "Legal"
 msgstr "Legal"
 
-#: src/pages/PrivacyPage.tsx:221
+#: src/pages/PrivacyPage.tsx:220
 msgid "Legitimate interest:"
 msgstr "Legitimate interest:"
 
@@ -3853,9 +3857,9 @@ msgstr "Machine translated by {{provider}}"
 msgid "Machine translated with glossary by {{provider}}"
 msgstr "Machine translated with glossary by {{provider}}"
 
-#: src/components/editor/TranslateToolbar.tsx:791
-#: src/pages/PrivacyPage.tsx:160
-#: src/pages/PrivacyPage.tsx:167
+#: src/components/editor/TranslateToolbar.tsx:815
+#: src/pages/PrivacyPage.tsx:159
+#: src/pages/PrivacyPage.tsx:166
 msgid "Machine translation"
 msgstr "Machine translation"
 
@@ -3922,19 +3926,19 @@ msgstr "Mark all read"
 msgid "Mark as fuzzy"
 msgstr "Mark as fuzzy"
 
-#: src/components/editor/TranslateToolbar.tsx:1152
+#: src/components/editor/TranslateToolbar.tsx:1176
 msgid "Mark fuzzy ({{count}})"
 msgstr "Mark fuzzy ({{count}})"
 
-#: src/components/editor/TranslateToolbar.tsx:1150
+#: src/components/editor/TranslateToolbar.tsx:1174
 msgid "Mark fuzzy selected"
 msgstr "Mark fuzzy selected"
 
-#: src/components/editor/TranslateToolbar.tsx:1143
+#: src/components/editor/TranslateToolbar.tsx:1167
 msgid "Mark selected rows as fuzzy"
 msgstr "Mark selected rows as fuzzy"
 
-#: src/components/editor/TranslateToolbar.tsx:684
+#: src/components/editor/TranslateToolbar.tsx:708
 msgid "Marked {{count}} row(s) as fuzzy."
 msgstr "Marked {{count}} row(s) as fuzzy."
 
@@ -4192,6 +4196,16 @@ msgstr "No organizations yet"
 msgid "No pending invites"
 msgstr "No pending invites"
 
+#: src/pages/PrivacyPage.tsx:105
+msgid ""
+"No personal data — including user IDs, email addresses, or IP addresses — is"
+" sent to PostHog. All analytics data is fully anonymous and cannot be linked"
+" to individual users."
+msgstr ""
+"No personal data — including user IDs, email addresses, or IP addresses — is"
+" sent to PostHog. All analytics data is fully anonymous and cannot be linked"
+" to individual users."
+
 #: src/pages/OrgSettings.tsx:437
 #: src/pages/OrgSettingsPage.tsx:642
 msgid "No projects in this organization yet"
@@ -4239,11 +4253,11 @@ msgstr "No review history yet."
 msgid "No roadmap items match your search"
 msgstr "No roadmap items match your search"
 
-#: src/components/editor/TranslateToolbar.tsx:676
+#: src/components/editor/TranslateToolbar.tsx:700
 msgid "No selected fuzzy rows to clear."
 msgstr "No selected fuzzy rows to clear."
 
-#: src/components/editor/TranslateToolbar.tsx:685
+#: src/components/editor/TranslateToolbar.tsx:709
 msgid "No selected rows available to mark as fuzzy."
 msgstr "No selected rows available to mark as fuzzy."
 
@@ -4359,7 +4373,7 @@ msgstr "OK"
 msgid "OK:"
 msgstr "OK:"
 
-#: src/pages/PrivacyPage.tsx:309
+#: src/pages/PrivacyPage.tsx:308
 msgid "Object"
 msgstr "Object"
 
@@ -4465,7 +4479,7 @@ msgstr ""
 msgid "Optional description"
 msgstr "Optional description"
 
-#: src/pages/PrivacyPage.tsx:228
+#: src/pages/PrivacyPage.tsx:227
 msgid ""
 "Optional integrations (translation providers, TTS, cloud sync of credentials"
 ") are only activated when you explicitly enable them."
@@ -4604,14 +4618,6 @@ msgstr "Page 1 of 1"
 #: src/pages/PrivacyPage.tsx:88
 msgid "Page views"
 msgstr "Page views"
-
-#: src/pages/PrivacyPage.tsx:194
-msgid ""
-"Page views, feature events, user ID, email (cookie-less, via first-party pro"
-"xy)"
-msgstr ""
-"Page views, feature events, user ID, email (cookie-less, via first-party pro"
-"xy)"
 
 #: src/pages/auth/Login.tsx:123
 #: src/pages/auth/Signup.tsx:152
@@ -4813,7 +4819,7 @@ msgstr "Please provide a valid email address or leave it empty."
 msgid "Plugin"
 msgstr "Plugin"
 
-#: src/pages/PrivacyPage.tsx:188
+#: src/pages/PrivacyPage.tsx:187
 msgid "Plugin/theme slug lookups"
 msgstr "Plugin/theme slug lookups"
 
@@ -4837,9 +4843,9 @@ msgstr "Plural form {{index}}"
 msgid "Plural {{index}}: {{value}}"
 msgstr "Plural {{index}}: {{value}}"
 
-#: src/pages/PrivacyPage.tsx:148
-#: src/pages/PrivacyPage.tsx:249
-#: src/pages/PrivacyPage.tsx:362
+#: src/pages/PrivacyPage.tsx:147
+#: src/pages/PrivacyPage.tsx:248
+#: src/pages/PrivacyPage.tsx:361
 #: src/pages/TermsPage.tsx:116
 msgid "Polar.sh"
 msgstr "Polar.sh"
@@ -4871,12 +4877,12 @@ msgid "Portuguese (Portugal)"
 msgstr "Portuguese (Portugal)"
 
 #: src/pages/PrivacyPage.tsx:79
-#: src/pages/PrivacyPage.tsx:192
-#: src/pages/PrivacyPage.tsx:245
+#: src/pages/PrivacyPage.tsx:191
+#: src/pages/PrivacyPage.tsx:244
 msgid "PostHog"
 msgstr "PostHog"
 
-#: src/pages/PrivacyPage.tsx:366
+#: src/pages/PrivacyPage.tsx:365
 msgid "PostHog Inc."
 msgstr "PostHog Inc."
 
@@ -4969,7 +4975,7 @@ msgstr "Problem / opportunity"
 msgid "Product"
 msgstr "Product"
 
-#: src/pages/PrivacyPage.tsx:198
+#: src/pages/PrivacyPage.tsx:197
 msgid "Product analytics"
 msgstr "Product analytics"
 
@@ -5094,7 +5100,7 @@ msgstr "Projects in this org will use this provider by default."
 msgid "Proposed solution"
 msgstr "Proposed solution"
 
-#: src/components/editor/TranslateToolbar.tsx:1249
+#: src/components/editor/TranslateToolbar.tsx:1273
 msgid "Protect {{count}} manual edits from bulk translation"
 msgstr "Protect {{count}} manual edits from bulk translation"
 
@@ -5142,7 +5148,7 @@ msgstr "Punctuation drift"
 msgid "Punjabi"
 msgstr "Punjabi"
 
-#: src/pages/PrivacyPage.tsx:137
+#: src/pages/PrivacyPage.tsx:136
 msgid "Purpose"
 msgstr "Purpose"
 
@@ -5215,7 +5221,7 @@ msgstr "Quick open"
 msgid "Quickstart guide"
 msgstr "Quickstart guide"
 
-#: src/components/editor/TranslateToolbar.tsx:1091
+#: src/components/editor/TranslateToolbar.tsx:1115
 msgid "Re-run glossary analysis on selected rows"
 msgstr "Re-run glossary analysis on selected rows"
 
@@ -5241,7 +5247,7 @@ msgstr "Recommended"
 msgid "Reconnect"
 msgstr "Reconnect"
 
-#: src/pages/PrivacyPage.tsx:297
+#: src/pages/PrivacyPage.tsx:296
 msgid "Rectification"
 msgstr "Rectification"
 
@@ -5358,7 +5364,7 @@ msgstr "Repeat your password"
 msgid "Repeated-source consistency"
 msgstr "Repeated-source consistency"
 
-#: src/components/editor/TranslateButton.tsx:315
+#: src/components/editor/TranslateButton.tsx:321
 #: src/pages/index/IndexPageDialogs.tsx:148
 #: src/pages/index/IndexPageDialogs.tsx:160
 msgid "Replace"
@@ -5369,7 +5375,7 @@ msgstr "Replace"
 msgid "Replace current file?"
 msgstr "Replace current file?"
 
-#: src/components/editor/TranslateButton.tsx:302
+#: src/components/editor/TranslateButton.tsx:308
 msgid "Replace existing translation?"
 msgstr "Replace existing translation?"
 
@@ -5418,7 +5424,7 @@ msgstr "Repository:"
 msgid "Request changes"
 msgstr "Request changes"
 
-#: src/components/editor/TranslateToolbar.tsx:1219
+#: src/components/editor/TranslateToolbar.tsx:1243
 msgid "Request changes selected"
 msgstr "Request changes selected"
 
@@ -5462,7 +5468,7 @@ msgstr "Resources"
 msgid "Restore draft"
 msgstr "Restore draft"
 
-#: src/pages/PrivacyPage.tsx:313
+#: src/pages/PrivacyPage.tsx:312
 msgid "Restrict processing"
 msgstr "Restrict processing"
 
@@ -5472,20 +5478,20 @@ msgstr "Restrict processing"
 msgid "Resync"
 msgstr "Resync"
 
-#: src/components/editor/TranslateToolbar.tsx:760
-#: src/components/editor/TranslateToolbar.tsx:988
+#: src/components/editor/TranslateToolbar.tsx:784
+#: src/components/editor/TranslateToolbar.tsx:1012
 msgid "Retranslate all"
 msgstr "Retranslate all"
 
-#: src/components/editor/TranslateToolbar.tsx:975
+#: src/components/editor/TranslateToolbar.tsx:999
 msgid "Retranslate all entries"
 msgstr "Retranslate all entries"
 
-#: src/components/editor/TranslateToolbar.tsx:746
+#: src/components/editor/TranslateToolbar.tsx:770
 msgid "Retranslate all entries?"
 msgstr "Retranslate all entries?"
 
-#: src/components/editor/TranslateToolbar.tsx:1273
+#: src/components/editor/TranslateToolbar.tsx:1297
 msgid "Retranslating"
 msgstr "Retranslating"
 
@@ -5495,8 +5501,8 @@ msgstr "Retranslating"
 msgid "Retry"
 msgstr "Retry"
 
-#: src/components/editor/TranslateButton.tsx:237
-#: src/components/editor/TranslateButton.tsx:256
+#: src/components/editor/TranslateButton.tsx:243
+#: src/components/editor/TranslateButton.tsx:262
 msgid "Retry translation"
 msgstr "Retry translation"
 
@@ -5761,7 +5767,7 @@ msgstr "Select a repository"
 msgid "Select a row to inspect context and metadata."
 msgstr "Select a row to inspect context and metadata."
 
-#: src/components/editor/TranslateToolbar.tsx:1028
+#: src/components/editor/TranslateToolbar.tsx:1052
 msgid "Select all filtered"
 msgstr "Select all filtered"
 
@@ -5807,8 +5813,8 @@ msgstr "Select or type locale..."
 msgid "Select plural form for your language..."
 msgstr "Select plural form for your language..."
 
-#: src/components/editor/TranslateToolbar.tsx:868
-#: src/components/editor/TranslateToolbar.tsx:920
+#: src/components/editor/TranslateToolbar.tsx:892
+#: src/components/editor/TranslateToolbar.tsx:944
 msgid "Select target..."
 msgstr "Select target..."
 
@@ -5836,7 +5842,7 @@ msgstr "Serbian"
 msgid "Serbian (Latin)"
 msgstr "Serbian (Latin)"
 
-#: src/pages/PrivacyPage.tsx:131
+#: src/pages/PrivacyPage.tsx:130
 msgid "Service"
 msgstr "Service"
 
@@ -6082,7 +6088,7 @@ msgstr "Sign out"
 msgid "Sign up"
 msgstr "Sign up"
 
-#: src/pages/PrivacyPage.tsx:155
+#: src/pages/PrivacyPage.tsx:154
 msgid "Sign-in, feedback issue creation"
 msgstr "Sign-in, feedback issue creation"
 
@@ -6167,7 +6173,7 @@ msgstr "Source A-Z"
 msgid "Source Z-A"
 msgstr "Source Z-A"
 
-#: src/pages/PrivacyPage.tsx:189
+#: src/pages/PrivacyPage.tsx:188
 msgid "Source file and glossary fetching"
 msgstr "Source file and glossary fetching"
 
@@ -6175,8 +6181,8 @@ msgstr "Source file and glossary fetching"
 msgid "Source format"
 msgstr "Source format"
 
-#: src/components/editor/TranslateToolbar.tsx:852
-#: src/components/editor/TranslateToolbar.tsx:902
+#: src/components/editor/TranslateToolbar.tsx:876
+#: src/components/editor/TranslateToolbar.tsx:926
 #: src/components/projects/CreateProjectModal.tsx:638
 msgid "Source language"
 msgstr "Source language"
@@ -6339,7 +6345,7 @@ msgstr ""
 "Submissions may create a GitHub issue and can include your optional contact "
 "email for follow-up. See"
 
-#: src/pages/PrivacyPage.tsx:150
+#: src/pages/PrivacyPage.tsx:149
 msgid "Subscription billing"
 msgstr "Subscription billing"
 
@@ -6347,17 +6353,17 @@ msgstr "Subscription billing"
 msgid "Subscriptions are billed monthly or annually through our payment processor,"
 msgstr "Subscriptions are billed monthly or annually through our payment processor,"
 
-#: src/components/editor/TranslateToolbar.tsx:1339
+#: src/components/editor/TranslateToolbar.tsx:1363
 msgid "Successfully translated {{count}} entries"
 msgstr "Successfully translated {{count}} entries"
 
 #: src/pages/PrivacyPage.tsx:38
-#: src/pages/PrivacyPage.tsx:143
-#: src/pages/PrivacyPage.tsx:239
+#: src/pages/PrivacyPage.tsx:142
+#: src/pages/PrivacyPage.tsx:238
 msgid "Supabase"
 msgstr "Supabase"
 
-#: src/pages/PrivacyPage.tsx:354
+#: src/pages/PrivacyPage.tsx:353
 msgid "Supabase Inc."
 msgstr "Supabase Inc."
 
@@ -6457,8 +6463,8 @@ msgstr "Take a tour"
 msgid "Tamil"
 msgstr "Tamil"
 
-#: src/components/editor/TranslateToolbar.tsx:873
-#: src/components/editor/TranslateToolbar.tsx:926
+#: src/components/editor/TranslateToolbar.tsx:897
+#: src/components/editor/TranslateToolbar.tsx:950
 msgid "Target language"
 msgstr "Target language"
 
@@ -6527,11 +6533,11 @@ msgstr "Terms of Service"
 msgid "Test connection"
 msgstr "Test connection"
 
-#: src/pages/PrivacyPage.tsx:176
+#: src/pages/PrivacyPage.tsx:175
 msgid "Text (up to 500 chars), your API key"
 msgstr "Text (up to 500 chars), your API key"
 
-#: src/pages/PrivacyPage.tsx:177
+#: src/pages/PrivacyPage.tsx:176
 msgid "Text-to-speech preview"
 msgstr "Text-to-speech preview"
 
@@ -6561,7 +6567,7 @@ msgstr "The GlossBoss application source code is licensed under the"
 msgid "The OpenAI-compatible API base URL. Must use HTTPS."
 msgstr "The OpenAI-compatible API base URL. Must use HTTPS."
 
-#: src/pages/PrivacyPage.tsx:121
+#: src/pages/PrivacyPage.tsx:120
 msgid ""
 "The Service integrates with third-party providers. Data is shared only as ne"
 "eded to deliver the functionality you use."
@@ -6569,7 +6575,7 @@ msgstr ""
 "The Service integrates with third-party providers. Data is shared only as ne"
 "eded to deliver the functionality you use."
 
-#: src/pages/PrivacyPage.tsx:343
+#: src/pages/PrivacyPage.tsx:342
 msgid ""
 "The Service is not directed at children under 16. We do not knowingly collec"
 "t personal information from children. If you believe a child has provided us"
@@ -6779,11 +6785,11 @@ msgstr "This setting is enforced by your organization and cannot be changed."
 msgid "This settings file contains saved translation credentials in plain text."
 msgstr "This settings file contains saved translation credentials in plain text."
 
-#: src/components/editor/TranslateButton.tsx:306
+#: src/components/editor/TranslateButton.tsx:312
 msgid "This will overwrite your current translation with the {{provider}} result."
 msgstr "This will overwrite your current translation with the {{provider}} result."
 
-#: src/components/editor/TranslateToolbar.tsx:747
+#: src/components/editor/TranslateToolbar.tsx:771
 msgid ""
 "This will overwrite {{count}} existing translations with new machine transla"
 "tions."
@@ -6826,8 +6832,8 @@ msgstr ""
 msgid "Title"
 msgstr "Title"
 
-#: src/components/editor/TranslateToolbar.tsx:859
-#: src/components/editor/TranslateToolbar.tsx:911
+#: src/components/editor/TranslateToolbar.tsx:883
+#: src/components/editor/TranslateToolbar.tsx:935
 #: src/components/landing/ProductShowcase.tsx:348
 msgid "To"
 msgstr "To"
@@ -6895,7 +6901,7 @@ msgstr "Translate with {{provider}}"
 msgid "Translate with {{provider}} + Glossary"
 msgstr "Translate with {{provider}} + Glossary"
 
-#: src/components/editor/TranslateToolbar.tsx:999
+#: src/components/editor/TranslateToolbar.tsx:1023
 #: src/components/landing/ProductShowcase.tsx:373
 msgid "Translate {{count}} untranslated"
 msgstr "Translate {{count}} untranslated"
@@ -6911,8 +6917,8 @@ msgstr "Translated"
 msgid "Translated string"
 msgstr "Translated string"
 
-#: src/components/editor/TranslateButton.tsx:214
-#: src/components/editor/TranslateToolbar.tsx:1273
+#: src/components/editor/TranslateButton.tsx:220
+#: src/components/editor/TranslateToolbar.tsx:1297
 msgid "Translating"
 msgstr "Translating"
 
@@ -6920,7 +6926,7 @@ msgstr "Translating"
 msgid "Translating on my own"
 msgstr "Translating on my own"
 
-#: src/components/editor/TranslateButton.tsx:208
+#: src/components/editor/TranslateButton.tsx:214
 msgid "Translating..."
 msgstr "Translating..."
 
@@ -6939,7 +6945,7 @@ msgstr "Translation"
 msgid "Translation A-Z"
 msgstr "Translation A-Z"
 
-#: src/pages/PrivacyPage.tsx:255
+#: src/pages/PrivacyPage.tsx:254
 msgid ""
 "Translation API calls to DeepL (EU), Azure (region-dependent), and Google Ge"
 "mini (US) are transient - text is sent for translation and not stored by Glo"
@@ -6988,7 +6994,7 @@ msgstr "Translation memory exported as JSON."
 msgid "Translation memory exported as TMX."
 msgstr "Translation memory exported as TMX."
 
-#: src/components/editor/TranslateToolbar.tsx:1286
+#: src/components/editor/TranslateToolbar.tsx:1310
 msgid "Translation progress"
 msgstr "Translation progress"
 
@@ -7016,7 +7022,7 @@ msgstr "Translation provider saved."
 msgid "Translation providers"
 msgstr "Translation providers"
 
-#: src/pages/PrivacyPage.tsx:205
+#: src/pages/PrivacyPage.tsx:204
 msgid ""
 "Translation providers (DeepL, Azure, Gemini) and text-to-speech (ElevenLabs)"
 " are only activated when you explicitly configure them. No data is sent to t"
@@ -7034,7 +7040,7 @@ msgstr "Translation table"
 msgid "Translation team contact"
 msgstr "Translation team contact"
 
-#: src/pages/PrivacyPage.tsx:166
+#: src/pages/PrivacyPage.tsx:165
 msgid "Translation text"
 msgstr "Translation text"
 
@@ -7048,11 +7054,11 @@ msgstr ""
 "essing regions vary by provider. No translation data is stored by GlossBoss "
 "after the response is received."
 
-#: src/pages/PrivacyPage.tsx:159
+#: src/pages/PrivacyPage.tsx:158
 msgid "Translation text, glossary terms"
 msgstr "Translation text, glossary terms"
 
-#: src/pages/PrivacyPage.tsx:171
+#: src/pages/PrivacyPage.tsx:170
 msgid "Translation text, project context, glossary"
 msgstr "Translation text, project context, glossary"
 
@@ -7174,7 +7180,7 @@ msgstr "Unable to read the selected settings file."
 msgid "Unapprove"
 msgstr "Unapprove"
 
-#: src/components/editor/TranslateToolbar.tsx:1197
+#: src/components/editor/TranslateToolbar.tsx:1221
 msgid "Unapprove selected"
 msgstr "Unapprove selected"
 
@@ -7182,7 +7188,7 @@ msgstr "Unapprove selected"
 msgid "Under 5,000"
 msgstr "Under 5,000"
 
-#: src/pages/PrivacyPage.tsx:290
+#: src/pages/PrivacyPage.tsx:289
 msgid "Under GDPR and similar privacy laws, you have the right to:"
 msgstr "Under GDPR and similar privacy laws, you have the right to:"
 
@@ -7471,10 +7477,6 @@ msgstr ""
 "Use the Service for any unlawful purpose or in violation of any applicable l"
 "aw."
 
-#: src/pages/PrivacyPage.tsx:98
-msgid "User identity"
-msgstr "User identity"
-
 #: src/components/editor/HeaderEditor.tsx:143
 msgid "Uzbek"
 msgstr "Uzbek"
@@ -7555,7 +7557,7 @@ msgstr ""
 msgid "We collect the following analytics data to improve the product:"
 msgstr "We collect the following analytics data to improve the product:"
 
-#: src/pages/PrivacyPage.tsx:111
+#: src/pages/PrivacyPage.tsx:110
 msgid "We honor the"
 msgstr "We honor the"
 
@@ -7587,7 +7589,7 @@ msgstr ""
 "hey take effect. Continued use of the Service after changes take effect cons"
 "titutes acceptance of the updated terms."
 
-#: src/pages/PrivacyPage.tsx:379
+#: src/pages/PrivacyPage.tsx:378
 msgid ""
 "We may update this policy from time to time. Material changes will be commun"
 "icated via email or in-app notice at least 14 days before they take effect. "
@@ -7617,7 +7619,7 @@ msgstr "We recommend"
 msgid "We use"
 msgstr "We use"
 
-#: src/pages/PrivacyPage.tsx:351
+#: src/pages/PrivacyPage.tsx:350
 msgid "We use the following sub-processors to provide the Service:"
 msgstr "We use the following sub-processors to provide the Service:"
 
@@ -7856,7 +7858,7 @@ msgid "WordPress source browsing is unavailable in this deployment."
 msgstr "WordPress source browsing is unavailable in this deployment."
 
 #: src/components/projects/AddLanguageModal.tsx:387
-#: src/pages/PrivacyPage.tsx:187
+#: src/pages/PrivacyPage.tsx:186
 msgid "WordPress.org"
 msgstr "WordPress.org"
 
@@ -8054,7 +8056,7 @@ msgstr ""
 msgid "Your subscription is canceled and will expire on {{date}}."
 msgstr "Your subscription is canceled and will expire on {{date}}."
 
-#: src/pages/PrivacyPage.tsx:246
+#: src/pages/PrivacyPage.tsx:245
 msgid "analytics data is stored in the EU (Frankfurt, Germany)."
 msgstr "analytics data is stored in the EU (Frankfurt, Germany)."
 
@@ -8066,7 +8068,7 @@ msgstr "and"
 msgid "and do not restrict your rights under the AGPL."
 msgstr "and do not restrict your rights under the AGPL."
 
-#: src/pages/PrivacyPage.tsx:271
+#: src/pages/PrivacyPage.tsx:270
 msgid ""
 "are purged immediately. All associated projects, translations, organization "
 "memberships, notifications, and subscription records are permanently deleted"
@@ -8076,7 +8078,7 @@ msgstr ""
 "memberships, notifications, and subscription records are permanently deleted"
 "."
 
-#: src/pages/PrivacyPage.tsx:283
+#: src/pages/PrivacyPage.tsx:282
 msgid ""
 "are stored as GitHub issues and retained indefinitely for product improvemen"
 "t."
@@ -8089,7 +8091,7 @@ msgstr ""
 msgid "billed annually"
 msgstr "billed annually"
 
-#: src/pages/PrivacyPage.tsx:112
+#: src/pages/PrivacyPage.tsx:111
 msgid ""
 "browser setting. When DNT is enabled, no analytics data is collected. Sessio"
 "n recording is disabled."
@@ -8157,7 +8159,7 @@ msgstr "for details."
 msgid "fuzzy"
 msgstr "fuzzy"
 
-#: src/pages/PrivacyPage.tsx:240
+#: src/pages/PrivacyPage.tsx:239
 msgid ""
 "hosts our database and authentication in the United States. Supabase complie"
 "s with SOC 2 Type II."
@@ -8165,17 +8167,17 @@ msgstr ""
 "hosts our database and authentication in the United States. Supabase complie"
 "s with SOC 2 Type II."
 
-#: src/pages/PrivacyPage.tsx:277
+#: src/pages/PrivacyPage.tsx:276
 msgid ""
-"is retained by PostHog according to their data retention policies. User ID a"
-"nd email are linked to analytics sessions; all other event data is non-perso"
-"nal metadata. Analytics data is deleted when you delete your account."
+"is retained by PostHog according to their data retention policies. Analytics"
+" data is fully anonymous — no user IDs, emails, or IP addresses are collecte"
+"d — so it cannot be linked to individual accounts."
 msgstr ""
-"is retained by PostHog according to their data retention policies. User ID a"
-"nd email are linked to analytics sessions; all other event data is non-perso"
-"nal metadata. Analytics data is deleted when you delete your account."
+"is retained by PostHog according to their data retention policies. Analytics"
+" data is fully anonymous — no user IDs, emails, or IP addresses are collecte"
+"d — so it cannot be linked to individual accounts."
 
-#: src/pages/PrivacyPage.tsx:267
+#: src/pages/PrivacyPage.tsx:266
 msgid "is retained for as long as your account is active."
 msgstr "is retained for as long as your account is active."
 
@@ -8239,7 +8241,7 @@ msgstr "or use a personal access token"
 msgid "organization"
 msgstr "organization"
 
-#: src/components/editor/TranslateToolbar.tsx:973
+#: src/components/editor/TranslateToolbar.tsx:997
 msgid "overwritten"
 msgstr "overwritten"
 
@@ -8247,7 +8249,7 @@ msgstr "overwritten"
 msgid "plural"
 msgstr "plural"
 
-#: src/pages/PrivacyPage.tsx:250
+#: src/pages/PrivacyPage.tsx:249
 msgid ""
 "processes billing data. Payment processing is handled by Stripe, which is ce"
 "rtified under the EU-US Data Privacy Framework."
@@ -8283,7 +8285,7 @@ msgstr ""
 msgid "singular"
 msgstr "singular"
 
-#: src/components/editor/TranslateToolbar.tsx:973
+#: src/components/editor/TranslateToolbar.tsx:997
 msgid "skipped"
 msgstr "skipped"
 
@@ -8394,7 +8396,7 @@ msgstr "{{count}} entries"
 msgid "{{count}} error issue(s)"
 msgstr "{{count}} error issue(s)"
 
-#: src/components/editor/TranslateToolbar.tsx:1275
+#: src/components/editor/TranslateToolbar.tsx:1299
 msgid "{{count}} failed"
 msgstr "{{count}} failed"
 
@@ -8416,11 +8418,11 @@ msgstr "{{count}} languages"
 msgid "{{count}} locale files found"
 msgstr "{{count}} locale files found"
 
-#: src/components/editor/TranslateToolbar.tsx:971
+#: src/components/editor/TranslateToolbar.tsx:995
 msgid "{{count}} manual edits will be {{action}}"
 msgstr "{{count}} manual edits will be {{action}}"
 
-#: src/components/editor/TranslateToolbar.tsx:753
+#: src/components/editor/TranslateToolbar.tsx:777
 msgid "{{count}} manually edited entries will be skipped."
 msgstr "{{count}} manually edited entries will be skipped."
 
@@ -8445,7 +8447,7 @@ msgstr "{{count}} ref(s)"
 msgid "{{count}} removed"
 msgstr "{{count}} removed"
 
-#: src/components/editor/TranslateToolbar.tsx:799
+#: src/components/editor/TranslateToolbar.tsx:823
 msgid "{{count}} selected"
 msgstr "{{count}} selected"
 
@@ -8493,7 +8495,7 @@ msgstr "{{count}} unresolved comment(s)"
 msgid "{{count}} unresolved review comment(s)"
 msgstr "{{count}} unresolved review comment(s)"
 
-#: src/components/editor/TranslateToolbar.tsx:800
+#: src/components/editor/TranslateToolbar.tsx:824
 msgid "{{count}} untranslated"
 msgstr "{{count}} untranslated"
 
@@ -8615,6 +8617,6 @@ msgstr "€{{price}}/1k strings"
 msgid "€{{price}}/mo"
 msgstr "€{{price}}/mo"
 
-#: src/components/editor/TranslateToolbar.tsx:755
+#: src/components/editor/TranslateToolbar.tsx:779
 msgid "⚠️ {{count}} manually edited entries will be overwritten!"
 msgstr "⚠️ {{count}} manually edited entries will be overwritten!"

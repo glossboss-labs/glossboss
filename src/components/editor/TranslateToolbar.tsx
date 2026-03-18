@@ -612,18 +612,42 @@ export function TranslateToolbar({
     trackEvent('batch_translation_triggered', {
       mode: 'untranslated',
       count: untranslatedEntries.length,
+      provider: activeProvider,
+      source_lang: sourceLang || 'auto',
+      target_lang: targetLang,
+      had_glossary: Boolean(deeplGlossaryId || glossary),
     });
     handleTranslate(untranslatedEntries, 'untranslated');
-  }, [handleTranslate, untranslatedEntries]);
+  }, [
+    handleTranslate,
+    untranslatedEntries,
+    activeProvider,
+    sourceLang,
+    targetLang,
+    deeplGlossaryId,
+    glossary,
+  ]);
 
   const handleRetranslateAll = useCallback(() => {
     setConfirmRetranslateOpen(false);
     trackEvent('batch_translation_triggered', {
       mode: 'overwrite-all',
       count: allTranslatableEntries.length,
+      provider: activeProvider,
+      source_lang: sourceLang || 'auto',
+      target_lang: targetLang,
+      had_glossary: Boolean(deeplGlossaryId || glossary),
     });
     handleTranslate(allTranslatableEntries, 'overwrite-all');
-  }, [handleTranslate, allTranslatableEntries]);
+  }, [
+    handleTranslate,
+    allTranslatableEntries,
+    activeProvider,
+    sourceLang,
+    targetLang,
+    deeplGlossaryId,
+    glossary,
+  ]);
 
   const handleSelectAllFiltered = useCallback(() => {
     const merged = new Set(selectedEntryIds);

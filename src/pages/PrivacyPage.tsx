@@ -86,18 +86,12 @@ export default function PrivacyPage() {
           <ul className="list-disc space-y-1.5 pl-5">
             <li>
               <strong className="text-text-primary">{t('Page views')}</strong>{' '}
-              {t('- which pages you visit and how you navigate the app.')}
+              {t('- which pages are visited and how users navigate the app.')}
             </li>
             <li>
               <strong className="text-text-primary">{t('Feature usage events')}</strong>{' '}
               {t(
-                '- actions like opening files, running translations, exporting, creating projects, and changing settings. These events include technical metadata (e.g. file entry count, translation mode) but not the content of your translations.',
-              )}
-            </li>
-            <li>
-              <strong className="text-text-primary">{t('User identity')}</strong>{' '}
-              {t(
-                '- if you are signed in, your user ID and email address are linked to your analytics session so we can understand usage patterns. You can opt out by enabling Do Not Track in your browser.',
+                '- actions like opening files, running translations, exporting, creating projects, and changing settings. These events include technical metadata (e.g. file entry count, translation provider, language pair) but never the content of your translations or any personal data.',
               )}
             </li>
             <li>
@@ -107,6 +101,11 @@ export default function PrivacyPage() {
               )}
             </li>
           </ul>
+          <p>
+            {t(
+              'No personal data — including user IDs, email addresses, or IP addresses — is sent to PostHog. All analytics data is fully anonymous and cannot be linked to individual users.',
+            )}
+          </p>
           <p>
             {t('We honor the')} <strong className="text-text-primary">{t('Do Not Track')}</strong>{' '}
             {t(
@@ -192,7 +191,7 @@ export default function PrivacyPage() {
                   <td className="py-2 pr-4 font-medium text-text-primary">{t('PostHog')}</td>
                   <td className="py-2 pr-4">
                     {t(
-                      'Page views, feature events, user ID, email (cookie-less, via first-party proxy)',
+                      'Anonymous page views, feature events (cookie-less, via first-party proxy, no personal data)',
                     )}
                   </td>
                   <td className="py-2">{t('Product analytics')}</td>
@@ -220,7 +219,7 @@ export default function PrivacyPage() {
             <li>
               <strong className="text-text-primary">{t('Legitimate interest:')}</strong>{' '}
               {t(
-                'Analytics data is processed to improve the Service. We use cookie-less tracking to minimize privacy impact.',
+                'Anonymous, aggregate analytics data is processed to improve the Service. No personal data is collected for analytics — we use cookie-less tracking with no user identification.',
               )}
             </li>
             <li>
@@ -275,7 +274,7 @@ export default function PrivacyPage() {
             <li>
               <strong className="text-text-primary">{t('Analytics data')}</strong>{' '}
               {t(
-                'is retained by PostHog according to their data retention policies. User ID and email are linked to analytics sessions; all other event data is non-personal metadata. Analytics data is deleted when you delete your account.',
+                'is retained by PostHog according to their data retention policies. Analytics data is fully anonymous — no user IDs, emails, or IP addresses are collected — so it cannot be linked to individual accounts.',
               )}
             </li>
             <li>
