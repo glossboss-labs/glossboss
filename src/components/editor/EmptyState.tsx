@@ -21,7 +21,7 @@ import {
 import { Link as RouterLink } from 'react-router';
 import { motion } from 'motion/react';
 import { FileUp, Globe, GitBranch, Link, Cloud, CircleHelp } from 'lucide-react';
-import { sectionVariants, buttonStates } from '@/lib/motion';
+import { fadeVariants, buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
 import { useAuth } from '@/hooks/use-auth';
 
@@ -58,7 +58,7 @@ export function EmptyState({
 
   return (
     <MotionDiv
-      variants={sectionVariants}
+      variants={fadeVariants}
       initial="hidden"
       animate="visible"
       onClick={onFileClick}

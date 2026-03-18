@@ -10,7 +10,8 @@ import { useParams, useNavigate, Link } from 'react-router';
 import { Container, Stack, Center, Loader, Alert, Button, Paper, Text, Group } from '@mantine/core';
 import { motion } from 'motion/react';
 import { AlertCircle, Check, Users } from 'lucide-react';
-import { contentVariants, fadeVariants } from '@/lib/motion';
+import { contentVariants } from '@/lib/motion';
+import { AnimatedStateSwitch } from '@/components/ui';
 import { useTranslation } from '@/lib/app-language';
 import { acceptInvite, getInviteByToken } from '@/lib/organizations/api';
 import type { InviteRow } from '@/lib/organizations/types';
@@ -76,77 +77,86 @@ export default function Invite() {
     }
   };
 
-  if (authLoading || loading) {
-    return (
-      <MotionDiv variants={fadeVariants} initial="hidden" animate="visible">
-        <Center py={80}>
-          <Loader size="lg" />
-        </Center>
-      </MotionDiv>
-    );
-  }
+  const stateKey =
+    authLoading || loading
+      ? 'loading'
+      : accepted
+        ? 'accepted'
+        : error && !invite
+          ? 'error'
+          : 'invite';
 
   return (
     <Container size="xs" py={80}>
       <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
-        {error && !invite && (
-          <Stack align="center" gap="md">
-            <Alert icon={<AlertCircle size={16} />} color="red" variant="light" w="100%">
-              {error}
-            </Alert>
-            <Button component={Link} to="/dashboard" variant="light">
-              {t('Back to dashboard')}
-            </Button>
-          </Stack>
-        )}
-
-        {accepted && (
-          <Paper withBorder p="xl">
-            <Stack align="center" gap="md">
-              <Check size={40} color="var(--mantine-color-teal-6)" />
-              <Text size="lg" fw={600}>
-                {t('Invite accepted')}
-              </Text>
-              <Text size="sm" c="dimmed" ta="center">
-                {t('You are now a member of this organization.')}
-              </Text>
-              <Button component={Link} to="/dashboard">
-                {t('Go to dashboard')}
-              </Button>
-            </Stack>
-          </Paper>
-        )}
-
-        {invite && !accepted && (
-          <Paper withBorder p="xl">
-            <Stack align="center" gap="md">
-              <Users size={40} color="var(--mantine-color-blue-6)" />
-              <Text size="lg" fw={600}>
-                {t('Organization invite')}
-              </Text>
-              <Text size="sm" c="dimmed" ta="center">
-                {t("You've been invited to join an organization as {{role}}.", {
-                  role: invite.role,
-                })}
-              </Text>
-
-              {error && (
-                <Alert icon={<AlertCircle size={16} />} color="red" variant="light" w="100%">
-                  {error}
-                </Alert>
+        <AnimatedStateSwitch stateKey={stateKey}>
+          {authLoading || loading ? (
+            <Center py={80}>
+              <Loader size="lg" />
+            </Center>
+          ) : (
+            <>
+              {error && !invite && (
+                <Stack align="center" gap="md">
+                  <Alert icon={<AlertCircle size={16} />} color="red" variant="light" w="100%">
+                    {error}
+                  </Alert>
+                  <Button component={Link} to="/dashboard" variant="light">
+                    {t('Back to dashboard')}
+                  </Button>
+                </Stack>
               )}
 
-              <Group>
-                <Button variant="light" component={Link} to="/dashboard">
-                  {t('Decline')}
-                </Button>
-                <Button onClick={handleAccept} loading={accepting}>
-                  {t('Accept invite')}
-                </Button>
-              </Group>
-            </Stack>
-          </Paper>
-        )}
+              {accepted && (
+                <Paper withBorder p="xl">
+                  <Stack align="center" gap="md">
+                    <Check size={40} color="var(--mantine-color-teal-6)" />
+                    <Text size="lg" fw={600}>
+                      {t('Invite accepted')}
+                    </Text>
+                    <Text size="sm" c="dimmed" ta="center">
+                      {t('You are now a member of this organization.')}
+                    </Text>
+                    <Button component={Link} to="/dashboard">
+                      {t('Go to dashboard')}
+                    </Button>
+                  </Stack>
+                </Paper>
+              )}
+
+              {invite && !accepted && (
+                <Paper withBorder p="xl">
+                  <Stack align="center" gap="md">
+                    <Users size={40} color="var(--mantine-color-blue-6)" />
+                    <Text size="lg" fw={600}>
+                      {t('Organization invite')}
+                    </Text>
+                    <Text size="sm" c="dimmed" ta="center">
+                      {t("You've been invited to join an organization as {{role}}.", {
+                        role: invite.role,
+                      })}
+                    </Text>
+
+                    {error && (
+                      <Alert icon={<AlertCircle size={16} />} color="red" variant="light" w="100%">
+                        {error}
+                      </Alert>
+                    )}
+
+                    <Group>
+                      <Button variant="light" component={Link} to="/dashboard">
+                        {t('Decline')}
+                      </Button>
+                      <Button onClick={handleAccept} loading={accepting}>
+                        {t('Accept invite')}
+                      </Button>
+                    </Group>
+                  </Stack>
+                </Paper>
+              )}
+            </>
+          )}
+        </AnimatedStateSwitch>
       </MotionDiv>
     </Container>
   );

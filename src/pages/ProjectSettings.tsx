@@ -46,7 +46,7 @@ import {
   BookOpen,
   Key,
 } from 'lucide-react';
-import { sectionVariants, fadeVariants, buttonStates } from '@/lib/motion';
+import { staggerPageVariants, fadeVariants, buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
 import {
   getProject,
@@ -72,7 +72,7 @@ import { ProjectNotificationsTab } from '@/components/projects/ProjectNotificati
 import { AddLanguageModal } from '@/components/projects/AddLanguageModal';
 import { ProjectGlossaryTab } from '@/components/projects/ProjectGlossaryTab';
 import { ProjectTranslationTab } from '@/components/projects/ProjectTranslationTab';
-import { ConfirmModal } from '@/components/ui';
+import { ConfirmModal, AnimatedStateSwitch, AnimatedTabPanel } from '@/components/ui';
 import { getOrgSettings } from '@/lib/organizations/api';
 import type { OrgSettingsRow } from '@/lib/organizations/types';
 import { useDeleteLanguage } from '@/lib/projects/queries';
@@ -266,582 +266,616 @@ export default function ProjectSettings() {
     setLanguages((prev) => prev.map((l) => (l.id === updated.id ? updated : l)));
   }, []);
 
-  if (loading) {
-    return (
-      <MotionDiv variants={fadeVariants} initial="hidden" animate="visible">
-        <Center py={80}>
-          <Loader size="lg" />
-        </Center>
-      </MotionDiv>
-    );
-  }
-
-  if (error && !project) {
-    return (
-      <Box maw={960}>
-        <Alert icon={<AlertCircle size={16} />} color="red" variant="light">
-          {error}
-        </Alert>
-        <Button component={Link} to="/dashboard" variant="light" mt="md">
-          {t('Back to dashboard')}
-        </Button>
-      </Box>
-    );
-  }
-
-  if (!project) return null;
+  const stateKey = loading ? 'loading' : error && !project ? 'error' : project ? 'data' : 'empty';
 
   return (
     <Box maw={960}>
-      <MotionDiv variants={sectionVariants} initial="hidden" animate="visible">
-        <Stack gap="lg">
-          {/* Breadcrumb */}
-          <Group gap={6}>
-            <Text
-              component={Link}
-              to={`/projects/${project.id}`}
-              size="sm"
-              style={{
-                color: 'var(--gb-text-secondary)',
-                textDecoration: 'none',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 4,
-              }}
-            >
-              <ArrowLeft size={14} />
-              {project.name}
-            </Text>
-          </Group>
-
-          <Group gap="sm" align="center">
-            <Settings size={20} c="dimmed" />
-            <Title order={3}>{t('Project settings')}</Title>
-          </Group>
-
-          {error && (
-            <Alert
-              icon={<AlertCircle size={16} />}
-              color="red"
-              variant="light"
-              withCloseButton
-              onClose={() => setError(null)}
-            >
+      <AnimatedStateSwitch stateKey={stateKey}>
+        {loading ? (
+          <Center py={80}>
+            <Loader size="lg" />
+          </Center>
+        ) : error && !project ? (
+          <>
+            <Alert icon={<AlertCircle size={16} />} color="red" variant="light">
               {error}
             </Alert>
-          )}
-
-          <Tabs
-            value={activeTab}
-            onChange={handleTabChange}
-            orientation={isMobile ? 'horizontal' : 'vertical'}
-            variant="pills"
-            classNames={{ tab: 'gb-tab-left-align' }}
-            styles={{
-              root: isMobile ? undefined : { display: 'flex', gap: 'var(--mantine-spacing-xl)' },
-              list: isMobile
-                ? { overflowX: 'auto', flexWrap: 'nowrap' }
-                : { minWidth: 180, flexShrink: 0 },
-              panel: { flex: 1, minWidth: 0 },
-            }}
-          >
-            <Tabs.List>
-              <Tabs.Tab value="general" leftSection={<Settings size={14} />}>
-                {t('General')}
-              </Tabs.Tab>
-              <Tabs.Tab value="repository" leftSection={<GitBranch size={14} />}>
-                {t('Repository')}
-              </Tabs.Tab>
-              <Tabs.Tab value="languages" leftSection={<Languages size={14} />}>
-                {t('Languages')} ({languages.length})
-              </Tabs.Tab>
-              <Tabs.Tab value="translation" leftSection={<Key size={14} />}>
-                {t('Translation')}
-              </Tabs.Tab>
-              <Tabs.Tab value="glossary" leftSection={<BookOpen size={14} />}>
-                {t('Glossary')}
-              </Tabs.Tab>
-              <Tabs.Tab value="members" leftSection={<Users size={14} />}>
-                {t('Members')} ({members.length})
-              </Tabs.Tab>
-              <Tabs.Tab value="notifications" leftSection={<Bell size={14} />}>
-                {t('Notifications')}
-              </Tabs.Tab>
-              <Tabs.Tab value="danger" leftSection={<Trash2 size={14} />} color="red">
-                {t('Danger zone')}
-              </Tabs.Tab>
-            </Tabs.List>
-
-            {/* General tab */}
-            <Tabs.Panel value="general" pt={isMobile ? 'md' : undefined}>
-              <Stack gap="lg">
-                <Paper withBorder p="md">
-                  <Text size="sm" fw={500} mb="sm">
-                    {t('Project details')}
+            <Button component={Link} to="/dashboard" variant="light" mt="md">
+              {t('Back to dashboard')}
+            </Button>
+          </>
+        ) : !project ? null : (
+          <MotionDiv variants={staggerPageVariants} initial="hidden" animate="visible">
+            <Stack gap="lg">
+              {/* Breadcrumb */}
+              <MotionDiv variants={fadeVariants}>
+                <Group gap={6}>
+                  <Text
+                    component={Link}
+                    to={`/projects/${project.id}`}
+                    size="sm"
+                    style={{
+                      color: 'var(--gb-text-secondary)',
+                      textDecoration: 'none',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 4,
+                    }}
+                  >
+                    <ArrowLeft size={14} />
+                    {project.name}
                   </Text>
-                  {isManager ? (
-                    <Stack gap="sm">
-                      <TextInput
-                        label={t('Project name')}
-                        value={editName}
-                        onChange={(e) => setEditName(e.currentTarget.value)}
-                        maw={400}
-                      />
-                      <Textarea
-                        label={t('Description')}
-                        value={editDescription}
-                        onChange={(e) => setEditDescription(e.currentTarget.value)}
-                        autosize
-                        minRows={2}
-                        maxRows={4}
-                        maw={400}
-                      />
-                      <TextInput
-                        label={t('Website')}
-                        placeholder="https://example.com"
-                        value={editWebsite}
-                        onChange={(e) => setEditWebsite(e.currentTarget.value)}
-                        leftSection={<ExternalLink size={14} />}
-                        maw={400}
-                      />
-                      <Select
-                        label={t('Visibility')}
-                        data={[
-                          { value: 'private', label: t('Private') },
-                          { value: 'public', label: t('Public') },
-                          { value: 'unlisted', label: t('Unlisted') },
-                        ]}
-                        value={editVisibility}
-                        onChange={(v) => setEditVisibility(v || 'private')}
-                        w={200}
-                        allowDeselect={false}
-                      />
-                      {editVisibility === 'public' && (
-                        <Select
-                          label={t('Public permissions')}
-                          description={t(
-                            'Role assigned to non-members who visit this public project.',
-                          )}
-                          data={[
-                            { value: 'viewer', label: t('Viewer — read-only') },
-                            { value: 'translator', label: t('Translator — can translate') },
-                            { value: 'reviewer', label: t('Reviewer — can translate and review') },
-                          ]}
-                          value={editPublicRole}
-                          onChange={(v) => setEditPublicRole(v || 'viewer')}
-                          w={300}
-                          allowDeselect={false}
-                        />
-                      )}
-                      {project.wp_slug && (
-                        <Group gap="xs">
-                          <Text size="sm" c="dimmed">
-                            {t('WordPress')}: {project.wp_project_type} / {project.wp_slug}
-                          </Text>
-                        </Group>
-                      )}
-                      <div>
-                        <motion.div {...buttonStates}>
-                          <Button
-                            onClick={() => void handleSave()}
-                            loading={saving}
-                            disabled={!editName.trim()}
-                          >
-                            {t('Save changes')}
-                          </Button>
-                        </motion.div>
-                      </div>
-                    </Stack>
-                  ) : (
-                    <Stack gap="md">
-                      <Group gap="xl" wrap="wrap">
-                        <div>
-                          <Text size="xs" c="dimmed" tt="uppercase" fw={600} mb={2}>
-                            {t('Name')}
-                          </Text>
-                          <Text size="sm">{project.name}</Text>
-                        </div>
-                        <div>
-                          <Text size="xs" c="dimmed" tt="uppercase" fw={600} mb={2}>
-                            {t('Visibility')}
-                          </Text>
-                          <Badge variant="light" size="sm">
-                            {project.visibility}
-                          </Badge>
-                        </div>
-                        <div>
-                          <Text size="xs" c="dimmed" tt="uppercase" fw={600} mb={2}>
-                            {t('Format')}
-                          </Text>
-                          <Badge variant="light" size="sm" color="gray">
-                            {project.source_format}
-                          </Badge>
-                        </div>
-                      </Group>
-                      {project.description && (
-                        <div>
-                          <Text size="xs" c="dimmed" tt="uppercase" fw={600} mb={2}>
-                            {t('Description')}
-                          </Text>
-                          <Text size="sm">{project.description}</Text>
-                        </div>
-                      )}
-                      {project.website && (
-                        <div>
-                          <Text size="xs" c="dimmed" tt="uppercase" fw={600} mb={2}>
-                            {t('Website')}
-                          </Text>
-                          <Text
-                            component="a"
-                            href={
-                              project.website.startsWith('http')
-                                ? project.website
-                                : `https://${project.website}`
-                            }
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            size="sm"
-                            style={{
-                              color: 'var(--mantine-color-blue-6)',
-                              textDecoration: 'none',
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: 4,
-                            }}
-                          >
-                            <ExternalLink size={12} />
-                            {project.website.replace(/^https?:\/\//, '')}
-                          </Text>
-                        </div>
-                      )}
-                      {project.wp_slug && (
-                        <div>
-                          <Text size="xs" c="dimmed" tt="uppercase" fw={600} mb={2}>
-                            {t('WordPress')}
-                          </Text>
-                          <Text size="sm">
-                            {project.wp_project_type} / {project.wp_slug}
-                          </Text>
-                        </div>
-                      )}
-                    </Stack>
-                  )}
-                </Paper>
-              </Stack>
-            </Tabs.Panel>
+                </Group>
+              </MotionDiv>
 
-            {/* Repository tab */}
-            <Tabs.Panel value="repository" pt={isMobile ? 'md' : undefined}>
-              <Stack gap="md">
-                <Text size="sm" c="dimmed">
-                  {t(
-                    'Repository connections are per-language. Each language can be linked to a file in a GitHub or GitLab repository.',
-                  )}
-                </Text>
-                {languages.length === 0 ? (
-                  <Paper withBorder p="md">
-                    <Center py={20}>
-                      <Text size="sm" c="dimmed">
-                        {t('No languages in this project yet.')}
-                      </Text>
-                    </Center>
-                  </Paper>
-                ) : (
-                  languages.map((lang) => {
-                    const hasRepo = lang.repo_provider && lang.repo_owner && lang.repo_name;
-                    return (
-                      <Paper key={lang.id} withBorder p="md">
-                        <Group justify="space-between" align="center" wrap="nowrap">
-                          <Stack gap={4}>
-                            <Group gap="sm">
-                              <Text size="sm" fw={600}>
-                                {lang.locale}
+              <MotionDiv variants={fadeVariants}>
+                <Group gap="sm" align="center">
+                  <Settings size={20} c="dimmed" />
+                  <Title order={3}>{t('Project settings')}</Title>
+                </Group>
+              </MotionDiv>
+
+              {error && (
+                <MotionDiv variants={fadeVariants}>
+                  <Alert
+                    icon={<AlertCircle size={16} />}
+                    color="red"
+                    variant="light"
+                    withCloseButton
+                    onClose={() => setError(null)}
+                  >
+                    {error}
+                  </Alert>
+                </MotionDiv>
+              )}
+
+              <MotionDiv variants={fadeVariants}>
+                <Box
+                  style={
+                    isMobile ? undefined : { display: 'flex', gap: 'var(--mantine-spacing-xl)' }
+                  }
+                >
+                  <Tabs
+                    value={activeTab}
+                    onChange={handleTabChange}
+                    orientation={isMobile ? 'horizontal' : 'vertical'}
+                    variant="pills"
+                    classNames={{ tab: 'gb-tab-left-align' }}
+                    styles={{
+                      list: isMobile
+                        ? { overflowX: 'auto', flexWrap: 'nowrap' }
+                        : { minWidth: 180, flexShrink: 0 },
+                    }}
+                  >
+                    <Tabs.List>
+                      <Tabs.Tab value="general" leftSection={<Settings size={14} />}>
+                        {t('General')}
+                      </Tabs.Tab>
+                      <Tabs.Tab value="repository" leftSection={<GitBranch size={14} />}>
+                        {t('Repository')}
+                      </Tabs.Tab>
+                      <Tabs.Tab value="languages" leftSection={<Languages size={14} />}>
+                        {t('Languages')} ({languages.length})
+                      </Tabs.Tab>
+                      <Tabs.Tab value="translation" leftSection={<Key size={14} />}>
+                        {t('Translation')}
+                      </Tabs.Tab>
+                      <Tabs.Tab value="glossary" leftSection={<BookOpen size={14} />}>
+                        {t('Glossary')}
+                      </Tabs.Tab>
+                      <Tabs.Tab value="members" leftSection={<Users size={14} />}>
+                        {t('Members')} ({members.length})
+                      </Tabs.Tab>
+                      <Tabs.Tab value="notifications" leftSection={<Bell size={14} />}>
+                        {t('Notifications')}
+                      </Tabs.Tab>
+                      <Tabs.Tab value="danger" leftSection={<Trash2 size={14} />} color="red">
+                        {t('Danger zone')}
+                      </Tabs.Tab>
+                    </Tabs.List>
+                  </Tabs>
+
+                  <Box style={{ flex: 1, minWidth: 0 }}>
+                    <AnimatedTabPanel tabKey={activeTab}>
+                      <Box pt={isMobile ? 'md' : undefined}>
+                        {/* General tab */}
+                        {activeTab === 'general' && (
+                          <Stack gap="lg">
+                            <Paper withBorder p="md">
+                              <Text size="sm" fw={500} mb="sm">
+                                {t('Project details')}
                               </Text>
-                              {lang.source_filename && (
-                                <Text size="xs" c="dimmed" truncate>
-                                  {lang.source_filename}
-                                </Text>
+                              {isManager ? (
+                                <Stack gap="sm">
+                                  <TextInput
+                                    label={t('Project name')}
+                                    value={editName}
+                                    onChange={(e) => setEditName(e.currentTarget.value)}
+                                    maw={400}
+                                  />
+                                  <Textarea
+                                    label={t('Description')}
+                                    value={editDescription}
+                                    onChange={(e) => setEditDescription(e.currentTarget.value)}
+                                    autosize
+                                    minRows={2}
+                                    maxRows={4}
+                                    maw={400}
+                                  />
+                                  <TextInput
+                                    label={t('Website')}
+                                    placeholder="https://example.com"
+                                    value={editWebsite}
+                                    onChange={(e) => setEditWebsite(e.currentTarget.value)}
+                                    leftSection={<ExternalLink size={14} />}
+                                    maw={400}
+                                  />
+                                  <Select
+                                    label={t('Visibility')}
+                                    data={[
+                                      { value: 'private', label: t('Private') },
+                                      { value: 'public', label: t('Public') },
+                                      { value: 'unlisted', label: t('Unlisted') },
+                                    ]}
+                                    value={editVisibility}
+                                    onChange={(v) => setEditVisibility(v || 'private')}
+                                    w={200}
+                                    allowDeselect={false}
+                                  />
+                                  {editVisibility === 'public' && (
+                                    <Select
+                                      label={t('Public permissions')}
+                                      description={t(
+                                        'Role assigned to non-members who visit this public project.',
+                                      )}
+                                      data={[
+                                        { value: 'viewer', label: t('Viewer — read-only') },
+                                        {
+                                          value: 'translator',
+                                          label: t('Translator — can translate'),
+                                        },
+                                        {
+                                          value: 'reviewer',
+                                          label: t('Reviewer — can translate and review'),
+                                        },
+                                      ]}
+                                      value={editPublicRole}
+                                      onChange={(v) => setEditPublicRole(v || 'viewer')}
+                                      w={300}
+                                      allowDeselect={false}
+                                    />
+                                  )}
+                                  {project.wp_slug && (
+                                    <Group gap="xs">
+                                      <Text size="sm" c="dimmed">
+                                        {t('WordPress')}: {project.wp_project_type} /{' '}
+                                        {project.wp_slug}
+                                      </Text>
+                                    </Group>
+                                  )}
+                                  <div>
+                                    <motion.div {...buttonStates}>
+                                      <Button
+                                        onClick={() => void handleSave()}
+                                        loading={saving}
+                                        disabled={!editName.trim()}
+                                      >
+                                        {t('Save changes')}
+                                      </Button>
+                                    </motion.div>
+                                  </div>
+                                </Stack>
+                              ) : (
+                                <Stack gap="md">
+                                  <Group gap="xl" wrap="wrap">
+                                    <div>
+                                      <Text size="xs" c="dimmed" tt="uppercase" fw={600} mb={2}>
+                                        {t('Name')}
+                                      </Text>
+                                      <Text size="sm">{project.name}</Text>
+                                    </div>
+                                    <div>
+                                      <Text size="xs" c="dimmed" tt="uppercase" fw={600} mb={2}>
+                                        {t('Visibility')}
+                                      </Text>
+                                      <Badge variant="light" size="sm">
+                                        {project.visibility}
+                                      </Badge>
+                                    </div>
+                                    <div>
+                                      <Text size="xs" c="dimmed" tt="uppercase" fw={600} mb={2}>
+                                        {t('Format')}
+                                      </Text>
+                                      <Badge variant="light" size="sm" color="gray">
+                                        {project.source_format}
+                                      </Badge>
+                                    </div>
+                                  </Group>
+                                  {project.description && (
+                                    <div>
+                                      <Text size="xs" c="dimmed" tt="uppercase" fw={600} mb={2}>
+                                        {t('Description')}
+                                      </Text>
+                                      <Text size="sm">{project.description}</Text>
+                                    </div>
+                                  )}
+                                  {project.website && (
+                                    <div>
+                                      <Text size="xs" c="dimmed" tt="uppercase" fw={600} mb={2}>
+                                        {t('Website')}
+                                      </Text>
+                                      <Text
+                                        component="a"
+                                        href={
+                                          project.website.startsWith('http')
+                                            ? project.website
+                                            : `https://${project.website}`
+                                        }
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        size="sm"
+                                        style={{
+                                          color: 'var(--mantine-color-blue-6)',
+                                          textDecoration: 'none',
+                                          display: 'inline-flex',
+                                          alignItems: 'center',
+                                          gap: 4,
+                                        }}
+                                      >
+                                        <ExternalLink size={12} />
+                                        {project.website.replace(/^https?:\/\//, '')}
+                                      </Text>
+                                    </div>
+                                  )}
+                                  {project.wp_slug && (
+                                    <div>
+                                      <Text size="xs" c="dimmed" tt="uppercase" fw={600} mb={2}>
+                                        {t('WordPress')}
+                                      </Text>
+                                      <Text size="sm">
+                                        {project.wp_project_type} / {project.wp_slug}
+                                      </Text>
+                                    </div>
+                                  )}
+                                </Stack>
                               )}
-                            </Group>
-                            {hasRepo ? (
-                              <Group gap="xs">
-                                <Badge
-                                  variant="light"
-                                  size="sm"
-                                  color="dark"
-                                  leftSection={<GitBranch size={10} />}
-                                >
-                                  {lang.repo_provider === 'github' ? 'GitHub' : 'GitLab'}
-                                </Badge>
-                                <Text size="xs" c="dimmed">
-                                  {lang.repo_owner}/{lang.repo_name}
-                                  {lang.repo_branch ? ` @ ${lang.repo_branch}` : ''}
-                                </Text>
-                                {lang.repo_file_path && (
-                                  <Text size="xs" c="dimmed">
-                                    — {lang.repo_file_path}
+                            </Paper>
+                          </Stack>
+                        )}
+
+                        {/* Repository tab */}
+                        {activeTab === 'repository' && (
+                          <Stack gap="md">
+                            <Text size="sm" c="dimmed">
+                              {t(
+                                'Repository connections are per-language. Each language can be linked to a file in a GitHub or GitLab repository.',
+                              )}
+                            </Text>
+                            {languages.length === 0 ? (
+                              <Paper withBorder p="md">
+                                <Center py={20}>
+                                  <Text size="sm" c="dimmed">
+                                    {t('No languages in this project yet.')}
                                   </Text>
-                                )}
-                              </Group>
+                                </Center>
+                              </Paper>
                             ) : (
-                              <Text size="xs" c="dimmed">
-                                {t('No repository linked')}
-                              </Text>
+                              languages.map((lang) => {
+                                const hasRepo =
+                                  lang.repo_provider && lang.repo_owner && lang.repo_name;
+                                return (
+                                  <Paper key={lang.id} withBorder p="md">
+                                    <Group justify="space-between" align="center" wrap="nowrap">
+                                      <Stack gap={4}>
+                                        <Group gap="sm">
+                                          <Text size="sm" fw={600}>
+                                            {lang.locale}
+                                          </Text>
+                                          {lang.source_filename && (
+                                            <Text size="xs" c="dimmed" truncate>
+                                              {lang.source_filename}
+                                            </Text>
+                                          )}
+                                        </Group>
+                                        {hasRepo ? (
+                                          <Group gap="xs">
+                                            <Badge
+                                              variant="light"
+                                              size="sm"
+                                              color="dark"
+                                              leftSection={<GitBranch size={10} />}
+                                            >
+                                              {lang.repo_provider === 'github'
+                                                ? 'GitHub'
+                                                : 'GitLab'}
+                                            </Badge>
+                                            <Text size="xs" c="dimmed">
+                                              {lang.repo_owner}/{lang.repo_name}
+                                              {lang.repo_branch ? ` @ ${lang.repo_branch}` : ''}
+                                            </Text>
+                                            {lang.repo_file_path && (
+                                              <Text size="xs" c="dimmed">
+                                                — {lang.repo_file_path}
+                                              </Text>
+                                            )}
+                                          </Group>
+                                        ) : (
+                                          <Text size="xs" c="dimmed">
+                                            {t('No repository linked')}
+                                          </Text>
+                                        )}
+                                      </Stack>
+                                      {isManager && (
+                                        <Group gap="xs">
+                                          {hasRepo ? (
+                                            <Tooltip label={t('Unlink repository')}>
+                                              <ActionIcon
+                                                variant="subtle"
+                                                color="red"
+                                                size="sm"
+                                                onClick={() => void handleUnlinkRepo(lang.id)}
+                                              >
+                                                <Unlink size={14} />
+                                              </ActionIcon>
+                                            </Tooltip>
+                                          ) : (
+                                            <Tooltip
+                                              label={t(
+                                                'Open the editor to connect this language to a repository via Push settings.',
+                                              )}
+                                            >
+                                              <Button
+                                                component={Link}
+                                                to={`/projects/${project.id}/languages/${lang.id}`}
+                                                variant="light"
+                                                size="xs"
+                                                leftSection={<GitBranch size={12} />}
+                                              >
+                                                {t('Link repository')}
+                                              </Button>
+                                            </Tooltip>
+                                          )}
+                                        </Group>
+                                      )}
+                                    </Group>
+                                  </Paper>
+                                );
+                              })
                             )}
                           </Stack>
-                          {isManager && (
-                            <Group gap="xs">
-                              {hasRepo ? (
-                                <Tooltip label={t('Unlink repository')}>
-                                  <ActionIcon
-                                    variant="subtle"
-                                    color="red"
-                                    size="sm"
-                                    onClick={() => void handleUnlinkRepo(lang.id)}
-                                  >
-                                    <Unlink size={14} />
-                                  </ActionIcon>
-                                </Tooltip>
-                              ) : (
-                                <Tooltip
-                                  label={t(
-                                    'Open the editor to connect this language to a repository via Push settings.',
-                                  )}
-                                >
-                                  <Button
-                                    component={Link}
-                                    to={`/projects/${project.id}/languages/${lang.id}`}
-                                    variant="light"
-                                    size="xs"
-                                    leftSection={<GitBranch size={12} />}
-                                  >
-                                    {t('Link repository')}
-                                  </Button>
-                                </Tooltip>
-                              )}
-                            </Group>
-                          )}
-                        </Group>
-                      </Paper>
-                    );
-                  })
-                )}
-              </Stack>
-            </Tabs.Panel>
-
-            {/* Languages tab */}
-            <Tabs.Panel value="languages" pt={isMobile ? 'md' : undefined}>
-              <Stack gap="md">
-                {isManager && (
-                  <Group justify="flex-end">
-                    <motion.div {...buttonStates}>
-                      <Button
-                        leftSection={<Plus size={16} />}
-                        onClick={() => setAddLanguageOpen(true)}
-                      >
-                        {t('Add language')}
-                      </Button>
-                    </motion.div>
-                  </Group>
-                )}
-                {languages.length === 0 ? (
-                  <Paper withBorder p="md">
-                    <Center py={20}>
-                      <Text size="sm" c="dimmed">
-                        {t('No languages yet')}
-                      </Text>
-                    </Center>
-                  </Paper>
-                ) : (
-                  languages.map((lang) => (
-                    <Paper key={lang.id} withBorder p="sm">
-                      <Group justify="space-between" align="center" wrap="nowrap">
-                        <Stack gap={2}>
-                          <Group gap="sm">
-                            <Text size="sm" fw={600}>
-                              {lang.locale}
-                            </Text>
-                            {lang.source_filename && (
-                              <Text size="xs" c="dimmed" truncate>
-                                {lang.source_filename}
-                              </Text>
-                            )}
-                          </Group>
-                          <Text size="xs" c="dimmed">
-                            {lang.stats_total} {t('strings')} · {lang.stats_translated}{' '}
-                            {t('translated')}
-                          </Text>
-                        </Stack>
-                        {isManager && (
-                          <Menu position="bottom-end" withinPortal>
-                            <Menu.Target>
-                              <ActionIcon variant="subtle" size="sm" color="gray">
-                                <Trash2 size={14} />
-                              </ActionIcon>
-                            </Menu.Target>
-                            <Menu.Dropdown>
-                              <Menu.Item
-                                color="red"
-                                leftSection={<Trash2 size={14} />}
-                                onClick={() => void handleDeleteLanguage(lang.id)}
-                              >
-                                {t('Delete language')}
-                              </Menu.Item>
-                            </Menu.Dropdown>
-                          </Menu>
                         )}
-                      </Group>
-                    </Paper>
-                  ))
-                )}
-              </Stack>
-            </Tabs.Panel>
 
-            {/* Translation tab */}
-            <Tabs.Panel value="translation" pt={isMobile ? 'md' : undefined}>
-              <ProjectTranslationTab
-                languages={languages}
-                projectId={project.id}
-                orgId={project.organization_id}
-                orgSettings={orgSettings}
-                isManager={isManager}
-                onLanguageUpdated={handleLanguageUpdated}
-              />
-            </Tabs.Panel>
+                        {/* Languages tab */}
+                        {activeTab === 'languages' && (
+                          <Stack gap="md">
+                            {isManager && (
+                              <Group justify="flex-end">
+                                <motion.div {...buttonStates}>
+                                  <Button
+                                    leftSection={<Plus size={16} />}
+                                    onClick={() => setAddLanguageOpen(true)}
+                                  >
+                                    {t('Add language')}
+                                  </Button>
+                                </motion.div>
+                              </Group>
+                            )}
+                            {languages.length === 0 ? (
+                              <Paper withBorder p="md">
+                                <Center py={20}>
+                                  <Text size="sm" c="dimmed">
+                                    {t('No languages yet')}
+                                  </Text>
+                                </Center>
+                              </Paper>
+                            ) : (
+                              languages.map((lang) => (
+                                <Paper key={lang.id} withBorder p="sm">
+                                  <Group justify="space-between" align="center" wrap="nowrap">
+                                    <Stack gap={2}>
+                                      <Group gap="sm">
+                                        <Text size="sm" fw={600}>
+                                          {lang.locale}
+                                        </Text>
+                                        {lang.source_filename && (
+                                          <Text size="xs" c="dimmed" truncate>
+                                            {lang.source_filename}
+                                          </Text>
+                                        )}
+                                      </Group>
+                                      <Text size="xs" c="dimmed">
+                                        {lang.stats_total} {t('strings')} · {lang.stats_translated}{' '}
+                                        {t('translated')}
+                                      </Text>
+                                    </Stack>
+                                    {isManager && (
+                                      <Menu position="bottom-end" withinPortal>
+                                        <Menu.Target>
+                                          <ActionIcon variant="subtle" size="sm" color="gray">
+                                            <Trash2 size={14} />
+                                          </ActionIcon>
+                                        </Menu.Target>
+                                        <Menu.Dropdown>
+                                          <Menu.Item
+                                            color="red"
+                                            leftSection={<Trash2 size={14} />}
+                                            onClick={() => void handleDeleteLanguage(lang.id)}
+                                          >
+                                            {t('Delete language')}
+                                          </Menu.Item>
+                                        </Menu.Dropdown>
+                                      </Menu>
+                                    )}
+                                  </Group>
+                                </Paper>
+                              ))
+                            )}
+                          </Stack>
+                        )}
 
-            {/* Glossary tab */}
-            <Tabs.Panel value="glossary" pt={isMobile ? 'md' : undefined}>
-              <ProjectGlossaryTab
-                languages={languages}
-                isManager={isManager}
-                onLanguageUpdated={handleLanguageUpdated}
-              />
-            </Tabs.Panel>
+                        {/* Translation tab */}
+                        {activeTab === 'translation' && (
+                          <ProjectTranslationTab
+                            languages={languages}
+                            projectId={project.id}
+                            orgId={project.organization_id}
+                            orgSettings={orgSettings}
+                            isManager={isManager}
+                            onLanguageUpdated={handleLanguageUpdated}
+                          />
+                        )}
 
-            {/* Members tab */}
-            <Tabs.Panel value="members" pt={isMobile ? 'md' : undefined}>
-              <Stack gap="lg">
-                <ProjectMembersTab
-                  projectId={project.id}
-                  members={members}
-                  isAdmin={isAdmin}
-                  currentUserId={user?.id}
-                  onMembersChange={setMembers}
-                  onInviteCreated={(inv) => setInvites((prev) => [inv, ...prev])}
-                  onLeave={() => setConfirmLeaveOpen(true)}
-                  onError={setError}
-                />
-                {isAdmin && invites.length > 0 && (
-                  <ProjectInvitesTab
-                    projectId={project.id}
-                    invites={invites}
-                    onInvitesChange={setInvites}
-                    onError={setError}
-                  />
-                )}
-              </Stack>
-            </Tabs.Panel>
+                        {/* Glossary tab */}
+                        {activeTab === 'glossary' && (
+                          <ProjectGlossaryTab
+                            languages={languages}
+                            isManager={isManager}
+                            onLanguageUpdated={handleLanguageUpdated}
+                          />
+                        )}
 
-            {/* Notifications tab */}
-            <Tabs.Panel value="notifications" pt={isMobile ? 'md' : undefined}>
-              <ProjectNotificationsTab projectId={project.id} />
-            </Tabs.Panel>
+                        {/* Members tab */}
+                        {activeTab === 'members' && (
+                          <Stack gap="lg">
+                            <ProjectMembersTab
+                              projectId={project.id}
+                              members={members}
+                              isAdmin={isAdmin}
+                              currentUserId={user?.id}
+                              onMembersChange={setMembers}
+                              onInviteCreated={(inv) => setInvites((prev) => [inv, ...prev])}
+                              onLeave={() => setConfirmLeaveOpen(true)}
+                              onError={setError}
+                            />
+                            {isAdmin && invites.length > 0 && (
+                              <ProjectInvitesTab
+                                projectId={project.id}
+                                invites={invites}
+                                onInvitesChange={setInvites}
+                                onError={setError}
+                              />
+                            )}
+                          </Stack>
+                        )}
 
-            {/* Danger zone tab */}
-            <Tabs.Panel value="danger" pt={isMobile ? 'md' : undefined}>
-              <Stack gap="md">
-                {isAdmin && (
-                  <Paper withBorder p="md" style={{ borderColor: 'var(--mantine-color-red-4)' }}>
-                    <Group justify="space-between" align="center">
-                      <div>
-                        <Text size="sm" fw={500}>
-                          {t('Delete this project')}
-                        </Text>
-                        <Text size="xs" c="dimmed">
-                          {t(
-                            'Permanently delete this project, all languages, and all entries. This cannot be undone.',
-                          )}
-                        </Text>
-                      </div>
-                      <motion.div {...buttonStates}>
-                        <Button
-                          color="red"
-                          variant="outline"
-                          leftSection={<Trash2 size={14} />}
-                          onClick={() => setConfirmDeleteOpen(true)}
-                        >
-                          {t('Delete project')}
-                        </Button>
-                      </motion.div>
-                    </Group>
-                  </Paper>
-                )}
+                        {/* Notifications tab */}
+                        {activeTab === 'notifications' && (
+                          <ProjectNotificationsTab projectId={project.id} />
+                        )}
 
-                <Paper withBorder p="md" style={{ borderColor: 'var(--mantine-color-orange-4)' }}>
-                  <Group justify="space-between" align="center">
-                    <div>
-                      <Text size="sm" fw={500}>
-                        {t('Leave this project')}
-                      </Text>
-                      <Text size="xs" c="dimmed">
-                        {t('Remove yourself from this project.')}
-                      </Text>
-                    </div>
-                    <motion.div {...buttonStates}>
-                      <Button
-                        color="orange"
-                        variant="outline"
-                        leftSection={<LogOut size={14} />}
-                        onClick={() => setConfirmLeaveOpen(true)}
-                      >
-                        {t('Leave project')}
-                      </Button>
-                    </motion.div>
-                  </Group>
-                </Paper>
-              </Stack>
-            </Tabs.Panel>
-          </Tabs>
-        </Stack>
-      </MotionDiv>
+                        {/* Danger zone tab */}
+                        {activeTab === 'danger' && (
+                          <Stack gap="md">
+                            {isAdmin && (
+                              <Paper
+                                withBorder
+                                p="md"
+                                style={{ borderColor: 'var(--mantine-color-red-4)' }}
+                              >
+                                <Group justify="space-between" align="center">
+                                  <div>
+                                    <Text size="sm" fw={500}>
+                                      {t('Delete this project')}
+                                    </Text>
+                                    <Text size="xs" c="dimmed">
+                                      {t(
+                                        'Permanently delete this project, all languages, and all entries. This cannot be undone.',
+                                      )}
+                                    </Text>
+                                  </div>
+                                  <motion.div {...buttonStates}>
+                                    <Button
+                                      color="red"
+                                      variant="outline"
+                                      leftSection={<Trash2 size={14} />}
+                                      onClick={() => setConfirmDeleteOpen(true)}
+                                    >
+                                      {t('Delete project')}
+                                    </Button>
+                                  </motion.div>
+                                </Group>
+                              </Paper>
+                            )}
 
-      <AddLanguageModal
-        opened={addLanguageOpen}
-        onClose={() => setAddLanguageOpen(false)}
-        projectId={project.id}
-        existingLanguages={languages}
-        wpProjectType={project.wp_project_type}
-        wpSlug={project.wp_slug}
-        onLanguageAdded={() => {
-          setAddLanguageOpen(false);
-          setRefreshKey((k) => k + 1);
-        }}
-      />
-
-      <ConfirmModal
-        opened={confirmDeleteOpen}
-        onClose={() => setConfirmDeleteOpen(false)}
-        onConfirm={() => void handleDelete()}
-        title={t('Delete project')}
-        message={t(
-          'Are you sure you want to delete "{{name}}"? All languages and entries will be permanently removed.',
-          { name: project.name },
+                            <Paper
+                              withBorder
+                              p="md"
+                              style={{ borderColor: 'var(--mantine-color-orange-4)' }}
+                            >
+                              <Group justify="space-between" align="center">
+                                <div>
+                                  <Text size="sm" fw={500}>
+                                    {t('Leave this project')}
+                                  </Text>
+                                  <Text size="xs" c="dimmed">
+                                    {t('Remove yourself from this project.')}
+                                  </Text>
+                                </div>
+                                <motion.div {...buttonStates}>
+                                  <Button
+                                    color="orange"
+                                    variant="outline"
+                                    leftSection={<LogOut size={14} />}
+                                    onClick={() => setConfirmLeaveOpen(true)}
+                                  >
+                                    {t('Leave project')}
+                                  </Button>
+                                </motion.div>
+                              </Group>
+                            </Paper>
+                          </Stack>
+                        )}
+                      </Box>
+                    </AnimatedTabPanel>
+                  </Box>
+                </Box>
+              </MotionDiv>
+            </Stack>
+          </MotionDiv>
         )}
-        confirmLabel={t('Delete project')}
-        variant="danger"
-        loading={deleting}
-      />
+      </AnimatedStateSwitch>
 
-      <ConfirmModal
-        opened={confirmLeaveOpen}
-        onClose={() => setConfirmLeaveOpen(false)}
-        onConfirm={() => void handleLeave()}
-        title={t('Leave project')}
-        message={t('Are you sure you want to leave "{{name}}"?', { name: project.name })}
-        confirmLabel={t('Leave project')}
-        variant="warning"
-        loading={leaveLoading}
-      />
+      {project && (
+        <>
+          <AddLanguageModal
+            opened={addLanguageOpen}
+            onClose={() => setAddLanguageOpen(false)}
+            projectId={project.id}
+            existingLanguages={languages}
+            wpProjectType={project.wp_project_type}
+            wpSlug={project.wp_slug}
+            onLanguageAdded={() => {
+              setAddLanguageOpen(false);
+              setRefreshKey((k) => k + 1);
+            }}
+          />
+
+          <ConfirmModal
+            opened={confirmDeleteOpen}
+            onClose={() => setConfirmDeleteOpen(false)}
+            onConfirm={() => void handleDelete()}
+            title={t('Delete project')}
+            message={t(
+              'Are you sure you want to delete "{{name}}"? All languages and entries will be permanently removed.',
+              { name: project.name },
+            )}
+            confirmLabel={t('Delete project')}
+            variant="danger"
+            loading={deleting}
+          />
+
+          <ConfirmModal
+            opened={confirmLeaveOpen}
+            onClose={() => setConfirmLeaveOpen(false)}
+            onConfirm={() => void handleLeave()}
+            title={t('Leave project')}
+            message={t('Are you sure you want to leave "{{name}}"?', { name: project.name })}
+            confirmLabel={t('Leave project')}
+            variant="warning"
+            loading={leaveLoading}
+          />
+        </>
+      )}
     </Box>
   );
 }

@@ -3,6 +3,9 @@
  *
  * Two-tier hybrid: ambient tween for content + interactive spring for feedback.
  * All animations use consistent patterns — no random pop/bounce.
+ *
+ * Easing: expo-out [0.16, 1, 0.3, 1] — sharp attack, smooth deceleration.
+ * Inspired by Linear, Vercel, Raycast animation systems.
  */
 
 import type { Variants, Transition } from 'motion/react';
@@ -11,16 +14,19 @@ import type { Variants, Transition } from 'motion/react';
 // TRANSITIONS (Two-tier system)
 // ============================================================================
 
+/** Expo-out easing — responsive attack, smooth deceleration */
+const expoOut: [number, number, number, number] = [0.16, 1, 0.3, 1];
+
 /** Ambient enter — tween for content appearing */
 export const ambientEnter: Transition = {
-  duration: 0.2,
-  ease: [0.25, 0.1, 0.25, 1.0],
+  duration: 0.3,
+  ease: expoOut,
 };
 
-/** Ambient exit — 30% faster than enter */
+/** Ambient exit — faster than enter */
 export const ambientExit: Transition = {
-  duration: 0.14,
-  ease: [0.25, 0.1, 0.25, 1.0],
+  duration: 0.18,
+  ease: expoOut,
 };
 
 /** Interactive spring — for button/badge feedback */
@@ -110,6 +116,34 @@ export const sectionVariants: Variants = {
   },
 };
 
+/** Route-level page crossfade */
+export const pageVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { duration: 0.15, ease: expoOut },
+  },
+  exit: {
+    opacity: 0,
+    transition: { duration: 0.1, ease: expoOut },
+  },
+};
+
+/** Tab panel content switches */
+export const tabPanelVariants: Variants = {
+  hidden: { opacity: 0, y: 6 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.25, ease: expoOut },
+  },
+  exit: {
+    opacity: 0,
+    y: -4,
+    transition: { duration: 0.15, ease: expoOut },
+  },
+};
+
 /** Filter badges, status chips (spring-based) */
 export const badgeVariants: Variants = {
   hidden: { opacity: 0, scale: 0.85 },
@@ -125,20 +159,29 @@ export const badgeVariants: Variants = {
   },
 };
 
-/** Groups of 3+ items */
-export const staggerContainerVariants: Variants = {
-  hidden: { opacity: 0 },
+/** Page-level stagger — orchestrates major sections */
+export const staggerPageVariants: Variants = {
+  hidden: {},
   visible: {
-    opacity: 1,
     transition: {
-      staggerChildren: 0.06,
+      staggerChildren: 0.08,
+      delayChildren: 0.04,
+    },
+  },
+};
+
+/** Groups of 3+ items — container orchestrates, children animate */
+export const staggerContainerVariants: Variants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.04,
       delayChildren: 0.02,
     },
   },
   exit: {
-    opacity: 0,
     transition: {
-      staggerChildren: 0.03,
+      staggerChildren: 0.02,
       staggerDirection: -1,
     },
   },
@@ -186,14 +229,21 @@ export const iconStates = {
 };
 
 // ============================================================================
+// CONSTANTS
+// ============================================================================
+
+/** Sidebar collapse/expand CSS transition */
+export const SIDEBAR_TRANSITION = 'width 200ms cubic-bezier(0.16, 1, 0.3, 1)';
+
+// ============================================================================
 // UTILITY FUNCTIONS
 // ============================================================================
 
 /**
- * Create stagger delay for list items
+ * Create stagger delay for list items (capped to prevent long cascades)
  */
-export function getStaggerDelay(index: number, baseDelay = 0.06): number {
-  return index * baseDelay;
+export function getStaggerDelay(index: number, baseDelay = 0.04, maxItems = 10): number {
+  return Math.min(index, maxItems) * baseDelay;
 }
 
 /**

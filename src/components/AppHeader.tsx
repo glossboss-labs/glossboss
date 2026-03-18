@@ -19,7 +19,7 @@ import {
 import { useMediaQuery } from '@mantine/hooks';
 import { motion } from 'motion/react';
 import { Sun, Moon, Globe, LayoutDashboard } from 'lucide-react';
-import { sectionVariants, buttonStates } from '@/lib/motion';
+import { fadeVariants, buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
 import { useAuth } from '@/hooks/use-auth';
 import { useNotifications } from '@/hooks/use-notifications';
@@ -67,7 +67,7 @@ export function AppHeader({ actions }: AppHeaderProps) {
   useNotifications();
 
   return (
-    <MotionDiv variants={sectionVariants} initial="hidden" animate="visible">
+    <MotionDiv variants={fadeVariants} initial="hidden" animate="visible">
       <Group justify="space-between" align="center" mb="lg">
         {/* Left: branding */}
         <Link
