@@ -33,10 +33,7 @@ jobs:
               - 'public/**'
               - 'index.html'
               - 'vite.config.ts'
-              - 'vitest.config.ts'
               - 'tsconfig*.json'
-              - 'eslint.config.js'
-              - '.prettierrc.json'
               - 'package.json'
               - 'pnpm-lock.yaml'
             i18n:
