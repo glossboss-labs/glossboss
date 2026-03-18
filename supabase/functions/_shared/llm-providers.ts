@@ -20,15 +20,15 @@ export interface LlmProviderDef {
 export const LLM_PROVIDERS: Record<string, LlmProviderDef> = {
   openai: {
     sdk: 'openai',
-    defaultModel: 'gpt-4o-mini',
+    defaultModel: 'gpt-4.1-mini',
   },
   anthropic: {
     sdk: 'anthropic',
-    defaultModel: 'claude-sonnet-4-20250514',
+    defaultModel: 'claude-sonnet-4-6',
   },
   google: {
     sdk: 'google',
-    defaultModel: 'gemini-2.0-flash-lite',
+    defaultModel: 'gemini-2.5-flash',
   },
   mistral: {
     sdk: 'mistral',

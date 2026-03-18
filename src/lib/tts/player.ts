@@ -242,8 +242,8 @@ export function primeElevenLabsVoices(
 
   if (!settings.sourceElevenLabsVoiceId || !settings.translationElevenLabsVoiceId) {
     saveTtsSettings({
-      sourceElevenLabsVoiceId: settings.sourceElevenLabsVoiceId ?? voices[0].voiceId,
-      translationElevenLabsVoiceId: settings.translationElevenLabsVoiceId ?? voices[0].voiceId,
+      sourceElevenLabsVoiceId: settings.sourceElevenLabsVoiceId ?? voices[0]!.voiceId,
+      translationElevenLabsVoiceId: settings.translationElevenLabsVoiceId ?? voices[0]!.voiceId,
     });
   }
 }

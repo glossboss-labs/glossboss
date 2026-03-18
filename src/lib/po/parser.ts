@@ -204,7 +204,7 @@ function extractNplurals(pluralForms?: string): number | undefined {
   if (!pluralForms) return undefined;
 
   const match = pluralForms.match(/nplurals\s*=\s*(\d+)/i);
-  return match ? parseInt(match[1], 10) : undefined;
+  return match ? parseInt(match[1]!, 10) : undefined;
 }
 
 // ============================================================================
@@ -227,7 +227,7 @@ function splitIntoBlocks(content: string): RawEntry[] {
   let blockStartLine = 1;
 
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
+    const line = lines[i]!;
     const lineNum = i + 1;
 
     // Skip completely empty lines between blocks
@@ -277,7 +277,7 @@ function parseEntryBlock(block: RawEntry): { entry: POEntry | null; issues: Pars
   let currentPluralIndex: number | null = null;
 
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
+    const line = lines[i]!;
     const lineNum = startLine + i;
 
     // Empty line within block (shouldn't happen after splitting, but be safe)
@@ -380,8 +380,8 @@ function parseEntryBlock(block: RawEntry): { entry: POEntry | null; issues: Pars
       const match = line.match(/^msgstr\[(\d+)\]\s(.*)$/);
       if (match) {
         currentKey = 'msgstr';
-        currentPluralIndex = parseInt(match[1], 10);
-        const { value, valid } = extractQuotedString(match[2]);
+        currentPluralIndex = parseInt(match[1]!, 10);
+        const { value, valid } = extractQuotedString(match[2]!);
         if (!valid) {
           issues.push(
             createIssue(
@@ -538,7 +538,7 @@ export function parsePOFileWithDiagnostics(
   const seenMsgids = new Map<string, number>(); // For duplicate detection
 
   for (let i = 0; i < blocks.length; i++) {
-    const block = blocks[i];
+    const block = blocks[i]!;
     const { entry, issues } = parseEntryBlock(block);
 
     // Collect issues

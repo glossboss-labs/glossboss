@@ -26,32 +26,32 @@ describe('translation usage tracking', () => {
   });
 
   it('accumulates characters across multiple recordings', () => {
-    recordTranslationUsage('gemini', 50);
-    recordTranslationUsage('gemini', 75);
-    recordTranslationUsage('gemini', 25);
-    const usage = getTranslationUsage('gemini');
+    recordTranslationUsage('google', 50);
+    recordTranslationUsage('google', 75);
+    recordTranslationUsage('google', 25);
+    const usage = getTranslationUsage('google');
     expect(usage.characterCount).toBe(150);
     expect(usage.translationCount).toBe(3);
   });
 
   it('tracks providers independently', () => {
     recordTranslationUsage('azure', 200);
-    recordTranslationUsage('gemini', 300);
+    recordTranslationUsage('google', 300);
     recordTranslationUsage('deepl', 400);
 
     expect(getTranslationUsage('azure').characterCount).toBe(200);
-    expect(getTranslationUsage('gemini').characterCount).toBe(300);
+    expect(getTranslationUsage('google').characterCount).toBe(300);
     expect(getTranslationUsage('deepl').characterCount).toBe(400);
   });
 
   it('resets usage for a specific provider without affecting others', () => {
     recordTranslationUsage('azure', 100);
-    recordTranslationUsage('gemini', 200);
+    recordTranslationUsage('google', 200);
 
     resetTranslationUsage('azure');
 
     expect(getTranslationUsage('azure').characterCount).toBe(0);
-    expect(getTranslationUsage('gemini').characterCount).toBe(200);
+    expect(getTranslationUsage('google').characterCount).toBe(200);
   });
 
   it('ignores zero or negative character counts', () => {

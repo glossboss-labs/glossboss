@@ -269,7 +269,7 @@ export async function commitFile(req: CommitFileRequest): Promise<CommitResult> 
   const bytes = encoder.encode(req.content);
   let binary = '';
   for (let i = 0; i < bytes.length; i++) {
-    binary += String.fromCharCode(bytes[i]);
+    binary += String.fromCharCode(bytes[i]!);
   }
   const base64Content = btoa(binary);
 

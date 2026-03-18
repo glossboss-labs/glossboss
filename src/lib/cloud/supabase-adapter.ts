@@ -79,8 +79,8 @@ export class SupabaseStorageAdapter implements StorageAdapter {
     const machineTranslatedIds: string[] = [];
 
     for (let i = 0; i < entries.length; i++) {
-      const row = entries[i];
-      const clientId = poEntries[i].id;
+      const row = entries[i]!;
+      const clientId = poEntries[i]!.id;
 
       const mtMeta = dbEntryToMTMeta(row);
       if (mtMeta) {
@@ -184,7 +184,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
         state: {
           projectName: string;
           filename: string | null;
-          sourceFormat: string;
+          sourceFormat: 'po' | 'i18next';
           header: POHeader | null;
           entries: POEntry[];
           machineTranslationMeta: [string, MachineTranslationMeta][];

@@ -33,8 +33,8 @@ describe('parsePOFile', () => {
   it('parses a minimal PO file', () => {
     const file = parsePOFile(MINIMAL_PO, 'test.po');
     expect(file.entries).toHaveLength(1);
-    expect(file.entries[0].msgid).toBe('Hello');
-    expect(file.entries[0].msgstr).toBe('Hallo');
+    expect(file.entries[0]!.msgid).toBe('Hello');
+    expect(file.entries[0]!.msgstr).toBe('Hallo');
   });
 
   it('parses header metadata', () => {
@@ -45,8 +45,8 @@ describe('parsePOFile', () => {
 
   it('parses references and flags', () => {
     const file = parsePOFile(MULTI_ENTRY_PO, 'test.po');
-    expect(file.entries[0].references).toContain('src/app.tsx:10');
-    expect(file.entries[1].flags).toContain('fuzzy');
+    expect(file.entries[0]!.references).toContain('src/app.tsx:10');
+    expect(file.entries[1]!.flags).toContain('fuzzy');
   });
 
   it('throws on empty input', () => {

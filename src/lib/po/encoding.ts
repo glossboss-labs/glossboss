@@ -152,7 +152,7 @@ function detectFromHeader(bytes: Uint8Array): SupportedEncoding | null {
   const previewLength = Math.min(bytes.length, 2000); // Check first 2KB
 
   for (let i = 0; i < previewLength; i++) {
-    const byte = bytes[i];
+    const byte = bytes[i]!;
     // Only include printable ASCII and common whitespace
     if ((byte >= 32 && byte <= 126) || byte === 10 || byte === 13 || byte === 9) {
       asciiPreview += String.fromCharCode(byte);
@@ -162,7 +162,7 @@ function detectFromHeader(bytes: Uint8Array): SupportedEncoding | null {
   // Look for charset in Content-Type
   const charsetMatch = asciiPreview.match(/[Cc]ontent-[Tt]ype:[^\n]*charset=([^\s\\"]+)/i);
   if (charsetMatch) {
-    const charset = charsetMatch[1].toLowerCase().replace(/["']/g, '');
+    const charset = charsetMatch[1]!.toLowerCase().replace(/["']/g, '');
     return normalizeEncoding(charset);
   }
 
@@ -211,7 +211,7 @@ function isValidUtf8(bytes: Uint8Array): boolean {
   let invalidCount = 0;
 
   while (i < bytes.length) {
-    const byte = bytes[i];
+    const byte = bytes[i]!;
 
     if (byte < 0x80) {
       // ASCII
@@ -219,7 +219,7 @@ function isValidUtf8(bytes: Uint8Array): boolean {
     } else if (byte >= 0xc2 && byte <= 0xdf) {
       // 2-byte sequence
       nonAsciiCount++;
-      if (i + 1 >= bytes.length || (bytes[i + 1] & 0xc0) !== 0x80) {
+      if (i + 1 >= bytes.length || (bytes[i + 1]! & 0xc0) !== 0x80) {
         invalidCount++;
         i++;
       } else {
@@ -230,8 +230,8 @@ function isValidUtf8(bytes: Uint8Array): boolean {
       nonAsciiCount++;
       if (
         i + 2 >= bytes.length ||
-        (bytes[i + 1] & 0xc0) !== 0x80 ||
-        (bytes[i + 2] & 0xc0) !== 0x80
+        (bytes[i + 1]! & 0xc0) !== 0x80 ||
+        (bytes[i + 2]! & 0xc0) !== 0x80
       ) {
         invalidCount++;
         i++;
@@ -243,9 +243,9 @@ function isValidUtf8(bytes: Uint8Array): boolean {
       nonAsciiCount++;
       if (
         i + 3 >= bytes.length ||
-        (bytes[i + 1] & 0xc0) !== 0x80 ||
-        (bytes[i + 2] & 0xc0) !== 0x80 ||
-        (bytes[i + 3] & 0xc0) !== 0x80
+        (bytes[i + 1]! & 0xc0) !== 0x80 ||
+        (bytes[i + 2]! & 0xc0) !== 0x80 ||
+        (bytes[i + 3]! & 0xc0) !== 0x80
       ) {
         invalidCount++;
         i++;

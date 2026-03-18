@@ -25,8 +25,8 @@ function isWordBoundary(char: string): boolean {
  * Check word boundaries around a match
  */
 function checkWordBoundaries(text: string, start: number, end: number): boolean {
-  const beforeChar = start > 0 ? text[start - 1] : ' ';
-  const afterChar = end < text.length ? text[end] : ' ';
+  const beforeChar = start > 0 ? text[start - 1]! : ' ';
+  const afterChar = end < text.length ? text[end]! : ' ';
   return isWordBoundary(beforeChar) && isWordBoundary(afterChar);
 }
 

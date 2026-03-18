@@ -14,7 +14,7 @@ import { getGeminiSettings, isGeminiPersistEnabled } from './gemini';
 import { getActiveTranslationProvider } from './translation';
 
 const baseSnapshot: AppSettingsSnapshot = {
-  translationProvider: 'gemini',
+  translationProvider: 'google',
   deepl: {
     apiKey: 'deepl-key',
     apiType: 'pro',
@@ -83,7 +83,7 @@ describe('app settings', () => {
     );
 
     expect(parseAppSettingsFile(content)).toMatchObject({
-      translationProvider: 'gemini',
+      translationProvider: 'google',
       deepl: {
         apiType: 'pro',
         formality: 'prefer_more',

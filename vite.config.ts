@@ -72,7 +72,7 @@ export default defineConfig({
     __GIT_BRANCH__: JSON.stringify(gitBranch),
   },
   build: {
-    assetsInlineLimit: 100000,
+    assetsInlineLimit: 4096,
     rollupOptions: {
       output: {
         manualChunks: {

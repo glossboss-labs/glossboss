@@ -129,7 +129,7 @@ export function getCountryCode(langCode: string): string | null {
   const normalized = langCode.toLowerCase().replace(/-/g, '_');
 
   // Try full locale first (e.g. "en_us"), then base language (e.g. "en")
-  return LANG_TO_COUNTRY[normalized] ?? LANG_TO_COUNTRY[normalized.split('_')[0]] ?? null;
+  return LANG_TO_COUNTRY[normalized] ?? LANG_TO_COUNTRY[normalized.split('_')[0]!] ?? null;
 }
 
 /**

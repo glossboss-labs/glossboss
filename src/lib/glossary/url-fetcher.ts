@@ -51,11 +51,11 @@ export async function fetchGlossaryFromUrl(url: string): Promise<FetchResult> {
       };
     }
 
-    if (data.ok === false || data.error) {
+    if (!data || data.ok === false || data.error) {
       return {
         glossary: null,
         fromCache: false,
-        error: data.message || data.error || 'Glossary URL fetch returned ok:false',
+        error: data?.message || data?.error || 'Glossary URL fetch returned ok:false',
       };
     }
 

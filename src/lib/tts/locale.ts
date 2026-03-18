@@ -8,12 +8,13 @@ export function toSpeakLanguageTag(value: string | null | undefined): string | n
   if (parts.length === 0) return null;
 
   const [base, second, ...rest] = parts;
+  if (!base) return null;
   const normalizedSecond = !second
     ? undefined
     : second.length === 4
-      ? `${second[0].toUpperCase()}${second.slice(1).toLowerCase()}`
+      ? `${second[0]!.toUpperCase()}${second.slice(1).toLowerCase()}`
       : second.toUpperCase();
-  const normalized = [base.toLowerCase(), normalizedSecond, ...rest].filter(Boolean);
+  const normalized = [base!.toLowerCase(), normalizedSecond, ...rest].filter(Boolean);
 
   return normalized.join('-');
 }

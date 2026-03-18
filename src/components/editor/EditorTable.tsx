@@ -11,7 +11,7 @@ import {
   useRef,
   type KeyboardEvent,
   createContext,
-  useContext,
+  use,
   useMemo,
   memo,
   useEffect,
@@ -639,7 +639,7 @@ function SourceKeyBadge({ keyText }: { keyText: string }) {
  */
 function SourceCell({ entry }: { entry: POEntry }) {
   const { t } = useTranslation();
-  const translateSettings = useContext(TranslateSettingsContext);
+  const translateSettings = use(TranslateSettingsContext);
   const sourceLang = toSpeakLanguageTag(translateSettings.sourceLang);
   const hasPlural = Boolean(entry.msgidPlural);
   const hasSourceText = Boolean(entry.sourceText);
@@ -993,9 +993,8 @@ function TranslationCell({
     return lock ? lock.userId : null;
   });
 
-  const translateSettings = useContext(TranslateSettingsContext);
-  const { broadcastEntryUpdate, broadcastLock, broadcastUnlock } =
-    useContext(RealtimeBroadcastContext);
+  const translateSettings = use(TranslateSettingsContext);
+  const { broadcastEntryUpdate, broadcastLock, broadcastUnlock } = use(RealtimeBroadcastContext);
 
   const handleEditStart = useCallback(() => {
     broadcastLock?.(entry.id);
@@ -1008,7 +1007,7 @@ function TranslationCell({
   const pluralForms = useMemo(() => entry.msgstrPlural ?? [], [entry.msgstrPlural]);
   const glossaryAnalysis = signalsColumnHidden ? getGlossaryAnalysis(entry.id) : null;
   const translationLang = toSpeakLanguageTag(translateSettings.targetLang);
-  const editorReadOnly = useContext(ReadOnlyContext);
+  const editorReadOnly = use(ReadOnlyContext);
   const isReviewEntryLocked = isReviewLocked(reviewStatus, lockApprovedEntries);
   const isRemoteLocked = Boolean(remoteLock && localUserId !== undefined);
   const isLocked = editorReadOnly || isReviewEntryLocked || isRemoteLocked;
@@ -1590,7 +1589,7 @@ function ReviewCommentsPanel({
   const addReviewComment = useEditorStore((state) => state.addReviewComment);
   const setReviewCommentResolved = useEditorStore((state) => state.setReviewCommentResolved);
   const reviewerName = useEditorStore((state) => state.reviewerName);
-  const { broadcastReviewEvent } = useContext(RealtimeBroadcastContext);
+  const { broadcastReviewEvent } = use(RealtimeBroadcastContext);
   const [draftComment, setDraftComment] = useState('');
   const [replyTo, setReplyTo] = useState<string | null>(null);
 
@@ -1729,8 +1728,8 @@ function ReviewPanel({
   const addFuzzyBatch = useEditorStore((state) => state.addFuzzyBatch);
   const lockApprovedEntries = useEditorStore((state) => state.lockApprovedEntries);
   const reviewerName = useEditorStore((state) => state.reviewerName);
-  const { broadcastReviewEvent } = useContext(RealtimeBroadcastContext);
-  const editorReadOnly = useContext(ReadOnlyContext);
+  const { broadcastReviewEvent } = use(RealtimeBroadcastContext);
+  const editorReadOnly = use(ReadOnlyContext);
   const translationStatus = getTranslationStatus(entry.msgstr, entry.flags, entry.msgstrPlural);
   const locked = editorReadOnly || isReviewLocked(reviewEntry.status, lockApprovedEntries);
   const unresolvedCount = reviewEntry.comments.filter((comment) => !comment.resolvedAt).length;

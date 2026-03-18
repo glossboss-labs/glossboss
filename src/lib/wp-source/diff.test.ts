@@ -3,13 +3,11 @@ import { diffEntriesAgainstTemplate } from './diff';
 
 function createEntry(overrides: Partial<POEntry> & Pick<POEntry, 'id' | 'msgid'>): POEntry {
   return {
-    id: overrides.id,
-    msgid: overrides.msgid,
-    msgstr: overrides.msgstr ?? '',
-    translatorComments: overrides.translatorComments ?? [],
-    extractedComments: overrides.extractedComments ?? [],
-    references: overrides.references ?? [],
-    flags: overrides.flags ?? [],
+    msgstr: '',
+    translatorComments: [],
+    extractedComments: [],
+    references: [],
+    flags: [],
     ...overrides,
   };
 }

@@ -13,7 +13,7 @@
 
 /* eslint-disable react-refresh/only-export-components -- context + hooks are co-located by design */
 
-import { createContext, useContext, useMemo, type ReactNode } from 'react';
+import { createContext, use, useMemo, type ReactNode } from 'react';
 import { useLocalStorage } from '@mantine/hooks';
 import {
   TRANSLATION_PROVIDER_STORAGE_KEY,
@@ -80,7 +80,7 @@ export interface TranslationProviderInfo {
  * Returns the provider ID + metadata about where it came from.
  */
 export function useTranslationProviderInfo(): TranslationProviderInfo {
-  const ctx = useContext(TranslationProviderContext);
+  const ctx = use(TranslationProviderContext);
   const [providerState] = useLocalStorage<TranslationProviderSettings>({
     key: TRANSLATION_PROVIDER_STORAGE_KEY,
     defaultValue: { provider: 'deepl', updatedAt: 0 },

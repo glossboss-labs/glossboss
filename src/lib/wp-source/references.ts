@@ -119,7 +119,7 @@ export function normalizeSourcePath(
 
 function extractVersion(projectIdVersion: string): string | null {
   const match = projectIdVersion.match(/[\s_-]+v?([\d][\d.]*(?:-[\w.]+)?)\s*$/);
-  return match ? match[1] : null;
+  return match ? match[1]! : null;
 }
 
 function slugifyProjectName(value: string): string | null {
@@ -172,7 +172,7 @@ function detectSlugFromHeader(header: POHeader): string | null {
   const reportUrl = header.reportMsgidBugsTo ?? '';
   const reportMatch = reportUrl.match(/\/support\/(plugin|theme)\/([a-z0-9-]+)\//i);
   if (reportMatch) {
-    return reportMatch[2].toLowerCase();
+    return reportMatch[2]!.toLowerCase();
   }
 
   const domain =

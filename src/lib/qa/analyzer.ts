@@ -74,7 +74,9 @@ function extractHtmlTags(value: string): string[] {
 }
 
 function extractIcuVariables(value: string): string[] {
-  return Array.from(value.matchAll(/\{([a-zA-Z_][\w.-]*)(?:,[^{}]+)?\}/g)).map((match) => match[1]);
+  return Array.from(value.matchAll(/\{([a-zA-Z_][\w.-]*)(?:,[^{}]+)?\}/g)).map(
+    (match) => match[1]!,
+  );
 }
 
 function getWhitespaceSignature(value: string): {

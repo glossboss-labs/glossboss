@@ -67,7 +67,7 @@ function wrapString(str: string, width: number): string[] {
   const parts = escaped.split('\\n');
 
   for (let i = 0; i < parts.length; i++) {
-    const part = parts[i];
+    const part = parts[i]!;
     const suffix = i < parts.length - 1 ? '\\n' : '';
 
     // If this part is short enough, add it as one line
@@ -189,25 +189,25 @@ function serializeEntry(entry: POEntry, options: SerializeOptions): string {
   // msgctxt (message context)
   if (entry.msgctxt) {
     const wrapped = wrapString(entry.msgctxt, wrapWidth);
-    lines.push(`msgctxt ${wrapped[0]}`);
+    lines.push(`msgctxt ${wrapped[0]!}`);
     for (let i = 1; i < wrapped.length; i++) {
-      lines.push(wrapped[i]);
+      lines.push(wrapped[i]!);
     }
   }
 
   // msgid (source string)
   const msgidWrapped = wrapString(entry.msgid, wrapWidth);
-  lines.push(`msgid ${msgidWrapped[0]}`);
+  lines.push(`msgid ${msgidWrapped[0]!}`);
   for (let i = 1; i < msgidWrapped.length; i++) {
-    lines.push(msgidWrapped[i]);
+    lines.push(msgidWrapped[i]!);
   }
 
   // msgid_plural (plural source string)
   if (entry.msgidPlural) {
     const wrapped = wrapString(entry.msgidPlural, wrapWidth);
-    lines.push(`msgid_plural ${wrapped[0]}`);
+    lines.push(`msgid_plural ${wrapped[0]!}`);
     for (let i = 1; i < wrapped.length; i++) {
-      lines.push(wrapped[i]);
+      lines.push(wrapped[i]!);
     }
   }
 
@@ -216,9 +216,9 @@ function serializeEntry(entry: POEntry, options: SerializeOptions): string {
     // Plural forms
     for (let i = 0; i < entry.msgstrPlural.length; i++) {
       const wrapped = wrapString(entry.msgstrPlural[i] ?? '', wrapWidth);
-      lines.push(`msgstr[${i}] ${wrapped[0]}`);
+      lines.push(`msgstr[${i}] ${wrapped[0]!}`);
       for (let j = 1; j < wrapped.length; j++) {
-        lines.push(wrapped[j]);
+        lines.push(wrapped[j]!);
       }
     }
   } else if (entry.msgidPlural) {
@@ -228,9 +228,9 @@ function serializeEntry(entry: POEntry, options: SerializeOptions): string {
   } else {
     // Singular form
     const msgstrWrapped = wrapString(entry.msgstr ?? '', wrapWidth);
-    lines.push(`msgstr ${msgstrWrapped[0]}`);
+    lines.push(`msgstr ${msgstrWrapped[0]!}`);
     for (let i = 1; i < msgstrWrapped.length; i++) {
-      lines.push(msgstrWrapped[i]);
+      lines.push(msgstrWrapped[i]!);
     }
   }
 

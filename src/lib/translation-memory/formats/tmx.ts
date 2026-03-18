@@ -85,7 +85,7 @@ export function parseTranslationMemoryTmx(content: string): {
     const props = new Map<string, string>();
     const propMatches = tu.matchAll(/<prop type="([^"]+)">([\s\S]*?)<\/prop>/g);
     for (const match of propMatches) {
-      props.set(match[1], match[2]);
+      props.set(match[1]!, match[2]!);
     }
 
     const tuvMatches = Array.from(
@@ -93,12 +93,12 @@ export function parseTranslationMemoryTmx(content: string): {
     );
     if (tuvMatches.length < 2) continue;
 
-    const sourceLang = decodeXml(tuvMatches[0][1]);
-    const sourceText = decodeXml(tuvMatches[0][2]);
+    const sourceLang = decodeXml(tuvMatches[0]![1]!);
+    const sourceText = decodeXml(tuvMatches[0]![2]!);
     const targetLanguage = decodeXml(
-      readProp(props, 'x-glossboss-target-language') ?? tuvMatches[1][1] ?? 'und',
+      readProp(props, 'x-glossboss-target-language') ?? tuvMatches[1]![1]! ?? 'und',
     );
-    const targetText = decodeXml(tuvMatches[1][2]);
+    const targetText = decodeXml(tuvMatches[1]![2]!);
     const projectName = readProp(props, 'x-glossboss-project') ?? 'Imported TMX';
 
     scope ??= {

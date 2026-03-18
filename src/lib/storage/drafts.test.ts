@@ -25,7 +25,7 @@ function makeDraft(overrides: Partial<{ filename: string; entries: POEntry[] }> 
       msgid: 'hello',
       msgstr: ['hallo'],
       comments: {},
-    } as POEntry,
+    } as unknown as POEntry,
   ];
   return {
     filename: overrides.filename ?? 'test.po',

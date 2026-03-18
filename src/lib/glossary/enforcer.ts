@@ -36,9 +36,9 @@ function findTermInText(
 
   while (index !== -1) {
     // Check word boundaries
-    const before = index > 0 ? lowerText[index - 1] : ' ';
+    const before = index > 0 ? lowerText[index - 1]! : ' ';
     const after =
-      index + lowerTerm.length < lowerText.length ? lowerText[index + lowerTerm.length] : ' ';
+      index + lowerTerm.length < lowerText.length ? lowerText[index + lowerTerm.length]! : ' ';
 
     const isWordBoundaryBefore = /[\s,.!?;:()[\]{}"'<>\-/]/.test(before);
     const isWordBoundaryAfter = /[\s,.!?;:()[\]{}"'<>\-/]/.test(after);
@@ -124,10 +124,10 @@ export function applyGlossaryToTranslation(
       let wordEnd = compoundIndex + lowerExpected.length;
 
       // Expand to find full word
-      while (wordStart > 0 && /[a-zA-Z\u00C0-\u017F]/.test(lowerResult[wordStart - 1])) {
+      while (wordStart > 0 && /[a-zA-Z\u00C0-\u017F]/.test(lowerResult[wordStart - 1]!)) {
         wordStart--;
       }
-      while (wordEnd < lowerResult.length && /[a-zA-Z\u00C0-\u017F]/.test(lowerResult[wordEnd])) {
+      while (wordEnd < lowerResult.length && /[a-zA-Z\u00C0-\u017F]/.test(lowerResult[wordEnd]!)) {
         wordEnd++;
       }
 

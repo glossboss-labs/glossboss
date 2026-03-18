@@ -29,5 +29,5 @@ function hashString(str: string): number {
 }
 
 export function getUserColor(userId: string): string {
-  return PALETTE[hashString(userId) % PALETTE.length];
+  return PALETTE[hashString(userId) % PALETTE.length]!;
 }

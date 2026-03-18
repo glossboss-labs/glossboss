@@ -37,16 +37,14 @@ export async function submitFeedbackIssue(
         );
       }
 
-      const errorBody = (await readSupabaseFunctionError(
-        response,
-      )) as Partial<FeedbackIssueResponse>;
+      const errorBody = (await readSupabaseFunctionError(response)) as Record<string, unknown>;
       const message =
-        typeof errorBody.message === 'string'
-          ? errorBody.message
+        typeof errorBody['message'] === 'string'
+          ? errorBody['message']
           : `Feedback request failed with HTTP ${response?.status ?? 'unknown'}`;
       const code =
-        typeof errorBody.code === 'string'
-          ? errorBody.code
+        typeof errorBody['code'] === 'string'
+          ? errorBody['code']
           : `HTTP_${response?.status ?? 'UNKNOWN'}`;
       throw new FeedbackSubmissionError(message, code);
     }

@@ -86,7 +86,7 @@ describe('prepareForTranslation', () => {
     // "Custom Post" should be replaced as a single match, not "Post" separately
     expect(result.placeholders.size).toBe(1);
     const info = [...result.placeholders.values()][0];
-    expect(info.entry.term).toBe('Custom Post');
+    expect(info!.entry.term).toBe('Custom Post');
   });
 });
 
