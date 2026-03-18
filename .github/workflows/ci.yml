@@ -49,7 +49,7 @@ jobs:
     needs: detect-changes
     if: needs.detect-changes.outputs.src == 'true' || needs.detect-changes.outputs.ci == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 7
+    timeout-minutes: 5
 
     steps:
       - uses: actions/checkout@v6
@@ -64,20 +64,63 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Lint
-        run: pnpm run lint
-
-      - name: Format check
-        run: pnpm run format:check
-
       - name: Register TypeScript problem matcher
         run: echo "::add-matcher::.github/matchers/tsc.json"
 
-      - name: Typecheck
-        run: pnpm run typecheck
+      - name: Check (lint + format + typecheck)
+        run: pnpm run typecheck && pnpm run lint && pnpm run format:check
 
       - name: Build
         run: pnpm run build
+
+      # i18n check (runs in same job to avoid duplicate setup)
+      - name: Check i18n sync
+        if: needs.detect-changes.outputs.i18n == 'true' || needs.detect-changes.outputs.ci == 'true'
+        run: |
+          pnpm run i18n:sync-en -- --check
+          pnpm run i18n:extract
+          git diff --exit-code src/lib/app-language/locales/
+
+      - name: i18n summary
+        if: always() && (needs.detect-changes.outputs.i18n == 'true' || needs.detect-changes.outputs.ci == 'true')
+        run: |
+          {
+            echo "## i18n Status"
+            echo ""
+            echo "| Language | Untranslated |"
+            echo "|----------|-------------|"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          for po in src/lib/app-language/locales/app.*.po; do
+            lang=$(echo "$po" | sed 's/.*app\.\(.*\)\.po/\1/')
+            if [ "$lang" = "en" ]; then continue; fi
+            count=$(awk '
+              /^msgid "/ {
+                msgid = $0
+                sub(/^msgid "/, "", msgid)
+                sub(/"$/, "", msgid)
+                if (msgid == "") { in_msgid = 1; msgid = ""; next }
+                in_msgid = 0
+                next
+              }
+              in_msgid && /^"/ {
+                line = $0
+                sub(/^"/, "", line)
+                sub(/"$/, "", line)
+                msgid = msgid line
+                next
+              }
+              in_msgid { in_msgid = 0 }
+              /^msgstr ""$/ && msgid != "" { count++ }
+              /^msgstr ".+"/ { msgid = "" }
+              /^msgstr ""$/ { msgid = "" }
+              END { print count + 0 }
+            ' "$po")
+            echo "| $lang | $count |" >> "$GITHUB_STEP_SUMMARY"
+            if [ "$count" -gt 0 ]; then
+              echo "::warning::$po has $count untranslated string(s)"
+            fi
+          done
 
       - name: Summary
         if: failure()
@@ -110,78 +153,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Validate commit messages
-        run: pnpx commitlint --from "${{ github.event.pull_request.base.sha }}" --to "${{ github.event.pull_request.head.sha }}" --verbose
-
-  i18n-sync:
-    name: i18n Sync Check
-    needs: detect-changes
-    if: needs.detect-changes.outputs.i18n == 'true' || needs.detect-changes.outputs.ci == 'true'
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-
-    steps:
-      - uses: actions/checkout@v6
-
-      - uses: pnpm/action-setup@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Check English source strings are synced
-        run: pnpm run i18n:sync-en -- --check
-
-      - name: Extract and merge i18n strings
-        run: pnpm run i18n:extract
-
-      - name: Check PO/POT files are up to date
-        run: git diff --exit-code src/lib/app-language/locales/
-
-      - name: Warn about untranslated strings
-        if: always()
-        run: |
-          {
-            echo "## i18n Status"
-            echo ""
-            echo "| Language | Untranslated |"
-            echo "|----------|-------------|"
-          } >> "$GITHUB_STEP_SUMMARY"
-
-          for po in src/lib/app-language/locales/app.*.po; do
-            lang=$(echo "$po" | sed 's/.*app\.\(.*\)\.po/\1/')
-            if [ "$lang" = "en" ]; then continue; fi
-            count=$(awk '
-              /^msgid "/ {
-                msgid = $0
-                sub(/^msgid "/, "", msgid)
-                sub(/"$/, "", msgid)
-                # Start accumulating for wrapped msgid
-                if (msgid == "") { in_msgid = 1; msgid = ""; next }
-                in_msgid = 0
-                next
-              }
-              in_msgid && /^"/ {
-                line = $0
-                sub(/^"/, "", line)
-                sub(/"$/, "", line)
-                msgid = msgid line
-                next
-              }
-              in_msgid { in_msgid = 0 }
-              /^msgstr ""$/ && msgid != "" { count++ }
-              /^msgstr ".+"/ { msgid = "" }
-              /^msgstr ""$/ { msgid = "" }
-              END { print count + 0 }
-            ' "$po")
-            echo "| $lang | $count |" >> "$GITHUB_STEP_SUMMARY"
-            if [ "$count" -gt 0 ]; then
-              echo "::warning::$po has $count untranslated string(s)"
-            fi
-          done
+        run: pnpm exec commitlint --from "${{ github.event.pull_request.base.sha }}" --to "${{ github.event.pull_request.head.sha }}" --verbose
 
   tests:
     name: Tests
@@ -206,7 +178,7 @@ jobs:
       - name: Test (coverage)
         run: |
           set -o pipefail
-          pnpm run test:coverage 2>&1 | tee test-output.txt
+          pnpm run test:coverage -- --pool=forks 2>&1 | tee test-output.txt
 
       - name: Summary
         if: always()
@@ -228,7 +200,7 @@ jobs:
   ci-gate:
     name: CI Gate
     if: always()
-    needs: [quality, conventional-commits, i18n-sync, tests]
+    needs: [quality, conventional-commits, tests]
     runs-on: ubuntu-latest
     timeout-minutes: 2
 
@@ -241,7 +213,6 @@ jobs:
           echo "|-----|--------|" >> "$GITHUB_STEP_SUMMARY"
           echo "| Quality | ${{ needs.quality.result }} |" >> "$GITHUB_STEP_SUMMARY"
           echo "| Conventional Commits | ${{ needs.conventional-commits.result }} |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| i18n Sync | ${{ needs.i18n-sync.result }} |" >> "$GITHUB_STEP_SUMMARY"
           echo "| Tests | ${{ needs.tests.result }} |" >> "$GITHUB_STEP_SUMMARY"
 
           RESULTS='${{ toJSON(needs.*.result) }}'
