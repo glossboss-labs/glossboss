@@ -3,7 +3,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react-swc';
-import { defineConfig, type Plugin } from 'vite';
+import { defineConfig, type Plugin } from 'vite-plus';
 
 const packageJson = JSON.parse(
   readFileSync(new URL('./package.json', import.meta.url), 'utf-8'),
@@ -75,14 +75,57 @@ export default defineConfig({
     assetsInlineLimit: 4096,
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router'],
-          ui: ['@mantine/core', '@mantine/hooks'],
-          motion: ['motion'],
-          supabase: ['@supabase/supabase-js'],
-          icons: ['lucide-react'],
+        manualChunks(id) {
+          if (
+            id.includes('node_modules/react-dom') ||
+            id.includes('node_modules/react/') ||
+            id.includes('node_modules/react-router')
+          )
+            return 'vendor';
+          if (
+            id.includes('node_modules/@mantine/core') ||
+            id.includes('node_modules/@mantine/hooks')
+          )
+            return 'ui';
+          if (id.includes('node_modules/motion')) return 'motion';
+          if (id.includes('node_modules/@supabase')) return 'supabase';
+          if (id.includes('node_modules/lucide-react')) return 'icons';
         },
       },
     },
+  },
+
+  // Vitest configuration
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    testTimeout: 15000,
+    setupFiles: './src/test/setup.ts',
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'lcov'],
+      exclude: ['src/test/**'],
+    },
+    exclude: ['e2e/**', 'node_modules/**'],
+  },
+
+  // Oxlint configuration
+  lint: {
+    ignorePatterns: ['dist/**', 'coverage/**'],
+  },
+
+  // Oxfmt configuration
+  fmt: {
+    semi: true,
+    singleQuote: true,
+    trailingComma: 'all',
+    printWidth: 100,
+    tabWidth: 2,
+  },
+
+  // Staged files (replaces lint-staged)
+  staged: {
+    '*.{ts,tsx}': 'vp check --fix',
+    '*.{json,md,css,yml}': 'vp fmt --write',
   },
 });

@@ -9,15 +9,16 @@ Only non-obvious, repo-specific constraints belong here. If you can infer it fro
 ## Commands
 
 ```
-pnpm run lint
-pnpm run format:check          # fix with: pnpm run format
-pnpm run typecheck
-pnpm run build
-pnpm run test:coverage
+vp check                        # lint + format + typecheck in one command
+vp check --fix                  # auto-fix lint and format issues
+vp build
+vp test --coverage
 pnpm run i18n:extract           # after any t() or msgid() changes
 ```
 
-Run all six before committing any non-trivial change. If any step fails, fix it before committing. If a step is skipped, explain why. **Do not push code that breaks CI.**
+Run all four before committing any non-trivial change. If any step fails, fix it before committing. If a step is skipped, explain why. **Do not push code that breaks CI.**
+
+Vite+ (`vp`) is the unified toolchain — it bundles Vite 8, Vitest, Oxlint, and Oxfmt. Config is in `vite.config.ts`.
 
 ## Boundaries
 

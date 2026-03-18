@@ -1,15 +1,14 @@
 {
   "name": "glossboss",
-  "private": true,
   "version": "1.2.0",
-  "author": "Toine Rademacher and Bjorn Lammers",
+  "private": true,
   "license": "AGPL-3.0-only",
+  "author": "Toine Rademacher and Bjorn Lammers",
   "repository": "https://github.com/glossboss-labs/glossboss.git",
-  "packageManager": "pnpm@10.32.1",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
+    "dev": "vp dev",
+    "build": "vp build",
     "sync:uncodixfy": "tsx scripts/sync-uncodixfy.ts",
     "cf:deploy:check-env": "node -e \"const required=['VITE_SUPABASE_URL','VITE_SUPABASE_ANON_KEY','VITE_TURNSTILE_SITE_KEY']; const env=process.env; const missing=required.filter((name)=>!(env[name]||'').trim()); if(missing.length){console.error('Missing required env vars for Cloudflare deploy: '+missing.join(', ')); process.exit(1);}\"",
     "cf:project:create": "pnpx wrangler pages project create glossboss --production-branch main",
@@ -20,29 +19,20 @@
     "supabase:stop": "pnpx supabase stop",
     "supabase:db:reset": "pnpx supabase db reset --local --no-seed",
     "supabase:db:lint": "pnpx supabase db lint --local --fail-on error",
-    "lint": "eslint .",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
+    "lint": "vp lint",
+    "format": "vp fmt --write",
+    "format:check": "vp fmt --check",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage",
-    "preview": "vite preview",
+    "test": "vp test",
+    "test:watch": "vp test --watch",
+    "test:coverage": "vp test --coverage",
+    "preview": "vp preview",
     "i18n:extract": "tsx scripts/extract-i18n.ts",
     "i18n:add-lang": "tsx scripts/add-language.ts",
     "i18n:sync-en": "tsx scripts/sync-en-strings.ts",
     "test:e2e": "playwright test",
     "test:e2e:report": "playwright show-report",
     "prepare": "husky"
-  },
-  "lint-staged": {
-    "*.{ts,tsx}": [
-      "eslint --fix --max-warnings 0",
-      "prettier --write"
-    ],
-    "*.{json,md,css,yml,yaml}": [
-      "prettier --write"
-    ]
   },
   "dependencies": {
     "@fontsource-variable/geist": "^5.2.8",
@@ -69,7 +59,6 @@
   "devDependencies": {
     "@commitlint/cli": "^20.5.0",
     "@commitlint/config-conventional": "^20.5.0",
-    "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.58.2",
     "@tailwindcss/vite": "^4.2.1",
     "@testing-library/jest-dom": "^6.9.1",
@@ -81,28 +70,38 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react-swc": "^4.3.0",
     "@vitest/coverage-v8": "^4.1.0",
-    "eslint": "^10.0.3",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-react-hooks": "^7.0.1",
-    "eslint-plugin-react-refresh": "^0.5.2",
-    "globals": "^17.4.0",
+    "@voidzero-dev/vite-plus-core": "^0.1.12",
+    "@voidzero-dev/vite-plus-test": "^0.1.12",
     "husky": "^9.1.7",
     "jsdom": "^28.1.0",
     "lint-staged": "^16.4.0",
-    "prettier": "^3.8.1",
     "supabase": "^2.81.2",
     "tailwindcss": "^4.2.1",
     "tsx": "^4.21.0",
     "typescript": "~5.9.3",
-    "typescript-eslint": "^8.57.1",
     "vite": "^7.3.1",
+    "vite-plus": "^0.1.12",
     "vitest": "^4.1.0"
   },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "vp lint --fix",
+      "vp fmt --write"
+    ],
+    "*.{json,md,css,yml,yaml}": [
+      "vp fmt --write"
+    ]
+  },
+  "packageManager": "pnpm@10.32.1",
   "pnpm": {
     "onlyBuiltDependencies": [
       "@swc/core",
       "esbuild",
       "supabase"
-    ]
+    ],
+    "overrides": {
+      "vite": "npm:@voidzero-dev/vite-plus-core@latest",
+      "vitest": "npm:@voidzero-dev/vite-plus-test@latest"
+    }
   }
 }
