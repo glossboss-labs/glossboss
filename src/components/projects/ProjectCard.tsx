@@ -50,6 +50,7 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
         textDecoration: 'none',
         color: 'inherit',
         cursor: 'pointer',
+        height: '100%',
         transition: 'border-color 120ms ease, box-shadow 120ms ease, background-color 120ms ease',
       }}
       styles={{

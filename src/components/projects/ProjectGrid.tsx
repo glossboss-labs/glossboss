@@ -22,7 +22,7 @@ export function ProjectGrid({ projects, onDelete, ownerId }: ProjectGridProps) {
     <MotionDiv variants={staggerContainerVariants} initial="hidden" animate="visible">
       <SimpleGrid cols={{ base: 1, sm: 2, md: 3, xl: 4 }} spacing="md">
         {projects.map((project) => (
-          <MotionDiv key={project.id} variants={contentVariants}>
+          <MotionDiv key={project.id} variants={contentVariants} style={{ height: '100%' }}>
             <ProjectCard
               project={project}
               onDelete={
