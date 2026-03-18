@@ -1,8 +1,8 @@
 /**
- * Explore — public discovery page listing all public projects.
+ * Explore — public discovery page with platform stats and project listing.
  */
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Title,
   Group,
@@ -14,14 +14,18 @@ import {
   TextInput,
   Select,
   ThemeIcon,
+  Paper,
+  Progress,
+  SimpleGrid,
 } from '@mantine/core';
-import { motion } from 'motion/react';
-import { AlertCircle, Search, Globe } from 'lucide-react';
+import { motion, useInView, useMotionValue, useSpring } from 'motion/react';
+import { AlertCircle, Search, Globe, Languages, FileText, Users, TrendingUp } from 'lucide-react';
 import { sectionVariants, contentVariants, fadeVariants } from '@/lib/motion';
 import { useTranslation, msgid } from '@/lib/app-language';
 import { sortProjects, type ProjectSortOption } from '@/lib/utils/sorting';
 import { trackEvent } from '@/lib/analytics';
 import { listPublicProjects } from '@/lib/projects/api';
+import { invokeSupabaseFunction } from '@/lib/supabase/client';
 import { ProjectGrid } from '@/components/projects/ProjectGrid';
 import type { ProjectWithLanguages } from '@/lib/projects/types';
 
@@ -37,6 +41,73 @@ const SORT_LABELS: Record<SortOption, string> = {
   'least-complete': msgid('Least complete'),
 };
 
+interface PlatformStats {
+  totalStrings: number;
+  totalProjects: number;
+  totalMembers: number;
+  totalLanguages: number;
+}
+
+/** Animated counter that springs from 0 to the target value on scroll-into-view. */
+function AnimatedStat({
+  value,
+  label,
+  icon,
+}: {
+  value: number;
+  label: string;
+  icon: React.ReactNode;
+}) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const motionValue = useMotionValue(0);
+  const springValue = useSpring(motionValue, { damping: 60, stiffness: 100 });
+  const isInView = useInView(containerRef, { once: true });
+
+  useEffect(() => {
+    if (isInView && value > 0) motionValue.set(value);
+  }, [isInView, motionValue, value]);
+
+  useEffect(
+    () =>
+      springValue.on('change', (latest) => {
+        if (ref.current) {
+          ref.current.textContent = Math.round(latest).toLocaleString();
+        }
+      }),
+    [springValue],
+  );
+
+  return (
+    <Paper ref={containerRef} p="lg" radius="md" withBorder style={{ textAlign: 'center' }}>
+      <Group justify="center" mb={8}>
+        <ThemeIcon variant="light" color="blue" size="lg" radius="xl">
+          {icon}
+        </ThemeIcon>
+      </Group>
+      <Text size="xl" fw={700} className="gb-tabular-nums">
+        <span ref={ref}>0</span>
+      </Text>
+      <Text size="xs" c="dimmed" mt={4}>
+        {label}
+      </Text>
+    </Paper>
+  );
+}
+
+/** Aggregate stats computed from public projects for the summary bar. */
+function useProjectStats(projects: ProjectWithLanguages[]) {
+  return useMemo(() => {
+    const totalStrings = projects.reduce((s, p) => s + p.stats_total, 0);
+    const totalTranslated = projects.reduce((s, p) => s + p.stats_translated, 0);
+    const totalLanguages = new Set(
+      projects.flatMap((p) => (p.project_languages ?? []).map((l) => l.locale)),
+    ).size;
+    const avgCompletion = totalStrings > 0 ? Math.round((totalTranslated / totalStrings) * 100) : 0;
+    return { totalStrings, totalTranslated, totalLanguages, avgCompletion };
+  }, [projects]);
+}
+
 export default function Explore() {
   const { t } = useTranslation();
   const [projects, setProjects] = useState<ProjectWithLanguages[]>([]);
@@ -46,7 +117,9 @@ export default function Explore() {
   const [sort, setSort] = useState<SortOption>('updated');
   const [formatFilter, setFormatFilter] = useState<string | null>(null);
   const [languageFilter, setLanguageFilter] = useState<string | null>(null);
+  const [platformStats, setPlatformStats] = useState<PlatformStats | null>(null);
 
+  // Fetch public projects
   useEffect(() => {
     let cancelled = false;
 
@@ -70,6 +143,28 @@ export default function Explore() {
       cancelled = true;
     };
   }, [t]);
+
+  // Fetch platform-wide stats
+  const statsFetchedRef = useRef(false);
+  useEffect(() => {
+    if (statsFetchedRef.current) return;
+    statsFetchedRef.current = true;
+
+    async function loadStats() {
+      try {
+        const { data } = await invokeSupabaseFunction<{ ok: boolean; stats: PlatformStats }>(
+          'platform-stats',
+          { featureLabel: 'Platform stats' },
+        );
+        if (data?.ok && data.stats) setPlatformStats(data.stats);
+      } catch {
+        // Stats are non-critical — fail silently
+      }
+    }
+    void loadStats();
+  });
+
+  const projectStats = useProjectStats(projects);
 
   const filtered = useMemo(() => {
     let result = projects;
@@ -118,14 +213,48 @@ export default function Explore() {
   return (
     <>
       <MotionDiv variants={sectionVariants} initial="hidden" animate="visible">
-        <Group justify="space-between" mb="xl">
-          <div>
-            <Title order={2}>{t('Explore')}</Title>
-            <Text size="sm" mt={4} c="dimmed">
-              {t('Public translation projects')}
-            </Text>
-          </div>
-        </Group>
+        {/* Hero header */}
+        <Stack gap={4} mb="xl">
+          <Group gap="sm" align="center">
+            <ThemeIcon variant="light" color="blue" size="xl" radius="xl">
+              <Globe size={22} />
+            </ThemeIcon>
+            <div>
+              <Title order={2}>{t('Explore')}</Title>
+              <Text size="sm" c="dimmed">
+                {t('Discover and contribute to public translation projects')}
+              </Text>
+            </div>
+          </Group>
+        </Stack>
+
+        {/* Platform stats counters */}
+        {platformStats && (platformStats.totalStrings > 0 || platformStats.totalProjects > 0) && (
+          <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
+            <SimpleGrid cols={{ base: 2, sm: 4 }} spacing="md" mb="xl">
+              <AnimatedStat
+                value={platformStats.totalStrings}
+                label={t('strings translated')}
+                icon={<FileText size={18} />}
+              />
+              <AnimatedStat
+                value={platformStats.totalProjects}
+                label={t('projects')}
+                icon={<Globe size={18} />}
+              />
+              <AnimatedStat
+                value={platformStats.totalMembers}
+                label={t('members')}
+                icon={<Users size={18} />}
+              />
+              <AnimatedStat
+                value={platformStats.totalLanguages}
+                label={t('languages')}
+                icon={<Languages size={18} />}
+              />
+            </SimpleGrid>
+          </MotionDiv>
+        )}
 
         {loading && (
           <MotionDiv variants={fadeVariants} initial="hidden" animate="visible">
@@ -160,52 +289,90 @@ export default function Explore() {
 
         {!loading && projects.length > 0 && (
           <>
-            <Text size="sm" mb="sm" c="dimmed">
-              {t('{{projects}} projects', { projects: projects.length })}
-            </Text>
-
-            {projects.length >= 3 && (
-              <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
-                <Group mb="md" gap="sm" wrap="wrap">
-                  <TextInput
-                    placeholder={t('Search projects…')}
-                    leftSection={<Search size={14} />}
-                    value={search}
-                    onChange={(e) => setSearch(e.currentTarget.value)}
-                    style={{ flex: '1 1 200px', minWidth: 0 }}
-                  />
-                  <Select
-                    data={formatOptions}
-                    value={formatFilter}
-                    onChange={setFormatFilter}
-                    placeholder={t('Format')}
-                    clearable
-                    style={{ flex: '0 1 auto' }}
-                    size="sm"
-                  />
-                  {languageOptions.length > 0 && (
-                    <Select
-                      data={languageOptions}
-                      value={languageFilter}
-                      onChange={setLanguageFilter}
-                      placeholder={t('Language')}
-                      clearable
-                      searchable
-                      style={{ flex: '0 1 auto' }}
+            {/* Community summary bar */}
+            <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
+              <Paper withBorder p="md" radius="md" mb="lg">
+                <Group justify="space-between" wrap="wrap" gap="md">
+                  <Group gap="lg">
+                    <Group gap={6}>
+                      <Globe size={14} style={{ opacity: 0.5 }} />
+                      <Text size="sm" fw={500}>
+                        {t('{{count}} projects', { count: projects.length })}
+                      </Text>
+                    </Group>
+                    <Group gap={6}>
+                      <FileText size={14} style={{ opacity: 0.5 }} />
+                      <Text size="sm" c="dimmed">
+                        {t('{{count}} strings', {
+                          count: projectStats.totalStrings.toLocaleString(),
+                        })}
+                      </Text>
+                    </Group>
+                    <Group gap={6}>
+                      <Languages size={14} style={{ opacity: 0.5 }} />
+                      <Text size="sm" c="dimmed">
+                        {t('{{count}} languages', { count: projectStats.totalLanguages })}
+                      </Text>
+                    </Group>
+                  </Group>
+                  <Group gap={8}>
+                    <TrendingUp size={14} style={{ opacity: 0.5 }} />
+                    <Text size="sm" c="dimmed">
+                      {t('{{pct}}% translated', { pct: projectStats.avgCompletion })}
+                    </Text>
+                    <Progress
+                      value={projectStats.avgCompletion}
                       size="sm"
+                      color="blue"
+                      style={{ width: 80 }}
+                      radius="xl"
                     />
-                  )}
+                  </Group>
+                </Group>
+              </Paper>
+            </MotionDiv>
+
+            {/* Search + filters */}
+            <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
+              <Group mb="md" gap="sm" wrap="wrap">
+                <TextInput
+                  placeholder={t('Search projects…')}
+                  leftSection={<Search size={14} />}
+                  value={search}
+                  onChange={(e) => setSearch(e.currentTarget.value)}
+                  style={{ flex: '1 1 200px', minWidth: 0 }}
+                />
+                <Select
+                  data={formatOptions}
+                  value={formatFilter}
+                  onChange={setFormatFilter}
+                  placeholder={t('Format')}
+                  clearable
+                  style={{ flex: '0 1 auto' }}
+                  size="sm"
+                />
+                {languageOptions.length > 0 && (
                   <Select
-                    data={sortOptions}
-                    value={sort}
-                    onChange={(v) => setSort((v as SortOption) || 'updated')}
+                    data={languageOptions}
+                    value={languageFilter}
+                    onChange={setLanguageFilter}
+                    placeholder={t('Language')}
+                    clearable
+                    searchable
                     style={{ flex: '0 1 auto' }}
                     size="sm"
-                    allowDeselect={false}
                   />
-                </Group>
-              </MotionDiv>
-            )}
+                )}
+                <Select
+                  data={sortOptions}
+                  value={sort}
+                  onChange={(v) => setSort((v as SortOption) || 'updated')}
+                  style={{ flex: '0 1 auto' }}
+                  size="sm"
+                  allowDeselect={false}
+                />
+              </Group>
+            </MotionDiv>
 
             {filtered.length === 0 ? (
               <MotionDiv variants={contentVariants} initial="hidden" animate="visible">

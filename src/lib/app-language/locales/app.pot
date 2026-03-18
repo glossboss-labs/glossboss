@@ -110,7 +110,7 @@ msgstr ""
 msgid "/mo"
 msgstr ""
 
-#: src/components/projects/ProjectCard.tsx:83
+#: src/components/projects/ProjectCard.tsx:84
 #: src/pages/ProjectDetail.tsx:379
 msgid "1 language"
 msgstr ""
@@ -273,7 +273,7 @@ msgstr ""
 msgid "AI-powered translation"
 msgstr ""
 
-#: src/components/settings/AccountSection.tsx:582
+#: src/components/settings/AccountSection.tsx:583
 msgid ""
 "API credentials are sensitive. Only enable credential sync if you trust all "
 "devices where you sign in to GlossBoss."
@@ -830,7 +830,7 @@ msgstr ""
 #: src/components/organizations/SharedCredentialsTab.tsx:333
 #: src/components/projects/AddLanguageModal.tsx:445
 #: src/components/projects/SaveToCloudModal.tsx:158
-#: src/components/settings/AccountSection.tsx:285
+#: src/components/settings/AccountSection.tsx:286
 #: src/components/settings/BackupSection.tsx:581
 #: src/components/settings/DeleteAccountSection.tsx:140
 #: src/components/ui/ConfirmModal.tsx:39
@@ -874,7 +874,7 @@ msgstr ""
 msgid "Change history"
 msgstr ""
 
-#: src/components/settings/AccountSection.tsx:322
+#: src/components/settings/AccountSection.tsx:323
 msgid "Change password"
 msgstr ""
 
@@ -894,7 +894,7 @@ msgstr ""
 msgid "Changes committed successfully"
 msgstr ""
 
-#: src/components/settings/AccountSection.tsx:269
+#: src/components/settings/AccountSection.tsx:270
 msgid "Changing your email requires confirmation via both addresses."
 msgstr ""
 
@@ -1100,15 +1100,15 @@ msgstr ""
 msgid "Close settings"
 msgstr ""
 
-#: src/components/settings/AccountSection.tsx:456
+#: src/components/settings/AccountSection.tsx:457
 msgid "Cloud settings found"
 msgstr ""
 
-#: src/components/settings/AccountSection.tsx:467
+#: src/components/settings/AccountSection.tsx:468
 msgid "Cloud settings last updated: {{time}}"
 msgstr ""
 
-#: src/components/settings/AccountSection.tsx:489
+#: src/components/settings/AccountSection.tsx:490
 msgid "Cloud sync"
 msgstr ""
 
@@ -1189,8 +1189,8 @@ msgstr ""
 msgid "Confirm"
 msgstr ""
 
-#: src/components/settings/AccountSection.tsx:339
 #: src/components/settings/AccountSection.tsx:340
+#: src/components/settings/AccountSection.tsx:341
 msgid "Confirm new password"
 msgstr ""
 
@@ -1209,7 +1209,7 @@ msgstr ""
 msgid "Connect & list repositories"
 msgstr ""
 
-#: src/components/settings/AccountSection.tsx:445
+#: src/components/settings/AccountSection.tsx:446
 msgid "Connect GitHub"
 msgstr ""
 
@@ -1237,11 +1237,11 @@ msgstr ""
 msgid "Connected"
 msgstr ""
 
-#: src/components/settings/AccountSection.tsx:373
+#: src/components/settings/AccountSection.tsx:374
 msgid "Connected accounts"
 msgstr ""
 
-#: src/components/settings/AccountSection.tsx:393
+#: src/components/settings/AccountSection.tsx:394
 msgid "Connected as"
 msgstr ""
 
@@ -1549,7 +1549,7 @@ msgstr ""
 msgid "Default provider"
 msgstr ""
 
-#: src/components/projects/ProjectCard.tsx:135
+#: src/components/projects/ProjectCard.tsx:136
 #: src/pages/ProjectDetail.tsx:630
 msgid "Delete"
 msgstr ""
@@ -1675,6 +1675,10 @@ msgstr ""
 msgid "Disconnect"
 msgstr ""
 
+#: src/pages/Explore.tsx:225
+msgid "Discover and contribute to public translation projects"
+msgstr ""
+
 #: src/pages/Roadmap.tsx:171
 msgid "Discuss"
 msgstr ""
@@ -1684,7 +1688,7 @@ msgstr ""
 msgid "Display"
 msgstr ""
 
-#: src/components/settings/AccountSection.tsx:257
+#: src/components/settings/AccountSection.tsx:258
 #: src/components/settings/CustomProviderCard.tsx:196
 msgid "Display name"
 msgstr ""
@@ -1771,7 +1775,7 @@ msgid "Dutch (Netherlands)"
 msgstr ""
 
 #: src/components/editor/EditorWorkspace.tsx:144
-#: src/components/settings/AccountSection.tsx:244
+#: src/components/settings/AccountSection.tsx:245
 msgid "Edit"
 msgstr ""
 
@@ -1844,7 +1848,7 @@ msgstr ""
 
 #: src/components/feedback/FeedbackModal.tsx:425
 #: src/components/projects/ProjectNotificationsTab.tsx:58
-#: src/components/settings/AccountSection.tsx:263
+#: src/components/settings/AccountSection.tsx:264
 #: src/components/settings/NotificationsSection.tsx:50
 #: src/pages/auth/ForgotPassword.tsx:88
 #: src/pages/auth/Login.tsx:113
@@ -1945,7 +1949,7 @@ msgstr ""
 msgid "Enter custom expression"
 msgstr ""
 
-#: src/components/settings/AccountSection.tsx:330
+#: src/components/settings/AccountSection.tsx:331
 msgid "Enter new password"
 msgstr ""
 
@@ -2053,7 +2057,7 @@ msgstr ""
 #: src/components/AppHeader.tsx:97
 #: src/components/AppSidebar.tsx:250
 #: src/components/landing/LandingFooter.tsx:17
-#: src/pages/Explore.tsx:123
+#: src/pages/Explore.tsx:223
 #: src/pages/ProjectDetail.tsx:249
 msgid "Explore"
 msgstr ""
@@ -2282,7 +2286,7 @@ msgstr ""
 msgid "Failed to load project metadata."
 msgstr ""
 
-#: src/pages/Explore.tsx:62
+#: src/pages/Explore.tsx:135
 msgid "Failed to load projects"
 msgstr ""
 
@@ -2380,11 +2384,11 @@ msgstr ""
 msgid "Failed to update organization"
 msgstr ""
 
-#: src/components/settings/AccountSection.tsx:180
+#: src/components/settings/AccountSection.tsx:181
 msgid "Failed to update password. Please try again."
 msgstr ""
 
-#: src/components/settings/AccountSection.tsx:143
+#: src/components/settings/AccountSection.tsx:144
 msgid "Failed to update profile."
 msgstr ""
 
@@ -2530,7 +2534,7 @@ msgid "Formality"
 msgstr ""
 
 #: src/components/projects/ProjectSettingsTab.tsx:130
-#: src/pages/Explore.tsx:181
+#: src/pages/Explore.tsx:349
 #: src/pages/ProjectSettings.tsx:474
 msgid "Format"
 msgstr ""
@@ -2693,7 +2697,7 @@ msgstr ""
 
 #: src/components/landing/LandingFooter.tsx:24
 #: src/components/onboarding/AttributionStep.tsx:26
-#: src/components/settings/AccountSection.tsx:388
+#: src/components/settings/AccountSection.tsx:389
 #: src/pages/PrivacyPage.tsx:152
 msgid "GitHub"
 msgstr ""
@@ -3086,7 +3090,7 @@ msgstr ""
 msgid "In-app"
 msgstr ""
 
-#: src/components/settings/AccountSection.tsx:589
+#: src/components/settings/AccountSection.tsx:590
 msgid "Include API credentials in sync"
 msgstr ""
 
@@ -3263,7 +3267,7 @@ msgstr ""
 #: src/components/editor/HeaderEditor.tsx:222
 #: src/components/landing/LandingFooter.tsx:104
 #: src/components/settings/GlossarySection.tsx:281
-#: src/pages/Explore.tsx:191
+#: src/pages/Explore.tsx:359
 msgid "Language"
 msgstr ""
 
@@ -3287,7 +3291,7 @@ msgstr ""
 msgid "Languages"
 msgstr ""
 
-#: src/components/settings/AccountSection.tsx:544
+#: src/components/settings/AccountSection.tsx:545
 msgid "Last synced: {{time}}"
 msgstr ""
 
@@ -3297,7 +3301,7 @@ msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:257
 #: src/pages/Dashboard.tsx:137
-#: src/pages/Explore.tsx:33
+#: src/pages/Explore.tsx:37
 #: src/pages/ProjectDetail.tsx:195
 msgid "Last updated"
 msgstr ""
@@ -3315,7 +3319,7 @@ msgid "Latvian"
 msgstr ""
 
 #: src/pages/Dashboard.tsx:140
-#: src/pages/Explore.tsx:37
+#: src/pages/Explore.tsx:41
 #: src/pages/ProjectDetail.tsx:193
 msgid "Least complete"
 msgstr ""
@@ -3687,13 +3691,13 @@ msgstr ""
 msgid "More info"
 msgstr ""
 
-#: src/pages/Explore.tsx:36
+#: src/pages/Explore.tsx:40
 #: src/pages/ProjectDetail.tsx:192
 msgid "Most complete"
 msgstr ""
 
 #: src/pages/Dashboard.tsx:139
-#: src/pages/Explore.tsx:35
+#: src/pages/Explore.tsx:39
 #: src/pages/ProjectDetail.tsx:194
 msgid "Most strings"
 msgstr ""
@@ -3710,7 +3714,7 @@ msgid "Name"
 msgstr ""
 
 #: src/pages/Dashboard.tsx:138
-#: src/pages/Explore.tsx:34
+#: src/pages/Explore.tsx:38
 msgid "Name A–Z"
 msgstr ""
 
@@ -3743,7 +3747,7 @@ msgstr ""
 msgid "New notification"
 msgstr ""
 
-#: src/components/settings/AccountSection.tsx:329
+#: src/components/settings/AccountSection.tsx:330
 #: src/pages/auth/ResetPassword.tsx:100
 msgid "New password"
 msgstr ""
@@ -3791,7 +3795,7 @@ msgstr ""
 msgid "No additional metadata fields"
 msgstr ""
 
-#: src/components/settings/AccountSection.tsx:125
+#: src/components/settings/AccountSection.tsx:126
 msgid "No changes to save."
 msgstr ""
 
@@ -3815,7 +3819,7 @@ msgstr ""
 msgid "No entries match the current filters."
 msgstr ""
 
-#: src/components/settings/AccountSection.tsx:428
+#: src/components/settings/AccountSection.tsx:429
 msgid "No external accounts connected. Signed in with email and password."
 msgstr ""
 
@@ -3902,7 +3906,7 @@ msgid "No projects in this organization yet"
 msgstr ""
 
 #: src/pages/Dashboard.tsx:225
-#: src/pages/Explore.tsx:214
+#: src/pages/Explore.tsx:381
 msgid "No projects match your search"
 msgstr ""
 
@@ -3910,7 +3914,7 @@ msgstr ""
 msgid "No projects yet"
 msgstr ""
 
-#: src/pages/Explore.tsx:154
+#: src/pages/Explore.tsx:283
 msgid "No public projects yet"
 msgstr ""
 
@@ -4297,11 +4301,11 @@ msgstr ""
 msgid "Password"
 msgstr ""
 
-#: src/components/settings/AccountSection.tsx:158
+#: src/components/settings/AccountSection.tsx:159
 msgid "Password must be at least 6 characters."
 msgstr ""
 
-#: src/components/settings/AccountSection.tsx:174
+#: src/components/settings/AccountSection.tsx:175
 msgid "Password updated successfully."
 msgstr ""
 
@@ -4309,7 +4313,7 @@ msgstr ""
 msgid "Password updated. Redirecting..."
 msgstr ""
 
-#: src/components/settings/AccountSection.tsx:164
+#: src/components/settings/AccountSection.tsx:165
 #: src/pages/auth/ResetPassword.tsx:95
 msgid "Passwords do not match."
 msgstr ""
@@ -4446,7 +4450,7 @@ msgstr ""
 msgid "Please enter a base URL"
 msgstr ""
 
-#: src/components/settings/AccountSection.tsx:151
+#: src/components/settings/AccountSection.tsx:152
 msgid "Please enter a new password."
 msgstr ""
 
@@ -4623,15 +4627,15 @@ msgstr ""
 msgid "Product analytics"
 msgstr ""
 
-#: src/components/settings/AccountSection.tsx:235
+#: src/components/settings/AccountSection.tsx:236
 msgid "Profile"
 msgstr ""
 
-#: src/components/settings/AccountSection.tsx:138
+#: src/components/settings/AccountSection.tsx:139
 msgid "Profile updated."
 msgstr ""
 
-#: src/components/settings/AccountSection.tsx:137
+#: src/components/settings/AccountSection.tsx:138
 msgid "Profile updated. Check your new email for a confirmation link."
 msgstr ""
 
@@ -4767,11 +4771,7 @@ msgstr ""
 msgid "Public permissions"
 msgstr ""
 
-#: src/pages/Explore.tsx:125
-msgid "Public translation projects"
-msgstr ""
-
-#: src/components/settings/AccountSection.tsx:572
+#: src/components/settings/AccountSection.tsx:573
 msgid "Pull from cloud"
 msgstr ""
 
@@ -4818,7 +4818,7 @@ msgstr ""
 msgid "Push to a new branch instead of the default branch"
 msgstr ""
 
-#: src/components/settings/AccountSection.tsx:566
+#: src/components/settings/AccountSection.tsx:567
 msgid "Push to cloud"
 msgstr ""
 
@@ -4876,7 +4876,7 @@ msgstr ""
 msgid "Recommended"
 msgstr ""
 
-#: src/components/settings/AccountSection.tsx:422
+#: src/components/settings/AccountSection.tsx:423
 msgid "Reconnect"
 msgstr ""
 
@@ -5233,7 +5233,7 @@ msgstr ""
 #: src/components/organizations/SharedCredentialsTab.tsx:229
 #: src/components/projects/ProjectGlossaryTab.tsx:444
 #: src/components/projects/ProjectTranslationTab.tsx:255
-#: src/components/settings/AccountSection.tsx:277
+#: src/components/settings/AccountSection.tsx:278
 #: src/components/settings/CustomProviderCard.tsx:294
 #: src/components/settings/LlmProviderCard.tsx:345
 #: src/components/settings/SpeechSection.tsx:388
@@ -5314,7 +5314,7 @@ msgid "Search or type language code..."
 msgstr ""
 
 #: src/pages/Dashboard.tsx:204
-#: src/pages/Explore.tsx:171
+#: src/pages/Explore.tsx:339
 msgid "Search projects…"
 msgstr ""
 
@@ -5487,7 +5487,7 @@ msgstr ""
 #: src/components/AppSidebar.tsx:278
 #: src/components/SettingsModal.tsx:84
 #: src/components/auth/UserMenu.tsx:113
-#: src/components/projects/ProjectCard.tsx:124
+#: src/components/projects/ProjectCard.tsx:125
 #: src/pages/OrgSettings.tsx:313
 #: src/pages/ProjectDetail.tsx:271
 #: src/pages/Settings.tsx:83
@@ -5618,7 +5618,7 @@ msgstr ""
 msgid "Showing {{start}}--{{end}} of {{total}} entries"
 msgstr ""
 
-#: src/components/AppSidebar.tsx:412
+#: src/components/AppSidebar.tsx:417
 #: src/components/auth/UserMenu.tsx:46
 #: src/components/auth/UserMenu.tsx:53
 #: src/components/editor/EmptyState.tsx:221
@@ -5637,7 +5637,7 @@ msgstr ""
 msgid "Sign in to continue"
 msgstr ""
 
-#: src/components/settings/AccountSection.tsx:221
+#: src/components/settings/AccountSection.tsx:222
 msgid "Sign in to manage your account settings and enable cloud sync."
 msgstr ""
 
@@ -5653,7 +5653,7 @@ msgstr ""
 msgid "Sign in with email"
 msgstr ""
 
-#: src/components/AppSidebar.tsx:403
+#: src/components/AppSidebar.tsx:408
 #: src/components/auth/UserMenu.tsx:181
 msgid "Sign out"
 msgstr ""
@@ -5672,7 +5672,7 @@ msgstr ""
 msgid "Signals"
 msgstr ""
 
-#: src/components/settings/AccountSection.tsx:408
+#: src/components/settings/AccountSection.tsx:409
 msgid "Signed in with GitHub"
 msgstr ""
 
@@ -5967,11 +5967,11 @@ msgstr ""
 msgid "Switch to light mode"
 msgstr ""
 
-#: src/components/settings/AccountSection.tsx:561
+#: src/components/settings/AccountSection.tsx:562
 msgid "Sync"
 msgstr ""
 
-#: src/components/settings/AccountSection.tsx:530
+#: src/components/settings/AccountSection.tsx:531
 msgid "Sync error"
 msgstr ""
 
@@ -5981,17 +5981,17 @@ msgstr ""
 msgid "Sync failed"
 msgstr ""
 
-#: src/components/settings/AccountSection.tsx:500
+#: src/components/settings/AccountSection.tsx:501
 msgid "Sync settings to cloud"
 msgstr ""
 
-#: src/components/settings/AccountSection.tsx:494
+#: src/components/settings/AccountSection.tsx:495
 msgid ""
 "Sync your GlossBoss settings across browsers. When enabled, changes are auto"
 "matically saved to the cloud and restored on sign-in."
 msgstr ""
 
-#: src/components/settings/AccountSection.tsx:537
+#: src/components/settings/AccountSection.tsx:538
 msgid "Synced"
 msgstr ""
 
@@ -6001,7 +6001,7 @@ msgstr ""
 msgid "Syncing glossary..."
 msgstr ""
 
-#: src/components/settings/AccountSection.tsx:523
+#: src/components/settings/AccountSection.tsx:524
 msgid "Syncing..."
 msgstr ""
 
@@ -6746,7 +6746,7 @@ msgstr ""
 msgid "Update from POT…"
 msgstr ""
 
-#: src/components/settings/AccountSection.tsx:354
+#: src/components/settings/AccountSection.tsx:355
 #: src/pages/auth/ResetPassword.tsx:119
 msgid "Update password"
 msgstr ""
@@ -6759,7 +6759,7 @@ msgstr ""
 msgid "Update translations"
 msgstr ""
 
-#: src/components/settings/AccountSection.tsx:325
+#: src/components/settings/AccountSection.tsx:326
 msgid ""
 "Update your account password. No current password is required while signed i"
 "n."
@@ -6883,7 +6883,7 @@ msgstr ""
 msgid "Use case"
 msgstr ""
 
-#: src/components/settings/AccountSection.tsx:477
+#: src/components/settings/AccountSection.tsx:478
 msgid "Use cloud settings"
 msgstr ""
 
@@ -6891,7 +6891,7 @@ msgstr ""
 msgid "Use glossary for translations"
 msgstr ""
 
-#: src/components/settings/AccountSection.tsx:474
+#: src/components/settings/AccountSection.tsx:475
 msgid "Use my local settings"
 msgstr ""
 
@@ -7106,7 +7106,7 @@ msgstr ""
 msgid "What would help?"
 msgstr ""
 
-#: src/components/settings/AccountSection.tsx:501
+#: src/components/settings/AccountSection.tsx:502
 msgid "When disabled, all settings are stored locally in this browser only."
 msgstr ""
 
@@ -7126,7 +7126,7 @@ msgid ""
 "ts. Disable on shared or untrusted devices."
 msgstr ""
 
-#: src/components/settings/AccountSection.tsx:590
+#: src/components/settings/AccountSection.tsx:591
 msgid ""
 "When enabled, your translation and TTS API keys are included in cloud sync. "
 "When disabled, credentials stay local to each browser."
@@ -7361,7 +7361,7 @@ msgid ""
 "it across sessions."
 msgstr ""
 
-#: src/components/settings/AccountSection.tsx:461
+#: src/components/settings/AccountSection.tsx:462
 msgid ""
 "Your cloud account has existing settings from another device. Would you like"
 " to use those settings, or save your current local settings to the cloud?"
@@ -7372,7 +7372,7 @@ msgid "Your content:"
 msgstr ""
 
 #: src/components/onboarding/ProfileStep.tsx:40
-#: src/components/settings/AccountSection.tsx:260
+#: src/components/settings/AccountSection.tsx:261
 msgid "Your name"
 msgstr ""
 
@@ -7473,7 +7473,7 @@ msgstr ""
 msgid "for details."
 msgstr ""
 
-#: src/components/projects/ProjectCard.tsx:174
+#: src/components/projects/ProjectCard.tsx:175
 #: src/pages/ProjectDetail.tsx:582
 msgid "fuzzy"
 msgstr ""
@@ -7500,6 +7500,7 @@ msgid "just now"
 msgstr ""
 
 #: src/components/landing/StatsCounters.tsx:47
+#: src/pages/Explore.tsx:252
 #: src/pages/OrgSettings.tsx:470
 #: src/pages/OrgSettingsPage.tsx:675
 msgid "languages"
@@ -7511,6 +7512,7 @@ msgid "member"
 msgstr ""
 
 #: src/components/landing/StatsCounters.tsx:46
+#: src/pages/Explore.tsx:247
 msgid "members"
 msgstr ""
 
@@ -7574,9 +7576,10 @@ msgstr ""
 msgid "project"
 msgstr ""
 
-#: src/components/AppSidebar.tsx:391
+#: src/components/AppSidebar.tsx:396
 #: src/components/auth/UserMenu.tsx:98
 #: src/components/settings/BillingSection.tsx:651
+#: src/pages/Explore.tsx:242
 msgid "projects"
 msgstr ""
 
@@ -7598,7 +7601,7 @@ msgstr ""
 msgid "skipped"
 msgstr ""
 
-#: src/components/AppSidebar.tsx:396
+#: src/components/AppSidebar.tsx:401
 #: src/components/auth/UserMenu.tsx:103
 #: src/components/billing/FreePlanBanner.tsx:53
 #: src/components/settings/BillingSection.tsx:579
@@ -7612,6 +7615,7 @@ msgid "strings"
 msgstr ""
 
 #: src/components/landing/StatsCounters.tsx:44
+#: src/pages/Explore.tsx:237
 msgid "strings translated"
 msgstr ""
 
@@ -7640,13 +7644,13 @@ msgid ""
 "work under the project owner's plan — no subscription needed to contribute."
 msgstr ""
 
-#: src/components/projects/ProjectCard.tsx:162
+#: src/components/projects/ProjectCard.tsx:163
 #: src/pages/ProjectDetail.tsx:570
 #: src/pages/ProjectSettings.tsx:672
 msgid "translated"
 msgstr ""
 
-#: src/components/projects/ProjectCard.tsx:189
+#: src/components/projects/ProjectCard.tsx:190
 #: src/pages/ProjectDetail.tsx:597
 msgid "untranslated"
 msgstr ""
@@ -7714,7 +7718,8 @@ msgstr ""
 msgid "{{count}} hours ago"
 msgstr ""
 
-#: src/components/projects/ProjectCard.tsx:84
+#: src/components/projects/ProjectCard.tsx:85
+#: src/pages/Explore.tsx:314
 #: src/pages/ProjectDetail.tsx:380
 #: src/pages/ProjectDetail.tsx:416
 msgid "{{count}} languages"
@@ -7744,6 +7749,10 @@ msgstr ""
 msgid "{{count}} minutes ago"
 msgstr ""
 
+#: src/pages/Explore.tsx:300
+msgid "{{count}} projects"
+msgstr ""
+
 #: src/components/editor/EditorTableRow.tsx:695
 #: src/components/editor/EditorTableRow.tsx:706
 msgid "{{count}} ref(s)"
@@ -7759,6 +7768,10 @@ msgstr ""
 
 #: src/components/settings/BackupSection.tsx:441
 msgid "{{count}} stored entries"
+msgstr ""
+
+#: src/pages/Explore.tsx:306
+msgid "{{count}} strings"
 msgstr ""
 
 #: src/components/notifications/NotificationItem.tsx:126
@@ -7840,8 +7853,11 @@ msgstr ""
 msgid "{{name}} joined {{project}}"
 msgstr ""
 
+#: src/pages/Explore.tsx:321
+msgid "{{pct}}% translated"
+msgstr ""
+
 #: src/pages/Dashboard.tsx:194
-#: src/pages/Explore.tsx:164
 msgid "{{projects}} projects"
 msgstr ""
 
