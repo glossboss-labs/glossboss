@@ -2,7 +2,7 @@
  * Dashboard — project list for authenticated users.
  */
 
-import { memo, useCallback, useState } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import { Link } from 'react-router';
 import {
   Title,
@@ -33,6 +33,7 @@ import { CreateProjectModal } from '@/components/projects/CreateProjectModal';
 import { CreateOrgModal } from '@/components/organizations/CreateOrgModal';
 import { ConfirmModal } from '@/components/ui';
 import { FreePlanBanner } from '@/components/billing/FreePlanBanner';
+import { createFuseSearch, fuzzyFilter } from '@/lib/utils/fuzzy-search';
 
 const MotionDiv = motion.div;
 
@@ -119,11 +120,11 @@ export default function Dashboard() {
     }
   };
 
-  const filtered = (() => {
-    const q = search.toLowerCase().trim();
-    const base = q ? projects.filter((p) => p.name.toLowerCase().includes(q)) : projects;
-    return sortProjects(base, sort);
-  })();
+  const fuse = useMemo(() => createFuseSearch(projects, ['name']), [projects]);
+  const filtered = useMemo(
+    () => sortProjects(fuzzyFilter(fuse, projects, search, ['name']), sort),
+    [fuse, projects, search, sort],
+  );
 
   const totalLanguages = projects.reduce((sum, p) => sum + (p.project_languages?.length ?? 0), 0);
   const totalStrings = projects.reduce((sum, p) => sum + p.stats_total, 0);

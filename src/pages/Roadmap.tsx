@@ -43,6 +43,7 @@ import { formatRelative } from '@/lib/utils/date';
 import { useRoadmapItems } from '@/lib/roadmap/queries';
 import { FeedbackModal } from '@/components/feedback';
 import { deriveStatus, type RoadmapIssue, type RoadmapStatus } from '@/lib/roadmap/types';
+import { createFuseSearch, fuzzyFilter } from '@/lib/utils/fuzzy-search';
 
 const MotionDiv = motion.div;
 
@@ -194,6 +195,8 @@ export default function Roadmap() {
       })()
     : null;
 
+  const roadmapFuse = useMemo(() => createFuseSearch(issues, ['title', 'goal']), [issues]);
+
   const filtered = useMemo(() => {
     let result = issues;
 
@@ -201,12 +204,7 @@ export default function Roadmap() {
       result = result.filter((issue) => deriveStatus(issue) === statusFilter);
     }
 
-    const q = search.toLowerCase().trim();
-    if (q) {
-      result = result.filter(
-        (issue) => issue.title.toLowerCase().includes(q) || issue.goal.toLowerCase().includes(q),
-      );
-    }
+    result = fuzzyFilter(roadmapFuse, result, search, ['title', 'goal']);
 
     // Sort: in-progress first, then planned, then done; within each group by issue number
     const statusOrder: Record<string, number> = { 'in-progress': 0, planned: 1, done: 2 };
@@ -216,7 +214,7 @@ export default function Roadmap() {
       if (sa !== sb) return sa - sb;
       return a.number - b.number;
     });
-  }, [issues, search, statusFilter]);
+  }, [roadmapFuse, issues, search, statusFilter]);
 
   const counts = useMemo(() => {
     const c = { planned: 0, 'in-progress': 0, done: 0 };

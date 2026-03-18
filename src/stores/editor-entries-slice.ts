@@ -18,6 +18,7 @@ import {
 } from '@/lib/review';
 import type { TranslationGlossaryMode, TranslationProviderId } from '@/lib/translation/types';
 import { getTranslationStatus } from '@/types';
+import { fuzzyMatch } from '@/lib/utils/fuzzy-search';
 import type { EditorReviewSlice } from './editor-review-slice';
 import type { EditorSelectionSlice } from './editor-selection-slice';
 
@@ -328,20 +329,17 @@ function entryMatchesSearch(
   query: string,
   reviewEntries: Map<string, ReviewEntryState>,
 ): boolean {
-  const lowerQuery = query.toLowerCase();
   const reviewEntry = reviewEntries.get(entry.id);
 
   return (
-    entry.msgid.toLowerCase().includes(lowerQuery) ||
-    entry.msgstr.toLowerCase().includes(lowerQuery) ||
-    (entry.sourceText?.toLowerCase().includes(lowerQuery) ?? false) ||
-    (entry.msgctxt?.toLowerCase().includes(lowerQuery) ?? false) ||
-    entry.translatorComments.some((c) => c.toLowerCase().includes(lowerQuery)) ||
-    entry.extractedComments.some((c) => c.toLowerCase().includes(lowerQuery)) ||
+    fuzzyMatch(entry.msgid, query) ||
+    fuzzyMatch(entry.msgstr, query) ||
+    (entry.sourceText ? fuzzyMatch(entry.sourceText, query) : false) ||
+    (entry.msgctxt ? fuzzyMatch(entry.msgctxt, query) : false) ||
+    entry.translatorComments.some((c) => fuzzyMatch(c, query)) ||
+    entry.extractedComments.some((c) => fuzzyMatch(c, query)) ||
     (reviewEntry?.comments.some(
-      (comment) =>
-        comment.message.toLowerCase().includes(lowerQuery) ||
-        comment.author.toLowerCase().includes(lowerQuery),
+      (comment) => fuzzyMatch(comment.message, query) || fuzzyMatch(comment.author, query),
     ) ??
       false)
   );
