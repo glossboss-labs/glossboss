@@ -88,7 +88,7 @@ export default function ProjectEditor() {
 
         setProject(proj);
         setLanguage(lang);
-        recordRecentProject(proj.id, proj.name);
+        recordRecentProject(proj.id, proj.name, `/projects/${id}/languages/${languageId}`);
 
         const poEntries = dbEntries.map((row, i) => dbEntryToPOEntry(row, i));
         const poHeader = dbLanguageToHeader(lang);

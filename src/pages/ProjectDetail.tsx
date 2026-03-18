@@ -3,7 +3,7 @@
  */
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useParams, Link, useNavigate } from 'react-router';
+import { useParams, Link, useNavigate, useLocation } from 'react-router';
 import {
   Stack,
   Group,
@@ -79,6 +79,7 @@ export default function ProjectDetail() {
   const { t } = useTranslation();
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const deleteLanguageMutation = useDeleteLanguage();
   const queryClient = useQueryClient();
 
@@ -90,8 +91,9 @@ export default function ProjectDetail() {
 
   // Record recent project visit
   useEffect(() => {
-    if (project?.id && project.name) recordRecentProject(project.id, project.name);
-  }, [project?.id, project?.name]);
+    if (project?.id && project.name)
+      recordRecentProject(project.id, project.name, location.pathname);
+  }, [project?.id, project?.name, location.pathname]);
 
   // Local state for optimistic updates from child tabs
   const [members, setMembers] = useState<ProjectMemberWithProfile[]>([]);

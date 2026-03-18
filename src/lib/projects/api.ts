@@ -33,24 +33,37 @@ function supabase() {
 // ── Projects ─────────────────────────────────────────────────
 
 export async function listProjects(): Promise<ProjectWithLanguages[]> {
-  // Try joined query first; fall back to projects-only if PostgREST
-  // schema cache hasn't picked up the project_languages relationship yet.
+  const {
+    data: { user },
+  } = await supabase().auth.getUser();
+  if (!user) throw new Error('Not authenticated');
+
+  // Inner-join on project_members so only projects the current user belongs
+  // to are returned.  Without this, the public-read RLS policy for unlisted
+  // projects causes other users' unlisted projects to leak into the list.
   const joined = await supabase()
     .from('projects')
-    .select('*, project_languages(*)')
+    .select('*, project_languages(*), project_members!inner(user_id)')
+    .eq('project_members.user_id', user.id)
     .order('updated_at', { ascending: false });
 
   if (!joined.error) {
-    return (joined.data ?? []) as ProjectWithLanguages[];
+    return (joined.data ?? []).map(({ project_members: _pm, ...p }) => p) as ProjectWithLanguages[];
   }
 
+  // Fallback: projects-only if PostgREST schema cache hasn't picked up
+  // the project_languages relationship yet.
   const { data, error } = await supabase()
     .from('projects')
-    .select('*')
+    .select('*, project_members!inner(user_id)')
+    .eq('project_members.user_id', user.id)
     .order('updated_at', { ascending: false });
 
   if (error) throw error;
-  return (data ?? []).map((p) => ({ ...p, project_languages: [] }) as ProjectWithLanguages);
+  return (data ?? []).map(({ project_members: _pm, ...p }) => ({
+    ...p,
+    project_languages: [],
+  })) as ProjectWithLanguages[];
 }
 
 export async function getProject(id: string): Promise<ProjectRow | null> {
