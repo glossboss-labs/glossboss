@@ -94,3 +94,4 @@ export const SOURCE_STORE_KEY = 'glossboss-source-store';
 
 export const SIDEBAR_COLLAPSED_KEY = 'gb-sidebar-collapsed';
 export const SIDEBAR_WIDTH_KEY = 'gb-sidebar-width';
+export const RECENT_PROJECTS_KEY = 'glossboss-recent-projects';

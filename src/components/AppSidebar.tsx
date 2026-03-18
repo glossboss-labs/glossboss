@@ -41,6 +41,8 @@ import {
   LogIn,
   LogOut,
   Bell,
+  FolderOpen,
+  History,
 } from 'lucide-react';
 import { useTranslation } from '@/lib/app-language';
 import { getInitials, getSizedAvatarUrl } from '@/lib/utils/avatar';
@@ -55,6 +57,7 @@ import { formatLimit } from '@/lib/billing/limits';
 import { FeedbackModal } from '@/components/feedback';
 import { AuthPromptModal } from '@/components/auth/AuthPromptModal';
 import { GlossBossLogo } from '@/components/ui/GlossBossLogo';
+import { useRecentProjects } from '@/hooks/use-recent-projects';
 
 interface AppSidebarProps {
   collapsed: boolean;
@@ -188,6 +191,7 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
   const { plan, limits, loading: subLoading } = useSubscription();
   const { data: projects = [] } = useProjects();
   const unreadNotifications = useNotificationsStore((s) => s.unreadCount);
+  const { recentProjects } = useRecentProjects();
   const { toggleColorScheme } = useMantineColorScheme();
   const computedColorScheme = useComputedColorScheme('light');
   const pathname = location.pathname;
@@ -266,6 +270,36 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
               collapsed={collapsed}
             />
           </Stack>
+
+          {/* Recent projects */}
+          {isAuthenticated && recentProjects.length > 0 && (
+            <>
+              <Divider mt="sm" />
+              {!collapsed && (
+                <Group gap={6} px={12} pt={6} pb={2}>
+                  <History size={12} style={{ color: 'var(--gb-text-tertiary)' }} />
+                  <Text size="xs" fw={500} c="dimmed">
+                    {t('Recent')}
+                  </Text>
+                </Group>
+              )}
+              <Stack gap={2}>
+                {recentProjects.map((rp) => (
+                  <NavItem
+                    key={rp.id}
+                    to={`/projects/${rp.id}`}
+                    icon={<FolderOpen size={16} />}
+                    label={rp.name}
+                    active={
+                      pathname === `/projects/${rp.id}` ||
+                      pathname.startsWith(`/projects/${rp.id}/`)
+                    }
+                    collapsed={collapsed}
+                  />
+                ))}
+              </Stack>
+            </>
+          )}
         </Stack>
 
         {/* Bottom section */}

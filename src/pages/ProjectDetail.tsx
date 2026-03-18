@@ -65,6 +65,7 @@ import {
   useDeleteLanguage,
 } from '@/lib/projects/queries';
 import { useAuth } from '@/hooks/use-auth';
+import { recordRecentProject } from '@/hooks/use-recent-projects';
 import { AddLanguageModal } from '@/components/projects/AddLanguageModal';
 import { ProjectMembersTab } from '@/components/projects/ProjectMembersTab';
 import { ProjectInvitesTab } from '@/components/projects/ProjectInvitesTab';
@@ -86,6 +87,11 @@ export default function ProjectDetail() {
   const { data: languages = [], isLoading: languagesLoading } = useProjectLanguages(id);
   const { data: fetchedMembers = [] } = useProjectMembers(id);
   const { data: fetchedInvites = [] } = useProjectInvites(id);
+
+  // Record recent project visit
+  useEffect(() => {
+    if (project?.id && project.name) recordRecentProject(project.id, project.name);
+  }, [project?.id, project?.name]);
 
   // Local state for optimistic updates from child tabs
   const [members, setMembers] = useState<ProjectMemberWithProfile[]>([]);
