@@ -49,7 +49,7 @@ function detectCapitalization(text: string): 'lower' | 'upper' | 'title' | 'mixe
   const isAllLower = text === text.toLowerCase();
   const isAllUpper = text === text.toUpperCase();
   const isTitle =
-    text[0] === text[0].toUpperCase() && text.slice(1) === text.slice(1).toLowerCase();
+    text[0] === text[0]!.toUpperCase() && text.slice(1) === text.slice(1).toLowerCase();
 
   if (isAllLower) return 'lower';
   if (isAllUpper) return 'upper';
@@ -93,8 +93,8 @@ function findTermWithBoundaries(
     if (index === -1) return null;
 
     // Check word boundaries
-    const before = index > 0 ? text[index - 1] : ' ';
-    const after = index + term.length < text.length ? text[index + term.length] : ' ';
+    const before = index > 0 ? text[index - 1]! : ' ';
+    const after = index + term.length < text.length ? text[index + term.length]! : ' ';
 
     const boundaryChars = /[\s,.!?;:()[\]{}"'<>\-/\n\r\t]/;
     const isWordStart = index === 0 || boundaryChars.test(before);

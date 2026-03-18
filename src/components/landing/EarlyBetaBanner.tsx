@@ -9,9 +9,7 @@ export function EarlyBetaBanner() {
         <span className="inline-flex items-center gap-1.5 rounded-full border border-accent/30 bg-accent/10 px-2 py-0.5 text-[11px] font-semibold tracking-wide text-accent uppercase sm:text-xs">
           {t('Beta')}
         </span>{' '}
-        {t(
-          'GlossBoss is already usable for real translation work, but the product is still in early beta. Expect rapid improvements, a few rough edges, and occasional changes as we tighten up the workflow.',
-        )}
+        {t('Usable for real work, improving fast.')}
       </p>
     </div>
   );

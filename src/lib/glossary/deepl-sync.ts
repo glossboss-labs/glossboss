@@ -8,9 +8,10 @@
 import { getDeepLClient } from '@/lib/deepl';
 import { debugError, debugLog } from '@/lib/debug';
 import type { Glossary } from '@/lib/glossary/types';
+import { DEEPL_GLOSSARY_MAPPING_KEY } from '@/lib/constants/storage-keys';
 
 /** Storage key for glossary mapping */
-const GLOSSARY_MAPPING_KEY = 'glossboss-deepl-glossary-mapping';
+const GLOSSARY_MAPPING_KEY = DEEPL_GLOSSARY_MAPPING_KEY;
 
 /** Mapping of WP locale to DeepL glossary ID */
 interface GlossaryMapping {

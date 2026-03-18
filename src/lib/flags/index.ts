@@ -117,6 +117,22 @@ const LANG_TO_COUNTRY: Record<string, string> = {
 };
 
 /**
+ * Resolve a language/locale code to its ISO 3166-1 alpha-2 country code.
+ *
+ * Accepts formats like "nl", "en_US", "en-US", "EN-GB", "pt_BR", "zh_CN".
+ * Returns the uppercase country code (e.g. "NL", "DE") or null if no mapping exists.
+ */
+export function getCountryCode(langCode: string): string | null {
+  if (!langCode) return null;
+
+  // Normalize: lowercase, replace hyphens with underscores
+  const normalized = langCode.toLowerCase().replace(/-/g, '_');
+
+  // Try full locale first (e.g. "en_us"), then base language (e.g. "en")
+  return LANG_TO_COUNTRY[normalized] ?? LANG_TO_COUNTRY[normalized.split('_')[0]!] ?? null;
+}
+
+/**
  * Convert an ISO 3166-1 alpha-2 country code to a flag emoji.
  * Uses regional indicator symbols (U+1F1E6–U+1F1FF).
  */
@@ -130,16 +146,12 @@ function countryToEmoji(countryCode: string): string {
  *
  * Accepts formats like "nl", "en_US", "en-US", "EN-GB", "pt_BR", "zh_CN".
  * Returns the flag emoji or null if no mapping exists.
+ *
+ * @deprecated Use `CountryFlag` component or `getCountryCode()` instead —
+ * flag emoji are not supported on Windows.
  */
 export function getFlagEmoji(langCode: string): string | null {
-  if (!langCode) return null;
-
-  // Normalize: lowercase, replace hyphens with underscores
-  const normalized = langCode.toLowerCase().replace(/-/g, '_');
-
-  // Try full locale first (e.g. "en_us"), then base language (e.g. "en")
-  const country = LANG_TO_COUNTRY[normalized] ?? LANG_TO_COUNTRY[normalized.split('_')[0]];
+  const country = getCountryCode(langCode);
   if (!country) return null;
-
   return countryToEmoji(country);
 }

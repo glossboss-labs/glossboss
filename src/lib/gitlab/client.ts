@@ -49,7 +49,7 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     headers: {
       'Content-Type': 'application/json',
       ...authHeader,
-      ...options.headers,
+      ...(options.headers as Record<string, string> | undefined),
     },
   });
 

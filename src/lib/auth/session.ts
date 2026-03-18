@@ -4,6 +4,10 @@
 
 import type { Session, User, AuthError } from '@supabase/supabase-js';
 import { getSupabaseClient } from '@/lib/supabase/client';
+import {
+  OAUTH_RETURN_PATH_KEY as _RETURN_PATH_KEY,
+  PLAN_PARAMS_KEY as _PLAN_PARAMS_KEY,
+} from '@/lib/constants/storage-keys';
 
 function auth() {
   return getSupabaseClient('Auth').auth;
@@ -63,8 +67,8 @@ export async function signInWithEmail(
 /*  OAuth                                                              */
 /* ------------------------------------------------------------------ */
 
-const RETURN_PATH_KEY = 'glossboss-oauth-return-path';
-const PLAN_PARAMS_KEY = 'glossboss-plan-params';
+const RETURN_PATH_KEY = _RETURN_PATH_KEY;
+const PLAN_PARAMS_KEY = _PLAN_PARAMS_KEY;
 
 /** Paths that should not be restored after OAuth — redirect to dashboard instead. */
 const AUTH_PATHS = new Set(['/login', '/signup', '/auth/callback', '/onboarding']);

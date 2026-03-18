@@ -108,9 +108,12 @@ export function poEntryToDbFields(
 }
 
 /** Build project metadata update from editor state fields (project-level only). */
-export function editorStateToProjectUpdate(state: { projectName: string; sourceFormat: string }): {
+export function editorStateToProjectUpdate(state: {
+  projectName: string;
+  sourceFormat: 'po' | 'i18next';
+}): {
   name: string;
-  source_format: string;
+  source_format: 'po' | 'i18next';
 } {
   return {
     name: state.projectName,

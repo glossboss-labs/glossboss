@@ -38,6 +38,7 @@ import {
 } from '@/lib/translation';
 import { syncGlossaryToDeepL } from '@/lib/glossary';
 import { useTranslation } from '@/lib/app-language';
+import { renderFlagOption } from '@/components/ui';
 
 export interface GlossarySectionProps {
   initialLocale?: string;
@@ -284,6 +285,7 @@ export function GlossarySection({
             onChange={(value) => setSelectedLocale(value || '')}
             searchable
             style={{ flex: 1 }}
+            renderOption={renderFlagOption}
           />
 
           {!effectiveGlossary ? (

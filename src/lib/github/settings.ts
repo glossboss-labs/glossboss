@@ -2,11 +2,11 @@
  * GitHub Settings Storage
  *
  * Manages user's GitHub Personal Access Token.
- * Follows the same session/localStorage pattern as DeepL settings.
+ * Follows the same session/localStorage pattern as other providers.
  */
 
-const STORAGE_KEY = 'glossboss-github-settings';
-const PERSIST_KEY = 'glossboss-github-persist';
+import { createPersistenceManager } from '@/lib/settings/storage-persistence';
+import { GITHUB_SETTINGS_KEY, GITHUB_PERSIST_KEY } from '@/lib/constants/storage-keys';
 
 export interface GitHubSettings {
   /** GitHub Personal Access Token */
@@ -20,74 +20,31 @@ const DEFAULT_SETTINGS: GitHubSettings = {
   updatedAt: 0,
 };
 
+const manager = createPersistenceManager<GitHubSettings>({
+  storageKey: GITHUB_SETTINGS_KEY,
+  persistKey: GITHUB_PERSIST_KEY,
+  defaults: DEFAULT_SETTINGS,
+  label: 'GitHub Settings',
+});
+
 export function isGitHubPersistEnabled(): boolean {
-  try {
-    return localStorage.getItem(PERSIST_KEY) === 'true';
-  } catch {
-    return false;
-  }
+  return manager.isPersistEnabled();
 }
 
 export function setGitHubPersistEnabled(enabled: boolean): void {
-  try {
-    if (enabled) {
-      const session = sessionStorage.getItem(STORAGE_KEY);
-      if (session) {
-        localStorage.setItem(STORAGE_KEY, session);
-        sessionStorage.removeItem(STORAGE_KEY);
-      }
-      localStorage.setItem(PERSIST_KEY, 'true');
-    } else {
-      const local = localStorage.getItem(STORAGE_KEY);
-      if (local) {
-        sessionStorage.setItem(STORAGE_KEY, local);
-        localStorage.removeItem(STORAGE_KEY);
-      }
-      localStorage.removeItem(PERSIST_KEY);
-    }
-  } catch {
-    // Ignore storage errors
-  }
-}
-
-function getStore(): Storage {
-  return isGitHubPersistEnabled() ? localStorage : sessionStorage;
+  manager.setPersistEnabled(enabled);
 }
 
 export function getGitHubSettings(): GitHubSettings {
-  try {
-    const stored = getStore().getItem(STORAGE_KEY);
-    if (stored) {
-      return { ...DEFAULT_SETTINGS, ...JSON.parse(stored) };
-    }
-  } catch {
-    // Fall through to default
-  }
-  return DEFAULT_SETTINGS;
+  return manager.get();
 }
 
 export function saveGitHubSettings(settings: Partial<GitHubSettings>): void {
-  try {
-    const current = getGitHubSettings();
-    const updated: GitHubSettings = {
-      ...current,
-      ...settings,
-      updatedAt: Date.now(),
-    };
-    getStore().setItem(STORAGE_KEY, JSON.stringify(updated));
-  } catch {
-    // Ignore storage errors
-  }
+  manager.save(settings);
 }
 
 export function clearGitHubSettings(): void {
-  try {
-    localStorage.removeItem(STORAGE_KEY);
-    sessionStorage.removeItem(STORAGE_KEY);
-    localStorage.removeItem(PERSIST_KEY);
-  } catch {
-    // Ignore storage errors
-  }
+  manager.clear();
 }
 
 export function hasGitHubToken(): boolean {

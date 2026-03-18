@@ -15,11 +15,13 @@ import type { TtsProviderId } from '@/lib/tts';
 export interface CloudSettingsPreferences {
   appLanguage: AppLanguage;
   containerWidth: ContainerWidth;
-  glossaryLocale: string;
-  glossaryEnforcementEnabled: boolean;
   navSkipTranslated: boolean;
   speechEnabled: boolean;
   translateEnabled: boolean;
+  /** @deprecated Glossary config moved to project_languages DB. Kept for backward-compat reads. */
+  glossaryLocale?: string;
+  /** @deprecated Glossary config moved to project_languages DB. Kept for backward-compat reads. */
+  glossaryEnforcementEnabled?: boolean;
 }
 
 /** Always-synced provider configuration (no API keys). */
@@ -27,7 +29,11 @@ export interface CloudSettingsProviders {
   translationProvider: TranslationProviderId;
   deepl: { apiType: DeepLApiType; formality: DeepLFormality };
   azure: { region: string; endpoint: string };
-  gemini: { modelId: string; useProjectContext: boolean };
+  /** @deprecated Use llm.google instead. Kept for backward-compat reads. */
+  gemini?: { modelId: string; useProjectContext: boolean };
+  llm?: Partial<
+    Record<string, { modelId: string; temperature: number; useProjectContext: boolean }>
+  >;
 }
 
 /** Opt-in only — API keys stored in the cloud. */
@@ -50,8 +56,13 @@ export interface CloudSettingsPayload {
   encryptedCredentials?: string;
 }
 
+import {
+  CLOUD_SETTINGS_ENABLED_KEY as _CLOUD_SETTINGS_ENABLED_KEY,
+  CLOUD_CREDENTIAL_SYNC_KEY as _CLOUD_CREDENTIAL_SYNC_KEY,
+} from '@/lib/constants/storage-keys';
+
 /** localStorage key controlling whether cloud sync is enabled. */
-export const CLOUD_SETTINGS_ENABLED_KEY = 'glossboss-cloud-settings-enabled';
+export const CLOUD_SETTINGS_ENABLED_KEY = _CLOUD_SETTINGS_ENABLED_KEY;
 
 /** localStorage key controlling whether credentials are included in sync. */
-export const CLOUD_CREDENTIAL_SYNC_KEY = 'glossboss-cloud-credential-sync';
+export const CLOUD_CREDENTIAL_SYNC_KEY = _CLOUD_CREDENTIAL_SYNC_KEY;

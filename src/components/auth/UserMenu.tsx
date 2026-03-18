@@ -21,10 +21,11 @@ import {
 import { motion } from 'motion/react';
 import { buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
+import { getInitials } from '@/lib/utils/avatar';
 import { useAuth } from '@/hooks/use-auth';
 import { useAuthStore } from '@/stores/auth-store';
 import { useSubscription } from '@/hooks/use-subscription';
-import { useProjectsStore } from '@/stores/projects-store';
+import { useProjects } from '@/lib/projects/queries';
 import { formatLimit } from '@/lib/billing/limits';
 import { PlanBadge } from '@/components/billing/PlanBadge';
 import { FeedbackModal } from '@/components/feedback';
@@ -35,7 +36,7 @@ export function UserMenu() {
   const { user, isAuthenticated, loading } = useAuth();
   const signOut = useAuthStore((s) => s.signOut);
   const { plan, limits } = useSubscription();
-  const projects = useProjectsStore((s) => s.projects);
+  const { data: projects = [] } = useProjects();
   const [feedbackOpen, setFeedbackOpen] = useState(false);
 
   if (loading) return null;
@@ -60,12 +61,7 @@ export function UserMenu() {
 
   const displayName = user?.user_metadata?.full_name || user?.email || '';
   const avatarUrl = user?.user_metadata?.avatar_url;
-  const initials = displayName
-    .split(/\s+/)
-    .map((w: string) => w[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
+  const initials = getInitials(displayName);
 
   return (
     <>

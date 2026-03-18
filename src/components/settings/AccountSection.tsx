@@ -18,8 +18,21 @@ import {
   Avatar,
   Loader,
   Divider,
+  Modal,
+  Menu,
 } from '@mantine/core';
-import { Check, AlertCircle, Cloud, RefreshCw, ShieldAlert, Pencil, X } from 'lucide-react';
+import {
+  Check,
+  AlertCircle,
+  Cloud,
+  RefreshCw,
+  ShieldAlert,
+  Pencil,
+  X,
+  Upload,
+  Download,
+  ChevronDown,
+} from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { useAuthStore } from '@/stores/auth-store';
 import { useCloudSettingsSync } from '@/hooks/use-cloud-settings-sync';
@@ -38,7 +51,11 @@ export function AccountSection() {
     lastSynced,
     credentialSyncEnabled,
     setCredentialSyncEnabled,
-    syncNow,
+    pushToCloud,
+    pullFromCloud,
+    pendingCloudSettings,
+    resolveConflict,
+    dismissPending,
   } = useCloudSettingsSync();
 
   // Password change state
@@ -181,9 +198,20 @@ export function AccountSection() {
     [setCredentialSyncEnabled],
   );
 
-  const handleSyncNow = useCallback(async () => {
-    await syncNow();
-  }, [syncNow]);
+  const handlePush = useCallback(async () => {
+    await pushToCloud();
+  }, [pushToCloud]);
+
+  const handlePull = useCallback(async () => {
+    await pullFromCloud();
+  }, [pullFromCloud]);
+
+  const handleResolveConflict = useCallback(
+    async (choice: 'cloud' | 'local') => {
+      await resolveConflict(choice);
+    },
+    [resolveConflict],
+  );
 
   if (!user) {
     return (
@@ -357,7 +385,7 @@ export function AccountSection() {
                     </svg>
                   }
                 >
-                  GitHub
+                  {t('GitHub')}
                 </Badge>
                 <Text size="xs" c="dimmed">
                   {githubUsername ? (
@@ -420,6 +448,37 @@ export function AccountSection() {
           )}
         </Stack>
       </Paper>
+
+      {/* Cloud sync conflict dialog */}
+      <Modal
+        opened={pendingCloudSettings !== null}
+        onClose={dismissPending}
+        title={t('Cloud settings found')}
+        centered
+      >
+        <Stack gap="md">
+          <Text size="sm">
+            {t(
+              'Your cloud account has existing settings from another device. Would you like to use those settings, or save your current local settings to the cloud?',
+            )}
+          </Text>
+          {pendingCloudSettings?.updatedAt && (
+            <Text size="xs" c="dimmed">
+              {t('Cloud settings last updated: {{time}}', {
+                time: new Date(pendingCloudSettings.updatedAt).toLocaleString(),
+              })}
+            </Text>
+          )}
+          <Group justify="flex-end" gap="sm">
+            <Button variant="default" onClick={() => void handleResolveConflict('local')}>
+              {t('Use my local settings')}
+            </Button>
+            <Button onClick={() => void handleResolveConflict('cloud')}>
+              {t('Use cloud settings')}
+            </Button>
+          </Group>
+        </Stack>
+      </Modal>
 
       {/* Cloud sync section */}
       <Paper p="md" withBorder>
@@ -489,15 +548,32 @@ export function AccountSection() {
                 )}
               </Group>
 
-              <Button
-                variant="light"
-                size="xs"
-                leftSection={<RefreshCw size={14} />}
-                onClick={handleSyncNow}
-                loading={syncStatus === 'syncing'}
-              >
-                {t('Sync now')}
-              </Button>
+              <Group gap="xs">
+                <Menu shadow="md" width={200} position="bottom-start">
+                  <Menu.Target>
+                    <Button
+                      variant="light"
+                      size="xs"
+                      leftSection={<RefreshCw size={14} />}
+                      rightSection={<ChevronDown size={12} />}
+                      loading={syncStatus === 'syncing'}
+                    >
+                      {t('Sync')}
+                    </Button>
+                  </Menu.Target>
+                  <Menu.Dropdown>
+                    <Menu.Item leftSection={<Upload size={14} />} onClick={() => void handlePush()}>
+                      {t('Push to cloud')}
+                    </Menu.Item>
+                    <Menu.Item
+                      leftSection={<Download size={14} />}
+                      onClick={() => void handlePull()}
+                    >
+                      {t('Pull from cloud')}
+                    </Menu.Item>
+                  </Menu.Dropdown>
+                </Menu>
+              </Group>
 
               <Divider />
 

@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { Modal, Stack, TextInput, Textarea, Button, Alert } from '@mantine/core';
 import { AlertCircle } from 'lucide-react';
 import { useTranslation } from '@/lib/app-language';
-import { useOrganizationsStore } from '@/stores/organizations-store';
+import { useCreateOrganization } from '@/lib/organizations/queries';
 import { useAuth } from '@/hooks/use-auth';
 
 interface CreateOrgModalProps {
@@ -26,13 +26,12 @@ function toSlug(name: string): string {
 export function CreateOrgModal({ opened, onClose, onCreated }: CreateOrgModalProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
-  const createOrganization = useOrganizationsStore((s) => s.createOrganization);
+  const createOrganization = useCreateOrganization();
 
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
   const [slugTouched, setSlugTouched] = useState(false);
   const [description, setDescription] = useState('');
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleNameChange = (val: string) => {
@@ -50,11 +49,10 @@ export function CreateOrgModal({ opened, onClose, onCreated }: CreateOrgModalPro
   const handleCreate = async () => {
     if (!name.trim() || !slug.trim() || !user) return;
 
-    setLoading(true);
     setError(null);
 
     try {
-      const org = await createOrganization({
+      const org = await createOrganization.mutateAsync({
         name: name.trim(),
         slug: slug.trim(),
         description: description.trim(),
@@ -69,8 +67,6 @@ export function CreateOrgModal({ opened, onClose, onCreated }: CreateOrgModalPro
       onCreated?.(org.id);
     } catch (err) {
       setError(err instanceof Error ? err.message : t('Failed to create organization'));
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -119,7 +115,7 @@ export function CreateOrgModal({ opened, onClose, onCreated }: CreateOrgModalPro
 
         <Button
           onClick={handleCreate}
-          loading={loading}
+          loading={createOrganization.isPending}
           disabled={!name.trim() || !slugValid}
           fullWidth
         >

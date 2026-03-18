@@ -1,0 +1,173 @@
+/**
+ * TanStack Query hooks for projects.
+ *
+ * Provides cached, deduplicated data fetching for project listing,
+ * detail, and languages. Mutations invalidate relevant caches automatically.
+ */
+
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  listProjects,
+  getProject,
+  getProjectLanguages,
+  createProject as apiCreateProject,
+  deleteProject as apiDeleteProject,
+  createProjectLanguage as apiCreateProjectLanguage,
+  deleteProjectLanguage as apiDeleteProjectLanguage,
+  cloneLanguageEntries as apiCloneLanguageEntries,
+  syncProjectEntries,
+  listProjectMembers,
+  listProjectInvites,
+} from './api';
+import type {
+  ProjectInsert,
+  ProjectLanguageInsert,
+  ProjectWithLanguages,
+  ProjectRow,
+  ProjectLanguageRow,
+  ProjectMemberWithProfile,
+  ProjectInviteRow,
+} from './types';
+import type { POEntry } from '@/lib/po/types';
+
+// ── Query key factory ────────────────────────────────────────
+
+export const projectKeys = {
+  all: ['projects'] as const,
+  detail: (id: string) => ['projects', id] as const,
+  languages: (projectId: string) => ['projects', projectId, 'languages'] as const,
+  members: (projectId: string) => ['projects', projectId, 'members'] as const,
+  invites: (projectId: string) => ['projects', projectId, 'invites'] as const,
+};
+
+// ── Query hooks ──────────────────────────────────────────────
+
+export function useProjects() {
+  return useQuery<ProjectWithLanguages[]>({
+    queryKey: projectKeys.all,
+    queryFn: listProjects,
+  });
+}
+
+export function useProject(id: string | undefined) {
+  return useQuery<ProjectRow | null>({
+    queryKey: projectKeys.detail(id!),
+    queryFn: () => getProject(id!),
+    enabled: Boolean(id),
+  });
+}
+
+export function useProjectLanguages(projectId: string | undefined) {
+  return useQuery<ProjectLanguageRow[]>({
+    queryKey: projectKeys.languages(projectId!),
+    queryFn: () => getProjectLanguages(projectId!),
+    enabled: Boolean(projectId),
+  });
+}
+
+export function useProjectMembers(projectId: string | undefined) {
+  return useQuery<ProjectMemberWithProfile[]>({
+    queryKey: projectKeys.members(projectId!),
+    queryFn: () => listProjectMembers(projectId!),
+    enabled: Boolean(projectId),
+  });
+}
+
+export function useProjectInvites(projectId: string | undefined) {
+  return useQuery<ProjectInviteRow[]>({
+    queryKey: projectKeys.invites(projectId!),
+    queryFn: () => listProjectInvites(projectId!),
+    enabled: Boolean(projectId),
+  });
+}
+
+// ── Mutations ────────────────────────────────────────────────
+
+interface CreateProjectParams {
+  insert: ProjectInsert;
+  languageInsert?: ProjectLanguageInsert;
+  entries?: POEntry[];
+}
+
+interface CreateProjectResult {
+  project: ProjectRow;
+  languageId: string | null;
+}
+
+export function useCreateProject() {
+  const queryClient = useQueryClient();
+  return useMutation<CreateProjectResult, Error, CreateProjectParams>({
+    mutationFn: async ({ insert, languageInsert, entries }) => {
+      const project = await apiCreateProject(insert);
+
+      let languageId: string | null = null;
+
+      if (languageInsert) {
+        const language = await apiCreateProjectLanguage({
+          ...languageInsert,
+          project_id: project.id,
+        });
+        languageId = language.id;
+
+        if (entries && entries.length > 0) {
+          await syncProjectEntries(language.id, project.id, entries, new Map(), new Map());
+        }
+      }
+
+      return { project, languageId };
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: projectKeys.all });
+    },
+  });
+}
+
+export function useDeleteProject() {
+  const queryClient = useQueryClient();
+  return useMutation<void, Error, string>({
+    mutationFn: apiDeleteProject,
+    onSuccess: (_data, id) => {
+      // Optimistic removal from cache
+      queryClient.setQueryData<ProjectWithLanguages[]>(projectKeys.all, (old) =>
+        old ? old.filter((p) => p.id !== id) : [],
+      );
+    },
+  });
+}
+
+export function useAddLanguage() {
+  const queryClient = useQueryClient();
+  return useMutation<
+    string,
+    Error,
+    { projectId: string; languageInsert: ProjectLanguageInsert; sourceLanguageId?: string }
+  >({
+    mutationFn: async ({ projectId, languageInsert, sourceLanguageId }) => {
+      const language = await apiCreateProjectLanguage({
+        ...languageInsert,
+        project_id: projectId,
+      });
+
+      if (sourceLanguageId) {
+        await apiCloneLanguageEntries(sourceLanguageId, language.id);
+      }
+
+      return language.id;
+    },
+    onSuccess: (_data, { projectId }) => {
+      void queryClient.invalidateQueries({ queryKey: projectKeys.all });
+      void queryClient.invalidateQueries({ queryKey: projectKeys.languages(projectId) });
+    },
+  });
+}
+
+export function useDeleteLanguage() {
+  const queryClient = useQueryClient();
+  return useMutation<void, Error, { languageId: string; projectId: string }>({
+    mutationFn: ({ languageId }) => apiDeleteProjectLanguage(languageId),
+    onSuccess: (_data, { projectId }) => {
+      void queryClient.invalidateQueries({ queryKey: projectKeys.all });
+      void queryClient.invalidateQueries({ queryKey: projectKeys.languages(projectId) });
+    },
+  });
+}

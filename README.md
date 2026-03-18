@@ -50,14 +50,14 @@
 
 ## Getting started
 
-Requires [Bun](https://bun.sh/) v1.3+.
+Requires [pnpm](https://pnpm.io/) v10+ and [Node.js](https://nodejs.org/) v22+.
 
 ```bash
-bun install --frozen-lockfile
+pnpm install --frozen-lockfile
 cp .env.example .env.local
-bun run supabase:start
-# then fill in VITE_SUPABASE_ANON_KEY from `bunx supabase status -o env`
-bun run dev
+pnpm run supabase:start
+# then fill in VITE_SUPABASE_ANON_KEY from `pnpx supabase status -o env`
+pnpm run dev
 ```
 
 ```bash
@@ -74,7 +74,7 @@ Environment templates:
 
 Real environment files stay untracked. Only the example templates are committed.
 
-Run `bun run` to see all available scripts.
+Run `pnpm run` to see all available scripts.
 
 ## Deployment
 

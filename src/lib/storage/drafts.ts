@@ -8,12 +8,16 @@
 import type { POEntry, POHeader } from '@/lib/po/types';
 import type { ReviewEntryState } from '@/lib/review';
 import { debugError, debugLog, debugWarn } from '@/lib/debug';
+import {
+  DRAFT_KEY_PREFIX as _DRAFT_KEY_PREFIX,
+  DRAFT_INDEX_KEY as _DRAFT_INDEX_KEY,
+} from '@/lib/constants/storage-keys';
 
 /** Storage key prefix for drafts */
-const DRAFT_KEY_PREFIX = 'po-editor-draft:';
+const DRAFT_KEY_PREFIX = _DRAFT_KEY_PREFIX;
 
 /** Storage key for draft metadata index */
-const DRAFT_INDEX_KEY = 'po-editor-draft-index';
+const DRAFT_INDEX_KEY = _DRAFT_INDEX_KEY;
 
 /** Maximum age for drafts before auto-cleanup (7 days) */
 const DRAFT_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;

@@ -5,8 +5,8 @@
  * renames the source string in all t()/msgid() calls across the codebase
  * and updates msgid in all PO files to match.
  *
- * Usage: bun scripts/sync-en-strings.ts          # apply renames
- *        bun scripts/sync-en-strings.ts --check   # dry-run, exit 1 if renames pending
+ * Usage: pnpm run i18n:sync-en                    # apply renames
+ *        pnpm run i18n:sync-en -- --check          # dry-run, exit 1 if renames pending
  */
 
 import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
@@ -194,7 +194,9 @@ for (const { oldStr, newStr } of renames) {
 }
 
 if (checkOnly) {
-  console.log('  Run `bun run i18n:sync-en` to apply these renames to source code and PO files.\n');
+  console.log(
+    '  Run `pnpm run i18n:sync-en` to apply these renames to source code and PO files.\n',
+  );
   process.exit(1);
 }
 
@@ -207,6 +209,6 @@ console.log(`  Renamed ${poCount} msgid(s) across PO files`);
 
 // Re-run the extractor to update references and POT
 console.log(`  Running i18n:extract to sync...\n`);
-execSync('bun run i18n:extract', { cwd: rootDir, stdio: 'inherit' });
+execSync('pnpm run i18n:extract', { cwd: rootDir, stdio: 'inherit' });
 
 console.log(`\n  Done. Review the changes and commit.\n`);

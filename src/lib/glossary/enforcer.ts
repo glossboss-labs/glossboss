@@ -6,6 +6,7 @@
  */
 
 import type { Glossary, GlossaryEntry } from './types';
+import { checkWordBoundaries } from './text-utils';
 
 /** Result of applying glossary to a translation */
 export interface EnforcementResult {
@@ -35,15 +36,7 @@ function findTermInText(
   let index = lowerText.indexOf(lowerTerm);
 
   while (index !== -1) {
-    // Check word boundaries
-    const before = index > 0 ? lowerText[index - 1] : ' ';
-    const after =
-      index + lowerTerm.length < lowerText.length ? lowerText[index + lowerTerm.length] : ' ';
-
-    const isWordBoundaryBefore = /[\s,.!?;:()[\]{}"'<>\-/]/.test(before);
-    const isWordBoundaryAfter = /[\s,.!?;:()[\]{}"'<>\-/]/.test(after);
-
-    if (isWordBoundaryBefore && isWordBoundaryAfter) {
+    if (checkWordBoundaries(lowerText, index, index + lowerTerm.length)) {
       return {
         found: true,
         index,
@@ -124,10 +117,10 @@ export function applyGlossaryToTranslation(
       let wordEnd = compoundIndex + lowerExpected.length;
 
       // Expand to find full word
-      while (wordStart > 0 && /[a-zA-Z\u00C0-\u017F]/.test(lowerResult[wordStart - 1])) {
+      while (wordStart > 0 && /[a-zA-Z\u00C0-\u017F]/.test(lowerResult[wordStart - 1]!)) {
         wordStart--;
       }
-      while (wordEnd < lowerResult.length && /[a-zA-Z\u00C0-\u017F]/.test(lowerResult[wordEnd])) {
+      while (wordEnd < lowerResult.length && /[a-zA-Z\u00C0-\u017F]/.test(lowerResult[wordEnd]!)) {
         wordEnd++;
       }
 

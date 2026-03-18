@@ -12,10 +12,15 @@ import { useDisclosure, useLocalStorage, useMediaQuery } from '@mantine/hooks';
 import { useNotifications } from '@/hooks/use-notifications';
 import { AppSidebar } from './AppSidebar';
 import { DevBranchChip } from '@/pages/index/DevBranchChip';
+import {
+  DEV_BRANCH_CHIP_KEY,
+  SIDEBAR_COLLAPSED_KEY,
+  SIDEBAR_WIDTH_KEY,
+} from '@/lib/constants/storage-keys';
 
-const DEV_BRANCH_CHIP_STORAGE_KEY = 'glossboss-dev-branch-chip';
-const COLLAPSED_KEY = 'gb-sidebar-collapsed';
-const WIDTH_KEY = 'gb-sidebar-width';
+const DEV_BRANCH_CHIP_STORAGE_KEY = DEV_BRANCH_CHIP_KEY;
+const COLLAPSED_KEY = SIDEBAR_COLLAPSED_KEY;
+const WIDTH_KEY = SIDEBAR_WIDTH_KEY;
 const DEFAULT_WIDTH = 200;
 const MIN_WIDTH = 160;
 const MAX_WIDTH = 320;

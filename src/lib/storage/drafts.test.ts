@@ -25,7 +25,7 @@ function makeDraft(overrides: Partial<{ filename: string; entries: POEntry[] }> 
       msgid: 'hello',
       msgstr: ['hallo'],
       comments: {},
-    } as POEntry,
+    } as unknown as POEntry,
   ];
   return {
     filename: overrides.filename ?? 'test.po',
@@ -160,7 +160,7 @@ describe('drafts', () => {
       const all = getAllDrafts();
       expect(all).toHaveLength(2);
       // b.po has a newer savedAt so should be first
-      expect(all[0].filename).toBe('b.po');
+      expect(all[0]!.filename).toBe('b.po');
     });
   });
 

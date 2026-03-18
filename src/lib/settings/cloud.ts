@@ -13,20 +13,20 @@ import { getSupabaseClient } from '@/lib/supabase/client';
 import { getDeepLSettings, saveDeepLSettings } from '@/lib/deepl';
 import { getAzureSettings, saveAzureSettings } from '@/lib/azure';
 import { getGeminiSettings, saveGeminiSettings } from '@/lib/gemini';
+import { getLlmSettings, saveLlmSettings, LLM_PROVIDERS } from '@/lib/llm';
 import { getTtsSettings, saveTtsSettings } from '@/lib/tts';
 import { getTranslationProviderSettings, saveActiveTranslationProvider } from '@/lib/translation';
+import type { LlmProviderId } from '@/lib/translation/types';
 import { getAppLanguage, saveAppLanguage } from '@/lib/app-language';
-import { CONTAINER_WIDTH_KEY, type ContainerWidth } from '@/lib/container-width';
+import { type ContainerWidth } from '@/lib/container-width';
 import {
-  GLOSSARY_SELECTED_LOCALE_KEY,
-  GLOSSARY_ENFORCEMENT_KEY,
-} from '@/components/glossary/constants';
-import { NAV_SKIP_TRANSLATED_KEY } from '@/components/editor/EditorTable';
+  CONTAINER_WIDTH_KEY,
+  NAV_SKIP_TRANSLATED_KEY,
+  SPEECH_ENABLED_KEY,
+  TRANSLATE_ENABLED_KEY,
+} from '@/lib/constants/storage-keys';
 import { encryptCredentials, decryptCredentials } from './crypto';
 import type { CloudSettingsPayload, CloudSettingsCredentials } from './types';
-
-const SPEECH_ENABLED_KEY = 'glossboss-speech-enabled';
-const TRANSLATE_ENABLED_KEY = 'glossboss-translate-enabled';
 
 function supabase() {
   return getSupabaseClient('Settings');
@@ -111,11 +111,25 @@ export function collectLocalSettings(includeCredentials: boolean = false): Cloud
   const translation = getTranslationProviderSettings();
 
   const containerWidth = (localStorage.getItem(CONTAINER_WIDTH_KEY) as ContainerWidth) || 'xl';
-  const glossaryLocale = localStorage.getItem(GLOSSARY_SELECTED_LOCALE_KEY) || '';
-  const glossaryEnforcement = localStorage.getItem(GLOSSARY_ENFORCEMENT_KEY);
   const navSkip = localStorage.getItem(NAV_SKIP_TRANSLATED_KEY);
   const speechEnabled = localStorage.getItem(SPEECH_ENABLED_KEY);
   const translateEnabled = localStorage.getItem(TRANSLATE_ENABLED_KEY);
+
+  // Collect LLM provider settings
+  const llmSettings: Record<
+    string,
+    { modelId: string; temperature: number; useProjectContext: boolean }
+  > = {};
+  for (const provider of LLM_PROVIDERS) {
+    const s = getLlmSettings(provider.id);
+    if (s.apiKey || s.modelId !== provider.defaultModel || s.useProjectContext) {
+      llmSettings[provider.id] = {
+        modelId: s.modelId,
+        temperature: s.temperature,
+        useProjectContext: s.useProjectContext,
+      };
+    }
+  }
 
   const payload: CloudSettingsPayload = {
     version: 1,
@@ -123,8 +137,6 @@ export function collectLocalSettings(includeCredentials: boolean = false): Cloud
     preferences: {
       appLanguage: getAppLanguage(),
       containerWidth,
-      glossaryLocale,
-      glossaryEnforcementEnabled: glossaryEnforcement !== 'false',
       navSkipTranslated: navSkip === 'true',
       speechEnabled: speechEnabled !== 'false',
       translateEnabled: translateEnabled !== 'false',
@@ -133,7 +145,9 @@ export function collectLocalSettings(includeCredentials: boolean = false): Cloud
       translationProvider: translation.provider,
       deepl: { apiType: deepl.apiType, formality: deepl.formality },
       azure: { region: azure.region, endpoint: azure.endpoint },
+      // Legacy gemini field for backward compat
       gemini: { modelId: gemini.modelId, useProjectContext: gemini.useProjectContext },
+      llm: Object.keys(llmSettings).length > 0 ? llmSettings : undefined,
     },
   };
 
@@ -157,11 +171,9 @@ export function collectLocalSettings(includeCredentials: boolean = false): Cloud
 export function applyCloudSettings(payload: CloudSettingsPayload): void {
   const { preferences, providers, credentials } = payload;
 
-  // Preferences
+  // Preferences (glossary settings excluded — now per-project in DB)
   saveAppLanguage(preferences.appLanguage);
   localStorage.setItem(CONTAINER_WIDTH_KEY, preferences.containerWidth);
-  localStorage.setItem(GLOSSARY_SELECTED_LOCALE_KEY, preferences.glossaryLocale);
-  localStorage.setItem(GLOSSARY_ENFORCEMENT_KEY, String(preferences.glossaryEnforcementEnabled));
   localStorage.setItem(NAV_SKIP_TRANSLATED_KEY, String(preferences.navSkipTranslated));
   localStorage.setItem(SPEECH_ENABLED_KEY, String(preferences.speechEnabled));
   localStorage.setItem(TRANSLATE_ENABLED_KEY, String(preferences.translateEnabled));
@@ -185,11 +197,27 @@ export function applyCloudSettings(payload: CloudSettingsPayload): void {
     endpoint: providers.azure.endpoint,
   });
 
-  saveGeminiSettings({
-    apiKey: credentials?.gemini?.apiKey ?? currentGemini.apiKey,
-    modelId: providers.gemini.modelId,
-    useProjectContext: providers.gemini.useProjectContext,
-  });
+  // Legacy Gemini settings (backward compat)
+  if (providers.gemini) {
+    saveGeminiSettings({
+      apiKey: credentials?.gemini?.apiKey ?? currentGemini.apiKey,
+      modelId: providers.gemini.modelId,
+      useProjectContext: providers.gemini.useProjectContext,
+    });
+  }
+
+  // Unified LLM settings
+  if (providers.llm) {
+    for (const [id, settings] of Object.entries(providers.llm)) {
+      if (settings) {
+        saveLlmSettings(id as LlmProviderId, {
+          modelId: settings.modelId,
+          temperature: settings.temperature,
+          useProjectContext: settings.useProjectContext,
+        });
+      }
+    }
+  }
 
   if (credentials?.tts) {
     saveTtsSettings({

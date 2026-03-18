@@ -180,7 +180,7 @@ async function fetchFromSvn(url: string, init?: RequestInit): Promise<Response> 
     ...init,
     headers: {
       ...FETCH_HEADERS,
-      ...(init?.headers ?? {}),
+      ...init?.headers,
     },
   });
 }

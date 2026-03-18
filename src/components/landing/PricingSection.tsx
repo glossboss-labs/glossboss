@@ -13,11 +13,13 @@ import { cn } from '@/lib/utils';
 type Interval = 'month' | 'year';
 
 function PriceDisplay({ tier, interval }: { tier: string; interval: Interval }) {
+  const { t } = useTranslation();
+
   if (tier === 'free') {
     return (
       <div className="my-4 h-[52px]">
         <span className="text-3xl font-semibold text-text-primary">€0</span>
-        <span className="text-sm text-text-tertiary">/mo</span>
+        <span className="text-sm text-text-tertiary">{t('/mo')}</span>
       </div>
     );
   }
@@ -27,7 +29,7 @@ function PriceDisplay({ tier, interval }: { tier: string; interval: Interval }) 
         <span className="text-3xl font-semibold text-text-primary">
           €{FLEX_PRICING.pricePerKStrings}
         </span>
-        <span className="text-sm text-text-tertiary">/1k strings</span>
+        <span className="text-sm text-text-tertiary">{t('/1k strings')}</span>
       </div>
     );
   }
@@ -44,9 +46,11 @@ function PriceDisplay({ tier, interval }: { tier: string; interval: Interval }) 
           transition={{ duration: 0.15 }}
         >
           <span className="text-3xl font-semibold text-text-primary">{displayPrice}</span>
-          <span className="text-sm text-text-tertiary">/mo</span>
+          <span className="text-sm text-text-tertiary">{t('/mo')}</span>
           {interval === 'year' && (
-            <p className="mt-0.5 text-xs text-text-tertiary">€{pricing.year} billed yearly</p>
+            <p className="mt-0.5 text-xs text-text-tertiary">
+              {t('€{{price}} billed yearly', { price: pricing.year })}
+            </p>
           )}
         </motion.div>
       </AnimatePresence>

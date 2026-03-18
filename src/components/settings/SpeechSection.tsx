@@ -118,8 +118,8 @@ export function SpeechSection({ speechEnabled = true, onSpeechEnabledChange }: S
       const voices = await getElevenLabsClient().listVoices();
       setElevenLabsVoices(voices);
       if (voices.length > 0) {
-        setSourceElevenLabsVoiceId((current) => current ?? voices[0].voiceId);
-        setTranslationElevenLabsVoiceId((current) => current ?? voices[0].voiceId);
+        setSourceElevenLabsVoiceId((current) => current ?? voices[0]!.voiceId);
+        setTranslationElevenLabsVoiceId((current) => current ?? voices[0]!.voiceId);
       }
       primeElevenLabsVoices(voices);
     } catch (error) {

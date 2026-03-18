@@ -1,6 +1,7 @@
 import { DISCOVERED_APP_LANGUAGES } from './discovery';
+import { APP_LANGUAGE_KEY } from '@/lib/constants/storage-keys';
 
-export const APP_LANGUAGE_STORAGE_KEY = 'glossboss-app-language';
+export const APP_LANGUAGE_STORAGE_KEY = APP_LANGUAGE_KEY;
 
 export const APP_LANGUAGE_OPTIONS = DISCOVERED_APP_LANGUAGES.map(({ value, label }) => ({
   value,

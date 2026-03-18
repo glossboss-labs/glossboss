@@ -24,18 +24,17 @@ export function LandingNav({
     { label: t('Features'), href: '/#features' },
     { label: t('Pricing'), href: '/#pricing' },
     { label: t('Roadmap'), href: '/roadmap' },
-    { label: t('Explore'), href: '/explore' },
   ];
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-border-subtle bg-surface-0/80 backdrop-blur-lg">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+      <div className="mx-auto grid h-16 max-w-6xl grid-cols-[1fr_auto_1fr] items-center px-6">
         {/* Logo */}
         <Link to="/" className="flex shrink-0 items-center">
           <img src={logo} alt="GlossBoss" className="h-7" />
         </Link>
 
-        {/* Desktop nav */}
+        {/* Desktop nav — centered on the page */}
         <div className="hidden items-center gap-8 md:flex">
           {navLinks.map((link) =>
             link.href.includes('#') ? (
@@ -59,12 +58,12 @@ export function LandingNav({
         </div>
 
         {/* Desktop CTAs */}
-        <div className="hidden items-center gap-4 md:flex">
+        <div className="hidden items-center justify-end gap-4 md:flex">
           <LanguageSwitcher currentLang={currentLang} size="sm" />
           <button
             onClick={toggleColorScheme}
             className="flex h-8 w-8 items-center justify-center rounded-md text-text-secondary transition-colors hover:bg-surface-2 hover:text-text-primary"
-            aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+            aria-label={isDark ? t('Switch to light mode') : t('Switch to dark mode')}
           >
             {isDark ? <Sun size={15} /> : <Moon size={15} />}
           </button>
@@ -97,7 +96,7 @@ export function LandingNav({
         <button
           className="flex items-center md:hidden"
           onClick={() => setMobileOpen(!mobileOpen)}
-          aria-label="Toggle menu"
+          aria-label={t('Toggle menu')}
         >
           {mobileOpen ? (
             <X size={20} className="text-text-primary" />

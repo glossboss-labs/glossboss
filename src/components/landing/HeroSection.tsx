@@ -81,30 +81,35 @@ export function HeroSection() {
           transition={{ duration: 0.6, ease: 'easeOut', delay: 0.1 }}
           className="text-4xl font-semibold leading-[1.1] tracking-tight text-text-primary sm:text-5xl md:text-6xl"
         >
-          {/* Cycling translation line */}
+          {t('Everything you need to ship translations')}
+        </motion.h1>
+
+        {/* Decorative rotating translations — showcases multilingual capability */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.4, delay: 0.2 }}
+          className="mt-4 flex items-center justify-center gap-2 text-lg text-text-tertiary"
+        >
           <span className="inline-grid justify-center [&>*]:[grid-area:1/1]">
-            {/* Invisible sizing spans — reserves width of widest translation */}
             {HERO_TRANSLATIONS.map((entry) => (
               <span key={entry.lang} className="invisible select-none" aria-hidden="true">
                 {entry.text}
               </span>
             ))}
-            {/* Visible animated span */}
             <AnimatePresence mode="wait">
               <motion.span
                 key={HERO_TRANSLATIONS[index].lang}
-                initial={reducedMotion ? false : { opacity: 0, y: 16, filter: 'blur(6px)' }}
+                initial={reducedMotion ? false : { opacity: 0, y: 10, filter: 'blur(4px)' }}
                 animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                exit={reducedMotion ? undefined : { opacity: 0, y: -16, filter: 'blur(6px)' }}
+                exit={reducedMotion ? undefined : { opacity: 0, y: -10, filter: 'blur(4px)' }}
                 transition={{ duration: 0.3, ease: 'easeOut' }}
               >
                 {HERO_TRANSLATIONS[index].text}
               </motion.span>
             </AnimatePresence>
           </span>
-          <br />
-          <span className="text-text-secondary">{t('Ship faster.')}</span>
-        </motion.h1>
+        </motion.div>
 
         {/* Subheadline */}
         <motion.p

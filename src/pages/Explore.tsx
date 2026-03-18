@@ -19,6 +19,7 @@ import { motion } from 'motion/react';
 import { AlertCircle, Search, Globe } from 'lucide-react';
 import { sectionVariants, contentVariants, fadeVariants } from '@/lib/motion';
 import { useTranslation, msgid } from '@/lib/app-language';
+import { sortProjects, type ProjectSortOption } from '@/lib/utils/sorting';
 import { trackEvent } from '@/lib/analytics';
 import { listPublicProjects } from '@/lib/projects/api';
 import { ProjectGrid } from '@/components/projects/ProjectGrid';
@@ -26,7 +27,7 @@ import type { ProjectWithLanguages } from '@/lib/projects/types';
 
 const MotionDiv = motion.div;
 
-type SortOption = 'updated' | 'name' | 'most-strings' | 'least-complete' | 'most-complete';
+type SortOption = ProjectSortOption;
 
 const SORT_LABELS: Record<SortOption, string> = {
   updated: msgid('Last updated'),
@@ -35,31 +36,6 @@ const SORT_LABELS: Record<SortOption, string> = {
   'most-complete': msgid('Most complete'),
   'least-complete': msgid('Least complete'),
 };
-
-function sortProjects(projects: ProjectWithLanguages[], sort: SortOption): ProjectWithLanguages[] {
-  const sorted = [...projects];
-  switch (sort) {
-    case 'name':
-      return sorted.sort((a, b) => a.name.localeCompare(b.name));
-    case 'most-strings':
-      return sorted.sort((a, b) => b.stats_total - a.stats_total);
-    case 'most-complete': {
-      const pct = (p: ProjectWithLanguages) =>
-        p.stats_total > 0 ? p.stats_translated / p.stats_total : 0;
-      return sorted.sort((a, b) => pct(b) - pct(a));
-    }
-    case 'least-complete': {
-      const pct = (p: ProjectWithLanguages) =>
-        p.stats_total > 0 ? p.stats_translated / p.stats_total : 0;
-      return sorted.sort((a, b) => pct(a) - pct(b));
-    }
-    case 'updated':
-    default:
-      return sorted.sort(
-        (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
-      );
-  }
-}
 
 export default function Explore() {
   const { t } = useTranslation();

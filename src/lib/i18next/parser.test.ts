@@ -23,10 +23,10 @@ describe('parseI18nextJSON', () => {
 
     const result = parseI18nextJSON(json, 'en.json');
     expect(result.entries).toHaveLength(2);
-    expect(result.entries[0].msgid).toBe('greeting');
-    expect(result.entries[0].msgstr).toBe('Hello');
-    expect(result.entries[1].msgid).toBe('farewell');
-    expect(result.entries[1].msgstr).toBe('Goodbye');
+    expect(result.entries[0]!.msgid).toBe('greeting');
+    expect(result.entries[0]!.msgstr).toBe('Hello');
+    expect(result.entries[1]!.msgid).toBe('farewell');
+    expect(result.entries[1]!.msgstr).toBe('Goodbye');
     expect(result.filename).toBe('en.json');
   });
 
@@ -40,10 +40,10 @@ describe('parseI18nextJSON', () => {
 
     const result = parseI18nextJSON(json, 'test.json');
     expect(result.entries).toHaveLength(2);
-    expect(result.entries[0].msgid).toBe('common.save');
-    expect(result.entries[0].msgstr).toBe('Save');
-    expect(result.entries[1].msgid).toBe('common.cancel');
-    expect(result.entries[1].msgstr).toBe('Cancel');
+    expect(result.entries[0]!.msgid).toBe('common.save');
+    expect(result.entries[0]!.msgstr).toBe('Save');
+    expect(result.entries[1]!.msgid).toBe('common.cancel');
+    expect(result.entries[1]!.msgstr).toBe('Cancel');
   });
 
   it('groups plural suffixes into plural entries', () => {
@@ -54,10 +54,10 @@ describe('parseI18nextJSON', () => {
 
     const result = parseI18nextJSON(json, 'test.json');
     expect(result.entries).toHaveLength(1);
-    expect(result.entries[0].msgid).toBe('item');
-    expect(result.entries[0].msgidPlural).toBe('item_other');
-    expect(result.entries[0].msgstr).toBe('{{count}} item');
-    expect(result.entries[0].msgstrPlural).toEqual(['{{count}} item', '{{count}} items']);
+    expect(result.entries[0]!.msgid).toBe('item');
+    expect(result.entries[0]!.msgidPlural).toBe('item_other');
+    expect(result.entries[0]!.msgstr).toBe('{{count}} item');
+    expect(result.entries[0]!.msgstrPlural).toEqual(['{{count}} item', '{{count}} items']);
   });
 
   it('handles deeply nested keys', () => {
@@ -67,8 +67,8 @@ describe('parseI18nextJSON', () => {
 
     const result = parseI18nextJSON(json, 'test.json');
     expect(result.entries).toHaveLength(1);
-    expect(result.entries[0].msgid).toBe('a.b.c');
-    expect(result.entries[0].msgstr).toBe('deep');
+    expect(result.entries[0]!.msgid).toBe('a.b.c');
+    expect(result.entries[0]!.msgstr).toBe('deep');
   });
 
   it('handles empty object', () => {

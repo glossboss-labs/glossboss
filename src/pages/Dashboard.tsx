@@ -2,7 +2,7 @@
  * Dashboard — project list for authenticated users.
  */
 
-import { useEffect, useMemo, useState } from 'react';
+import { memo, useCallback, useState } from 'react';
 import { Link } from 'react-router';
 import {
   Title,
@@ -21,53 +21,85 @@ import { motion } from 'motion/react';
 import { Plus, AlertCircle, FolderOpen, Search, Building2 } from 'lucide-react';
 import { sectionVariants, contentVariants, buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
+import { sortProjects, type ProjectSortOption } from '@/lib/utils/sorting';
 import { trackEvent } from '@/lib/analytics';
-import { useProjectsStore } from '@/stores/projects-store';
+import { useProjects, useDeleteProject } from '@/lib/projects/queries';
 import { useAuthStore } from '@/stores/auth-store';
-import { useOrganizationsStore } from '@/stores/organizations-store';
+import { useOrganizations } from '@/lib/organizations/queries';
+import type { OrganizationRow } from '@/lib/organizations/types';
 import { ProjectGrid } from '@/components/projects/ProjectGrid';
 import { ProjectGridSkeleton } from '@/components/projects/ProjectGridSkeleton';
 import { CreateProjectModal } from '@/components/projects/CreateProjectModal';
 import { CreateOrgModal } from '@/components/organizations/CreateOrgModal';
 import { ConfirmModal } from '@/components/ui';
 import { FreePlanBanner } from '@/components/billing/FreePlanBanner';
-import type { ProjectWithLanguages } from '@/lib/projects/types';
 
 const MotionDiv = motion.div;
 
-type SortOption = 'updated' | 'name' | 'most-strings' | 'least-complete';
+type SortOption = ProjectSortOption;
 
-function sortProjects(projects: ProjectWithLanguages[], sort: SortOption): ProjectWithLanguages[] {
-  const sorted = [...projects];
-  switch (sort) {
-    case 'name':
-      return sorted.sort((a, b) => a.name.localeCompare(b.name));
-    case 'most-strings':
-      return sorted.sort((a, b) => b.stats_total - a.stats_total);
-    case 'least-complete': {
-      const pct = (p: ProjectWithLanguages) =>
-        p.stats_total > 0 ? p.stats_translated / p.stats_total : 0;
-      return sorted.sort((a, b) => pct(a) - pct(b));
-    }
-    case 'updated':
-    default:
-      return sorted.sort(
-        (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
-      );
-  }
-}
+/** Memoized organization list item to avoid re-renders when sibling items change. */
+const OrgCard = memo(function OrgCard({ org }: { org: OrganizationRow }) {
+  return (
+    <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
+      <Paper
+        component={Link}
+        to={`/orgs/${org.slug}`}
+        withBorder
+        p="md"
+        style={{
+          textDecoration: 'none',
+          color: 'inherit',
+          cursor: 'pointer',
+          transition: 'border-color 120ms ease, background-color 120ms ease',
+        }}
+        styles={{
+          root: {
+            '&:hover': {
+              borderColor: 'var(--gb-border-strong)',
+              backgroundColor: 'var(--gb-highlight-row)',
+            },
+          },
+        }}
+      >
+        <Group justify="space-between" align="center">
+          <Group gap="sm">
+            <ThemeIcon variant="light" color="violet" size="md" radius="xl">
+              <Building2 size={14} />
+            </ThemeIcon>
+            <div>
+              <Text size="sm" fw={600}>
+                {org.name}
+              </Text>
+              <Text size="xs" c="dimmed">
+                {org.slug}
+              </Text>
+            </div>
+          </Group>
+          {org.description && (
+            <Text size="xs" c="dimmed" truncate maw={300}>
+              {org.description}
+            </Text>
+          )}
+        </Group>
+      </Paper>
+    </MotionDiv>
+  );
+});
 
 export default function Dashboard() {
   const { t } = useTranslation();
-  const { projects, loading, error, fetchProjects, deleteProject } = useProjectsStore();
+  const { data: projects = [], isLoading: loading, error: projectsError } = useProjects();
+  const deleteProjectMutation = useDeleteProject();
   const { user } = useAuthStore();
-  const { organizations, loading: orgsLoading, fetchOrganizations } = useOrganizationsStore();
+  const { data: organizations = [], isLoading: orgsLoading } = useOrganizations();
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [createOrgModalOpen, setCreateOrgModalOpen] = useState(false);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
-  const [deleting, setDeleting] = useState(false);
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<SortOption>('updated');
+
+  const error = projectsError ? (projectsError as Error).message : null;
 
   const confirmDeleteProject = confirmDeleteId
     ? projects.find((p) => p.id === confirmDeleteId)
@@ -76,36 +108,29 @@ export default function Dashboard() {
   const handleDeleteConfirmed = async () => {
     if (!confirmDeleteId) return;
     const projectToDelete = projects.find((p) => p.id === confirmDeleteId);
-    setDeleting(true);
     try {
-      await deleteProject(confirmDeleteId);
+      await deleteProjectMutation.mutateAsync(confirmDeleteId);
       trackEvent('project_deleted', {
         had_translations: (projectToDelete?.stats_translated ?? 0) > 0,
       });
       setConfirmDeleteId(null);
-    } finally {
-      setDeleting(false);
+    } catch {
+      // Error handled by TanStack Query
     }
   };
 
-  useEffect(() => {
-    void fetchProjects();
-    void fetchOrganizations();
-  }, [fetchProjects, fetchOrganizations]);
-
-  const filtered = useMemo(() => {
+  const filtered = (() => {
     const q = search.toLowerCase().trim();
     const base = q ? projects.filter((p) => p.name.toLowerCase().includes(q)) : projects;
     return sortProjects(base, sort);
-  }, [projects, search, sort]);
+  })();
 
-  const totalLanguages = useMemo(
-    () => projects.reduce((sum, p) => sum + (p.project_languages?.length ?? 0), 0),
-    [projects],
-  );
-  const totalStrings = useMemo(
-    () => projects.reduce((sum, p) => sum + p.stats_total, 0),
-    [projects],
+  const totalLanguages = projects.reduce((sum, p) => sum + (p.project_languages?.length ?? 0), 0);
+  const totalStrings = projects.reduce((sum, p) => sum + p.stats_total, 0);
+
+  const handleSortChange = useCallback(
+    (v: string | null) => setSort((v as SortOption) || 'updated'),
+    [],
   );
 
   const sortOptions = [
@@ -185,7 +210,7 @@ export default function Dashboard() {
                 <Select
                   data={sortOptions}
                   value={sort}
-                  onChange={(v) => setSort((v as SortOption) || 'updated')}
+                  onChange={handleSortChange}
                   style={{ flex: '0 1 auto' }}
                   size="sm"
                   allowDeselect={false}
@@ -241,49 +266,7 @@ export default function Dashboard() {
         {organizations.length > 0 && (
           <Stack gap="sm">
             {organizations.map((org) => (
-              <MotionDiv key={org.id} variants={contentVariants} initial="hidden" animate="visible">
-                <Paper
-                  component={Link}
-                  to={`/orgs/${org.slug}`}
-                  withBorder
-                  p="md"
-                  style={{
-                    textDecoration: 'none',
-                    color: 'inherit',
-                    cursor: 'pointer',
-                    transition: 'border-color 120ms ease, background-color 120ms ease',
-                  }}
-                  styles={{
-                    root: {
-                      '&:hover': {
-                        borderColor: 'var(--gb-border-strong)',
-                        backgroundColor: 'var(--gb-highlight-row)',
-                      },
-                    },
-                  }}
-                >
-                  <Group justify="space-between" align="center">
-                    <Group gap="sm">
-                      <ThemeIcon variant="light" color="violet" size="md" radius="xl">
-                        <Building2 size={14} />
-                      </ThemeIcon>
-                      <div>
-                        <Text size="sm" fw={600}>
-                          {org.name}
-                        </Text>
-                        <Text size="xs" c="dimmed">
-                          {org.slug}
-                        </Text>
-                      </div>
-                    </Group>
-                    {org.description && (
-                      <Text size="xs" c="dimmed" truncate maw={300}>
-                        {org.description}
-                      </Text>
-                    )}
-                  </Group>
-                </Paper>
-              </MotionDiv>
+              <OrgCard key={org.id} org={org} />
             ))}
           </Stack>
         )}
@@ -303,7 +286,7 @@ export default function Dashboard() {
         )}
         confirmLabel={t('Delete project')}
         variant="danger"
-        loading={deleting}
+        loading={deleteProjectMutation.isPending}
       />
     </>
   );

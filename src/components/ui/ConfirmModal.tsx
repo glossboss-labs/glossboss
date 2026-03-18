@@ -5,11 +5,12 @@
  * Used for destructive or risky actions.
  */
 
-import { Modal, Stack, Text, Group, Button, ThemeIcon } from '@mantine/core';
+import { Modal, Stack, Text, Group, ThemeIcon } from '@mantine/core';
 import { motion, AnimatePresence } from 'motion/react';
 import { AlertTriangle, Info } from 'lucide-react';
-import { contentVariants, buttonStates } from '@/lib/motion';
+import { contentVariants } from '@/lib/motion';
 import { msgid, useTranslation } from '@/lib/app-language';
+import { ModalActionButtons } from './ModalActionButtons';
 
 const MotionStack = motion.create(Stack);
 
@@ -79,18 +80,15 @@ export function ConfirmModal({
               </Stack>
             </Group>
 
-            <Group justify="flex-end" gap="sm">
-              <motion.div {...buttonStates}>
-                <Button variant="default" onClick={onClose} disabled={loading}>
-                  {t(cancelLabel)}
-                </Button>
-              </motion.div>
-              <motion.div {...buttonStates}>
-                <Button color={confirmColor} onClick={onConfirm} loading={loading}>
-                  {t(confirmLabel)}
-                </Button>
-              </motion.div>
-            </Group>
+            <ModalActionButtons
+              cancelLabel={cancelLabel}
+              confirmLabel={confirmLabel}
+              onCancel={onClose}
+              onConfirm={onConfirm}
+              confirmColor={confirmColor}
+              cancelDisabled={loading}
+              loading={loading}
+            />
           </MotionStack>
         )}
       </AnimatePresence>

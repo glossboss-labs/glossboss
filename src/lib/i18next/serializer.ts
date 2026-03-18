@@ -16,14 +16,14 @@ function setNestedValue(obj: I18nextResource, key: string, value: string): void 
   let current: I18nextResource = obj;
 
   for (let i = 0; i < parts.length - 1; i++) {
-    const part = parts[i];
+    const part = parts[i]!;
     if (typeof current[part] !== 'object' || current[part] === null) {
       current[part] = {};
     }
     current = current[part] as I18nextResource;
   }
 
-  current[parts[parts.length - 1]] = value;
+  current[parts[parts.length - 1]!] = value;
 }
 
 /**

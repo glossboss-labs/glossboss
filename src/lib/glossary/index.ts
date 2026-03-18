@@ -1,37 +1,14 @@
 /**
- * WordPress Glossary Integration
+ * WordPress Glossary Integration — public API
  *
- * Fetch and apply WordPress translation glossaries.
+ * Only re-exports consumed by other modules via `@/lib/glossary`.
+ * Internal utilities (csv-parser, wp-fetcher, matcher, loader, etc.)
+ * should be imported directly from their submodule when needed.
  */
 
-export * from './types';
-export { findGlossaryMatches, applyGlossaryToTranslation, getGlossarySuggestions } from './matcher';
-
-// WordPress.org CSV-based glossary fetching
-export { parseGlossaryCSV, isValidGlossaryCSV } from './csv-parser';
-export type { ParseResult } from './csv-parser';
-export {
-  fetchWPGlossary,
-  clearWPGlossaryCache,
-  getCachedWPGlossaryLocales,
-  hasGlossaryCache,
-  buildGlossaryURL,
-  type FetchResult,
-} from './wp-fetcher';
-
 // Glossary analysis
-export {
-  analyzeTranslation,
-  batchAnalyzeTranslations,
-  entryNeedsGlossaryReview,
-  entryGlossaryComplete,
-} from './analyzer';
-export type { TermAnalysisResult, GlossaryAnalysisResult } from './analyzer';
+export { analyzeTranslation, batchAnalyzeTranslations } from './analyzer';
+export type { GlossaryAnalysisResult } from './analyzer';
 
 // DeepL glossary sync
-export {
-  syncGlossaryToDeepL,
-  getCachedGlossaryId,
-  clearCachedGlossary,
-  clearAllCachedGlossaries,
-} from './deepl-sync';
+export { syncGlossaryToDeepL } from './deepl-sync';

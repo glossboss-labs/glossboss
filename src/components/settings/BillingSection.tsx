@@ -48,7 +48,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { useSubscription } from '@/hooks/use-subscription';
-import { useProjectsStore } from '@/stores/projects-store';
+import { useProjects } from '@/lib/projects/queries';
 import { useTranslation } from '@/lib/app-language';
 import { trackEvent } from '@/lib/analytics';
 import { createCheckoutSession } from '@/lib/billing/api';
@@ -218,6 +218,8 @@ function PlanCard({
   upgrading,
   children,
 }: PlanCardProps) {
+  const { t } = useTranslation();
+
   return (
     <Paper
       p="md"
@@ -239,7 +241,7 @@ function PlanCard({
           </Text>
           {isCurrent && (
             <Badge variant="light" color={color} size="xs">
-              Current
+              {t('Current')}
             </Badge>
           )}
         </Group>
@@ -284,7 +286,7 @@ function PlanCard({
           leftSection={isCurrent ? <Check size={14} /> : <Zap size={14} />}
           size="sm"
         >
-          {isCurrent ? 'Current plan' : ctaLabel}
+          {isCurrent ? t('Current plan') : ctaLabel}
         </Button>
       </Stack>
     </Paper>
@@ -299,7 +301,7 @@ export function BillingSection() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { subscription, plan, limits, loading } = useSubscription();
-  const projects = useProjectsStore((s) => s.projects);
+  const { data: projects = [] } = useProjects();
   const [billingInterval, setBillingInterval] = useState<BillingInterval>('year');
   const [upgrading, setUpgrading] = useState<string | null>(null);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);

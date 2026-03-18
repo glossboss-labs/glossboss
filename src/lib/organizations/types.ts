@@ -69,3 +69,32 @@ export type InviteInsert = Pick<InviteRow, 'organization_id' | 'email' | 'role'>
 export interface OrganizationWithCounts extends OrganizationRow {
   member_count: number;
 }
+
+// ── Organization settings ────────────────────────────────
+
+import type { TranslationProviderId } from '@/lib/translation/types';
+
+/** Row shape for the `organization_settings` table */
+export interface OrgSettingsRow {
+  id: string;
+  organization_id: string;
+  default_translation_provider: TranslationProviderId | null;
+  enforce_translation_provider: boolean;
+  default_glossary_enforcement: boolean;
+  enforce_glossary_enforcement: boolean;
+  translation_instructions: string;
+  updated_by: string | null;
+  updated_at: string;
+}
+
+/** Updatable fields on `organization_settings` */
+export type OrgSettingsUpdate = Partial<
+  Pick<
+    OrgSettingsRow,
+    | 'default_translation_provider'
+    | 'enforce_translation_provider'
+    | 'default_glossary_enforcement'
+    | 'enforce_glossary_enforcement'
+    | 'translation_instructions'
+  >
+>;

@@ -1,6 +1,6 @@
-import { useContext } from 'react';
+import { use } from 'react';
 import { TranslationContext } from './translation-context';
 
 export function useTranslation() {
-  return useContext(TranslationContext);
+  return use(TranslationContext);
 }

@@ -9,7 +9,6 @@
  * - Translation memory (project-scoped TM entries)
  */
 
-import JSZip from 'jszip';
 import type { ProjectRow, ProjectLanguageRow, ProjectEntryRow } from './types';
 import { getProject, getProjectLanguages, getProjectEntries } from './api';
 import { dbEntryToPOEntry, dbLanguageToHeader } from './conversions';
@@ -68,6 +67,7 @@ export async function exportProject(
   projectId: string,
   options: ProjectExportOptions,
 ): Promise<{ blob: Blob; filename: string }> {
+  const { default: JSZip } = await import('jszip');
   const zip = new JSZip();
   const now = new Date().toISOString();
 
@@ -105,7 +105,7 @@ export async function exportProject(
       } else {
         const content = serializePOFile(
           { filename, header: header ?? {}, entries: poEntries, charset: 'UTF-8' },
-          { updateRevisionDate: false },
+          { updateRevisionDate: true },
         );
         zip.file(`translations/${filename}`, content);
       }
@@ -173,12 +173,12 @@ export async function exportProject(
       const reviewEntries: [string, ReviewEntryState][] = [];
 
       for (let i = 0; i < dbEntries.length; i++) {
-        const meta = dbEntryToMTMeta(dbEntries[i]);
-        if (meta) mtMeta.push([poEntries[i].id, meta]);
+        const meta = dbEntryToMTMeta(dbEntries[i]!);
+        if (meta) mtMeta.push([poEntries[i]!.id, meta]);
 
-        const review = dbEntryToReviewState(dbEntries[i]);
+        const review = dbEntryToReviewState(dbEntries[i]!);
         if (review.status !== 'draft' || review.comments.length > 0) {
-          reviewEntries.push([poEntries[i].id, review]);
+          reviewEntries.push([poEntries[i]!.id, review]);
         }
       }
 

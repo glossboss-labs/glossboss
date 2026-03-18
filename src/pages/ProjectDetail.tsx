@@ -32,9 +32,7 @@ import {
   MoreVertical,
   Trash2,
   Languages,
-  Lock,
   Globe,
-  EyeOff,
   Search,
   GitBranch,
   Users,
@@ -51,101 +49,65 @@ import {
   buttonStates,
   fadeVariants,
 } from '@/lib/motion';
-import { useTranslation, msgid } from '@/lib/app-language';
+import { useTranslation } from '@/lib/app-language';
+import { VISIBILITY_ICON, VISIBILITY_LABEL } from '@/lib/constants/visibility';
+import { formatRelative } from '@/lib/utils/date';
+import { sortLanguages, type LangSortOption } from '@/lib/utils/sorting';
+import { useQueryClient } from '@tanstack/react-query';
+import { removeProjectMember, joinPublicProject } from '@/lib/projects/api';
+import type { ProjectMemberWithProfile, ProjectInviteRow } from '@/lib/projects/types';
 import {
-  getProject,
-  getProjectLanguages,
-  listProjectMembers,
-  listProjectInvites,
-  removeProjectMember,
-  joinPublicProject,
-} from '@/lib/projects/api';
-import type {
-  ProjectRow,
-  ProjectLanguageRow,
-  ProjectMemberWithProfile,
-  ProjectInviteRow,
-} from '@/lib/projects/types';
-import { useProjectsStore } from '@/stores/projects-store';
+  projectKeys,
+  useProject,
+  useProjectLanguages,
+  useProjectMembers,
+  useProjectInvites,
+  useDeleteLanguage,
+} from '@/lib/projects/queries';
 import { useAuth } from '@/hooks/use-auth';
 import { AddLanguageModal } from '@/components/projects/AddLanguageModal';
 import { ProjectMembersTab } from '@/components/projects/ProjectMembersTab';
 import { ProjectInvitesTab } from '@/components/projects/ProjectInvitesTab';
-import { ConfirmModal, LanguageFlag } from '@/components/ui';
+import { ConfirmModal, CountryFlag } from '@/components/ui';
 
 const MotionDiv = motion.div;
 const MotionSpan = motion.span;
-
-type LangSortOption = 'locale' | 'most-complete' | 'least-complete' | 'most-strings' | 'updated';
-
-const VISIBILITY_ICON = {
-  private: Lock,
-  public: Globe,
-  unlisted: EyeOff,
-} as const;
-
-const VISIBILITY_LABEL: Record<string, string> = {
-  private: msgid('Private'),
-  public: msgid('Public'),
-  unlisted: msgid('Unlisted'),
-};
-
-function sortLanguages(
-  languages: ProjectLanguageRow[],
-  sort: LangSortOption,
-): ProjectLanguageRow[] {
-  const sorted = [...languages];
-  switch (sort) {
-    case 'locale':
-      return sorted.sort((a, b) => a.locale.localeCompare(b.locale));
-    case 'most-complete': {
-      const pct = (l: ProjectLanguageRow) =>
-        l.stats_total > 0 ? l.stats_translated / l.stats_total : 0;
-      return sorted.sort((a, b) => pct(b) - pct(a));
-    }
-    case 'least-complete': {
-      const pct = (l: ProjectLanguageRow) =>
-        l.stats_total > 0 ? l.stats_translated / l.stats_total : 0;
-      return sorted.sort((a, b) => pct(a) - pct(b));
-    }
-    case 'most-strings':
-      return sorted.sort((a, b) => b.stats_total - a.stats_total);
-    case 'updated':
-      return sorted.sort(
-        (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
-      );
-    default:
-      return sorted;
-  }
-}
-
-function formatRelative(iso: string): string {
-  const diff = Date.now() - new Date(iso).getTime();
-  const mins = Math.floor(diff / 60_000);
-  if (mins < 1) return 'just now';
-  if (mins < 60) return `${mins}m ago`;
-  const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days < 30) return `${days}d ago`;
-  return new Date(iso).toLocaleDateString();
-}
 
 export default function ProjectDetail() {
   const { id } = useParams<{ id: string }>();
   const { t } = useTranslation();
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const deleteLanguage = useProjectsStore((s) => s.deleteLanguage);
+  const deleteLanguageMutation = useDeleteLanguage();
+  const queryClient = useQueryClient();
 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [project, setProject] = useState<ProjectRow | null>(null);
-  const [languages, setLanguages] = useState<ProjectLanguageRow[]>([]);
+  // TanStack Query for project data
+  const { data: project = null, isLoading: projectLoading, error: projectError } = useProject(id);
+  const { data: languages = [], isLoading: languagesLoading } = useProjectLanguages(id);
+  const { data: fetchedMembers = [] } = useProjectMembers(id);
+  const { data: fetchedInvites = [] } = useProjectInvites(id);
+
+  // Local state for optimistic updates from child tabs
   const [members, setMembers] = useState<ProjectMemberWithProfile[]>([]);
   const [invites, setInvites] = useState<ProjectInviteRow[]>([]);
+
+  // Sync fetched data to local state for child tab mutations
+  useEffect(() => {
+    if (fetchedMembers.length > 0 || !projectLoading) setMembers(fetchedMembers);
+  }, [fetchedMembers, projectLoading]);
+
+  useEffect(() => {
+    if (fetchedInvites.length > 0 || !projectLoading) setInvites(fetchedInvites);
+  }, [fetchedInvites, projectLoading]);
+
+  const loading = projectLoading || languagesLoading;
+  const queryErrorMessage = projectError
+    ? ((projectError as Error).message ?? t('Failed to load project'))
+    : null;
+  const [localError, setError] = useState<string | null>(null);
+  const error = localError || queryErrorMessage;
+
   const [addModalOpen, setAddModalOpen] = useState(false);
-  const [refreshKey, setRefreshKey] = useState(0);
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<LangSortOption>('locale');
   const [confirmLeaveOpen, setConfirmLeaveOpen] = useState(false);
@@ -161,64 +123,21 @@ export default function ProjectDetail() {
   const canManage = myMembership?.role === 'admin' || myMembership?.role === 'maintainer';
   const isMember = Boolean(myMembership);
 
-  useEffect(() => {
-    if (!id) return;
-    let cancelled = false;
-
-    async function load() {
-      try {
-        const [proj, langs] = await Promise.all([getProject(id!), getProjectLanguages(id!)]);
-        if (cancelled) return;
-        if (!proj) {
-          setError(t('Project not found'));
-          setLoading(false);
-          return;
-        }
-
-        // Members/invites only loadable by project members
-        let mems: ProjectMemberWithProfile[] = [];
-        let invs: ProjectInviteRow[] = [];
-        try {
-          mems = await listProjectMembers(id!);
-          invs = await listProjectInvites(id!).catch(() => [] as ProjectInviteRow[]);
-        } catch {
-          // Non-members may not be able to list invites; that's fine
-        }
-
-        if (cancelled) return;
-        setProject(proj);
-        setLanguages(langs);
-        setMembers(mems);
-        setInvites(invs);
-        setLoading(false);
-      } catch (err) {
-        if (cancelled) return;
-        setError(err instanceof Error ? err.message : t('Failed to load project'));
-        setLoading(false);
-      }
-    }
-
-    void load();
-    return () => {
-      cancelled = true;
-    };
-  }, [id, t, refreshKey]);
-
   const handleDeleteLanguage = useCallback(
     async (languageId: string) => {
+      if (!id) return;
       try {
-        await deleteLanguage(languageId);
-        setLanguages((prev) => prev.filter((l) => l.id !== languageId));
+        await deleteLanguageMutation.mutateAsync({ languageId, projectId: id });
       } catch (err) {
         setError(err instanceof Error ? err.message : t('Failed to delete language'));
       }
     },
-    [deleteLanguage, t],
+    [deleteLanguageMutation, id, t],
   );
 
   const handleLanguageAdded = useCallback(() => {
     setAddModalOpen(false);
-    setRefreshKey((k) => k + 1);
+    // TanStack Query will auto-refetch via invalidation from useAddLanguage mutation
   }, []);
 
   const handleLeaveProject = useCallback(async () => {
@@ -239,13 +158,13 @@ export default function ProjectDetail() {
     setJoinLoading(true);
     try {
       await joinPublicProject(id, user.id, project?.public_role ?? 'viewer');
-      setRefreshKey((k) => k + 1);
+      void queryClient.invalidateQueries({ queryKey: projectKeys.members(id) });
     } catch (err) {
       setError(err instanceof Error ? err.message : t('Failed to join project'));
     } finally {
       setJoinLoading(false);
     }
-  }, [user, id, project?.public_role, t]);
+  }, [user, id, project?.public_role, t, queryClient]);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
@@ -269,7 +188,7 @@ export default function ProjectDetail() {
   const aggFuzzyPct = aggTotal > 0 ? Math.round((aggFuzzy / aggTotal) * 100) : 0;
 
   const sortOptions = [
-    { value: 'locale', label: t('Locale A–Z') },
+    { value: 'locale', label: t('Locale A\u2013Z') },
     { value: 'most-complete', label: t('Most complete') },
     { value: 'least-complete', label: t('Least complete') },
     { value: 'most-strings', label: t('Most strings') },
@@ -392,22 +311,22 @@ export default function ProjectDetail() {
               <VisIcon size={12} c="dimmed" />
               <Text size="xs" c="dimmed">
                 {t(VISIBILITY_LABEL[project.visibility] ?? 'Public')}
-                {' · '}
+                {' \u00b7 '}
                 {project.source_format.toUpperCase()}
                 {project.source_language &&
                   project.target_language &&
                   project.source_language !== project.target_language && (
                     <>
-                      {' · '}
-                      <LanguageFlag code={project.source_language} size="xs" />{' '}
-                      {project.source_language} →{' '}
-                      <LanguageFlag code={project.target_language} size="xs" />{' '}
+                      {' \u00b7 '}
+                      <CountryFlag code={project.source_language} size="xs" />{' '}
+                      {project.source_language} \u2192{' '}
+                      <CountryFlag code={project.target_language} size="xs" />{' '}
                       {project.target_language}
                     </>
                   )}
                 {project.wp_slug && (
                   <>
-                    {' · '}
+                    {' \u00b7 '}
                     {t('{{type}} / {{slug}}', {
                       type: project.wp_project_type,
                       slug: project.wp_slug,
@@ -445,7 +364,7 @@ export default function ProjectDetail() {
                     {t('Sign up')}
                   </Link>{' '}
                   {t(
-                    "to save projects to the cloud and collaborate with your team. Collaborators work under the project owner's plan — no subscription needed to contribute.",
+                    "to save projects to the cloud and collaborate with your team. Collaborators work under the project owner's plan \u2014 no subscription needed to contribute.",
                   )}
                 </Text>
               </Group>
@@ -495,7 +414,7 @@ export default function ProjectDetail() {
                       <Group justify="space-between" align="center" mb={8}>
                         <Text size="sm" c="dimmed">
                           {t('{{count}} languages', { count: languages.length })}
-                          {' · '}
+                          {' \u00b7 '}
                           {t('{{strings}} total strings', { strings: aggTotal })}
                         </Text>
                         <Text size="sm" fw={600} c={aggPct === 100 ? 'teal' : undefined}>
@@ -514,7 +433,7 @@ export default function ProjectDetail() {
                   <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
                     <Group gap="sm">
                       <TextInput
-                        placeholder={t('Search languages…')}
+                        placeholder={t('Search languages\u2026')}
                         leftSection={<Search size={14} />}
                         value={search}
                         onChange={(e) => setSearch(e.currentTarget.value)}
@@ -601,7 +520,7 @@ export default function ProjectDetail() {
                               <Stack gap={4} style={{ flex: 1, minWidth: 0 }}>
                                 <Group gap="sm" wrap="wrap">
                                   <Group gap={6} wrap="nowrap">
-                                    <LanguageFlag code={lang.locale} />
+                                    <CountryFlag code={lang.locale} />
                                     <Text fw={600} size="sm">
                                       {lang.locale}
                                     </Text>

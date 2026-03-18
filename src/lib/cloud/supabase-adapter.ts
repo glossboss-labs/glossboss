@@ -12,6 +12,7 @@
  */
 
 import type { POEntry, POHeader } from '@/lib/po/types';
+import { formatPODate } from '@/lib/po';
 import type { MachineTranslationMeta } from '@/stores/editor-store';
 import type { ReviewEntryState } from '@/lib/review';
 import {
@@ -78,8 +79,8 @@ export class SupabaseStorageAdapter implements StorageAdapter {
     const machineTranslatedIds: string[] = [];
 
     for (let i = 0; i < entries.length; i++) {
-      const row = entries[i];
-      const clientId = poEntries[i].id;
+      const row = entries[i]!;
+      const clientId = poEntries[i]!.id;
 
       const mtMeta = dbEntryToMTMeta(row);
       if (mtMeta) {
@@ -183,7 +184,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
         state: {
           projectName: string;
           filename: string | null;
-          sourceFormat: string;
+          sourceFormat: 'po' | 'i18next';
           header: POHeader | null;
           entries: POEntry[];
           machineTranslationMeta: [string, MachineTranslationMeta][];
@@ -195,6 +196,11 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       // Sync project metadata (project-level fields only)
       const projectUpdate = editorStateToProjectUpdate(state);
       await updateProject(this.projectId, projectUpdate);
+
+      // Update PO-Revision-Date in the header before saving
+      if (state.header) {
+        state.header.poRevisionDate = formatPODate(new Date());
+      }
 
       // Sync language metadata
       const languageUpdate = editorStateToLanguageUpdate(state);

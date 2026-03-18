@@ -23,7 +23,7 @@ export interface GitHubRawUrl {
 export function parseGitHubRawUrl(url: string): GitHubRawUrl | null {
   const match = RAW_GITHUB_PATTERN.exec(url);
   if (!match) return null;
-  return { owner: match[1], repo: match[2], ref: match[3], path: match[4] };
+  return { owner: match[1]!, repo: match[2]!, ref: match[3]!, path: match[4]! };
 }
 
 /** Check if a URL is a raw.githubusercontent.com URL. */

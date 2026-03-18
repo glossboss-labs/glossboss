@@ -12,8 +12,9 @@ import {
   type TranslationMemoryScope,
   type TranslationMemorySuggestion,
 } from '@/lib/translation-memory';
+import { TRANSLATION_MEMORY_STORE_KEY } from '@/lib/constants/storage-keys';
 
-const STORAGE_KEY = 'glossboss-translation-memory';
+const STORAGE_KEY = TRANSLATION_MEMORY_STORE_KEY;
 
 interface TranslationMemoryState {
   projects: Record<string, TranslationMemoryProject>;

@@ -1,21 +1,10 @@
 import {
   fetchWithTimeout,
-  forbiddenOrigin,
-  isAbortError,
+  handleJsonPost,
   jsonResponse,
-  methodNotAllowed,
-  optionsResponse,
-  parseJsonBody,
-  requireJsonRequest,
   sanitizeUpstreamError,
-  validateRequestOrigin,
 } from '../_shared/http.ts';
-import {
-  isNonEmptyString,
-  isObject,
-  isValidLanguageCode,
-  trimAndLimit,
-} from '../_shared/validation.ts';
+import { isNonEmptyString, isValidLanguageCode, trimAndLimit } from '../_shared/validation.ts';
 
 const AZURE_FETCH_TIMEOUT_MS = 15000;
 const MAX_TRANSLATE_TEXTS = 50;
@@ -119,128 +108,86 @@ async function sendAzureRequest(
   });
 }
 
-export async function handleAzureTranslateRequest(req: Request): Promise<Response> {
-  if (req.method === 'OPTIONS') {
-    return optionsResponse(req);
-  }
-
-  if (req.method !== 'POST') {
-    return methodNotAllowed(req);
-  }
-
-  if (!validateRequestOrigin(req).allowed) {
-    return forbiddenOrigin(req);
-  }
-
-  const jsonError = requireJsonRequest(req);
-  if (jsonError) {
-    return jsonError;
-  }
-
-  try {
-    const body = await parseJsonBody(req);
-    if (!isObject(body)) {
-      return jsonResponse(
-        req,
-        { ok: false, code: 'INVALID_PAYLOAD', message: 'Request body must be a JSON object.' },
-        { status: 400 },
-      );
-    }
-
-    const payload = parseAzureTranslatePayload(body);
-    if (!payload) {
-      return jsonResponse(
-        req,
-        {
-          ok: false,
-          code: 'INVALID_PAYLOAD',
-          message: 'Provide 1-50 texts, a valid target language, and valid Azure settings.',
-        },
-        { status: 400 },
-      );
-    }
-
-    const apiKey = payload.userApiKey || Deno.env.get('AZURE_TRANSLATOR_KEY') || '';
-    const region = payload.userRegion || Deno.env.get('AZURE_TRANSLATOR_REGION') || '';
-    const endpoint =
-      payload.endpoint || Deno.env.get('AZURE_TRANSLATOR_ENDPOINT') || DEFAULT_ENDPOINT;
-
-    if (!isAllowedAzureEndpoint(endpoint)) {
-      return jsonResponse(
-        req,
-        {
-          ok: false,
-          code: 'INVALID_PAYLOAD',
-          message: 'Azure endpoint must be an HTTPS URL on a known Azure Translator domain.',
-        },
-        { status: 400 },
-      );
-    }
-
-    if (!apiKey || !region) {
-      return jsonResponse(
-        req,
-        {
-          ok: false,
-          code: 'MISSING_API_KEY',
-          message: 'Add your Azure Translator key and region in Settings.',
-        },
-        { status: 400 },
-      );
-    }
-
-    const response = await sendAzureRequest(endpoint, apiKey, region, payload);
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => '');
-      return jsonResponse(
-        req,
-        {
-          ok: false,
-          code: 'UPSTREAM_ERROR',
-          message: sanitizeUpstreamError(errorText, 'Azure translation request failed.'),
-        },
-        { status: response.status },
-      );
-    }
-
-    const data = await response.json();
-    const translations = (Array.isArray(data) ? data : []).flatMap(
-      (item: Record<string, unknown>) => {
-        const candidateTranslations = Array.isArray(item?.translations) ? item.translations : [];
-        return candidateTranslations.slice(0, 1).map((translation: Record<string, unknown>) => ({
-          text: typeof translation.text === 'string' ? translation.text : '',
-          detectedSourceLanguage:
-            typeof item?.detectedLanguage?.language === 'string'
-              ? item.detectedLanguage.language
-              : undefined,
-          metadata: {
-            provider: 'azure',
-            usedGlossary: false,
-            glossaryMode: 'none',
-            contextUsed: false,
-            warnings: [],
-          },
-        }));
+export const handleAzureTranslateRequest = handleJsonPost('Azure', async (req, body) => {
+  const payload = parseAzureTranslatePayload(body);
+  if (!payload) {
+    return jsonResponse(
+      req,
+      {
+        ok: false,
+        code: 'INVALID_PAYLOAD',
+        message: 'Provide 1-50 texts, a valid target language, and valid Azure settings.',
       },
+      { status: 400 },
     );
-
-    return jsonResponse(req, { translations });
-  } catch (error) {
-    if (error instanceof SyntaxError) {
-      return jsonResponse(
-        req,
-        { ok: false, code: 'INVALID_PAYLOAD', message: 'Request body is not valid JSON.' },
-        { status: 400 },
-      );
-    }
-
-    const message = isAbortError(error)
-      ? 'Azure translation request timed out.'
-      : 'Azure translation proxy failed.';
-
-    return jsonResponse(req, { ok: false, code: 'INTERNAL_ERROR', message }, { status: 500 });
   }
-}
+
+  const apiKey = payload.userApiKey || Deno.env.get('AZURE_TRANSLATOR_KEY') || '';
+  const region = payload.userRegion || Deno.env.get('AZURE_TRANSLATOR_REGION') || '';
+  const endpoint =
+    payload.endpoint || Deno.env.get('AZURE_TRANSLATOR_ENDPOINT') || DEFAULT_ENDPOINT;
+
+  if (!isAllowedAzureEndpoint(endpoint)) {
+    return jsonResponse(
+      req,
+      {
+        ok: false,
+        code: 'INVALID_PAYLOAD',
+        message: 'Azure endpoint must be an HTTPS URL on a known Azure Translator domain.',
+      },
+      { status: 400 },
+    );
+  }
+
+  if (!apiKey || !region) {
+    return jsonResponse(
+      req,
+      {
+        ok: false,
+        code: 'MISSING_API_KEY',
+        message: 'Add your Azure Translator key and region in Settings.',
+      },
+      { status: 400 },
+    );
+  }
+
+  const response = await sendAzureRequest(endpoint, apiKey, region, payload);
+  if (!response.ok) {
+    const errorText = await response.text().catch(() => '');
+    return jsonResponse(
+      req,
+      {
+        ok: false,
+        code: 'UPSTREAM_ERROR',
+        message: sanitizeUpstreamError(errorText, 'Azure translation request failed.'),
+      },
+      { status: response.status },
+    );
+  }
+
+  const data = await response.json();
+  const translations = (Array.isArray(data) ? data : []).flatMap(
+    (item: Record<string, unknown>) => {
+      const candidateTranslations = Array.isArray(item?.translations) ? item.translations : [];
+      return candidateTranslations.slice(0, 1).map((translation: Record<string, unknown>) => ({
+        text: typeof translation.text === 'string' ? translation.text : '',
+        detectedSourceLanguage:
+          typeof item?.detectedLanguage?.language === 'string'
+            ? item.detectedLanguage.language
+            : undefined,
+        metadata: {
+          provider: 'azure',
+          usedGlossary: false,
+          glossaryMode: 'none',
+          contextUsed: false,
+          warnings: [],
+        },
+      }));
+    },
+  );
+
+  return jsonResponse(req, { translations });
+});
 
 if (import.meta.main && typeof Deno !== 'undefined' && typeof Deno.serve === 'function') {
   Deno.serve(handleAzureTranslateRequest);

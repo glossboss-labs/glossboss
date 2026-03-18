@@ -9,7 +9,6 @@
 
 import { useState, useCallback } from 'react';
 import { ActionIcon, Tooltip, Loader, Popover, Button, Text, Stack, Group } from '@mantine/core';
-import { useLocalStorage } from '@mantine/hooks';
 import { Languages, AlertCircle, AlertTriangle } from 'lucide-react';
 import { useTranslation } from '@/lib/app-language';
 import { trackEvent } from '@/lib/analytics';
@@ -23,13 +22,10 @@ import type { Glossary } from '@/lib/glossary/types';
 import {
   getTranslationProviderLabel,
   hasProviderCredentials,
-  translateWithActiveProvider,
+  translateWithProvider,
   type ProviderTranslationMetadata,
 } from '@/lib/translation';
-import {
-  TRANSLATION_PROVIDER_STORAGE_KEY,
-  type TranslationProviderSettings,
-} from '@/lib/translation/settings';
+import { useTranslationProvider } from '@/hooks/use-translation-provider';
 import { getEffectiveProjectType, getEffectiveSlug, useSourceStore } from '@/stores/source-store';
 
 interface TranslateButtonProps {
@@ -79,14 +75,7 @@ export function TranslateButton({
   const [showConfirm, setShowConfirm] = useState(false);
   const [pendingTranslation, setPendingTranslation] = useState<string | null>(null);
   const [pendingMeta, setPendingMeta] = useState<ProviderTranslationMetadata | null>(null);
-  const [providerState] = useLocalStorage<TranslationProviderSettings>({
-    key: TRANSLATION_PROVIDER_STORAGE_KEY,
-    defaultValue: {
-      provider: 'deepl',
-      updatedAt: 0,
-    },
-  });
-  const activeProvider = providerState.provider;
+  const activeProvider = useTranslationProvider();
   const projectSlug = useSourceStore((state) => getEffectiveSlug(state));
   const projectType = useSourceStore((state) => getEffectiveProjectType(state));
   const providerLabel = getTranslationProviderLabel(activeProvider);
@@ -117,7 +106,7 @@ export function TranslateButton({
       let resultText = '';
       let resultMeta: ProviderTranslationMetadata | undefined;
       try {
-        const response = await translateWithActiveProvider({
+        const response = await translateWithProvider(activeProvider, {
           text,
           targetLang,
           sourceLang,
@@ -137,7 +126,7 @@ export function TranslateButton({
         // If glossary is stale/deleted, retry once without glossary.
         if (activeProvider === 'deepl' && glossaryId && isGlossaryNotFoundError(glossaryError)) {
           notifyGlossaryFallback('single');
-          const fallbackResponse = await translateWithActiveProvider({
+          const fallbackResponse = await translateWithProvider(activeProvider, {
             text,
             targetLang,
             sourceLang,
@@ -158,7 +147,13 @@ export function TranslateButton({
         }
       }
 
-      trackEvent('translation_completed', { provider: 'single' });
+      trackEvent('translation_completed', {
+        provider: activeProvider,
+        mode: 'single',
+        source_lang: sourceLang ?? 'auto',
+        target_lang: targetLang,
+        had_glossary: Boolean(glossaryId || glossary),
+      });
 
       // If there's existing translation, show confirmation first
       if (hasExistingTranslation) {

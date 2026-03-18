@@ -44,11 +44,11 @@ export async function fetchUpstreamTemplate(
     );
 
     for (let i = 0; i < i18nDirs.length; i += 1) {
-      const result = nestedResults[i];
+      const result = nestedResults[i]!;
       if (result.status !== 'fulfilled') continue;
       for (const nestedEntry of result.value.entries) {
         if (nestedEntry.isDir || !isPotFile(nestedEntry.name)) continue;
-        const nestedPath = `${i18nDirs[i]}/${nestedEntry.name}`;
+        const nestedPath = `${i18nDirs[i]!}/${nestedEntry.name}`;
         if (nestedEntry.name === slugPot) {
           preferredCandidates.push(nestedPath);
         } else {

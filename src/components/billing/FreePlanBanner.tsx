@@ -10,13 +10,13 @@ import { Paper, Group, Stack, Text, Button, Progress, Badge, ThemeIcon } from '@
 import { Zap, Crown } from 'lucide-react';
 import { useTranslation } from '@/lib/app-language';
 import { useSubscription } from '@/hooks/use-subscription';
-import { useProjectsStore } from '@/stores/projects-store';
+import { useProjects } from '@/lib/projects/queries';
 import { formatLimit, PLAN_LIMITS } from '@/lib/billing/limits';
 
 export function FreePlanBanner() {
   const { t } = useTranslation();
   const { plan, loading } = useSubscription();
-  const projects = useProjectsStore((s) => s.projects);
+  const { data: projects = [] } = useProjects();
 
   if (loading || plan !== 'free') return null;
 

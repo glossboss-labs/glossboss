@@ -6,6 +6,7 @@
  */
 
 import type { Glossary, GlossaryEntry, GlossaryMatch, MatchOptions } from './types';
+import { checkWordBoundaries } from './text-utils';
 
 /** Default matching options */
 const DEFAULT_OPTIONS: Required<MatchOptions> = {
@@ -13,22 +14,6 @@ const DEFAULT_OPTIONS: Required<MatchOptions> = {
   wholeWord: true,
   minLength: 2,
 };
-
-/**
- * Check if character is a word boundary
- */
-function isWordBoundary(char: string): boolean {
-  return /[\s,.!?;:()[\]{}"'<>\-/]/.test(char);
-}
-
-/**
- * Check word boundaries around a match
- */
-function checkWordBoundaries(text: string, start: number, end: number): boolean {
-  const beforeChar = start > 0 ? text[start - 1] : ' ';
-  const afterChar = end < text.length ? text[end] : ' ';
-  return isWordBoundary(beforeChar) && isWordBoundary(afterChar);
-}
 
 /**
  * Check if a range overlaps with existing matched positions
@@ -143,33 +128,6 @@ export function findGlossaryMatches(
 
   // Sort by position
   return deduped.sort((a, b) => a.startIndex - b.startIndex);
-}
-
-/**
- * Apply glossary to translation (placeholder for future implementation)
- *
- * @param translation - Current translation text
- * @param sourceText - Original source text
- * @param glossary - Glossary to apply
- * @param options - Matching options
- * @returns Translation (unchanged for now)
- */
-export function applyGlossaryToTranslation(
-  translation: string,
-  sourceText: string,
-  glossary: Glossary,
-  options: MatchOptions = {},
-): string {
-  // Find matches in source text
-  const sourceMatches = findGlossaryMatches(sourceText, glossary, options);
-
-  if (sourceMatches.length === 0) {
-    return translation;
-  }
-
-  // For now, just return the translation as-is
-  // Actual term replacement would need NLP for proper handling
-  return translation;
 }
 
 /**

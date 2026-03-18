@@ -26,6 +26,8 @@ export async function initPostHog(): Promise<void> {
         capture_pageview: false,
         respect_dnt: true,
         disable_session_recording: true,
+        enable_heatmaps: true,
+        capture_exceptions: true,
       });
       initialized = true;
     } catch {

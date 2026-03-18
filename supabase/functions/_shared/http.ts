@@ -1,3 +1,5 @@
+import { isObject } from './validation.ts';
+
 export interface JsonResponseInit {
   status?: number;
   headers?: HeadersInit;
@@ -209,4 +211,92 @@ export function sanitizeUpstreamError(message: string, fallback: string): string
   if (!trimmed) return fallback;
   const singleLine = trimmed.replace(/\s+/g, ' ').slice(0, 300);
   return singleLine || fallback;
+}
+
+/**
+ * Proxy an upstream error response into a standard JSON error shape.
+ *
+ * Every edge function was doing this inline — now there's one copy.
+ */
+export async function proxyUpstreamError(
+  req: Request,
+  response: Response,
+  fallback: string,
+): Promise<Response> {
+  const errorText = await response.text().catch(() => '');
+  return jsonResponse(
+    req,
+    {
+      ok: false,
+      code: 'UPSTREAM_ERROR',
+      message: sanitizeUpstreamError(errorText, fallback),
+    },
+    { status: response.status },
+  );
+}
+
+/**
+ * Shared request-lifecycle wrapper for POST-only JSON edge functions.
+ *
+ * Handles: CORS preflight, method check, origin validation,
+ * Content-Type guard, JSON body parsing, isObject check,
+ * SyntaxError / AbortError catch block.
+ *
+ * The `handler` callback receives the validated body object and returns
+ * the final `Response`. Any error it throws is caught by the wrapper.
+ *
+ * @param providerLabel  Short provider name used in timeout / fallback
+ *                       error messages (e.g. "DeepL", "Azure", "Gemini").
+ */
+export function handleJsonPost(
+  providerLabel: string,
+  handler: (req: Request, body: Record<string, unknown>) => Promise<Response>,
+): (req: Request) => Promise<Response> {
+  return async (req: Request): Promise<Response> => {
+    if (req.method === 'OPTIONS') {
+      return optionsResponse(req);
+    }
+
+    if (req.method !== 'POST') {
+      return methodNotAllowed(req);
+    }
+
+    if (!validateRequestOrigin(req).allowed) {
+      return forbiddenOrigin(req);
+    }
+
+    const jsonError = requireJsonRequest(req);
+    if (jsonError) {
+      return jsonError;
+    }
+
+    try {
+      const body = await parseJsonBody(req);
+      if (!isObject(body)) {
+        return jsonResponse(
+          req,
+          { ok: false, code: 'INVALID_PAYLOAD', message: 'Request body must be a JSON object.' },
+          { status: 400 },
+        );
+      }
+
+      return await handler(req, body);
+    } catch (error) {
+      if (error instanceof SyntaxError) {
+        return jsonResponse(
+          req,
+          { ok: false, code: 'INVALID_PAYLOAD', message: 'Request body is not valid JSON.' },
+          { status: 400 },
+        );
+      }
+
+      const message = isAbortError(error)
+        ? `${providerLabel} request timed out.`
+        : error instanceof Error && error.message
+          ? error.message
+          : `${providerLabel} proxy request failed.`;
+
+      return jsonResponse(req, { ok: false, code: 'INTERNAL_ERROR', message }, { status: 500 });
+    }
+  };
 }

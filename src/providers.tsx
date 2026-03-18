@@ -12,11 +12,16 @@ import {
   Progress,
   type CSSVariablesResolver,
 } from '@mantine/core';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { TranslationProvider } from '@/lib/app-language';
 import { useAuthStore } from '@/stores/auth-store';
 
-// Import Mantine styles
-import '@mantine/core/styles.css';
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: { staleTime: 30_000, retry: 1 },
+  },
+});
 
 /**
  * CSS Variables Resolver
@@ -290,8 +295,11 @@ export function AppProviders({ children }: { children: ReactNode }) {
   }, [initialize]);
 
   return (
-    <MantineProvider theme={theme} defaultColorScheme="auto" cssVariablesResolver={resolver}>
-      <TranslationProvider>{children}</TranslationProvider>
-    </MantineProvider>
+    <QueryClientProvider client={queryClient}>
+      <MantineProvider theme={theme} defaultColorScheme="auto" cssVariablesResolver={resolver}>
+        <TranslationProvider>{children}</TranslationProvider>
+      </MantineProvider>
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   );
 }

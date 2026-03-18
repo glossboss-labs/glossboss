@@ -3,7 +3,7 @@
  *
  * Scans src/ for t('...') calls, generates app.pot, and merges into all PO files.
  *
- * Usage: bun scripts/extract-i18n.ts
+ * Usage: pnpm run i18n:extract
  */
 
 import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
@@ -384,7 +384,9 @@ function main() {
 }
 
 // Run only when executed directly, not when imported by tests
-const isDirectRun = typeof Bun !== 'undefined' && Bun.main === import.meta.path;
+const isDirectRun =
+  import.meta.url === `file://${process.argv[1]}` ||
+  import.meta.url === new URL(process.argv[1], 'file://').href;
 if (isDirectRun) {
   main();
 }

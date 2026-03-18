@@ -43,16 +43,18 @@ import {
   Bell,
 } from 'lucide-react';
 import { useTranslation } from '@/lib/app-language';
+import { getInitials } from '@/lib/utils/avatar';
 import { useAuth } from '@/hooks/use-auth';
 import { useAuthStore } from '@/stores/auth-store';
 import { useNotificationsStore } from '@/stores/notifications-store';
 import { NotificationDropdown } from '@/components/notifications/NotificationDropdown';
 import { PlanBadge } from '@/components/billing/PlanBadge';
 import { useSubscription } from '@/hooks/use-subscription';
-import { useProjectsStore } from '@/stores/projects-store';
+import { useProjects } from '@/lib/projects/queries';
 import { formatLimit } from '@/lib/billing/limits';
 import { FeedbackModal } from '@/components/feedback';
 import { AuthPromptModal } from '@/components/auth/AuthPromptModal';
+import { GlossBossLogo } from '@/components/ui/GlossBossLogo';
 
 interface AppSidebarProps {
   collapsed: boolean;
@@ -68,21 +70,45 @@ interface NavItemProps {
   collapsed: boolean;
   onClick?: () => void;
   color?: string;
+  'aria-label'?: string;
 }
 
-function NavItem({ to, href, icon, label, active, collapsed, onClick, color }: NavItemProps) {
-  const commonStyle = {
-    display: 'flex',
-    alignItems: 'center',
+/** Base style shared by every NavItem button. Extracted to module scope to avoid re-creation on every render. */
+const NAV_ITEM_BASE_STYLE = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: 10,
+  borderRadius: 'var(--mantine-radius-sm)',
+  transition: 'background-color 120ms ease, color 120ms ease',
+  width: '100%',
+  textDecoration: 'none',
+} as const;
+
+function getNavItemStyle(
+  collapsed: boolean,
+  active: boolean | undefined,
+  color: string | undefined,
+) {
+  return {
+    ...NAV_ITEM_BASE_STYLE,
     justifyContent: collapsed ? 'center' : 'flex-start',
-    gap: 10,
-    borderRadius: 'var(--mantine-radius-sm)',
     color: color ?? (active ? 'var(--gb-text-primary)' : 'var(--gb-text-secondary)'),
     backgroundColor: active ? 'var(--gb-highlight-row)' : 'transparent',
-    transition: 'background-color 120ms ease, color 120ms ease',
-    width: '100%',
-    textDecoration: 'none',
   } as const;
+}
+
+function NavItem({
+  to,
+  href,
+  icon,
+  label,
+  active,
+  collapsed,
+  onClick,
+  color,
+  'aria-label': ariaLabel,
+}: NavItemProps) {
+  const commonStyle = getNavItemStyle(collapsed, active, color);
 
   const hoverStyles = {
     root: {
@@ -112,6 +138,7 @@ function NavItem({ to, href, icon, label, active, collapsed, onClick, color }: N
       px={collapsed ? 0 : 12}
       style={commonStyle}
       styles={hoverStyles}
+      aria-label={ariaLabel}
     >
       {content}
     </UnstyledButton>
@@ -125,6 +152,7 @@ function NavItem({ to, href, icon, label, active, collapsed, onClick, color }: N
       px={collapsed ? 0 : 12}
       style={commonStyle}
       styles={hoverStyles}
+      aria-label={ariaLabel}
     >
       {content}
     </UnstyledButton>
@@ -135,6 +163,7 @@ function NavItem({ to, href, icon, label, active, collapsed, onClick, color }: N
       style={commonStyle}
       styles={hoverStyles}
       onClick={onClick}
+      aria-label={ariaLabel}
     >
       {content}
     </UnstyledButton>
@@ -157,7 +186,7 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
   const { user, isAuthenticated } = useAuth();
   const signOut = useAuthStore((s) => s.signOut);
   const { plan, limits, loading: subLoading } = useSubscription();
-  const projects = useProjectsStore((s) => s.projects);
+  const { data: projects = [] } = useProjects();
   const unreadNotifications = useNotificationsStore((s) => s.unreadCount);
   const { toggleColorScheme } = useMantineColorScheme();
   const computedColorScheme = useComputedColorScheme('light');
@@ -168,12 +197,7 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
 
   const displayName = user?.user_metadata?.full_name || user?.email || '';
   const avatarUrl = user?.user_metadata?.avatar_url as string | undefined;
-  const initials = displayName
-    .split(/\s+/)
-    .map((w: string) => w[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
+  const initials = getInitials(displayName);
 
   return (
     <>
@@ -191,26 +215,7 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
               to="/"
               style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}
             >
-              <img
-                src={
-                  computedColorScheme === 'dark'
-                    ? collapsed
-                      ? '/glossboss-icon-light.svg'
-                      : '/glossboss-combined-light.svg'
-                    : collapsed
-                      ? '/glossboss-icon-dark.svg'
-                      : '/glossboss-combined-dark.svg'
-                }
-                alt="GlossBoss"
-                style={{ height: collapsed ? 24 : 24, display: 'block' }}
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src =
-                    computedColorScheme === 'dark'
-                      ? '/glossboss-combined-light.svg'
-                      : '/glossboss-combined-dark.svg';
-                  (e.target as HTMLImageElement).style.height = '20px';
-                }}
-              />
+              <GlossBossLogo size={24} variant={collapsed ? 'icon' : 'full'} />
             </Link>
             {!collapsed && (
               <Tooltip label={t('Collapse sidebar')} position="right">
@@ -288,6 +293,9 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
           <NavItem
             icon={computedColorScheme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
             label={computedColorScheme === 'dark' ? t('Light mode') : t('Dark mode')}
+            aria-label={
+              computedColorScheme === 'dark' ? t('Switch to light mode') : t('Switch to dark mode')
+            }
             collapsed={collapsed}
             onClick={toggleColorScheme}
           />

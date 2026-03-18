@@ -35,15 +35,31 @@ describe('SettingsModal', () => {
 
       renderModal();
 
+      // Expand the DeepL provider card to reveal the API key input
+      const allButtons = screen.getAllByRole('button');
+      const deeplButton = allButtons.find((btn) => btn.textContent?.includes('DeepL'));
+      expect(deeplButton).toBeTruthy();
+      await user.click(deeplButton!);
+
+      const apiKeyField = await screen.findByPlaceholderText(/enter your deepl api key/i);
       await waitFor(() => {
-        expect(screen.getByLabelText(/^api key$/i)).toHaveValue('existing-key');
+        expect(apiKeyField).toHaveValue('existing-key');
       });
 
-      await user.click(screen.getByRole('button', { name: /remove saved key/i }));
+      // Find the Remove button within the DeepL card
+      const deeplCard = apiKeyField.closest('[data-tour="settings-provider"]')!;
+      const removeButton = Array.from(deeplCard.querySelectorAll('button')).find(
+        (btn) => btn.textContent === 'Remove',
+      )!;
+      await user.click(removeButton);
 
-      const apiKeyInput = screen.getByLabelText(/^api key$/i);
-      await user.type(apiKeyInput, 'new-key');
-      await user.click(screen.getByRole('button', { name: /^save$/i }));
+      const newApiKeyField = await screen.findByPlaceholderText(/enter your deepl api key/i);
+      await user.type(newApiKeyField, 'new-key');
+
+      const saveButton = Array.from(
+        newApiKeyField.closest('[data-tour="settings-provider"]')!.querySelectorAll('button'),
+      ).find((btn) => btn.textContent === 'Save')!;
+      await user.click(saveButton);
 
       await waitFor(() => {
         expect(getDeepLSettings()).toMatchObject({
@@ -67,10 +83,6 @@ describe('SettingsModal', () => {
       });
 
       renderModal();
-
-      await waitFor(() => {
-        expect(screen.getByLabelText(/^api key$/i)).toHaveValue('existing-key');
-      });
 
       await user.click(screen.getByRole('tab', { name: /backup/i }));
       await user.click(screen.getByRole('button', { name: /export settings/i }));

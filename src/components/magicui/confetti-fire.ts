@@ -1,9 +1,8 @@
-import confetti from 'canvas-confetti';
-
 /**
  * Fire a big celebratory confetti burst from both sides of the screen.
  */
-export function fireConfetti() {
+export async function fireConfetti() {
+  const confetti = (await import('canvas-confetti')).default;
   const duration = 1500;
   const end = Date.now() + duration;
 

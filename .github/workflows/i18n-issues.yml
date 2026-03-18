@@ -30,7 +30,7 @@ jobs:
         run: |
           # Map language codes to display names and GitHub assignees.
           # "assignees" is a comma-separated list of GitHub usernames.
-          # Add entries here or use: bun run i18n:add-lang <code> --assignee <user>
+          # Add entries here or use: pnpm run i18n:add-lang <code> -- --assignee <user>
           LANG_CONFIG='{"en":{"name":"English","assignees":"lammersbjorn,toineenzo"},"nl":{"name":"Dutch","assignees":"lammersbjorn,toineenzo"}}'
 
           for po in src/lib/app-language/locales/app.*.po; do

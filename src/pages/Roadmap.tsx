@@ -2,7 +2,7 @@
  * Roadmap — public page showing planned, in-progress, and completed features.
  */
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Title,
   Group,
@@ -39,7 +39,8 @@ import {
   staggerContainerVariants,
 } from '@/lib/motion';
 import { useTranslation, msgid } from '@/lib/app-language';
-import { fetchRoadmap } from '@/lib/roadmap/api';
+import { formatRelative } from '@/lib/utils/date';
+import { useRoadmapItems } from '@/lib/roadmap/queries';
 import { FeedbackModal } from '@/components/feedback';
 import { deriveStatus, type RoadmapIssue, type RoadmapStatus } from '@/lib/roadmap/types';
 
@@ -63,18 +64,6 @@ const STATUS_ICONS: Record<'planned' | 'in-progress' | 'done', typeof Circle> = 
   'in-progress': Clock,
   done: CheckCircle2,
 };
-
-function formatRelative(iso: string): string {
-  const diff = Date.now() - new Date(iso).getTime();
-  const mins = Math.floor(diff / 60_000);
-  if (mins < 1) return 'just now';
-  if (mins < 60) return `${mins}m ago`;
-  const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days < 30) return `${days}d ago`;
-  return new Date(iso).toLocaleDateString();
-}
 
 function extractPhaseLabel(labels: RoadmapIssue['labels']): string | null {
   const phase = labels.find((l) => l.name.startsWith('phase:'));
@@ -191,41 +180,19 @@ function RoadmapCard({ issue }: { issue: RoadmapIssue }) {
 
 export default function Roadmap() {
   const { t } = useTranslation();
-  const [issues, setIssues] = useState<RoadmapIssue[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: issues = [], isLoading: loading, error: queryError } = useRoadmapItems();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<RoadmapStatus>('all');
   const [feedbackOpen, setFeedbackOpen] = useState(false);
 
-  useEffect(() => {
-    let cancelled = false;
-
-    async function load() {
-      try {
-        const data = await fetchRoadmap();
-        if (!cancelled) {
-          setIssues(data);
-          setLoading(false);
-        }
-      } catch (err) {
-        if (!cancelled) {
-          const msg = err instanceof Error ? err.message : '';
-          setError(
-            msg.includes('Not Found') || msg.includes('SERVER_MISCONFIGURED')
-              ? t('The roadmap is temporarily unavailable. Please try again later.')
-              : msg || t('Failed to load roadmap'),
-          );
-          setLoading(false);
-        }
-      }
-    }
-
-    void load();
-    return () => {
-      cancelled = true;
-    };
-  }, [t]);
+  const error = queryError
+    ? (() => {
+        const msg = (queryError as Error).message ?? '';
+        return msg.includes('Not Found') || msg.includes('SERVER_MISCONFIGURED')
+          ? t('The roadmap is temporarily unavailable. Please try again later.')
+          : msg || t('Failed to load roadmap');
+      })()
+    : null;
 
   const filtered = useMemo(() => {
     let result = issues;

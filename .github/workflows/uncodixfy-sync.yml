@@ -22,13 +22,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          bun-version: latest
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Sync vendored Uncodixfy files
-        run: bun run sync:uncodixfy
+        run: pnpm run sync:uncodixfy
 
       - name: Create pull request
         uses: peter-evans/create-pull-request@v7
@@ -44,7 +51,7 @@ jobs:
             This PR was created by the `Sync Uncodixfy` workflow after running:
 
             ```bash
-            bun run sync:uncodixfy
+            pnpm run sync:uncodixfy
             ```
           assignees: |
             lammersbjorn

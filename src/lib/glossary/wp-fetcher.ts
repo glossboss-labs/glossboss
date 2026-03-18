@@ -10,9 +10,10 @@
 import type { Glossary } from './types';
 import { parseGlossaryCSV, isValidGlossaryCSV } from './csv-parser';
 import { invokeSupabaseFunction, readSupabaseFunctionError } from '@/lib/supabase/client';
+import { WP_GLOSSARY_CACHE_PREFIX } from '@/lib/constants/storage-keys';
 
 /** Cache key prefix for localStorage */
-const CACHE_KEY_PREFIX = 'glossboss-wp-glossary-';
+const CACHE_KEY_PREFIX = WP_GLOSSARY_CACHE_PREFIX;
 
 /** Cache TTL in milliseconds (24 hours) */
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
@@ -97,15 +98,15 @@ export async function fetchWPGlossary(locale: string, forceRefresh = false): Pro
       };
     }
 
-    if (data.ok === false || data.error) {
+    if (!data || data.ok === false || data.error) {
       return {
         glossary: null,
         fromCache: false,
-        error: data.message || data.error || 'Glossary backend returned ok:false',
+        error: data?.message || data?.error || 'Glossary backend returned ok:false',
       };
     }
 
-    const csvText = data.csv;
+    const csvText = data.csv ?? '';
 
     // Validate it looks like a glossary CSV
     if (!isValidGlossaryCSV(csvText)) {
@@ -123,7 +124,7 @@ export async function fetchWPGlossary(locale: string, forceRefresh = false): Pro
       return {
         glossary: null,
         fromCache: false,
-        error: `Failed to parse glossary: ${parseResult.errors[0]}`,
+        error: `Failed to parse glossary: ${parseResult.errors[0] ?? 'Unknown error'}`,
       };
     }
 

@@ -119,7 +119,7 @@ export function createDeepLClient(config: DeepLClientConfig = {}) {
     // Restore original placeholders in translated text
     response.translations = response.translations.map((translation, i) => ({
       ...translation,
-      text: unmaskPlaceholders(translation.text, masked[i].tokens),
+      text: unmaskPlaceholders(translation.text, masked[i]!.tokens),
     }));
 
     return response;

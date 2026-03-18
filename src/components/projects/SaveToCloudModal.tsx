@@ -11,7 +11,7 @@ import { Cloud, AlertCircle } from 'lucide-react';
 import { useTranslation } from '@/lib/app-language';
 import { msgid } from '@/lib/app-language';
 import { useEditorStore } from '@/stores/editor-store';
-import { useProjectsStore } from '@/stores/projects-store';
+import { useCreateProject } from '@/lib/projects/queries';
 import { useAuth } from '@/hooks/use-auth';
 import { useNavigate } from 'react-router';
 
@@ -30,7 +30,7 @@ export function SaveToCloudModal({ opened, onClose }: SaveToCloudModalProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const createProject = useProjectsStore((s) => s.createProject);
+  const createProjectMutation = useCreateProject();
 
   const projectName = useEditorStore((s) => s.projectName);
   const filename = useEditorStore((s) => s.filename);
@@ -58,8 +58,8 @@ export function SaveToCloudModal({ opened, onClose }: SaveToCloudModalProps) {
     try {
       const locale = header?.language ?? 'unknown';
 
-      const { project } = await createProject(
-        {
+      const { project } = await createProjectMutation.mutateAsync({
+        insert: {
           owner_id: user.id,
           name: name.trim() || projectName || 'Untitled',
           description: '',
@@ -73,8 +73,8 @@ export function SaveToCloudModal({ opened, onClose }: SaveToCloudModalProps) {
           wp_slug: null,
           wp_track: null,
         },
-        {
-          project_id: '', // will be set by store
+        languageInsert: {
+          project_id: '', // will be set by mutation
           locale,
           source_filename: filename,
           po_header: header as Record<string, string> | null,
@@ -87,7 +87,7 @@ export function SaveToCloudModal({ opened, onClose }: SaveToCloudModalProps) {
           repo_default_branch: null,
         },
         entries,
-      );
+      });
 
       onClose();
       void navigate(`/projects/${project.id}`);
@@ -100,7 +100,7 @@ export function SaveToCloudModal({ opened, onClose }: SaveToCloudModalProps) {
       setSaving(false);
     }
   }, [
-    createProject,
+    createProjectMutation,
     entries,
     filename,
     header,

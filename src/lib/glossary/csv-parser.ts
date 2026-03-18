@@ -119,7 +119,7 @@ export function parseGlossaryCSV(csvText: string): ParseResult {
   }
 
   // First row is headers
-  const headers = rows[0].map((h) => h.toLowerCase().trim());
+  const headers = rows[0]!.map((h) => h.toLowerCase().trim());
 
   if (headers.length < 2) {
     return {
@@ -152,7 +152,7 @@ export function parseGlossaryCSV(csvText: string): ParseResult {
 
   // Parse data rows (skip header)
   for (let i = 1; i < rows.length; i++) {
-    const row = rows[i];
+    const row = rows[i]!;
 
     try {
       const term = row[termIndex] || '';
@@ -199,7 +199,7 @@ export function isValidGlossaryCSV(text: string): boolean {
     return false;
   }
 
-  const headers = rows[0];
+  const headers = rows[0]!;
 
   // WordPress.org CSVs have at least 2 columns (source, target)
   if (headers.length < 2) {

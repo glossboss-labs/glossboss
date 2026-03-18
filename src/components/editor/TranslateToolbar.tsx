@@ -2,38 +2,15 @@
  * Translate Toolbar Component
  *
  * Language selection and bulk translation controls with safeguards.
- * Integrates with DeepL via secure edge function.
+ * Layout wrapper that composes ProviderPicker, BatchTranslateControls,
+ * and GlossaryControls.
  */
 
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
-import {
-  Group,
-  Select,
-  Button,
-  Text,
-  Progress,
-  Stack,
-  Alert,
-  Checkbox,
-  Tooltip,
-  Badge,
-  useMantineTheme,
-} from '@mantine/core';
-import { useLocalStorage, useMediaQuery } from '@mantine/hooks';
+import { Group, Button, Text, Stack, Alert, Tooltip } from '@mantine/core';
 import { motion, AnimatePresence } from 'motion/react';
-import {
-  Zap,
-  AlertCircle,
-  Square,
-  RefreshCw,
-  ShieldAlert,
-  Key,
-  CheckCheck,
-  BookCheck,
-  RotateCcw,
-  WandSparkles,
-} from 'lucide-react';
-import { msgid, useTranslation } from '@/lib/app-language';
+import { Zap, Square, RefreshCw, CheckCheck, RotateCcw } from 'lucide-react';
+import { useTranslation } from '@/lib/app-language';
 import { trackEvent } from '@/lib/analytics';
 import { useEditorStore } from '@/stores';
 import { getEffectiveProjectType, getEffectiveSlug, useSourceStore } from '@/stores/source-store';
@@ -43,119 +20,29 @@ import {
   isGlossaryNotFoundError,
   notifyGlossaryFallback,
 } from '@/lib/deepl/errors';
-import { analyzeTranslation } from '@/lib/glossary';
-import { ConfirmModal } from '@/components/ui';
 import { contentVariants, buttonStates, badgeVariants } from '@/lib/motion';
 import type { TargetLanguage, SourceLanguage } from '@/lib/deepl/types';
-import type { Glossary, GlossaryAnalysisResult } from '@/lib/glossary/types';
+import type { Glossary } from '@/lib/glossary/types';
 import {
   getTranslationProviderLabel,
   hasProviderCredentials,
   recordTranslationUsage,
   TRANSLATION_USAGE_REFRESH_EVENT,
   translateWithProvider,
-  type TranslationProviderId,
 } from '@/lib/translation';
+import { isLlmProvider } from '@/lib/llm';
 import { getReviewEntryState, isReviewLocked } from '@/lib/review';
-import {
-  TRANSLATION_PROVIDER_STORAGE_KEY,
-  type TranslationProviderSettings,
-} from '@/lib/translation/settings';
+import { useTranslationProvider } from '@/hooks/use-translation-provider';
 import { shouldAutoTranslateEntry } from './translate-utils';
 import { getTranslationStatus } from '@/types';
-import { getFlagEmoji } from '@/lib/flags';
-
-/** Prepend flag emoji to a language label if a mapping exists. */
-function withFlag(code: string, label: string): string {
-  const flag = getFlagEmoji(code);
-  return flag ? `${flag} ${label}` : label;
-}
+import { ProviderPicker } from './ProviderPicker';
+import { mapToDeepLCode } from './translate-languages';
+import { GlossaryControls } from './GlossaryControls';
+import { BatchTranslateControls } from './BatchTranslateControls';
 
 const MotionDiv = motion.div;
-const MotionStack = motion.create(Stack);
 
 type TranslateMode = 'untranslated' | 'overwrite-all' | 'selected-empty-or-fuzzy';
-
-/** DeepL supported languages */
-const SOURCE_LANGUAGES: Array<{ value: string; label: string }> = [
-  { value: '', label: msgid('Auto-detect') },
-  { value: 'BG', label: msgid('Bulgarian') },
-  { value: 'CS', label: msgid('Czech') },
-  { value: 'DA', label: msgid('Danish') },
-  { value: 'DE', label: msgid('German') },
-  { value: 'EL', label: msgid('Greek') },
-  { value: 'EN', label: msgid('English') },
-  { value: 'ES', label: msgid('Spanish') },
-  { value: 'ET', label: msgid('Estonian') },
-  { value: 'FI', label: msgid('Finnish') },
-  { value: 'FR', label: msgid('French') },
-  { value: 'HU', label: msgid('Hungarian') },
-  { value: 'ID', label: msgid('Indonesian') },
-  { value: 'IT', label: msgid('Italian') },
-  { value: 'JA', label: msgid('Japanese') },
-  { value: 'KO', label: msgid('Korean') },
-  { value: 'LT', label: msgid('Lithuanian') },
-  { value: 'LV', label: msgid('Latvian') },
-  { value: 'NB', label: msgid('Norwegian') },
-  { value: 'NL', label: msgid('Dutch') },
-  { value: 'PL', label: msgid('Polish') },
-  { value: 'PT', label: msgid('Portuguese') },
-  { value: 'RO', label: msgid('Romanian') },
-  { value: 'RU', label: msgid('Russian') },
-  { value: 'SK', label: msgid('Slovak') },
-  { value: 'SL', label: msgid('Slovenian') },
-  { value: 'SV', label: msgid('Swedish') },
-  { value: 'TR', label: msgid('Turkish') },
-  { value: 'UK', label: msgid('Ukrainian') },
-  { value: 'ZH', label: msgid('Chinese') },
-];
-
-const TARGET_LANGUAGES: Array<{ value: string; label: string }> = [
-  { value: 'BG', label: msgid('Bulgarian') },
-  { value: 'CS', label: msgid('Czech') },
-  { value: 'DA', label: msgid('Danish') },
-  { value: 'DE', label: msgid('German') },
-  { value: 'EL', label: msgid('Greek') },
-  { value: 'EN-GB', label: msgid('English (UK)') },
-  { value: 'EN-US', label: msgid('English (US)') },
-  { value: 'ES', label: msgid('Spanish') },
-  { value: 'ET', label: msgid('Estonian') },
-  { value: 'FI', label: msgid('Finnish') },
-  { value: 'FR', label: msgid('French') },
-  { value: 'HU', label: msgid('Hungarian') },
-  { value: 'ID', label: msgid('Indonesian') },
-  { value: 'IT', label: msgid('Italian') },
-  { value: 'JA', label: msgid('Japanese') },
-  { value: 'KO', label: msgid('Korean') },
-  { value: 'LT', label: msgid('Lithuanian') },
-  { value: 'LV', label: msgid('Latvian') },
-  { value: 'NB', label: msgid('Norwegian') },
-  { value: 'NL', label: msgid('Dutch') },
-  { value: 'PL', label: msgid('Polish') },
-  { value: 'PT-BR', label: msgid('Portuguese (Brazil)') },
-  { value: 'PT-PT', label: msgid('Portuguese (Portugal)') },
-  { value: 'RO', label: msgid('Romanian') },
-  { value: 'RU', label: msgid('Russian') },
-  { value: 'SK', label: msgid('Slovak') },
-  { value: 'SL', label: msgid('Slovenian') },
-  { value: 'SV', label: msgid('Swedish') },
-  { value: 'TR', label: msgid('Turkish') },
-  { value: 'UK', label: msgid('Ukrainian') },
-  { value: 'ZH', label: msgid('Chinese') },
-];
-
-/** Map PO language codes to DeepL codes */
-function mapToDeepLCode(poLang: string): string | null {
-  const code = poLang.toUpperCase().replace('_', '-');
-  const directMatch = TARGET_LANGUAGES.find((l) => l.value === code);
-  if (directMatch) return directMatch.value;
-  const baseCode = code.split('-')[0];
-  const baseMatch = TARGET_LANGUAGES.find(
-    (l) => l.value === baseCode || l.value.startsWith(baseCode + '-'),
-  );
-  if (baseMatch) return baseMatch.value;
-  return null;
-}
 
 interface TranslateToolbarProps {
   sourceLang?: SourceLanguage;
@@ -175,8 +62,6 @@ export function TranslateToolbar({
   mode = 'edit',
 }: TranslateToolbarProps) {
   const { t } = useTranslation();
-  const theme = useMantineTheme();
-  const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
   const {
     header,
     entries,
@@ -220,14 +105,7 @@ export function TranslateToolbar({
   const [glossaryFallbackNotice, setGlossaryFallbackNotice] = useState<string | null>(null);
   const cancelRef = useRef(false);
   const batchCountRef = useRef(0);
-  const [providerState] = useLocalStorage<TranslationProviderSettings>({
-    key: TRANSLATION_PROVIDER_STORAGE_KEY,
-    defaultValue: {
-      provider: 'deepl',
-      updatedAt: 0,
-    },
-  });
-  const activeProvider = providerState.provider;
+  const activeProvider = useTranslationProvider();
   const projectSlug = useSourceStore((state) => getEffectiveSlug(state));
   const projectType = useSourceStore((state) => getEffectiveProjectType(state));
   const providerLabel = getTranslationProviderLabel(activeProvider);
@@ -357,9 +235,9 @@ export function TranslateToolbar({
 
   // Generic translate handler
   const handleTranslate = useCallback(
-    async (entriesToTranslate: typeof entries, mode: TranslateMode) => {
+    async (entriesToTranslate: typeof entries, translateMode: TranslateMode) => {
       if (!targetLang || entriesToTranslate.length === 0) return;
-      const overwriteAll = mode === 'overwrite-all';
+      const overwriteAll = translateMode === 'overwrite-all';
 
       setIsTranslating(true);
       setIsRetranslateMode(overwriteAll);
@@ -401,8 +279,8 @@ export function TranslateToolbar({
             const plurals = entry.msgstrPlural ?? ['', ''];
             const displayForms = plurals.length >= 2 ? plurals : ['', ''];
             const shouldTranslateAllForms =
-              mode === 'overwrite-all' ||
-              (mode === 'selected-empty-or-fuzzy' && entry.flags.includes('fuzzy'));
+              translateMode === 'overwrite-all' ||
+              (translateMode === 'selected-empty-or-fuzzy' && entry.flags.includes('fuzzy'));
 
             displayForms.forEach((form, index) => {
               if (shouldTranslateAllForms || !form.trim()) {
@@ -419,9 +297,9 @@ export function TranslateToolbar({
             });
           } else {
             if (
-              mode === 'overwrite-all' ||
+              translateMode === 'overwrite-all' ||
               !entry.msgstr.trim() ||
-              (mode === 'selected-empty-or-fuzzy' && entry.flags.includes('fuzzy'))
+              (translateMode === 'selected-empty-or-fuzzy' && entry.flags.includes('fuzzy'))
             ) {
               jobs.push({
                 entryId: entry.id,
@@ -468,7 +346,8 @@ export function TranslateToolbar({
           markAsMachineTranslated(job.entryId, translated.metadata);
         };
 
-        if (activeProvider === 'gemini') {
+        if (isLlmProvider(activeProvider)) {
+          // LLM providers translate one-at-a-time to support per-entry context
           for (const job of jobs) {
             if (cancelRef.current) break;
 
@@ -479,7 +358,7 @@ export function TranslateToolbar({
                   ? (sourceLang as SourceLanguage)
                   : undefined;
               const entry = entryById.get(job.entryId);
-              const translationResponse = await translateWithProvider('gemini', {
+              const translationResponse = await translateWithProvider(activeProvider, {
                 text: job.text,
                 targetLang: targetLang as TargetLanguage,
                 sourceLang: effectiveSourceLang,
@@ -492,7 +371,7 @@ export function TranslateToolbar({
               if (!translated?.text) {
                 failed += 1;
               } else {
-                recordTranslationUsage('gemini', job.text.length);
+                recordTranslationUsage(activeProvider, job.text.length);
                 applyTranslationResult(job, translated);
                 completed += 1;
               }
@@ -527,18 +406,15 @@ export function TranslateToolbar({
             try {
               let translationResponse;
               try {
-                translationResponse = await translateWithProvider(
-                  activeProvider as Exclude<TranslationProviderId, 'gemini'>,
-                  {
-                    text: texts,
-                    targetLang: targetLang as TargetLanguage,
-                    sourceLang: effectiveSourceLang,
-                    glossary,
-                    deeplGlossaryId: activeProvider === 'deepl' ? activeGlossaryId : undefined,
-                    projectSlug,
-                    projectType,
-                  },
-                );
+                translationResponse = await translateWithProvider(activeProvider, {
+                  text: texts,
+                  targetLang: targetLang as TargetLanguage,
+                  sourceLang: effectiveSourceLang,
+                  glossary,
+                  deeplGlossaryId: activeProvider === 'deepl' ? activeGlossaryId : undefined,
+                  projectSlug,
+                  projectType,
+                });
               } catch (translationError) {
                 if (
                   activeProvider === 'deepl' &&
@@ -630,18 +506,42 @@ export function TranslateToolbar({
     trackEvent('batch_translation_triggered', {
       mode: 'untranslated',
       count: untranslatedEntries.length,
+      provider: activeProvider,
+      source_lang: sourceLang || 'auto',
+      target_lang: targetLang,
+      had_glossary: Boolean(deeplGlossaryId || glossary),
     });
     handleTranslate(untranslatedEntries, 'untranslated');
-  }, [handleTranslate, untranslatedEntries]);
+  }, [
+    handleTranslate,
+    untranslatedEntries,
+    activeProvider,
+    sourceLang,
+    targetLang,
+    deeplGlossaryId,
+    glossary,
+  ]);
 
   const handleRetranslateAll = useCallback(() => {
     setConfirmRetranslateOpen(false);
     trackEvent('batch_translation_triggered', {
       mode: 'overwrite-all',
       count: allTranslatableEntries.length,
+      provider: activeProvider,
+      source_lang: sourceLang || 'auto',
+      target_lang: targetLang,
+      had_glossary: Boolean(deeplGlossaryId || glossary),
     });
     handleTranslate(allTranslatableEntries, 'overwrite-all');
-  }, [handleTranslate, allTranslatableEntries]);
+  }, [
+    handleTranslate,
+    allTranslatableEntries,
+    activeProvider,
+    sourceLang,
+    targetLang,
+    deeplGlossaryId,
+    glossary,
+  ]);
 
   const handleSelectAllFiltered = useCallback(() => {
     const merged = new Set(selectedEntryIds);
@@ -652,39 +552,6 @@ export function TranslateToolbar({
   const handleSelectedAutoTranslate = useCallback(() => {
     handleTranslate(selectedAutoTranslateEntries, 'selected-empty-or-fuzzy');
   }, [handleTranslate, selectedAutoTranslateEntries]);
-
-  const handleGlossaryCheckSelected = useCallback(() => {
-    if (!glossary || selectedEntries.length === 0) return;
-
-    const analyses = new Map<string, GlossaryAnalysisResult>();
-    selectedEntries.forEach((entry) => {
-      analyses.set(
-        entry.id,
-        analyzeTranslation(entry.sourceText ?? entry.msgid, entry.msgstr, glossary, entry.id),
-      );
-    });
-
-    setGlossaryAnalysisBatch(analyses);
-
-    const withTerms = Array.from(analyses.values()).filter((analysis) => analysis.terms.length > 0);
-    const needsReviewRows = withTerms.filter((analysis) => analysis.needsReviewCount > 0).length;
-
-    if (withTerms.length === 0) {
-      setBulkActionMessage(t('Glossary check complete: no glossary terms found in selected rows.'));
-      return;
-    }
-
-    if (needsReviewRows === 0) {
-      setBulkActionMessage(t('Glossary check complete: all selected rows match glossary terms.'));
-      return;
-    }
-
-    setBulkActionMessage(
-      t('Glossary check complete: {{count}} selected row(s) need review.', {
-        count: needsReviewRows,
-      }),
-    );
-  }, [glossary, selectedEntries, setGlossaryAnalysisBatch, t]);
 
   const handleClearFuzzySelected = useCallback(() => {
     clearFuzzyBatch(Array.from(selectedEntryIds));
@@ -755,609 +622,322 @@ export function TranslateToolbar({
   if (!translateEnabled) return null;
 
   return (
-    <>
-      {/* Retranslate confirmation modal */}
-      <ConfirmModal
-        opened={confirmRetranslateOpen}
-        onClose={() => setConfirmRetranslateOpen(false)}
-        onConfirm={handleRetranslateAll}
-        title={t('Retranslate all entries?')}
-        message={t(
-          'This will overwrite {{count}} existing translations with new machine translations.',
-          { count: translatedCount },
-        )}
-        detail={
-          manualEditCount > 0 && skipManualEdits
-            ? t('{{count}} manually edited entries will be skipped.', { count: manualEditCount })
-            : manualEditCount > 0
-              ? t('\u26a0\ufe0f {{count}} manually edited entries will be overwritten!', {
-                  count: manualEditCount,
-                })
-              : t('Consider downloading a backup first.')
-        }
-        confirmLabel={msgid('Retranslate all')}
-        confirmColor="orange"
-        variant={manualEditCount > 0 && !skipManualEdits ? 'danger' : 'warning'}
-      />
-
-      <Stack gap="sm">
-        {mode === 'edit' && (
-          <>
-            <AnimatePresence>
-              {glossaryFallbackNotice && (
-                <MotionDiv
-                  variants={contentVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
+    <Stack gap="sm">
+      {mode === 'edit' && (
+        <>
+          {/* Glossary fallback notice */}
+          <AnimatePresence>
+            {glossaryFallbackNotice && (
+              <MotionDiv variants={contentVariants} initial="hidden" animate="visible" exit="exit">
+                <Alert
+                  color="yellow"
+                  withCloseButton
+                  onClose={() => setGlossaryFallbackNotice(null)}
                 >
-                  <Alert
-                    color="yellow"
-                    withCloseButton
-                    onClose={() => setGlossaryFallbackNotice(null)}
-                  >
-                    <Text size="xs">{glossaryFallbackNotice}</Text>
-                  </Alert>
-                </MotionDiv>
-              )}
-            </AnimatePresence>
-
-            <Group justify="space-between" align="center" wrap="wrap">
-              <Group gap="xs">
-                <WandSparkles size={14} />
-                <Text size="sm" fw={600}>
-                  {t('Machine translation')}
-                </Text>
-                <Badge size="xs" variant="light" color="gray">
-                  {providerLabel}
-                </Badge>
-              </Group>
-              <Text size="xs" c="dimmed">
-                {selectedEntryIds.size > 0
-                  ? t('{{count}} selected', { count: selectedEntryIds.size })
-                  : t('{{count}} untranslated', { count: untranslatedEntries.length })}
-              </Text>
-            </Group>
-
-            {/* API Key Warning */}
-            <AnimatePresence>
-              {!hasApiKey && (
-                <MotionDiv
-                  variants={contentVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                >
-                  <Alert color="yellow" icon={<Key size={16} />}>
-                    <Text size="sm">
-                      {t('Add your {{provider}} API key in Settings to enable translation.', {
-                        provider: providerLabel,
-                      })}
-                    </Text>
-                  </Alert>
-                </MotionDiv>
-              )}
-            </AnimatePresence>
-          </>
-        )}
-
-        {mode === 'edit' && (
-          <Group
-            data-tour="language-selectors"
-            justify="space-between"
-            align={isMobile ? 'stretch' : 'center'}
-            wrap="wrap"
-            style={isMobile ? { flexDirection: 'column' } : undefined}
-          >
-            {isMobile ? (
-              <Stack gap="xs" w="100%">
-                <Group gap="xs" align="center" wrap="nowrap">
-                  <Text size="xs" c="dimmed" fw={500}>
-                    {t('From')}
-                  </Text>
-                  <Select
-                    data={SOURCE_LANGUAGES.map((opt) => ({
-                      ...opt,
-                      label: withFlag(opt.value, t(opt.label)),
-                    }))}
-                    value={sourceLang}
-                    onChange={handleSourceChange}
-                    placeholder={t('Auto-detect')}
-                    searchable
-                    clearable
-                    size="xs"
-                    disabled={!hasApiKey}
-                    aria-label={t('Source language')}
-                    style={{ flex: 1, minWidth: 0 }}
-                  />
-                </Group>
-                <Group gap="xs" align="center" wrap="nowrap">
-                  <Text size="xs" c="dimmed" fw={500}>
-                    {t('To')}
-                  </Text>
-                  <Select
-                    data={TARGET_LANGUAGES.map((opt) => ({
-                      ...opt,
-                      label: withFlag(opt.value, t(opt.label)),
-                    }))}
-                    value={targetLang}
-                    onChange={handleTargetChange}
-                    placeholder={t('Select target...')}
-                    searchable
-                    required
-                    size="xs"
-                    disabled={!hasApiKey}
-                    aria-label={t('Target language')}
-                    style={{ flex: 1, minWidth: 0 }}
-                  />
-                  {inferredTarget && (
-                    <Badge size="xs" variant="light" color="gray" style={{ flexShrink: 0 }}>
-                      {t('Detected: {{target}}', { target: inferredTarget })}
-                    </Badge>
-                  )}
-                </Group>
-              </Stack>
-            ) : (
-              <Group gap="xs" align="center">
-                <Text size="xs" c="dimmed" fw={500}>
-                  {t('From')}
-                </Text>
-                <Select
-                  data={SOURCE_LANGUAGES.map((opt) => ({
-                    ...opt,
-                    label: withFlag(opt.value, t(opt.label)),
-                  }))}
-                  value={sourceLang}
-                  onChange={handleSourceChange}
-                  placeholder={t('Auto-detect')}
-                  searchable
-                  clearable
-                  w={160}
-                  size="xs"
-                  disabled={!hasApiKey}
-                  aria-label={t('Source language')}
-                />
-
-                <Text c="dimmed" size="sm" aria-hidden="true">
-                  →
-                </Text>
-
-                <Text size="xs" c="dimmed" fw={500}>
-                  {t('To')}
-                </Text>
-                <Select
-                  data={TARGET_LANGUAGES.map((opt) => ({
-                    ...opt,
-                    label: withFlag(opt.value, t(opt.label)),
-                  }))}
-                  value={targetLang}
-                  onChange={handleTargetChange}
-                  placeholder={t('Select target...')}
-                  searchable
-                  required
-                  w={170}
-                  size="xs"
-                  disabled={!hasApiKey}
-                  aria-label={t('Target language')}
-                />
-
-                {inferredTarget && (
-                  <Badge size="xs" variant="light" color="gray">
-                    {t('Detected: {{target}}', { target: inferredTarget })}
-                  </Badge>
-                )}
-              </Group>
+                  <Text size="xs">{glossaryFallbackNotice}</Text>
+                </Alert>
+              </MotionDiv>
             )}
+          </AnimatePresence>
 
-            <Group gap="sm" wrap="wrap">
-              <AnimatePresence mode="wait">
-                {isTranslating ? (
-                  <MotionDiv
-                    key="cancel"
-                    variants={contentVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="exit"
-                  >
-                    <motion.div {...buttonStates}>
-                      <Button
-                        leftSection={<Square size={16} />}
-                        onClick={handleCancel}
-                        variant="light"
-                        color="red"
-                      >
-                        {t('Cancel')}
-                      </Button>
-                    </motion.div>
-                  </MotionDiv>
-                ) : (
-                  <MotionDiv
-                    key="actions"
-                    variants={contentVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="exit"
-                  >
-                    <Group gap="sm">
-                      <Tooltip
-                        label={
-                          manualEditCount > 0
-                            ? t('{{count}} manual edits will be {{action}}', {
-                                count: manualEditCount,
-                                action: skipManualEdits ? t('skipped') : t('overwritten'),
-                              })
-                            : t('Retranslate all entries')
-                        }
-                      >
-                        <motion.div {...buttonStates}>
-                          <Button
-                            leftSection={<RefreshCw size={16} />}
-                            onClick={() => setConfirmRetranslateOpen(true)}
-                            disabled={
-                              !targetLang || allTranslatableEntries.length === 0 || !hasApiKey
-                            }
-                            variant="subtle"
-                            color="orange"
-                          >
-                            {t('Retranslate all')}
-                          </Button>
-                        </motion.div>
-                      </Tooltip>
-                      <motion.div {...buttonStates} data-tour="bulk-translate">
+          {/* Provider header + language selectors + translate/cancel buttons */}
+          <ProviderPicker
+            sourceLang={sourceLang}
+            targetLang={targetLang}
+            inferredTarget={inferredTarget}
+            providerLabel={providerLabel}
+            hasApiKey={hasApiKey}
+            selectedCount={selectedEntryIds.size}
+            untranslatedCount={untranslatedEntries.length}
+            onSourceChange={handleSourceChange}
+            onTargetChange={handleTargetChange}
+            actionSlot={
+              <Group gap="sm" wrap="wrap">
+                <AnimatePresence mode="wait">
+                  {isTranslating ? (
+                    <MotionDiv
+                      key="cancel"
+                      variants={contentVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                    >
+                      <motion.div {...buttonStates}>
                         <Button
-                          leftSection={<Zap size={16} />}
-                          onClick={handleBulkTranslate}
-                          disabled={!targetLang || untranslatedEntries.length === 0 || !hasApiKey}
+                          leftSection={<Square size={16} />}
+                          onClick={handleCancel}
                           variant="light"
+                          color="red"
                         >
-                          {t('Translate {{count}} untranslated', {
-                            count: untranslatedEntries.length,
-                          })}
+                          {t('Cancel')}
                         </Button>
                       </motion.div>
-                    </Group>
+                    </MotionDiv>
+                  ) : (
+                    <MotionDiv
+                      key="actions"
+                      variants={contentVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                    >
+                      <Group gap="sm">
+                        <Tooltip
+                          label={
+                            manualEditCount > 0
+                              ? t('{{count}} manual edits will be {{action}}', {
+                                  count: manualEditCount,
+                                  action: skipManualEdits ? t('skipped') : t('overwritten'),
+                                })
+                              : t('Retranslate all entries')
+                          }
+                        >
+                          <motion.div {...buttonStates}>
+                            <Button
+                              leftSection={<RefreshCw size={16} />}
+                              onClick={() => setConfirmRetranslateOpen(true)}
+                              disabled={
+                                !targetLang || allTranslatableEntries.length === 0 || !hasApiKey
+                              }
+                              variant="subtle"
+                              color="orange"
+                            >
+                              {t('Retranslate all')}
+                            </Button>
+                          </motion.div>
+                        </Tooltip>
+                        <motion.div {...buttonStates} data-tour="bulk-translate">
+                          <Button
+                            leftSection={<Zap size={16} />}
+                            onClick={handleBulkTranslate}
+                            disabled={!targetLang || untranslatedEntries.length === 0 || !hasApiKey}
+                            variant="light"
+                          >
+                            {t('Translate {{count}} untranslated', {
+                              count: untranslatedEntries.length,
+                            })}
+                          </Button>
+                        </motion.div>
+                      </Group>
+                    </MotionDiv>
+                  )}
+                </AnimatePresence>
+              </Group>
+            }
+          />
+        </>
+      )}
+
+      {/* Bulk selection + selected-row actions */}
+      {!isTranslating && (
+        <Group gap="xs" align="center" wrap="wrap">
+          <MotionDiv layout variants={badgeVariants} initial="hidden" animate="visible" exit="exit">
+            <Button
+              size="xs"
+              variant="subtle"
+              onClick={handleSelectAllFiltered}
+              disabled={filteredEntries.length === 0}
+            >
+              {t('Select all filtered')}
+            </Button>
+          </MotionDiv>
+
+          <AnimatePresence mode="popLayout">
+            {selectedEntryIds.size > 0 && (
+              <MotionDiv
+                key="clear-selection"
+                layout
+                variants={badgeVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+              >
+                <Button size="xs" variant="subtle" color="gray" onClick={clearSelectedEntries}>
+                  {t('Clear')}
+                </Button>
+              </MotionDiv>
+            )}
+          </AnimatePresence>
+
+          {/* Edit-mode bulk actions */}
+          {mode === 'edit' && (
+            <>
+              <AnimatePresence mode="popLayout">
+                {selectedAutoTranslateEntries.length > 0 && (
+                  <MotionDiv
+                    key="auto-translate-selected"
+                    layout
+                    variants={badgeVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                  >
+                    <Tooltip label={t('Auto translate selected rows that are empty or fuzzy')}>
+                      <Button
+                        size="xs"
+                        variant="light"
+                        color="blue"
+                        leftSection={<Zap size={14} />}
+                        disabled={!hasApiKey || !targetLang}
+                        onClick={handleSelectedAutoTranslate}
+                        aria-label={t('Auto translate selected')}
+                      >
+                        {t('Auto translate ({{count}})', {
+                          count: selectedAutoTranslateEntries.length,
+                        })}
+                      </Button>
+                    </Tooltip>
                   </MotionDiv>
                 )}
               </AnimatePresence>
-            </Group>
-          </Group>
-        )}
 
-        {/* Bulk selection + selected-row actions */}
-        {!isTranslating && (
-          <Group gap="xs" align="center" wrap="wrap">
-            <MotionDiv
-              layout
-              variants={badgeVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-            >
-              <Button
-                size="xs"
-                variant="subtle"
-                onClick={handleSelectAllFiltered}
-                disabled={filteredEntries.length === 0}
-              >
-                {t('Select all filtered')}
-              </Button>
-            </MotionDiv>
+              <GlossaryControls
+                glossary={glossary}
+                selectedEntries={selectedEntries}
+                selectedEntryIds={selectedEntryIds}
+                onGlossaryAnalysisBatch={setGlossaryAnalysisBatch}
+                onBulkActionMessage={setBulkActionMessage}
+              />
 
-            <AnimatePresence mode="popLayout">
-              {selectedEntryIds.size > 0 && (
-                <MotionDiv
-                  key="clear-selection"
-                  layout
-                  variants={badgeVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                >
-                  <Button size="xs" variant="subtle" color="gray" onClick={clearSelectedEntries}>
-                    {t('Clear')}
-                  </Button>
-                </MotionDiv>
-              )}
-            </AnimatePresence>
-
-            {/* Edit-mode bulk actions */}
-            {mode === 'edit' && (
-              <>
-                <AnimatePresence mode="popLayout">
-                  {selectedAutoTranslateEntries.length > 0 && (
-                    <MotionDiv
-                      key="auto-translate-selected"
-                      layout
-                      variants={badgeVariants}
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
-                    >
-                      <Tooltip label={t('Auto translate selected rows that are empty or fuzzy')}>
-                        <Button
-                          size="xs"
-                          variant="light"
-                          color="blue"
-                          leftSection={<Zap size={14} />}
-                          disabled={!hasApiKey || !targetLang}
-                          onClick={handleSelectedAutoTranslate}
-                          aria-label={t('Auto translate selected')}
-                        >
-                          {t('Auto translate ({{count}})', {
-                            count: selectedAutoTranslateEntries.length,
-                          })}
-                        </Button>
-                      </Tooltip>
-                    </MotionDiv>
-                  )}
-                </AnimatePresence>
-
-                <AnimatePresence mode="popLayout">
-                  {selectedEntryIds.size > 0 && glossary && (
-                    <MotionDiv
-                      key="glossary-check-selected"
-                      layout
-                      variants={badgeVariants}
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
-                    >
-                      <Tooltip label={t('Re-run glossary analysis on selected rows')}>
-                        <Button
-                          size="xs"
-                          variant="light"
-                          color="violet"
-                          leftSection={<BookCheck size={14} />}
-                          onClick={handleGlossaryCheckSelected}
-                          aria-label={t('Glossary check selected')}
-                        >
-                          {t('Glossary check')}
-                        </Button>
-                      </Tooltip>
-                    </MotionDiv>
-                  )}
-                </AnimatePresence>
-
-                <AnimatePresence mode="popLayout">
-                  {selectedFuzzyCount > 0 && (
-                    <MotionDiv
-                      key="clear-fuzzy-selected"
-                      layout
-                      variants={badgeVariants}
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
-                    >
-                      <Tooltip label={t('Clear fuzzy on selected rows')}>
-                        <Button
-                          size="xs"
-                          variant="light"
-                          color="green"
-                          leftSection={<CheckCheck size={14} />}
-                          onClick={handleClearFuzzySelected}
-                          aria-label={t('Clear fuzzy selected')}
-                        >
-                          {t('Clear fuzzy ({{count}})', { count: selectedFuzzyCount })}
-                        </Button>
-                      </Tooltip>
-                    </MotionDiv>
-                  )}
-                </AnimatePresence>
-
-                <AnimatePresence mode="popLayout">
-                  {selectedNonFuzzyCount > 0 && (
-                    <MotionDiv
-                      key="mark-fuzzy-selected"
-                      layout
-                      variants={badgeVariants}
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
-                    >
-                      <Tooltip label={t('Mark selected rows as fuzzy')}>
-                        <Button
-                          size="xs"
-                          variant="light"
-                          color="yellow"
-                          leftSection={<RotateCcw size={14} />}
-                          onClick={handleMarkFuzzySelected}
-                          aria-label={t('Mark fuzzy selected')}
-                        >
-                          {t('Mark fuzzy ({{count}})', { count: selectedNonFuzzyCount })}
-                        </Button>
-                      </Tooltip>
-                    </MotionDiv>
-                  )}
-                </AnimatePresence>
-              </>
-            )}
-
-            {/* Review-mode bulk actions */}
-            {mode === 'review' && (
-              <>
-                <AnimatePresence mode="popLayout">
-                  {selectedEntryIds.size > 0 && (
-                    <MotionDiv
-                      key="approve-selected"
-                      layout
-                      variants={badgeVariants}
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
-                    >
+              <AnimatePresence mode="popLayout">
+                {selectedFuzzyCount > 0 && (
+                  <MotionDiv
+                    key="clear-fuzzy-selected"
+                    layout
+                    variants={badgeVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                  >
+                    <Tooltip label={t('Clear fuzzy on selected rows')}>
                       <Button
                         size="xs"
                         variant="light"
                         color="green"
-                        onClick={handleApproveSelected}
+                        leftSection={<CheckCheck size={14} />}
+                        onClick={handleClearFuzzySelected}
+                        aria-label={t('Clear fuzzy selected')}
                       >
-                        {t('Approve selected')}
+                        {t('Clear fuzzy ({{count}})', { count: selectedFuzzyCount })}
                       </Button>
-                    </MotionDiv>
-                  )}
-                </AnimatePresence>
+                    </Tooltip>
+                  </MotionDiv>
+                )}
+              </AnimatePresence>
 
-                <AnimatePresence mode="popLayout">
-                  {selectedReviewApprovedCount > 0 && (
-                    <MotionDiv
-                      key="unapprove-selected"
-                      layout
-                      variants={badgeVariants}
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
-                    >
-                      <Button size="xs" variant="default" onClick={handleUnapproveSelected}>
-                        {t('Unapprove selected')}
-                      </Button>
-                    </MotionDiv>
-                  )}
-                </AnimatePresence>
-
-                <AnimatePresence mode="popLayout">
-                  {selectedRequestChangesEligibleCount > 0 && (
-                    <MotionDiv
-                      key="request-changes-selected"
-                      layout
-                      variants={badgeVariants}
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
-                    >
+              <AnimatePresence mode="popLayout">
+                {selectedNonFuzzyCount > 0 && (
+                  <MotionDiv
+                    key="mark-fuzzy-selected"
+                    layout
+                    variants={badgeVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                  >
+                    <Tooltip label={t('Mark selected rows as fuzzy')}>
                       <Button
                         size="xs"
                         variant="light"
-                        color="orange"
-                        onClick={handleRequestChangesSelected}
+                        color="yellow"
+                        leftSection={<RotateCcw size={14} />}
+                        onClick={handleMarkFuzzySelected}
+                        aria-label={t('Mark fuzzy selected')}
                       >
-                        {t('Request changes selected')}
+                        {t('Mark fuzzy ({{count}})', { count: selectedNonFuzzyCount })}
                       </Button>
-                    </MotionDiv>
-                  )}
-                </AnimatePresence>
-              </>
-            )}
-          </Group>
-        )}
+                    </Tooltip>
+                  </MotionDiv>
+                )}
+              </AnimatePresence>
+            </>
+          )}
 
-        {/* Skip manual edits option — edit mode only */}
-        {mode === 'edit' && (
-          <>
-            <AnimatePresence>
-              {manualEditCount > 0 && !isTranslating && (
-                <MotionDiv
-                  variants={contentVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                >
-                  <Group gap="xs">
-                    <Checkbox
-                      size="xs"
-                      checked={skipManualEdits}
-                      onChange={(e) => setSkipManualEdits(e.currentTarget.checked)}
-                      label={
-                        <Group gap={4}>
-                          <ShieldAlert size={14} aria-hidden="true" />
-                          <Text size="xs">
-                            {t('Protect {{count}} manual edits from bulk translation', {
-                              count: manualEditCount,
-                            })}
-                          </Text>
-                        </Group>
-                      }
-                    />
-                  </Group>
-                </MotionDiv>
-              )}
-            </AnimatePresence>
-
-            {/* Progress bar during bulk translation */}
-            <AnimatePresence>
-              {isTranslating && (
-                <MotionStack
-                  gap="xs"
-                  variants={contentVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                >
-                  <Group justify="space-between">
-                    <Text size="sm" c="dimmed">
-                      {isRetranslateMode ? t('Retranslating') : t('Translating')}...{' '}
-                      {translateCount}
-                      {failedCount > 0 ? ` (${t('{{count}} failed', { count: failedCount })})` : ''}
-                    </Text>
-                    <Text size="sm" fw={500}>
-                      {progress}%
-                    </Text>
-                  </Group>
-                  <Progress
-                    value={progress}
-                    size="sm"
-                    animated
-                    color={failedCount > 0 ? 'orange' : 'blue'}
-                    aria-label={t('Translation progress')}
-                  />
-                </MotionStack>
-              )}
-            </AnimatePresence>
-
-            {/* Error display */}
-            <AnimatePresence>
-              {error && !isTranslating && (
-                <MotionDiv
-                  variants={contentVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                >
-                  <Alert
-                    color="red"
-                    icon={<AlertCircle size={16} />}
-                    withCloseButton
-                    onClose={() => setError(null)}
+          {/* Review-mode bulk actions */}
+          {mode === 'review' && (
+            <>
+              <AnimatePresence mode="popLayout">
+                {selectedEntryIds.size > 0 && (
+                  <MotionDiv
+                    key="approve-selected"
+                    layout
+                    variants={badgeVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
                   >
-                    {error}
-                  </Alert>
-                </MotionDiv>
-              )}
-            </AnimatePresence>
+                    <Button size="xs" variant="light" color="green" onClick={handleApproveSelected}>
+                      {t('Approve selected')}
+                    </Button>
+                  </MotionDiv>
+                )}
+              </AnimatePresence>
 
-            {/* Bulk action feedback */}
-            <AnimatePresence>
-              {bulkActionMessage && !isTranslating && (
-                <MotionDiv
-                  variants={contentVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                >
-                  <Alert color="blue" withCloseButton onClose={() => setBulkActionMessage(null)}>
-                    {bulkActionMessage}
-                  </Alert>
-                </MotionDiv>
-              )}
-            </AnimatePresence>
+              <AnimatePresence mode="popLayout">
+                {selectedReviewApprovedCount > 0 && (
+                  <MotionDiv
+                    key="unapprove-selected"
+                    layout
+                    variants={badgeVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                  >
+                    <Button size="xs" variant="default" onClick={handleUnapproveSelected}>
+                      {t('Unapprove selected')}
+                    </Button>
+                  </MotionDiv>
+                )}
+              </AnimatePresence>
 
-            {/* Success message */}
-            <AnimatePresence>
-              {!isTranslating && translateCount > 0 && !error && (
-                <MotionDiv
-                  variants={contentVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                >
-                  <Alert color="green" withCloseButton onClose={() => setTranslateCount(0)}>
-                    {t('Successfully translated {{count}} entries', { count: translateCount })}
-                  </Alert>
-                </MotionDiv>
-              )}
-            </AnimatePresence>
-          </>
-        )}
-      </Stack>
-    </>
+              <AnimatePresence mode="popLayout">
+                {selectedRequestChangesEligibleCount > 0 && (
+                  <MotionDiv
+                    key="request-changes-selected"
+                    layout
+                    variants={badgeVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                  >
+                    <Button
+                      size="xs"
+                      variant="light"
+                      color="orange"
+                      onClick={handleRequestChangesSelected}
+                    >
+                      {t('Request changes selected')}
+                    </Button>
+                  </MotionDiv>
+                )}
+              </AnimatePresence>
+            </>
+          )}
+        </Group>
+      )}
+
+      {/* Batch translate controls — edit mode only */}
+      {mode === 'edit' && (
+        <BatchTranslateControls
+          isTranslating={isTranslating}
+          isRetranslateMode={isRetranslateMode}
+          progress={progress}
+          translateCount={translateCount}
+          failedCount={failedCount}
+          error={error}
+          skipManualEdits={skipManualEdits}
+          manualEditCount={manualEditCount}
+          translatedCount={translatedCount}
+          bulkActionMessage={bulkActionMessage}
+          confirmRetranslateOpen={confirmRetranslateOpen}
+          onRetranslateAll={handleRetranslateAll}
+          onSetConfirmRetranslateOpen={setConfirmRetranslateOpen}
+          onSetSkipManualEdits={setSkipManualEdits}
+          onClearError={() => setError(null)}
+          onClearTranslateCount={() => setTranslateCount(0)}
+          onClearBulkActionMessage={() => setBulkActionMessage(null)}
+        />
+      )}
+    </Stack>
   );
 }

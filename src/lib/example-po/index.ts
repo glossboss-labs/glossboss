@@ -169,7 +169,7 @@ export function buildExamplePoWordPressUrls(targetLanguage: TargetLanguage | nul
             break;
           default:
             locales.add(targetLanguage.toLowerCase());
-            locales.add(targetLanguage.split('-')[0].toLowerCase());
+            locales.add(targetLanguage.split('-')[0]!.toLowerCase());
             break;
         }
 

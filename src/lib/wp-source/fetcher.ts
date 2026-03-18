@@ -67,10 +67,10 @@ async function readEdgeError(response: Response): Promise<string> {
 
 function extractVersionFromError(message: string): string | null {
   const pluginMatch = message.match(/\/tags\/([^/]+)\//);
-  if (pluginMatch) return pluginMatch[1];
+  if (pluginMatch) return pluginMatch[1]!;
 
   const themeMatch = message.match(/themes\.svn\.wordpress\.org\/[^/]+\/([^/]+)\//);
-  return themeMatch ? themeMatch[1] : null;
+  return themeMatch ? themeMatch[1]! : null;
 }
 
 async function findLegacySourceInBatches(

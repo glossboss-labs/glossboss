@@ -13,12 +13,14 @@ import type { NotificationRow } from '@/lib/notifications/types';
 
 export function useNotifications() {
   const userId = useAuthStore((s) => s.user?.id);
-  const fetch = useNotificationsStore((s) => s.fetch);
-  const addNotification = useNotificationsStore((s) => s.addNotification);
-  const reset = useNotificationsStore((s) => s.reset);
 
   useEffect(() => {
     if (!userId || !isCloudBackendConfigured()) return;
+
+    // Access store methods via getState() so they don't need to be in the
+    // dependency array — these are stable references on the store object,
+    // but subscribing to them via selectors would cause unnecessary re-renders.
+    const { fetch, addNotification, reset } = useNotificationsStore.getState();
 
     // Initial fetch
     void fetch();
@@ -45,5 +47,5 @@ export function useNotifications() {
       void client.removeChannel(channel);
       reset();
     };
-  }, [userId, fetch, addNotification, reset]);
+  }, [userId]);
 }

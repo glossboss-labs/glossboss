@@ -1,6 +1,5 @@
-#!/usr/bin/env bun
-
 import { cpSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import { homedir, tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 
@@ -11,18 +10,11 @@ const FILES_TO_SYNC = ['README.md', 'SKILL.md', 'Uncodixfy.md'] as const;
 const DIRS_TO_SYNC = ['images'] as const;
 
 function run(command: string[], cwd?: string): string {
-  const proc = Bun.spawnSync(command, {
+  return execFileSync(command[0], command.slice(1), {
     cwd,
-    stderr: 'pipe',
-    stdout: 'pipe',
-  });
-
-  if (proc.exitCode !== 0) {
-    const stderr = new TextDecoder().decode(proc.stderr).trim();
-    throw new Error(stderr || `Command failed: ${command.join(' ')}`);
-  }
-
-  return new TextDecoder().decode(proc.stdout).trim();
+    encoding: 'utf8',
+    stdio: ['pipe', 'pipe', 'pipe'],
+  }).trim();
 }
 
 function main() {

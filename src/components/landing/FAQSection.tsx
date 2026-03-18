@@ -32,7 +32,7 @@ const faqs = [
   {
     q: msgid('Is my data safe?'),
     a: msgid(
-      'GlossBoss uses no tracking cookies and is fully GDPR compliant. Files opened in the local editor are processed entirely in your browser and never sent to our servers. Cloud projects are stored in Supabase with encrypted credentials. The entire codebase is open source for inspection.',
+      'GlossBoss uses no cookies and collects no personal data for analytics — not even your email or IP address. Files opened in the local editor are processed entirely in your browser and never sent to our servers. Cloud projects are stored in Supabase with encrypted credentials. The entire codebase is open source for inspection.',
     ),
   },
   {

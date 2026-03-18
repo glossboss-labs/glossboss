@@ -5,6 +5,8 @@
  * Used by the projects API and cloud storage adapter.
  */
 
+import type { TranslationProviderId } from '@/lib/translation/types';
+
 /** Row shape for the `projects` table */
 export interface ProjectRow {
   id: string;
@@ -77,6 +79,17 @@ export interface ProjectLanguageRow {
   repo_branch: string | null;
   repo_file_path: string | null;
   repo_default_branch: string | null;
+  glossary_source: 'wordpress' | 'repo' | 'url' | null;
+  glossary_url: string | null;
+  glossary_repo_provider: 'github' | 'gitlab' | null;
+  glossary_repo_owner: string | null;
+  glossary_repo_name: string | null;
+  glossary_repo_branch: string | null;
+  glossary_repo_file_path: string | null;
+  glossary_repo_default_branch: string | null;
+  glossary_enforcement: boolean;
+  translation_provider: TranslationProviderId | null;
+  translation_instructions: string;
   stats_total: number;
   stats_translated: number;
   stats_fuzzy: number;
@@ -89,6 +102,7 @@ export interface ProjectLanguageRow {
 export type ProjectLanguageInsert = Omit<
   ProjectLanguageRow,
   | 'id'
+  | 'glossary_enforcement'
   | 'stats_total'
   | 'stats_translated'
   | 'stats_fuzzy'
@@ -111,6 +125,17 @@ export type ProjectLanguageUpdate = Partial<
     | 'repo_branch'
     | 'repo_file_path'
     | 'repo_default_branch'
+    | 'glossary_source'
+    | 'glossary_url'
+    | 'glossary_repo_provider'
+    | 'glossary_repo_owner'
+    | 'glossary_repo_name'
+    | 'glossary_repo_branch'
+    | 'glossary_repo_file_path'
+    | 'glossary_repo_default_branch'
+    | 'glossary_enforcement'
+    | 'translation_provider'
+    | 'translation_instructions'
   >
 >;
 

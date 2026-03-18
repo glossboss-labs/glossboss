@@ -51,6 +51,7 @@ import {
 } from '@/components/glossary/constants';
 import type { Glossary } from '@/lib/glossary/types';
 import { useTranslation } from '@/lib/app-language';
+import { renderFlagOption } from '@/components/ui';
 import {
   getActiveTranslationProvider,
   getTranslationProviderLabel,
@@ -391,6 +392,7 @@ export function GlossaryPanel({
                   w={200}
                   size="xs"
                   nothingFoundMessage={t('Type a custom locale code')}
+                  renderOption={renderFlagOption}
                 />
 
                 {glossary && (

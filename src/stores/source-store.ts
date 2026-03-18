@@ -4,6 +4,7 @@
 
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
+import { SOURCE_STORE_KEY } from '@/lib/constants/storage-keys';
 import type {
   ParsedReference,
   WordPressPluginTranslationTrack,
@@ -17,6 +18,13 @@ import {
   clearCache,
 } from '@/lib/wp-source/fetcher';
 import { msgid } from '@/lib/app-language';
+import {
+  getEffectiveSlug,
+  getEffectiveProjectType,
+  getEffectiveRelease,
+} from '@/lib/wp-source/effective-project';
+
+export { getEffectiveSlug, getEffectiveProjectType, getEffectiveRelease };
 
 export interface SourceState {
   projectType: WordPressProjectType | null;
@@ -60,7 +68,7 @@ export interface SourceActions {
   clearSource: () => void;
 }
 
-const STORAGE_KEY = 'glossboss-source-store';
+const STORAGE_KEY = SOURCE_STORE_KEY;
 const STORAGE_VERSION = 2;
 
 const initialState: SourceState = {
@@ -94,21 +102,6 @@ function resetProjectData(set: (value: Partial<SourceState>) => void) {
     resolvedBasePath: null,
     activeReference: null,
   });
-}
-
-export function getEffectiveSlug(state: SourceState): string | null {
-  return state.projectSlug || state.autoDetectedSlug;
-}
-
-export function getEffectiveProjectType(state: SourceState): WordPressProjectType | null {
-  return state.projectType || state.autoDetectedProjectType;
-}
-
-export function getEffectiveRelease(state: SourceState): string | null {
-  if (getEffectiveProjectType(state) === 'plugin' && state.pluginTranslationTrack === 'dev') {
-    return null;
-  }
-  return state.selectedRelease ?? state.projectVersion;
 }
 
 export const useSourceStore = create<SourceState & SourceActions>()(

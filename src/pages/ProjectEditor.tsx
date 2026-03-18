@@ -37,7 +37,10 @@ import { setStorageAdapter } from '@/lib/cloud/adapter';
 import { useRepoSyncStore } from '@/stores/repo-sync-store';
 import { useProjectRole } from '@/hooks/use-project-role';
 import { useRepoDbSync } from '@/hooks/use-repo-db-sync';
-import { fetchWPGlossary } from '@/lib/glossary/wp-fetcher';
+import { loadGlossaryForLanguage } from '@/lib/glossary/loader';
+import { TranslationProviderOverride } from '@/hooks/use-translation-provider';
+import { getOrgSettings } from '@/lib/organizations/api';
+import type { OrgSettingsRow } from '@/lib/organizations/types';
 import type { ReviewEntryState } from '@/lib/review';
 
 export default function ProjectEditor() {
@@ -116,10 +119,10 @@ export default function ProjectEditor() {
         const mtMeta = new Map<string, MachineTranslationMeta>();
         const mtIds = new Set<string>();
         for (let i = 0; i < dbEntries.length; i++) {
-          const meta = dbEntryToMTMeta(dbEntries[i]);
+          const meta = dbEntryToMTMeta(dbEntries[i]!);
           if (meta) {
-            mtMeta.set(poEntries[i].id, meta);
-            mtIds.add(poEntries[i].id);
+            mtMeta.set(poEntries[i]!.id, meta);
+            mtIds.add(poEntries[i]!.id);
           }
         }
         if (mtMeta.size > 0) {
@@ -132,9 +135,9 @@ export default function ProjectEditor() {
         // Restore review entries
         const reviewMap = new Map<string, ReviewEntryState>();
         for (let i = 0; i < dbEntries.length; i++) {
-          const review = dbEntryToReviewState(dbEntries[i]);
+          const review = dbEntryToReviewState(dbEntries[i]!);
           if (review.status !== 'draft' || review.comments.length > 0) {
-            reviewMap.set(poEntries[i].id, review);
+            reviewMap.set(poEntries[i]!.id, review);
           }
         }
         if (reviewMap.size > 0) {
@@ -229,6 +232,19 @@ function ProjectEditorLoaded({
   // Sync repo connection changes back to the database
   useRepoDbSync(language.id);
 
+  // Load org settings for the cascade (org → project → user)
+  const [orgSettings, setOrgSettings] = useState<OrgSettingsRow | null>(null);
+  useEffect(() => {
+    if (!project.organization_id) return;
+    let cancelled = false;
+    getOrgSettings(project.organization_id).then((settings) => {
+      if (!cancelled) setOrgSettings(settings);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [project.organization_id]);
+
   const {
     containerWidth,
     headerProps,
@@ -240,82 +256,103 @@ function ProjectEditorLoaded({
     loadGlossaryForLocale,
   } = useIndexPageController({ readOnly: !isContributor });
 
-  // Auto-load glossary for the project language
+  // Keep a stable ref so the effect only re-runs when glossary config changes,
+  // not every time the callback identity shifts (it depends on `entries`).
+  const loadGlossaryRef = useRef(loadGlossaryForLocale);
   useEffect(() => {
-    if (!language.locale || !loadGlossaryForLocale) return;
+    loadGlossaryRef.current = loadGlossaryForLocale;
+  });
+
+  // Auto-load glossary based on the DB-configured source.
+  // Only loads when glossary_source is set (null = no glossary).
+  useEffect(() => {
+    if (!language.glossary_source) return;
+
     let cancelled = false;
 
-    fetchWPGlossary(language.locale).then((result) => {
+    loadGlossaryForLanguage(language).then((result) => {
       if (!cancelled && result.glossary) {
-        void loadGlossaryForLocale(result.glossary);
+        void loadGlossaryRef.current(result.glossary);
       }
     });
 
     return () => {
       cancelled = true;
     };
-  }, [language.locale, loadGlossaryForLocale]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only re-run when glossary config fields change, not the full language object
+  }, [
+    language.glossary_source,
+    language.glossary_url,
+    language.glossary_repo_file_path,
+    language.locale,
+  ]);
 
   return (
-    <Box style={{ minHeight: '100vh', position: 'relative' }}>
-      <IndexPageNotifications {...notificationsProps} />
+    <TranslationProviderOverride
+      provider={language.translation_provider}
+      orgDefaultProvider={orgSettings?.default_translation_provider ?? null}
+      orgEnforced={orgSettings?.enforce_translation_provider ?? false}
+    >
+      <Box style={{ minHeight: '100vh', position: 'relative' }}>
+        <IndexPageNotifications {...notificationsProps} />
 
-      <Box component="main">
-        <Container
-          size={containerWidth === '100%' ? undefined : containerWidth}
-          fluid={containerWidth === '100%'}
-          py="xl"
-        >
-          <Stack gap="lg">
-            <EditorHeader
-              {...headerProps}
-              projectId={project.id}
-              onOpenRepoSync={isManager ? headerProps.onOpenRepoSync : undefined}
-              onPushToRepo={isManager ? headerProps.onPushToRepo : undefined}
-            />
-
-            {/* Cloud project breadcrumb + presence */}
-            <Group gap={6} align="center" justify="space-between" style={{ marginTop: -8 }}>
-              <Group gap={6} align="center">
-                <Text
-                  component={Link}
-                  to={`/projects/${project.id}`}
-                  size="sm"
-                  style={{
-                    color: 'var(--gb-text-secondary)',
-                    textDecoration: 'none',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 4,
-                  }}
-                >
-                  <ArrowLeft size={14} />
-                  {project.name}
-                </Text>
-                <Text size="xs" style={{ color: 'var(--gb-text-tertiary)' }}>
-                  · {language.locale}
-                </Text>
-              </Group>
-              <PresenceAvatars />
-            </Group>
-
-            <IndexPageBanners {...bannersProps} />
-            {workspaceProps ? (
-              <EditorWorkspace
-                {...workspaceProps}
-                broadcastEntryUpdate={broadcastEntryUpdate}
-                broadcastLock={broadcastLock}
-                broadcastUnlock={broadcastUnlock}
-                broadcastReviewEvent={broadcastReviewEvent}
+        <Box component="main">
+          <Container
+            size={containerWidth === '100%' ? undefined : containerWidth}
+            fluid={containerWidth === '100%'}
+            py="xl"
+          >
+            <Stack gap="lg">
+              <EditorHeader
+                {...headerProps}
+                projectId={project.id}
+                onOpenRepoSync={isManager ? headerProps.onOpenRepoSync : undefined}
+                onPushToRepo={isManager ? headerProps.onPushToRepo : undefined}
               />
-            ) : (
-              <EmptyState {...emptyStateProps} />
-            )}
-          </Stack>
-        </Container>
-      </Box>
 
-      <IndexPageDialogs {...dialogsProps} />
-    </Box>
+              {/* Cloud project breadcrumb + presence */}
+              <Group gap={6} align="center" justify="space-between" style={{ marginTop: -8 }}>
+                <Group gap={6} align="center">
+                  <Text
+                    component={Link}
+                    to={`/projects/${project.id}`}
+                    size="sm"
+                    style={{
+                      color: 'var(--gb-text-secondary)',
+                      textDecoration: 'none',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 4,
+                    }}
+                  >
+                    <ArrowLeft size={14} />
+                    {project.name}
+                  </Text>
+                  <Text size="xs" style={{ color: 'var(--gb-text-tertiary)' }}>
+                    · {language.locale}
+                  </Text>
+                </Group>
+                <PresenceAvatars />
+              </Group>
+
+              <IndexPageBanners {...bannersProps} />
+              {workspaceProps ? (
+                <EditorWorkspace
+                  {...workspaceProps}
+                  broadcastEntryUpdate={broadcastEntryUpdate}
+                  broadcastLock={broadcastLock}
+                  broadcastUnlock={broadcastUnlock}
+                  broadcastReviewEvent={broadcastReviewEvent}
+                />
+              ) : (
+                <EmptyState {...emptyStateProps} />
+              )}
+            </Stack>
+          </Container>
+        </Box>
+
+        <IndexPageDialogs {...dialogsProps} />
+      </Box>
+    </TranslationProviderOverride>
   );
 }

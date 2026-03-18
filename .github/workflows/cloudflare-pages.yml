@@ -39,7 +39,7 @@ jobs:
               - 'vite.config.ts'
               - 'tsconfig*.json'
               - 'package.json'
-              - 'bun.lock'
+              - 'pnpm-lock.yaml'
 
   deploy:
     runs-on: ubuntu-latest
@@ -51,13 +51,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          bun-version: latest
+          node-version: '22'
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: bun install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Validate Vite env for deploy
         if: github.event_name != 'pull_request'
@@ -77,7 +81,7 @@ jobs:
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
           VITE_TURNSTILE_SITE_KEY: ${{ secrets.VITE_TURNSTILE_SITE_KEY }}
           VITE_POSTHOG_KEY: ${{ secrets.VITE_POSTHOG_KEY }}
-        run: bun run build
+        run: pnpm run build
 
       - name: Deploy to Cloudflare Pages
         id: deploy
@@ -93,7 +97,7 @@ jobs:
           fi
 
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            DEPLOY_OUTPUT="$(bunx wrangler pages deploy dist --project-name "$PAGES_PROJECT" --branch "$DEPLOY_BRANCH" 2>&1 | tee /dev/stderr)"
+            DEPLOY_OUTPUT="$(pnpx wrangler pages deploy dist --project-name "$PAGES_PROJECT" --branch "$DEPLOY_BRANCH" 2>&1 | tee /dev/stderr)"
             set +e
             DEPLOY_URL="$(printf '%s\n' "$DEPLOY_OUTPUT" | grep -Eo 'https://[^[:space:]]+\.pages\.dev' | tail -n1)"
             DEPLOY_URL_STATUS=$?
@@ -116,7 +120,7 @@ jobs:
 
             echo "preview_url=$DEPLOY_URL" >> "$GITHUB_OUTPUT"
           else
-            bunx wrangler pages deploy dist --project-name "$PAGES_PROJECT" --branch "$DEPLOY_BRANCH"
+            pnpx wrangler pages deploy dist --project-name "$PAGES_PROJECT" --branch "$DEPLOY_BRANCH"
           fi
 
       - name: Comment PR with preview link

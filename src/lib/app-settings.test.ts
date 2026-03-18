@@ -14,7 +14,7 @@ import { getGeminiSettings, isGeminiPersistEnabled } from './gemini';
 import { getActiveTranslationProvider } from './translation';
 
 const baseSnapshot: AppSettingsSnapshot = {
-  translationProvider: 'gemini',
+  translationProvider: 'google',
   deepl: {
     apiKey: 'deepl-key',
     apiType: 'pro',
@@ -83,7 +83,7 @@ describe('app settings', () => {
     );
 
     expect(parseAppSettingsFile(content)).toMatchObject({
-      translationProvider: 'gemini',
+      translationProvider: 'google',
       deepl: {
         apiType: 'pro',
         formality: 'prefer_more',
@@ -230,7 +230,7 @@ describe('app settings', () => {
     expect(isPersistEnabled()).toBe(true);
     expect(isAzurePersistEnabled()).toBe(true);
     expect(isGeminiPersistEnabled()).toBe(true);
-    expect(getActiveTranslationProvider()).toBe('gemini');
+    expect(getActiveTranslationProvider()).toBe('google');
     expect(applied.deepl.persistKey).toBe(true);
     expect(applied.azure.persistKey).toBe(true);
     expect(applied.gemini.persistKey).toBe(true);

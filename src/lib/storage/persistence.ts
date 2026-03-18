@@ -5,8 +5,10 @@
  * Used by Zustand persist middleware and for manual state management.
  */
 
+import { EDITOR_STATE_KEY } from '@/lib/constants/storage-keys';
+
 /** Storage key for editor state */
-export const STORAGE_KEY = 'po-editor-state';
+export const STORAGE_KEY = EDITOR_STATE_KEY;
 
 /** Storage version for migration support */
 export const STORAGE_VERSION = 1;
@@ -38,11 +40,14 @@ export function getStorageUsage(): number {
   return total * 2; // UTF-16 = 2 bytes per char
 }
 
+/** Approximate localStorage limit in bytes (5 MB, typical across browsers). */
+const STORAGE_LIMIT_BYTES = 5 * 1024 * 1024;
+
 /**
  * Get storage limit (approximate, varies by browser)
  */
 export function getStorageLimit(): number {
-  return 5 * 1024 * 1024; // 5MB typical limit
+  return STORAGE_LIMIT_BYTES;
 }
 
 /**
