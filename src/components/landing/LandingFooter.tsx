@@ -98,6 +98,19 @@ export function LandingFooter({ currentLang = 'en' }: { currentLang?: AppLanguag
             &copy; {new Date().getFullYear()} {t('GlossBoss Labs.')} {t('All rights reserved.')}
           </p>
 
+          <a
+            href="https://www.saashub.com/glossboss?utm_source=badge&utm_campaign=badge&utm_content=glossboss&badge_variant=color&badge_kind=approved"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              src="https://cdn-b.saashub.com/img/badges/approved-color.png?v=1"
+              alt="GlossBoss on SaaSHub"
+              className="h-8"
+              loading="lazy"
+            />
+          </a>
+
           <LanguageSwitcher currentLang={currentLang} size="base" />
 
           {/* Crawlable language links for SEO (visually hidden) */}
