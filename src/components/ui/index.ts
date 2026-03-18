@@ -13,6 +13,7 @@ export { TranslationStatusBadge, ReviewStatusBadge } from './StatusBadge';
 export { StatusDot } from './StatusDot';
 export { PageLoader } from './PageLoader';
 export { PageError } from './PageError';
+export { ProblemPage } from './ProblemPage';
 export { CollapsibleSection } from './CollapsibleSection';
 export { CountryFlag } from './CountryFlag';
 export { GlossBossLogo } from './GlossBossLogo';

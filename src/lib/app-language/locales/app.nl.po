@@ -470,7 +470,9 @@ msgstr "Afrikaans"
 
 #: src/components/settings/TranslationSection.tsx:376
 msgid "After you get a key, expand the provider card below and paste it in."
-msgstr "Zodra je een sleutel hebt, klap de aanbiederkaart hieronder open en plak hem erin."
+msgstr ""
+"Zodra je een sleutel hebt, klap de aanbiederkaart hieronder open en plak hem"
+" erin."
 
 #: src/components/onboarding/RoleStep.tsx:36
 msgid "Agency or studio"
@@ -772,7 +774,9 @@ msgstr "Basisinformatie over je organisatie."
 msgid ""
 "Basic information about your project. The visibility setting controls who ca"
 "n see and contribute."
-msgstr "Basisinformatie over je project. De zichtbaarheidsinstelling bepaalt wie het kan zien en eraan kan bijdragen."
+msgstr ""
+"Basisinformatie over je project. De zichtbaarheidsinstelling bepaalt wie het"
+" kan zien en eraan kan bijdragen."
 
 #: src/components/editor/HeaderEditor.tsx:58
 msgid "Basque"
@@ -1024,7 +1028,10 @@ msgstr "Kies een bron om je cloudproject van te maken."
 msgid ""
 "Choose how you want to be notified about project activity. You can set per-p"
 "roject overrides in each project's notification settings."
-msgstr "Kies hoe je op de hoogte gehouden wilt worden van projectactiviteit. Je kunt per project afwijkende instellingen configureren in de meldingsinstellingen van elk project."
+msgstr ""
+"Kies hoe je op de hoogte gehouden wilt worden van projectactiviteit. Je kunt"
+" per project afwijkende instellingen configureren in de meldingsinstellingen"
+" van elk project."
 
 #: src/components/editor/HeaderEditor.tsx:504
 msgid "Choose the WordPress project type and slug used for source links."
@@ -1215,7 +1222,9 @@ msgstr "Samenwerking"
 
 #: src/components/editor/EmptyState.tsx:249
 msgid "Collaborators work under the project owner's plan — no subscription needed."
-msgstr "Medewerkers werken onder het plan van de projecteigenaar — geen abonnement nodig."
+msgstr ""
+"Medewerkers werken onder het plan van de projecteigenaar — geen abonnement n"
+"odig."
 
 #: src/components/AppSidebar.tsx:410
 msgid "Collapse sidebar"
@@ -1312,7 +1321,9 @@ msgstr "GitHub verbinden"
 msgid ""
 "Connect a free API key from DeepL, Azure, or Gemini to unlock AI translation"
 "."
-msgstr "Koppel een gratis API-sleutel van DeepL, Azure of Gemini om AI-vertaling te ontgrendelen."
+msgstr ""
+"Koppel een gratis API-sleutel van DeepL, Azure of Gemini om AI-vertaling te "
+"ontgrendelen."
 
 #: src/components/settings/CustomProviderCard.tsx:178
 msgid ""
@@ -1528,6 +1539,10 @@ msgstr "Huidig"
 #: src/lib/review/index.ts:50
 msgid "Current editor"
 msgstr "Huidige editor"
+
+#: src/components/AppErrorBoundary.tsx:70
+msgid "Current path"
+msgstr ""
 
 #: src/components/settings/BillingSection.tsx:289
 #: src/components/settings/BillingSection.tsx:442
@@ -1893,7 +1908,9 @@ msgstr ""
 msgid ""
 "Drop a translation file here to get started. Works with .po, .pot, and .json"
 " — the standard formats for WordPress, React, and most i18n frameworks."
-msgstr "Sleep hier een vertaalbestand om te beginnen. Werkt met .po, .pot en .json — de standaardformaten voor WordPress, React en de meeste i18n-frameworks."
+msgstr ""
+"Sleep hier een vertaalbestand om te beginnen. Werkt met .po, .pot en .json —"
+" de standaardformaten voor WordPress, React en de meeste i18n-frameworks."
 
 #: src/pages/index/IndexPageNotifications.tsx:66
 msgid "Drop it like it's hot"
@@ -1918,7 +1935,9 @@ msgstr "Nederlands (Nederland)"
 msgid ""
 "Each language is a translation target. Add languages here, then open them in"
 " the editor to translate."
-msgstr "Elke taal is een vertaaldoel. Voeg hier talen toe en open ze vervolgens in de editor om te vertalen."
+msgstr ""
+"Elke taal is een vertaaldoel. Voeg hier talen toe en open ze vervolgens in d"
+"e editor om te vertalen."
 
 #: src/components/editor/EditorWorkspace.tsx:144
 #: src/components/settings/AccountSection.tsx:245
@@ -2148,6 +2167,10 @@ msgstr "Wissing"
 #: src/components/editor/EditorInspector.tsx:77
 msgid "Error"
 msgstr "Fout"
+
+#: src/components/AppErrorBoundary.tsx:71
+msgid "Error details"
+msgstr ""
 
 #: src/components/editor/TranslateButton.tsx:230
 #: src/components/editor/TranslateButton.tsx:251
@@ -3045,7 +3068,10 @@ msgid ""
 "Glossaries ensure consistent translations for key terms. Load one from WordP"
 "ress.org or upload your own CSV. Cloud projects have their own glossary sett"
 "ings in Project Settings."
-msgstr "Glossaria zorgen voor consistente vertalingen van belangrijke termen. Laad er een van WordPress.org of upload je eigen CSV. Cloudprojecten hebben hun eigen glossary-instellingen in Projectinstellingen."
+msgstr ""
+"Glossaria zorgen voor consistente vertalingen van belangrijke termen. Laad e"
+"r een van WordPress.org of upload je eigen CSV. Cloudprojecten hebben hun ei"
+"gen glossary-instellingen in Projectinstellingen."
 
 #: src/components/SettingsModal.tsx:117
 #: src/components/editor/GlossaryPanel.tsx:307
@@ -3154,11 +3180,22 @@ msgstr "Glossary-bron: {{source}}"
 msgid "Glossary: {count} terms ({locale})"
 msgstr "Glossary: {count} termen ({locale})"
 
+#: src/pages/NotFoundPage.tsx:50
+msgid "Go back"
+msgstr ""
+
+#: src/components/AppErrorBoundary.tsx:62
+#: src/pages/NotFoundPage.tsx:24
+msgid "Go home"
+msgstr ""
+
 #: src/components/repo-sync/RepoSyncModal.tsx:926
 msgid "Go to Connect"
 msgstr "Ga naar Verbinden"
 
+#: src/components/AppErrorBoundary.tsx:62
 #: src/pages/Invite.tsx:121
+#: src/pages/NotFoundPage.tsx:24
 msgid "Go to dashboard"
 msgstr "Ga naar dashboard"
 
@@ -3879,14 +3916,20 @@ msgid ""
 "Manage who has access. Roles: Admin (full control), Manager (settings + invi"
 "tes), Translator (translate), Reviewer (translate + approve), Viewer (read-o"
 "nly)."
-msgstr "Beheer wie toegang heeft. Rollen: Beheerder (volledige controle), Manager (instellingen + uitnodigingen), Vertaler (vertalen), Reviewer (vertalen + goedkeuren), Lezer (alleen-lezen)."
+msgstr ""
+"Beheer wie toegang heeft. Rollen: Beheerder (volledige controle), Manager (i"
+"nstellingen + uitnodigingen), Vertaler (vertalen), Reviewer (vertalen + goed"
+"keuren), Lezer (alleen-lezen)."
 
 #: src/pages/OrgSettingsPage.tsx:481
 msgid ""
 "Manage your organization's members. Roles: Owner (full control, cannot be re"
 "moved), Admin (manage members and settings), Member (access organization pro"
 "jects)."
-msgstr "Beheer de leden van je organisatie. Rollen: Eigenaar (volledige controle, kan niet worden verwijderd), Beheerder (leden en instellingen beheren), Lid (toegang tot organisatieprojecten)."
+msgstr ""
+"Beheer de leden van je organisatie. Rollen: Eigenaar (volledige controle, ka"
+"n niet worden verwijderd), Beheerder (leden en instellingen beheren), Lid (t"
+"oegang tot organisatieprojecten)."
 
 #: src/components/onboarding/RoleStep.tsx:31
 msgid "Managing a translation team"
@@ -4103,7 +4146,9 @@ msgstr "Geen creditcard vereist"
 msgid ""
 "No credit card required. The local editor is free forever — no account neede"
 "d."
-msgstr "Geen creditcard nodig. De lokale editor is voor altijd gratis — geen account nodig."
+msgstr ""
+"Geen creditcard nodig. De lokale editor is voor altijd gratis — geen account"
+" nodig."
 
 #: src/components/editor/EditorTable.tsx:945
 msgid "No entries match the current filters."
@@ -4564,7 +4609,9 @@ msgstr "Vertaalinstellingen van de organisatie opgeslagen."
 msgid ""
 "Organization-wide translation defaults. These apply to all projects unless o"
 "verridden at the project level."
-msgstr "Organisatiebrede vertaalstandaarden. Deze gelden voor alle projecten, tenzij overschreven op projectniveau."
+msgstr ""
+"Organisatiebrede vertaalstandaarden. Deze gelden voor alle projecten, tenzij"
+" overschreven op projectniveau."
 
 #: src/pages/Dashboard.tsx:402
 msgid "Organizations"
@@ -4574,7 +4621,9 @@ msgstr "Organisaties"
 msgid ""
 "Organizations let you group projects, share API keys, and manage billing for"
 " your team. You don't need one to get started."
-msgstr "Met organisaties kun je projecten groeperen, API-sleutels delen en facturering voor je team beheren. Je hebt er geen nodig om te beginnen."
+msgstr ""
+"Met organisaties kun je projecten groeperen, API-sleutels delen en factureri"
+"ng voor je team beheren. Je hebt er geen nodig om te beginnen."
 
 #: src/components/onboarding/AttributionStep.tsx:27
 msgid "Other"
@@ -4608,7 +4657,9 @@ msgstr "Overschrijf de vertaalaanbieder per taal. Configureer API-sleutels in"
 msgid ""
 "Override your global notification preferences for this project. Click to cyc"
 "le: inherit → on → off."
-msgstr "Overschrijf je globale meldingsvoorkeuren voor dit project. Klik om te wisselen: overnemen → aan → uit."
+msgstr ""
+"Overschrijf je globale meldingsvoorkeuren voor dit project. Klik om te wisse"
+"len: overnemen → aan → uit."
 
 #: src/components/editor/EmptyState.tsx:116
 msgid "PO file URL"
@@ -4629,6 +4680,14 @@ msgstr "PR-titel"
 #: src/components/landing/ProductShowcase.tsx:516
 msgid "Page 1 of 1"
 msgstr "Pagina 1 van 1"
+
+#: src/pages/NotFoundPage.tsx:39
+msgid "Page not found"
+msgstr ""
+
+#: src/pages/NotFoundPage.tsx:16
+msgid "Page not found - GlossBoss"
+msgstr ""
 
 #: src/pages/PrivacyPage.tsx:88
 msgid "Page views"
@@ -4752,7 +4811,9 @@ msgstr ""
 msgid ""
 "Pick any provider below — all offer free tiers, and setup takes about 2 minu"
 "tes."
-msgstr "Kies een aanbieder hieronder — allemaal bieden ze gratis opties, en instellen duurt ongeveer 2 minuten."
+msgstr ""
+"Kies een aanbieder hieronder — allemaal bieden ze gratis opties, en instelle"
+"n duurt ongeveer 2 minuten."
 
 #: src/lib/qa/types.ts:40
 msgid "Placeholder parity"
@@ -5110,7 +5171,9 @@ msgstr "Projecten in deze organisatie gebruiken standaard deze aanbieder."
 msgid ""
 "Projects store your translations in the cloud — collaborate with your team a"
 "nd push to GitHub or GitLab."
-msgstr "Projecten slaan je vertalingen op in de cloud — werk samen met je team en push naar GitHub of GitLab."
+msgstr ""
+"Projecten slaan je vertalingen op in de cloud — werk samen met je team en pu"
+"sh naar GitHub of GitLab."
 
 #: src/components/feedback/FeedbackModal.tsx:391
 msgid "Proposed solution"
@@ -5307,6 +5370,10 @@ msgstr "Laat los om je vertaalbestand te laden"
 msgid "Release {{release}}"
 msgstr "Release {{release}}"
 
+#: src/components/AppErrorBoundary.tsx:81
+msgid "Reload page"
+msgstr ""
+
 #: src/components/settings/CustomProviderCard.tsx:185
 #: src/components/settings/LlmProviderCard.tsx:256
 #: src/components/settings/SpeechSection.tsx:403
@@ -5436,6 +5503,10 @@ msgid "Request timed out. Try downloading the file and uploading it directly."
 msgstr ""
 "De verbinding is verlopen. Probeer het bestand te downloaden en direct te up"
 "loaden."
+
+#: src/pages/NotFoundPage.tsx:43
+msgid "Requested path"
+msgstr ""
 
 #: src/pages/TermsPage.tsx:71
 msgid "Resell access to the Service without written permission."
@@ -6168,6 +6239,14 @@ msgstr "Slug"
 msgid "Social media"
 msgstr "Sociale media"
 
+#: src/components/AppErrorBoundary.tsx:67
+msgid "Something went wrong"
+msgstr ""
+
+#: src/components/AppErrorBoundary.tsx:54
+msgid "Something went wrong - GlossBoss"
+msgstr ""
+
 #: src/components/editor/FilterToolbar.tsx:619
 msgid "Sort entries"
 msgstr "Items sorteren"
@@ -6626,6 +6705,12 @@ msgstr "De URL moet beginnen met https://"
 msgid "The WordPress.org translation export could not be parsed."
 msgstr "De WordPress.org vertaalexport kon niet worden verwerkt."
 
+#: src/components/AppErrorBoundary.tsx:68
+msgid ""
+"The app ran into an unexpected error while loading this page. Reload and try"
+" again."
+msgstr ""
+
 #: src/pages/LicensePage.tsx:48
 msgid "The full license text for this deployment is available in the local"
 msgstr ""
@@ -6636,7 +6721,9 @@ msgstr ""
 msgid ""
 "The local editor is free forever — upload a .po file and start translating, "
 "no account needed."
-msgstr "De lokale editor is voor altijd gratis — upload een .po-bestand en begin met vertalen, geen account nodig."
+msgstr ""
+"De lokale editor is voor altijd gratis — upload een .po-bestand en begin met"
+" vertalen, geen account nodig."
 
 #: src/components/landing/PricingSection.tsx:151
 msgid ""
@@ -6719,7 +6806,9 @@ msgstr ""
 msgid ""
 "These settings apply to the local editor. Cloud projects can override the pr"
 "ovider in Project Settings."
-msgstr "Deze instellingen gelden voor de lokale editor. Cloudprojecten kunnen de aanbieder overschrijven in Projectinstellingen."
+msgstr ""
+"Deze instellingen gelden voor de lokale editor. Cloudprojecten kunnen de aan"
+"bieder overschrijven in Projectinstellingen."
 
 #: src/pages/TermsPage.tsx:254
 msgid ""
@@ -6845,7 +6934,9 @@ msgstr "Naar"
 
 #: src/components/editor/ProviderPicker.tsx:77
 msgid "To start translating, connect a free API key — it takes about 2 minutes."
-msgstr "Om te beginnen met vertalen, koppel een gratis API-sleutel — het duurt ongeveer 2 minuten."
+msgstr ""
+"Om te beginnen met vertalen, koppel een gratis API-sleutel — het duurt ongev"
+"eer 2 minuten."
 
 #: src/pages/TermsPage.tsx:199
 msgid ""
@@ -6891,7 +6982,9 @@ msgstr "Vertaal \"{{text}}\""
 msgid ""
 "Translate all entries at once using AI. You'll need a free API key from any "
 "provider — head to Settings to set one up."
-msgstr "Vertaal alle items in één keer met AI. Je hebt een gratis API-sleutel van een aanbieder nodig — ga naar Instellingen om er een in te stellen."
+msgstr ""
+"Vertaal alle items in één keer met AI. Je hebt een gratis API-sleutel van ee"
+"n aanbieder nodig — ga naar Instellingen om er een in te stellen."
 
 #: src/components/landing/HowItWorks.tsx:18
 msgid ""
@@ -7208,6 +7301,10 @@ msgstr ""
 "Onder de AGPL moet de beheerder van deze implementatie de bijbehorende bronc"
 "ode beschikbaar stellen aan netwerkgebruikers."
 
+#: src/components/AppErrorBoundary.tsx:66
+msgid "Unexpected error"
+msgstr ""
+
 #: src/components/editor/EditorInspector.tsx:242
 #: src/components/editor/EditorInspector.tsx:243
 #: src/components/editor/editor-table-utils.ts:195
@@ -7389,7 +7486,9 @@ msgstr "Brontaalbestand uploaden…"
 msgid ""
 "Upload your translation files, get AI translations in seconds, and push stra"
 "ight to your repo. No install, no setup — just ship."
-msgstr "Upload je vertaalbestanden, krijg AI-vertalingen in seconden en push direct naar je repo. Geen installatie, geen configuratie — gewoon leveren."
+msgstr ""
+"Upload je vertaalbestanden, krijg AI-vertalingen in seconden en push direct "
+"naar je repo. Geen installatie, geen configuratie — gewoon leveren."
 
 #: src/pages/TermsPage.tsx:224
 msgid ""
@@ -7559,6 +7658,12 @@ msgstr ""
 #: src/pages/PrivacyPage.tsx:85
 msgid "We collect the following analytics data to improve the product:"
 msgstr "We verzamelen de volgende analysegegevens om het product te verbeteren:"
+
+#: src/pages/NotFoundPage.tsx:40
+msgid ""
+"We couldn't find the page you requested. It may have moved, the link may be "
+"out of date, or the URL may be mistyped."
+msgstr ""
 
 #: src/pages/PrivacyPage.tsx:110
 msgid "We honor the"

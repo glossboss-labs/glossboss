@@ -35,6 +35,7 @@ const ProjectInvite = lazy(() => import('@/pages/ProjectInvite'));
 const LicensePage = lazy(() => import('@/pages/LicensePage'));
 const TermsPage = lazy(() => import('@/pages/TermsPage'));
 const PrivacyPage = lazy(() => import('@/pages/PrivacyPage'));
+const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
 const Callback = lazy(() => import('@/pages/auth/Callback'));
 const Onboarding = lazy(() => import('@/pages/auth/Onboarding'));
 const ForgotPassword = lazy(() => import('@/pages/auth/ForgotPassword'));
@@ -143,6 +144,8 @@ export default function App() {
           <Route path="/roadmap" element={<Roadmap />} />
           <Route path="/projects/:id" element={<ProjectDetail />} />
         </Route>
+
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Suspense>
   );

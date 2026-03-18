@@ -1458,6 +1458,10 @@ msgstr ""
 msgid "Current editor"
 msgstr ""
 
+#: src/components/AppErrorBoundary.tsx:70
+msgid "Current path"
+msgstr ""
+
 #: src/components/settings/BillingSection.tsx:289
 #: src/components/settings/BillingSection.tsx:442
 msgid "Current plan"
@@ -2051,6 +2055,10 @@ msgstr ""
 
 #: src/components/editor/EditorInspector.tsx:77
 msgid "Error"
+msgstr ""
+
+#: src/components/AppErrorBoundary.tsx:71
+msgid "Error details"
 msgstr ""
 
 #: src/components/editor/TranslateButton.tsx:230
@@ -2989,11 +2997,22 @@ msgstr ""
 msgid "Glossary: {count} terms ({locale})"
 msgstr ""
 
+#: src/pages/NotFoundPage.tsx:50
+msgid "Go back"
+msgstr ""
+
+#: src/components/AppErrorBoundary.tsx:62
+#: src/pages/NotFoundPage.tsx:24
+msgid "Go home"
+msgstr ""
+
 #: src/components/repo-sync/RepoSyncModal.tsx:926
 msgid "Go to Connect"
 msgstr ""
 
+#: src/components/AppErrorBoundary.tsx:62
 #: src/pages/Invite.tsx:121
+#: src/pages/NotFoundPage.tsx:24
 msgid "Go to dashboard"
 msgstr ""
 
@@ -4419,6 +4438,14 @@ msgstr ""
 msgid "Page 1 of 1"
 msgstr ""
 
+#: src/pages/NotFoundPage.tsx:39
+msgid "Page not found"
+msgstr ""
+
+#: src/pages/NotFoundPage.tsx:16
+msgid "Page not found - GlossBoss"
+msgstr ""
+
 #: src/pages/PrivacyPage.tsx:88
 msgid "Page views"
 msgstr ""
@@ -5076,6 +5103,10 @@ msgstr ""
 msgid "Release {{release}}"
 msgstr ""
 
+#: src/components/AppErrorBoundary.tsx:81
+msgid "Reload page"
+msgstr ""
+
 #: src/components/settings/CustomProviderCard.tsx:185
 #: src/components/settings/LlmProviderCard.tsx:256
 #: src/components/settings/SpeechSection.tsx:403
@@ -5200,6 +5231,10 @@ msgstr ""
 
 #: src/pages/index/useFileLoader.ts:331
 msgid "Request timed out. Try downloading the file and uploading it directly."
+msgstr ""
+
+#: src/pages/NotFoundPage.tsx:43
+msgid "Requested path"
 msgstr ""
 
 #: src/pages/TermsPage.tsx:71
@@ -5909,6 +5944,14 @@ msgstr ""
 msgid "Social media"
 msgstr ""
 
+#: src/components/AppErrorBoundary.tsx:67
+msgid "Something went wrong"
+msgstr ""
+
+#: src/components/AppErrorBoundary.tsx:54
+msgid "Something went wrong - GlossBoss"
+msgstr ""
+
 #: src/components/editor/FilterToolbar.tsx:619
 msgid "Sort entries"
 msgstr ""
@@ -6337,6 +6380,12 @@ msgstr ""
 
 #: src/pages/index/useFileLoader.ts:390
 msgid "The WordPress.org translation export could not be parsed."
+msgstr ""
+
+#: src/components/AppErrorBoundary.tsx:68
+msgid ""
+"The app ran into an unexpected error while loading this page. Reload and try"
+" again."
 msgstr ""
 
 #: src/pages/LicensePage.tsx:48
@@ -6852,6 +6901,10 @@ msgid ""
 "source code available to network users."
 msgstr ""
 
+#: src/components/AppErrorBoundary.tsx:66
+msgid "Unexpected error"
+msgstr ""
+
 #: src/components/editor/EditorInspector.tsx:242
 #: src/components/editor/EditorInspector.tsx:243
 #: src/components/editor/editor-table-utils.ts:195
@@ -7182,6 +7235,12 @@ msgstr ""
 
 #: src/pages/PrivacyPage.tsx:85
 msgid "We collect the following analytics data to improve the product:"
+msgstr ""
+
+#: src/pages/NotFoundPage.tsx:40
+msgid ""
+"We couldn't find the page you requested. It may have moved, the link may be "
+"out of date, or the URL may be mistyped."
 msgstr ""
 
 #: src/pages/PrivacyPage.tsx:110
