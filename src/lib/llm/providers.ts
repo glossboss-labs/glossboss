@@ -7,6 +7,7 @@
  */
 
 import type { LlmProviderId } from '@/lib/translation/types';
+import { TRANSLATION_DEFAULT_TEMPERATURE } from '@/lib/translation/constants';
 
 export interface LlmModelMeta {
   id: string;
@@ -37,7 +38,7 @@ export const LLM_PROVIDERS: LlmProviderMeta[] = [
     ],
     apiKeyUrl: 'https://platform.openai.com/api-keys',
     description: 'OpenAI models for translation. Strong across most languages.',
-    defaultTemperature: 0.2,
+    defaultTemperature: TRANSLATION_DEFAULT_TEMPERATURE,
   },
   {
     id: 'anthropic',
@@ -50,7 +51,7 @@ export const LLM_PROVIDERS: LlmProviderMeta[] = [
     ],
     apiKeyUrl: 'https://console.anthropic.com/settings/keys',
     description: 'Anthropic Claude models. Excellent for nuanced translations.',
-    defaultTemperature: 0.2,
+    defaultTemperature: TRANSLATION_DEFAULT_TEMPERATURE,
   },
   {
     id: 'google',
@@ -63,7 +64,7 @@ export const LLM_PROVIDERS: LlmProviderMeta[] = [
     ],
     apiKeyUrl: 'https://aistudio.google.com/apikey',
     description: 'Google Gemini. Best value for translation with project context support.',
-    defaultTemperature: 0.2,
+    defaultTemperature: TRANSLATION_DEFAULT_TEMPERATURE,
   },
   {
     id: 'mistral',
@@ -76,7 +77,7 @@ export const LLM_PROVIDERS: LlmProviderMeta[] = [
     ],
     apiKeyUrl: 'https://console.mistral.ai/api-keys/',
     description: 'Mistral AI. Strong for European languages, especially French.',
-    defaultTemperature: 0.2,
+    defaultTemperature: TRANSLATION_DEFAULT_TEMPERATURE,
   },
   {
     id: 'deepseek',
@@ -88,7 +89,7 @@ export const LLM_PROVIDERS: LlmProviderMeta[] = [
     ],
     apiKeyUrl: 'https://platform.deepseek.com/api_keys',
     description: 'DeepSeek. Excellent for Chinese and CJK languages, very competitive pricing.',
-    defaultTemperature: 0.2,
+    defaultTemperature: TRANSLATION_DEFAULT_TEMPERATURE,
   },
 ];
 

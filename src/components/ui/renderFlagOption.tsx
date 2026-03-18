@@ -6,15 +6,10 @@
  */
 
 import { Group, Text } from '@mantine/core';
-import type { ComboboxItem } from '@mantine/core';
+import type { ComboboxItem, ComboboxLikeRenderOptionInput } from '@mantine/core';
 import { CountryFlag } from './CountryFlag';
 
-interface RenderOptionProps {
-  option: ComboboxItem;
-  checked: boolean;
-}
-
-export function renderFlagOption({ option }: RenderOptionProps) {
+export function renderFlagOption({ option }: ComboboxLikeRenderOptionInput<ComboboxItem>) {
   return (
     <Group gap={8} wrap="nowrap">
       <CountryFlag code={option.value} size="xs" />

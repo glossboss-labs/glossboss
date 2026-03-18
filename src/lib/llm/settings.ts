@@ -6,6 +6,7 @@
  */
 
 import type { LlmProviderId } from '@/lib/translation/types';
+import { TRANSLATION_DEFAULT_TEMPERATURE } from '@/lib/translation/constants';
 import { getLlmDefaultModel } from './providers';
 import { createPersistenceManager } from '@/lib/settings/storage-persistence';
 import {
@@ -39,7 +40,10 @@ interface LlmStoreWrapper {
   updatedAt: number;
 }
 
-const DEFAULT_TEMPERATURE = 0.2;
+const DEFAULT_TEMPERATURE = TRANSLATION_DEFAULT_TEMPERATURE;
+
+/** Fallback provider used when generating defaults for the custom endpoint. */
+const CUSTOM_FALLBACK_PROVIDER: LlmProviderId = 'openai';
 
 function defaultSettings(provider: LlmProviderId): LlmProviderSettings {
   return {
@@ -192,7 +196,7 @@ export function getCustomSettings(): CustomProviderSettings {
   const stored = store.custom;
   if (!stored) {
     return {
-      ...defaultSettings('openai' as LlmProviderId),
+      ...defaultSettings(CUSTOM_FALLBACK_PROVIDER),
       label: '',
       baseURL: '',
     };
@@ -207,25 +211,19 @@ export function getCustomSettings(): CustomProviderSettings {
         : DEFAULT_TEMPERATURE,
     useProjectContext: Boolean(stored.useProjectContext),
     updatedAt: typeof stored.updatedAt === 'number' ? stored.updatedAt : 0,
-    label:
-      typeof (stored as CustomProviderSettings).label === 'string'
-        ? (stored as CustomProviderSettings).label
-        : '',
-    baseURL:
-      typeof (stored as CustomProviderSettings).baseURL === 'string'
-        ? (stored as CustomProviderSettings).baseURL
-        : '',
+    label: typeof stored.label === 'string' ? stored.label : '',
+    baseURL: typeof stored.baseURL === 'string' ? stored.baseURL : '',
   };
 }
 
 export function saveCustomSettings(settings: Partial<CustomProviderSettings>): void {
   const store = loadStore();
-  const current = (store.custom as CustomProviderSettings | undefined) ?? {
-    ...defaultSettings('openai' as LlmProviderId),
+  const current = store.custom ?? {
+    ...defaultSettings(CUSTOM_FALLBACK_PROVIDER),
     label: '',
     baseURL: '',
   };
-  (store as Record<string, unknown>).custom = {
+  store.custom = {
     ...current,
     ...settings,
     updatedAt: Date.now(),
@@ -235,7 +233,7 @@ export function saveCustomSettings(settings: Partial<CustomProviderSettings>): v
 
 export function clearCustomSettings(): void {
   const store = loadStore();
-  delete (store as Record<string, unknown>).custom;
+  delete store.custom;
   saveStoreRaw(store);
 }
 

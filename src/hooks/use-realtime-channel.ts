@@ -191,6 +191,7 @@ export function useRealtimeChannel(
           timestamp: Date.now(),
         } satisfies CellLockEvent,
       });
+      // getState() is correct here — called from a user-initiated callback, not render.
       useCollaborationStore.getState().setLocalLock(entryId);
     },
     [userId, displayName],
@@ -208,6 +209,7 @@ export function useRealtimeChannel(
           timestamp: Date.now(),
         } satisfies CellUnlockEvent,
       });
+      // getState() is correct here — called from a user-initiated callback, not render.
       useCollaborationStore.getState().setLocalLock(null);
     },
     [userId],

@@ -8,9 +8,13 @@
  *
  * Conflict handling: when cloud data exists and the user enables sync,
  * a conflict dialog lets them choose between cloud and local settings.
+ *
+ * This is a composition hook that delegates to:
+ * - useCloudSettingsPush — debounced push of local changes
+ * - useCloudSettingsPull — pull cloud settings on mount / on-demand
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { isCloudBackendConfigured } from '@/lib/supabase/client';
 import {
@@ -22,19 +26,8 @@ import {
 } from '@/lib/settings/cloud';
 import type { CloudSettingsPayload } from '@/lib/settings/types';
 import { CLOUD_SETTINGS_ENABLED_KEY, CLOUD_CREDENTIAL_SYNC_KEY } from '@/lib/settings/types';
-import {
-  APP_LANGUAGE_KEY,
-  CONTAINER_WIDTH_KEY,
-  NAV_SKIP_TRANSLATED_KEY,
-  SPEECH_ENABLED_KEY,
-  TRANSLATE_ENABLED_KEY,
-  TRANSLATION_PROVIDER_SETTINGS_KEY,
-  DEEPL_SETTINGS_KEY,
-  AZURE_SETTINGS_KEY,
-  GEMINI_SETTINGS_KEY,
-  LLM_SETTINGS_KEY,
-  TTS_SETTINGS_KEY,
-} from '@/lib/constants/storage-keys';
+import { useCloudSettingsPush } from './use-cloud-settings-push';
+import { useCloudSettingsPull } from './use-cloud-settings-pull';
 
 export type CloudSyncStatus = 'idle' | 'syncing' | 'error';
 
@@ -63,23 +56,6 @@ export interface CloudSettingsSyncState {
   dismissPending: () => void;
 }
 
-const DEBOUNCE_MS = 2000;
-
-/** localStorage keys we watch for changes. */
-const WATCHED_KEYS = [
-  APP_LANGUAGE_KEY,
-  CONTAINER_WIDTH_KEY,
-  NAV_SKIP_TRANSLATED_KEY,
-  SPEECH_ENABLED_KEY,
-  TRANSLATE_ENABLED_KEY,
-  TRANSLATION_PROVIDER_SETTINGS_KEY,
-  DEEPL_SETTINGS_KEY,
-  AZURE_SETTINGS_KEY,
-  GEMINI_SETTINGS_KEY, // legacy — triggers sync for migrated users
-  LLM_SETTINGS_KEY,
-  TTS_SETTINGS_KEY,
-];
-
 export function useCloudSettingsSync(): CloudSettingsSyncState {
   const { isAuthenticated } = useAuth();
   const [syncEnabled, setSyncEnabledState] = useState(
@@ -93,87 +69,27 @@ export function useCloudSettingsSync(): CloudSettingsSyncState {
   const [pendingCloudSettings, setPendingCloudSettings] = useState<CloudSettingsPayload | null>(
     null,
   );
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const activeRef = useRef(syncEnabled && isAuthenticated);
 
-  // Keep ref in sync
-  useEffect(() => {
-    activeRef.current = syncEnabled && isAuthenticated && isCloudBackendConfigured();
-  }, [syncEnabled, isAuthenticated]);
+  const isActive = syncEnabled && isAuthenticated && isCloudBackendConfigured();
 
-  // Pull from cloud on mount — only apply when sync is already enabled.
-  // If sync is disabled but cloud has data, hold it for a future conflict dialog.
-  useEffect(() => {
-    if (!isAuthenticated || !isCloudBackendConfigured()) return;
+  // ── Push (debounced local -> cloud) ──────────────────────
+  const { pushToCloud, cancelPending } = useCloudSettingsPush(
+    isActive,
+    isAuthenticated,
+    syncEnabled,
+    setSyncStatus,
+    setLastSynced,
+  );
 
-    let cancelled = false;
+  // ── Pull (cloud -> local on mount) ──────────────────────
+  const { pullFromCloud } = useCloudSettingsPull(
+    isAuthenticated,
+    syncEnabled,
+    setSyncStatus,
+    setLastSynced,
+  );
 
-    async function pull() {
-      try {
-        setSyncStatus('syncing');
-        const cloud = await readCloudSettings();
-        if (cancelled) return;
-        if (cloud && syncEnabled) {
-          applyCloudSettings(cloud);
-          setLastSynced(cloud.updatedAt);
-        }
-        // Don't auto-enable sync or auto-apply when sync is off.
-        // Cloud data is fetched on-demand when the user enables sync.
-        setSyncStatus('idle');
-      } catch {
-        if (!cancelled) setSyncStatus('error');
-      }
-    }
-
-    void pull();
-    return () => {
-      cancelled = true;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- syncEnabled intentionally excluded to avoid re-pull loops
-  }, [isAuthenticated]);
-
-  // Push to cloud (debounced)
-  const pushToCloudFn = useCallback(async () => {
-    if (!activeRef.current) return;
-
-    try {
-      setSyncStatus('syncing');
-      const credEnabled = localStorage.getItem(CLOUD_CREDENTIAL_SYNC_KEY) === 'true';
-      const payload = collectLocalSettings(credEnabled);
-      await writeCloudSettings(payload);
-      setLastSynced(payload.updatedAt);
-      setSyncStatus('idle');
-    } catch {
-      setSyncStatus('error');
-    }
-  }, []);
-
-  const schedulePush = useCallback(() => {
-    if (!activeRef.current) return;
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => {
-      void pushToCloudFn();
-    }, DEBOUNCE_MS);
-  }, [pushToCloudFn]);
-
-  // Listen for localStorage changes from the same tab and other tabs
-  useEffect(() => {
-    if (!syncEnabled || !isAuthenticated || !isCloudBackendConfigured()) return;
-
-    function handleStorageChange(e: StorageEvent) {
-      if (e.key && WATCHED_KEYS.includes(e.key)) {
-        schedulePush();
-      }
-    }
-
-    window.addEventListener('storage', handleStorageChange);
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-    };
-  }, [syncEnabled, isAuthenticated, schedulePush]);
-
-  // Enable/disable sync
+  // ── Enable/disable sync ──────────────────────────────────
   const setSyncEnabled = useCallback(
     async (enabled: boolean) => {
       if (enabled) {
@@ -195,14 +111,12 @@ export function useCloudSettingsSync(): CloudSettingsSyncState {
         // No cloud data — enable sync and push local settings
         setSyncEnabledState(true);
         localStorage.setItem(CLOUD_SETTINGS_ENABLED_KEY, 'true');
-        activeRef.current = true;
-        await pushToCloudFn();
+        await pushToCloud();
       } else {
         // Disabling: clear cloud settings, revert to local-only
         setSyncEnabledState(false);
         localStorage.setItem(CLOUD_SETTINGS_ENABLED_KEY, 'false');
-        activeRef.current = false;
-        if (debounceRef.current) clearTimeout(debounceRef.current);
+        cancelPending();
         try {
           await clearCloudSettings();
         } catch {
@@ -213,10 +127,10 @@ export function useCloudSettingsSync(): CloudSettingsSyncState {
         setPendingCloudSettings(null);
       }
     },
-    [pushToCloudFn],
+    [pushToCloud, cancelPending],
   );
 
-  // Resolve cloud vs local conflict
+  // ── Resolve cloud vs local conflict ──────────────────────
   const resolveConflict = useCallback(
     async (choice: 'cloud' | 'local') => {
       const pending = pendingCloudSettings;
@@ -225,32 +139,31 @@ export function useCloudSettingsSync(): CloudSettingsSyncState {
       // Enable sync
       setSyncEnabledState(true);
       localStorage.setItem(CLOUD_SETTINGS_ENABLED_KEY, 'true');
-      activeRef.current = true;
 
       if (choice === 'cloud' && pending) {
         // Apply cloud settings locally, then push to keep in sync
         applyCloudSettings(pending);
         setLastSynced(pending.updatedAt);
-        await pushToCloudFn();
+        await pushToCloud();
       } else {
         // Keep local settings, overwrite cloud
-        await pushToCloudFn();
+        await pushToCloud();
       }
     },
-    [pendingCloudSettings, pushToCloudFn],
+    [pendingCloudSettings, pushToCloud],
   );
 
   const dismissPending = useCallback(() => {
     setPendingCloudSettings(null);
   }, []);
 
-  // Enable/disable credential sync
+  // ── Enable/disable credential sync ───────────────────────
   const setCredentialSyncEnabled = useCallback(
     async (enabled: boolean) => {
       setCredentialSyncEnabledState(enabled);
       localStorage.setItem(CLOUD_CREDENTIAL_SYNC_KEY, String(enabled));
 
-      if (!enabled && activeRef.current) {
+      if (!enabled && isActive) {
         // Re-push without credentials to strip them from cloud
         try {
           const payload = collectLocalSettings(false);
@@ -259,34 +172,13 @@ export function useCloudSettingsSync(): CloudSettingsSyncState {
         } catch {
           // Best-effort
         }
-      } else if (enabled && activeRef.current) {
+      } else if (enabled && isActive) {
         // Re-push with credentials
-        await pushToCloudFn();
+        await pushToCloud();
       }
     },
-    [pushToCloudFn],
+    [pushToCloud, isActive],
   );
-
-  // Manual pull from cloud
-  const pullFromCloud = useCallback(async () => {
-    try {
-      setSyncStatus('syncing');
-      const cloud = await readCloudSettings();
-      if (cloud) {
-        applyCloudSettings(cloud);
-        setLastSynced(cloud.updatedAt);
-      }
-      setSyncStatus('idle');
-    } catch {
-      setSyncStatus('error');
-    }
-  }, []);
-
-  // Manual push to cloud
-  const pushToCloud = useCallback(async () => {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    await pushToCloudFn();
-  }, [pushToCloudFn]);
 
   return {
     syncEnabled,

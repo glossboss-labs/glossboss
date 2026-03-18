@@ -36,7 +36,7 @@ const DEFAULT_OPTIONS: Required<ParseOptions> = {
 };
 
 /** Known PO entry flags */
-const KNOWN_FLAGS: Set<string> = new Set([
+export const KNOWN_PO_FLAGS: Set<string> = new Set([
   'fuzzy',
   'c-format',
   'no-c-format',
@@ -307,7 +307,7 @@ function parseEntryBlock(block: RawEntry): { entry: POEntry | null; issues: Pars
 
       for (const flag of flags) {
         // Accept known flags, warn about unknown ones
-        if (KNOWN_FLAGS.has(flag)) {
+        if (KNOWN_PO_FLAGS.has(flag)) {
           entry.flags.push(flag as POEntryFlag);
         } else {
           // Still add it, but as a generic flag
