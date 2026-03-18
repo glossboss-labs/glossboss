@@ -1516,6 +1516,10 @@ msgstr "Current"
 msgid "Current editor"
 msgstr "Current editor"
 
+#: src/components/AppErrorBoundary.tsx:70
+msgid "Current path"
+msgstr "Current path"
+
 #: src/components/settings/BillingSection.tsx:289
 #: src/components/settings/BillingSection.tsx:442
 msgid "Current plan"
@@ -2131,6 +2135,10 @@ msgstr "Erasure"
 #: src/components/editor/EditorInspector.tsx:77
 msgid "Error"
 msgstr "Error"
+
+#: src/components/AppErrorBoundary.tsx:71
+msgid "Error details"
+msgstr "Error details"
 
 #: src/components/editor/TranslateButton.tsx:230
 #: src/components/editor/TranslateButton.tsx:251
@@ -3132,11 +3140,22 @@ msgstr "Glossary source: {{source}}"
 msgid "Glossary: {count} terms ({locale})"
 msgstr "Glossary: {count} terms ({locale})"
 
+#: src/pages/NotFoundPage.tsx:50
+msgid "Go back"
+msgstr "Go back"
+
+#: src/components/AppErrorBoundary.tsx:62
+#: src/pages/NotFoundPage.tsx:24
+msgid "Go home"
+msgstr "Go home"
+
 #: src/components/repo-sync/RepoSyncModal.tsx:926
 msgid "Go to Connect"
 msgstr "Go to Connect"
 
+#: src/components/AppErrorBoundary.tsx:62
 #: src/pages/Invite.tsx:121
+#: src/pages/NotFoundPage.tsx:24
 msgid "Go to dashboard"
 msgstr "Go to dashboard"
 
@@ -4617,6 +4636,14 @@ msgstr "PR title"
 msgid "Page 1 of 1"
 msgstr "Page 1 of 1"
 
+#: src/pages/NotFoundPage.tsx:39
+msgid "Page not found"
+msgstr "Page not found"
+
+#: src/pages/NotFoundPage.tsx:16
+msgid "Page not found - GlossBoss"
+msgstr "Page not found - GlossBoss"
+
 #: src/pages/PrivacyPage.tsx:88
 msgid "Page views"
 msgstr "Page views"
@@ -5294,6 +5321,10 @@ msgstr "Release to load your translation file"
 msgid "Release {{release}}"
 msgstr "Release {{release}}"
 
+#: src/components/AppErrorBoundary.tsx:81
+msgid "Reload page"
+msgstr "Reload page"
+
 #: src/components/settings/CustomProviderCard.tsx:185
 #: src/components/settings/LlmProviderCard.tsx:256
 #: src/components/settings/SpeechSection.tsx:403
@@ -5421,6 +5452,10 @@ msgstr "Request changes selected"
 #: src/pages/index/useFileLoader.ts:331
 msgid "Request timed out. Try downloading the file and uploading it directly."
 msgstr "Request timed out. Try downloading the file and uploading it directly."
+
+#: src/pages/NotFoundPage.tsx:43
+msgid "Requested path"
+msgstr "Requested path"
 
 #: src/pages/TermsPage.tsx:71
 msgid "Resell access to the Service without written permission."
@@ -6149,6 +6184,14 @@ msgstr "Slug"
 msgid "Social media"
 msgstr "Social media"
 
+#: src/components/AppErrorBoundary.tsx:67
+msgid "Something went wrong"
+msgstr "Something went wrong"
+
+#: src/components/AppErrorBoundary.tsx:54
+msgid "Something went wrong - GlossBoss"
+msgstr "Something went wrong - GlossBoss"
+
 #: src/components/editor/FilterToolbar.tsx:619
 msgid "Sort entries"
 msgstr "Sort entries"
@@ -6603,6 +6646,14 @@ msgstr "The URL must start with https://"
 #: src/pages/index/useFileLoader.ts:390
 msgid "The WordPress.org translation export could not be parsed."
 msgstr "The WordPress.org translation export could not be parsed."
+
+#: src/components/AppErrorBoundary.tsx:68
+msgid ""
+"The app ran into an unexpected error while loading this page. Reload and try"
+" again."
+msgstr ""
+"The app ran into an unexpected error while loading this page. Reload and try"
+" again."
 
 #: src/pages/LicensePage.tsx:48
 msgid "The full license text for this deployment is available in the local"
@@ -7178,6 +7229,10 @@ msgstr ""
 "Under the AGPL, the operator of this deployment must make the corresponding "
 "source code available to network users."
 
+#: src/components/AppErrorBoundary.tsx:66
+msgid "Unexpected error"
+msgstr "Unexpected error"
+
 #: src/components/editor/EditorInspector.tsx:242
 #: src/components/editor/EditorInspector.tsx:243
 #: src/components/editor/editor-table-utils.ts:195
@@ -7531,6 +7586,14 @@ msgstr ""
 #: src/pages/PrivacyPage.tsx:85
 msgid "We collect the following analytics data to improve the product:"
 msgstr "We collect the following analytics data to improve the product:"
+
+#: src/pages/NotFoundPage.tsx:40
+msgid ""
+"We couldn't find the page you requested. It may have moved, the link may be "
+"out of date, or the URL may be mistyped."
+msgstr ""
+"We couldn't find the page you requested. It may have moved, the link may be "
+"out of date, or the URL may be mistyped."
 
 #: src/pages/PrivacyPage.tsx:110
 msgid "We honor the"
