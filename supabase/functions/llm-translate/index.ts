@@ -140,6 +140,67 @@ function isValidCustomBaseURL(url: string): boolean {
   }
 }
 
+// ── Error classification ───────────────────────────────────
+
+function classifyLlmError(message: string): { status: number; code: string; message: string } {
+  const lower = message.toLowerCase();
+
+  // Authentication errors
+  if (lower.includes('api key') || lower.includes('unauthorized') || lower.includes('401')) {
+    return {
+      status: 401,
+      code: 'AUTH_ERROR',
+      message: sanitizeUpstreamError(message, 'Invalid API key. Check your key in Settings.'),
+    };
+  }
+
+  // Model or endpoint not found
+  if (lower.includes('not found') || lower.includes('404') || lower.includes('does not exist')) {
+    return {
+      status: 404,
+      code: 'NOT_FOUND',
+      message: sanitizeUpstreamError(
+        message,
+        'Model or endpoint not found. Check your model ID and base URL in Settings.',
+      ),
+    };
+  }
+
+  // Rate limiting
+  if (lower.includes('rate limit') || lower.includes('429') || lower.includes('too many')) {
+    return {
+      status: 429,
+      code: 'RATE_LIMITED',
+      message: sanitizeUpstreamError(
+        message,
+        'Rate limited by the LLM provider. Try again shortly.',
+      ),
+    };
+  }
+
+  // Quota / billing
+  if (lower.includes('quota') || lower.includes('billing') || lower.includes('insufficient')) {
+    return {
+      status: 402,
+      code: 'QUOTA_EXCEEDED',
+      message: sanitizeUpstreamError(
+        message,
+        'LLM provider quota exceeded. Check your billing or plan.',
+      ),
+    };
+  }
+
+  // Fallback
+  return {
+    status: 502,
+    code: 'UPSTREAM_ERROR',
+    message: sanitizeUpstreamError(
+      message,
+      'LLM translation failed. Check your provider settings.',
+    ),
+  };
+}
+
 // ── Request handler ────────────────────────────────────────
 
 export async function handleLlmTranslateRequest(req: Request): Promise<Response> {
@@ -269,13 +330,18 @@ export async function handleLlmTranslateRequest(req: Request): Promise<Response>
       );
     }
 
-    const message = isAbortError(error)
-      ? 'LLM translation request timed out.'
-      : error instanceof Error
-        ? sanitizeUpstreamError(error.message, 'LLM translation proxy failed.')
-        : 'LLM translation proxy failed.';
+    if (isAbortError(error)) {
+      return jsonResponse(
+        req,
+        { ok: false, code: 'TIMEOUT', message: 'LLM translation request timed out.' },
+        { status: 504 },
+      );
+    }
 
-    return jsonResponse(req, { ok: false, code: 'INTERNAL_ERROR', message }, { status: 500 });
+    // Extract upstream HTTP status from AI SDK errors (e.g. 401, 404, 429)
+    const rawMessage = error instanceof Error ? error.message : '';
+    const { status, code, message } = classifyLlmError(rawMessage);
+    return jsonResponse(req, { ok: false, code, message }, { status });
   }
 }
 
