@@ -166,7 +166,8 @@ export function TranslateToolbar({
     () =>
       allTranslatableEntries.filter((e) => {
         if (!e.msgid.trim()) return false;
-        if (e.flags.includes('fuzzy')) return false;
+        // Skip fuzzy entries that already have a translation (needs review, not untranslated)
+        if (e.flags.includes('fuzzy') && e.msgstr.trim()) return false;
         return shouldAutoTranslateEntry(e);
       }),
     [allTranslatableEntries],
