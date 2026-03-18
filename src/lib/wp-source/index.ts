@@ -53,3 +53,10 @@ export {
   type ReleaseDiffResult,
   type ReleaseDiffSummary,
 } from './diff';
+
+export {
+  getEffectiveSlug,
+  getEffectiveProjectType,
+  getEffectiveRelease,
+  type EffectiveProjectState,
+} from './effective-project';

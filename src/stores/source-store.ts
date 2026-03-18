@@ -18,6 +18,13 @@ import {
   clearCache,
 } from '@/lib/wp-source/fetcher';
 import { msgid } from '@/lib/app-language';
+import {
+  getEffectiveSlug,
+  getEffectiveProjectType,
+  getEffectiveRelease,
+} from '@/lib/wp-source/effective-project';
+
+export { getEffectiveSlug, getEffectiveProjectType, getEffectiveRelease };
 
 export interface SourceState {
   projectType: WordPressProjectType | null;
@@ -95,21 +102,6 @@ function resetProjectData(set: (value: Partial<SourceState>) => void) {
     resolvedBasePath: null,
     activeReference: null,
   });
-}
-
-export function getEffectiveSlug(state: SourceState): string | null {
-  return state.projectSlug || state.autoDetectedSlug;
-}
-
-export function getEffectiveProjectType(state: SourceState): WordPressProjectType | null {
-  return state.projectType || state.autoDetectedProjectType;
-}
-
-export function getEffectiveRelease(state: SourceState): string | null {
-  if (getEffectiveProjectType(state) === 'plugin' && state.pluginTranslationTrack === 'dev') {
-    return null;
-  }
-  return state.selectedRelease ?? state.projectVersion;
 }
 
 export const useSourceStore = create<SourceState & SourceActions>()(
