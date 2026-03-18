@@ -2,8 +2,8 @@
  * Dashboard — project list for authenticated users.
  */
 
-import { memo, useCallback, useMemo, useState } from 'react';
-import { Link } from 'react-router';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { Link, useSearchParams } from 'react-router';
 import {
   Title,
   Group,
@@ -16,9 +16,20 @@ import {
   Select,
   ThemeIcon,
   Paper,
+  CloseButton,
 } from '@mantine/core';
 import { motion } from 'motion/react';
-import { Plus, AlertCircle, FolderOpen, Search, Building2 } from 'lucide-react';
+import {
+  Plus,
+  AlertCircle,
+  FolderOpen,
+  Search,
+  Building2,
+  Key,
+  Pencil,
+  FileText,
+} from 'lucide-react';
+import { DASHBOARD_WELCOME_DISMISSED_KEY } from '@/lib/constants/storage-keys';
 import {
   staggerPageVariants,
   staggerContainerVariants,
@@ -97,6 +108,7 @@ const OrgCard = memo(function OrgCard({ org }: { org: OrganizationRow }) {
 
 export default function Dashboard() {
   const { t } = useTranslation();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { data: projects = [], isLoading: loading, error: projectsError } = useProjects();
   const deleteProjectMutation = useDeleteProject();
   const { user } = useAuthStore();
@@ -106,6 +118,39 @@ export default function Dashboard() {
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<SortOption>('updated');
+
+  // Welcome card state — shown after onboarding redirect (?welcome=1)
+  const [showWelcome, setShowWelcome] = useState(() => {
+    if (searchParams.get('welcome') !== '1') return false;
+    try {
+      return !localStorage.getItem(DASHBOARD_WELCOME_DISMISSED_KEY);
+    } catch {
+      return true;
+    }
+  });
+
+  // Clear the ?welcome=1 param from the URL without a full navigation
+  useEffect(() => {
+    if (searchParams.get('welcome') === '1') {
+      setSearchParams(
+        (prev) => {
+          const next = new URLSearchParams(prev);
+          next.delete('welcome');
+          return next;
+        },
+        { replace: true },
+      );
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const dismissWelcome = useCallback(() => {
+    setShowWelcome(false);
+    try {
+      localStorage.setItem(DASHBOARD_WELCOME_DISMISSED_KEY, '1');
+    } catch {
+      // Ignore storage errors
+    }
+  }, []);
 
   const error = projectsError ? (projectsError as Error).message : null;
 
@@ -173,6 +218,97 @@ export default function Dashboard() {
           </Group>
         </MotionDiv>
 
+        {/* Welcome card — shown once after onboarding */}
+        {showWelcome && !loading && projects.length === 0 && (
+          <MotionDiv variants={fadeVariants}>
+            <Paper withBorder p="lg" mb="xl">
+              <Group justify="space-between" align="flex-start" mb="md">
+                <Text size="lg" fw={600}>
+                  {t('Welcome to GlossBoss!')}
+                </Text>
+                <CloseButton size="sm" onClick={dismissWelcome} aria-label={t('Dismiss')} />
+              </Group>
+              <Stack gap="md">
+                <Group gap="md" align="flex-start" wrap="nowrap">
+                  <ThemeIcon variant="light" color="blue" size="lg" radius="xl">
+                    <Key size={16} />
+                  </ThemeIcon>
+                  <div>
+                    <Text size="sm" fw={500}>
+                      {t('Set up a translation provider')}
+                    </Text>
+                    <Text size="xs" c="dimmed">
+                      {t(
+                        'Connect a free API key from DeepL, Azure, or Gemini to unlock AI translation.',
+                      )}
+                    </Text>
+                    <Button
+                      component={Link}
+                      to="/settings?tab=translation"
+                      variant="light"
+                      size="xs"
+                      mt={4}
+                    >
+                      {t('Open translation settings')}
+                    </Button>
+                  </div>
+                </Group>
+                <Group gap="md" align="flex-start" wrap="nowrap">
+                  <ThemeIcon variant="light" color="teal" size="lg" radius="xl">
+                    <Pencil size={16} />
+                  </ThemeIcon>
+                  <div>
+                    <Text size="sm" fw={500}>
+                      {t('Create your first project')}
+                    </Text>
+                    <Text size="xs" c="dimmed">
+                      {t(
+                        'A project holds all the translation files for one app, plugin, or theme.',
+                      )}
+                    </Text>
+                    <Button
+                      variant="light"
+                      size="xs"
+                      mt={4}
+                      onClick={() => {
+                        dismissWelcome();
+                        setCreateModalOpen(true);
+                      }}
+                    >
+                      {t('New project')}
+                    </Button>
+                  </div>
+                </Group>
+                <Group gap="md" align="flex-start" wrap="nowrap">
+                  <ThemeIcon variant="light" color="gray" size="lg" radius="xl">
+                    <FileText size={16} />
+                  </ThemeIcon>
+                  <div>
+                    <Text size="sm" fw={500}>
+                      {t('Use the local editor')}
+                    </Text>
+                    <Text size="xs" c="dimmed">
+                      {t(
+                        'The local editor is free forever — upload a .po file and start translating, no account needed.',
+                      )}
+                    </Text>
+                    <Button
+                      component={Link}
+                      to="/editor"
+                      variant="light"
+                      color="gray"
+                      size="xs"
+                      mt={4}
+                    >
+                      {t('Open the editor')}
+                    </Button>
+                  </div>
+                </Group>
+              </Stack>
+            </Paper>
+          </MotionDiv>
+        )}
+
         {/* Projects content — animated state transitions */}
         <MotionDiv variants={fadeVariants}>
           <AnimatedStateSwitch stateKey={projectStateKey}>
@@ -193,10 +329,17 @@ export default function Dashboard() {
                   <Text size="lg" c="dimmed">
                     {t('No projects yet')}
                   </Text>
-                  <Text size="sm" maw={360} ta="center" c="dimmed">
+                  <Text size="sm" maw={420} ta="center" c="dimmed">
                     {t(
-                      'Create a cloud project from a PO file, a WordPress.org export, or a repository.',
+                      'Projects store your translations in the cloud — collaborate with your team and push to GitHub or GitLab.',
                     )}
+                  </Text>
+                  <Text size="xs" c="dimmed">
+                    {t('The')}{' '}
+                    <Text component={Link} to="/editor" size="xs" c="blue" td="underline" inherit>
+                      {t('local editor')}
+                    </Text>{' '}
+                    {t('is always free — no account needed.')}
                   </Text>
                   <motion.div {...buttonStates}>
                     <Button variant="light" onClick={() => setCreateModalOpen(true)}>
@@ -283,6 +426,21 @@ export default function Dashboard() {
                   <Text size="sm" c="dimmed">
                     {t('No organizations yet')}
                   </Text>
+                  <Text size="xs" maw={400} ta="center" c="dimmed">
+                    {t(
+                      "Organizations let you group projects, share API keys, and manage billing for your team. You don't need one to get started.",
+                    )}
+                  </Text>
+                  <motion.div {...buttonStates}>
+                    <Button
+                      variant="light"
+                      color="violet"
+                      size="xs"
+                      onClick={() => setCreateOrgModalOpen(true)}
+                    >
+                      {t('Create organization')}
+                    </Button>
+                  </motion.div>
                 </Stack>
               </Center>
             )}

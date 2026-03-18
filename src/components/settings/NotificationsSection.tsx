@@ -145,6 +145,11 @@ export function NotificationsSection() {
 
   return (
     <Stack gap="lg">
+      <Text size="sm" c="dimmed">
+        {t(
+          "Choose how you want to be notified about project activity. You can set per-project overrides in each project's notification settings.",
+        )}
+      </Text>
       <Paper withBorder p="md">
         <Table verticalSpacing="sm" horizontalSpacing="sm">
           <Table.Thead>

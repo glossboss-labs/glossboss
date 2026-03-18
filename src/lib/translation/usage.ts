@@ -13,6 +13,15 @@ export interface TranslationUsageEntry {
   /** Number of translation requests in the current tracking period */
   translationCount: number;
 
+  /** Total tokens consumed (LLM providers only, 0 for DeepL/Azure) */
+  tokenCount: number;
+
+  /** Prompt tokens consumed (LLM providers only) */
+  promptTokens: number;
+
+  /** Completion tokens consumed (LLM providers only) */
+  completionTokens: number;
+
   /** Timestamp (ms) of the first recorded usage in this period */
   periodStartedAt: number;
 }
@@ -24,6 +33,9 @@ interface UsageStore {
 const EMPTY_ENTRY: TranslationUsageEntry = {
   characterCount: 0,
   translationCount: 0,
+  tokenCount: 0,
+  promptTokens: 0,
+  completionTokens: 0,
   periodStartedAt: 0,
 };
 
@@ -56,23 +68,42 @@ function parseEntry(raw: unknown): TranslationUsageEntry {
   return {
     characterCount: safeNonNegative(entry.characterCount),
     translationCount: safeNonNegative(entry.translationCount),
+    tokenCount: safeNonNegative(entry.tokenCount),
+    promptTokens: safeNonNegative(entry.promptTokens),
+    completionTokens: safeNonNegative(entry.completionTokens),
     periodStartedAt: safeNonNegative(entry.periodStartedAt),
   };
 }
 
+/** Optional token usage to record alongside characters. */
+export interface TokenUsageDelta {
+  promptTokens: number;
+  completionTokens: number;
+  totalTokens: number;
+}
+
 /**
- * Record translated characters for a provider.
+ * Record translated characters (and optionally tokens) for a provider.
  *
  * Call this after every successful translation batch.
  */
-export function recordTranslationUsage(provider: TranslationProviderId, characters: number): void {
-  if (characters <= 0) return;
+export function recordTranslationUsage(
+  provider: TranslationProviderId,
+  characters: number,
+  tokens?: TokenUsageDelta,
+): void {
+  if (characters <= 0 && !tokens) return;
 
   const store = loadStore();
   const entry = parseEntry(store[provider]);
 
-  entry.characterCount += characters;
+  entry.characterCount += Math.max(0, characters);
   entry.translationCount += 1;
+  if (tokens) {
+    entry.tokenCount += tokens.totalTokens;
+    entry.promptTokens += tokens.promptTokens;
+    entry.completionTokens += tokens.completionTokens;
+  }
   if (entry.periodStartedAt === 0) {
     entry.periodStartedAt = Date.now();
   }

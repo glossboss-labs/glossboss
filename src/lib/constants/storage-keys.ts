@@ -70,10 +70,12 @@ export const GLOSSARY_ENFORCEMENT_KEY = 'glossboss-glossary-enforcement';
 export const DEEPL_GLOSSARY_MAPPING_KEY = 'glossboss-deepl-glossary-mapping';
 export const WP_GLOSSARY_CACHE_PREFIX = 'glossboss-wp-glossary-';
 
-// ── Tours ────────────────────────────────────────────────────────────
+// ── Tours & onboarding ──────────────────────────────────────────────
 
 export const EDITOR_TOUR_KEY = 'glossboss-editor-tour-completed';
 export const SETTINGS_TOUR_KEY = 'glossboss-settings-tour-completed';
+export const API_KEY_SETUP_PROMPTED_KEY = 'glossboss-api-key-setup-prompted';
+export const DASHBOARD_WELCOME_DISMISSED_KEY = 'glossboss-dashboard-welcome-dismissed';
 
 // ── Development ──────────────────────────────────────────────────────
 

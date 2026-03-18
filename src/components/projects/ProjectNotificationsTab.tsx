@@ -194,7 +194,7 @@ export function ProjectNotificationsTab({ projectId }: ProjectNotificationsTabPr
 
       <Text size="sm" c="dimmed">
         {t(
-          'Override global notification settings for this project. Click to cycle: inherit \u2192 on \u2192 off.',
+          'Override your global notification preferences for this project. Click to cycle: inherit \u2192 on \u2192 off.',
         )}
       </Text>
 

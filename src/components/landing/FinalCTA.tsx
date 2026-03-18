@@ -20,12 +20,18 @@ export function FinalCTA() {
         <p className="mx-auto mt-4 max-w-md text-text-secondary">
           {t('Free for individuals. Upgrade when you need team features.')}
         </p>
-        <div className="mt-8">
+        <div className="mt-8 flex flex-col items-center gap-3">
           <Link
             to="/signup"
             className="inline-block rounded-md bg-text-primary px-8 py-3 text-sm font-medium text-surface-0 transition-opacity hover:opacity-90"
           >
             {t('Get started free')}
+          </Link>
+          <Link
+            to="/editor?tour=1"
+            className="text-sm text-text-secondary transition-colors hover:text-text-primary"
+          >
+            {t('Or use the free editor — no account needed')}
           </Link>
         </div>
       </motion.div>

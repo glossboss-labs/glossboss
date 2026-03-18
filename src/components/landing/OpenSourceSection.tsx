@@ -35,6 +35,15 @@ export function OpenSourceSection() {
             <Github className="h-4 w-4" />
             {t('View on GitHub')}
           </a>
+          <a
+            href="https://github.com/sponsors/lammersbjorn"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-md border border-border-default px-5 py-2.5 text-sm font-medium text-text-primary transition-colors hover:bg-surface-2"
+          >
+            <Heart className="h-4 w-4" />
+            {t('Sponsor')}
+          </a>
         </div>
         <p className="mt-6 flex items-center justify-center gap-1.5 text-xs text-text-tertiary">
           <Heart className="h-3 w-3" />

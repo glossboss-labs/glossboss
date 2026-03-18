@@ -119,7 +119,7 @@ export function HeroSection() {
           className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-text-secondary"
         >
           {t(
-            'The browser-based translation platform with multi-provider AI, real-time collaboration, and one-click deploys to GitHub & GitLab.',
+            'Upload your translation files, get AI translations in seconds, and push straight to your repo. No install, no setup — just ship.',
           )}
         </motion.p>
 
@@ -147,7 +147,7 @@ export function HeroSection() {
             {t('Start translating free')}
           </Link>
           <Link
-            to="/editor"
+            to="/editor?tour=1"
             className="rounded-md border border-border-default px-6 py-2.5 text-sm font-medium text-text-primary transition-colors hover:bg-surface-2"
           >
             {t('Try the editor')}
@@ -161,7 +161,7 @@ export function HeroSection() {
           transition={{ duration: 0.4, delay: 0.7 }}
           className="mt-5 text-xs text-text-tertiary"
         >
-          {t('No credit card required. Free for individuals.')}
+          {t('No credit card required. The local editor is free forever — no account needed.')}
         </motion.p>
       </div>
     </section>

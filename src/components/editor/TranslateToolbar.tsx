@@ -52,6 +52,8 @@ interface TranslateToolbarProps {
   glossary?: Glossary | null;
   translateEnabled?: boolean;
   mode?: 'edit' | 'review';
+  /** Navigate to settings (threaded to ProviderPicker for API key setup) */
+  onOpenSettings?: (tab?: string) => void;
 }
 
 export function TranslateToolbar({
@@ -60,6 +62,7 @@ export function TranslateToolbar({
   glossary = null,
   translateEnabled = true,
   mode = 'edit',
+  onOpenSettings,
 }: TranslateToolbarProps) {
   const { t } = useTranslation();
   const {
@@ -372,7 +375,11 @@ export function TranslateToolbar({
               if (!translated?.text) {
                 failed += 1;
               } else {
-                recordTranslationUsage(activeProvider, job.text.length);
+                recordTranslationUsage(
+                  activeProvider,
+                  job.text.length,
+                  translationResponse.usage ?? undefined,
+                );
                 applyTranslationResult(job, translated);
                 completed += 1;
               }
@@ -438,6 +445,8 @@ export function TranslateToolbar({
                 }
               }
 
+              // Record token usage once per batch (tokens cover the whole request)
+              let batchTokensRecorded = false;
               batch.forEach((job, index) => {
                 const translated = translationResponse.translations[index];
                 if (!translated?.text) {
@@ -445,7 +454,12 @@ export function TranslateToolbar({
                   return;
                 }
 
-                recordTranslationUsage(activeProvider, job.text.length);
+                recordTranslationUsage(
+                  activeProvider,
+                  job.text.length,
+                  !batchTokensRecorded ? (translationResponse.usage ?? undefined) : undefined,
+                );
+                batchTokensRecorded = true;
                 applyTranslationResult(job, translated);
                 completed += 1;
               });
@@ -652,6 +666,7 @@ export function TranslateToolbar({
             untranslatedCount={untranslatedEntries.length}
             onSourceChange={handleSourceChange}
             onTargetChange={handleTargetChange}
+            onOpenSettings={onOpenSettings}
             actionSlot={
               <Group gap="sm" wrap="wrap">
                 <AnimatePresence mode="wait">

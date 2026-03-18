@@ -292,9 +292,17 @@ export function TranslationSection({
 
   const deeplConfigured = hasProviderCredentials('deepl');
   const azureConfigured = hasProviderCredentials('azure');
+  const googleConfigured = hasProviderCredentials('google');
+  const anyProviderConfigured = deeplConfigured || azureConfigured || googleConfigured;
 
   return (
     <Stack gap="md">
+      <Text size="sm" c="dimmed">
+        {t(
+          'These settings apply to the local editor. Cloud projects can override the provider in Project Settings.',
+        )}
+      </Text>
+
       <Switch
         label={t('Enable machine translation')}
         description={t(
@@ -318,6 +326,58 @@ export function TranslationSection({
       <Text size="sm" fw={500}>
         {t('Translation providers')}
       </Text>
+
+      {!anyProviderConfigured && (
+        <Alert color="blue" variant="light">
+          <Stack gap="xs">
+            <Text size="sm" fw={500}>
+              {t(
+                'Pick any provider below — all offer free tiers, and setup takes about 2 minutes.',
+              )}
+            </Text>
+            <Text size="xs">{t('Recommended for getting started:')}</Text>
+            <Stack gap={4}>
+              <Group gap="xs">
+                <Text size="xs" fw={500}>
+                  {t('DeepL Free')}
+                </Text>
+                <Text size="xs" c="dimmed">
+                  {t('— 500,000 characters/month, best general quality')}
+                </Text>
+                <Anchor
+                  href="https://www.deepl.com/pro-api"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  size="xs"
+                >
+                  {t('Get a free API key')}{' '}
+                  <ExternalLink size={10} style={{ display: 'inline', verticalAlign: 'middle' }} />
+                </Anchor>
+              </Group>
+              <Group gap="xs">
+                <Text size="xs" fw={500}>
+                  {t('Google Gemini')}
+                </Text>
+                <Text size="xs" c="dimmed">
+                  {t('— generous free tier, best for context-aware translation')}
+                </Text>
+                <Anchor
+                  href="https://aistudio.google.com/apikey"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  size="xs"
+                >
+                  {t('Get a free API key')}{' '}
+                  <ExternalLink size={10} style={{ display: 'inline', verticalAlign: 'middle' }} />
+                </Anchor>
+              </Group>
+            </Stack>
+            <Text size="xs" c="dimmed">
+              {t('After you get a key, expand the provider card below and paste it in.')}
+            </Text>
+          </Stack>
+        </Alert>
+      )}
 
       {/* ── DeepL card ── */}
       <Paper withBorder data-tour="settings-provider">

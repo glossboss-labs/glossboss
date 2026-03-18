@@ -203,28 +203,52 @@ export function EmptyState({
             </Group>
           )}
 
-          {!isAuthenticated && (
-            <Group
-              gap={4}
+          {isAuthenticated && (
+            <Text
+              size="xs"
+              c="dimmed"
               onClick={(e: React.MouseEvent) => e.stopPropagation()}
               style={{ cursor: 'default' }}
             >
-              <Cloud size={14} style={{ opacity: 0.4 }} />
+              {t('Or open a cloud project from your')}{' '}
+              <RouterLink
+                to="/dashboard"
+                style={{
+                  color: 'var(--mantine-color-blue-6)',
+                  textDecoration: 'none',
+                }}
+              >
+                {t('Dashboard')}
+              </RouterLink>
+            </Text>
+          )}
+
+          {!isAuthenticated && (
+            <Stack
+              gap={4}
+              align="center"
+              onClick={(e: React.MouseEvent) => e.stopPropagation()}
+              style={{ cursor: 'default' }}
+            >
+              <Group gap={4}>
+                <Cloud size={14} style={{ opacity: 0.4 }} />
+                <Text size="xs" c="dimmed">
+                  <RouterLink
+                    to="/login"
+                    style={{
+                      color: 'var(--mantine-color-blue-6)',
+                      textDecoration: 'none',
+                    }}
+                  >
+                    {t('Sign in')}
+                  </RouterLink>{' '}
+                  {t('to save projects to the cloud and collaborate with your team.')}
+                </Text>
+              </Group>
               <Text size="xs" c="dimmed">
-                <RouterLink
-                  to="/login"
-                  style={{
-                    color: 'var(--mantine-color-blue-6)',
-                    textDecoration: 'none',
-                  }}
-                >
-                  {t('Sign in')}
-                </RouterLink>{' '}
-                {t(
-                  "to save projects to the cloud and collaborate with your team. Collaborators work under the project owner's plan — no subscription needed to contribute.",
-                )}
+                {t("Collaborators work under the project owner's plan — no subscription needed.")}
               </Text>
-            </Group>
+            </Stack>
           )}
         </Stack>
       </Paper>

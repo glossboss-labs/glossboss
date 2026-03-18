@@ -56,6 +56,9 @@ export interface EditorWorkspaceProps {
   /** When true, disables all editing (viewer role). */
   readOnly?: boolean;
 
+  /** Navigate to settings (for API key setup prompts). */
+  onOpenSettings?: (tab?: string) => void;
+
   /** Broadcast callback for realtime entry updates (cloud editor only). */
   broadcastEntryUpdate?: (event: {
     entryId: string;
@@ -100,6 +103,7 @@ export function EditorWorkspace({
   speechEnabled,
   onEntrySelect,
   readOnly,
+  onOpenSettings,
   broadcastEntryUpdate,
   broadcastLock,
   broadcastUnlock,
@@ -160,6 +164,7 @@ export function EditorWorkspace({
               glossary={glossary}
               translateEnabled={translateEnabled}
               mode={workspaceMode}
+              onOpenSettings={onOpenSettings}
             />
             {workspaceMode === 'edit' && <SourceFileIndicator />}
             {workspaceMode === 'edit' && glossary && (

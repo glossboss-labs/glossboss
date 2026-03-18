@@ -4,7 +4,7 @@
  */
 
 import type { ReactNode } from 'react';
-import { Group, Select, Text, Badge, Alert, Stack, useMantineTheme } from '@mantine/core';
+import { Group, Select, Text, Badge, Alert, Button, Stack, useMantineTheme } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { motion, AnimatePresence } from 'motion/react';
 import { WandSparkles, Key } from 'lucide-react';
@@ -27,6 +27,8 @@ export interface ProviderPickerProps {
   onTargetChange: (value: string | null) => void;
   /** Slot for action buttons (translate / cancel) rendered beside the language selectors */
   actionSlot?: ReactNode;
+  /** Navigate to settings (called when user clicks "Set up API key") */
+  onOpenSettings?: (tab?: string) => void;
 }
 
 export function ProviderPicker({
@@ -40,6 +42,7 @@ export function ProviderPicker({
   onSourceChange,
   onTargetChange,
   actionSlot,
+  onOpenSettings,
 }: ProviderPickerProps) {
   const { t } = useTranslation();
   const theme = useMantineTheme();
@@ -69,11 +72,21 @@ export function ProviderPicker({
         {!hasApiKey && (
           <MotionDiv variants={contentVariants} initial="hidden" animate="visible" exit="exit">
             <Alert color="yellow" icon={<Key size={16} />}>
-              <Text size="sm">
-                {t('Add your {{provider}} API key in Settings to enable translation.', {
-                  provider: providerLabel,
-                })}
-              </Text>
+              <Group justify="space-between" align="center" wrap="wrap" gap="xs">
+                <Text size="sm">
+                  {t('To start translating, connect a free API key — it takes about 2 minutes.')}
+                </Text>
+                {onOpenSettings && (
+                  <Button
+                    variant="light"
+                    size="xs"
+                    leftSection={<Key size={14} />}
+                    onClick={() => onOpenSettings('translation')}
+                  >
+                    {t('Set up API key')}
+                  </Button>
+                )}
+              </Group>
             </Alert>
           </MotionDiv>
         )}
