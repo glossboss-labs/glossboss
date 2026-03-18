@@ -18,18 +18,14 @@ export async function initPostHog(): Promise<void> {
   initPromise = (async () => {
     try {
       posthogModule = await import('posthog-js');
-      const isProduction =
-        typeof window !== 'undefined' && window.location.hostname === 'glossboss.ink';
-
       posthogModule.default.init(key, {
         api_host: '/ingest',
-        ...(isProduction ? {} : { ui_host: 'https://eu.posthog.com' }),
+        ui_host: 'https://eu.posthog.com',
         persistence: 'memory',
         autocapture: true,
         capture_pageview: false,
         respect_dnt: true,
         disable_session_recording: true,
-        disable_toolbar: isProduction,
         enable_heatmaps: true,
         capture_exceptions: true,
       });

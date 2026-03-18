@@ -15,12 +15,6 @@ export const onRequest: PagesFunction = async ({ request, params }) => {
   const path = Array.isArray(params.path) ? params.path.join('/') : (params.path ?? '');
   const url = new URL(request.url);
 
-  // Block the PostHog toolbar (3.3MB) on production — keep it available on dev.
-  const isProduction = url.hostname === 'glossboss.ink';
-  if (isProduction && (path === 'static/toolbar.js' || path === 'static/toolbar.js.map')) {
-    return new Response(null, { status: 204 });
-  }
-
   // Asset requests (config.js, surveys.js, etc.) go to the assets host.
   const isAsset = path.startsWith('static/') || path.startsWith('array/') || path.endsWith('.js');
   const upstream = isAsset ? POSTHOG_ASSETS_HOST : POSTHOG_HOST;
