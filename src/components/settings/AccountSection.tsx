@@ -34,6 +34,7 @@ import {
   ChevronDown,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
+import { getSizedAvatarUrl } from '@/lib/utils/avatar';
 import { useAuthStore } from '@/stores/auth-store';
 import { useCloudSettingsSync } from '@/hooks/use-cloud-settings-sync';
 import { useTranslation } from '@/lib/app-language';
@@ -249,7 +250,7 @@ export function AccountSection() {
           {editingProfile ? (
             <>
               <Group gap="md" align="flex-start">
-                <Avatar src={avatarUrl} size="lg" radius="xl" color="blue">
+                <Avatar src={getSizedAvatarUrl(avatarUrl, 56)} size="lg" radius="xl" color="blue">
                   {initials}
                 </Avatar>
                 <Stack gap="xs" style={{ flex: 1 }}>
@@ -288,7 +289,7 @@ export function AccountSection() {
             </>
           ) : (
             <Group gap="md">
-              <Avatar src={avatarUrl} size="lg" radius="xl" color="blue">
+              <Avatar src={getSizedAvatarUrl(avatarUrl, 56)} size="lg" radius="xl" color="blue">
                 {initials}
               </Avatar>
               <Stack gap={2}>

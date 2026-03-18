@@ -31,5 +31,16 @@ export function GlossBossLogo({ size = 28, variant = 'full' }: GlossBossLogoProp
         ? '/glossboss-combined-light.svg'
         : '/glossboss-combined-dark.svg';
 
-  return <img src={src} alt="GlossBoss" style={{ height: size, display: 'block' }} />;
+  // Icon is 1:1, combined wordmark has viewBox 364.3×80 (aspect ~4.554:1).
+  const width = variant === 'icon' ? size : Math.round(size * (364.3 / 80));
+
+  return (
+    <img
+      src={src}
+      alt="GlossBoss"
+      width={width}
+      height={size}
+      style={{ height: size, display: 'block' }}
+    />
+  );
 }

@@ -21,7 +21,7 @@ import {
 import { motion } from 'motion/react';
 import { buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
-import { getInitials } from '@/lib/utils/avatar';
+import { getInitials, getSizedAvatarUrl } from '@/lib/utils/avatar';
 import { useAuth } from '@/hooks/use-auth';
 import { useAuthStore } from '@/stores/auth-store';
 import { useSubscription } from '@/hooks/use-subscription';
@@ -74,7 +74,7 @@ export function UserMenu() {
               radius="sm"
               style={{ padding: 0, overflow: 'hidden' }}
             >
-              <Avatar src={avatarUrl} size="100%" radius="sm" color="blue">
+              <Avatar src={getSizedAvatarUrl(avatarUrl, 34)} size="100%" radius="sm" color="blue">
                 {initials}
               </Avatar>
             </ActionIcon>
