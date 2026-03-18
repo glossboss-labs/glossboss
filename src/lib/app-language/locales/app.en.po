@@ -298,7 +298,7 @@ msgstr ""
 
 #: src/components/organizations/SharedCredentialsTab.tsx:310
 #: src/components/settings/CustomProviderCard.tsx:219
-#: src/components/settings/LlmProviderCard.tsx:213
+#: src/components/settings/LlmProviderCard.tsx:266
 #: src/components/settings/SpeechSection.tsx:417
 #: src/components/settings/TranslationSection.tsx:368
 #: src/components/settings/TranslationSection.tsx:520
@@ -310,7 +310,7 @@ msgid "API key (leave empty to keep current)"
 msgstr "API key (leave empty to keep current)"
 
 #: src/components/settings/CustomProviderCard.tsx:90
-#: src/components/settings/LlmProviderCard.tsx:101
+#: src/components/settings/LlmProviderCard.tsx:134
 #: src/components/settings/SpeechSection.tsx:162
 #: src/components/settings/TranslationSection.tsx:160
 #: src/components/settings/TranslationSection.tsx:206
@@ -1226,7 +1226,7 @@ msgid "Configure your ElevenLabs API key in Settings."
 msgstr "Configure your ElevenLabs API key in Settings."
 
 #: src/components/settings/CustomProviderCard.tsx:152
-#: src/components/settings/LlmProviderCard.tsx:169
+#: src/components/settings/LlmProviderCard.tsx:222
 #: src/components/settings/TranslationSection.tsx:280
 msgid "Configured"
 msgstr "Configured"
@@ -1602,7 +1602,7 @@ msgstr "Default glossary enforcement"
 #: src/components/organizations/OrgTranslationTab.tsx:134
 #: src/components/organizations/OrgTranslationTab.tsx:236
 #: src/components/settings/CustomProviderCard.tsx:131
-#: src/components/settings/LlmProviderCard.tsx:149
+#: src/components/settings/LlmProviderCard.tsx:202
 #: src/components/settings/TranslationSection.tsx:260
 msgid "Default provider"
 msgstr "Default provider"
@@ -2025,7 +2025,7 @@ msgid "Enter the API key"
 msgstr "Enter the API key"
 
 #: src/components/settings/CustomProviderCard.tsx:220
-#: src/components/settings/LlmProviderCard.tsx:214
+#: src/components/settings/LlmProviderCard.tsx:267
 #: src/hooks/use-editor-tour.ts:196
 msgid "Enter your API key"
 msgstr "Enter your API key"
@@ -2251,7 +2251,7 @@ msgid "Failed to compare releases."
 msgstr "Failed to compare releases."
 
 #: src/components/settings/CustomProviderCard.tsx:95
-#: src/components/settings/LlmProviderCard.tsx:111
+#: src/components/settings/LlmProviderCard.tsx:147
 #: src/components/settings/SpeechSection.tsx:174
 #: src/components/settings/TranslationSection.tsx:167
 #: src/components/settings/TranslationSection.tsx:216
@@ -2754,7 +2754,7 @@ msgstr "German (Germany)"
 msgid "German (Switzerland)"
 msgstr "German (Switzerland)"
 
-#: src/components/settings/LlmProviderCard.tsx:197
+#: src/components/settings/LlmProviderCard.tsx:250
 msgid "Get API key"
 msgstr "Get API key"
 
@@ -3368,7 +3368,7 @@ msgid "Key"
 msgstr "Key"
 
 #: src/components/settings/CustomProviderCard.tsx:229
-#: src/components/settings/LlmProviderCard.tsx:223
+#: src/components/settings/LlmProviderCard.tsx:276
 #: src/components/settings/SpeechSection.tsx:427
 #: src/components/settings/TranslationSection.tsx:378
 #: src/components/settings/TranslationSection.tsx:530
@@ -3634,6 +3634,10 @@ msgstr "Loading file..."
 msgid "Loading glossary..."
 msgstr "Loading glossary..."
 
+#: src/components/settings/LlmProviderCard.tsx:287
+msgid "Loading models…"
+msgstr "Loading models…"
+
 #: src/components/editor/WordPressRefreshModal.tsx:277
 msgid "Loading releases..."
 msgstr "Loading releases..."
@@ -3814,7 +3818,7 @@ msgid "Missing something? Let us know what you need."
 msgstr "Missing something? Let us know what you need."
 
 #: src/components/settings/CustomProviderCard.tsx:239
-#: src/components/settings/LlmProviderCard.tsx:233
+#: src/components/settings/LlmProviderCard.tsx:286
 msgid "Model"
 msgstr "Model"
 
@@ -4176,7 +4180,7 @@ msgid "Norwegian Nynorsk"
 msgstr "Norwegian Nynorsk"
 
 #: src/components/settings/CustomProviderCard.tsx:156
-#: src/components/settings/LlmProviderCard.tsx:173
+#: src/components/settings/LlmProviderCard.tsx:226
 #: src/components/settings/TranslationSection.tsx:284
 msgid "Not configured"
 msgstr "Not configured"
@@ -4635,7 +4639,7 @@ msgstr "Please enter a base URL"
 msgid "Please enter a new password."
 msgstr "Please enter a new password."
 
-#: src/components/settings/LlmProviderCard.tsx:90
+#: src/components/settings/LlmProviderCard.tsx:123
 #: src/components/settings/SpeechSection.tsx:140
 #: src/components/settings/TranslationSection.tsx:150
 msgid "Please enter an API key"
@@ -5115,7 +5119,7 @@ msgid "Release {{release}}"
 msgstr "Release {{release}}"
 
 #: src/components/settings/CustomProviderCard.tsx:185
-#: src/components/settings/LlmProviderCard.tsx:203
+#: src/components/settings/LlmProviderCard.tsx:256
 #: src/components/settings/SpeechSection.tsx:403
 #: src/components/settings/TranslationSection.tsx:357
 #: src/components/settings/TranslationSection.tsx:509
@@ -5129,7 +5133,7 @@ msgstr "Remember token"
 
 #: src/components/projects/ProjectMembersTab.tsx:241
 #: src/components/settings/CustomProviderCard.tsx:298
-#: src/components/settings/LlmProviderCard.tsx:295
+#: src/components/settings/LlmProviderCard.tsx:349
 #: src/components/settings/TranslationSection.tsx:439
 #: src/components/settings/TranslationSection.tsx:577
 #: src/pages/OrgSettings.tsx:406
@@ -5424,7 +5428,7 @@ msgstr "STATUS"
 #: src/components/projects/ProjectTranslationTab.tsx:255
 #: src/components/settings/AccountSection.tsx:277
 #: src/components/settings/CustomProviderCard.tsx:294
-#: src/components/settings/LlmProviderCard.tsx:291
+#: src/components/settings/LlmProviderCard.tsx:345
 #: src/components/settings/SpeechSection.tsx:388
 #: src/components/settings/SpeechSection.tsx:444
 #: src/components/settings/TranslationSection.tsx:435
@@ -5644,7 +5648,7 @@ msgstr "Service"
 msgid "Service tier"
 msgstr "Service tier"
 
-#: src/components/settings/LlmProviderCard.tsx:310
+#: src/components/settings/LlmProviderCard.tsx:364
 #: src/components/settings/TranslationSection.tsx:592
 msgid "Session usage: {{count}} characters"
 msgstr "Session usage: {{count}} characters"
@@ -5654,7 +5658,7 @@ msgid "Set a WordPress project slug to browse source files."
 msgstr "Set a WordPress project slug to browse source files."
 
 #: src/components/settings/CustomProviderCard.tsx:173
-#: src/components/settings/LlmProviderCard.tsx:190
+#: src/components/settings/LlmProviderCard.tsx:243
 #: src/components/settings/TranslationSection.tsx:344
 #: src/components/settings/TranslationSection.tsx:492
 msgid "Set as default"
@@ -5715,7 +5719,7 @@ msgid "Settings imported, including your saved translation credentials."
 msgstr "Settings imported, including your saved translation credentials."
 
 #: src/components/settings/CustomProviderCard.tsx:106
-#: src/components/settings/LlmProviderCard.tsx:122
+#: src/components/settings/LlmProviderCard.tsx:158
 #: src/components/settings/SpeechSection.tsx:215
 #: src/components/settings/TranslationSection.tsx:179
 #: src/components/settings/TranslationSection.tsx:227
@@ -6263,7 +6267,7 @@ msgid "Telugu"
 msgstr "Telugu"
 
 #: src/components/settings/CustomProviderCard.tsx:249
-#: src/components/settings/LlmProviderCard.tsx:246
+#: src/components/settings/LlmProviderCard.tsx:300
 msgid "Temperature"
 msgstr "Temperature"
 
@@ -6296,7 +6300,7 @@ msgid "Terms of Service"
 msgstr "Terms of Service"
 
 #: src/components/settings/CustomProviderCard.tsx:291
-#: src/components/settings/LlmProviderCard.tsx:288
+#: src/components/settings/LlmProviderCard.tsx:342
 #: src/components/settings/SpeechSection.tsx:441
 #: src/components/settings/TranslationSection.tsx:432
 #: src/components/settings/TranslationSection.tsx:566
@@ -6909,7 +6913,7 @@ msgstr "Type DELETE to confirm"
 msgid "Type a custom locale code"
 msgstr "Type a custom locale code"
 
-#: src/components/settings/LlmProviderCard.tsx:242
+#: src/components/settings/LlmProviderCard.tsx:296
 msgid "Type a custom model ID"
 msgstr "Type a custom model ID"
 
@@ -7202,12 +7206,12 @@ msgid "Use my local settings"
 msgstr "Use my local settings"
 
 #: src/components/settings/CustomProviderCard.tsx:272
-#: src/components/settings/LlmProviderCard.tsx:269
+#: src/components/settings/LlmProviderCard.tsx:323
 msgid "Use project context when available"
 msgstr "Use project context when available"
 
 #: src/components/settings/CustomProviderCard.tsx:273
-#: src/components/settings/LlmProviderCard.tsx:270
+#: src/components/settings/LlmProviderCard.tsx:324
 msgid ""
 "Use relevant source excerpts for the current project as extra translation co"
 "ntext."
