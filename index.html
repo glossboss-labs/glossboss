@@ -8,33 +8,42 @@
     <link rel="icon" type="image/svg+xml" href="/icon.svg" />
     <link rel="icon" type="image/png" href="/icon.png" />
     <link rel="apple-touch-icon" href="/icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="canonical" href="https://glossboss.ink/" />
     <link rel="dns-prefetch" href="https://avatars.githubusercontent.com" />
-    <title>GlossBoss | Translation Platform</title>
+    <title>GlossBoss &mdash; Open-Source Translation Platform</title>
     <meta
       name="description"
-      content="The browser-based translation platform with AI translation from DeepL, Azure &amp; Gemini, real-time collaboration, and one-click deploys to GitHub &amp; GitLab."
+      content="Free, open-source translation editor for PO, POT, and i18next JSON files. AI translation from DeepL, OpenAI, Claude, Gemini, Mistral, DeepSeek &amp; Azure with real-time collaboration and GitHub/GitLab sync."
     />
 
     <!-- Open Graph / Social -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="GlossBoss | Translation Platform" />
+    <meta property="og:url" content="https://glossboss.ink/" />
+    <meta property="og:title" content="GlossBoss &mdash; Open-Source Translation Platform" />
     <meta
       property="og:description"
-      content="The browser-based translation platform with AI translation from DeepL, Azure &amp; Gemini, real-time collaboration, and one-click deploys to GitHub &amp; GitLab."
+      content="Free, open-source translation editor for PO, POT, and i18next JSON files. AI translation from DeepL, OpenAI, Claude, Gemini, Mistral, DeepSeek &amp; Azure with real-time collaboration and GitHub/GitLab sync."
     />
     <meta property="og:site_name" content="GlossBoss" />
-    <meta property="og:image" content="/icon.png" />
+    <meta property="og:image" content="https://glossboss.ink/og-card.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="GlossBoss &mdash; open-source translation platform" />
+    <!-- og:locale tags injected at build time by seoMeta() Vite plugin -->
 
     <!-- Twitter -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="GlossBoss | Translation Platform" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="GlossBoss &mdash; Open-Source Translation Platform" />
     <meta
       name="twitter:description"
-      content="The browser-based translation platform with AI translation from DeepL, Azure &amp; Gemini, real-time collaboration, and one-click deploys to GitHub &amp; GitLab."
+      content="Free, open-source translation editor for PO, POT, and i18next JSON files. AI translation from DeepL, OpenAI, Claude, Gemini, Mistral, DeepSeek &amp; Azure with real-time collaboration and GitHub/GitLab sync."
     />
-    <meta name="twitter:image" content="/icon.png" />
+    <meta name="twitter:image" content="https://glossboss.ink/og-card.png" />
+
+    <!-- hreflang tags injected at build time by seoMeta() Vite plugin -->
 
     <!-- Theme color -->
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#fafbfc" />
@@ -43,5 +52,103 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+
+    <!-- JSON-LD structured data — keep FAQ answers in sync with src/components/landing/FAQSection.tsx -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "GlossBoss Labs",
+        "url": "https://glossboss.ink",
+        "logo": "https://glossboss.ink/icon.png",
+        "sameAs": ["https://github.com/glossboss-labs/glossboss"]
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "GlossBoss",
+        "url": "https://glossboss.ink",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Web",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "EUR"
+        },
+        "description": "Browser-based translation platform with AI translation from DeepL, OpenAI, Claude, Gemini, Mistral, DeepSeek & Azure, real-time collaboration, and one-click deploys to GitHub & GitLab.",
+        "screenshot": "https://glossboss.ink/og-card.png",
+        "license": "https://www.gnu.org/licenses/agpl-3.0.html",
+        "author": {
+          "@type": "Organization",
+          "name": "GlossBoss Labs"
+        }
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Is GlossBoss really free?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "The local editor is free with no limits — open any PO, POT, or JSON file and translate without an account. Cloud features like saved projects, team collaboration, and repo sync start with a free tier (1 project, 5,000 strings) and scale from there."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What file formats does it support?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "GlossBoss supports gettext PO/POT files and i18next JSON resources. These cover WordPress plugins and themes, React and JavaScript apps, and most open-source projects."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Which translation providers are supported?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Seven providers: DeepL, OpenAI, Claude, Google Gemini, Mistral, DeepSeek, and Azure Translator — plus custom endpoints for self-hosted LLMs. You can switch between them mid-session and bring your own API keys or use the shared access included with your plan."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How is this different from Poedit or Crowdin?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "GlossBoss combines the simplicity of Poedit with the collaboration features of Crowdin — in the browser, with no install required. It supports seven AI translation providers including DeepL, OpenAI, Claude, and Gemini, has deep WordPress integration with source-code context, includes a full review workflow with threaded comments, syncs directly with GitHub and GitLab, and is open source."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Is my data safe?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "GlossBoss uses no cookies and collects no personal data for analytics — not even your email or IP address. Files opened in the local editor are processed entirely in your browser and never sent to our servers. Cloud projects are stored in Supabase with encrypted credentials. The entire codebase is open source for inspection."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I self-host GlossBoss?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. GlossBoss is licensed under AGPL-3.0 and the full source code is on GitHub. You can run your own instance for your team or organization."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What makes the WordPress integration special?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "GlossBoss can load glossaries directly from WordPress.org for any plugin or theme, browse the actual plugin source files via SVN, and use Google Gemini to read your source code for context-aware translations — so the AI understands where each string appears in your UI."
+            }
+          }
+        ]
+      }
+    </script>
   </body>
 </html>

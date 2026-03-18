@@ -112,7 +112,7 @@ msgid "/mo"
 msgstr ""
 
 #: src/components/projects/ProjectCard.tsx:84
-#: src/pages/ProjectDetail.tsx:382
+#: src/pages/ProjectDetail.tsx:387
 msgid "1 language"
 msgstr "1 taal"
 
@@ -309,8 +309,8 @@ msgstr "De API-sleutel is geldig!"
 msgid "API key to use"
 msgstr ""
 
-#: src/pages/Invite.tsx:144
-#: src/pages/ProjectInvite.tsx:146
+#: src/pages/Invite.tsx:151
+#: src/pages/ProjectInvite.tsx:156
 msgid "Accept invite"
 msgstr "Uitnodiging accepteren"
 
@@ -318,7 +318,7 @@ msgstr "Uitnodiging accepteren"
 msgid "Access"
 msgstr ""
 
-#: src/pages/Settings.tsx:102
+#: src/pages/Settings.tsx:104
 msgid "Account"
 msgstr "Account"
 
@@ -326,7 +326,7 @@ msgstr "Account"
 msgid "Account and project data"
 msgstr ""
 
-#: src/pages/auth/Signup.tsx:117
+#: src/pages/auth/Signup.tsx:125
 msgid "Account created. Check your email to confirm, or sign in now."
 msgstr "Account aangemaakt. Controleer je e-mail om te bevestigen, of log nu in."
 
@@ -382,8 +382,8 @@ msgstr "Opmerking toevoegen"
 
 #: src/components/projects/AddLanguageModal.tsx:275
 #: src/components/projects/AddLanguageModal.tsx:453
-#: src/pages/ProjectDetail.tsx:408
-#: src/pages/ProjectSettings.tsx:642
+#: src/pages/ProjectDetail.tsx:415
+#: src/pages/ProjectSettings.tsx:658
 msgid "Add language"
 msgstr "Taal toevoegen"
 
@@ -453,7 +453,7 @@ msgstr "Bureau of studio"
 msgid "Albanian"
 msgstr "Albanees"
 
-#: src/pages/Roadmap.tsx:51
+#: src/pages/Roadmap.tsx:47
 msgid "All"
 msgstr "Alles"
 
@@ -485,7 +485,7 @@ msgstr ""
 msgid "Allow follow-up questions about this feedback"
 msgstr "Sta vervolgvragen over deze feedback toe"
 
-#: src/pages/auth/Signup.tsx:106
+#: src/pages/auth/Signup.tsx:113
 msgid "Already have an account?"
 msgstr "Heb je al een account?"
 
@@ -565,8 +565,8 @@ msgid "Arabic (Saudi Arabia)"
 msgstr "Arabisch (Saoedi-Arabië)"
 
 #: src/components/projects/ProjectSettingsTab.tsx:170
-#: src/pages/Dashboard.tsx:284
-#: src/pages/ProjectSettings.tsx:826
+#: src/pages/Dashboard.tsx:311
+#: src/pages/ProjectSettings.tsx:858
 msgid ""
 "Are you sure you want to delete \"{{name}}\"? All languages and entries will"
 " be permanently removed."
@@ -574,8 +574,8 @@ msgstr ""
 "Weet je zeker dat je \"{{name}}\" wilt verwijderen? Alle talen en items zull"
 "en permanent worden verwijderd."
 
-#: src/pages/OrgSettings.tsx:599
-#: src/pages/OrgSettingsPage.tsx:763
+#: src/pages/OrgSettings.tsx:641
+#: src/pages/OrgSettingsPage.tsx:861
 msgid ""
 "Are you sure you want to delete \"{{name}}\"? All members, invites, and asso"
 "ciated data will be permanently removed."
@@ -583,10 +583,10 @@ msgstr ""
 "Weet je zeker dat je \"{{name}}\" wilt verwijderen? Alle leden, uitnodiginge"
 "n en bijbehorende gegevens zullen permanent worden verwijderd."
 
-#: src/pages/OrgSettings.tsx:613
-#: src/pages/OrgSettingsPage.tsx:777
-#: src/pages/ProjectDetail.tsx:694
-#: src/pages/ProjectSettings.tsx:840
+#: src/pages/OrgSettings.tsx:655
+#: src/pages/OrgSettingsPage.tsx:875
+#: src/pages/ProjectDetail.tsx:706
+#: src/pages/ProjectSettings.tsx:872
 msgid "Are you sure you want to leave \"{{name}}\"?"
 msgstr "Weet je zeker dat je \"{{name}}\" wilt verlaten?"
 
@@ -689,13 +689,13 @@ msgstr "Azure-vertaling mislukt"
 msgid "Back"
 msgstr "Terug"
 
-#: src/pages/Invite.tsx:98
-#: src/pages/OrgSettings.tsx:247
-#: src/pages/OrgSettingsPage.tsx:285
-#: src/pages/ProjectDetail.tsx:224
-#: src/pages/ProjectEditor.tsx:205
-#: src/pages/ProjectInvite.tsx:100
-#: src/pages/ProjectSettings.tsx:286
+#: src/pages/Invite.tsx:105
+#: src/pages/OrgSettings.tsx:253
+#: src/pages/OrgSettingsPage.tsx:290
+#: src/pages/ProjectDetail.tsx:225
+#: src/pages/ProjectEditor.tsx:203
+#: src/pages/ProjectInvite.tsx:107
+#: src/pages/ProjectSettings.tsx:284
 msgid "Back to dashboard"
 msgstr "Terug naar dashboard"
 
@@ -707,18 +707,18 @@ msgstr "Terug naar gedetecteerde bestanden"
 msgid "Back to listing"
 msgstr "Terug naar lijst"
 
-#: src/pages/ProjectDetail.tsx:224
+#: src/pages/ProjectDetail.tsx:225
 msgid "Back to projects"
 msgstr "Terug naar projecten"
 
-#: src/pages/auth/ForgotPassword.tsx:75
-#: src/pages/auth/ForgotPassword.tsx:103
+#: src/pages/auth/ForgotPassword.tsx:83
+#: src/pages/auth/ForgotPassword.tsx:111
 msgid "Back to sign in"
 msgstr "Terug naar inloggen"
 
 #: src/components/SettingsModal.tsx:126
 #: src/components/editor/EditorHeader.tsx:222
-#: src/pages/Settings.tsx:143
+#: src/pages/Settings.tsx:145
 msgid "Backup"
 msgstr "Back-up"
 
@@ -746,7 +746,7 @@ msgstr "Bengaals"
 msgid "Beta"
 msgstr "Bèta"
 
-#: src/pages/Roadmap.tsx:271
+#: src/pages/Roadmap.tsx:270
 msgid "Big things are coming"
 msgstr "Er komen grote dingen aan"
 
@@ -760,7 +760,7 @@ msgstr "Jaarlijks gefactureerd"
 msgid "Billed monthly"
 msgstr "Maandelijks gefactureerd"
 
-#: src/pages/Settings.tsx:107
+#: src/pages/Settings.tsx:109
 msgid "Billing"
 msgstr "Facturering"
 
@@ -837,7 +837,7 @@ msgstr "Gebouwd voor WordPress"
 msgid "Bulgarian"
 msgstr "Bulgaars"
 
-#: src/pages/auth/Signup.tsx:162
+#: src/pages/auth/Signup.tsx:172
 msgid "By creating an account, you agree to our"
 msgstr "Door een account aan te maken, ga je akkoord met onze"
 
@@ -929,7 +929,7 @@ msgstr "Om je e-mailadres te wijzigen is bevestiging via beide adressen vereist.
 msgid "Check file compatibility"
 msgstr "Controleer bestandscompatibiliteit"
 
-#: src/pages/auth/ForgotPassword.tsx:71
+#: src/pages/auth/ForgotPassword.tsx:79
 msgid "Check your email for a password reset link."
 msgstr "Controleer je e-mail voor een link om je wachtwoord te resetten."
 
@@ -955,12 +955,12 @@ msgstr "Chinees (Traditioneel)"
 msgid "Chinese, Japanese, Korean, Vietnamese, Thai, Indonesian"
 msgstr "Chinees, Japans, Koreaans, Vietnamees, Thais, Indonesisch"
 
-#: src/pages/auth/ResetPassword.tsx:76
+#: src/pages/auth/ResetPassword.tsx:83
 msgid "Choose a new password for your account."
 msgstr "Kies een nieuw wachtwoord voor je account."
 
-#: src/pages/auth/ResetPassword.tsx:101
-#: src/pages/auth/Signup.tsx:153
+#: src/pages/auth/ResetPassword.tsx:109
+#: src/pages/auth/Signup.tsx:161
 msgid "Choose a password"
 msgstr "Kies een wachtwoord"
 
@@ -1227,7 +1227,7 @@ msgstr "Bevestigen"
 msgid "Confirm new password"
 msgstr "Nieuw wachtwoord bevestigen"
 
-#: src/pages/auth/ResetPassword.tsx:110
+#: src/pages/auth/ResetPassword.tsx:118
 msgid "Confirm password"
 msgstr "Wachtwoord bevestigen"
 
@@ -1321,12 +1321,12 @@ msgid "Continue with Free"
 msgstr "Doorgaan met Free"
 
 #: src/components/auth/AuthPromptModal.tsx:49
-#: src/pages/auth/Login.tsx:99
-#: src/pages/auth/Signup.tsx:128
+#: src/pages/auth/Login.tsx:105
+#: src/pages/auth/Signup.tsx:136
 msgid "Continue with GitHub"
 msgstr "Doorgaan met GitHub"
 
-#: src/pages/auth/Login.tsx:142
+#: src/pages/auth/Login.tsx:148
 msgid "Continue without account"
 msgstr "Doorgaan zonder account"
 
@@ -1348,8 +1348,8 @@ msgid "Conventional commit prefix prepended to commit messages, e.g. fix(i18n):"
 msgstr "Conventionele commit-prefix toegevoegd aan commitberichten, bijv. fix(i18n):"
 
 #: src/components/projects/ProjectInvitesTab.tsx:159
-#: src/pages/OrgSettings.tsx:560
-#: src/pages/OrgSettingsPage.tsx:593
+#: src/pages/OrgSettings.tsx:599
+#: src/pages/OrgSettingsPage.tsx:659
 msgid "Copied"
 msgstr "Gekopieerd"
 
@@ -1358,8 +1358,8 @@ msgid "Copy entries with empty translations"
 msgstr "Items met lege vertalingen kopiëren"
 
 #: src/components/projects/ProjectInvitesTab.tsx:159
-#: src/pages/OrgSettings.tsx:560
-#: src/pages/OrgSettingsPage.tsx:593
+#: src/pages/OrgSettings.tsx:599
+#: src/pages/OrgSettingsPage.tsx:660
 msgid "Copy invite link"
 msgstr "Uitnodigingslink kopiëren"
 
@@ -1384,7 +1384,7 @@ msgstr "Met zorg gemaakt in Nederland"
 msgid "Create"
 msgstr "Aanmaken"
 
-#: src/pages/Dashboard.tsx:178
+#: src/pages/Dashboard.tsx:197
 msgid ""
 "Create a cloud project from a PO file, a WordPress.org export, or a reposito"
 "ry."
@@ -1404,11 +1404,11 @@ msgstr "Maak een fine-grained token"
 msgid "Create a token"
 msgstr "Maak een token aan"
 
-#: src/pages/auth/Signup.tsx:176
+#: src/pages/auth/Signup.tsx:186
 msgid "Create account"
 msgstr "Account aanmaken"
 
-#: src/pages/auth/Signup.tsx:103
+#: src/pages/auth/Signup.tsx:110
 msgid "Create an account"
 msgstr "Een account aanmaken"
 
@@ -1418,19 +1418,19 @@ msgid "Create new branch"
 msgstr "Nieuwe branch aanmaken"
 
 #: src/components/auth/AuthPromptModal.tsx:61
-#: src/pages/auth/Login.tsx:88
+#: src/pages/auth/Login.tsx:94
 msgid "Create one"
 msgstr "Maak er een aan"
 
 #: src/components/organizations/CreateOrgModal.tsx:76
 #: src/components/organizations/CreateOrgModal.tsx:122
-#: src/pages/Dashboard.tsx:247
+#: src/pages/Dashboard.tsx:266
 msgid "Create organization"
 msgstr "Organisatie aanmaken"
 
 #: src/components/projects/CreateProjectModal.tsx:676
-#: src/pages/OrgSettings.tsx:430
-#: src/pages/OrgSettingsPage.tsx:635
+#: src/pages/OrgSettings.tsx:455
+#: src/pages/OrgSettingsPage.tsx:712
 msgid "Create project"
 msgstr "Project aanmaken"
 
@@ -1527,8 +1527,8 @@ msgid "Daily"
 msgstr "Dagelijks"
 
 #: src/components/projects/ProjectSettingsTab.tsx:140
-#: src/pages/OrgSettingsPage.tsx:359
-#: src/pages/ProjectSettings.tsx:371
+#: src/pages/OrgSettingsPage.tsx:371
+#: src/pages/ProjectSettings.tsx:373
 msgid "Danger zone"
 msgstr "Gevarenzone"
 
@@ -1547,7 +1547,7 @@ msgstr "Donkere modus"
 #: src/components/AppSidebar.tsx:250
 #: src/components/landing/LandingNav.tsx:75
 #: src/components/landing/LandingNav.tsx:149
-#: src/pages/OrgSettings.tsx:274
+#: src/pages/OrgSettings.tsx:277
 msgid "Dashboard"
 msgstr "Dashboard"
 
@@ -1568,8 +1568,8 @@ msgstr ""
 msgid "Data shared"
 msgstr ""
 
-#: src/pages/Invite.tsx:141
-#: src/pages/ProjectInvite.tsx:143
+#: src/pages/Invite.tsx:148
+#: src/pages/ProjectInvite.tsx:153
 msgid "Decline"
 msgstr "Afwijzen"
 
@@ -1595,7 +1595,7 @@ msgid "Default provider"
 msgstr ""
 
 #: src/components/projects/ProjectCard.tsx:136
-#: src/pages/ProjectDetail.tsx:633
+#: src/pages/ProjectDetail.tsx:640
 msgid "Delete"
 msgstr "Verwijderen"
 
@@ -1604,7 +1604,7 @@ msgstr "Verwijderen"
 msgid "Delete account"
 msgstr "Account verwijderen"
 
-#: src/pages/ProjectSettings.tsx:688
+#: src/pages/ProjectSettings.tsx:704
 msgid "Delete language"
 msgstr "Taal verwijderen"
 
@@ -1612,31 +1612,31 @@ msgstr "Taal verwijderen"
 msgid "Delete my account"
 msgstr "Mijn account verwijderen"
 
-#: src/pages/OrgSettings.tsx:598
-#: src/pages/OrgSettings.tsx:603
-#: src/pages/OrgSettingsPage.tsx:723
-#: src/pages/OrgSettingsPage.tsx:762
-#: src/pages/OrgSettingsPage.tsx:767
+#: src/pages/OrgSettings.tsx:640
+#: src/pages/OrgSettings.tsx:645
+#: src/pages/OrgSettingsPage.tsx:813
+#: src/pages/OrgSettingsPage.tsx:860
+#: src/pages/OrgSettingsPage.tsx:865
 msgid "Delete organization"
 msgstr "Organisatie verwijderen"
 
 #: src/components/projects/ProjectSettingsTab.tsx:158
 #: src/components/projects/ProjectSettingsTab.tsx:169
 #: src/components/projects/ProjectSettingsTab.tsx:174
-#: src/pages/Dashboard.tsx:283
-#: src/pages/Dashboard.tsx:288
-#: src/pages/ProjectSettings.tsx:773
-#: src/pages/ProjectSettings.tsx:825
-#: src/pages/ProjectSettings.tsx:830
+#: src/pages/Dashboard.tsx:310
+#: src/pages/Dashboard.tsx:315
+#: src/pages/ProjectSettings.tsx:793
+#: src/pages/ProjectSettings.tsx:857
+#: src/pages/ProjectSettings.tsx:862
 msgid "Delete project"
 msgstr "Project verwijderen"
 
-#: src/pages/OrgSettingsPage.tsx:708
+#: src/pages/OrgSettingsPage.tsx:798
 msgid "Delete this organization"
 msgstr "Deze organisatie verwijderen"
 
 #: src/components/projects/ProjectSettingsTab.tsx:144
-#: src/pages/ProjectSettings.tsx:758
+#: src/pages/ProjectSettings.tsx:778
 msgid "Delete this project"
 msgstr "Dit project verwijderen"
 
@@ -1660,10 +1660,10 @@ msgstr "Beschrijf wat je hebt gezien"
 #: src/components/projects/ProjectSettingsTab.tsx:86
 #: src/components/projects/ProjectSettingsTab.tsx:124
 #: src/components/settings/KeybindsSection.tsx:155
-#: src/pages/OrgSettingsPage.tsx:379
-#: src/pages/OrgSettingsPage.tsx:418
-#: src/pages/ProjectSettings.tsx:391
-#: src/pages/ProjectSettings.tsx:484
+#: src/pages/OrgSettingsPage.tsx:400
+#: src/pages/OrgSettingsPage.tsx:439
+#: src/pages/ProjectSettings.tsx:397
+#: src/pages/ProjectSettings.tsx:497
 msgid "Description"
 msgstr "Beschrijving"
 
@@ -1687,7 +1687,7 @@ msgstr "Ontwikkelaar"
 #: src/components/SettingsModal.tsx:130
 #: src/components/editor/WordPressProjectModal.tsx:356
 #: src/components/editor/WordPressRefreshModal.tsx:242
-#: src/pages/Settings.tsx:147
+#: src/pages/Settings.tsx:149
 msgid "Development"
 msgstr "Ontwikkeling"
 
@@ -1720,16 +1720,16 @@ msgstr "Wijzigingen weggooien en huidig veld verlaten"
 msgid "Disconnect"
 msgstr "Verbinding verbreken"
 
-#: src/pages/Explore.tsx:233
+#: src/pages/Explore.tsx:237
 msgid "Discover and contribute to public translation projects"
 msgstr ""
 
-#: src/pages/Roadmap.tsx:172
+#: src/pages/Roadmap.tsx:168
 msgid "Discuss"
 msgstr "Bespreek"
 
 #: src/components/SettingsModal.tsx:123
-#: src/pages/Settings.tsx:136
+#: src/pages/Settings.tsx:138
 msgid "Display"
 msgstr "Weergave"
 
@@ -1751,12 +1751,12 @@ msgid "Do you need GitHub/GitLab integration?"
 msgstr "Heb je GitHub/GitLab-integratie nodig?"
 
 #: src/components/auth/AuthPromptModal.tsx:59
-#: src/pages/auth/Login.tsx:86
+#: src/pages/auth/Login.tsx:92
 msgid "Don't have an account?"
 msgstr "Heb je nog geen account?"
 
 #: src/hooks/use-editor-tour.ts:272
-#: src/pages/Roadmap.tsx:54
+#: src/pages/Roadmap.tsx:50
 msgid "Done"
 msgstr "Klaar"
 
@@ -1908,16 +1908,16 @@ msgstr ""
 #: src/components/projects/ProjectNotificationsTab.tsx:58
 #: src/components/settings/AccountSection.tsx:264
 #: src/components/settings/NotificationsSection.tsx:50
-#: src/pages/auth/ForgotPassword.tsx:88
-#: src/pages/auth/Login.tsx:113
-#: src/pages/auth/Signup.tsx:142
+#: src/pages/auth/ForgotPassword.tsx:96
+#: src/pages/auth/Login.tsx:119
+#: src/pages/auth/Signup.tsx:150
 msgid "Email"
 msgstr "E-mail"
 
 #: src/components/projects/ProjectInvitesTab.tsx:96
 #: src/components/projects/ProjectMembersTab.tsx:147
-#: src/pages/OrgSettings.tsx:497
-#: src/pages/OrgSettingsPage.tsx:458
+#: src/pages/OrgSettings.tsx:529
+#: src/pages/OrgSettingsPage.tsx:480
 msgid "Email address"
 msgstr "E-mailadres"
 
@@ -2039,7 +2039,7 @@ msgstr ""
 msgid "Enter your ElevenLabs API key"
 msgstr "Voer je ElevenLabs API-sleutel in"
 
-#: src/pages/auth/ForgotPassword.tsx:64
+#: src/pages/auth/ForgotPassword.tsx:71
 msgid "Enter your email and we'll send you a reset link."
 msgstr "Voer je e-mailadres in en we sturen je een link om te resetten."
 
@@ -2103,22 +2103,22 @@ msgid "Expected behavior"
 msgstr "Verwacht gedrag"
 
 #: src/components/projects/ProjectInvitesTab.tsx:146
-#: src/pages/OrgSettings.tsx:547
-#: src/pages/OrgSettingsPage.tsx:580
+#: src/pages/OrgSettings.tsx:585
+#: src/pages/OrgSettingsPage.tsx:641
 msgid "Expired"
 msgstr "Verlopen"
 
 #: src/components/projects/ProjectInvitesTab.tsx:151
-#: src/pages/OrgSettings.tsx:552
-#: src/pages/OrgSettingsPage.tsx:585
+#: src/pages/OrgSettings.tsx:590
+#: src/pages/OrgSettingsPage.tsx:646
 msgid "Expires {{date}}"
 msgstr "Verloopt op {{date}}"
 
 #: src/components/AppHeader.tsx:97
 #: src/components/AppSidebar.tsx:257
 #: src/components/landing/LandingFooter.tsx:17
-#: src/pages/Explore.tsx:231
-#: src/pages/ProjectDetail.tsx:252
+#: src/pages/Explore.tsx:235
+#: src/pages/ProjectDetail.tsx:249
 msgid "Explore"
 msgstr "Ontdek"
 
@@ -2221,8 +2221,8 @@ msgstr "Geëxtraheerde opmerkingen"
 msgid "FUZZY"
 msgstr ""
 
-#: src/pages/Invite.tsx:73
-#: src/pages/ProjectInvite.tsx:75
+#: src/pages/Invite.tsx:74
+#: src/pages/ProjectInvite.tsx:76
 msgid "Failed to accept invite"
 msgstr "Kan de uitnodiging niet accepteren"
 
@@ -2271,8 +2271,8 @@ msgstr ""
 msgid "Failed to delete language"
 msgstr "Kan de taal niet verwijderen"
 
-#: src/pages/OrgSettings.tsx:199
-#: src/pages/OrgSettingsPage.tsx:250
+#: src/pages/OrgSettings.tsx:207
+#: src/pages/OrgSettingsPage.tsx:255
 msgid "Failed to delete organization"
 msgstr "Kan de organisatie niet verwijderen"
 
@@ -2306,8 +2306,8 @@ msgstr "Kan de verificatie niet starten."
 msgid "Failed to join project"
 msgstr "Kan niet deelnemen aan het project"
 
-#: src/pages/OrgSettings.tsx:212
-#: src/pages/OrgSettingsPage.tsx:263
+#: src/pages/OrgSettings.tsx:220
+#: src/pages/OrgSettingsPage.tsx:268
 msgid "Failed to leave organization"
 msgstr "Kan de organisatie niet verlaten"
 
@@ -2337,13 +2337,13 @@ msgstr "Kan de glossary niet laden"
 msgid "Failed to load glossary."
 msgstr ""
 
-#: src/pages/Invite.tsx:53
-#: src/pages/ProjectInvite.tsx:54
+#: src/pages/Invite.tsx:54
+#: src/pages/ProjectInvite.tsx:55
 msgid "Failed to load invite"
 msgstr "Kan de uitnodiging niet laden"
 
-#: src/pages/OrgSettings.tsx:136
-#: src/pages/OrgSettingsPage.tsx:155
+#: src/pages/OrgSettings.tsx:144
+#: src/pages/OrgSettingsPage.tsx:160
 msgid "Failed to load organization"
 msgstr "Kan de organisatie niet laden"
 
@@ -2351,8 +2351,8 @@ msgstr "Kan de organisatie niet laden"
 msgid "Failed to load preferences"
 msgstr "Kan de voorkeuren niet laden"
 
-#: src/pages/ProjectDetail.tsx:114
-#: src/pages/ProjectEditor.tsx:167
+#: src/pages/ProjectDetail.tsx:113
+#: src/pages/ProjectEditor.tsx:168
 #: src/pages/ProjectSettings.tsx:159
 msgid "Failed to load project"
 msgstr "Kan het project niet laden"
@@ -2361,7 +2361,7 @@ msgstr "Kan het project niet laden"
 msgid "Failed to load project metadata."
 msgstr "Kan de projectmetadata niet laden."
 
-#: src/pages/Explore.tsx:137
+#: src/pages/Explore.tsx:138
 msgid "Failed to load projects"
 msgstr "Kan de projecten niet laden"
 
@@ -2369,7 +2369,7 @@ msgstr "Kan de projecten niet laden"
 msgid "Failed to load releases."
 msgstr "Kan de releases niet laden."
 
-#: src/pages/Roadmap.tsx:194
+#: src/pages/Roadmap.tsx:190
 msgid "Failed to load roadmap"
 msgstr "Kan roadmap niet laden"
 
@@ -2400,14 +2400,14 @@ msgid "Failed to read the file."
 msgstr "Het lukte niet om het bestand te lezen."
 
 #: src/components/projects/ProjectMembersTab.tsx:131
-#: src/pages/OrgSettings.tsx:165
-#: src/pages/OrgSettingsPage.tsx:205
+#: src/pages/OrgSettings.tsx:173
+#: src/pages/OrgSettingsPage.tsx:210
 msgid "Failed to remove member"
 msgstr "Kan het lid niet verwijderen"
 
 #: src/components/projects/ProjectInvitesTab.tsx:81
-#: src/pages/OrgSettings.tsx:223
-#: src/pages/OrgSettingsPage.tsx:236
+#: src/pages/OrgSettings.tsx:231
+#: src/pages/OrgSettingsPage.tsx:241
 msgid "Failed to revoke invite"
 msgstr "Kan de uitnodiging niet intrekken"
 
@@ -2434,8 +2434,8 @@ msgid "Failed to save translation provider."
 msgstr ""
 
 #: src/components/projects/ProjectInvitesTab.tsx:69
-#: src/pages/OrgSettings.tsx:185
-#: src/pages/OrgSettingsPage.tsx:224
+#: src/pages/OrgSettings.tsx:193
+#: src/pages/OrgSettingsPage.tsx:229
 msgid "Failed to send invite"
 msgstr "Kan de uitnodiging niet versturen"
 
@@ -2455,7 +2455,7 @@ msgstr "Kan de repository niet ontkoppelen"
 msgid "Failed to update credential."
 msgstr ""
 
-#: src/pages/OrgSettingsPage.tsx:181
+#: src/pages/OrgSettingsPage.tsx:186
 msgid "Failed to update organization"
 msgstr "Kan de organisatie niet bijwerken"
 
@@ -2468,8 +2468,8 @@ msgid "Failed to update profile."
 msgstr "Kan het profiel niet bijwerken."
 
 #: src/components/projects/ProjectMembersTab.tsx:119
-#: src/pages/OrgSettings.tsx:153
-#: src/pages/OrgSettingsPage.tsx:193
+#: src/pages/OrgSettings.tsx:161
+#: src/pages/OrgSettingsPage.tsx:198
 msgid "Failed to update role"
 msgstr "Kan de rol niet bijwerken"
 
@@ -2596,7 +2596,7 @@ msgstr "Voor je eigen projecten — samenwerken aan die van anderen is altijd gr
 msgid "Force recreate glossary on {{provider}}"
 msgstr "Forceer het opnieuw maken van de glossary op {{provider}}"
 
-#: src/pages/auth/Login.tsx:132
+#: src/pages/auth/Login.tsx:138
 msgid "Forgot password?"
 msgstr "Wachtwoord vergeten?"
 
@@ -2609,8 +2609,8 @@ msgid "Formality"
 msgstr "Formaliteit"
 
 #: src/components/projects/ProjectSettingsTab.tsx:130
-#: src/pages/Explore.tsx:357
-#: src/pages/ProjectSettings.tsx:474
+#: src/pages/Explore.tsx:356
+#: src/pages/ProjectSettings.tsx:487
 msgid "Format"
 msgstr "Formaat"
 
@@ -2646,8 +2646,8 @@ msgstr "Gratis abonnement"
 #: src/pages/Landing.tsx:22
 msgid ""
 "Free, open-source translation editor for PO, POT, and i18next JSON files. AI"
-" translation from DeepL, Azure & Gemini with real-time collaboration and Git"
-"Hub/GitLab sync."
+" translation from DeepL, OpenAI, Claude, Gemini, Mistral, DeepSeek & Azure w"
+"ith real-time collaboration and GitHub/GitLab sync."
 msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:81
@@ -2724,8 +2724,8 @@ msgstr "Galicisch"
 msgid "Gemini translation failed"
 msgstr "Gemini-vertaling mislukt"
 
-#: src/pages/OrgSettingsPage.tsx:347
-#: src/pages/ProjectSettings.tsx:350
+#: src/pages/OrgSettingsPage.tsx:359
+#: src/pages/ProjectSettings.tsx:352
 msgid "General"
 msgstr "Algemeen"
 
@@ -2832,16 +2832,12 @@ msgstr ""
 #: src/components/landing/FAQSection.tsx:28
 msgid ""
 "GlossBoss combines the simplicity of Poedit with the collaboration features "
-"of Crowdin — in the browser, with no install required. It supports three AI "
-"translation providers instead of one, has deep WordPress integration with so"
-"urce-code context, includes a full review workflow with threaded comments, s"
-"yncs directly with GitHub and GitLab, and is open source."
+"of Crowdin — in the browser, with no install required. It supports seven AI "
+"translation providers including DeepL, OpenAI, Claude, and Gemini, has deep "
+"WordPress integration with source-code context, includes a full review workf"
+"low with threaded comments, syncs directly with GitHub and GitLab, and is op"
+"en source."
 msgstr ""
-"GlossBoss combineert de eenvoud van Poedit met de samenwerkingsfuncties van "
-"Crowdin — in de browser, zonder installatie. Het ondersteunt drie AI vertaal"
-"aanbieders in plaats van één, heeft diepe WordPress-integratie met broncode "
-"context, bevat een volledige reviewworkflow met discussiethreads, synchronis"
-"eert direct met GitHub en GitLab, en is open source."
 
 #: src/pages/PrivacyPage.tsx:333
 msgid ""
@@ -2920,8 +2916,8 @@ msgstr ""
 #: src/components/SettingsModal.tsx:117
 #: src/components/editor/GlossaryPanel.tsx:307
 #: src/components/organizations/OrgTranslationTab.tsx:163
-#: src/pages/ProjectSettings.tsx:362
-#: src/pages/Settings.tsx:126
+#: src/pages/ProjectSettings.tsx:364
+#: src/pages/Settings.tsx:128
 msgid "Glossary"
 msgstr "Glossary"
 
@@ -3028,11 +3024,11 @@ msgstr "Glossary: {count} termen ({locale})"
 msgid "Go to Connect"
 msgstr "Ga naar Verbinden"
 
-#: src/pages/Invite.tsx:114
+#: src/pages/Invite.tsx:121
 msgid "Go to dashboard"
 msgstr "Ga naar dashboard"
 
-#: src/pages/ProjectInvite.tsx:116
+#: src/pages/ProjectInvite.tsx:126
 msgid "Go to project"
 msgstr "Ga naar project"
 
@@ -3197,7 +3193,7 @@ msgstr "Instellingen importeren"
 msgid "Imported {{count}} translation memory entries."
 msgstr "{{count}} items in vertaalgeheugen geïmporteerd."
 
-#: src/pages/Roadmap.tsx:53
+#: src/pages/Roadmap.tsx:49
 msgid "In progress"
 msgstr "In uitvoering"
 
@@ -3253,7 +3249,7 @@ msgstr "Erven van globaal"
 msgid "Insert a line break in the translation"
 msgstr "Voeg een nieuwe regel toe in de vertaling"
 
-#: src/components/landing/SocialProofBar.tsx:49
+#: src/components/landing/SocialProofBar.tsx:57
 msgid "Integrates with your favorite tools"
 msgstr "Integreert met je favoriete tools"
 
@@ -3267,8 +3263,8 @@ msgid "Invalid file type: .{{ext}}. Please drop a .po, .pot, or .json file."
 msgstr "Ongeldig bestandstype: .{{ext}}. Sleep een .po-, .pot- of .json-bestand."
 
 #: src/components/projects/ProjectInvitesTab.tsx:116
-#: src/pages/OrgSettings.tsx:517
-#: src/pages/OrgSettingsPage.tsx:478
+#: src/pages/OrgSettings.tsx:549
+#: src/pages/OrgSettingsPage.tsx:502
 msgid "Invite"
 msgstr "Uitnodigen"
 
@@ -3276,18 +3272,18 @@ msgstr "Uitnodigen"
 msgid "Invite a collaborator"
 msgstr "Een medewerker uitnodigen"
 
-#: src/pages/OrgSettings.tsx:493
-#: src/pages/OrgSettingsPage.tsx:454
+#: src/pages/OrgSettings.tsx:525
+#: src/pages/OrgSettingsPage.tsx:476
 msgid "Invite a team member"
 msgstr "Een teamlid uitnodigen"
 
-#: src/pages/Invite.tsx:108
-#: src/pages/ProjectInvite.tsx:110
+#: src/pages/Invite.tsx:115
+#: src/pages/ProjectInvite.tsx:117
 msgid "Invite accepted"
 msgstr "Uitnodiging geaccepteerd"
 
-#: src/pages/OrgSettings.tsx:340
-#: src/pages/ProjectDetail.tsx:392
+#: src/pages/OrgSettings.tsx:350
+#: src/pages/ProjectDetail.tsx:397
 msgid "Invites"
 msgstr "Uitnodigingen"
 
@@ -3323,7 +3319,7 @@ msgstr "Italiaans (Zwitserland)"
 msgid "Japanese"
 msgstr "Japans"
 
-#: src/pages/ProjectDetail.tsx:262
+#: src/pages/ProjectDetail.tsx:259
 msgid "Join as {{role}}"
 msgstr "Deelnemen als {{role}}"
 
@@ -3390,7 +3386,7 @@ msgstr ""
 #: src/components/editor/HeaderEditor.tsx:222
 #: src/components/landing/LandingFooter.tsx:104
 #: src/components/settings/GlossarySection.tsx:281
-#: src/pages/Explore.tsx:367
+#: src/pages/Explore.tsx:366
 msgid "Language"
 msgstr "Taal"
 
@@ -3398,7 +3394,7 @@ msgstr "Taal"
 msgid "Language code"
 msgstr "Taalcode"
 
-#: src/pages/ProjectEditor.tsx:84
+#: src/pages/ProjectEditor.tsx:85
 msgid "Language not found"
 msgstr "Taal niet gevonden"
 
@@ -3410,7 +3406,7 @@ msgstr "Taalinstellingen"
 msgid "Language team"
 msgstr "Taalteam"
 
-#: src/pages/ProjectSettings.tsx:356
+#: src/pages/ProjectSettings.tsx:358
 msgid "Languages"
 msgstr "Talen"
 
@@ -3423,8 +3419,8 @@ msgid "Last translator"
 msgstr "Laatste vertaler"
 
 #: src/components/editor/HeaderEditor.tsx:257
-#: src/pages/Dashboard.tsx:138
-#: src/pages/Explore.tsx:39
+#: src/pages/Dashboard.tsx:145
+#: src/pages/Explore.tsx:40
 #: src/pages/ProjectDetail.tsx:198
 msgid "Last updated"
 msgstr "Laatst bijgewerkt"
@@ -3441,33 +3437,33 @@ msgstr ""
 msgid "Latvian"
 msgstr "Lets"
 
-#: src/pages/Dashboard.tsx:141
-#: src/pages/Explore.tsx:43
+#: src/pages/Dashboard.tsx:148
+#: src/pages/Explore.tsx:44
 #: src/pages/ProjectDetail.tsx:196
 msgid "Least complete"
 msgstr "Minst compleet"
 
-#: src/pages/OrgSettings.tsx:612
-#: src/pages/OrgSettings.tsx:614
-#: src/pages/OrgSettingsPage.tsx:747
-#: src/pages/OrgSettingsPage.tsx:776
-#: src/pages/OrgSettingsPage.tsx:778
+#: src/pages/OrgSettings.tsx:654
+#: src/pages/OrgSettings.tsx:656
+#: src/pages/OrgSettingsPage.tsx:841
+#: src/pages/OrgSettingsPage.tsx:874
+#: src/pages/OrgSettingsPage.tsx:876
 msgid "Leave organization"
 msgstr "Organisatie verlaten"
 
-#: src/pages/ProjectDetail.tsx:693
-#: src/pages/ProjectDetail.tsx:695
-#: src/pages/ProjectSettings.tsx:797
-#: src/pages/ProjectSettings.tsx:839
-#: src/pages/ProjectSettings.tsx:841
+#: src/pages/ProjectDetail.tsx:705
+#: src/pages/ProjectDetail.tsx:707
+#: src/pages/ProjectSettings.tsx:821
+#: src/pages/ProjectSettings.tsx:871
+#: src/pages/ProjectSettings.tsx:873
 msgid "Leave project"
 msgstr "Project verlaten"
 
-#: src/pages/OrgSettingsPage.tsx:734
+#: src/pages/OrgSettingsPage.tsx:828
 msgid "Leave this organization"
 msgstr "Deze organisatie verlaten"
 
-#: src/pages/ProjectSettings.tsx:784
+#: src/pages/ProjectSettings.tsx:808
 msgid "Leave this project"
 msgstr "Dit project verlaten"
 
@@ -3482,8 +3478,8 @@ msgstr ""
 #: src/components/auth/UserMenu.tsx:157
 #: src/components/landing/LandingFooter.tsx:32
 #: src/pages/LicensePage.tsx:11
-#: src/pages/auth/Login.tsx:158
-#: src/pages/auth/Signup.tsx:194
+#: src/pages/auth/Login.tsx:164
+#: src/pages/auth/Signup.tsx:205
 msgid "License"
 msgstr "Licentie"
 
@@ -3505,7 +3501,7 @@ msgstr "Regel {{lineNumber}}"
 msgid "Line {{line}}"
 msgstr "Regel {{line}}"
 
-#: src/pages/ProjectSettings.tsx:618
+#: src/pages/ProjectSettings.tsx:634
 msgid "Link repository"
 msgstr "Repository koppelen"
 
@@ -3705,13 +3701,13 @@ msgstr "Automatisch vertaald met glossary door {{provider}}"
 msgid "Machine translation"
 msgstr "Automatische vertaling"
 
-#: src/pages/OrgSettings.tsx:389
-#: src/pages/OrgSettingsPage.tsx:529
+#: src/pages/OrgSettings.tsx:410
+#: src/pages/OrgSettingsPage.tsx:574
 msgid "Make admin"
 msgstr "Maak beheerder"
 
-#: src/pages/OrgSettings.tsx:397
-#: src/pages/OrgSettingsPage.tsx:537
+#: src/pages/OrgSettings.tsx:420
+#: src/pages/OrgSettingsPage.tsx:584
 msgid "Make member"
 msgstr "Maak lid"
 
@@ -3783,19 +3779,19 @@ msgstr "Geselecteerde rijen als fuzzy markeren"
 msgid "Marked {{count}} row(s) as fuzzy."
 msgstr "{{count}} rij(en) als fuzzy gemarkeerd."
 
-#: src/pages/OrgSettings.tsx:333
-#: src/pages/OrgSettingsPage.tsx:350
-#: src/pages/ProjectDetail.tsx:387
-#: src/pages/ProjectSettings.tsx:365
+#: src/pages/OrgSettings.tsx:343
+#: src/pages/OrgSettingsPage.tsx:362
+#: src/pages/ProjectDetail.tsx:392
+#: src/pages/ProjectSettings.tsx:367
 msgid "Members"
 msgstr "Leden"
 
-#: src/pages/auth/ResetPassword.tsx:106
-#: src/pages/auth/Signup.tsx:158
+#: src/pages/auth/ResetPassword.tsx:114
+#: src/pages/auth/Signup.tsx:166
 msgid "Minimum 8 characters, with uppercase, lowercase, and a digit"
 msgstr "Minimaal 8 tekens, met hoofdletter, kleine letter en een cijfer"
 
-#: src/pages/Roadmap.tsx:331
+#: src/pages/Roadmap.tsx:328
 msgid "Missing something? Let us know what you need."
 msgstr "Mis je iets? Laat ons weten wat je nodig hebt."
 
@@ -3827,13 +3823,13 @@ msgstr "Maandelijks"
 msgid "More info"
 msgstr "Meer info"
 
-#: src/pages/Explore.tsx:42
+#: src/pages/Explore.tsx:43
 #: src/pages/ProjectDetail.tsx:195
 msgid "Most complete"
 msgstr "Meest compleet"
 
-#: src/pages/Dashboard.tsx:140
-#: src/pages/Explore.tsx:41
+#: src/pages/Dashboard.tsx:147
+#: src/pages/Explore.tsx:42
 #: src/pages/ProjectDetail.tsx:197
 msgid "Most strings"
 msgstr "Meeste strings"
@@ -3843,14 +3839,14 @@ msgid "My team"
 msgstr "Mijn team"
 
 #: src/components/projects/ProjectSettingsTab.tsx:121
-#: src/pages/OrgSettingsPage.tsx:372
-#: src/pages/OrgSettingsPage.tsx:412
-#: src/pages/ProjectSettings.tsx:460
+#: src/pages/OrgSettingsPage.tsx:388
+#: src/pages/OrgSettingsPage.tsx:433
+#: src/pages/ProjectSettings.tsx:473
 msgid "Name"
 msgstr "Naam"
 
-#: src/pages/Dashboard.tsx:139
-#: src/pages/Explore.tsx:40
+#: src/pages/Dashboard.tsx:146
+#: src/pages/Explore.tsx:41
 msgid "Name A–Z"
 msgstr "Naam A–Z"
 
@@ -3884,7 +3880,7 @@ msgid "New notification"
 msgstr "Nieuwe melding"
 
 #: src/components/settings/AccountSection.tsx:330
-#: src/pages/auth/ResetPassword.tsx:100
+#: src/pages/auth/ResetPassword.tsx:108
 msgid "New password"
 msgstr "Nieuw wachtwoord"
 
@@ -3893,8 +3889,8 @@ msgstr "Nieuw wachtwoord"
 #: src/components/projects/CreateProjectModal.tsx:315
 #: src/components/projects/CreateProjectModal.tsx:383
 #: src/components/projects/SaveToCloudModal.tsx:48
-#: src/pages/Dashboard.tsx:152
-#: src/pages/Dashboard.tsx:184
+#: src/pages/Dashboard.tsx:170
+#: src/pages/Dashboard.tsx:203
 msgid "New project"
 msgstr "Nieuw project"
 
@@ -3985,7 +3981,7 @@ msgstr "Er zijn geen glossary-items gevonden in het geüploade bestand."
 msgid "No glossary terms in selected text"
 msgstr "Geen glossarytermen in de geselecteerde tekst"
 
-#: src/pages/ProjectSettings.tsx:545
+#: src/pages/ProjectSettings.tsx:558
 msgid "No languages in this project yet."
 msgstr "Nog geen talen in dit project."
 
@@ -3993,8 +3989,8 @@ msgstr "Nog geen talen in dit project."
 msgid "No languages match your search"
 msgstr "Geen talen komen overeen met je zoekopdracht"
 
-#: src/pages/ProjectDetail.tsx:464
-#: src/pages/ProjectSettings.tsx:651
+#: src/pages/ProjectDetail.tsx:466
+#: src/pages/ProjectSettings.tsx:667
 msgid "No languages yet"
 msgstr "Nog geen talen"
 
@@ -4022,12 +4018,12 @@ msgstr "Geen leden"
 msgid "No notifications"
 msgstr "Geen meldingen"
 
-#: src/pages/Dashboard.tsx:260
+#: src/pages/Dashboard.tsx:284
 msgid "No organizations yet"
 msgstr "Nog geen organisaties"
 
 #: src/components/projects/ProjectInvitesTab.tsx:126
-#: src/pages/OrgSettings.tsx:527
+#: src/pages/OrgSettings.tsx:559
 msgid "No pending invites"
 msgstr "Geen openstaande uitnodigingen"
 
@@ -4042,21 +4038,21 @@ msgstr ""
 msgid "No projects found"
 msgstr ""
 
-#: src/pages/OrgSettings.tsx:437
-#: src/pages/OrgSettingsPage.tsx:642
+#: src/pages/OrgSettings.tsx:462
+#: src/pages/OrgSettingsPage.tsx:719
 msgid "No projects in this organization yet"
 msgstr "Nog geen projecten in deze organisatie"
 
-#: src/pages/Dashboard.tsx:226
-#: src/pages/Explore.tsx:390
+#: src/pages/Dashboard.tsx:241
+#: src/pages/Explore.tsx:387
 msgid "No projects match your search"
 msgstr "Geen projecten komen overeen met je zoekopdracht"
 
-#: src/pages/Dashboard.tsx:175
+#: src/pages/Dashboard.tsx:194
 msgid "No projects yet"
 msgstr "Nog geen projecten"
 
-#: src/pages/Explore.tsx:291
+#: src/pages/Explore.tsx:294
 msgid "No public projects yet"
 msgstr "Nog geen openbare projecten"
 
@@ -4073,7 +4069,7 @@ msgstr "Geen releases gevonden"
 msgid "No repositories found"
 msgstr "Geen repositories gevonden"
 
-#: src/pages/ProjectSettings.tsx:588
+#: src/pages/ProjectSettings.tsx:604
 msgid "No repository linked"
 msgstr "Geen repository gekoppeld"
 
@@ -4085,7 +4081,7 @@ msgstr "Nog geen reviewopmerkingen."
 msgid "No review history yet."
 msgstr "Nog geen reviewgeschiedenis."
 
-#: src/pages/Roadmap.tsx:313
+#: src/pages/Roadmap.tsx:310
 msgid "No roadmap items match your search"
 msgstr "Geen roadmap items komen overeen met je zoekopdracht"
 
@@ -4195,8 +4191,8 @@ msgstr "Melding"
 #: src/components/notifications/NotificationBell.tsx:29
 #: src/components/notifications/NotificationBell.tsx:43
 #: src/components/notifications/NotificationDropdown.tsx:28
-#: src/pages/ProjectSettings.tsx:368
-#: src/pages/Settings.tsx:112
+#: src/pages/ProjectSettings.tsx:370
+#: src/pages/Settings.tsx:114
 msgid "Notifications"
 msgstr "Meldingen"
 
@@ -4290,7 +4286,7 @@ msgstr "Open source & voor altijd gratis"
 msgid "Open source. Built in the open."
 msgstr "Open source. Gebouwd in de openbaarheid."
 
-#: src/pages/ProjectSettings.tsx:607
+#: src/pages/ProjectSettings.tsx:623
 msgid "Open the editor to connect this language to a repository via Push settings."
 msgstr ""
 "Open de editor om deze taal met een repository te verbinden via de Push-inst"
@@ -4342,11 +4338,11 @@ msgstr ""
 msgid "Organization"
 msgstr "Organisatie"
 
-#: src/pages/OrgSettingsPage.tsx:368
+#: src/pages/OrgSettingsPage.tsx:384
 msgid "Organization details"
 msgstr "Organisatiedetails"
 
-#: src/pages/Invite.tsx:125
+#: src/pages/Invite.tsx:132
 msgid "Organization invite"
 msgstr "Organisatie-uitnodiging"
 
@@ -4369,12 +4365,12 @@ msgstr "Organisatiebeheer"
 msgid "Organization name"
 msgstr "Organisatienaam"
 
-#: src/pages/OrgSettings.tsx:118
-#: src/pages/OrgSettingsPage.tsx:134
+#: src/pages/OrgSettings.tsx:126
+#: src/pages/OrgSettingsPage.tsx:139
 msgid "Organization not found"
 msgstr "Organisatie niet gevonden"
 
-#: src/pages/OrgSettingsPage.tsx:316
+#: src/pages/OrgSettingsPage.tsx:322
 msgid "Organization settings"
 msgstr "Organisatie-instellingen"
 
@@ -4382,7 +4378,7 @@ msgstr "Organisatie-instellingen"
 msgid "Organization translation settings saved."
 msgstr ""
 
-#: src/pages/Dashboard.tsx:240
+#: src/pages/Dashboard.tsx:259
 msgid "Organizations"
 msgstr "Organisaties"
 
@@ -4446,8 +4442,8 @@ msgstr ""
 msgid "Page views"
 msgstr ""
 
-#: src/pages/auth/Login.tsx:123
-#: src/pages/auth/Signup.tsx:152
+#: src/pages/auth/Login.tsx:129
+#: src/pages/auth/Signup.tsx:160
 msgid "Password"
 msgstr "Wachtwoord"
 
@@ -4459,12 +4455,12 @@ msgstr "Wachtwoord moet minimaal 6 tekens lang zijn."
 msgid "Password updated successfully."
 msgstr "Wachtwoord succesvol bijgewerkt."
 
-#: src/pages/auth/ResetPassword.tsx:82
+#: src/pages/auth/ResetPassword.tsx:90
 msgid "Password updated. Redirecting..."
 msgstr "Wachtwoord bijgewerkt. Doorverwijzen..."
 
 #: src/components/settings/AccountSection.tsx:165
-#: src/pages/auth/ResetPassword.tsx:95
+#: src/pages/auth/ResetPassword.tsx:103
 msgid "Passwords do not match."
 msgstr "Wachtwoorden komen niet overeen."
 
@@ -4492,7 +4488,7 @@ msgstr "Betalen per gebruik"
 msgid "Pay as you go · billed monthly"
 msgstr "Betalen per gebruik · maandelijks gefactureerd"
 
-#: src/pages/OrgSettingsPage.tsx:562
+#: src/pages/OrgSettingsPage.tsx:613
 msgid "Pending invites"
 msgstr "Openstaande uitnodigingen"
 
@@ -4502,7 +4498,7 @@ msgstr ""
 "Per-project meldingsoverschrijvingen zijn beschikbaar in de instellingen van"
 " elk project."
 
-#: src/pages/OrgSettingsPage.tsx:711
+#: src/pages/OrgSettingsPage.tsx:801
 msgid ""
 "Permanently delete this organization and all its data. This cannot be undone"
 "."
@@ -4511,7 +4507,7 @@ msgstr ""
 "edaan worden gemaakt."
 
 #: src/components/projects/ProjectSettingsTab.tsx:146
-#: src/pages/ProjectSettings.tsx:761
+#: src/pages/ProjectSettings.tsx:781
 msgid ""
 "Permanently delete this project, all languages, and all entries. This cannot"
 " be undone."
@@ -4564,7 +4560,7 @@ msgstr ""
 msgid "Placeholder parity"
 msgstr "Placeholdercontrole"
 
-#: src/pages/Roadmap.tsx:52
+#: src/pages/Roadmap.tsx:48
 msgid "Planned"
 msgstr "Gepland"
 
@@ -4710,8 +4706,8 @@ msgid "PostHog Inc."
 msgstr ""
 
 #: src/components/landing/HeroSection.tsx:133
-msgid "Powered by DeepL, Azure Translator & Google Gemini"
-msgstr "Aangedreven door DeepL, Azure Translator & Google Gemini"
+msgid "Powered by DeepL, OpenAI, Claude, Gemini, Mistral, DeepSeek & Azure"
+msgstr ""
 
 #: src/components/feedback/FeedbackModal.tsx:455
 msgid "Preparing spam protection..."
@@ -4752,15 +4748,15 @@ msgstr "Voorrangssupport"
 #: src/components/feedback/FeedbackModal.tsx:418
 #: src/components/landing/FeatureGrid.tsx:94
 #: src/components/landing/LandingFooter.tsx:30
-#: src/pages/auth/Login.tsx:154
-#: src/pages/auth/Signup.tsx:190
+#: src/pages/auth/Login.tsx:160
+#: src/pages/auth/Signup.tsx:201
 msgid "Privacy"
 msgstr "Privacy"
 
 #: src/components/settings/TranslationSection.tsx:313
 #: src/pages/PrivacyPage.tsx:12
 #: src/pages/TermsPage.tsx:156
-#: src/pages/auth/Signup.tsx:168
+#: src/pages/auth/Signup.tsx:178
 msgid "Privacy Policy"
 msgstr "Privacybeleid"
 
@@ -4768,7 +4764,7 @@ msgstr "Privacybeleid"
 #: src/components/projects/ProjectSettingsTab.tsx:97
 #: src/components/projects/SaveToCloudModal.tsx:19
 #: src/lib/constants/visibility.ts:15
-#: src/pages/ProjectSettings.tsx:410
+#: src/pages/ProjectSettings.tsx:416
 msgid "Private"
 msgstr "Privé"
 
@@ -4815,7 +4811,7 @@ msgid "Project data"
 msgstr ""
 
 #: src/components/projects/ProjectSettingsTab.tsx:75
-#: src/pages/ProjectSettings.tsx:380
+#: src/pages/ProjectSettings.tsx:386
 msgid "Project details"
 msgstr "Projectdetails"
 
@@ -4827,7 +4823,7 @@ msgstr "Project export"
 msgid "Project exported successfully."
 msgstr "Project succesvol geëxporteerd."
 
-#: src/pages/ProjectInvite.tsx:127
+#: src/pages/ProjectInvite.tsx:137
 msgid "Project invite"
 msgstr "Project-uitnodiging"
 
@@ -4850,7 +4846,7 @@ msgstr "Projectmetadata"
 #: src/components/projects/SaveToCloudModal.tsx:129
 #: src/components/settings/BackupSection.tsx:431
 #: src/components/settings/BackupSection.tsx:435
-#: src/pages/ProjectSettings.tsx:385
+#: src/pages/ProjectSettings.tsx:391
 msgid "Project name"
 msgstr "Projectnaam"
 
@@ -4858,9 +4854,9 @@ msgstr "Projectnaam"
 msgid "Project name and version"
 msgstr "Projectnaam en versie"
 
-#: src/pages/ProjectDetail.tsx:216
-#: src/pages/ProjectEditor.tsx:78
-#: src/pages/ProjectEditor.tsx:202
+#: src/pages/ProjectDetail.tsx:217
+#: src/pages/ProjectEditor.tsx:79
+#: src/pages/ProjectEditor.tsx:200
 #: src/pages/ProjectSettings.tsx:135
 msgid "Project not found"
 msgstr "Project niet gevonden"
@@ -4882,7 +4878,7 @@ msgid "Project overview"
 msgstr "Projectoverzicht"
 
 #: src/components/editor/EditorHeader.tsx:263
-#: src/pages/ProjectSettings.tsx:319
+#: src/pages/ProjectSettings.tsx:314
 msgid "Project settings"
 msgstr "Projectinstellingen"
 
@@ -4896,10 +4892,10 @@ msgstr "Projecttype"
 
 #: src/components/billing/FreePlanBanner.tsx:64
 #: src/components/settings/BillingSection.tsx:485
-#: src/pages/Dashboard.tsx:149
-#: src/pages/OrgSettings.tsx:336
-#: src/pages/OrgSettingsPage.tsx:353
-#: src/pages/ProjectDetail.tsx:252
+#: src/pages/Dashboard.tsx:167
+#: src/pages/OrgSettings.tsx:346
+#: src/pages/OrgSettingsPage.tsx:365
+#: src/pages/ProjectDetail.tsx:249
 msgid "Projects"
 msgstr "Projecten"
 
@@ -4929,11 +4925,11 @@ msgstr ""
 #: src/components/projects/ProjectSettingsTab.tsx:98
 #: src/components/projects/SaveToCloudModal.tsx:20
 #: src/lib/constants/visibility.ts:16
-#: src/pages/ProjectSettings.tsx:411
+#: src/pages/ProjectSettings.tsx:417
 msgid "Public"
 msgstr "Openbaar"
 
-#: src/pages/ProjectSettings.tsx:421
+#: src/pages/ProjectSettings.tsx:427
 msgid "Public permissions"
 msgstr "Openbare rechten"
 
@@ -5116,8 +5112,8 @@ msgstr "Token onthouden"
 #: src/components/settings/LlmProviderCard.tsx:349
 #: src/components/settings/TranslationSection.tsx:439
 #: src/components/settings/TranslationSection.tsx:577
-#: src/pages/OrgSettings.tsx:406
-#: src/pages/OrgSettingsPage.tsx:546
+#: src/pages/OrgSettings.tsx:429
+#: src/pages/OrgSettingsPage.tsx:595
 msgid "Remove"
 msgstr "Verwijderen"
 
@@ -5130,11 +5126,11 @@ msgstr "Opgeslagen sleutel verwijderen"
 msgid "Remove source file"
 msgstr "Bronbestand verwijderen"
 
-#: src/pages/OrgSettingsPage.tsx:737
+#: src/pages/OrgSettingsPage.tsx:831
 msgid "Remove yourself from this organization."
 msgstr "Verwijder jezelf uit deze organisatie."
 
-#: src/pages/ProjectSettings.tsx:787
+#: src/pages/ProjectSettings.tsx:811
 msgid "Remove yourself from this project."
 msgstr "Verwijder jezelf uit dit project."
 
@@ -5150,7 +5146,7 @@ msgstr "Heropenen"
 msgid "Reopened comment"
 msgstr "Opmerking heropend"
 
-#: src/pages/auth/ResetPassword.tsx:111
+#: src/pages/auth/ResetPassword.tsx:119
 msgid "Repeat your password"
 msgstr "Herhaal je wachtwoord"
 
@@ -5188,11 +5184,11 @@ msgstr "Rapporteer bugs aan"
 #: src/components/projects/AddLanguageModal.tsx:424
 #: src/components/projects/ProjectGlossaryTab.tsx:268
 #: src/components/repo-sync/RepoSyncModal.tsx:932
-#: src/pages/ProjectSettings.tsx:353
+#: src/pages/ProjectSettings.tsx:355
 msgid "Repository"
 msgstr "Repository"
 
-#: src/pages/ProjectSettings.tsx:537
+#: src/pages/ProjectSettings.tsx:550
 msgid ""
 "Repository connections are per-language. Each language can be linked to a fi"
 "le in a GitHub or GitLab repository."
@@ -5236,7 +5232,7 @@ msgstr ""
 msgid "Reset demo"
 msgstr ""
 
-#: src/pages/auth/ForgotPassword.tsx:61
+#: src/pages/auth/ForgotPassword.tsx:68
 msgid "Reset your password"
 msgstr "Reset je wachtwoord"
 
@@ -5360,7 +5356,7 @@ msgstr "Review: wijzigingen nodig"
 msgid "Reviewer name"
 msgstr "Naam reviewer"
 
-#: src/pages/ProjectSettings.tsx:428
+#: src/pages/ProjectSettings.tsx:439
 msgid "Reviewer — can translate and review"
 msgstr "Reviewer — kan vertalen en controleren"
 
@@ -5371,7 +5367,7 @@ msgstr "Reviewer — kan vertalen en controleren"
 msgid "Roadmap"
 msgstr "Roadmap"
 
-#: src/pages/ProjectSettings.tsx:422
+#: src/pages/ProjectSettings.tsx:428
 msgid "Role assigned to non-members who visit this public project."
 msgstr "Rol toegewezen aan niet-leden die dit openbare project bezoeken."
 
@@ -5425,8 +5421,8 @@ msgstr ""
 "vergeslagen)"
 
 #: src/components/projects/ProjectSettingsTab.tsx:113
-#: src/pages/OrgSettingsPage.tsx:402
-#: src/pages/ProjectSettings.tsx:450
+#: src/pages/OrgSettingsPage.tsx:423
+#: src/pages/ProjectSettings.tsx:463
 msgid "Save changes"
 msgstr "Wijzigingen opslaan"
 
@@ -5484,7 +5480,7 @@ msgstr ""
 "Zoek items op brontekst, vertaling of context. Filter op status: onvertaald,"
 " fuzzy, vertaald."
 
-#: src/pages/ProjectDetail.tsx:439
+#: src/pages/ProjectDetail.tsx:443
 msgid "Search languages…"
 msgstr "Talen zoeken…"
 
@@ -5500,12 +5496,12 @@ msgstr ""
 msgid "Search projects..."
 msgstr ""
 
-#: src/pages/Dashboard.tsx:205
-#: src/pages/Explore.tsx:347
+#: src/pages/Dashboard.tsx:222
+#: src/pages/Explore.tsx:346
 msgid "Search projects…"
 msgstr "Projecten zoeken…"
 
-#: src/pages/Roadmap.tsx:302
+#: src/pages/Roadmap.tsx:299
 msgid "Search roadmap…"
 msgstr "Roadmap zoeken…"
 
@@ -5620,7 +5616,7 @@ msgstr "Geselecteerde tekst"
 msgid "Send feedback"
 msgstr "Feedback sturen"
 
-#: src/pages/auth/ForgotPassword.tsx:98
+#: src/pages/auth/ForgotPassword.tsx:106
 msgid "Send reset link"
 msgstr "Resetlink versturen"
 
@@ -5662,7 +5658,7 @@ msgid ""
 "ects can override these unless they are enforced."
 msgstr ""
 
-#: src/pages/auth/ResetPassword.tsx:73
+#: src/pages/auth/ResetPassword.tsx:80
 msgid "Set new password"
 msgstr "Nieuw wachtwoord instellen"
 
@@ -5678,9 +5674,9 @@ msgstr "Stel je bron- en doeltalen in voor vertaling."
 #: src/components/SettingsModal.tsx:84
 #: src/components/auth/UserMenu.tsx:113
 #: src/components/projects/ProjectCard.tsx:125
-#: src/pages/OrgSettings.tsx:313
-#: src/pages/ProjectDetail.tsx:274
-#: src/pages/Settings.tsx:83
+#: src/pages/OrgSettings.tsx:320
+#: src/pages/ProjectDetail.tsx:271
+#: src/pages/Settings.tsx:85
 msgid "Settings"
 msgstr "Instellingen"
 
@@ -5724,6 +5720,10 @@ msgstr "Instellingentabbladen"
 msgid "Settings tour"
 msgstr "Instellingen tour"
 
+#: src/components/landing/FeatureGrid.tsx:40
+msgid "Seven AI providers, one click"
+msgstr ""
+
 #: src/components/landing/FeatureGrid.tsx:68
 msgid ""
 "Seven QA checks run on every translation: placeholders, HTML tags, ICU varia"
@@ -5733,6 +5733,14 @@ msgstr ""
 "Zeven QA-controles draaien op elke vertaling: placeholders, HTML tags, ICU v"
 "ariabelen, glossary mismatches, en meer. Fouten worden gemarkeerd voordat ze"
 " productie bereiken."
+
+#: src/components/landing/FAQSection.tsx:22
+msgid ""
+"Seven providers: DeepL, OpenAI, Claude, Google Gemini, Mistral, DeepSeek, an"
+"d Azure Translator — plus custom endpoints for self-hosted LLMs. You can swi"
+"tch between them mid-session and bring your own API keys or use the shared a"
+"ccess included with your plan."
+msgstr ""
 
 #: src/components/organizations/SharedCredentialsTab.tsx:164
 msgid ""
@@ -5746,12 +5754,12 @@ msgstr "Feedback delen"
 
 #: src/components/AppSidebar.tsx:330
 #: src/components/auth/UserMenu.tsx:119
-#: src/pages/Roadmap.tsx:283
-#: src/pages/Roadmap.tsx:339
+#: src/pages/Roadmap.tsx:282
+#: src/pages/Roadmap.tsx:336
 msgid "Share feedback"
 msgstr "Feedback delen"
 
-#: src/pages/OrgSettingsPage.tsx:695
+#: src/pages/OrgSettingsPage.tsx:781
 msgid "Shared credentials"
 msgstr ""
 
@@ -5771,7 +5779,7 @@ msgstr "Korte samenvatting van het verzoek"
 msgid "Shortcut"
 msgstr "Sneltoets"
 
-#: src/pages/Settings.tsx:129
+#: src/pages/Settings.tsx:131
 msgid "Shortcuts"
 msgstr "Sneltoetsen"
 
@@ -5821,12 +5829,12 @@ msgstr ""
 #: src/components/editor/EmptyState.tsx:221
 #: src/components/landing/LandingNav.tsx:83
 #: src/components/landing/LandingNav.tsx:154
-#: src/pages/auth/Login.tsx:138
-#: src/pages/auth/Signup.tsx:108
+#: src/pages/auth/Login.tsx:144
+#: src/pages/auth/Signup.tsx:115
 msgid "Sign in"
 msgstr "Inloggen"
 
-#: src/pages/auth/Login.tsx:83
+#: src/pages/auth/Login.tsx:89
 msgid "Sign in to GlossBoss"
 msgstr "Inloggen bij GlossBoss"
 
@@ -5857,7 +5865,7 @@ msgstr "Inloggen met e-mail"
 msgid "Sign out"
 msgstr "Uitloggen"
 
-#: src/pages/ProjectDetail.tsx:367
+#: src/pages/ProjectDetail.tsx:370
 msgid "Sign up"
 msgstr "Aanmelden"
 
@@ -5918,8 +5926,8 @@ msgstr "Sloveens"
 
 #: src/components/editor/WordPressProjectModal.tsx:317
 #: src/components/organizations/CreateOrgModal.tsx:93
-#: src/pages/OrgSettingsPage.tsx:377
-#: src/pages/OrgSettingsPage.tsx:415
+#: src/pages/OrgSettingsPage.tsx:394
+#: src/pages/OrgSettingsPage.tsx:436
 msgid "Slug"
 msgstr "Slug"
 
@@ -6008,7 +6016,7 @@ msgid "Spanish (Spain)"
 msgstr "Spaans (Spanje)"
 
 #: src/components/SettingsModal.tsx:104
-#: src/pages/Settings.tsx:119
+#: src/pages/Settings.tsx:121
 msgid "Speech"
 msgstr "Spraak"
 
@@ -6149,13 +6157,10 @@ msgstr "Zweeds"
 
 #: src/components/landing/FeatureGrid.tsx:41
 msgid ""
-"Switch between DeepL, Azure, and Gemini mid-session. Gemini even reads your "
-"plugin source code for context-aware translations that understand where each"
-" string appears in your UI."
+"Switch between DeepL, OpenAI, Claude, Gemini, Mistral, DeepSeek, and Azure m"
+"id-session. LLM providers read your plugin source code for context-aware tra"
+"nslations that understand where each string appears in your UI."
 msgstr ""
-"Schakel tussen DeepL, Azure en Gemini tijdens je sessie. Gemini leest zelfs "
-"je plugin broncode voor contextbewuste vertalingen die begrijpen waar elke s"
-"tring in je UI verschijnt."
 
 #: src/hooks/use-editor-tour.ts:148
 msgid ""
@@ -6272,8 +6277,8 @@ msgstr "Term (EN)"
 
 #: src/components/auth/UserMenu.tsx:166
 #: src/components/landing/LandingFooter.tsx:31
-#: src/pages/auth/Login.tsx:150
-#: src/pages/auth/Signup.tsx:186
+#: src/pages/auth/Login.tsx:156
+#: src/pages/auth/Signup.tsx:197
 msgid "Terms"
 msgstr "Voorwaarden"
 
@@ -6286,7 +6291,7 @@ msgid "Terms in selected text:"
 msgstr "Termen in de geselecteerde tekst:"
 
 #: src/pages/TermsPage.tsx:12
-#: src/pages/auth/Signup.tsx:164
+#: src/pages/auth/Signup.tsx:174
 msgid "Terms of Service"
 msgstr "Servicevoorwaarden"
 
@@ -6404,7 +6409,7 @@ msgstr ""
 msgid "The old way vs. the GlossBoss way"
 msgstr "De oude manier vs. de GlossBoss manier"
 
-#: src/pages/Roadmap.tsx:193
+#: src/pages/Roadmap.tsx:189
 msgid "The roadmap is temporarily unavailable. Please try again later."
 msgstr "De roadmap is tijdelijk niet beschikbaar. Probeer het later opnieuw."
 
@@ -6503,8 +6508,8 @@ msgstr ""
 msgid "This helps us improve how we reach translators like you."
 msgstr "Dit helpt ons verbeteren hoe we vertalers zoals jij bereiken."
 
-#: src/pages/Invite.tsx:47
-#: src/pages/ProjectInvite.tsx:48
+#: src/pages/Invite.tsx:48
+#: src/pages/ProjectInvite.tsx:49
 msgid "This invite link is invalid or has expired."
 msgstr "Deze uitnodigingslink is ongeldig of is verlopen."
 
@@ -6550,23 +6555,9 @@ msgstr ""
 msgid "This will remove all your work on the current file."
 msgstr "Hierdoor gaat al je werk aan het huidige bestand verloren."
 
-#: src/components/landing/FeatureGrid.tsx:40
-msgid "Three AI providers, one click"
-msgstr "Drie AI-aanbieders, één klik"
-
 #: src/components/editor/HeaderEditor.tsx:170
 msgid "Three forms"
 msgstr "Drie vormen"
-
-#: src/components/landing/FAQSection.tsx:22
-msgid ""
-"Three providers: DeepL, Azure Translator, and Google Gemini. You can switch "
-"between them mid-session and bring your own API keys or use the shared acces"
-"s included with your plan."
-msgstr ""
-"Drie aanbieders: DeepL, Azure Translator en Google Gemini. Je kunt tijdens j"
-"e sessie tussen hen schakelen en je eigen API-sleutels meenemen of de gedeel"
-"de toegang gebruiken die bij je abonnement is inbegrepen."
 
 #: src/components/feedback/FeedbackModal.tsx:342
 #: src/components/feedback/FeedbackModal.tsx:377
@@ -6620,11 +6611,9 @@ msgstr "Vertaal alle onvertaalde items in één keer met DeepL, Azure of Gemini.
 
 #: src/components/landing/HowItWorks.tsx:18
 msgid ""
-"Translate with AI from DeepL, Azure, or Gemini. Review with your team. Run Q"
-"A checks."
+"Translate with AI from DeepL, OpenAI, Claude, Gemini, and more. Review with "
+"your team. Run QA checks."
 msgstr ""
-"Vertaal met AI van DeepL, Azure of Gemini. Controleer met je team. Voer QA c"
-"ontroles uit."
 
 #: src/components/editor/TranslateButton.tsx:89
 msgid "Translate with Glossary"
@@ -6673,9 +6662,9 @@ msgstr "Bezig met vertalen..."
 #: src/components/editor/EditorTableRow.tsx:1054
 #: src/components/editor/FilterToolbar.tsx:445
 #: src/components/glossary/shared.tsx:93
-#: src/pages/OrgSettingsPage.tsx:356
-#: src/pages/ProjectSettings.tsx:359
-#: src/pages/Settings.tsx:116
+#: src/pages/OrgSettingsPage.tsx:368
+#: src/pages/ProjectSettings.tsx:361
+#: src/pages/Settings.tsx:118
 msgid "Translation"
 msgstr "Vertaling"
 
@@ -6805,7 +6794,7 @@ msgstr "Vertalingen zonder glossary-afdwinging"
 msgid "Translator comments"
 msgstr "Vertalersopmerkingen"
 
-#: src/pages/ProjectSettings.tsx:427
+#: src/pages/ProjectSettings.tsx:435
 msgid "Translator — can translate"
 msgstr "Vertaler — kan vertalen"
 
@@ -6961,7 +6950,7 @@ msgstr "Onbeperkte strings"
 msgid "Unlimited team members"
 msgstr "Onbeperkt aantal teamleden"
 
-#: src/pages/ProjectSettings.tsx:595
+#: src/pages/ProjectSettings.tsx:611
 msgid "Unlink repository"
 msgstr "Repository ontkoppelen"
 
@@ -6969,7 +6958,7 @@ msgstr "Repository ontkoppelen"
 #: src/components/projects/ProjectSettingsTab.tsx:99
 #: src/components/projects/SaveToCloudModal.tsx:21
 #: src/lib/constants/visibility.ts:17
-#: src/pages/ProjectSettings.tsx:412
+#: src/pages/ProjectSettings.tsx:418
 msgid "Unlisted"
 msgstr "Verborgen"
 
@@ -6996,7 +6985,7 @@ msgid "Update from POT…"
 msgstr "Bijwerken vanuit POT…"
 
 #: src/components/settings/AccountSection.tsx:355
-#: src/pages/auth/ResetPassword.tsx:119
+#: src/pages/auth/ResetPassword.tsx:127
 msgid "Update password"
 msgstr "Wachtwoord bijwerken"
 
@@ -7215,7 +7204,7 @@ msgstr "Bekijk op GitHub"
 msgid "View plans"
 msgstr "Bekijk abonnementen"
 
-#: src/pages/ProjectSettings.tsx:426
+#: src/pages/ProjectSettings.tsx:432
 msgid "Viewer — read-only"
 msgstr "Kijker — alleen lezen"
 
@@ -7223,8 +7212,8 @@ msgstr "Kijker — alleen lezen"
 #: src/components/projects/ProjectSettingsTab.tsx:95
 #: src/components/projects/ProjectSettingsTab.tsx:127
 #: src/components/projects/SaveToCloudModal.tsx:136
-#: src/pages/ProjectSettings.tsx:408
-#: src/pages/ProjectSettings.tsx:466
+#: src/pages/ProjectSettings.tsx:414
+#: src/pages/ProjectSettings.tsx:479
 msgid "Visibility"
 msgstr "Zichtbaarheid"
 
@@ -7308,7 +7297,7 @@ msgstr ""
 msgid "We'll tailor your experience based on your answer."
 msgstr "We passen je ervaring aan op basis van je antwoord."
 
-#: src/pages/Roadmap.tsx:273
+#: src/pages/Roadmap.tsx:272
 msgid ""
 "We're cooking up new features. Want to help shape what comes next? Tell us w"
 "hat you need."
@@ -7317,10 +7306,10 @@ msgstr ""
 "tel ons wat je nodig hebt."
 
 #: src/components/feedback/FeedbackModal.tsx:438
-#: src/pages/OrgSettingsPage.tsx:388
-#: src/pages/OrgSettingsPage.tsx:421
-#: src/pages/ProjectSettings.tsx:400
-#: src/pages/ProjectSettings.tsx:492
+#: src/pages/OrgSettingsPage.tsx:409
+#: src/pages/OrgSettingsPage.tsx:442
+#: src/pages/ProjectSettings.tsx:406
+#: src/pages/ProjectSettings.tsx:505
 msgid "Website"
 msgstr "Website"
 
@@ -7459,8 +7448,8 @@ msgstr "Mond-tot-mondreclame"
 
 #: src/components/landing/FeatureGrid.tsx:48
 #: src/components/projects/ProjectGlossaryTab.tsx:267
-#: src/pages/ProjectSettings.tsx:439
-#: src/pages/ProjectSettings.tsx:520
+#: src/pages/ProjectSettings.tsx:451
+#: src/pages/ProjectSettings.tsx:533
 msgid "WordPress"
 msgstr "WordPress"
 
@@ -7537,11 +7526,11 @@ msgstr ""
 msgid "You agree not to:"
 msgstr ""
 
-#: src/pages/Invite.tsx:111
+#: src/pages/Invite.tsx:118
 msgid "You are now a member of this organization."
 msgstr "Je bent nu lid van deze organisatie."
 
-#: src/pages/ProjectInvite.tsx:113
+#: src/pages/ProjectInvite.tsx:120
 msgid "You are now a member of this project."
 msgstr "Je bent nu lid van dit project."
 
@@ -7629,11 +7618,11 @@ msgstr ""
 "Je bevindt je op de default branch — een nieuwe branch aanmaken wordt aanbev"
 "olen"
 
-#: src/pages/ProjectInvite.tsx:130
+#: src/pages/ProjectInvite.tsx:140
 msgid "You've been invited to join a translation project as {{role}}."
 msgstr "Je bent uitgenodigd om deel te nemen aan een vertaalproject als {{role}}."
 
-#: src/pages/Invite.tsx:128
+#: src/pages/Invite.tsx:135
 msgid "You've been invited to join an organization as {{role}}."
 msgstr "Je bent uitgenodigd om deel te nemen aan een organisatie als {{role}}."
 
@@ -7662,7 +7651,7 @@ msgstr ""
 msgid "Your name"
 msgstr "Jouw naam"
 
-#: src/pages/auth/Login.tsx:124
+#: src/pages/auth/Login.tsx:130
 msgid "Your password"
 msgstr "Jouw wachtwoord"
 
@@ -7682,7 +7671,7 @@ msgstr "Je abonnement is opgezegd en vervalt op {{date}}."
 msgid "analytics data is stored in the EU (Frankfurt, Germany)."
 msgstr ""
 
-#: src/pages/auth/Signup.tsx:166
+#: src/pages/auth/Signup.tsx:176
 msgid "and"
 msgstr "en"
 
@@ -7723,7 +7712,7 @@ msgstr "gecacht"
 msgid "characters"
 msgstr "tekens"
 
-#: src/pages/ProjectDetail.tsx:424
+#: src/pages/ProjectDetail.tsx:430
 msgid "complete"
 msgstr "voltooid"
 
@@ -7762,7 +7751,7 @@ msgid "for details."
 msgstr "voor details."
 
 #: src/components/projects/ProjectCard.tsx:175
-#: src/pages/ProjectDetail.tsx:585
+#: src/pages/ProjectDetail.tsx:592
 msgid "fuzzy"
 msgstr "fuzzy"
 
@@ -7788,9 +7777,9 @@ msgid "just now"
 msgstr "zojuist"
 
 #: src/components/landing/StatsCounters.tsx:47
-#: src/pages/Explore.tsx:260
-#: src/pages/OrgSettings.tsx:470
-#: src/pages/OrgSettingsPage.tsx:675
+#: src/pages/Explore.tsx:265
+#: src/pages/OrgSettings.tsx:501
+#: src/pages/OrgSettingsPage.tsx:759
 msgid "languages"
 msgstr "talen"
 
@@ -7800,7 +7789,7 @@ msgid "member"
 msgstr "lid"
 
 #: src/components/landing/StatsCounters.tsx:46
-#: src/pages/Explore.tsx:255
+#: src/pages/Explore.tsx:260
 msgid "members"
 msgstr "leden"
 
@@ -7823,11 +7812,11 @@ msgstr "of"
 msgid "or connect with a personal access token"
 msgstr "of verbind met een personal access token"
 
-#: src/pages/auth/Signup.tsx:131
+#: src/pages/auth/Signup.tsx:139
 msgid "or create account with email"
 msgstr "of account aanmaken met e-mail"
 
-#: src/pages/auth/Login.tsx:102
+#: src/pages/auth/Login.tsx:108
 msgid "or sign in with email"
 msgstr "of log in met e-mail"
 
@@ -7867,7 +7856,7 @@ msgstr "project"
 #: src/components/AppSidebar.tsx:442
 #: src/components/auth/UserMenu.tsx:98
 #: src/components/settings/BillingSection.tsx:651
-#: src/pages/Explore.tsx:250
+#: src/pages/Explore.tsx:255
 msgid "projects"
 msgstr "projecten"
 
@@ -7898,18 +7887,18 @@ msgstr "overgeslagen"
 #: src/components/settings/BillingSection.tsx:598
 #: src/components/settings/BillingSection.tsx:606
 #: src/components/settings/BillingSection.tsx:652
-#: src/pages/OrgSettings.tsx:472
-#: src/pages/OrgSettingsPage.tsx:677
-#: src/pages/ProjectSettings.tsx:671
+#: src/pages/OrgSettings.tsx:503
+#: src/pages/OrgSettingsPage.tsx:761
+#: src/pages/ProjectSettings.tsx:687
 msgid "strings"
 msgstr "strings"
 
 #: src/components/landing/StatsCounters.tsx:44
-#: src/pages/Explore.tsx:245
+#: src/pages/Explore.tsx:250
 msgid "strings translated"
 msgstr "strings vertaald"
 
-#: src/pages/Roadmap.tsx:138
+#: src/pages/Roadmap.tsx:134
 msgid "tasks"
 msgstr "taken"
 
@@ -7928,7 +7917,7 @@ msgid "terms loaded"
 msgstr ""
 
 #: src/components/editor/EmptyState.tsx:223
-#: src/pages/ProjectDetail.tsx:369
+#: src/pages/ProjectDetail.tsx:372
 msgid ""
 "to save projects to the cloud and collaborate with your team. Collaborators "
 "work under the project owner's plan — no subscription needed to contribute."
@@ -7938,13 +7927,13 @@ msgstr ""
 "dig om bij te dragen."
 
 #: src/components/projects/ProjectCard.tsx:163
-#: src/pages/ProjectDetail.tsx:573
-#: src/pages/ProjectSettings.tsx:672
+#: src/pages/ProjectDetail.tsx:580
+#: src/pages/ProjectSettings.tsx:688
 msgid "translated"
 msgstr "vertaald"
 
 #: src/components/projects/ProjectCard.tsx:190
-#: src/pages/ProjectDetail.tsx:600
+#: src/pages/ProjectDetail.tsx:607
 msgid "untranslated"
 msgstr "onvertaald"
 
@@ -8012,9 +8001,9 @@ msgid "{{count}} hours ago"
 msgstr "{{count}} uur geleden"
 
 #: src/components/projects/ProjectCard.tsx:85
-#: src/pages/Explore.tsx:322
-#: src/pages/ProjectDetail.tsx:383
-#: src/pages/ProjectDetail.tsx:419
+#: src/pages/Explore.tsx:323
+#: src/pages/ProjectDetail.tsx:388
+#: src/pages/ProjectDetail.tsx:425
 msgid "{{count}} languages"
 msgstr "{{count}} talen"
 
@@ -8042,7 +8031,7 @@ msgstr "{{count}} minuut geleden"
 msgid "{{count}} minutes ago"
 msgstr "{{count}} minuten geleden"
 
-#: src/pages/Explore.tsx:308
+#: src/pages/Explore.tsx:309
 msgid "{{count}} projects"
 msgstr ""
 
@@ -8063,7 +8052,7 @@ msgstr "{{count}} geselecteerd"
 msgid "{{count}} stored entries"
 msgstr "{{count}} opgeslagen items"
 
-#: src/pages/Explore.tsx:314
+#: src/pages/Explore.tsx:315
 msgid "{{count}} strings"
 msgstr ""
 
@@ -8126,7 +8115,7 @@ msgstr "{{count}} met bijgewerkte verwijzingen"
 msgid "{{file}} is replaced with the filename without extension"
 msgstr "{{file}} wordt vervangen door de bestandsnaam zonder extensie"
 
-#: src/pages/Dashboard.tsx:197
+#: src/pages/Dashboard.tsx:215
 msgid "{{languages}} languages"
 msgstr "{{languages}} talen"
 
@@ -8146,11 +8135,11 @@ msgstr "{{name}} is lid geworden van {{org}}"
 msgid "{{name}} joined {{project}}"
 msgstr "{{name}} is lid geworden van {{project}}"
 
-#: src/pages/Explore.tsx:329
+#: src/pages/Explore.tsx:330
 msgid "{{pct}}% translated"
 msgstr ""
 
-#: src/pages/Dashboard.tsx:195
+#: src/pages/Dashboard.tsx:213
 msgid "{{projects}} projects"
 msgstr "{{projects}} projecten"
 
@@ -8195,17 +8184,17 @@ msgstr ""
 msgid "{{score}}% match"
 msgstr "{{score}}% match"
 
-#: src/pages/Dashboard.tsx:199
+#: src/pages/Dashboard.tsx:217
 msgid "{{strings}} strings"
 msgstr "{{strings}} strings"
 
-#: src/pages/ProjectDetail.tsx:421
+#: src/pages/ProjectDetail.tsx:427
 msgid "{{strings}} total strings"
 msgstr "{{strings}} totale strings"
 
 #: src/components/editor/HeaderEditor.tsx:617
 #: src/components/editor/WordPressRefreshModal.tsx:218
-#: src/pages/ProjectDetail.tsx:333
+#: src/pages/ProjectDetail.tsx:332
 msgid "{{type}} / {{slug}}"
 msgstr "{{type}} / {{slug}}"
 

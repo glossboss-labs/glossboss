@@ -5,8 +5,10 @@ import {
   SiDeepl,
   SiGooglegemini,
   SiElevenlabs,
+  SiAnthropic,
+  SiMistralai,
 } from '@icons-pack/react-simple-icons';
-import { Cloud } from 'lucide-react';
+import { BrainCircuit, Cloud } from 'lucide-react';
 import { useTranslation } from '@/lib/app-language';
 
 const tools: Array<{
@@ -18,10 +20,16 @@ const tools: Array<{
   { name: 'GitLab', Icon: SiGitlab },
   { name: 'DeepL', Icon: SiDeepl },
   {
+    name: 'OpenAI',
+    Icon: BrainCircuit as React.ComponentType<{ size?: number; className?: string }>,
+  },
+  { name: 'Claude', Icon: SiAnthropic },
+  { name: 'Gemini', Icon: SiGooglegemini },
+  { name: 'Mistral', Icon: SiMistralai },
+  {
     name: 'Azure Translator',
     Icon: Cloud as React.ComponentType<{ size?: number; className?: string }>,
   },
-  { name: 'Gemini', Icon: SiGooglegemini },
   { name: 'ElevenLabs', Icon: SiElevenlabs },
 ];
 

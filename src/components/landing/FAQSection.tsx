@@ -20,13 +20,13 @@ const faqs = [
   {
     q: msgid('Which translation providers are supported?'),
     a: msgid(
-      'Three providers: DeepL, Azure Translator, and Google Gemini. You can switch between them mid-session and bring your own API keys or use the shared access included with your plan.',
+      'Seven providers: DeepL, OpenAI, Claude, Google Gemini, Mistral, DeepSeek, and Azure Translator — plus custom endpoints for self-hosted LLMs. You can switch between them mid-session and bring your own API keys or use the shared access included with your plan.',
     ),
   },
   {
     q: msgid('How is this different from Poedit or Crowdin?'),
     a: msgid(
-      'GlossBoss combines the simplicity of Poedit with the collaboration features of Crowdin — in the browser, with no install required. It supports three AI translation providers instead of one, has deep WordPress integration with source-code context, includes a full review workflow with threaded comments, syncs directly with GitHub and GitLab, and is open source.',
+      'GlossBoss combines the simplicity of Poedit with the collaboration features of Crowdin — in the browser, with no install required. It supports seven AI translation providers including DeepL, OpenAI, Claude, and Gemini, has deep WordPress integration with source-code context, includes a full review workflow with threaded comments, syncs directly with GitHub and GitLab, and is open source.',
     ),
   },
   {
