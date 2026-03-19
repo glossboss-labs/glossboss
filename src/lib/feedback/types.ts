@@ -33,7 +33,8 @@ export interface FeedbackIssueRequest {
 
 export interface FeedbackIssueSuccess {
   ok: true;
-  referenceId?: string;
+  issueNumber: number;
+  issueUrl: string;
 }
 
 export interface FeedbackIssueError {

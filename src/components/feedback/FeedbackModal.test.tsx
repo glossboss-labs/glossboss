@@ -14,7 +14,8 @@ function renderModal(props: Partial<ComponentProps<typeof FeedbackModal>> = {}) 
     resolveTurnstileToken: async () => 'turnstile-token',
     submitFeedbackRequest: async () => ({
       ok: true,
-      referenceId: 'INBOX-123',
+      issueNumber: 123,
+      issueUrl: 'https://example.com/123',
     }),
   };
 
@@ -83,7 +84,8 @@ describe('FeedbackModal', () => {
         .fn<(payload: FeedbackIssueRequest) => Promise<FeedbackIssueSuccess>>()
         .mockResolvedValue({
           ok: true,
-          referenceId: 'INBOX-55',
+          issueNumber: 55,
+          issueUrl: 'https://example.com/issues/55',
         });
 
       renderModal({

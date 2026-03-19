@@ -412,7 +412,7 @@ export function FeedbackModal({
           <Alert color="gray" icon={<AlertCircle size={16} />}>
             <Text size="sm">
               {t(
-                'Submissions are stored in our internal product systems and can include your optional contact email for follow-up. See',
+                'Submissions may create a GitHub issue and can include your optional contact email for follow-up. See',
               )}{' '}
               <Text component="a" href="/privacy" inherit td="underline">
                 {t('Privacy')}
