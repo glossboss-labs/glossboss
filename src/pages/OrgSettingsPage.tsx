@@ -58,13 +58,10 @@ import {
 } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
 import {
-  getOrganizationBySlug,
-  listOrgMembers,
   updateOrgMemberRole,
   removeOrgMember,
   updateOrganization,
   deleteOrganization,
-  listInvites,
   createInvite,
   revokeInvite,
 } from '@/lib/organizations/api';
@@ -74,12 +71,12 @@ import type {
   OrgRole,
   InviteRow,
 } from '@/lib/organizations/types';
-import { listOrgProjects } from '@/lib/projects/api';
 import type { ProjectWithLanguages } from '@/lib/projects/types';
 import { useAuth } from '@/hooks/use-auth';
 import { AnimatedStateSwitch, AnimatedTabPanel, ConfirmModal, RoleBadge } from '@/components/ui';
 import { OrgTranslationTab } from '@/components/organizations/OrgTranslationTab';
 import { SharedCredentialsTab } from '@/components/organizations/SharedCredentialsTab';
+import { useOrganizationBySlug, useOrgSettingsPage } from '@/lib/organizations/queries';
 
 const MotionDiv = motion.div;
 
@@ -97,8 +94,12 @@ export default function OrgSettingsPage() {
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = searchParams.get('tab') || 'general';
-
-  const [loading, setLoading] = useState(true);
+  const {
+    data: baseOrg = null,
+    isLoading: orgLoading,
+    error: orgError,
+  } = useOrganizationBySlug(slug);
+  const { data: settingsData, isLoading: pageLoading, error: pageError } = useOrgSettingsPage(slug);
   const [error, setError] = useState<string | null>(null);
   const [org, setOrg] = useState<OrganizationRow | null>(null);
   const [members, setMembers] = useState<OrgMemberWithProfile[]>([]);
@@ -129,45 +130,27 @@ export default function OrgSettingsPage() {
   const isOwner = myMembership?.role === 'owner';
 
   useEffect(() => {
-    if (!slug) return;
-    let cancelled = false;
+    if (!baseOrg) return;
+    setOrg(baseOrg);
+    setEditOrgName(baseOrg.name);
+    setEditOrgDescription(baseOrg.description);
+    setEditOrgWebsite(baseOrg.website ?? '');
+  }, [baseOrg]);
 
-    async function load() {
-      try {
-        const organization = await getOrganizationBySlug(slug!);
-        if (cancelled) return;
-        if (!organization) {
-          setError(t('Organization not found'));
-          setLoading(false);
-          return;
-        }
-        setOrg(organization);
-        setEditOrgName(organization.name);
-        setEditOrgDescription(organization.description);
-        setEditOrgWebsite(organization.website ?? '');
+  useEffect(() => {
+    if (!settingsData) return;
 
-        const [memberList, inviteList, projectList] = await Promise.all([
-          listOrgMembers(organization.id),
-          listInvites(organization.id).catch(() => [] as InviteRow[]),
-          listOrgProjects(organization.id).catch(() => [] as ProjectWithLanguages[]),
-        ]);
-        if (cancelled) return;
-        setMembers(memberList);
-        setInvites(inviteList);
-        setOrgProjects(projectList);
-        setLoading(false);
-      } catch (err) {
-        if (cancelled) return;
-        setError(err instanceof Error ? err.message : t('Failed to load organization'));
-        setLoading(false);
-      }
+    setMembers(settingsData.members);
+    setInvites(settingsData.invites);
+    setOrgProjects(settingsData.orgProjects);
+
+    if (settingsData.organization) {
+      setOrg(settingsData.organization);
+      setEditOrgName(settingsData.organization.name);
+      setEditOrgDescription(settingsData.organization.description);
+      setEditOrgWebsite(settingsData.organization.website ?? '');
     }
-
-    void load();
-    return () => {
-      cancelled = true;
-    };
-  }, [slug, t]);
+  }, [settingsData]);
 
   const handleTabChange = (tab: string | null) => {
     if (tab) setSearchParams({ tab }, { replace: true });
@@ -233,6 +216,12 @@ export default function OrgSettingsPage() {
     }
   }, [org, inviteEmail, inviteRole, t]);
 
+  const queryErrorMessage =
+    orgError || pageError
+      ? (((orgError ?? pageError) as Error).message ?? t('Failed to load organization'))
+      : null;
+  const loading = (orgLoading || pageLoading) && !org;
+
   const handleRevokeInvite = useCallback(
     async (inviteId: string) => {
       try {
@@ -271,7 +260,7 @@ export default function OrgSettingsPage() {
     }
   }, [myMembership, navigate, t]);
 
-  const stateKey = loading ? 'loading' : error && !org ? 'error' : 'data';
+  const stateKey = loading ? 'loading' : (error ?? queryErrorMessage) && !org ? 'error' : 'data';
 
   return (
     <Box maw={960}>
@@ -282,10 +271,10 @@ export default function OrgSettingsPage() {
           </Center>
         )}
 
-        {error && !org && (
+        {(error ?? queryErrorMessage) && !org && (
           <>
             <Alert icon={<AlertCircle size={16} />} color="red" variant="light">
-              {error}
+              {error ?? queryErrorMessage}
             </Alert>
             <Button component={Link} to="/dashboard" variant="light" mt="md">
               {t('Back to dashboard')}

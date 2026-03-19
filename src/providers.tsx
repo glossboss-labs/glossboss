@@ -18,7 +18,7 @@ import { MotionConfig } from 'motion/react';
 import { TranslationProvider } from '@/lib/app-language';
 import { useAuthStore } from '@/stores/auth-store';
 
-const queryClient = new QueryClient({
+export const queryClient = new QueryClient({
   defaultOptions: {
     queries: { staleTime: 30_000, retry: 1 },
   },

@@ -110,7 +110,7 @@ msgstr ""
 msgid "/mo"
 msgstr ""
 
-#: src/components/projects/ProjectCard.tsx:84
+#: src/components/projects/ProjectCard.tsx:87
 #: src/pages/ProjectDetail.tsx:461
 msgid "1 language"
 msgstr ""
@@ -306,8 +306,8 @@ msgstr ""
 msgid "API key to use"
 msgstr ""
 
-#: src/pages/Invite.tsx:151
-#: src/pages/ProjectInvite.tsx:156
+#: src/pages/Invite.tsx:136
+#: src/pages/ProjectInvite.tsx:141
 msgid "Accept invite"
 msgstr ""
 
@@ -386,7 +386,7 @@ msgstr ""
 #: src/components/projects/AddLanguageModal.tsx:275
 #: src/components/projects/AddLanguageModal.tsx:453
 #: src/pages/ProjectDetail.tsx:489
-#: src/pages/ProjectSettings.tsx:690
+#: src/pages/ProjectSettings.tsx:669
 msgid "Add language"
 msgstr ""
 
@@ -561,23 +561,23 @@ msgstr ""
 
 #: src/components/projects/ProjectSettingsTab.tsx:170
 #: src/pages/Dashboard.tsx:468
-#: src/pages/ProjectSettings.tsx:897
+#: src/pages/ProjectSettings.tsx:876
 msgid ""
 "Are you sure you want to delete \"{{name}}\"? All languages and entries will"
 " be permanently removed."
 msgstr ""
 
-#: src/pages/OrgSettings.tsx:642
-#: src/pages/OrgSettingsPage.tsx:879
+#: src/pages/OrgSettings.tsx:614
+#: src/pages/OrgSettingsPage.tsx:856
 msgid ""
 "Are you sure you want to delete \"{{name}}\"? All members, invites, and asso"
 "ciated data will be permanently removed."
 msgstr ""
 
-#: src/pages/OrgSettings.tsx:656
-#: src/pages/OrgSettingsPage.tsx:893
+#: src/pages/OrgSettings.tsx:628
+#: src/pages/OrgSettingsPage.tsx:870
 #: src/pages/ProjectDetail.tsx:848
-#: src/pages/ProjectSettings.tsx:911
+#: src/pages/ProjectSettings.tsx:890
 msgid "Are you sure you want to leave \"{{name}}\"?"
 msgstr ""
 
@@ -676,13 +676,13 @@ msgstr ""
 msgid "Back"
 msgstr ""
 
-#: src/pages/Invite.tsx:105
-#: src/pages/OrgSettings.tsx:254
-#: src/pages/OrgSettingsPage.tsx:291
+#: src/pages/Invite.tsx:90
+#: src/pages/OrgSettings.tsx:226
+#: src/pages/OrgSettingsPage.tsx:268
 #: src/pages/ProjectDetail.tsx:299
-#: src/pages/ProjectEditor.tsx:199
-#: src/pages/ProjectInvite.tsx:107
-#: src/pages/ProjectSettings.tsx:284
+#: src/pages/ProjectEditor.tsx:177
+#: src/pages/ProjectInvite.tsx:92
+#: src/pages/ProjectSettings.tsx:263
 msgid "Back to dashboard"
 msgstr ""
 
@@ -698,7 +698,7 @@ msgstr ""
 msgid "Back to listing"
 msgstr ""
 
-#: src/pages/ProjectSettings.tsx:305
+#: src/pages/ProjectSettings.tsx:284
 msgid "Back to project"
 msgstr ""
 
@@ -725,11 +725,11 @@ msgstr ""
 msgid "Base URL"
 msgstr ""
 
-#: src/pages/OrgSettingsPage.tsx:384
+#: src/pages/OrgSettingsPage.tsx:361
 msgid "Basic information about your organization."
 msgstr ""
 
-#: src/pages/ProjectSettings.tsx:407
+#: src/pages/ProjectSettings.tsx:386
 msgid ""
 "Basic information about your project. The visibility setting controls who ca"
 "n see and contribute."
@@ -816,7 +816,7 @@ msgstr ""
 msgid "Browse files manually"
 msgstr ""
 
-#: src/pages/Explore.tsx:48
+#: src/pages/Explore.tsx:49
 msgid ""
 "Browse public GlossBoss translation projects, languages, contributors, and c"
 "ompletion progress."
@@ -1184,7 +1184,7 @@ msgstr ""
 msgid "Collaborators work under the project owner's plan — no subscription needed."
 msgstr ""
 
-#: src/components/AppSidebar.tsx:410
+#: src/components/AppSidebar.tsx:421
 msgid "Collapse sidebar"
 msgstr ""
 
@@ -1247,7 +1247,7 @@ msgstr ""
 msgid "Configured"
 msgstr ""
 
-#: src/components/AppSidebar.tsx:279
+#: src/components/AppSidebar.tsx:290
 msgid "Configured — no usage this session"
 msgstr ""
 
@@ -1389,8 +1389,8 @@ msgid "Conventional commit prefix prepended to commit messages, e.g. fix(i18n):"
 msgstr ""
 
 #: src/components/projects/ProjectInvitesTab.tsx:159
-#: src/pages/OrgSettings.tsx:600
-#: src/pages/OrgSettingsPage.tsx:672
+#: src/pages/OrgSettings.tsx:572
+#: src/pages/OrgSettingsPage.tsx:649
 msgid "Copied"
 msgstr ""
 
@@ -1399,8 +1399,8 @@ msgid "Copy entries with empty translations"
 msgstr ""
 
 #: src/components/projects/ProjectInvitesTab.tsx:159
-#: src/pages/OrgSettings.tsx:600
-#: src/pages/OrgSettingsPage.tsx:673
+#: src/pages/OrgSettings.tsx:572
+#: src/pages/OrgSettingsPage.tsx:650
 msgid "Copy invite link"
 msgstr ""
 
@@ -1466,8 +1466,8 @@ msgid "Create organization"
 msgstr ""
 
 #: src/components/projects/CreateProjectModal.tsx:676
-#: src/pages/OrgSettings.tsx:456
-#: src/pages/OrgSettingsPage.tsx:725
+#: src/pages/OrgSettings.tsx:428
+#: src/pages/OrgSettingsPage.tsx:702
 msgid "Create project"
 msgstr ""
 
@@ -1568,8 +1568,8 @@ msgid "Daily"
 msgstr ""
 
 #: src/components/projects/ProjectSettingsTab.tsx:140
-#: src/pages/OrgSettingsPage.tsx:372
-#: src/pages/ProjectSettings.tsx:395
+#: src/pages/OrgSettingsPage.tsx:349
+#: src/pages/ProjectSettings.tsx:374
 msgid "Danger zone"
 msgstr ""
 
@@ -1580,16 +1580,16 @@ msgid "Danish"
 msgstr ""
 
 #: src/components/AppHeader.tsx:43
-#: src/components/AppSidebar.tsx:517
+#: src/components/AppSidebar.tsx:540
 msgid "Dark mode"
 msgstr ""
 
-#: src/components/AppHeader.tsx:107
-#: src/components/AppSidebar.tsx:432
+#: src/components/AppHeader.tsx:108
+#: src/components/AppSidebar.tsx:443
 #: src/components/editor/EmptyState.tsx:221
 #: src/components/landing/LandingNav.tsx:75
 #: src/components/landing/LandingNav.tsx:152
-#: src/pages/OrgSettings.tsx:278
+#: src/pages/OrgSettings.tsx:250
 msgid "Dashboard"
 msgstr ""
 
@@ -1610,8 +1610,8 @@ msgstr ""
 msgid "Data shared"
 msgstr ""
 
-#: src/pages/Invite.tsx:148
-#: src/pages/ProjectInvite.tsx:153
+#: src/pages/Invite.tsx:133
+#: src/pages/ProjectInvite.tsx:138
 msgid "Decline"
 msgstr ""
 
@@ -1640,7 +1640,7 @@ msgstr ""
 msgid "Default provider"
 msgstr ""
 
-#: src/components/projects/ProjectCard.tsx:136
+#: src/components/projects/ProjectCard.tsx:140
 #: src/pages/ProjectDetail.tsx:714
 msgid "Delete"
 msgstr ""
@@ -1650,7 +1650,7 @@ msgstr ""
 msgid "Delete account"
 msgstr ""
 
-#: src/pages/ProjectSettings.tsx:738
+#: src/pages/ProjectSettings.tsx:717
 msgid "Delete language"
 msgstr ""
 
@@ -1658,11 +1658,11 @@ msgstr ""
 msgid "Delete my account"
 msgstr ""
 
-#: src/pages/OrgSettings.tsx:641
-#: src/pages/OrgSettings.tsx:646
-#: src/pages/OrgSettingsPage.tsx:831
-#: src/pages/OrgSettingsPage.tsx:878
-#: src/pages/OrgSettingsPage.tsx:883
+#: src/pages/OrgSettings.tsx:613
+#: src/pages/OrgSettings.tsx:618
+#: src/pages/OrgSettingsPage.tsx:808
+#: src/pages/OrgSettingsPage.tsx:855
+#: src/pages/OrgSettingsPage.tsx:860
 msgid "Delete organization"
 msgstr ""
 
@@ -1671,18 +1671,18 @@ msgstr ""
 #: src/components/projects/ProjectSettingsTab.tsx:174
 #: src/pages/Dashboard.tsx:467
 #: src/pages/Dashboard.tsx:472
-#: src/pages/ProjectSettings.tsx:832
-#: src/pages/ProjectSettings.tsx:896
-#: src/pages/ProjectSettings.tsx:901
+#: src/pages/ProjectSettings.tsx:811
+#: src/pages/ProjectSettings.tsx:875
+#: src/pages/ProjectSettings.tsx:880
 msgid "Delete project"
 msgstr ""
 
-#: src/pages/OrgSettingsPage.tsx:816
+#: src/pages/OrgSettingsPage.tsx:793
 msgid "Delete this organization"
 msgstr ""
 
 #: src/components/projects/ProjectSettingsTab.tsx:144
-#: src/pages/ProjectSettings.tsx:817
+#: src/pages/ProjectSettings.tsx:796
 msgid "Delete this project"
 msgstr ""
 
@@ -1706,10 +1706,10 @@ msgstr ""
 #: src/components/projects/ProjectSettingsTab.tsx:86
 #: src/components/projects/ProjectSettingsTab.tsx:124
 #: src/components/settings/KeybindsSection.tsx:155
-#: src/pages/OrgSettingsPage.tsx:408
-#: src/pages/OrgSettingsPage.tsx:447
-#: src/pages/ProjectSettings.tsx:424
-#: src/pages/ProjectSettings.tsx:524
+#: src/pages/OrgSettingsPage.tsx:385
+#: src/pages/OrgSettingsPage.tsx:424
+#: src/pages/ProjectSettings.tsx:403
+#: src/pages/ProjectSettings.tsx:503
 msgid "Description"
 msgstr ""
 
@@ -1766,7 +1766,7 @@ msgstr ""
 msgid "Disconnect"
 msgstr ""
 
-#: src/pages/Explore.tsx:243
+#: src/pages/Explore.tsx:215
 msgid "Discover and contribute to public translation projects"
 msgstr ""
 
@@ -1875,7 +1875,7 @@ msgstr ""
 msgid "Dutch (Netherlands)"
 msgstr ""
 
-#: src/pages/ProjectSettings.tsx:679
+#: src/pages/ProjectSettings.tsx:658
 msgid ""
 "Each language is a translation target. Add languages here, then open them in"
 " the editor to translate."
@@ -1965,8 +1965,8 @@ msgstr ""
 
 #: src/components/projects/ProjectInvitesTab.tsx:96
 #: src/components/projects/ProjectMembersTab.tsx:147
-#: src/pages/OrgSettings.tsx:530
-#: src/pages/OrgSettingsPage.tsx:493
+#: src/pages/OrgSettings.tsx:502
+#: src/pages/OrgSettingsPage.tsx:470
 msgid "Email address"
 msgstr ""
 
@@ -2145,7 +2145,7 @@ msgstr ""
 msgid "Exact match"
 msgstr ""
 
-#: src/components/AppSidebar.tsx:417
+#: src/components/AppSidebar.tsx:428
 msgid "Expand sidebar"
 msgstr ""
 
@@ -2154,26 +2154,26 @@ msgid "Expected behavior"
 msgstr ""
 
 #: src/components/projects/ProjectInvitesTab.tsx:146
-#: src/pages/OrgSettings.tsx:586
-#: src/pages/OrgSettingsPage.tsx:654
+#: src/pages/OrgSettings.tsx:558
+#: src/pages/OrgSettingsPage.tsx:631
 msgid "Expired"
 msgstr ""
 
 #: src/components/projects/ProjectInvitesTab.tsx:151
-#: src/pages/OrgSettings.tsx:591
-#: src/pages/OrgSettingsPage.tsx:659
+#: src/pages/OrgSettings.tsx:563
+#: src/pages/OrgSettingsPage.tsx:636
 msgid "Expires {{date}}"
 msgstr ""
 
-#: src/components/AppHeader.tsx:97
-#: src/components/AppSidebar.tsx:439
+#: src/components/AppHeader.tsx:96
+#: src/components/AppSidebar.tsx:452
 #: src/components/landing/LandingFooter.tsx:17
-#: src/pages/Explore.tsx:241
+#: src/pages/Explore.tsx:213
 #: src/pages/ProjectDetail.tsx:323
 msgid "Explore"
 msgstr ""
 
-#: src/pages/Explore.tsx:47
+#: src/pages/Explore.tsx:48
 msgid "Explore Open-Source Translation Projects — GlossBoss"
 msgstr ""
 
@@ -2261,8 +2261,8 @@ msgstr ""
 msgid "FUZZY"
 msgstr ""
 
-#: src/pages/Invite.tsx:74
-#: src/pages/ProjectInvite.tsx:76
+#: src/pages/Invite.tsx:53
+#: src/pages/ProjectInvite.tsx:55
 msgid "Failed to accept invite"
 msgstr ""
 
@@ -2307,17 +2307,17 @@ msgid "Failed to delete credential."
 msgstr ""
 
 #: src/pages/ProjectDetail.tsx:154
-#: src/pages/ProjectSettings.tsx:226
+#: src/pages/ProjectSettings.tsx:199
 msgid "Failed to delete language"
 msgstr ""
 
-#: src/pages/OrgSettings.tsx:208
-#: src/pages/OrgSettingsPage.tsx:256
+#: src/pages/OrgSettings.tsx:175
+#: src/pages/OrgSettingsPage.tsx:233
 msgid "Failed to delete organization"
 msgstr ""
 
 #: src/components/projects/ProjectSettingsTab.tsx:65
-#: src/pages/ProjectSettings.tsx:201
+#: src/pages/ProjectSettings.tsx:174
 msgid "Failed to delete project"
 msgstr ""
 
@@ -2346,13 +2346,13 @@ msgstr ""
 msgid "Failed to join project"
 msgstr ""
 
-#: src/pages/OrgSettings.tsx:221
-#: src/pages/OrgSettingsPage.tsx:269
+#: src/pages/OrgSettings.tsx:188
+#: src/pages/OrgSettingsPage.tsx:246
 msgid "Failed to leave organization"
 msgstr ""
 
 #: src/pages/ProjectDetail.tsx:173
-#: src/pages/ProjectSettings.tsx:214
+#: src/pages/ProjectSettings.tsx:187
 msgid "Failed to leave project"
 msgstr ""
 
@@ -2377,13 +2377,13 @@ msgstr ""
 msgid "Failed to load glossary."
 msgstr ""
 
-#: src/pages/Invite.tsx:54
-#: src/pages/ProjectInvite.tsx:55
+#: src/pages/Invite.tsx:60
+#: src/pages/ProjectInvite.tsx:62
 msgid "Failed to load invite"
 msgstr ""
 
-#: src/pages/OrgSettings.tsx:145
-#: src/pages/OrgSettingsPage.tsx:161
+#: src/pages/OrgSettings.tsx:206
+#: src/pages/OrgSettingsPage.tsx:209
 msgid "Failed to load organization"
 msgstr ""
 
@@ -2396,8 +2396,8 @@ msgid "Failed to load preview strings."
 msgstr ""
 
 #: src/pages/ProjectDetail.tsx:123
-#: src/pages/ProjectEditor.tsx:166
-#: src/pages/ProjectSettings.tsx:159
+#: src/pages/ProjectEditor.tsx:160
+#: src/pages/ProjectSettings.tsx:206
 msgid "Failed to load project"
 msgstr ""
 
@@ -2405,7 +2405,7 @@ msgstr ""
 msgid "Failed to load project metadata."
 msgstr ""
 
-#: src/pages/Explore.tsx:143
+#: src/pages/Explore.tsx:144
 msgid "Failed to load projects"
 msgstr ""
 
@@ -2444,14 +2444,14 @@ msgid "Failed to read the file."
 msgstr ""
 
 #: src/components/projects/ProjectMembersTab.tsx:131
-#: src/pages/OrgSettings.tsx:174
-#: src/pages/OrgSettingsPage.tsx:211
+#: src/pages/OrgSettings.tsx:141
+#: src/pages/OrgSettingsPage.tsx:183
 msgid "Failed to remove member"
 msgstr ""
 
 #: src/components/projects/ProjectInvitesTab.tsx:81
-#: src/pages/OrgSettings.tsx:232
-#: src/pages/OrgSettingsPage.tsx:242
+#: src/pages/OrgSettings.tsx:199
+#: src/pages/OrgSettingsPage.tsx:219
 msgid "Failed to revoke invite"
 msgstr ""
 
@@ -2461,7 +2461,7 @@ msgstr ""
 
 #: src/components/projects/ProjectSettingsTab.tsx:52
 #: src/components/projects/SaveToCloudModal.tsx:98
-#: src/pages/ProjectSettings.tsx:187
+#: src/pages/ProjectSettings.tsx:160
 msgid "Failed to save project"
 msgstr ""
 
@@ -2478,8 +2478,8 @@ msgid "Failed to save translation provider."
 msgstr ""
 
 #: src/components/projects/ProjectInvitesTab.tsx:69
-#: src/pages/OrgSettings.tsx:194
-#: src/pages/OrgSettingsPage.tsx:230
+#: src/pages/OrgSettings.tsx:161
+#: src/pages/OrgSettingsPage.tsx:202
 msgid "Failed to send invite"
 msgstr ""
 
@@ -2491,7 +2491,7 @@ msgstr ""
 msgid "Failed to start checkout. Please try again."
 msgstr ""
 
-#: src/pages/ProjectSettings.tsx:259
+#: src/pages/ProjectSettings.tsx:237
 msgid "Failed to unlink repository"
 msgstr ""
 
@@ -2499,7 +2499,7 @@ msgstr ""
 msgid "Failed to update credential."
 msgstr ""
 
-#: src/pages/OrgSettingsPage.tsx:187
+#: src/pages/OrgSettingsPage.tsx:159
 msgid "Failed to update organization"
 msgstr ""
 
@@ -2512,8 +2512,8 @@ msgid "Failed to update profile."
 msgstr ""
 
 #: src/components/projects/ProjectMembersTab.tsx:119
-#: src/pages/OrgSettings.tsx:162
-#: src/pages/OrgSettingsPage.tsx:199
+#: src/pages/OrgSettings.tsx:129
+#: src/pages/OrgSettingsPage.tsx:171
 msgid "Failed to update role"
 msgstr ""
 
@@ -2653,8 +2653,8 @@ msgid "Formality"
 msgstr ""
 
 #: src/components/projects/ProjectSettingsTab.tsx:130
-#: src/pages/Explore.tsx:362
-#: src/pages/ProjectSettings.tsx:514
+#: src/pages/Explore.tsx:334
+#: src/pages/ProjectSettings.tsx:493
 msgid "Format"
 msgstr ""
 
@@ -2768,8 +2768,8 @@ msgstr ""
 msgid "Gemini translation failed"
 msgstr ""
 
-#: src/pages/OrgSettingsPage.tsx:360
-#: src/pages/ProjectSettings.tsx:374
+#: src/pages/OrgSettingsPage.tsx:337
+#: src/pages/ProjectSettings.tsx:353
 msgid "General"
 msgstr ""
 
@@ -2960,7 +2960,7 @@ msgstr ""
 #: src/components/SettingsModal.tsx:117
 #: src/components/editor/GlossaryPanel.tsx:307
 #: src/components/organizations/OrgTranslationTab.tsx:163
-#: src/pages/ProjectSettings.tsx:386
+#: src/pages/ProjectSettings.tsx:365
 #: src/pages/Settings.tsx:177
 msgid "Glossary"
 msgstr ""
@@ -3064,12 +3064,12 @@ msgid "Go to Connect"
 msgstr ""
 
 #: src/components/AppErrorBoundary.tsx:62
-#: src/pages/Invite.tsx:121
+#: src/pages/Invite.tsx:106
 #: src/pages/NotFoundPage.tsx:24
 msgid "Go to dashboard"
 msgstr ""
 
-#: src/pages/ProjectInvite.tsx:126
+#: src/pages/ProjectInvite.tsx:111
 msgid "Go to project"
 msgstr ""
 
@@ -3303,8 +3303,8 @@ msgid "Invalid file type: .{{ext}}. Please drop a .po, .pot, or .json file."
 msgstr ""
 
 #: src/components/projects/ProjectInvitesTab.tsx:116
-#: src/pages/OrgSettings.tsx:550
-#: src/pages/OrgSettingsPage.tsx:515
+#: src/pages/OrgSettings.tsx:522
+#: src/pages/OrgSettingsPage.tsx:492
 msgid "Invite"
 msgstr ""
 
@@ -3312,17 +3312,17 @@ msgstr ""
 msgid "Invite a collaborator"
 msgstr ""
 
-#: src/pages/OrgSettings.tsx:526
-#: src/pages/OrgSettingsPage.tsx:489
+#: src/pages/OrgSettings.tsx:498
+#: src/pages/OrgSettingsPage.tsx:466
 msgid "Invite a team member"
 msgstr ""
 
-#: src/pages/Invite.tsx:115
-#: src/pages/ProjectInvite.tsx:117
+#: src/pages/Invite.tsx:100
+#: src/pages/ProjectInvite.tsx:102
 msgid "Invite accepted"
 msgstr ""
 
-#: src/pages/OrgSettings.tsx:351
+#: src/pages/OrgSettings.tsx:323
 #: src/pages/ProjectDetail.tsx:471
 msgid "Invites"
 msgstr ""
@@ -3434,16 +3434,12 @@ msgstr ""
 #: src/components/editor/HeaderEditor.tsx:222
 #: src/components/landing/LandingFooter.tsx:117
 #: src/components/settings/GlossarySection.tsx:284
-#: src/pages/Explore.tsx:372
+#: src/pages/Explore.tsx:344
 msgid "Language"
 msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:320
 msgid "Language code"
-msgstr ""
-
-#: src/pages/ProjectEditor.tsx:83
-msgid "Language not found"
 msgstr ""
 
 #: src/hooks/use-editor-tour.ts:118
@@ -3454,7 +3450,7 @@ msgstr ""
 msgid "Language team"
 msgstr ""
 
-#: src/pages/ProjectSettings.tsx:380
+#: src/pages/ProjectSettings.tsx:359
 msgid "Languages"
 msgstr ""
 
@@ -3468,7 +3464,7 @@ msgstr ""
 
 #: src/components/editor/HeaderEditor.tsx:257
 #: src/pages/Dashboard.tsx:191
-#: src/pages/Explore.tsx:41
+#: src/pages/Explore.tsx:42
 #: src/pages/ProjectDetail.tsx:216
 msgid "Last updated"
 msgstr ""
@@ -3486,32 +3482,32 @@ msgid "Latvian"
 msgstr ""
 
 #: src/pages/Dashboard.tsx:194
-#: src/pages/Explore.tsx:45
+#: src/pages/Explore.tsx:46
 #: src/pages/ProjectDetail.tsx:214
 msgid "Least complete"
 msgstr ""
 
-#: src/pages/OrgSettings.tsx:655
-#: src/pages/OrgSettings.tsx:657
-#: src/pages/OrgSettingsPage.tsx:859
-#: src/pages/OrgSettingsPage.tsx:892
-#: src/pages/OrgSettingsPage.tsx:894
+#: src/pages/OrgSettings.tsx:627
+#: src/pages/OrgSettings.tsx:629
+#: src/pages/OrgSettingsPage.tsx:836
+#: src/pages/OrgSettingsPage.tsx:869
+#: src/pages/OrgSettingsPage.tsx:871
 msgid "Leave organization"
 msgstr ""
 
 #: src/pages/ProjectDetail.tsx:847
 #: src/pages/ProjectDetail.tsx:849
-#: src/pages/ProjectSettings.tsx:860
-#: src/pages/ProjectSettings.tsx:910
-#: src/pages/ProjectSettings.tsx:912
+#: src/pages/ProjectSettings.tsx:839
+#: src/pages/ProjectSettings.tsx:889
+#: src/pages/ProjectSettings.tsx:891
 msgid "Leave project"
 msgstr ""
 
-#: src/pages/OrgSettingsPage.tsx:846
+#: src/pages/OrgSettingsPage.tsx:823
 msgid "Leave this organization"
 msgstr ""
 
-#: src/pages/ProjectSettings.tsx:847
+#: src/pages/ProjectSettings.tsx:826
 msgid "Leave this project"
 msgstr ""
 
@@ -3532,7 +3528,7 @@ msgid "License"
 msgstr ""
 
 #: src/components/AppHeader.tsx:43
-#: src/components/AppSidebar.tsx:517
+#: src/components/AppSidebar.tsx:540
 msgid "Light mode"
 msgstr ""
 
@@ -3549,7 +3545,7 @@ msgstr ""
 msgid "Line {{line}}"
 msgstr ""
 
-#: src/pages/ProjectSettings.tsx:661
+#: src/pages/ProjectSettings.tsx:640
 msgid "Link repository"
 msgstr ""
 
@@ -3665,7 +3661,7 @@ msgstr ""
 msgid "Loading..."
 msgstr ""
 
-#: src/components/AppSidebar.tsx:453
+#: src/components/AppSidebar.tsx:470
 #: src/components/auth/UserMenu.tsx:110
 msgid "Local editor"
 msgstr ""
@@ -3736,13 +3732,13 @@ msgstr ""
 msgid "Machine translation"
 msgstr ""
 
-#: src/pages/OrgSettings.tsx:411
-#: src/pages/OrgSettingsPage.tsx:587
+#: src/pages/OrgSettings.tsx:383
+#: src/pages/OrgSettingsPage.tsx:564
 msgid "Make admin"
 msgstr ""
 
-#: src/pages/OrgSettings.tsx:421
-#: src/pages/OrgSettingsPage.tsx:597
+#: src/pages/OrgSettings.tsx:393
+#: src/pages/OrgSettingsPage.tsx:574
 msgid "Make member"
 msgstr ""
 
@@ -3772,14 +3768,14 @@ msgstr ""
 msgid "Manage subscription"
 msgstr ""
 
-#: src/pages/ProjectSettings.tsx:775
+#: src/pages/ProjectSettings.tsx:754
 msgid ""
 "Manage who has access. Roles: Admin (full control), Manager (settings + invi"
 "tes), Translator (translate), Reviewer (translate + approve), Viewer (read-o"
 "nly)."
 msgstr ""
 
-#: src/pages/OrgSettingsPage.tsx:481
+#: src/pages/OrgSettingsPage.tsx:458
 msgid ""
 "Manage your organization's members. Roles: Owner (full control, cannot be re"
 "moved), Admin (manage members and settings), Member (access organization pro"
@@ -3830,10 +3826,10 @@ msgstr ""
 msgid "Marked {{count}} row(s) as fuzzy."
 msgstr ""
 
-#: src/pages/OrgSettings.tsx:344
-#: src/pages/OrgSettingsPage.tsx:363
+#: src/pages/OrgSettings.tsx:316
+#: src/pages/OrgSettingsPage.tsx:340
 #: src/pages/ProjectDetail.tsx:466
-#: src/pages/ProjectSettings.tsx:389
+#: src/pages/ProjectSettings.tsx:368
 msgid "Members"
 msgstr ""
 
@@ -3874,13 +3870,13 @@ msgstr ""
 msgid "More info"
 msgstr ""
 
-#: src/pages/Explore.tsx:44
+#: src/pages/Explore.tsx:45
 #: src/pages/ProjectDetail.tsx:213
 msgid "Most complete"
 msgstr ""
 
 #: src/pages/Dashboard.tsx:193
-#: src/pages/Explore.tsx:43
+#: src/pages/Explore.tsx:44
 #: src/pages/ProjectDetail.tsx:215
 msgid "Most strings"
 msgstr ""
@@ -3890,14 +3886,14 @@ msgid "My team"
 msgstr ""
 
 #: src/components/projects/ProjectSettingsTab.tsx:121
-#: src/pages/OrgSettingsPage.tsx:396
-#: src/pages/OrgSettingsPage.tsx:441
-#: src/pages/ProjectSettings.tsx:500
+#: src/pages/OrgSettingsPage.tsx:373
+#: src/pages/OrgSettingsPage.tsx:418
+#: src/pages/ProjectSettings.tsx:479
 msgid "Name"
 msgstr ""
 
 #: src/pages/Dashboard.tsx:192
-#: src/pages/Explore.tsx:42
+#: src/pages/Explore.tsx:43
 msgid "Name A–Z"
 msgstr ""
 
@@ -4033,7 +4029,7 @@ msgstr ""
 msgid "No glossary terms in selected text"
 msgstr ""
 
-#: src/pages/ProjectSettings.tsx:585
+#: src/pages/ProjectSettings.tsx:564
 msgid "No languages in this project yet."
 msgstr ""
 
@@ -4045,7 +4041,7 @@ msgstr ""
 msgid "No languages yet"
 msgstr ""
 
-#: src/pages/ProjectSettings.tsx:699
+#: src/pages/ProjectSettings.tsx:678
 msgid "No languages yet. Add your first language to start translating this project."
 msgstr ""
 
@@ -4078,7 +4074,7 @@ msgid "No organizations yet"
 msgstr ""
 
 #: src/components/projects/ProjectInvitesTab.tsx:126
-#: src/pages/OrgSettings.tsx:560
+#: src/pages/OrgSettings.tsx:532
 msgid "No pending invites"
 msgstr ""
 
@@ -4097,13 +4093,13 @@ msgstr ""
 msgid "No projects found"
 msgstr ""
 
-#: src/pages/OrgSettings.tsx:463
-#: src/pages/OrgSettingsPage.tsx:732
+#: src/pages/OrgSettings.tsx:435
+#: src/pages/OrgSettingsPage.tsx:709
 msgid "No projects in this organization yet"
 msgstr ""
 
 #: src/pages/Dashboard.tsx:383
-#: src/pages/Explore.tsx:393
+#: src/pages/Explore.tsx:365
 msgid "No projects match your search"
 msgstr ""
 
@@ -4111,7 +4107,7 @@ msgstr ""
 msgid "No projects yet"
 msgstr ""
 
-#: src/pages/Explore.tsx:300
+#: src/pages/Explore.tsx:272
 msgid "No public projects yet"
 msgstr ""
 
@@ -4128,7 +4124,7 @@ msgstr ""
 msgid "No repositories found"
 msgstr ""
 
-#: src/pages/ProjectSettings.tsx:631
+#: src/pages/ProjectSettings.tsx:610
 msgid "No repository linked"
 msgstr ""
 
@@ -4246,11 +4242,11 @@ msgstr ""
 msgid "Notification"
 msgstr ""
 
-#: src/components/AppSidebar.tsx:551
+#: src/components/AppSidebar.tsx:574
 #: src/components/notifications/NotificationBell.tsx:29
 #: src/components/notifications/NotificationBell.tsx:43
 #: src/components/notifications/NotificationDropdown.tsx:28
-#: src/pages/ProjectSettings.tsx:392
+#: src/pages/ProjectSettings.tsx:371
 #: src/pages/Settings.tsx:163
 msgid "Notifications"
 msgstr ""
@@ -4359,7 +4355,7 @@ msgstr ""
 msgid "Open the editor"
 msgstr ""
 
-#: src/pages/ProjectSettings.tsx:650
+#: src/pages/ProjectSettings.tsx:629
 msgid "Open the editor to connect this language to a repository via Push settings."
 msgstr ""
 
@@ -4419,11 +4415,11 @@ msgstr ""
 msgid "Organization"
 msgstr ""
 
-#: src/pages/OrgSettingsPage.tsx:392
+#: src/pages/OrgSettingsPage.tsx:369
 msgid "Organization details"
 msgstr ""
 
-#: src/pages/Invite.tsx:132
+#: src/pages/Invite.tsx:117
 msgid "Organization invite"
 msgstr ""
 
@@ -4446,12 +4442,7 @@ msgstr ""
 msgid "Organization name"
 msgstr ""
 
-#: src/pages/OrgSettings.tsx:127
-#: src/pages/OrgSettingsPage.tsx:140
-msgid "Organization not found"
-msgstr ""
-
-#: src/pages/OrgSettingsPage.tsx:323
+#: src/pages/OrgSettingsPage.tsx:300
 msgid "Organization settings"
 msgstr ""
 
@@ -4459,7 +4450,7 @@ msgstr ""
 msgid "Organization translation settings saved."
 msgstr ""
 
-#: src/pages/OrgSettingsPage.tsx:794
+#: src/pages/OrgSettingsPage.tsx:771
 msgid ""
 "Organization-wide translation defaults. These apply to all projects unless o"
 "verridden at the project level."
@@ -4583,7 +4574,7 @@ msgstr ""
 msgid "Pay as you go · billed monthly"
 msgstr ""
 
-#: src/pages/OrgSettingsPage.tsx:626
+#: src/pages/OrgSettingsPage.tsx:603
 msgid "Pending invites"
 msgstr ""
 
@@ -4591,14 +4582,14 @@ msgstr ""
 msgid "Per-project notification overrides are available in each project's settings."
 msgstr ""
 
-#: src/pages/OrgSettingsPage.tsx:819
+#: src/pages/OrgSettingsPage.tsx:796
 msgid ""
 "Permanently delete this organization and all its data. This cannot be undone"
 "."
 msgstr ""
 
 #: src/components/projects/ProjectSettingsTab.tsx:146
-#: src/pages/ProjectSettings.tsx:820
+#: src/pages/ProjectSettings.tsx:799
 msgid ""
 "Permanently delete this project, all languages, and all entries. This cannot"
 " be undone."
@@ -4857,7 +4848,7 @@ msgstr ""
 #: src/components/projects/ProjectSettingsTab.tsx:97
 #: src/components/projects/SaveToCloudModal.tsx:19
 #: src/lib/constants/visibility.ts:15
-#: src/pages/ProjectSettings.tsx:443
+#: src/pages/ProjectSettings.tsx:422
 msgid "Private"
 msgstr ""
 
@@ -4904,7 +4895,7 @@ msgid "Project data"
 msgstr ""
 
 #: src/components/projects/ProjectSettingsTab.tsx:75
-#: src/pages/ProjectSettings.tsx:413
+#: src/pages/ProjectSettings.tsx:392
 msgid "Project details"
 msgstr ""
 
@@ -4916,7 +4907,7 @@ msgstr ""
 msgid "Project exported successfully."
 msgstr ""
 
-#: src/pages/ProjectInvite.tsx:137
+#: src/pages/ProjectInvite.tsx:122
 msgid "Project invite"
 msgstr ""
 
@@ -4939,7 +4930,7 @@ msgstr ""
 #: src/components/projects/SaveToCloudModal.tsx:129
 #: src/components/settings/BackupSection.tsx:499
 #: src/components/settings/BackupSection.tsx:503
-#: src/pages/ProjectSettings.tsx:418
+#: src/pages/ProjectSettings.tsx:397
 msgid "Project name"
 msgstr ""
 
@@ -4948,9 +4939,7 @@ msgid "Project name and version"
 msgstr ""
 
 #: src/pages/ProjectDetail.tsx:291
-#: src/pages/ProjectEditor.tsx:77
-#: src/pages/ProjectEditor.tsx:196
-#: src/pages/ProjectSettings.tsx:135
+#: src/pages/ProjectEditor.tsx:174
 msgid "Project not found"
 msgstr ""
 
@@ -4971,7 +4960,7 @@ msgid "Project overview"
 msgstr ""
 
 #: src/components/editor/EditorHeader.tsx:263
-#: src/pages/ProjectSettings.tsx:336
+#: src/pages/ProjectSettings.tsx:315
 msgid "Project settings"
 msgstr ""
 
@@ -4983,12 +4972,12 @@ msgstr ""
 msgid "Project type"
 msgstr ""
 
-#: src/components/AppSidebar.tsx:340
+#: src/components/AppSidebar.tsx:351
 #: src/components/billing/FreePlanBanner.tsx:64
 #: src/components/settings/BillingSection.tsx:485
 #: src/pages/Dashboard.tsx:213
-#: src/pages/OrgSettings.tsx:347
-#: src/pages/OrgSettingsPage.tsx:366
+#: src/pages/OrgSettings.tsx:319
+#: src/pages/OrgSettingsPage.tsx:343
 #: src/pages/ProjectDetail.tsx:323
 msgid "Projects"
 msgstr ""
@@ -5019,11 +5008,11 @@ msgstr ""
 #: src/components/projects/ProjectSettingsTab.tsx:98
 #: src/components/projects/SaveToCloudModal.tsx:20
 #: src/lib/constants/visibility.ts:16
-#: src/pages/ProjectSettings.tsx:444
+#: src/pages/ProjectSettings.tsx:423
 msgid "Public"
 msgstr ""
 
-#: src/pages/ProjectSettings.tsx:454
+#: src/pages/ProjectSettings.tsx:433
 msgid "Public permissions"
 msgstr ""
 
@@ -5136,7 +5125,7 @@ msgstr ""
 msgid "Real-time collaboration"
 msgstr ""
 
-#: src/components/AppSidebar.tsx:470
+#: src/components/AppSidebar.tsx:489
 #: src/components/SidebarProjectSearch.tsx:239
 msgid "Recent"
 msgstr ""
@@ -5222,8 +5211,8 @@ msgstr ""
 #: src/components/settings/LlmProviderCard.tsx:349
 #: src/components/settings/TranslationSection.tsx:581
 #: src/components/settings/TranslationSection.tsx:719
-#: src/pages/OrgSettings.tsx:430
-#: src/pages/OrgSettingsPage.tsx:608
+#: src/pages/OrgSettings.tsx:402
+#: src/pages/OrgSettingsPage.tsx:585
 msgid "Remove"
 msgstr ""
 
@@ -5236,11 +5225,11 @@ msgstr ""
 msgid "Remove source file"
 msgstr ""
 
-#: src/pages/OrgSettingsPage.tsx:849
+#: src/pages/OrgSettingsPage.tsx:826
 msgid "Remove yourself from this organization."
 msgstr ""
 
-#: src/pages/ProjectSettings.tsx:850
+#: src/pages/ProjectSettings.tsx:829
 msgid "Remove yourself from this project."
 msgstr ""
 
@@ -5294,11 +5283,11 @@ msgstr ""
 #: src/components/projects/AddLanguageModal.tsx:424
 #: src/components/projects/ProjectGlossaryTab.tsx:268
 #: src/components/repo-sync/RepoSyncModal.tsx:932
-#: src/pages/ProjectSettings.tsx:377
+#: src/pages/ProjectSettings.tsx:356
 msgid "Repository"
 msgstr ""
 
-#: src/pages/ProjectSettings.tsx:577
+#: src/pages/ProjectSettings.tsx:556
 msgid ""
 "Repository connections are per-language. Each language can be linked to a fi"
 "le in a GitHub or GitLab repository."
@@ -5466,18 +5455,18 @@ msgstr ""
 msgid "Reviewer name"
 msgstr ""
 
-#: src/pages/ProjectSettings.tsx:466
+#: src/pages/ProjectSettings.tsx:445
 msgid "Reviewer — can translate and review"
 msgstr ""
 
-#: src/components/AppSidebar.tsx:446
+#: src/components/AppSidebar.tsx:461
 #: src/components/landing/LandingFooter.tsx:16
 #: src/components/landing/LandingNav.tsx:26
 #: src/pages/Roadmap.tsx:245
 msgid "Roadmap"
 msgstr ""
 
-#: src/pages/ProjectSettings.tsx:455
+#: src/pages/ProjectSettings.tsx:434
 msgid "Role assigned to non-members who visit this public project."
 msgstr ""
 
@@ -5529,8 +5518,8 @@ msgid "Save and jump to the next translation entry (skips translated by default)
 msgstr ""
 
 #: src/components/projects/ProjectSettingsTab.tsx:113
-#: src/pages/OrgSettingsPage.tsx:431
-#: src/pages/ProjectSettings.tsx:490
+#: src/pages/OrgSettingsPage.tsx:408
+#: src/pages/ProjectSettings.tsx:469
 msgid "Save changes"
 msgstr ""
 
@@ -5603,7 +5592,7 @@ msgid "Search projects..."
 msgstr ""
 
 #: src/pages/Dashboard.tsx:364
-#: src/pages/Explore.tsx:352
+#: src/pages/Explore.tsx:324
 msgid "Search projects…"
 msgstr ""
 
@@ -5794,11 +5783,11 @@ msgstr ""
 msgid "Set your source and target languages for translation."
 msgstr ""
 
-#: src/components/AppSidebar.tsx:500
+#: src/components/AppSidebar.tsx:521
 #: src/components/SettingsModal.tsx:84
 #: src/components/auth/UserMenu.tsx:113
-#: src/components/projects/ProjectCard.tsx:125
-#: src/pages/OrgSettings.tsx:321
+#: src/components/projects/ProjectCard.tsx:129
+#: src/pages/OrgSettings.tsx:293
 #: src/pages/ProjectDetail.tsx:345
 #: src/pages/Settings.tsx:134
 msgid "Settings"
@@ -5876,14 +5865,14 @@ msgstr ""
 msgid "Share Feedback"
 msgstr ""
 
-#: src/components/AppSidebar.tsx:506
+#: src/components/AppSidebar.tsx:529
 #: src/components/auth/UserMenu.tsx:119
 #: src/pages/Roadmap.tsx:287
 #: src/pages/Roadmap.tsx:341
 msgid "Share feedback"
 msgstr ""
 
-#: src/pages/OrgSettingsPage.tsx:799
+#: src/pages/OrgSettingsPage.tsx:776
 msgid "Shared credentials"
 msgstr ""
 
@@ -5945,7 +5934,7 @@ msgstr ""
 msgid "Showing {{start}}--{{end}} of {{total}} entries"
 msgstr ""
 
-#: src/components/AppSidebar.tsx:650
+#: src/components/AppSidebar.tsx:673
 #: src/components/auth/UserMenu.tsx:46
 #: src/components/auth/UserMenu.tsx:53
 #: src/components/editor/EmptyState.tsx:243
@@ -5980,7 +5969,7 @@ msgstr ""
 msgid "Sign in with email"
 msgstr ""
 
-#: src/components/AppSidebar.tsx:641
+#: src/components/AppSidebar.tsx:664
 #: src/components/auth/UserMenu.tsx:181
 msgid "Sign out"
 msgstr ""
@@ -6046,8 +6035,8 @@ msgstr ""
 
 #: src/components/editor/WordPressProjectModal.tsx:317
 #: src/components/organizations/CreateOrgModal.tsx:93
-#: src/pages/OrgSettingsPage.tsx:402
-#: src/pages/OrgSettingsPage.tsx:444
+#: src/pages/OrgSettingsPage.tsx:379
+#: src/pages/OrgSettingsPage.tsx:421
 msgid "Slug"
 msgstr ""
 
@@ -6220,7 +6209,7 @@ msgstr ""
 msgid "String update digest"
 msgstr ""
 
-#: src/components/AppSidebar.tsx:350
+#: src/components/AppSidebar.tsx:361
 #: src/components/billing/FreePlanBanner.tsx:79
 #: src/components/landing/PricingSection.tsx:91
 #: src/components/onboarding/PlanStep.tsx:114
@@ -6291,14 +6280,14 @@ msgid "Switch local default"
 msgstr ""
 
 #: src/components/AppHeader.tsx:50
-#: src/components/AppSidebar.tsx:519
+#: src/components/AppSidebar.tsx:542
 #: src/components/landing/LandingNav.tsx:66
 #: src/components/landing/LandingNav.tsx:142
 msgid "Switch to dark mode"
 msgstr ""
 
 #: src/components/AppHeader.tsx:50
-#: src/components/AppSidebar.tsx:519
+#: src/components/AppSidebar.tsx:542
 #: src/components/landing/LandingNav.tsx:66
 #: src/components/landing/LandingNav.tsx:142
 msgid "Switch to light mode"
@@ -6628,8 +6617,8 @@ msgstr ""
 msgid "This helps us improve how we reach translators like you."
 msgstr ""
 
-#: src/pages/Invite.tsx:48
-#: src/pages/ProjectInvite.tsx:49
+#: src/pages/Invite.tsx:63
+#: src/pages/ProjectInvite.tsx:65
 msgid "This invite link is invalid or has expired."
 msgstr ""
 
@@ -6792,8 +6781,8 @@ msgstr ""
 #: src/components/editor/EditorTableRow.tsx:1054
 #: src/components/editor/FilterToolbar.tsx:445
 #: src/components/glossary/shared.tsx:93
-#: src/pages/OrgSettingsPage.tsx:369
-#: src/pages/ProjectSettings.tsx:383
+#: src/pages/OrgSettingsPage.tsx:346
+#: src/pages/ProjectSettings.tsx:362
 #: src/pages/Settings.tsx:167
 msgid "Translation"
 msgstr ""
@@ -6923,7 +6912,7 @@ msgstr ""
 msgid "Translator comments"
 msgstr ""
 
-#: src/pages/ProjectSettings.tsx:462
+#: src/pages/ProjectSettings.tsx:441
 msgid "Translator — can translate"
 msgstr ""
 
@@ -7081,7 +7070,7 @@ msgstr ""
 msgid "Unlimited team members"
 msgstr ""
 
-#: src/pages/ProjectSettings.tsx:638
+#: src/pages/ProjectSettings.tsx:617
 msgid "Unlink repository"
 msgstr ""
 
@@ -7089,7 +7078,7 @@ msgstr ""
 #: src/components/projects/ProjectSettingsTab.tsx:99
 #: src/components/projects/SaveToCloudModal.tsx:21
 #: src/lib/constants/visibility.ts:17
-#: src/pages/ProjectSettings.tsx:445
+#: src/pages/ProjectSettings.tsx:424
 msgid "Unlisted"
 msgstr ""
 
@@ -7344,7 +7333,7 @@ msgstr ""
 msgid "View plans"
 msgstr ""
 
-#: src/pages/ProjectSettings.tsx:459
+#: src/pages/ProjectSettings.tsx:438
 msgid "Viewer — read-only"
 msgstr ""
 
@@ -7352,8 +7341,8 @@ msgstr ""
 #: src/components/projects/ProjectSettingsTab.tsx:95
 #: src/components/projects/ProjectSettingsTab.tsx:127
 #: src/components/projects/SaveToCloudModal.tsx:136
-#: src/pages/ProjectSettings.tsx:441
-#: src/pages/ProjectSettings.tsx:506
+#: src/pages/ProjectSettings.tsx:420
+#: src/pages/ProjectSettings.tsx:485
 msgid "Visibility"
 msgstr ""
 
@@ -7450,10 +7439,10 @@ msgid ""
 msgstr ""
 
 #: src/components/feedback/FeedbackModal.tsx:438
-#: src/pages/OrgSettingsPage.tsx:417
-#: src/pages/OrgSettingsPage.tsx:450
-#: src/pages/ProjectSettings.tsx:433
-#: src/pages/ProjectSettings.tsx:532
+#: src/pages/OrgSettingsPage.tsx:394
+#: src/pages/OrgSettingsPage.tsx:427
+#: src/pages/ProjectSettings.tsx:412
+#: src/pages/ProjectSettings.tsx:511
 msgid "Website"
 msgstr ""
 
@@ -7584,8 +7573,8 @@ msgstr ""
 
 #: src/components/landing/FeatureGrid.tsx:48
 #: src/components/projects/ProjectGlossaryTab.tsx:267
-#: src/pages/ProjectSettings.tsx:478
-#: src/pages/ProjectSettings.tsx:560
+#: src/pages/ProjectSettings.tsx:457
+#: src/pages/ProjectSettings.tsx:539
 msgid "WordPress"
 msgstr ""
 
@@ -7662,11 +7651,11 @@ msgstr ""
 msgid "You are currently using email and password only."
 msgstr ""
 
-#: src/pages/Invite.tsx:118
+#: src/pages/Invite.tsx:103
 msgid "You are now a member of this organization."
 msgstr ""
 
-#: src/pages/ProjectInvite.tsx:120
+#: src/pages/ProjectInvite.tsx:105
 msgid "You are now a member of this project."
 msgstr ""
 
@@ -7674,7 +7663,7 @@ msgstr ""
 msgid "You are responsible for keeping your account credentials secure."
 msgstr ""
 
-#: src/pages/ProjectSettings.tsx:295
+#: src/pages/ProjectSettings.tsx:274
 msgid ""
 "You are viewing public project settings in read-only mode. Join the project "
 "to make changes."
@@ -7752,11 +7741,11 @@ msgstr ""
 msgid "You're on the default branch — creating a new branch is recommended"
 msgstr ""
 
-#: src/pages/ProjectInvite.tsx:140
+#: src/pages/ProjectInvite.tsx:125
 msgid "You've been invited to join a translation project as {{role}}."
 msgstr ""
 
-#: src/pages/Invite.tsx:135
+#: src/pages/Invite.tsx:120
 msgid "You've been invited to join an organization as {{role}}."
 msgstr ""
 
@@ -7879,7 +7868,7 @@ msgstr ""
 msgid "for details."
 msgstr ""
 
-#: src/components/projects/ProjectCard.tsx:175
+#: src/components/projects/ProjectCard.tsx:179
 #: src/pages/ProjectDetail.tsx:666
 msgid "fuzzy"
 msgstr ""
@@ -7906,9 +7895,9 @@ msgid "just now"
 msgstr ""
 
 #: src/components/landing/StatsCounters.tsx:47
-#: src/pages/Explore.tsx:271
-#: src/pages/OrgSettings.tsx:502
-#: src/pages/OrgSettingsPage.tsx:772
+#: src/pages/Explore.tsx:243
+#: src/pages/OrgSettings.tsx:474
+#: src/pages/OrgSettingsPage.tsx:749
 msgid "languages"
 msgstr ""
 
@@ -7918,7 +7907,7 @@ msgid "member"
 msgstr ""
 
 #: src/components/landing/StatsCounters.tsx:46
-#: src/pages/Explore.tsx:266
+#: src/pages/Explore.tsx:238
 msgid "members"
 msgstr ""
 
@@ -7984,7 +7973,7 @@ msgstr ""
 
 #: src/components/auth/UserMenu.tsx:98
 #: src/components/settings/BillingSection.tsx:651
-#: src/pages/Explore.tsx:261
+#: src/pages/Explore.tsx:233
 msgid "projects"
 msgstr ""
 
@@ -7992,7 +7981,7 @@ msgstr ""
 msgid "projects created"
 msgstr ""
 
-#: src/components/AppSidebar.tsx:266
+#: src/components/AppSidebar.tsx:277
 msgid "ready"
 msgstr ""
 
@@ -8016,14 +8005,14 @@ msgstr ""
 #: src/components/settings/BillingSection.tsx:598
 #: src/components/settings/BillingSection.tsx:606
 #: src/components/settings/BillingSection.tsx:652
-#: src/pages/OrgSettings.tsx:504
-#: src/pages/OrgSettingsPage.tsx:774
-#: src/pages/ProjectSettings.tsx:721
+#: src/pages/OrgSettings.tsx:476
+#: src/pages/OrgSettingsPage.tsx:751
+#: src/pages/ProjectSettings.tsx:700
 msgid "strings"
 msgstr ""
 
 #: src/components/landing/StatsCounters.tsx:44
-#: src/pages/Explore.tsx:256
+#: src/pages/Explore.tsx:228
 msgid "strings translated"
 msgstr ""
 
@@ -8055,13 +8044,13 @@ msgstr ""
 msgid "to save projects to the cloud and collaborate with your team."
 msgstr ""
 
-#: src/components/projects/ProjectCard.tsx:163
+#: src/components/projects/ProjectCard.tsx:167
 #: src/pages/ProjectDetail.tsx:654
-#: src/pages/ProjectSettings.tsx:722
+#: src/pages/ProjectSettings.tsx:701
 msgid "translated"
 msgstr ""
 
-#: src/components/projects/ProjectCard.tsx:190
+#: src/components/projects/ProjectCard.tsx:194
 #: src/pages/ProjectDetail.tsx:681
 msgid "untranslated"
 msgstr ""
@@ -8078,7 +8067,7 @@ msgstr ""
 msgid "{{author}} commented on \"{{msgid}}\""
 msgstr ""
 
-#: src/components/AppSidebar.tsx:275
+#: src/components/AppSidebar.tsx:286
 msgid "{{chars}} characters · {{count}} requests"
 msgstr ""
 
@@ -8133,8 +8122,8 @@ msgstr ""
 msgid "{{count}} hours ago"
 msgstr ""
 
-#: src/components/projects/ProjectCard.tsx:85
-#: src/pages/Explore.tsx:329
+#: src/components/projects/ProjectCard.tsx:88
+#: src/pages/Explore.tsx:301
 #: src/pages/ProjectDetail.tsx:462
 #: src/pages/ProjectDetail.tsx:499
 msgid "{{count}} languages"
@@ -8164,15 +8153,15 @@ msgstr ""
 msgid "{{count}} minutes ago"
 msgstr ""
 
-#: src/components/AppSidebar.tsx:343
+#: src/components/AppSidebar.tsx:354
 msgid "{{count}} of {{limit}} projects"
 msgstr ""
 
-#: src/components/AppSidebar.tsx:353
+#: src/components/AppSidebar.tsx:364
 msgid "{{count}} of {{limit}} strings stored"
 msgstr ""
 
-#: src/pages/Explore.tsx:315
+#: src/pages/Explore.tsx:287
 msgid "{{count}} projects"
 msgstr ""
 
@@ -8193,7 +8182,7 @@ msgstr ""
 msgid "{{count}} stored entries"
 msgstr ""
 
-#: src/pages/Explore.tsx:321
+#: src/pages/Explore.tsx:293
 msgid "{{count}} strings"
 msgstr ""
 
@@ -8276,7 +8265,7 @@ msgstr ""
 msgid "{{name}} joined {{project}}"
 msgstr ""
 
-#: src/pages/Explore.tsx:336
+#: src/pages/Explore.tsx:308
 msgid "{{pct}}% translated"
 msgstr ""
 
@@ -8341,7 +8330,7 @@ msgstr ""
 msgid "{{strings}} total strings"
 msgstr ""
 
-#: src/components/AppSidebar.tsx:269
+#: src/components/AppSidebar.tsx:280
 msgid "{{tokens}} tokens · {{chars}} chars · {{count}} requests"
 msgstr ""
 
@@ -8351,7 +8340,7 @@ msgstr ""
 msgid "{{type}} / {{slug}}"
 msgstr ""
 
-#: src/components/AppSidebar.tsx:250
+#: src/components/AppSidebar.tsx:261
 msgid "{{used}} of {{limit}} characters this billing period"
 msgstr ""
 

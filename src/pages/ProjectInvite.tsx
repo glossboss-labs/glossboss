@@ -13,9 +13,9 @@ import { AlertCircle, Check, FolderOpen } from 'lucide-react';
 import { contentVariants } from '@/lib/motion';
 import { AnimatedStateSwitch } from '@/components/ui';
 import { useTranslation } from '@/lib/app-language';
-import { acceptProjectInvite, getProjectInviteByToken } from '@/lib/projects/api';
-import type { ProjectInviteRow } from '@/lib/projects/types';
+import { acceptProjectInvite } from '@/lib/projects/api';
 import { useAuth } from '@/hooks/use-auth';
+import { useProjectInviteByToken } from '@/lib/projects/queries';
 
 const MotionDiv = motion.div;
 
@@ -25,43 +25,22 @@ export default function ProjectInvite() {
   const navigate = useNavigate();
   const { isAuthenticated, loading: authLoading } = useAuth();
 
-  const [loading, setLoading] = useState(true);
   const [accepting, setAccepting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [invite, setInvite] = useState<ProjectInviteRow | null>(null);
   const [accepted, setAccepted] = useState(false);
   const [projectId, setProjectId] = useState<string | null>(null);
+  const {
+    data: invite = null,
+    isLoading: inviteLoading,
+    error: inviteError,
+  } = useProjectInviteByToken(token, isAuthenticated && !authLoading);
 
   useEffect(() => {
-    if (!token || authLoading) return;
-
+    if (!token || authLoading || isAuthenticated) return;
     if (!isAuthenticated) {
       void navigate(`/login?redirect=/invite/project/${token}`, { replace: true });
-      return;
     }
-
-    let cancelled = false;
-    async function load() {
-      try {
-        const inv = await getProjectInviteByToken(token!);
-        if (cancelled) return;
-        if (!inv) {
-          setError(t('This invite link is invalid or has expired.'));
-        } else {
-          setInvite(inv);
-        }
-      } catch (err) {
-        if (cancelled) return;
-        setError(err instanceof Error ? err.message : t('Failed to load invite'));
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-    void load();
-    return () => {
-      cancelled = true;
-    };
-  }, [token, isAuthenticated, authLoading, navigate, t]);
+  }, [token, authLoading, isAuthenticated, navigate]);
 
   const handleAccept = async () => {
     if (!token) return;
@@ -79,29 +58,35 @@ export default function ProjectInvite() {
     }
   };
 
-  const stateKey =
-    authLoading || loading
-      ? 'loading'
-      : accepted
-        ? 'accepted'
-        : error && !invite
-          ? 'error'
-          : 'invite';
+  const queryErrorMessage = inviteError
+    ? ((inviteError as Error).message ?? t('Failed to load invite'))
+    : null;
+  const resolvedError =
+    error ??
+    (queryErrorMessage || (invite ? null : t('This invite link is invalid or has expired.')));
+  const loading = authLoading || (isAuthenticated && inviteLoading && !invite);
+  const stateKey = loading
+    ? 'loading'
+    : accepted
+      ? 'accepted'
+      : resolvedError && !invite
+        ? 'error'
+        : 'invite';
 
   return (
     <Container size="xs" py={80}>
       <MotionDiv variants={contentVariants} initial="hidden" animate="visible">
         <AnimatedStateSwitch stateKey={stateKey}>
-          {authLoading || loading ? (
+          {loading ? (
             <Center py={80}>
               <Loader size="lg" />
             </Center>
           ) : (
             <>
-              {error && !invite && (
+              {resolvedError && !invite && (
                 <Stack align="center" gap="md">
                   <Alert icon={<AlertCircle size={16} />} color="red" variant="light" w="100%">
-                    {error}
+                    {resolvedError}
                   </Alert>
                   <Button component={Link} to="/dashboard" variant="light">
                     {t('Back to dashboard')}

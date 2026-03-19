@@ -5,6 +5,9 @@ function supabase() {
   return getSupabaseClient('Billing');
 }
 
+const SUBSCRIPTION_SELECT =
+  'id, user_id, organization_id, polar_subscription_id, polar_customer_id, polar_product_id, plan, billing_interval, status, current_period_end, cancel_at_period_end, created_at, updated_at';
+
 /** Create a Polar checkout session and return the checkout URL. */
 export async function createCheckoutSession(
   productId: string,
@@ -29,7 +32,7 @@ export async function getUserSubscription(): Promise<SubscriptionRow | null> {
 
   const { data, error } = await supabase()
     .from('subscriptions')
-    .select('*')
+    .select(SUBSCRIPTION_SELECT)
     .eq('user_id', user.id)
     .eq('status', 'active')
     .order('created_at', { ascending: false })
@@ -44,7 +47,7 @@ export async function getUserSubscription(): Promise<SubscriptionRow | null> {
 export async function getOrgSubscription(orgId: string): Promise<SubscriptionRow | null> {
   const { data, error } = await supabase()
     .from('subscriptions')
-    .select('*')
+    .select(SUBSCRIPTION_SELECT)
     .eq('organization_id', orgId)
     .eq('status', 'active')
     .order('created_at', { ascending: false })

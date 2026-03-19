@@ -52,12 +52,9 @@ import {
 } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
 import {
-  getOrganizationBySlug,
-  listOrgMembers,
   updateOrgMemberRole,
   removeOrgMember,
   deleteOrganization,
-  listInvites,
   createInvite,
   revokeInvite,
 } from '@/lib/organizations/api';
@@ -69,8 +66,8 @@ import type {
 } from '@/lib/organizations/types';
 import { useAuth } from '@/hooks/use-auth';
 import { AnimatedStateSwitch, AnimatedTabPanel, ConfirmModal, RoleBadge } from '@/components/ui';
-import { listOrgProjects } from '@/lib/projects/api';
 import type { ProjectWithLanguages } from '@/lib/projects/types';
+import { useOrganizationBySlug, useOrgSettingsPage } from '@/lib/organizations/queries';
 
 const MotionDiv = motion.div;
 
@@ -84,8 +81,13 @@ export default function OrgSettings() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const {
+    data: baseOrg = null,
+    isLoading: orgLoading,
+    error: orgError,
+  } = useOrganizationBySlug(slug);
+  const { data: settingsData, isLoading: pageLoading, error: pageError } = useOrgSettingsPage(slug);
 
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [org, setOrg] = useState<OrganizationRow | null>(null);
   const [members, setMembers] = useState<OrgMemberWithProfile[]>([]);
@@ -116,42 +118,19 @@ export default function OrgSettings() {
   );
 
   useEffect(() => {
-    if (!slug) return;
-    let cancelled = false;
+    if (!baseOrg) return;
+    setOrg(baseOrg);
+  }, [baseOrg]);
 
-    async function load() {
-      try {
-        const organization = await getOrganizationBySlug(slug!);
-        if (cancelled) return;
-        if (!organization) {
-          setError(t('Organization not found'));
-          setLoading(false);
-          return;
-        }
-        setOrg(organization);
-
-        const [memberList, inviteList, projectList] = await Promise.all([
-          listOrgMembers(organization.id),
-          listInvites(organization.id).catch(() => [] as InviteRow[]),
-          listOrgProjects(organization.id).catch(() => [] as ProjectWithLanguages[]),
-        ]);
-        if (cancelled) return;
-        setMembers(memberList);
-        setInvites(inviteList);
-        setOrgProjects(projectList);
-        setLoading(false);
-      } catch (err) {
-        if (cancelled) return;
-        setError(err instanceof Error ? err.message : t('Failed to load organization'));
-        setLoading(false);
-      }
+  useEffect(() => {
+    if (!settingsData) return;
+    setMembers(settingsData.members);
+    setInvites(settingsData.invites);
+    setOrgProjects(settingsData.orgProjects);
+    if (settingsData.organization) {
+      setOrg(settingsData.organization);
     }
-
-    void load();
-    return () => {
-      cancelled = true;
-    };
-  }, [slug, t]);
+  }, [settingsData]);
 
   const handleUpdateRole = useCallback(
     async (memberId: string, role: OrgRole) => {
@@ -235,7 +214,13 @@ export default function OrgSettings() {
     [t],
   );
 
-  const stateKey = loading ? 'loading' : error && !org ? 'error' : 'data';
+  const queryErrorMessage =
+    orgError || pageError
+      ? (((orgError ?? pageError) as Error).message ?? t('Failed to load organization'))
+      : null;
+  const loading = (orgLoading || pageLoading) && !org;
+  const blockingError = queryErrorMessage ?? (error && !org ? error : null);
+  const stateKey = loading ? 'loading' : blockingError ? 'error' : 'data';
 
   return (
     <AnimatedStateSwitch stateKey={stateKey}>
@@ -245,10 +230,10 @@ export default function OrgSettings() {
         </Center>
       )}
 
-      {error && !org && (
+      {blockingError && !org && (
         <>
           <Alert icon={<AlertCircle size={16} />} color="red" variant="light">
-            {error}
+            {blockingError}
           </Alert>
           <Button component={Link} to="/dashboard" variant="light" mt="md">
             {t('Back to dashboard')}

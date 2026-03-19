@@ -30,6 +30,69 @@ function supabase() {
   return getSupabaseClient('Projects');
 }
 
+const PROJECT_SELECT = [
+  'id',
+  'owner_id',
+  'organization_id',
+  'name',
+  'description',
+  'website',
+  'visibility',
+  'public_role',
+  'source_language',
+  'target_language',
+  'source_format',
+  'source_filename',
+  'po_header',
+  'wp_project_type',
+  'wp_slug',
+  'wp_track',
+  'stats_total',
+  'stats_translated',
+  'stats_fuzzy',
+  'stats_untranslated',
+  'created_at',
+  'updated_at',
+].join(', ');
+
+const PROJECT_LANGUAGE_SELECT = [
+  'id',
+  'project_id',
+  'locale',
+  'source_filename',
+  'po_header',
+  'wp_locale',
+  'repo_provider',
+  'repo_owner',
+  'repo_name',
+  'repo_branch',
+  'repo_file_path',
+  'repo_default_branch',
+  'glossary_source',
+  'glossary_url',
+  'glossary_repo_provider',
+  'glossary_repo_owner',
+  'glossary_repo_name',
+  'glossary_repo_branch',
+  'glossary_repo_file_path',
+  'glossary_repo_default_branch',
+  'glossary_enforcement',
+  'translation_provider',
+  'translation_instructions',
+  'stats_total',
+  'stats_translated',
+  'stats_fuzzy',
+  'stats_untranslated',
+  'created_at',
+  'updated_at',
+].join(', ');
+
+const PROJECT_MEMBER_SELECT = 'id, project_id, user_id, role, created_at, updated_at';
+const PROJECT_INVITE_SELECT =
+  'id, project_id, email, role, token, invited_by, accepted_at, accepted_by, expires_at, created_at';
+const PROJECT_ENTRY_SELECT =
+  'id, project_id, language_id, entry_index, msgctxt, msgid, msgid_plural, msgstr, msgstr_plural, flags, translator_comments, extracted_comments, file_references, previous_msgid, previous_msgctxt, review_status, review_comments, review_history, mt_provider, mt_used_glossary, mt_glossary_mode, mt_context_used, mt_timestamp, created_at, updated_at';
+
 // ── Projects ─────────────────────────────────────────────────
 
 export async function listProjects(): Promise<ProjectWithLanguages[]> {
@@ -43,7 +106,9 @@ export async function listProjects(): Promise<ProjectWithLanguages[]> {
   // projects causes other users' unlisted projects to leak into the list.
   const joined = await supabase()
     .from('projects')
-    .select('*, project_languages(*), project_members!inner(user_id)')
+    .select(
+      `${PROJECT_SELECT}, project_languages(${PROJECT_LANGUAGE_SELECT}), project_members!inner(user_id)`,
+    )
     .eq('project_members.user_id', user.id)
     .order('updated_at', { ascending: false });
 
@@ -55,7 +120,7 @@ export async function listProjects(): Promise<ProjectWithLanguages[]> {
   // the project_languages relationship yet.
   const { data, error } = await supabase()
     .from('projects')
-    .select('*, project_members!inner(user_id)')
+    .select(`${PROJECT_SELECT}, project_members!inner(user_id)`)
     .eq('project_members.user_id', user.id)
     .order('updated_at', { ascending: false });
 
@@ -67,7 +132,11 @@ export async function listProjects(): Promise<ProjectWithLanguages[]> {
 }
 
 export async function getProject(id: string): Promise<ProjectRow | null> {
-  const { data, error } = await supabase().from('projects').select('*').eq('id', id).single();
+  const { data, error } = await supabase()
+    .from('projects')
+    .select(PROJECT_SELECT)
+    .eq('id', id)
+    .single();
 
   if (error) {
     if (error.code === 'PGRST116') return null; // not found
@@ -105,7 +174,7 @@ export async function deleteProject(id: string): Promise<void> {
 export async function listPublicProjects(): Promise<ProjectWithLanguages[]> {
   const joined = await supabase()
     .from('projects')
-    .select('*, project_languages(*)')
+    .select(`${PROJECT_SELECT}, project_languages(${PROJECT_LANGUAGE_SELECT})`)
     .eq('visibility', 'public')
     .order('updated_at', { ascending: false });
 
@@ -115,7 +184,7 @@ export async function listPublicProjects(): Promise<ProjectWithLanguages[]> {
 
   const { data, error } = await supabase()
     .from('projects')
-    .select('*')
+    .select(PROJECT_SELECT)
     .eq('visibility', 'public')
     .order('updated_at', { ascending: false });
 
@@ -126,7 +195,7 @@ export async function listPublicProjects(): Promise<ProjectWithLanguages[]> {
 
   const { data: languages, error: languagesError } = await supabase()
     .from('project_languages')
-    .select('*')
+    .select(PROJECT_LANGUAGE_SELECT)
     .in(
       'project_id',
       projects.map((project) => project.id),
@@ -157,7 +226,7 @@ export async function listPublicProjects(): Promise<ProjectWithLanguages[]> {
 export async function getProjectLanguages(projectId: string): Promise<ProjectLanguageRow[]> {
   const { data, error } = await supabase()
     .from('project_languages')
-    .select('*')
+    .select(PROJECT_LANGUAGE_SELECT)
     .eq('project_id', projectId)
     .order('created_at', { ascending: true });
 
@@ -168,7 +237,7 @@ export async function getProjectLanguages(projectId: string): Promise<ProjectLan
 export async function getProjectLanguage(languageId: string): Promise<ProjectLanguageRow | null> {
   const { data, error } = await supabase()
     .from('project_languages')
-    .select('*')
+    .select(PROJECT_LANGUAGE_SELECT)
     .eq('id', languageId)
     .single();
 
@@ -236,7 +305,7 @@ export async function getProjectEntries(languageId: string): Promise<ProjectEntr
   while (true) {
     const { data, error } = await supabase()
       .from('project_entries')
-      .select('*')
+      .select(PROJECT_ENTRY_SELECT)
       .eq('language_id', languageId)
       .order('entry_index', { ascending: true })
       .range(from, from + PAGE_SIZE - 1);
@@ -380,7 +449,7 @@ export async function getMyProjectRole(projectId: string): Promise<ProjectRole |
 export async function listProjectMembers(projectId: string): Promise<ProjectMemberWithProfile[]> {
   const { data: members, error } = await supabase()
     .from('project_members')
-    .select('*')
+    .select(PROJECT_MEMBER_SELECT)
     .eq('project_id', projectId)
     .order('created_at', { ascending: true });
 
@@ -477,7 +546,7 @@ export async function findProfileByEmail(email: string): Promise<{
 export async function listProjectInvites(projectId: string): Promise<ProjectInviteRow[]> {
   const { data, error } = await supabase()
     .from('project_invites')
-    .select('*')
+    .select(PROJECT_INVITE_SELECT)
     .eq('project_id', projectId)
     .is('accepted_at', null)
     .order('created_at', { ascending: false });
@@ -509,7 +578,7 @@ export async function acceptProjectInvite(token: string): Promise<string> {
 export async function getProjectInviteByToken(token: string): Promise<ProjectInviteRow | null> {
   const { data, error } = await supabase()
     .from('project_invites')
-    .select('*')
+    .select(PROJECT_INVITE_SELECT)
     .eq('token', token)
     .is('accepted_at', null)
     .gt('expires_at', new Date().toISOString())
@@ -527,7 +596,7 @@ export async function getProjectInviteByToken(token: string): Promise<ProjectInv
 export async function listOrgProjects(orgId: string): Promise<ProjectWithLanguages[]> {
   const joined = await supabase()
     .from('projects')
-    .select('*, project_languages(*)')
+    .select(`${PROJECT_SELECT}, project_languages(${PROJECT_LANGUAGE_SELECT})`)
     .eq('organization_id', orgId)
     .order('updated_at', { ascending: false });
 
@@ -537,10 +606,47 @@ export async function listOrgProjects(orgId: string): Promise<ProjectWithLanguag
 
   const { data, error } = await supabase()
     .from('projects')
-    .select('*')
+    .select(PROJECT_SELECT)
     .eq('organization_id', orgId)
     .order('updated_at', { ascending: false });
 
   if (error) throw error;
   return (data ?? []).map((p) => ({ ...p, project_languages: [] }) as ProjectWithLanguages);
+}
+
+export interface ProjectEditorPageData {
+  project: ProjectRow | null;
+  language: ProjectLanguageRow | null;
+  entries: ProjectEntryRow[];
+}
+
+export interface ProjectSettingsPageData {
+  project: ProjectRow | null;
+  languages: ProjectLanguageRow[];
+  members: ProjectMemberWithProfile[];
+  invites: ProjectInviteRow[];
+}
+
+export async function getProjectEditorPage(
+  projectId: string,
+  languageId: string,
+): Promise<ProjectEditorPageData> {
+  const [project, language, entries] = await Promise.all([
+    getProject(projectId),
+    getProjectLanguage(languageId),
+    getProjectEntries(languageId),
+  ]);
+
+  return { project, language, entries };
+}
+
+export async function getProjectSettingsPage(projectId: string): Promise<ProjectSettingsPageData> {
+  const [project, languages, members, invites] = await Promise.all([
+    getProject(projectId),
+    getProjectLanguages(projectId),
+    listProjectMembers(projectId),
+    listProjectInvites(projectId).catch(() => [] as ProjectInviteRow[]),
+  ]);
+
+  return { project, languages, members, invites };
 }

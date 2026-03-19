@@ -8,8 +8,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   listProjects,
+  listPublicProjects,
   getProject,
   getProjectLanguages,
+  getProjectEditorPage,
+  getProjectSettingsPage,
+  getProjectInviteByToken,
   createProject as apiCreateProject,
   deleteProject as apiDeleteProject,
   createProjectLanguage as apiCreateProjectLanguage,
@@ -18,6 +22,8 @@ import {
   syncProjectEntries,
   listProjectMembers,
   listProjectInvites,
+  type ProjectEditorPageData,
+  type ProjectSettingsPageData,
 } from './api';
 import type {
   ProjectInsert,
@@ -38,6 +44,11 @@ export const projectKeys = {
   languages: (projectId: string) => ['projects', projectId, 'languages'] as const,
   members: (projectId: string) => ['projects', projectId, 'members'] as const,
   invites: (projectId: string) => ['projects', projectId, 'invites'] as const,
+  public: ['projects', 'public'] as const,
+  editorPage: (projectId: string, languageId: string) =>
+    ['projects', projectId, 'editor-page', languageId] as const,
+  settingsPage: (projectId: string) => ['projects', projectId, 'settings-page'] as const,
+  inviteToken: (token: string) => ['projects', 'invites', 'token', token] as const,
 };
 
 // ── Query hooks ──────────────────────────────────────────────
@@ -46,6 +57,17 @@ export function useProjects() {
   return useQuery<ProjectWithLanguages[]>({
     queryKey: projectKeys.all,
     queryFn: listProjects,
+    staleTime: 60_000,
+    placeholderData: (previous) => previous,
+  });
+}
+
+export function usePublicProjects() {
+  return useQuery<ProjectWithLanguages[]>({
+    queryKey: projectKeys.public,
+    queryFn: listPublicProjects,
+    staleTime: 60_000,
+    placeholderData: (previous) => previous,
   });
 }
 
@@ -54,6 +76,8 @@ export function useProject(id: string | undefined) {
     queryKey: projectKeys.detail(id!),
     queryFn: () => getProject(id!),
     enabled: Boolean(id),
+    staleTime: 60_000,
+    placeholderData: (previous) => previous,
   });
 }
 
@@ -62,6 +86,8 @@ export function useProjectLanguages(projectId: string | undefined) {
     queryKey: projectKeys.languages(projectId!),
     queryFn: () => getProjectLanguages(projectId!),
     enabled: Boolean(projectId),
+    staleTime: 60_000,
+    placeholderData: (previous) => previous,
   });
 }
 
@@ -70,6 +96,8 @@ export function useProjectMembers(projectId: string | undefined) {
     queryKey: projectKeys.members(projectId!),
     queryFn: () => listProjectMembers(projectId!),
     enabled: Boolean(projectId),
+    staleTime: 60_000,
+    placeholderData: (previous) => previous,
   });
 }
 
@@ -78,6 +106,41 @@ export function useProjectInvites(projectId: string | undefined) {
     queryKey: projectKeys.invites(projectId!),
     queryFn: () => listProjectInvites(projectId!),
     enabled: Boolean(projectId),
+    staleTime: 60_000,
+    placeholderData: (previous) => previous,
+  });
+}
+
+export function useProjectEditorPage(
+  projectId: string | undefined,
+  languageId: string | undefined,
+) {
+  return useQuery<ProjectEditorPageData>({
+    queryKey:
+      projectId && languageId ? projectKeys.editorPage(projectId, languageId) : projectKeys.all,
+    queryFn: () => getProjectEditorPage(projectId!, languageId!),
+    enabled: Boolean(projectId && languageId),
+    staleTime: 60_000,
+  });
+}
+
+export function useProjectSettingsPage(projectId: string | undefined) {
+  return useQuery<ProjectSettingsPageData>({
+    queryKey: projectId ? projectKeys.settingsPage(projectId) : projectKeys.all,
+    queryFn: () => getProjectSettingsPage(projectId!),
+    enabled: Boolean(projectId),
+    staleTime: 60_000,
+    placeholderData: (previous) => previous,
+  });
+}
+
+export function useProjectInviteByToken(token: string | undefined, enabled = true) {
+  return useQuery<ProjectInviteRow | null>({
+    queryKey: token ? projectKeys.inviteToken(token) : projectKeys.all,
+    queryFn: () => getProjectInviteByToken(token!),
+    enabled: Boolean(token) && enabled,
+    staleTime: 60_000,
+    placeholderData: (previous) => previous,
   });
 }
 

@@ -19,6 +19,7 @@ import { MoreVertical, Trash2, Settings, Languages, Globe } from 'lucide-react';
 import { badgeVariants } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
 import { VISIBILITY_ICON, VISIBILITY_LABEL } from '@/lib/constants/visibility';
+import { prefetchPath } from '@/lib/navigation/prefetch';
 import { formatRelative } from '@/lib/utils/date';
 import type { ProjectWithLanguages } from '@/lib/projects/types';
 import { CountryFlag } from '@/components/ui';
@@ -61,6 +62,8 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
           },
         },
       }}
+      onPointerEnter={() => prefetchPath(`/projects/${project.id}`)}
+      onFocus={() => prefetchPath(`/projects/${project.id}`)}
     >
       <Group justify="space-between" align="flex-start" wrap="nowrap">
         <Stack gap={4} style={{ flex: 1, minWidth: 0 }}>
@@ -121,6 +124,7 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
                   to={`/projects/${project.id}/settings`}
                   leftSection={<Settings size={14} />}
                   onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                  onPointerEnter={() => prefetchPath(`/projects/${project.id}/settings`)}
                 >
                   {t('Settings')}
                 </Menu.Item>
