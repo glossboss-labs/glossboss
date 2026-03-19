@@ -279,7 +279,9 @@ export default function PrivacyPage() {
             </li>
             <li>
               <strong className="text-text-primary">{t('Feedback submissions')}</strong>{' '}
-              {t('are stored as GitHub issues and retained indefinitely for product improvement.')}
+              {t(
+                'are stored in our internal product systems and retained indefinitely for product improvement.',
+              )}
             </li>
           </ul>
 

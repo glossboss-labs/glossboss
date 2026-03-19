@@ -14,7 +14,7 @@ export interface MergeInfo {
   updatedMeta: number;
 }
 
-export type FeedbackInfo = Pick<FeedbackIssueSuccess, 'issueNumber' | 'issueUrl'>;
+export type FeedbackInfo = Pick<FeedbackIssueSuccess, 'referenceId'>;
 
 export interface PendingDraft {
   draft: DraftData;

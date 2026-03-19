@@ -1,7 +1,5 @@
 import {
   buildIssueBody,
-  buildIssueTitle,
-  getLabelsForType,
   type BugFeedbackDetails,
   type FeatureFeedbackDetails,
   type FeedbackContext,
@@ -25,7 +23,7 @@ const RATE_LIMIT_WINDOW_MS = 5 * 60 * 1000;
 const RATE_LIMIT_PER_IP = 6;
 const RATE_LIMIT_GLOBAL = 150;
 const TURNSTILE_FETCH_TIMEOUT_MS = 8000;
-const GITHUB_FETCH_TIMEOUT_MS = 12000;
+const KANEO_FETCH_TIMEOUT_MS = 12000;
 
 const TITLE_MAX_LENGTH = 160;
 const TEXT_MAX_LENGTH = 8000;
@@ -37,8 +35,7 @@ const USER_AGENT_MAX_LENGTH = 500;
 const APP_VERSION_MAX_LENGTH = 100;
 const FILENAME_MAX_LENGTH = 200;
 const SUBMITTED_AT_MAX_LENGTH = 100;
-const DEFAULT_GITHUB_OWNER = 'glossboss-labs';
-const DEFAULT_GITHUB_REPO = 'glossboss';
+const DEFAULT_KANEO_FEEDBACK_PROJECT_SLUG = 'INBOX';
 
 const ipRequestLog = new Map<string, number[]>();
 const globalRequestLog: number[] = [];
@@ -316,93 +313,128 @@ async function verifyTurnstile(token: string): Promise<boolean> {
   }
 }
 
-function hasLabelValidationError(payload: unknown): boolean {
-  if (!isObject(payload)) return false;
-
-  const message = typeof payload.message === 'string' ? payload.message.toLowerCase() : '';
-  if (message.includes('label') && message.includes('does not exist')) {
-    return true;
-  }
-
-  const errors = Array.isArray(payload.errors) ? payload.errors : [];
-  return errors.some((error) => isObject(error) && error.field === 'labels');
+interface KaneoTaskResponse {
+  id: string;
+  number: number | null;
 }
 
-async function createGitHubIssue(
-  payload: FeedbackRequest,
-): Promise<{ issueNumber: number; issueUrl: string }> {
-  const token = Deno.env.get('GITHUB_TOKEN');
-  if (!token) {
-    throw new Error('GITHUB_TOKEN is not configured.');
+interface KaneoLabelSpec {
+  name: string;
+  color: string;
+}
+
+function requireEnv(name: string): string {
+  const value = Deno.env.get(name)?.trim();
+  if (!value) {
+    throw new Error(`${name} is not configured.`);
   }
+  return value;
+}
 
-  const owner = Deno.env.get('FEEDBACK_GITHUB_OWNER')?.trim() || DEFAULT_GITHUB_OWNER;
-  const repo = Deno.env.get('FEEDBACK_GITHUB_REPO')?.trim() || DEFAULT_GITHUB_REPO;
-  const url = `https://api.github.com/repos/${owner}/${repo}/issues`;
+function getKaneoBaseUrl(): string {
+  return requireEnv('KANEO_API_URL').replace(/\/+$/, '');
+}
 
-  const requestHeaders = {
-    Accept: 'application/vnd.github+json',
-    Authorization: `Bearer ${token}`,
+function buildKaneoHeaders(): HeadersInit {
+  return {
+    Accept: 'application/json',
+    Authorization: `Bearer ${requireEnv('KANEO_API_KEY')}`,
+    'CF-Access-Client-Id': requireEnv('KANEO_CF_ACCESS_CLIENT_ID'),
+    'CF-Access-Client-Secret': requireEnv('KANEO_CF_ACCESS_CLIENT_SECRET'),
     'Content-Type': 'application/json',
     'User-Agent': 'GlossBoss-Feedback-Function',
-    'X-GitHub-Api-Version': '2022-11-28',
   };
+}
 
-  const requestBody = {
-    title: buildIssueTitle(payload),
-    body: buildIssueBody(payload),
-    labels: getLabelsForType(payload.type),
-  };
-
-  const postIssue = async (
-    bodyData: Record<string, unknown>,
-  ): Promise<{ response: Response; result: unknown }> => {
-    let response: Response;
-    try {
-      response = await fetchWithTimeout(url, GITHUB_FETCH_TIMEOUT_MS, {
-        method: 'POST',
-        headers: requestHeaders,
-        body: JSON.stringify(bodyData),
-      });
-    } catch (error) {
-      if (isAbortError(error)) {
-        throw new Error('GitHub API request timed out.', { cause: error });
-      }
-      throw error;
-    }
-
-    return {
-      response,
-      result: await response.json().catch(() => ({})),
-    };
-  };
-
-  let { response, result } = await postIssue(requestBody);
-
-  if (!response.ok && response.status === 422 && hasLabelValidationError(result)) {
-    ({ response, result } = await postIssue({
-      title: requestBody.title,
-      body: requestBody.body,
-    }));
+function getKaneoFeedbackLabels(type: FeedbackType): KaneoLabelSpec[] {
+  if (type === 'bug') {
+    return [
+      { name: 'bug', color: 'teal' },
+      { name: 'customer', color: 'red' },
+      { name: 'source:in-app', color: 'gray' },
+    ];
   }
 
+  return [
+    { name: 'feature', color: 'purple' },
+    { name: 'customer', color: 'red' },
+    { name: 'source:in-app', color: 'gray' },
+  ];
+}
+
+async function createKaneoTask(payload: FeedbackRequest): Promise<{ referenceId?: string }> {
+  const baseUrl = getKaneoBaseUrl();
+  const workspaceId = requireEnv('KANEO_WORKSPACE_ID');
+  const projectId = requireEnv('KANEO_FEEDBACK_PROJECT_ID');
+  const projectSlug =
+    Deno.env.get('KANEO_FEEDBACK_PROJECT_SLUG')?.trim() || DEFAULT_KANEO_FEEDBACK_PROJECT_SLUG;
+
+  let response: Response;
+  try {
+    response = await fetchWithTimeout(`${baseUrl}/task/${projectId}`, KANEO_FETCH_TIMEOUT_MS, {
+      method: 'POST',
+      headers: buildKaneoHeaders(),
+      body: JSON.stringify({
+        title: payload.title.trim(),
+        description: buildIssueBody(payload),
+        priority: 'no-priority',
+        status: 'inbox',
+      }),
+    });
+  } catch (error) {
+    if (isAbortError(error)) {
+      throw new Error('Kaneo API request timed out.', { cause: error });
+    }
+    throw error;
+  }
+
+  const result = await response.json().catch(() => ({}));
   if (!response.ok) {
     const message =
       isObject(result) && typeof result.message === 'string'
-        ? sanitizeUpstreamError(result.message, 'GitHub issue creation failed.')
-        : `GitHub issue creation failed with HTTP ${response.status}`;
+        ? sanitizeUpstreamError(result.message, 'Kaneo task creation failed.')
+        : `Kaneo task creation failed with HTTP ${response.status}`;
     throw new Error(message);
   }
 
-  if (
-    !isObject(result) ||
-    typeof result.number !== 'number' ||
-    typeof result.html_url !== 'string'
-  ) {
-    throw new Error('GitHub returned an unexpected issue response.');
+  if (!isObject(result) || typeof result.id !== 'string') {
+    throw new Error('Kaneo returned an unexpected task response.');
   }
 
-  return { issueNumber: result.number, issueUrl: result.html_url };
+  const task = result as unknown as KaneoTaskResponse;
+
+  for (const label of getKaneoFeedbackLabels(payload.type)) {
+    try {
+      const labelResponse = await fetchWithTimeout(`${baseUrl}/label`, KANEO_FETCH_TIMEOUT_MS, {
+        method: 'POST',
+        headers: buildKaneoHeaders(),
+        body: JSON.stringify({
+          name: label.name,
+          color: label.color,
+          workspaceId,
+          taskId: task.id,
+        }),
+      });
+
+      if (!labelResponse.ok) {
+        const labelError = await labelResponse.json().catch(() => ({}));
+        const labelMessage =
+          isObject(labelError) && typeof labelError.message === 'string'
+            ? labelError.message
+            : `HTTP ${labelResponse.status}`;
+        console.error(`Failed to create Kaneo label ${label.name}: ${labelMessage}`);
+      }
+    } catch (error) {
+      console.error(`Failed to create Kaneo label ${label.name}:`, error);
+    }
+  }
+
+  const referenceId =
+    typeof task.number === 'number' && Number.isFinite(task.number)
+      ? `${projectSlug}-${task.number}`
+      : undefined;
+
+  return { referenceId };
 }
 
 export async function handleFeedbackIssueRequest(req: Request): Promise<Response> {
@@ -486,11 +518,10 @@ export async function handleFeedbackIssueRequest(req: Request): Promise<Response
       }
     }
 
-    const issue = await createGitHubIssue(parsed.data);
+    const task = await createKaneoTask(parsed.data);
     return jsonResponse(req, {
       ok: true,
-      issueNumber: issue.issueNumber,
-      issueUrl: issue.issueUrl,
+      referenceId: task.referenceId,
     });
   } catch (error) {
     if (error instanceof SyntaxError) {
@@ -505,9 +536,12 @@ export async function handleFeedbackIssueRequest(req: Request): Promise<Response
 
     if (
       message.includes('TURNSTILE_SECRET') ||
-      message.includes('GITHUB_TOKEN') ||
-      message.includes('GITHUB_OWNER') ||
-      message.includes('GITHUB_REPO')
+      message.includes('KANEO_API_URL') ||
+      message.includes('KANEO_API_KEY') ||
+      message.includes('KANEO_CF_ACCESS_CLIENT_ID') ||
+      message.includes('KANEO_CF_ACCESS_CLIENT_SECRET') ||
+      message.includes('KANEO_WORKSPACE_ID') ||
+      message.includes('KANEO_FEEDBACK_PROJECT_ID')
     ) {
       return jsonResponse(
         req,

@@ -130,7 +130,13 @@ describe('feedback issue handler', () => {
     installDenoEnv({
       ALLOWED_ORIGINS: 'https://glossboss.test',
       TURNSTILE_SECRET: ' secret-value ',
-      GITHUB_TOKEN: 'github-token',
+      KANEO_API_URL: 'https://kaneo.example/api',
+      KANEO_API_KEY: 'kaneo-token',
+      KANEO_CF_ACCESS_CLIENT_ID: 'cf-client-id',
+      KANEO_CF_ACCESS_CLIENT_SECRET: 'cf-client-secret',
+      KANEO_WORKSPACE_ID: 'workspace-123',
+      KANEO_FEEDBACK_PROJECT_ID: 'project-123',
+      KANEO_FEEDBACK_PROJECT_SLUG: 'INBOX',
     });
 
     const fetchMock = vi
@@ -142,13 +148,16 @@ describe('feedback issue handler', () => {
         }),
       )
       .mockResolvedValueOnce(
-        new Response(
-          JSON.stringify({ number: 42, html_url: 'https://github.com/example/issues/42' }),
-          {
-            status: 201,
-            headers: { 'content-type': 'application/json' },
-          },
-        ),
+        new Response(JSON.stringify({ id: 'task-1', number: 42 }), {
+          status: 200,
+          headers: { 'content-type': 'application/json' },
+        }),
+      )
+      .mockResolvedValue(
+        new Response(JSON.stringify({ ok: true }), {
+          status: 200,
+          headers: { 'content-type': 'application/json' },
+        }),
       );
 
     vi.stubGlobal('fetch', fetchMock);
@@ -165,19 +174,30 @@ describe('feedback issue handler', () => {
 
     const response = await handleFeedbackIssueRequest(request);
     expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toMatchObject({ ok: true, referenceId: 'INBOX-42' });
 
-    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock).toHaveBeenCalledTimes(5);
     expect(fetchMock.mock.calls[0]?.[0]).toBe(
       'https://challenges.cloudflare.com/turnstile/v0/siteverify',
     );
-    expect(fetchMock.mock.calls[1]?.[0]).toBe(
-      'https://api.github.com/repos/glossboss-labs/glossboss/issues',
-    );
+    expect(fetchMock.mock.calls[1]?.[0]).toBe('https://kaneo.example/api/task/project-123');
 
     const turnstileInit = fetchMock.mock.calls[0]?.[1] as RequestInit;
     const params = new URLSearchParams(String(turnstileInit.body));
     expect(params.get('secret')).toBe('secret-value');
     expect(params.get('response')).toBe('token');
     expect(params.has('remoteip')).toBe(false);
+
+    const taskInit = fetchMock.mock.calls[1]?.[1] as RequestInit;
+    expect(taskInit.headers).toMatchObject({
+      Authorization: 'Bearer kaneo-token',
+      'CF-Access-Client-Id': 'cf-client-id',
+      'CF-Access-Client-Secret': 'cf-client-secret',
+    });
+    expect(JSON.parse(String(taskInit.body))).toMatchObject({
+      title: 'Broken import flow',
+      priority: 'no-priority',
+      status: 'inbox',
+    });
   });
 });
