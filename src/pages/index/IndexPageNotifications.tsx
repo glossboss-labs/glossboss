@@ -161,12 +161,21 @@ export function IndexPageNotifications({
               minWidth: 300,
             }}
           >
-            <Text size="sm">{t('Thanks. Your feedback was submitted.')}</Text>
-            {feedbackSuccess?.referenceId && (
-              <Text size="sm" mt={4}>
-                {t('Reference: {{referenceId}}', {
-                  referenceId: feedbackSuccess.referenceId,
-                })}
+            <Text size="sm">
+              {t('Thanks. Issue #{issueNumber} was created.', {
+                issueNumber: feedbackSuccess?.issueNumber ?? '',
+              })}
+            </Text>
+            {feedbackSuccess?.issueUrl && (
+              <Text
+                component="a"
+                href={feedbackSuccess.issueUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                size="sm"
+                mt={4}
+              >
+                {t('Open issue')}
               </Text>
             )}
           </Notification>
