@@ -65,6 +65,7 @@ import { AuthPromptModal } from '@/components/auth/AuthPromptModal';
 import { GlossBossLogo } from '@/components/ui/GlossBossLogo';
 import { useRecentProjects } from '@/hooks/use-recent-projects';
 import { SidebarProjectSearch } from '@/components/SidebarProjectSearch';
+import { prefetchPath } from '@/lib/navigation/prefetch';
 
 interface AppSidebarProps {
   collapsed: boolean;
@@ -79,6 +80,8 @@ interface NavItemProps {
   active?: boolean;
   collapsed: boolean;
   onClick?: () => void;
+  onPointerEnter?: () => void;
+  onFocus?: () => void;
   color?: string;
   'aria-label'?: string;
 }
@@ -115,6 +118,8 @@ function NavItem({
   active,
   collapsed,
   onClick,
+  onPointerEnter,
+  onFocus,
   color,
   'aria-label': ariaLabel,
 }: NavItemProps) {
@@ -149,6 +154,8 @@ function NavItem({
       style={commonStyle}
       styles={hoverStyles}
       aria-label={ariaLabel}
+      onPointerEnter={onPointerEnter}
+      onFocus={onFocus}
     >
       {content}
     </UnstyledButton>
@@ -163,6 +170,8 @@ function NavItem({
       style={commonStyle}
       styles={hoverStyles}
       aria-label={ariaLabel}
+      onPointerEnter={onPointerEnter}
+      onFocus={onFocus}
     >
       {content}
     </UnstyledButton>
@@ -174,6 +183,8 @@ function NavItem({
       styles={hoverStyles}
       onClick={onClick}
       aria-label={ariaLabel}
+      onPointerEnter={onPointerEnter}
+      onFocus={onFocus}
     >
       {content}
     </UnstyledButton>
@@ -432,6 +443,8 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
               label={t('Dashboard')}
               active={pathname === '/dashboard'}
               collapsed={collapsed}
+              onPointerEnter={() => prefetchPath('/dashboard')}
+              onFocus={() => prefetchPath('/dashboard')}
             />
             <NavItem
               to="/explore"
@@ -439,6 +452,8 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
               label={t('Explore')}
               active={pathname === '/explore'}
               collapsed={collapsed}
+              onPointerEnter={() => prefetchPath('/explore')}
+              onFocus={() => prefetchPath('/explore')}
             />
             <NavItem
               to="/roadmap"
@@ -446,6 +461,8 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
               label={t('Roadmap')}
               active={pathname === '/roadmap'}
               collapsed={collapsed}
+              onPointerEnter={() => prefetchPath('/roadmap')}
+              onFocus={() => prefetchPath('/roadmap')}
             />
             <NavItem
               to="/editor"
@@ -453,6 +470,8 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
               label={t('Local editor')}
               active={pathname === '/editor'}
               collapsed={collapsed}
+              onPointerEnter={() => prefetchPath('/editor')}
+              onFocus={() => prefetchPath('/editor')}
             />
           </Stack>
 
@@ -483,6 +502,8 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
                       pathname.startsWith(`/projects/${rp.id}/`)
                     }
                     collapsed={collapsed}
+                    onPointerEnter={() => prefetchPath(rp.path)}
+                    onFocus={() => prefetchPath(rp.path)}
                   />
                 ))}
               </Stack>
@@ -500,6 +521,8 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
               label={t('Settings')}
               active={pathname.startsWith('/settings')}
               collapsed={collapsed}
+              onPointerEnter={() => prefetchPath('/settings')}
+              onFocus={() => prefetchPath('/settings')}
             />
             <NavItem
               icon={<MessageSquare size={18} />}

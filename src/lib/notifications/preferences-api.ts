@@ -17,6 +17,11 @@ function supabase() {
   return getSupabaseClient('Notifications');
 }
 
+const NOTIFICATION_PREFERENCES_SELECT =
+  'user_id, preferences, digest_frequency, created_at, updated_at';
+const PROJECT_NOTIFICATION_PREFERENCES_SELECT =
+  'id, user_id, project_id, preferences, digest_frequency, created_at, updated_at';
+
 async function getUserId(): Promise<string> {
   const {
     data: { user },
@@ -32,7 +37,7 @@ export async function getNotificationPreferences(): Promise<NotificationPreferen
 
   const { data, error } = await supabase()
     .from('notification_preferences')
-    .select('*')
+    .select(NOTIFICATION_PREFERENCES_SELECT)
     .eq('user_id', userId)
     .maybeSingle();
 
@@ -67,7 +72,7 @@ export async function getProjectNotificationPreferences(
 
   const { data, error } = await supabase()
     .from('project_notification_preferences')
-    .select('*')
+    .select(PROJECT_NOTIFICATION_PREFERENCES_SELECT)
     .eq('user_id', userId)
     .eq('project_id', projectId)
     .maybeSingle();

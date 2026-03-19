@@ -22,12 +22,20 @@ function supabase() {
   return getSupabaseClient('Organizations');
 }
 
+const ORGANIZATION_SELECT =
+  'id, name, slug, description, website, avatar_url, owner_id, created_at, updated_at';
+const ORGANIZATION_MEMBER_SELECT = 'id, organization_id, user_id, role, created_at, updated_at';
+const ORGANIZATION_INVITE_SELECT =
+  'id, organization_id, email, role, token, invited_by, accepted_at, accepted_by, expires_at, created_at';
+const ORGANIZATION_SETTINGS_SELECT =
+  'id, organization_id, default_translation_provider, enforce_translation_provider, default_glossary_enforcement, enforce_glossary_enforcement, translation_instructions, updated_by, updated_at';
+
 // ── Organizations ─────────────────────────────────────────────
 
 export async function listOrganizations(): Promise<OrganizationRow[]> {
   const { data, error } = await supabase()
     .from('organizations')
-    .select('*')
+    .select(ORGANIZATION_SELECT)
     .order('name', { ascending: true });
 
   if (error) throw error;
@@ -35,7 +43,11 @@ export async function listOrganizations(): Promise<OrganizationRow[]> {
 }
 
 export async function getOrganization(id: string): Promise<OrganizationRow | null> {
-  const { data, error } = await supabase().from('organizations').select('*').eq('id', id).single();
+  const { data, error } = await supabase()
+    .from('organizations')
+    .select(ORGANIZATION_SELECT)
+    .eq('id', id)
+    .single();
 
   if (error) {
     if (error.code === 'PGRST116') return null;
@@ -47,7 +59,7 @@ export async function getOrganization(id: string): Promise<OrganizationRow | nul
 export async function getOrganizationBySlug(slug: string): Promise<OrganizationRow | null> {
   const { data, error } = await supabase()
     .from('organizations')
-    .select('*')
+    .select(ORGANIZATION_SELECT)
     .eq('slug', slug)
     .single();
 
@@ -93,7 +105,7 @@ export async function listOrgMembers(orgId: string): Promise<OrgMemberWithProfil
   // FK resolution issues (organization_members.user_id → auth.users, not profiles).
   const { data: members, error } = await supabase()
     .from('organization_members')
-    .select('*')
+    .select(ORGANIZATION_MEMBER_SELECT)
     .eq('organization_id', orgId)
     .order('created_at', { ascending: true });
 
@@ -152,7 +164,7 @@ export async function removeOrgMember(memberId: string): Promise<void> {
 export async function listInvites(orgId: string): Promise<InviteRow[]> {
   const { data, error } = await supabase()
     .from('invites')
-    .select('*')
+    .select(ORGANIZATION_INVITE_SELECT)
     .eq('organization_id', orgId)
     .is('accepted_at', null)
     .order('created_at', { ascending: false });
@@ -184,7 +196,7 @@ export async function acceptInvite(token: string): Promise<string> {
 export async function getInviteByToken(token: string): Promise<InviteRow | null> {
   const { data, error } = await supabase()
     .from('invites')
-    .select('*')
+    .select(ORGANIZATION_INVITE_SELECT)
     .eq('token', token)
     .is('accepted_at', null)
     .gt('expires_at', new Date().toISOString())
@@ -202,7 +214,7 @@ export async function getInviteByToken(token: string): Promise<InviteRow | null>
 export async function getOrgSettings(orgId: string): Promise<OrgSettingsRow | null> {
   const { data, error } = await supabase()
     .from('organization_settings')
-    .select('*')
+    .select(ORGANIZATION_SETTINGS_SELECT)
     .eq('organization_id', orgId)
     .single();
 
@@ -232,4 +244,32 @@ export async function upsertOrgSettings(
 
   if (error) throw error;
   return data;
+}
+
+export interface OrgSettingsPageData {
+  organization: OrganizationRow | null;
+  members: OrgMemberWithProfile[];
+  invites: InviteRow[];
+}
+
+export async function getOrgSettingsPage(slug: string): Promise<OrgSettingsPageData> {
+  const organization = await getOrganizationBySlug(slug);
+  if (!organization) {
+    return {
+      organization: null,
+      members: [],
+      invites: [],
+    };
+  }
+
+  const [members, invites] = await Promise.all([
+    listOrgMembers(organization.id),
+    listInvites(organization.id).catch(() => [] as InviteRow[]),
+  ]);
+
+  return {
+    organization,
+    members,
+    invites,
+  };
 }

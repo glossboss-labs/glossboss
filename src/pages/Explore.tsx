@@ -3,6 +3,7 @@
  */
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import {
   Title,
   Group,
@@ -26,8 +27,8 @@ import { AnimatedStateSwitch } from '@/components/ui';
 import { useTranslation, msgid } from '@/lib/app-language';
 import { sortProjects, type ProjectSortOption } from '@/lib/utils/sorting';
 import { trackEvent } from '@/lib/analytics';
-import { listPublicProjects } from '@/lib/projects/api';
 import { invokeSupabaseFunction } from '@/lib/supabase/client';
+import { usePublicProjects } from '@/lib/projects/queries';
 import { ProjectGrid } from '@/components/projects/ProjectGrid';
 import { renderFlagOption } from '@/components/ui/renderFlagOption';
 import type { ProjectWithLanguages } from '@/lib/projects/types';
@@ -118,59 +119,34 @@ function useProjectStats(projects: ProjectWithLanguages[]) {
 
 export default function Explore() {
   const { t } = useTranslation();
-  const [projects, setProjects] = useState<ProjectWithLanguages[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<SortOption>('updated');
   const [formatFilter, setFormatFilter] = useState<string | null>(null);
   const [languageFilter, setLanguageFilter] = useState<string | null>(null);
-  const [platformStats, setPlatformStats] = useState<PlatformStats | null>(null);
-
-  // Fetch public projects
-  useEffect(() => {
-    let cancelled = false;
-
-    async function load() {
-      try {
-        const data = await listPublicProjects();
-        if (!cancelled) {
-          setProjects(data);
-          setLoading(false);
-        }
-      } catch (err) {
-        if (!cancelled) {
-          setError(err instanceof Error ? err.message : t('Failed to load projects'));
-          setLoading(false);
-        }
-      }
-    }
-
-    void load();
-    return () => {
-      cancelled = true;
-    };
-  }, [t]);
-
-  // Fetch platform-wide stats
-  const statsFetchedRef = useRef(false);
-  useEffect(() => {
-    if (statsFetchedRef.current) return;
-    statsFetchedRef.current = true;
-
-    async function loadStats() {
+  const {
+    data: projects = [],
+    isLoading: projectsLoading,
+    error: projectsError,
+  } = usePublicProjects();
+  const { data: platformStats = null } = useQuery<PlatformStats | null>({
+    queryKey: ['platform-stats'],
+    queryFn: async () => {
       try {
         const { data } = await invokeSupabaseFunction<{ ok: boolean; stats: PlatformStats }>(
           'platform-stats',
           { featureLabel: 'Platform stats' },
         );
-        if (data?.ok && data.stats) setPlatformStats(data.stats);
+        return data?.ok ? data.stats : null;
       } catch {
-        // Stats are non-critical — fail silently
+        return null;
       }
-    }
-    void loadStats();
+    },
+    staleTime: 5 * 60_000,
   });
+
+  const error = projectsError
+    ? ((projectsError as Error).message ?? t('Failed to load projects'))
+    : null;
 
   const projectStats = useProjectStats(projects);
 
@@ -224,6 +200,7 @@ export default function Explore() {
       .sort((a, b) => a.label.localeCompare(b.label));
   }, [projects]);
 
+  const loading = projectsLoading && projects.length === 0;
   const stateKey = loading ? 'loading' : error ? 'error' : projects.length === 0 ? 'empty' : 'data';
 
   return (

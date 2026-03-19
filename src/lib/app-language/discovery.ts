@@ -1,18 +1,13 @@
-import { parsePOFile } from '@/lib/po';
-import type { POFile } from '@/lib/po';
-
 export interface AppLanguageDefinition {
   value: string;
   label: string;
   filename: string;
-  file: POFile;
 }
 
 const localeModules = import.meta.glob('./locales/app.*.po', {
-  eager: true,
   import: 'default',
   query: '?raw',
-}) as Record<string, string>;
+}) as Record<string, () => Promise<string>>;
 
 function normalizeDiscoveredLanguage(value?: string | null): string | null {
   if (!value) return null;
@@ -44,39 +39,51 @@ function compareDefinitions(a: AppLanguageDefinition, b: AppLanguageDefinition):
 function discoverAppLanguages(): AppLanguageDefinition[] {
   const discovered = new Map<string, AppLanguageDefinition>();
 
-  for (const [path, rawContent] of Object.entries(localeModules)) {
+  for (const path of Object.keys(localeModules)) {
     const filename = path.split('/').pop() ?? path;
+    const value = extractLanguageFromFilename(filename);
 
-    try {
-      const file = parsePOFile(rawContent, filename);
-      const value =
-        normalizeDiscoveredLanguage(file.header.language) ?? extractLanguageFromFilename(filename);
-
-      if (!value) {
-        console.error(
-          `[App Language] Could not determine language for ${filename}. Add "Language: <code>" to the PO file header or use the app.[code].po naming pattern.`,
-        );
-        continue;
-      }
-
-      discovered.set(value, {
-        value,
-        label: getLanguageLabel(value),
-        filename,
-        file,
-      });
-    } catch (error) {
+    if (!value) {
       console.error(
-        `[App Language] Failed to discover ${filename}. Check that the PO file is valid and can be parsed:`,
-        error,
+        `[App Language] Could not determine language for ${filename}. Use the app.[code].po naming pattern.`,
       );
+      continue;
     }
+
+    discovered.set(value, {
+      value,
+      label: getLanguageLabel(value),
+      filename,
+    });
   }
 
   return Array.from(discovered.values()).sort(compareDefinitions);
 }
 
 export const DISCOVERED_APP_LANGUAGES = discoverAppLanguages();
+
+export function loadAppLanguageSource(
+  language: string,
+): Promise<{ filename: string; rawContent: string }> {
+  const definition = DISCOVERED_APP_LANGUAGES.find((item) => item.value === language);
+  if (!definition) {
+    return Promise.reject(new Error(`[App Language] Unsupported app locale "${language}".`));
+  }
+
+  const matchingPath = Object.keys(localeModules).find((path) =>
+    path.endsWith(definition.filename),
+  );
+  if (!matchingPath) {
+    return Promise.reject(
+      new Error(`[App Language] Could not find locale source for ${definition.filename}.`),
+    );
+  }
+
+  return localeModules[matchingPath]().then((rawContent) => ({
+    filename: definition.filename,
+    rawContent,
+  }));
+}
 
 if (DISCOVERED_APP_LANGUAGES.length === 0) {
   throw new Error(

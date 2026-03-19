@@ -22,10 +22,10 @@ import { Sun, Moon, Globe, LayoutDashboard } from 'lucide-react';
 import { fadeVariants, buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
 import { useAuth } from '@/hooks/use-auth';
-import { useNotifications } from '@/hooks/use-notifications';
 import { UserMenu } from '@/components/auth/UserMenu';
 import { NotificationBell } from '@/components/notifications';
 import { GlossBossLogo } from '@/components/ui/GlossBossLogo';
+import { prefetchPath } from '@/lib/navigation/prefetch';
 
 const MotionDiv = motion.div;
 
@@ -63,9 +63,6 @@ export function AppHeader({ actions }: AppHeaderProps) {
   const theme = useMantineTheme();
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
 
-  // Subscribe to notifications when authenticated
-  useNotifications();
-
   return (
     <MotionDiv variants={fadeVariants} initial="hidden" animate="visible">
       <Group justify="space-between" align="center" mb="lg">
@@ -93,6 +90,8 @@ export function AppHeader({ actions }: AppHeaderProps) {
                   to="/explore"
                   variant="subtle"
                   leftSection={<Globe size={16} />}
+                  onPointerEnter={() => prefetchPath('/explore')}
+                  onFocus={() => prefetchPath('/explore')}
                 >
                   {t('Explore')}
                 </Button>
@@ -103,6 +102,8 @@ export function AppHeader({ actions }: AppHeaderProps) {
                   to="/dashboard"
                   variant="subtle"
                   leftSection={<LayoutDashboard size={16} />}
+                  onPointerEnter={() => prefetchPath('/dashboard')}
+                  onFocus={() => prefetchPath('/dashboard')}
                 >
                   {t('Dashboard')}
                 </Button>
