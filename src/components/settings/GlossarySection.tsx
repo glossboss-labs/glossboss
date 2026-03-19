@@ -209,6 +209,7 @@ export function GlossarySection({
           fetchedAt: new Date().toISOString(),
         };
 
+        setLocalGlossary(uploaded);
         onGlossaryLoaded?.(uploaded);
         csvUploadResetRef.current?.();
       };

@@ -343,7 +343,7 @@ msgstr "Uitnodiging accepteren"
 msgid "Access"
 msgstr "Toegang"
 
-#: src/pages/Settings.tsx:104
+#: src/pages/Settings.tsx:153
 msgid "Account"
 msgstr "Account"
 
@@ -754,7 +754,7 @@ msgstr "Terug naar inloggen"
 
 #: src/components/SettingsModal.tsx:126
 #: src/components/editor/EditorHeader.tsx:222
-#: src/pages/Settings.tsx:145
+#: src/pages/Settings.tsx:194
 msgid "Backup"
 msgstr "Back-up"
 
@@ -808,7 +808,7 @@ msgstr "Jaarlijks gefactureerd"
 msgid "Billed monthly"
 msgstr "Maandelijks gefactureerd"
 
-#: src/pages/Settings.tsx:109
+#: src/pages/Settings.tsx:158
 msgid "Billing"
 msgstr "Facturering"
 
@@ -1072,7 +1072,7 @@ msgstr "Kies je abonnement"
 #: src/components/editor/GlossaryPanel.tsx:361
 #: src/components/editor/TranslateToolbar.tsx:772
 #: src/components/projects/ProjectGlossaryTab.tsx:422
-#: src/components/settings/GlossarySection.tsx:314
+#: src/components/settings/GlossarySection.tsx:315
 msgid "Clear"
 msgstr "Wissen"
 
@@ -1776,7 +1776,7 @@ msgstr "Ontwikkelaar"
 #: src/components/SettingsModal.tsx:130
 #: src/components/editor/WordPressProjectModal.tsx:356
 #: src/components/editor/WordPressRefreshModal.tsx:242
-#: src/pages/Settings.tsx:149
+#: src/pages/Settings.tsx:198
 msgid "Development"
 msgstr "Ontwikkeling"
 
@@ -1824,7 +1824,7 @@ msgid "Dismiss"
 msgstr "Sluiten"
 
 #: src/components/SettingsModal.tsx:123
-#: src/pages/Settings.tsx:138
+#: src/pages/Settings.tsx:187
 msgid "Display"
 msgstr "Weergave"
 
@@ -2512,7 +2512,7 @@ msgstr "Kan het WordPress.org project niet openen."
 msgid "Failed to parse file"
 msgstr "Kan het bestand niet verwerken"
 
-#: src/components/settings/GlossarySection.tsx:216
+#: src/components/settings/GlossarySection.tsx:217
 msgid "Failed to read the file."
 msgstr "Het lukte niet om het bestand te lezen."
 
@@ -3063,7 +3063,7 @@ msgstr "GlossBoss v{version}"
 msgid "GlossBoss — Open-Source Translation Platform"
 msgstr "GlossBoss — Open-source vertaalplatform"
 
-#: src/components/settings/GlossarySection.tsx:276
+#: src/components/settings/GlossarySection.tsx:277
 msgid ""
 "Glossaries ensure consistent translations for key terms. Load one from WordP"
 "ress.org or upload your own CSV. Cloud projects have their own glossary sett"
@@ -3077,7 +3077,7 @@ msgstr ""
 #: src/components/editor/GlossaryPanel.tsx:307
 #: src/components/organizations/OrgTranslationTab.tsx:163
 #: src/pages/ProjectSettings.tsx:364
-#: src/pages/Settings.tsx:128
+#: src/pages/Settings.tsx:177
 msgid "Glossary"
 msgstr "Glossary"
 
@@ -3093,7 +3093,7 @@ msgstr "Glossary CSV-URL"
 msgid "Glossary analysis is active but {{provider}} does not support enforcement."
 msgstr "Glossary-analyse is actief maar {{provider}} ondersteunt geen afdwinging."
 
-#: src/components/settings/GlossarySection.tsx:446
+#: src/components/settings/GlossarySection.tsx:447
 msgid ""
 "Glossary analysis is active but {{provider}} does not support glossary enfor"
 "cement"
@@ -3567,7 +3567,7 @@ msgstr "Label"
 #: src/components/editor/GlossaryPanel.tsx:385
 #: src/components/editor/HeaderEditor.tsx:222
 #: src/components/landing/LandingFooter.tsx:117
-#: src/components/settings/GlossarySection.tsx:283
+#: src/components/settings/GlossarySection.tsx:284
 #: src/pages/Explore.tsx:366
 msgid "Language"
 msgstr "Taal"
@@ -3763,7 +3763,7 @@ msgstr ""
 "en importeer .po bestanden rechtstreeks vanuit de plug-in directory. Diepe i"
 "ntegratie die het WordPress ecosysteem begrijpt."
 
-#: src/components/settings/GlossarySection.tsx:299
+#: src/components/settings/GlossarySection.tsx:300
 msgid "Load glossary"
 msgstr "Glossary laden"
 
@@ -4399,7 +4399,7 @@ msgstr "Melding"
 #: src/components/notifications/NotificationBell.tsx:43
 #: src/components/notifications/NotificationDropdown.tsx:28
 #: src/pages/ProjectSettings.tsx:370
-#: src/pages/Settings.tsx:114
+#: src/pages/Settings.tsx:163
 msgid "Notifications"
 msgstr "Meldingen"
 
@@ -5346,7 +5346,7 @@ msgstr "Vernieuwen"
 #: src/components/editor/GlossaryPanel.tsx:339
 #: src/components/editor/GlossaryPanel.tsx:343
 #: src/components/editor/WordPressRefreshModal.tsx:198
-#: src/components/settings/GlossarySection.tsx:303
+#: src/components/settings/GlossarySection.tsx:304
 msgid "Refresh from WordPress.org"
 msgstr "Vernieuwen vanaf WordPress.org"
 
@@ -5549,7 +5549,7 @@ msgid "Restrict processing"
 msgstr "Beperking van verwerking"
 
 #: src/components/editor/GlossaryPanel.tsx:273
-#: src/components/settings/GlossarySection.tsx:407
+#: src/components/settings/GlossarySection.tsx:408
 msgid "Resync"
 msgstr "Opnieuw synchroniseren"
 
@@ -5571,7 +5571,7 @@ msgid "Retranslating"
 msgstr "Opnieuw aan het vertalen"
 
 #: src/components/editor/GlossaryPanel.tsx:287
-#: src/components/settings/GlossarySection.tsx:426
+#: src/components/settings/GlossarySection.tsx:427
 msgid "Retry"
 msgstr "Opnieuw proberen"
 
@@ -5875,7 +5875,7 @@ msgstr "Selecteer glossarybestand uit repository"
 msgid "Select language"
 msgstr "Taal selecteren"
 
-#: src/components/settings/GlossarySection.tsx:284
+#: src/components/settings/GlossarySection.tsx:285
 msgid "Select locale"
 msgstr "Taal selecteren"
 
@@ -5970,7 +5970,7 @@ msgstr "Stel je bron- en doeltalen in voor vertaling."
 #: src/components/projects/ProjectCard.tsx:125
 #: src/pages/OrgSettings.tsx:321
 #: src/pages/ProjectDetail.tsx:272
-#: src/pages/Settings.tsx:85
+#: src/pages/Settings.tsx:134
 msgid "Settings"
 msgstr "Instellingen"
 
@@ -6083,7 +6083,7 @@ msgstr "Korte samenvatting van het verzoek"
 msgid "Shortcut"
 msgstr "Sneltoets"
 
-#: src/pages/Settings.tsx:131
+#: src/pages/Settings.tsx:180
 msgid "Shortcuts"
 msgstr "Sneltoetsen"
 
@@ -6328,7 +6328,7 @@ msgid "Spanish (Spain)"
 msgstr "Spaans (Spanje)"
 
 #: src/components/SettingsModal.tsx:104
-#: src/pages/Settings.tsx:121
+#: src/pages/Settings.tsx:170
 msgid "Speech"
 msgstr "Spraak"
 
@@ -6508,7 +6508,7 @@ msgstr "Synchronisatiefout"
 
 #: src/components/editor/GlossaryPanel.tsx:284
 #: src/components/projects/ProjectGlossaryTab.tsx:387
-#: src/components/settings/GlossarySection.tsx:415
+#: src/components/settings/GlossarySection.tsx:416
 msgid "Sync failed"
 msgstr "Synchronisatie mislukt"
 
@@ -6531,7 +6531,7 @@ msgstr "Gesynchroniseerd"
 
 #: src/components/editor/GlossaryPanel.tsx:246
 #: src/components/projects/ProjectGlossaryTab.tsx:370
-#: src/components/settings/GlossarySection.tsx:380
+#: src/components/settings/GlossarySection.tsx:381
 msgid "Syncing glossary..."
 msgstr "Glossary synchroniseren..."
 
@@ -6602,7 +6602,7 @@ msgstr "Voorwaarden"
 msgid "Terms in selected row:"
 msgstr "Termen in de geselecteerde rij:"
 
-#: src/components/settings/GlossarySection.tsx:471
+#: src/components/settings/GlossarySection.tsx:472
 msgid "Terms in selected text:"
 msgstr "Termen in de geselecteerde tekst:"
 
@@ -7047,7 +7047,7 @@ msgstr "Bezig met vertalen..."
 #: src/components/glossary/shared.tsx:93
 #: src/pages/OrgSettingsPage.tsx:369
 #: src/pages/ProjectSettings.tsx:361
-#: src/pages/Settings.tsx:118
+#: src/pages/Settings.tsx:167
 msgid "Translation"
 msgstr "Vertaling"
 
@@ -7440,11 +7440,11 @@ msgstr "Vertaling bijgewerkt"
 msgid "Upgrade to {{plan}}"
 msgstr "Upgrade naar {{plan}}"
 
-#: src/components/settings/GlossarySection.tsx:341
+#: src/components/settings/GlossarySection.tsx:342
 msgid "Upload CSV"
 msgstr "CSV uploaden"
 
-#: src/components/settings/GlossarySection.tsx:346
+#: src/components/settings/GlossarySection.tsx:347
 msgid "Upload a WordPress glossary CSV for the selected language"
 msgstr "Upload een WordPress-glossary CSV voor de geselecteerde taal"
 
@@ -7551,7 +7551,7 @@ msgstr "Gebruiksscenario"
 msgid "Use cloud settings"
 msgstr "Cloudinstellingen gebruiken"
 
-#: src/components/settings/GlossarySection.tsx:436
+#: src/components/settings/GlossarySection.tsx:437
 msgid "Use glossary for translations"
 msgstr "Gebruik de glossary voor vertalingen"
 
@@ -7611,7 +7611,7 @@ msgid "View"
 msgstr "Bekijken"
 
 #: src/components/editor/GlossaryPanel.tsx:405
-#: src/components/settings/GlossarySection.tsx:370
+#: src/components/settings/GlossarySection.tsx:371
 msgid "View All"
 msgstr "Alles bekijken"
 
@@ -8328,7 +8328,7 @@ msgstr "of account aanmaken met e-mail"
 msgid "or sign in with email"
 msgstr "of log in met e-mail"
 
-#: src/components/settings/GlossarySection.tsx:326
+#: src/components/settings/GlossarySection.tsx:327
 msgid "or upload manually"
 msgstr "of handmatig uploaden"
 
@@ -8420,7 +8420,7 @@ msgstr "teamleden"
 
 #: src/components/projects/ProjectGlossaryTab.tsx:245
 #: src/components/projects/ProjectGlossaryTab.tsx:455
-#: src/components/settings/GlossarySection.tsx:357
+#: src/components/settings/GlossarySection.tsx:358
 msgid "terms"
 msgstr "termen"
 
@@ -8672,13 +8672,13 @@ msgstr "{{projects}} projecten"
 
 #: src/components/editor/EditorWorkspace.tsx:180
 #: src/components/editor/GlossaryPanel.tsx:260
-#: src/components/settings/GlossarySection.tsx:392
+#: src/components/settings/GlossarySection.tsx:393
 msgid "{{provider}} ready"
 msgstr "{{provider}} klaar"
 
 #: src/components/editor/GlossaryPanel.tsx:256
 #: src/components/projects/ProjectGlossaryTab.tsx:377
-#: src/components/settings/GlossarySection.tsx:388
+#: src/components/settings/GlossarySection.tsx:389
 msgid "{{provider}} ready ({{count}} terms)"
 msgstr "{{provider}} klaar ({{count}} termen)"
 
@@ -8686,7 +8686,7 @@ msgstr "{{provider}} klaar ({{count}} termen)"
 msgid "{{provider}} session usage: {{count}} characters"
 msgstr "{{provider}} sessieverbruik: {{count}} tekens"
 
-#: src/components/settings/GlossarySection.tsx:439
+#: src/components/settings/GlossarySection.tsx:440
 msgid "{{provider}} will enforce glossary terms in machine translations"
 msgstr "{{provider}} zal glossarytermen afdwingen in automatische vertalingen"
 
@@ -8699,7 +8699,7 @@ msgid "{{provider}} will enforce glossary terms in translations"
 msgstr "{{provider}} zal glossarytermen afdwingen in vertalingen"
 
 #: src/components/editor/GlossaryPanel.tsx:430
-#: src/components/settings/GlossarySection.tsx:443
+#: src/components/settings/GlossarySection.tsx:444
 msgid "{{provider}} will include glossary terms in the translation prompt"
 msgstr "{{provider}} zal glossarytermen opnemen in de vertaalprompt"
 

@@ -317,7 +317,7 @@ msgstr ""
 msgid "Access"
 msgstr ""
 
-#: src/pages/Settings.tsx:104
+#: src/pages/Settings.tsx:153
 msgid "Account"
 msgstr ""
 
@@ -699,7 +699,7 @@ msgstr ""
 
 #: src/components/SettingsModal.tsx:126
 #: src/components/editor/EditorHeader.tsx:222
-#: src/pages/Settings.tsx:145
+#: src/pages/Settings.tsx:194
 msgid "Backup"
 msgstr ""
 
@@ -751,7 +751,7 @@ msgstr ""
 msgid "Billed monthly"
 msgstr ""
 
-#: src/pages/Settings.tsx:109
+#: src/pages/Settings.tsx:158
 msgid "Billing"
 msgstr ""
 
@@ -1008,7 +1008,7 @@ msgstr ""
 #: src/components/editor/GlossaryPanel.tsx:361
 #: src/components/editor/TranslateToolbar.tsx:772
 #: src/components/projects/ProjectGlossaryTab.tsx:422
-#: src/components/settings/GlossarySection.tsx:314
+#: src/components/settings/GlossarySection.tsx:315
 msgid "Clear"
 msgstr ""
 
@@ -1688,7 +1688,7 @@ msgstr ""
 #: src/components/SettingsModal.tsx:130
 #: src/components/editor/WordPressProjectModal.tsx:356
 #: src/components/editor/WordPressRefreshModal.tsx:242
-#: src/pages/Settings.tsx:149
+#: src/pages/Settings.tsx:198
 msgid "Development"
 msgstr ""
 
@@ -1734,7 +1734,7 @@ msgid "Dismiss"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:123
-#: src/pages/Settings.tsx:138
+#: src/pages/Settings.tsx:187
 msgid "Display"
 msgstr ""
 
@@ -2386,7 +2386,7 @@ msgstr ""
 msgid "Failed to parse file"
 msgstr ""
 
-#: src/components/settings/GlossarySection.tsx:216
+#: src/components/settings/GlossarySection.tsx:217
 msgid "Failed to read the file."
 msgstr ""
 
@@ -2897,7 +2897,7 @@ msgstr ""
 msgid "GlossBoss — Open-Source Translation Platform"
 msgstr ""
 
-#: src/components/settings/GlossarySection.tsx:276
+#: src/components/settings/GlossarySection.tsx:277
 msgid ""
 "Glossaries ensure consistent translations for key terms. Load one from WordP"
 "ress.org or upload your own CSV. Cloud projects have their own glossary sett"
@@ -2908,7 +2908,7 @@ msgstr ""
 #: src/components/editor/GlossaryPanel.tsx:307
 #: src/components/organizations/OrgTranslationTab.tsx:163
 #: src/pages/ProjectSettings.tsx:364
-#: src/pages/Settings.tsx:128
+#: src/pages/Settings.tsx:177
 msgid "Glossary"
 msgstr ""
 
@@ -2924,7 +2924,7 @@ msgstr ""
 msgid "Glossary analysis is active but {{provider}} does not support enforcement."
 msgstr ""
 
-#: src/components/settings/GlossarySection.tsx:446
+#: src/components/settings/GlossarySection.tsx:447
 msgid ""
 "Glossary analysis is active but {{provider}} does not support glossary enfor"
 "cement"
@@ -3368,7 +3368,7 @@ msgstr ""
 #: src/components/editor/GlossaryPanel.tsx:385
 #: src/components/editor/HeaderEditor.tsx:222
 #: src/components/landing/LandingFooter.tsx:117
-#: src/components/settings/GlossarySection.tsx:283
+#: src/components/settings/GlossarySection.tsx:284
 #: src/pages/Explore.tsx:366
 msgid "Language"
 msgstr ""
@@ -3555,7 +3555,7 @@ msgid ""
 "nderstands the WordPress ecosystem."
 msgstr ""
 
-#: src/components/settings/GlossarySection.tsx:299
+#: src/components/settings/GlossarySection.tsx:300
 msgid "Load glossary"
 msgstr ""
 
@@ -4174,7 +4174,7 @@ msgstr ""
 #: src/components/notifications/NotificationBell.tsx:43
 #: src/components/notifications/NotificationDropdown.tsx:28
 #: src/pages/ProjectSettings.tsx:370
-#: src/pages/Settings.tsx:114
+#: src/pages/Settings.tsx:163
 msgid "Notifications"
 msgstr ""
 
@@ -5079,7 +5079,7 @@ msgstr ""
 #: src/components/editor/GlossaryPanel.tsx:339
 #: src/components/editor/GlossaryPanel.tsx:343
 #: src/components/editor/WordPressRefreshModal.tsx:198
-#: src/components/settings/GlossarySection.tsx:303
+#: src/components/settings/GlossarySection.tsx:304
 msgid "Refresh from WordPress.org"
 msgstr ""
 
@@ -5278,7 +5278,7 @@ msgid "Restrict processing"
 msgstr ""
 
 #: src/components/editor/GlossaryPanel.tsx:273
-#: src/components/settings/GlossarySection.tsx:407
+#: src/components/settings/GlossarySection.tsx:408
 msgid "Resync"
 msgstr ""
 
@@ -5300,7 +5300,7 @@ msgid "Retranslating"
 msgstr ""
 
 #: src/components/editor/GlossaryPanel.tsx:287
-#: src/components/settings/GlossarySection.tsx:426
+#: src/components/settings/GlossarySection.tsx:427
 msgid "Retry"
 msgstr ""
 
@@ -5597,7 +5597,7 @@ msgstr ""
 msgid "Select language"
 msgstr ""
 
-#: src/components/settings/GlossarySection.tsx:284
+#: src/components/settings/GlossarySection.tsx:285
 msgid "Select locale"
 msgstr ""
 
@@ -5690,7 +5690,7 @@ msgstr ""
 #: src/components/projects/ProjectCard.tsx:125
 #: src/pages/OrgSettings.tsx:321
 #: src/pages/ProjectDetail.tsx:272
-#: src/pages/Settings.tsx:85
+#: src/pages/Settings.tsx:134
 msgid "Settings"
 msgstr ""
 
@@ -5792,7 +5792,7 @@ msgstr ""
 msgid "Shortcut"
 msgstr ""
 
-#: src/pages/Settings.tsx:131
+#: src/pages/Settings.tsx:180
 msgid "Shortcuts"
 msgstr ""
 
@@ -6031,7 +6031,7 @@ msgid "Spanish (Spain)"
 msgstr ""
 
 #: src/components/SettingsModal.tsx:104
-#: src/pages/Settings.tsx:121
+#: src/pages/Settings.tsx:170
 msgid "Speech"
 msgstr ""
 
@@ -6202,7 +6202,7 @@ msgstr ""
 
 #: src/components/editor/GlossaryPanel.tsx:284
 #: src/components/projects/ProjectGlossaryTab.tsx:387
-#: src/components/settings/GlossarySection.tsx:415
+#: src/components/settings/GlossarySection.tsx:416
 msgid "Sync failed"
 msgstr ""
 
@@ -6222,7 +6222,7 @@ msgstr ""
 
 #: src/components/editor/GlossaryPanel.tsx:246
 #: src/components/projects/ProjectGlossaryTab.tsx:370
-#: src/components/settings/GlossarySection.tsx:380
+#: src/components/settings/GlossarySection.tsx:381
 msgid "Syncing glossary..."
 msgstr ""
 
@@ -6293,7 +6293,7 @@ msgstr ""
 msgid "Terms in selected row:"
 msgstr ""
 
-#: src/components/settings/GlossarySection.tsx:471
+#: src/components/settings/GlossarySection.tsx:472
 msgid "Terms in selected text:"
 msgstr ""
 
@@ -6664,7 +6664,7 @@ msgstr ""
 #: src/components/glossary/shared.tsx:93
 #: src/pages/OrgSettingsPage.tsx:369
 #: src/pages/ProjectSettings.tsx:361
-#: src/pages/Settings.tsx:118
+#: src/pages/Settings.tsx:167
 msgid "Translation"
 msgstr ""
 
@@ -7034,11 +7034,11 @@ msgstr ""
 msgid "Upgrade to {{plan}}"
 msgstr ""
 
-#: src/components/settings/GlossarySection.tsx:341
+#: src/components/settings/GlossarySection.tsx:342
 msgid "Upload CSV"
 msgstr ""
 
-#: src/components/settings/GlossarySection.tsx:346
+#: src/components/settings/GlossarySection.tsx:347
 msgid "Upload a WordPress glossary CSV for the selected language"
 msgstr ""
 
@@ -7133,7 +7133,7 @@ msgstr ""
 msgid "Use cloud settings"
 msgstr ""
 
-#: src/components/settings/GlossarySection.tsx:436
+#: src/components/settings/GlossarySection.tsx:437
 msgid "Use glossary for translations"
 msgstr ""
 
@@ -7189,7 +7189,7 @@ msgid "View"
 msgstr ""
 
 #: src/components/editor/GlossaryPanel.tsx:405
-#: src/components/settings/GlossarySection.tsx:370
+#: src/components/settings/GlossarySection.tsx:371
 msgid "View All"
 msgstr ""
 
@@ -7811,7 +7811,7 @@ msgstr ""
 msgid "or sign in with email"
 msgstr ""
 
-#: src/components/settings/GlossarySection.tsx:326
+#: src/components/settings/GlossarySection.tsx:327
 msgid "or upload manually"
 msgstr ""
 
@@ -7899,7 +7899,7 @@ msgstr ""
 
 #: src/components/projects/ProjectGlossaryTab.tsx:245
 #: src/components/projects/ProjectGlossaryTab.tsx:455
-#: src/components/settings/GlossarySection.tsx:357
+#: src/components/settings/GlossarySection.tsx:358
 msgid "terms"
 msgstr ""
 
@@ -8148,13 +8148,13 @@ msgstr ""
 
 #: src/components/editor/EditorWorkspace.tsx:180
 #: src/components/editor/GlossaryPanel.tsx:260
-#: src/components/settings/GlossarySection.tsx:392
+#: src/components/settings/GlossarySection.tsx:393
 msgid "{{provider}} ready"
 msgstr ""
 
 #: src/components/editor/GlossaryPanel.tsx:256
 #: src/components/projects/ProjectGlossaryTab.tsx:377
-#: src/components/settings/GlossarySection.tsx:388
+#: src/components/settings/GlossarySection.tsx:389
 msgid "{{provider}} ready ({{count}} terms)"
 msgstr ""
 
@@ -8162,7 +8162,7 @@ msgstr ""
 msgid "{{provider}} session usage: {{count}} characters"
 msgstr ""
 
-#: src/components/settings/GlossarySection.tsx:439
+#: src/components/settings/GlossarySection.tsx:440
 msgid "{{provider}} will enforce glossary terms in machine translations"
 msgstr ""
 
@@ -8175,7 +8175,7 @@ msgid "{{provider}} will enforce glossary terms in translations"
 msgstr ""
 
 #: src/components/editor/GlossaryPanel.tsx:430
-#: src/components/settings/GlossarySection.tsx:443
+#: src/components/settings/GlossarySection.tsx:444
 msgid "{{provider}} will include glossary terms in the translation prompt"
 msgstr ""
 
