@@ -24,21 +24,24 @@ import { contentVariants, buttonStates, badgeVariants } from '@/lib/motion';
 import type { TargetLanguage, SourceLanguage } from '@/lib/deepl/types';
 import type { Glossary } from '@/lib/glossary/types';
 import {
+  ALL_TRANSLATION_PROVIDERS,
   getTranslationProviderLabel,
   hasProviderCredentials,
   recordTranslationUsage,
+  saveActiveTranslationProvider,
   TRANSLATION_USAGE_REFRESH_EVENT,
   translateWithProvider,
 } from '@/lib/translation';
 import { isLlmProvider } from '@/lib/llm';
 import { getReviewEntryState, isReviewLocked } from '@/lib/review';
-import { useTranslationProvider } from '@/hooks/use-translation-provider';
+import { useTranslationProviderInfo } from '@/hooks/use-translation-provider';
 import { shouldAutoTranslateEntry } from './translate-utils';
 import { getTranslationStatus } from '@/types';
 import { ProviderPicker } from './ProviderPicker';
 import { mapToDeepLCode } from './translate-languages';
 import { GlossaryControls } from './GlossaryControls';
 import { BatchTranslateControls } from './BatchTranslateControls';
+import type { SettingsSource } from '@/components/ui';
 
 const MotionDiv = motion.div;
 
@@ -52,8 +55,6 @@ interface TranslateToolbarProps {
   glossary?: Glossary | null;
   translateEnabled?: boolean;
   mode?: 'edit' | 'review';
-  /** Navigate to settings (threaded to ProviderPicker for API key setup) */
-  onOpenSettings?: (tab?: string) => void;
 }
 
 export function TranslateToolbar({
@@ -62,7 +63,6 @@ export function TranslateToolbar({
   glossary = null,
   translateEnabled = true,
   mode = 'edit',
-  onOpenSettings,
 }: TranslateToolbarProps) {
   const { t } = useTranslation();
   const {
@@ -108,10 +108,25 @@ export function TranslateToolbar({
   const [glossaryFallbackNotice, setGlossaryFallbackNotice] = useState<string | null>(null);
   const cancelRef = useRef(false);
   const batchCountRef = useRef(0);
-  const activeProvider = useTranslationProvider();
+  const {
+    provider: activeProvider,
+    source: providerSource,
+    enforced: providerLocked,
+  } = useTranslationProviderInfo();
   const projectSlug = useSourceStore((state) => getEffectiveSlug(state));
   const projectType = useSourceStore((state) => getEffectiveProjectType(state));
   const providerLabel = getTranslationProviderLabel(activeProvider);
+  const providerSourceBadge: SettingsSource =
+    providerSource === 'language'
+      ? 'project'
+      : providerSource === 'org-enforced'
+        ? 'org-enforced'
+        : providerSource === 'org-default'
+          ? 'org-default'
+          : 'personal';
+  const configuredProviders = ALL_TRANSLATION_PROVIDERS.filter((provider) =>
+    hasProviderCredentials(provider),
+  );
 
   // Check if API key is configured
   const hasApiKey = hasProviderCredentials(activeProvider);
@@ -660,13 +675,17 @@ export function TranslateToolbar({
             sourceLang={sourceLang}
             targetLang={targetLang}
             inferredTarget={inferredTarget}
+            provider={activeProvider}
             providerLabel={providerLabel}
+            providerSource={providerSourceBadge}
+            providerLocked={providerLocked}
+            configuredProviders={configuredProviders}
             hasApiKey={hasApiKey}
             selectedCount={selectedEntryIds.size}
             untranslatedCount={untranslatedEntries.length}
             onSourceChange={handleSourceChange}
             onTargetChange={handleTargetChange}
-            onOpenSettings={onOpenSettings}
+            onProviderChange={(provider) => saveActiveTranslationProvider(provider)}
             actionSlot={
               <Group gap="sm" wrap="wrap">
                 <AnimatePresence mode="wait">

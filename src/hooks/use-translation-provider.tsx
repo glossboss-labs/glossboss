@@ -13,10 +13,12 @@
 
 /* eslint-disable react-refresh/only-export-components -- context + hooks are co-located by design */
 
-import { createContext, use, useMemo, type ReactNode } from 'react';
-import { useLocalStorage } from '@mantine/hooks';
+import { createContext, use, useMemo, useSyncExternalStore, type ReactNode } from 'react';
 import {
   TRANSLATION_PROVIDER_STORAGE_KEY,
+  TRANSLATION_PROVIDER_SETTINGS_EVENT,
+  getTranslationProviderSettings,
+  refreshTranslationProviderSettings,
   type TranslationProviderSettings,
 } from '@/lib/translation/settings';
 import type { TranslationProviderId } from '@/lib/translation/types';
@@ -81,10 +83,33 @@ export interface TranslationProviderInfo {
  */
 export function useTranslationProviderInfo(): TranslationProviderInfo {
   const ctx = use(TranslationProviderContext);
-  const [providerState] = useLocalStorage<TranslationProviderSettings>({
-    key: TRANSLATION_PROVIDER_STORAGE_KEY,
-    defaultValue: { provider: 'deepl', updatedAt: 0 },
-  });
+  const providerState = useSyncExternalStore<TranslationProviderSettings>(
+    (onStoreChange) => {
+      if (typeof window === 'undefined') return () => {};
+
+      const handleStorage = (event: Event) => {
+        if (
+          event instanceof StorageEvent &&
+          event.key &&
+          event.key !== TRANSLATION_PROVIDER_STORAGE_KEY
+        ) {
+          return;
+        }
+        refreshTranslationProviderSettings();
+        onStoreChange();
+      };
+
+      window.addEventListener('storage', handleStorage);
+      window.addEventListener(TRANSLATION_PROVIDER_SETTINGS_EVENT, handleStorage);
+
+      return () => {
+        window.removeEventListener('storage', handleStorage);
+        window.removeEventListener(TRANSLATION_PROVIDER_SETTINGS_EVENT, handleStorage);
+      };
+    },
+    getTranslationProviderSettings,
+    getTranslationProviderSettings,
+  );
 
   // 1. Org enforcement (locked)
   if (ctx?.orgEnforced && ctx.orgDefaultProvider) {

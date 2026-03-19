@@ -20,7 +20,7 @@ const faqs = [
   {
     q: msgid('Which translation providers are supported?'),
     a: msgid(
-      'Seven providers: DeepL, OpenAI, Claude, Google Gemini, Mistral, DeepSeek, and Azure Translator — plus custom endpoints for self-hosted LLMs. You can switch between them mid-session and bring your own API keys or use the shared access included with your plan.',
+      'Seven providers: DeepL, OpenAI, Claude, Google Gemini, Mistral, DeepSeek, and Azure Translator — plus custom endpoints for self-hosted LLMs. You can switch between configured providers from the editor when the current project is not locked to an organization or language-level override, and you can always manage provider setup in Settings.',
     ),
   },
   {

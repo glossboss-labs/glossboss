@@ -2,13 +2,18 @@ import type { ReactNode } from 'react';
 import { describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router';
 import { AppProviders } from '@/providers';
 import { SPEECH_ENABLED_KEY, TRANSLATE_ENABLED_KEY } from '@/lib/constants/storage-keys';
 import { SpeechSection } from './SpeechSection';
 import { TranslationSection } from './TranslationSection';
 
 function renderWithProviders(node: ReactNode) {
-  return render(<AppProviders>{node}</AppProviders>);
+  return render(
+    <MemoryRouter>
+      <AppProviders>{node}</AppProviders>
+    </MemoryRouter>,
+  );
 }
 
 describe('Settings preference toggles', () => {

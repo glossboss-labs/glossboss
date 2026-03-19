@@ -354,7 +354,7 @@ msgstr ""
 msgid "Active local default"
 msgstr ""
 
-#: src/components/editor/ProviderPicker.tsx:109
+#: src/components/editor/ProviderPicker.tsx:134
 msgid "Active provider"
 msgstr ""
 
@@ -400,7 +400,7 @@ msgstr ""
 msgid "Add shared credential"
 msgstr ""
 
-#: src/components/editor/TranslateButton.tsx:123
+#: src/components/editor/TranslateButton.tsx:124
 msgid "Add your {{provider}} API key in Settings to enable translation"
 msgstr ""
 
@@ -623,8 +623,8 @@ msgstr ""
 msgid "Auto translate selected rows that are empty or fuzzy"
 msgstr ""
 
-#: src/components/editor/ProviderPicker.tsx:226
-#: src/components/editor/ProviderPicker.tsx:275
+#: src/components/editor/ProviderPicker.tsx:251
+#: src/components/editor/ProviderPicker.tsx:300
 #: src/components/editor/translate-languages.ts:9
 #: src/components/landing/ProductShowcase.tsx:345
 msgid "Auto-detect"
@@ -920,11 +920,11 @@ msgstr ""
 msgid "Change role"
 msgstr ""
 
-#: src/components/editor/ProviderPicker.tsx:158
+#: src/components/editor/ProviderPicker.tsx:183
 msgid "Change this provider from project or organization settings."
 msgstr ""
 
-#: src/components/editor/ProviderPicker.tsx:92
+#: src/components/editor/ProviderPicker.tsx:100
 msgid "Change translation provider"
 msgstr ""
 
@@ -1285,7 +1285,7 @@ msgid ""
 "."
 msgstr ""
 
-#: src/components/editor/ProviderPicker.tsx:157
+#: src/components/editor/ProviderPicker.tsx:182
 msgid "Connect another provider in Settings to switch here."
 msgstr ""
 
@@ -1721,8 +1721,8 @@ msgstr ""
 msgid "Detected via {{method}} with {{confidence}} confidence"
 msgstr ""
 
-#: src/components/editor/ProviderPicker.tsx:258
-#: src/components/editor/ProviderPicker.tsx:311
+#: src/components/editor/ProviderPicker.tsx:283
+#: src/components/editor/ProviderPicker.tsx:336
 msgid "Detected: {{target}}"
 msgstr ""
 
@@ -2106,8 +2106,8 @@ msgstr ""
 msgid "Error details"
 msgstr ""
 
-#: src/components/editor/TranslateButton.tsx:351
-#: src/components/editor/TranslateButton.tsx:372
+#: src/components/editor/TranslateButton.tsx:353
+#: src/components/editor/TranslateButton.tsx:374
 msgid "Error: {{error}}. Click to retry."
 msgstr ""
 
@@ -2724,8 +2724,8 @@ msgstr ""
 msgid "Frequently asked questions"
 msgstr ""
 
-#: src/components/editor/ProviderPicker.tsx:217
-#: src/components/editor/ProviderPicker.tsx:266
+#: src/components/editor/ProviderPicker.tsx:242
+#: src/components/editor/ProviderPicker.tsx:291
 #: src/components/landing/ProductShowcase.tsx:343
 msgid "From"
 msgstr ""
@@ -3383,7 +3383,7 @@ msgstr ""
 msgid "Keep current key"
 msgstr ""
 
-#: src/components/editor/TranslateButton.tsx:439
+#: src/components/editor/TranslateButton.tsx:448
 msgid "Keep original"
 msgstr ""
 
@@ -3730,7 +3730,7 @@ msgstr ""
 msgid "Machine translated with glossary by {{provider}}"
 msgstr ""
 
-#: src/components/editor/ProviderPicker.tsx:86
+#: src/components/editor/ProviderPicker.tsx:87
 #: src/pages/PrivacyPage.tsx:159
 #: src/pages/PrivacyPage.tsx:166
 msgid "Machine translation"
@@ -3758,7 +3758,7 @@ msgstr ""
 msgid "Maltese"
 msgstr ""
 
-#: src/components/editor/ProviderPicker.tsx:168
+#: src/components/editor/ProviderPicker.tsx:193
 msgid "Manage provider setup"
 msgstr ""
 
@@ -5264,7 +5264,7 @@ msgstr ""
 msgid "Repeated-source consistency"
 msgstr ""
 
-#: src/components/editor/TranslateButton.tsx:442
+#: src/components/editor/TranslateButton.tsx:451
 #: src/pages/index/IndexPageDialogs.tsx:148
 #: src/pages/index/IndexPageDialogs.tsx:160
 msgid "Replace"
@@ -5275,7 +5275,7 @@ msgstr ""
 msgid "Replace current file?"
 msgstr ""
 
-#: src/components/editor/TranslateButton.tsx:429
+#: src/components/editor/TranslateButton.tsx:438
 msgid "Replace existing translation?"
 msgstr ""
 
@@ -5401,8 +5401,8 @@ msgstr ""
 msgid "Retry"
 msgstr ""
 
-#: src/components/editor/TranslateButton.tsx:364
-#: src/components/editor/TranslateButton.tsx:383
+#: src/components/editor/TranslateButton.tsx:366
+#: src/components/editor/TranslateButton.tsx:385
 msgid "Retry translation"
 msgstr ""
 
@@ -5714,8 +5714,8 @@ msgstr ""
 msgid "Select plural form for your language..."
 msgstr ""
 
-#: src/components/editor/ProviderPicker.tsx:247
-#: src/components/editor/ProviderPicker.tsx:299
+#: src/components/editor/ProviderPicker.tsx:272
+#: src/components/editor/ProviderPicker.tsx:324
 msgid "Select target..."
 msgstr ""
 
@@ -5785,8 +5785,8 @@ msgstr ""
 msgid "Set up a translation provider"
 msgstr ""
 
-#: src/components/editor/ProviderPicker.tsx:198
-#: src/components/editor/TranslateButton.tsx:339
+#: src/components/editor/ProviderPicker.tsx:223
+#: src/components/editor/TranslateButton.tsx:341
 msgid "Set up {{provider}}"
 msgstr ""
 
@@ -6089,8 +6089,8 @@ msgstr ""
 msgid "Source format"
 msgstr ""
 
-#: src/components/editor/ProviderPicker.tsx:231
-#: src/components/editor/ProviderPicker.tsx:281
+#: src/components/editor/ProviderPicker.tsx:256
+#: src/components/editor/ProviderPicker.tsx:306
 #: src/components/projects/CreateProjectModal.tsx:640
 msgid "Source language"
 msgstr ""
@@ -6282,7 +6282,7 @@ msgid ""
 "ws."
 msgstr ""
 
-#: src/components/editor/ProviderPicker.tsx:133
+#: src/components/editor/ProviderPicker.tsx:158
 msgid "Switch here"
 msgstr ""
 
@@ -6352,8 +6352,8 @@ msgstr ""
 msgid "Tamil"
 msgstr ""
 
-#: src/components/editor/ProviderPicker.tsx:252
-#: src/components/editor/ProviderPicker.tsx:305
+#: src/components/editor/ProviderPicker.tsx:277
+#: src/components/editor/ProviderPicker.tsx:330
 msgid "Target language"
 msgstr ""
 
@@ -6590,11 +6590,11 @@ msgid ""
 " not shown in production."
 msgstr ""
 
-#: src/components/editor/TranslateButton.tsx:309
+#: src/components/editor/TranslateButton.tsx:311
 msgid "This editor is using your personal default provider."
 msgstr ""
 
-#: src/components/editor/ProviderPicker.tsx:124
+#: src/components/editor/ProviderPicker.tsx:149
 msgid "This editor uses your personal default provider."
 msgstr ""
 
@@ -6610,11 +6610,11 @@ msgid ""
 "imit}} strings. Upgrade to import this file."
 msgstr ""
 
-#: src/components/editor/TranslateButton.tsx:308
+#: src/components/editor/TranslateButton.tsx:310
 msgid "This file inherits your organization default provider."
 msgstr ""
 
-#: src/components/editor/TranslateButton.tsx:304
+#: src/components/editor/TranslateButton.tsx:306
 msgid "This file is locked to an organization-managed provider."
 msgstr ""
 
@@ -6641,19 +6641,19 @@ msgstr ""
 msgid "This is how your name will appear to collaborators."
 msgstr ""
 
-#: src/components/editor/ProviderPicker.tsx:121
+#: src/components/editor/ProviderPicker.tsx:146
 msgid "This language uses a project-level override."
 msgstr ""
 
-#: src/components/editor/TranslateButton.tsx:306
+#: src/components/editor/TranslateButton.tsx:308
 msgid "This language uses a project-level provider override."
 msgstr ""
 
-#: src/components/editor/ProviderPicker.tsx:123
+#: src/components/editor/ProviderPicker.tsx:148
 msgid "This project inherits your organization default."
 msgstr ""
 
-#: src/components/editor/ProviderPicker.tsx:119
+#: src/components/editor/ProviderPicker.tsx:144
 msgid "This provider is locked by your organization."
 msgstr ""
 
@@ -6665,7 +6665,7 @@ msgstr ""
 msgid "This settings file contains saved translation credentials in plain text."
 msgstr ""
 
-#: src/components/editor/TranslateButton.tsx:433
+#: src/components/editor/TranslateButton.tsx:442
 msgid "This will overwrite your current translation with the {{provider}} result."
 msgstr ""
 
@@ -6694,8 +6694,8 @@ msgstr ""
 msgid "Title"
 msgstr ""
 
-#: src/components/editor/ProviderPicker.tsx:238
-#: src/components/editor/ProviderPicker.tsx:290
+#: src/components/editor/ProviderPicker.tsx:263
+#: src/components/editor/ProviderPicker.tsx:315
 #: src/components/landing/ProductShowcase.tsx:348
 msgid "To"
 msgstr ""
@@ -6745,16 +6745,16 @@ msgid ""
 "your team. Run QA checks."
 msgstr ""
 
-#: src/components/editor/TranslateButton.tsx:120
+#: src/components/editor/TranslateButton.tsx:121
 msgid "Translate with Glossary"
 msgstr ""
 
-#: src/components/editor/TranslateButton.tsx:121
-#: src/components/editor/TranslateButton.tsx:128
+#: src/components/editor/TranslateButton.tsx:122
+#: src/components/editor/TranslateButton.tsx:129
 msgid "Translate with {{provider}}"
 msgstr ""
 
-#: src/components/editor/TranslateButton.tsx:127
+#: src/components/editor/TranslateButton.tsx:128
 msgid "Translate with {{provider}} + Glossary"
 msgstr ""
 
@@ -6775,7 +6775,7 @@ msgid "Translated string"
 msgstr ""
 
 #: src/components/editor/BatchTranslateControls.tsx:131
-#: src/components/editor/TranslateButton.tsx:251
+#: src/components/editor/TranslateButton.tsx:252
 msgid "Translating"
 msgstr ""
 
@@ -6783,7 +6783,7 @@ msgstr ""
 msgid "Translating on my own"
 msgstr ""
 
-#: src/components/editor/TranslateButton.tsx:245
+#: src/components/editor/TranslateButton.tsx:246
 msgid "Translating..."
 msgstr ""
 
@@ -7246,7 +7246,7 @@ msgid ""
 "s in your UI."
 msgstr ""
 
-#: src/components/editor/TranslateButton.tsx:315
+#: src/components/editor/TranslateButton.tsx:317
 msgid "Use another configured provider"
 msgstr ""
 
@@ -8185,7 +8185,7 @@ msgstr ""
 msgid "{{count}} removed"
 msgstr ""
 
-#: src/components/editor/ProviderPicker.tsx:177
+#: src/components/editor/ProviderPicker.tsx:202
 msgid "{{count}} selected"
 msgstr ""
 
@@ -8236,7 +8236,7 @@ msgstr ""
 msgid "{{count}} unresolved review comment(s)"
 msgstr ""
 
-#: src/components/editor/ProviderPicker.tsx:178
+#: src/components/editor/ProviderPicker.tsx:203
 msgid "{{count}} untranslated"
 msgstr ""
 
@@ -8284,11 +8284,11 @@ msgstr ""
 msgid "{{projects}} projects"
 msgstr ""
 
-#: src/components/editor/ProviderPicker.tsx:188
+#: src/components/editor/ProviderPicker.tsx:213
 msgid "{{provider}} needs an API key before translation can start."
 msgstr ""
 
-#: src/components/editor/TranslateButton.tsx:297
+#: src/components/editor/TranslateButton.tsx:299
 msgid "{{provider}} needs setup"
 msgstr ""
 

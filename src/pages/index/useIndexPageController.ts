@@ -5,7 +5,7 @@ import type { EditorWorkspaceProps } from '@/components/editor';
 import { deleteDraft } from '@/lib/storage';
 import { useTranslation } from '@/lib/app-language';
 import { getStorageAdapter } from '@/lib/cloud';
-import { useNavigate, useSearchParams } from 'react-router';
+import { useLocation, useNavigate, useSearchParams } from 'react-router';
 import { hasKeyBasedMsgids } from '@/lib/po';
 import { debugLog } from '@/lib/debug';
 import {
@@ -23,13 +23,14 @@ import {
   WORKSPACE_MODE_KEY,
   API_KEY_SETUP_PROMPTED_KEY,
 } from '@/lib/constants/storage-keys';
-import { hasProviderCredentials } from '@/lib/translation';
+import { getActiveTranslationProvider, hasProviderCredentials } from '@/lib/translation';
 import type { IndexPageBannersProps } from './IndexPageBanners';
 import type { IndexPageDialogsProps } from './IndexPageDialogs';
 import type { IndexPageNotificationsProps } from './IndexPageNotifications';
 import { useFileLoader } from './useFileLoader';
 import { useProjectSync } from './useProjectSync';
 import { useEditorDialogs } from './useEditorDialogs';
+import { buildTranslationSettingsHref } from '@/lib/settings/navigation';
 
 interface IndexPageControllerOptions {
   /** When true, disables editing actions (viewer role in cloud projects). */
@@ -41,6 +42,7 @@ export function useIndexPageController(options?: IndexPageControllerOptions) {
   const { t } = useTranslation();
   const [, setSelectedSourceText] = useState<string | null>(null);
   const settingsNavigate = useNavigate();
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [containerWidth] = useLocalStorage<ContainerWidth>({
     key: CONTAINER_WIDTH_KEY,
@@ -207,10 +209,19 @@ export function useIndexPageController(options?: IndexPageControllerOptions) {
         // Ignore storage errors
       }
       // Short delay to let the editor render before navigating
-      const timer = setTimeout(() => handleOpenSettings('translation'), 600);
+      const timer = setTimeout(
+        () =>
+          settingsNavigate(
+            buildTranslationSettingsHref({
+              provider: getActiveTranslationProvider(),
+              returnTo: `${location.pathname}${location.search}${location.hash}`,
+            }),
+          ),
+        600,
+      );
       return () => clearTimeout(timer);
     }
-  }, [filename, readOnly, handleOpenSettings]);
+  }, [filename, location.hash, location.pathname, location.search, readOnly, settingsNavigate]);
 
   const handleDiscardDraft = useCallback(() => {
     if (fileLoader.pendingDraft) {

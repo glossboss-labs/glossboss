@@ -16,6 +16,8 @@ import {
   Paper,
   Progress,
   Badge,
+  Collapse,
+  Divider,
   ActionIcon,
   Menu,
   TextInput,
@@ -54,7 +56,7 @@ import { VISIBILITY_ICON, VISIBILITY_LABEL } from '@/lib/constants/visibility';
 import { formatRelative } from '@/lib/utils/date';
 import { sortLanguages, type LangSortOption } from '@/lib/utils/sorting';
 import { useQueryClient } from '@tanstack/react-query';
-import { removeProjectMember, joinPublicProject } from '@/lib/projects/api';
+import { removeProjectMember, joinPublicProject, getProjectEntryPreview } from '@/lib/projects/api';
 import type { ProjectMemberWithProfile, ProjectInviteRow } from '@/lib/projects/types';
 import {
   projectKeys,
@@ -74,6 +76,13 @@ import { AnimatedStateSwitch, AnimatedTabPanel, ConfirmModal, CountryFlag } from
 
 const MotionDiv = motion.div;
 const MotionSpan = motion.span;
+
+interface LanguagePreviewState {
+  open: boolean;
+  loading: boolean;
+  items: { id: string; msgctxt: string | null; msgid: string; msgstr: string }[];
+  error: string | null;
+}
 
 export default function ProjectDetail() {
   const { id } = useParams<{ id: string }>();
@@ -123,6 +132,9 @@ export default function ProjectDetail() {
   const [confirmLeaveOpen, setConfirmLeaveOpen] = useState(false);
   const [leaveLoading, setLeaveLoading] = useState(false);
   const [joinLoading, setJoinLoading] = useState(false);
+  const [languagePreviews, setLanguagePreviews] = useState<Record<string, LanguagePreviewState>>(
+    {},
+  );
 
   // Derive role info
   const myMembership = useMemo(
@@ -190,6 +202,11 @@ export default function ProjectDetail() {
   const aggFuzzy = useMemo(() => languages.reduce((s, l) => s + l.stats_fuzzy, 0), [languages]);
   const aggPct = aggTotal > 0 ? Math.round((aggTranslated / aggTotal) * 100) : 0;
   const aggFuzzyPct = aggTotal > 0 ? Math.round((aggFuzzy / aggTotal) * 100) : 0;
+  const primaryLocale = languages[0]?.locale ?? null;
+  const joinCtaLabel =
+    project?.public_role === 'translator' && primaryLocale
+      ? t('Join to translate {{locale}}', { locale: primaryLocale })
+      : t('Join as {{role}}', { role: project?.public_role ?? 'viewer' });
 
   const sortOptions = [
     { value: 'locale', label: t('Locale A\u2013Z') },
@@ -202,6 +219,62 @@ export default function ProjectDetail() {
   const stateKey = loading ? 'loading' : error || !project ? 'error' : 'data';
 
   const VisIcon = project ? (VISIBILITY_ICON[project.visibility] ?? Globe) : Globe;
+
+  const toggleLanguagePreview = useCallback(
+    async (languageId: string) => {
+      const current = languagePreviews[languageId];
+
+      if (current?.open) {
+        setLanguagePreviews((prev) => ({
+          ...prev,
+          [languageId]: { ...prev[languageId]!, open: false },
+        }));
+        return;
+      }
+
+      if (current?.items.length) {
+        setLanguagePreviews((prev) => ({
+          ...prev,
+          [languageId]: { ...prev[languageId]!, open: true, error: null },
+        }));
+        return;
+      }
+
+      setLanguagePreviews((prev) => ({
+        ...prev,
+        [languageId]: {
+          open: true,
+          loading: true,
+          items: [],
+          error: null,
+        },
+      }));
+
+      try {
+        const items = await getProjectEntryPreview(languageId, 5);
+        setLanguagePreviews((prev) => ({
+          ...prev,
+          [languageId]: {
+            open: true,
+            loading: false,
+            items,
+            error: null,
+          },
+        }));
+      } catch (err) {
+        setLanguagePreviews((prev) => ({
+          ...prev,
+          [languageId]: {
+            open: true,
+            loading: false,
+            items: [],
+            error: err instanceof Error ? err.message : t('Failed to load preview strings.'),
+          },
+        }));
+      }
+    },
+    [languagePreviews, t],
+  );
 
   return (
     <>
@@ -257,7 +330,7 @@ export default function ProjectDetail() {
                           onClick={() => void handleJoinProject()}
                           loading={joinLoading}
                         >
-                          {t('Join as {{role}}', { role: project.public_role })}
+                          {joinCtaLabel}
                         </Button>
                       </motion.div>
                     )}
@@ -371,7 +444,7 @@ export default function ProjectDetail() {
                           {t('Sign up')}
                         </Link>{' '}
                         {t(
-                          "to save projects to the cloud and collaborate with your team. Collaborators work under the project owner's plan \u2014 no subscription needed to contribute.",
+                          "to preview more strings, save projects to the cloud, and collaborate with the team. Contributors work under the project owner's plan.",
                         )}
                       </Text>
                     </Group>
@@ -644,6 +717,74 @@ export default function ProjectDetail() {
                                       </Menu>
                                     )}
                                   </Group>
+
+                                  {!isMember && (
+                                    <>
+                                      <Divider my="sm" />
+                                      <Stack gap="xs">
+                                        <Group justify="space-between" align="center" wrap="wrap">
+                                          <Text size="xs" c="dimmed">
+                                            {t('Preview a few strings before you join.')}
+                                          </Text>
+                                          <Button
+                                            size="xs"
+                                            variant="subtle"
+                                            onClick={(e) => {
+                                              e.preventDefault();
+                                              void toggleLanguagePreview(lang.id);
+                                            }}
+                                          >
+                                            {languagePreviews[lang.id]?.open
+                                              ? t('Hide preview')
+                                              : t('Preview strings')}
+                                          </Button>
+                                        </Group>
+
+                                        <Collapse in={languagePreviews[lang.id]?.open ?? false}>
+                                          <Stack gap="xs">
+                                            {languagePreviews[lang.id]?.loading && (
+                                              <Text size="xs" c="dimmed">
+                                                {t('Loading preview…')}
+                                              </Text>
+                                            )}
+
+                                            {languagePreviews[lang.id]?.error && (
+                                              <Alert
+                                                color="yellow"
+                                                variant="light"
+                                                icon={<AlertCircle size={14} />}
+                                              >
+                                                <Text size="xs">
+                                                  {languagePreviews[lang.id]?.error}
+                                                </Text>
+                                              </Alert>
+                                            )}
+
+                                            {!languagePreviews[lang.id]?.loading &&
+                                              !languagePreviews[lang.id]?.error &&
+                                              languagePreviews[lang.id]?.items.length === 0 && (
+                                                <Text size="xs" c="dimmed">
+                                                  {t('No preview strings are available yet.')}
+                                                </Text>
+                                              )}
+
+                                            {languagePreviews[lang.id]?.items.map((item) => (
+                                              <Paper key={item.id} withBorder p="xs" radius="sm">
+                                                <Stack gap={4}>
+                                                  <Text size="xs" fw={600}>
+                                                    {item.msgid}
+                                                  </Text>
+                                                  <Text size="xs" c="dimmed">
+                                                    {item.msgstr || t('Untranslated')}
+                                                  </Text>
+                                                </Stack>
+                                              </Paper>
+                                            ))}
+                                          </Stack>
+                                        </Collapse>
+                                      </Stack>
+                                    </>
+                                  )}
                                 </Paper>
                               </MotionDiv>
                             );

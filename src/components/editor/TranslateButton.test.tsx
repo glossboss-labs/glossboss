@@ -2,14 +2,17 @@ import { describe, expect, it, vi, afterEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MantineProvider } from '@mantine/core';
+import { MemoryRouter } from 'react-router';
 import * as deepl from '@/lib/deepl';
 import { TranslateButton } from './TranslateButton';
 
 function renderWithMantine(display: 'icon' | 'button' = 'icon') {
   return render(
-    <MantineProvider>
-      <TranslateButton text="Hello" targetLang="DE" display={display} onTranslated={vi.fn()} />
-    </MantineProvider>,
+    <MemoryRouter>
+      <MantineProvider>
+        <TranslateButton text="Hello" targetLang="DE" display={display} onTranslated={vi.fn()} />
+      </MantineProvider>
+    </MemoryRouter>,
   );
 }
 
@@ -18,7 +21,7 @@ afterEach(() => {
 });
 
 describe('TranslateButton', () => {
-  it('disables the inline translate action when no DeepL API key is configured', async () => {
+  it('opens a recovery popover for the inline translate action when no DeepL API key is configured', async () => {
     const user = userEvent.setup();
     const getDeepLClientSpy = vi.spyOn(deepl, 'getDeepLClient');
 
@@ -26,30 +29,34 @@ describe('TranslateButton', () => {
 
     renderWithMantine('icon');
 
-    const button = screen.getByRole('button', { name: /translate with deepl/i });
-    expect(button).toBeDisabled();
-
+    const button = screen.getByRole('button', {
+      name: /add your deepl api key in settings to enable translation/i,
+    });
     await user.click(button);
 
+    expect(await screen.findByText(/deepl needs setup/i)).toBeInTheDocument();
+    expect(await screen.findByText(/set up deepl/i)).toBeInTheDocument();
     expect(getDeepLClientSpy).not.toHaveBeenCalled();
   });
 
-  it('shows a settings tooltip when the inline action is disabled by missing DeepL credentials', async () => {
+  it('shows an inline recovery path for the icon action when credentials are missing', async () => {
     const user = userEvent.setup();
 
     vi.spyOn(deepl, 'hasUserApiKey').mockReturnValue(false);
 
     renderWithMantine('icon');
 
-    const button = screen.getByRole('button', { name: /translate with deepl/i });
-    await user.hover(button.parentElement as HTMLElement);
+    const button = screen.getByRole('button', {
+      name: /add your deepl api key in settings to enable translation/i,
+    });
+    await user.click(button);
 
     expect(
-      await screen.findByText(/add your deepl api key in settings to enable translation/i),
+      await screen.findByText(/this editor is using your personal default provider/i),
     ).toBeInTheDocument();
   });
 
-  it('disables the sidebar translate action when no DeepL API key is configured', async () => {
+  it('opens a recovery popover for the sidebar translate action when no DeepL API key is configured', async () => {
     const user = userEvent.setup();
     const getDeepLClientSpy = vi.spyOn(deepl, 'getDeepLClient');
 
@@ -58,14 +65,13 @@ describe('TranslateButton', () => {
     renderWithMantine('button');
 
     const button = screen.getByRole('button', { name: /translate with deepl/i });
-    expect(button).toBeDisabled();
-
     await user.click(button);
 
+    expect(await screen.findByText(/deepl needs setup/i)).toBeInTheDocument();
     expect(getDeepLClientSpy).not.toHaveBeenCalled();
   });
 
-  it('shows a settings tooltip when the sidebar action is disabled by missing DeepL credentials', async () => {
+  it('shows an inline recovery path for the sidebar action when credentials are missing', async () => {
     const user = userEvent.setup();
 
     vi.spyOn(deepl, 'hasUserApiKey').mockReturnValue(false);
@@ -73,10 +79,8 @@ describe('TranslateButton', () => {
     renderWithMantine('button');
 
     const button = screen.getByRole('button', { name: /translate with deepl/i });
-    await user.hover(button.parentElement as HTMLElement);
+    await user.click(button);
 
-    expect(
-      await screen.findByText(/add your deepl api key in settings to enable translation/i),
-    ).toBeInTheDocument();
+    expect(await screen.findByText(/set up deepl/i)).toBeInTheDocument();
   });
 });

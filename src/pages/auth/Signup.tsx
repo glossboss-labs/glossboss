@@ -57,7 +57,7 @@ export default function Signup() {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const computedColorScheme = useComputedColorScheme('light');
-  const { containerRef, getCaptchaToken, ready: captchaReady } = useAuthCaptcha();
+  const { containerRef, getCaptchaToken, ready: captchaReady, captchaEnabled } = useAuthCaptcha();
 
   const handleEmailSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -182,9 +182,19 @@ export default function Signup() {
 
                     <div ref={containerRef} />
 
+                    {captchaEnabled && !captchaReady && (
+                      <Text size="xs" c="dimmed" ta="center">
+                        {t('Security check is loading. Account creation will unlock in a moment.')}
+                      </Text>
+                    )}
+
                     <Button type="submit" fullWidth loading={submitting} disabled={!captchaReady}>
                       {t('Create account')}
                     </Button>
+
+                    <Anchor component={Link} to="/editor" size="sm" ta="center">
+                      {t('Continue without account')}
+                    </Anchor>
                   </Stack>
                 </form>
               </>

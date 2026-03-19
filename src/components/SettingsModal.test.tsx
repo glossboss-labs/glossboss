@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router';
 import { SettingsModal } from './SettingsModal';
 import { AppProviders } from '@/providers';
 import { APP_LANGUAGE_STORAGE_KEY } from '@/lib/app-language';
@@ -11,9 +12,11 @@ const SLOW_UI_TEST_TIMEOUT = 30_000;
 
 function renderModal() {
   return render(
-    <AppProviders>
-      <SettingsModal opened onClose={vi.fn()} />
-    </AppProviders>,
+    <MemoryRouter>
+      <AppProviders>
+        <SettingsModal opened onClose={vi.fn()} />
+      </AppProviders>
+    </MemoryRouter>,
   );
 }
 

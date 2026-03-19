@@ -24,8 +24,10 @@ import {
   Collapse,
   UnstyledButton,
   Divider,
+  Select,
 } from '@mantine/core';
 import { useLocalStorage } from '@mantine/hooks';
+import { useNavigate, useSearchParams } from 'react-router';
 import {
   Check,
   AlertCircle,
@@ -55,6 +57,8 @@ import {
   setAzurePersistEnabled,
 } from '@/lib/azure';
 import {
+  ALL_TRANSLATION_PROVIDERS,
+  getTranslationProviderLabel,
   getTranslationProviderSettings,
   getTranslationUsage,
   saveActiveTranslationProvider,
@@ -90,6 +94,8 @@ export function TranslationSection({
   onTranslateEnabledChange,
 }: TranslationSectionProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [storedTranslateEnabled, setStoredTranslateEnabled] = useLocalStorage<boolean>({
     key: TRANSLATE_ENABLED_KEY,
     defaultValue: true,
@@ -122,6 +128,8 @@ export function TranslationSection({
   const [azureTesting, setAzureTesting] = useState(false);
   const [azureSaved, setAzureSaved] = useState(false);
   const [azureTestResult, setAzureTestResult] = useState<ConnectionResult | null>(null);
+  const requestedProvider = searchParams.get('provider');
+  const returnTo = searchParams.get('returnTo');
 
   // Load all settings on mount
   useEffect(() => {
@@ -141,6 +149,15 @@ export function TranslationSection({
     setAzurePersistKey(isAzurePersistEnabled());
     setAzureSaved(Boolean(az.apiKey.trim() && az.region.trim()));
   }, []);
+
+  useEffect(() => {
+    if (
+      requestedProvider &&
+      ALL_TRANSLATION_PROVIDERS.includes(requestedProvider as TranslationProviderId)
+    ) {
+      setExpandedCard(requestedProvider as TranslationProviderId);
+    }
+  }, [requestedProvider]);
 
   const handleSetDefault = useCallback(
     (provider: TranslationProviderId) => {
@@ -303,15 +320,20 @@ export function TranslationSection({
 
   const deeplConfigured = hasProviderCredentials('deepl');
   const azureConfigured = hasProviderCredentials('azure');
-  const googleConfigured = hasProviderCredentials('google');
-  const anyProviderConfigured = deeplConfigured || azureConfigured || googleConfigured;
+  const anyProviderConfigured = ALL_TRANSLATION_PROVIDERS.some((provider) =>
+    hasProviderCredentials(provider),
+  );
+  const defaultProviderConfigured = hasProviderCredentials(defaultProvider);
+  const defaultProviderOptions = ALL_TRANSLATION_PROVIDERS.map((provider) => ({
+    value: provider,
+    label: getTranslationProviderLabel(provider),
+    disabled: !hasProviderCredentials(provider),
+  }));
 
   return (
     <Stack gap="md">
       <Text size="sm" c="dimmed">
-        {t(
-          'These settings apply to the local editor. Cloud projects can override the provider in Project Settings.',
-        )}
+        {t('These settings control the local editor. Cloud projects can still override them.')}
       </Text>
 
       <Switch
@@ -327,10 +349,57 @@ export function TranslationSection({
         }}
       />
 
+      <Paper withBorder p="md">
+        <Stack gap="sm">
+          <Group justify="space-between" align="center" wrap="wrap">
+            <div>
+              <Text size="sm" fw={600}>
+                {t('Active local default')}
+              </Text>
+              <Group gap="xs" mt={4}>
+                <Badge variant="light" color={defaultProviderConfigured ? 'blue' : 'gray'}>
+                  {getTranslationProviderLabel(defaultProvider)}
+                </Badge>
+                <Badge
+                  variant="light"
+                  color={defaultProviderConfigured ? 'green' : 'yellow'}
+                  size="sm"
+                >
+                  {defaultProviderConfigured ? t('Ready') : t('Needs setup')}
+                </Badge>
+              </Group>
+            </div>
+
+            <Group gap="xs">
+              <Button size="xs" variant="light" onClick={() => setExpandedCard(defaultProvider)}>
+                {t('Open provider')}
+              </Button>
+              {returnTo && (
+                <Button size="xs" variant="subtle" onClick={() => navigate(returnTo)}>
+                  {t('Back to editor')}
+                </Button>
+              )}
+            </Group>
+          </Group>
+
+          <Select
+            size="xs"
+            label={t('Switch local default')}
+            description={t('Only configured providers can become the active local default.')}
+            value={defaultProvider}
+            data={defaultProviderOptions}
+            onChange={(value) => {
+              if (value) handleSetDefault(value as TranslationProviderId);
+            }}
+            allowDeselect={false}
+          />
+        </Stack>
+      </Paper>
+
       <Alert color="gray" variant="light" icon={<Shield size={16} />}>
         <Text size="xs">
           {t(
-            'Translation text is sent to your selected provider for processing. Data processing regions vary by provider. No translation data is stored by GlossBoss after the response is received.',
+            'Translation text is sent to your selected provider for processing. GlossBoss does not store the text after the response returns.',
           )}{' '}
           <Anchor href="/privacy" target="_blank" size="xs">
             {t('Privacy Policy')}
@@ -346,9 +415,7 @@ export function TranslationSection({
         <Alert color="blue" variant="light">
           <Stack gap="xs">
             <Text size="sm" fw={500}>
-              {t(
-                'Pick any provider below — all offer free tiers, and setup takes about 2 minutes.',
-              )}
+              {t('Quick start: connect one provider to unlock translation in the editor.')}
             </Text>
             <Text size="xs">{t('Recommended for getting started:')}</Text>
             <Stack gap={4}>
@@ -388,7 +455,7 @@ export function TranslationSection({
               </Group>
             </Stack>
             <Text size="xs" c="dimmed">
-              {t('After you get a key, expand the provider card below and paste it in.')}
+              {t('After you get a key, expand the matching card below and paste it in.')}
             </Text>
           </Stack>
         </Alert>

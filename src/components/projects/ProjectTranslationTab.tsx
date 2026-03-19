@@ -35,6 +35,7 @@ import type { SharedCredentialRow } from '@/lib/shared-credentials/types';
 import { listAvailableCredentials } from '@/lib/shared-credentials/api';
 import { SettingsSourceBadge, type SettingsSource } from '@/components/ui';
 import { SharedCredentialsTab } from '@/components/organizations/SharedCredentialsTab';
+import { buildTranslationSettingsHref } from '@/lib/settings/navigation';
 
 function maskKey(key: string): string {
   if (!key || key.length <= 4) return key ? '****' : '';
@@ -305,7 +306,13 @@ export function ProjectTranslationTab({
     <Stack gap="md">
       <Text size="sm" c="dimmed">
         {t('Override the translation provider per language. Configure API keys in')}{' '}
-        <Anchor component={Link} to="/settings?tab=translation" size="sm">
+        <Anchor
+          component={Link}
+          to={buildTranslationSettingsHref({
+            returnTo: `/projects/${projectId}/settings?tab=translation`,
+          })}
+          size="sm"
+        >
           {t('Settings → Translation')}
         </Anchor>
         .

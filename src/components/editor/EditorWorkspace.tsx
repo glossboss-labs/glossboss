@@ -128,6 +128,7 @@ export function EditorWorkspace({
           onRefreshWordPress={
             currentProjectType && currentProjectSlug ? onRefreshWordPress : undefined
           }
+          onOpenSettings={onOpenSettings}
         />
         <Paper p="md" withBorder>
           <Stack gap="sm">
@@ -164,7 +165,6 @@ export function EditorWorkspace({
               glossary={glossary}
               translateEnabled={translateEnabled}
               mode={workspaceMode}
-              onOpenSettings={onOpenSettings}
             />
             {workspaceMode === 'edit' && <SourceFileIndicator />}
             {workspaceMode === 'edit' && glossary && (
