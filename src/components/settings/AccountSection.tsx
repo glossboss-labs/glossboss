@@ -323,7 +323,7 @@ export function AccountSection() {
             {t('Change password')}
           </Text>
           <Text size="xs" c="dimmed">
-            {t('Update your account password. No current password is required while signed in.')}
+            {t('Set a new password for this account.')}
           </Text>
 
           <PasswordInput
@@ -426,7 +426,7 @@ export function AccountSection() {
           ) : (
             <>
               <Text size="sm" c="dimmed">
-                {t('No external accounts connected. Signed in with email and password.')}
+                {t('You are currently using email and password only.')}
               </Text>
               <Button
                 variant="light"
@@ -492,9 +492,7 @@ export function AccountSection() {
           </Group>
 
           <Text size="xs" c="dimmed">
-            {t(
-              'Sync your GlossBoss settings across browsers. When enabled, changes are automatically saved to the cloud and restored on sign-in.',
-            )}
+            {t('Keep your settings in sync across browsers when you sign in.')}
           </Text>
 
           <Switch
@@ -580,16 +578,14 @@ export function AccountSection() {
 
               <Alert color="yellow" variant="light" icon={<ShieldAlert size={16} />}>
                 <Text size="xs">
-                  {t(
-                    'API credentials are sensitive. Only enable credential sync if you trust all devices where you sign in to GlossBoss.',
-                  )}
+                  {t('API credentials are sensitive. Only sync them to devices you trust.')}
                 </Text>
               </Alert>
 
               <Switch
                 label={t('Include API credentials in sync')}
                 description={t(
-                  'When enabled, your translation and TTS API keys are included in cloud sync. When disabled, credentials stay local to each browser.',
+                  'When enabled, saved translation and TTS keys sync with your account. Otherwise they stay local to this browser.',
                 )}
                 checked={credentialSyncEnabled}
                 onChange={(e) => void handleCredentialSyncToggle(e.currentTarget.checked)}

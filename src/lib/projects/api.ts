@@ -120,7 +120,36 @@ export async function listPublicProjects(): Promise<ProjectWithLanguages[]> {
     .order('updated_at', { ascending: false });
 
   if (error) throw error;
-  return (data ?? []).map((p) => ({ ...p, project_languages: [] }) as ProjectWithLanguages);
+
+  const projects = data ?? [];
+  if (projects.length === 0) return [];
+
+  const { data: languages, error: languagesError } = await supabase()
+    .from('project_languages')
+    .select('*')
+    .in(
+      'project_id',
+      projects.map((project) => project.id),
+    );
+
+  if (languagesError) {
+    return projects.map((p) => ({ ...p, project_languages: [] }) as ProjectWithLanguages);
+  }
+
+  const languagesByProjectId = new Map<string, ProjectLanguageRow[]>();
+  for (const language of languages ?? []) {
+    const existing = languagesByProjectId.get(language.project_id) ?? [];
+    existing.push(language);
+    languagesByProjectId.set(language.project_id, existing);
+  }
+
+  return projects.map(
+    (project) =>
+      ({
+        ...project,
+        project_languages: languagesByProjectId.get(project.id) ?? [],
+      }) as ProjectWithLanguages,
+  );
 }
 
 // ── Project Languages ────────────────────────────────────────
@@ -220,6 +249,21 @@ export async function getProjectEntries(languageId: string): Promise<ProjectEntr
   }
 
   return all;
+}
+
+export async function getProjectEntryPreview(
+  languageId: string,
+  limit = 5,
+): Promise<Pick<ProjectEntryRow, 'id' | 'msgctxt' | 'msgid' | 'msgstr'>[]> {
+  const { data, error } = await supabase()
+    .from('project_entries')
+    .select('id, msgctxt, msgid, msgstr')
+    .eq('language_id', languageId)
+    .order('entry_index', { ascending: true })
+    .range(0, Math.max(limit - 1, 0));
+
+  if (error) throw error;
+  return data ?? [];
 }
 
 /** Lightweight fetch of just entry keys for diffing. */

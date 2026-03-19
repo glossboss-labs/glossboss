@@ -10,6 +10,7 @@
 import { useState, useCallback } from 'react';
 import { ActionIcon, Tooltip, Loader, Popover, Button, Text, Stack, Group } from '@mantine/core';
 import { Languages, AlertCircle, AlertTriangle } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router';
 import { useTranslation } from '@/lib/app-language';
 import { trackEvent } from '@/lib/analytics';
 import {
@@ -20,13 +21,18 @@ import {
 import type { TargetLanguage, SourceLanguage } from '@/lib/deepl/types';
 import type { Glossary } from '@/lib/glossary/types';
 import {
+  ALL_TRANSLATION_PROVIDERS,
   getTranslationProviderLabel,
   hasProviderCredentials,
+  saveActiveTranslationProvider,
   translateWithProvider,
   type ProviderTranslationMetadata,
 } from '@/lib/translation';
-import { useTranslationProvider } from '@/hooks/use-translation-provider';
+import { useTranslationProviderInfo } from '@/hooks/use-translation-provider';
 import { getEffectiveProjectType, getEffectiveSlug, useSourceStore } from '@/stores/source-store';
+import { buildTranslationSettingsHref } from '@/lib/settings/navigation';
+import { SettingsSourceBadge, type SettingsSource } from '@/components/ui';
+import { popoverTransitionProps } from '@/lib/motion';
 
 interface TranslateButtonProps {
   /** Text to translate */
@@ -75,12 +81,38 @@ export function TranslateButton({
   const [showConfirm, setShowConfirm] = useState(false);
   const [pendingTranslation, setPendingTranslation] = useState<string | null>(null);
   const [pendingMeta, setPendingMeta] = useState<ProviderTranslationMetadata | null>(null);
-  const activeProvider = useTranslationProvider();
+  const [showRecovery, setShowRecovery] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const {
+    provider: activeProvider,
+    source: providerSource,
+    enforced: providerLocked,
+  } = useTranslationProviderInfo();
   const projectSlug = useSourceStore((state) => getEffectiveSlug(state));
   const projectType = useSourceStore((state) => getEffectiveProjectType(state));
   const providerLabel = getTranslationProviderLabel(activeProvider);
   const apiKeyConfigured = hasProviderCredentials(activeProvider);
-  const isDisabled = disabled || !text.trim() || !apiKeyConfigured;
+  const configuredProviders = ALL_TRANSLATION_PROVIDERS.filter((provider) =>
+    hasProviderCredentials(provider),
+  );
+  const alternativeProviders = configuredProviders.filter(
+    (provider) => provider !== activeProvider,
+  );
+  const canSwitchInline = providerSource === 'personal' && alternativeProviders.length > 0;
+  const sourceBadge: SettingsSource =
+    providerSource === 'language'
+      ? 'project'
+      : providerSource === 'org-enforced'
+        ? 'org-enforced'
+        : providerSource === 'org-default'
+          ? 'org-default'
+          : 'personal';
+  const returnTo = `${location.pathname}${location.search}${location.hash}`;
+  const settingsHref = buildTranslationSettingsHref({ provider: activeProvider, returnTo });
+  const missingCredentials = !apiKeyConfigured;
+  const blockedByCredentials = !disabled && text.trim().length > 0 && missingCredentials;
+  const isDisabled = disabled || !text.trim();
 
   const iconSize = size === 'xs' ? 12 : size === 'sm' ? 14 : 16;
   const hasExistingTranslation = currentTranslation.trim().length > 0;
@@ -223,6 +255,97 @@ export function TranslateButton({
     );
   }
 
+  if (blockedByCredentials) {
+    const trigger =
+      display === 'button' ? (
+        <Button
+          size={size}
+          variant="light"
+          color="gray"
+          leftSection={<Languages size={iconSize} />}
+          onClick={() => setShowRecovery((open) => !open)}
+        >
+          {label}
+        </Button>
+      ) : (
+        <ActionIcon
+          size={size}
+          variant="subtle"
+          color="gray"
+          onClick={() => setShowRecovery((open) => !open)}
+          aria-label={tooltipLabel}
+        >
+          <Languages size={iconSize} />
+        </ActionIcon>
+      );
+
+    return (
+      <Popover
+        opened={showRecovery}
+        onChange={setShowRecovery}
+        position="top"
+        width={300}
+        shadow="md"
+        transitionProps={popoverTransitionProps}
+      >
+        <Popover.Target>
+          <span>{trigger}</span>
+        </Popover.Target>
+
+        <Popover.Dropdown>
+          <Stack gap="xs">
+            <Group justify="space-between" align="center">
+              <Text size="sm" fw={600}>
+                {t('{{provider}} needs setup', { provider: providerLabel })}
+              </Text>
+              <SettingsSourceBadge source={sourceBadge} />
+            </Group>
+
+            <Text size="xs" c="dimmed">
+              {providerLocked
+                ? t('This file is locked to an organization-managed provider.')
+                : providerSource === 'language'
+                  ? t('This language uses a project-level provider override.')
+                  : providerSource === 'org-default'
+                    ? t('This file inherits your organization default provider.')
+                    : t('This editor is using your personal default provider.')}
+            </Text>
+
+            {canSwitchInline && (
+              <Stack gap={4}>
+                <Text size="xs" fw={600}>
+                  {t('Use another configured provider')}
+                </Text>
+                {alternativeProviders.map((provider) => (
+                  <Button
+                    key={provider}
+                    size="xs"
+                    variant="subtle"
+                    fullWidth
+                    onClick={() => {
+                      saveActiveTranslationProvider(provider);
+                      setShowRecovery(false);
+                    }}
+                  >
+                    {getTranslationProviderLabel(provider)}
+                  </Button>
+                ))}
+              </Stack>
+            )}
+
+            <Button
+              size="xs"
+              leftSection={<AlertCircle size={12} />}
+              onClick={() => navigate(settingsHref)}
+            >
+              {t('Set up {{provider}}', { provider: providerLabel })}
+            </Button>
+          </Stack>
+        </Popover.Dropdown>
+      </Popover>
+    );
+  }
+
   if (error) {
     if (display === 'button') {
       return (
@@ -269,7 +392,14 @@ export function TranslateButton({
 
   // Show confirmation popover when there's existing translation
   return (
-    <Popover opened={showConfirm} onClose={handleCancel} position="top" withArrow shadow="md">
+    <Popover
+      opened={showConfirm}
+      onClose={handleCancel}
+      position="top"
+      withArrow
+      shadow="md"
+      transitionProps={popoverTransitionProps}
+    >
       <Popover.Target>
         <Tooltip label={tooltipLabel} color="dark">
           <span style={{ display: 'inline-flex' }}>

@@ -40,7 +40,7 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const computedColorScheme = useComputedColorScheme('light');
-  const { containerRef, getCaptchaToken, ready: captchaReady } = useAuthCaptcha();
+  const { containerRef, getCaptchaToken, ready: captchaReady, captchaEnabled } = useAuthCaptcha();
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -139,6 +139,12 @@ export default function Login() {
               </Anchor>
 
               <div ref={containerRef} />
+
+              {captchaEnabled && !captchaReady && (
+                <Text size="xs" c="dimmed" ta="center">
+                  {t('Security check is loading. Sign in will unlock in a moment.')}
+                </Text>
+              )}
 
               <Button type="submit" fullWidth loading={submitting} disabled={!captchaReady}>
                 {t('Sign in')}

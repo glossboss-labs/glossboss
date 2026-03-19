@@ -3,6 +3,7 @@ import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MantineProvider } from '@mantine/core';
 import type { ReactNode } from 'react';
+import { MemoryRouter } from 'react-router';
 import type { POEntry, POFile } from '@/lib/po';
 import { useEditorStore } from '@/stores/editor-store';
 import { useSourceStore } from '@/stores/source-store';
@@ -35,7 +36,11 @@ function makeFile(entries: POEntry[], filename = 'ui-test.po'): POFile {
 }
 
 function renderWithMantine(ui: ReactNode) {
-  return render(<MantineProvider>{ui}</MantineProvider>);
+  return render(
+    <MemoryRouter>
+      <MantineProvider>{ui}</MantineProvider>
+    </MemoryRouter>,
+  );
 }
 
 const originalMatchMedia = window.matchMedia;

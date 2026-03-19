@@ -287,6 +287,28 @@ export default function ProjectSettings() {
         ) : !project ? null : (
           <MotionDiv variants={staggerPageVariants} initial="hidden" animate="visible">
             <Stack gap="lg">
+              {project.visibility === 'public' && !myMembership && (
+                <MotionDiv variants={fadeVariants}>
+                  <Alert color="blue" variant="light">
+                    <Group justify="space-between" align="center" wrap="wrap" gap="sm">
+                      <Text size="sm">
+                        {t(
+                          'You are viewing public project settings in read-only mode. Join the project to make changes.',
+                        )}
+                      </Text>
+                      <Button
+                        component={Link}
+                        to={`/projects/${project.id}`}
+                        size="xs"
+                        variant="light"
+                      >
+                        {t('Back to project')}
+                      </Button>
+                    </Group>
+                  </Alert>
+                </MotionDiv>
+              )}
+
               {/* Breadcrumb */}
               <MotionDiv variants={fadeVariants}>
                 <Group gap={6}>

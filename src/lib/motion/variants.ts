@@ -16,6 +16,7 @@ import type { Variants, Transition } from 'motion/react';
 
 /** Expo-out easing — responsive attack, smooth deceleration */
 const expoOut: [number, number, number, number] = [0.16, 1, 0.3, 1];
+export const expoOutTimingFunction = 'cubic-bezier(0.16, 1, 0.3, 1)';
 
 /** Ambient enter — tween for content appearing */
 export const ambientEnter: Transition = {
@@ -28,6 +29,20 @@ export const ambientExit: Transition = {
   duration: 0.18,
   ease: expoOut,
 };
+
+/** Mantine-compatible dropdown transition props */
+export const dropdownTransitionProps = {
+  transition: 'fade-down',
+  duration: 140,
+  timingFunction: expoOutTimingFunction,
+} as const;
+
+/** Mantine-compatible popover transition props */
+export const popoverTransitionProps = {
+  transition: 'fade-up',
+  duration: 140,
+  timingFunction: expoOutTimingFunction,
+} as const;
 
 /** Interactive spring — for button/badge feedback */
 export const interactiveSpring: Transition = {

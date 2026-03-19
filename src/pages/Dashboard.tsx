@@ -52,6 +52,7 @@ import { CreateOrgModal } from '@/components/organizations/CreateOrgModal';
 import { ConfirmModal } from '@/components/ui';
 import { FreePlanBanner } from '@/components/billing/FreePlanBanner';
 import { createFuseSearch, fuzzyFilter } from '@/lib/utils/fuzzy-search';
+import { buildTranslationSettingsHref } from '@/lib/settings/navigation';
 
 const MotionDiv = motion.div;
 
@@ -244,7 +245,7 @@ export default function Dashboard() {
                     </Text>
                     <Button
                       component={Link}
-                      to="/settings?tab=translation"
+                      to={buildTranslationSettingsHref({ returnTo: '/dashboard' })}
                       variant="light"
                       size="xs"
                       mt={4}
@@ -331,21 +332,19 @@ export default function Dashboard() {
                   </Text>
                   <Text size="sm" maw={420} ta="center" c="dimmed">
                     {t(
-                      'Projects store your translations in the cloud — collaborate with your team and push to GitHub or GitLab.',
+                      'Create a cloud project to collaborate, sync with GitHub or GitLab, and keep translations in one place.',
                     )}
                   </Text>
-                  <Text size="xs" c="dimmed">
-                    {t('The')}{' '}
-                    <Text component={Link} to="/editor" size="xs" c="blue" td="underline" inherit>
-                      {t('local editor')}
-                    </Text>{' '}
-                    {t('is always free — no account needed.')}
-                  </Text>
-                  <motion.div {...buttonStates}>
-                    <Button variant="light" onClick={() => setCreateModalOpen(true)}>
-                      {t('New project')}
+                  <Group gap="sm">
+                    <motion.div {...buttonStates}>
+                      <Button variant="light" onClick={() => setCreateModalOpen(true)}>
+                        {t('New project')}
+                      </Button>
+                    </motion.div>
+                    <Button component={Link} to="/editor" variant="subtle" size="sm">
+                      {t('Open local editor')}
                     </Button>
-                  </motion.div>
+                  </Group>
                 </Stack>
               </Center>
             )}
@@ -428,7 +427,7 @@ export default function Dashboard() {
                   </Text>
                   <Text size="xs" maw={400} ta="center" c="dimmed">
                     {t(
-                      "Organizations let you group projects, share API keys, and manage billing for your team. You don't need one to get started.",
+                      'Organizations are for shared billing, shared API keys, and multi-project teams. You can add one later.',
                     )}
                   </Text>
                   <motion.div {...buttonStates}>
