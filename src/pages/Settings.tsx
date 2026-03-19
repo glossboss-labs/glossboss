@@ -44,6 +44,42 @@ import {
 } from '@/components/settings';
 
 const MotionDiv = motion.div;
+const SETTINGS_TAB_ALIASES = {
+  api: 'translation',
+  keybinds: 'shortcuts',
+  transfer: 'backup',
+} as const;
+const SHARED_SETTINGS_TABS = [
+  'translation',
+  'speech',
+  'glossary',
+  'shortcuts',
+  'display',
+  'backup',
+];
+const AUTHENTICATED_SETTINGS_TABS = ['account', 'billing', 'notifications'];
+const DEVELOPMENT_SETTINGS_TAB = 'development';
+
+export function normalizeSettingsTab(
+  rawTab: string | null,
+  options: {
+    isAuthenticated: boolean;
+    isDevelopment: boolean;
+  },
+): string {
+  const fallbackTab = options.isAuthenticated ? 'account' : 'translation';
+  const normalizedTab =
+    rawTab && rawTab in SETTINGS_TAB_ALIASES
+      ? SETTINGS_TAB_ALIASES[rawTab as keyof typeof SETTINGS_TAB_ALIASES]
+      : rawTab;
+  const allowedTabs = new Set<string>([
+    ...SHARED_SETTINGS_TABS,
+    ...(options.isAuthenticated ? AUTHENTICATED_SETTINGS_TABS : []),
+    ...(options.isDevelopment ? [DEVELOPMENT_SETTINGS_TAB] : []),
+  ]);
+
+  return normalizedTab && allowedTabs.has(normalizedTab) ? normalizedTab : fallbackTab;
+}
 
 export default function Settings() {
   const { t } = useTranslation();
@@ -52,7 +88,8 @@ export default function Settings() {
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
   const isDevelopment = import.meta.env.DEV;
   const [searchParams, setSearchParams] = useSearchParams();
-  const activeTab = searchParams.get('tab') || (isAuthenticated ? 'account' : 'translation');
+  const requestedTab = searchParams.get('tab');
+  const activeTab = normalizeSettingsTab(requestedTab, { isAuthenticated, isDevelopment });
 
   // Settings tour — auto-starts on first visit regardless of active tab
   const { startTour } = useSettingsTour();
@@ -68,12 +105,24 @@ export default function Settings() {
   }, [searchParams, setSearchParams, startTour]);
 
   useEffect(() => {
+    if (!requestedTab || requestedTab === activeTab) {
+      return;
+    }
+
+    const nextSearchParams = new URLSearchParams(searchParams);
+    nextSearchParams.set('tab', activeTab);
+    setSearchParams(nextSearchParams, { replace: true });
+  }, [activeTab, requestedTab, searchParams, setSearchParams]);
+
+  useEffect(() => {
     trackEvent('settings_page_viewed', { section: activeTab });
   }, [activeTab]);
 
   const handleTabChange = (tab: string | null) => {
     if (tab) {
-      setSearchParams({ tab }, { replace: true });
+      const nextSearchParams = new URLSearchParams(searchParams);
+      nextSearchParams.set('tab', tab);
+      setSearchParams(nextSearchParams, { replace: true });
     }
   };
 
