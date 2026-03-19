@@ -112,7 +112,7 @@ jobs:
             if [ "$count" -gt 0 ]; then
               # Build a raw GitHub URL for the PO file so GlossBoss can load it directly
               raw_url="https://raw.githubusercontent.com/${{ github.repository }}/main/${po}"
-              edit_url="https://glossboss.ink/?url=$(python3 -c "import urllib.parse; print(urllib.parse.quote('${raw_url}', safe=''))")"
+              edit_url="https://glossboss.ink/editor?url=$(python3 -c "import urllib.parse; print(urllib.parse.quote('${raw_url}', safe=''))")"
 
               body=$(cat <<EOF
           @coderabbitai ignore
