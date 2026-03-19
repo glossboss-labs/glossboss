@@ -25,6 +25,7 @@ import {
   UnstyledButton,
   Divider,
 } from '@mantine/core';
+import { useLocalStorage } from '@mantine/hooks';
 import {
   Check,
   AlertCircle,
@@ -63,6 +64,7 @@ import {
 import { LLM_PROVIDERS } from '@/lib/llm';
 import { useTranslation } from '@/lib/app-language';
 import { trackEvent } from '@/lib/analytics';
+import { TRANSLATE_ENABLED_KEY } from '@/lib/constants/storage-keys';
 import { LlmProviderCard } from './LlmProviderCard';
 import { CustomProviderCard } from './CustomProviderCard';
 
@@ -88,6 +90,15 @@ export function TranslationSection({
   onTranslateEnabledChange,
 }: TranslationSectionProps) {
   const { t } = useTranslation();
+  const [storedTranslateEnabled, setStoredTranslateEnabled] = useLocalStorage<boolean>({
+    key: TRANSLATE_ENABLED_KEY,
+    defaultValue: true,
+    getInitialValueInEffect: false,
+  });
+  const isTranslateControlled = typeof onTranslateEnabledChange === 'function';
+  const resolvedTranslateEnabled = isTranslateControlled
+    ? translateEnabled
+    : storedTranslateEnabled;
 
   // Global default provider
   const [defaultProvider, setDefaultProvider] = useState<TranslationProviderId>('deepl');
@@ -308,8 +319,12 @@ export function TranslationSection({
         description={t(
           'When disabled, all translate buttons and the bulk translation toolbar are hidden.',
         )}
-        checked={translateEnabled}
-        onChange={(e) => onTranslateEnabledChange?.(e.currentTarget.checked)}
+        checked={resolvedTranslateEnabled}
+        onChange={(e) => {
+          const enabled = e.currentTarget.checked;
+          setStoredTranslateEnabled(enabled);
+          onTranslateEnabledChange?.(enabled);
+        }}
       />
 
       <Alert color="gray" variant="light" icon={<Shield size={16} />}>

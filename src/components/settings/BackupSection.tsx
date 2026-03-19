@@ -16,6 +16,7 @@ import {
   Modal,
   FileButton,
 } from '@mantine/core';
+import { useLocalStorage } from '@mantine/hooks';
 import { Check, AlertCircle, Download, Upload } from 'lucide-react';
 import {
   applyAppSettingsFile,
@@ -40,11 +41,14 @@ import { getAzureSettings, isAzurePersistEnabled } from '@/lib/azure';
 import { getGeminiSettings, isGeminiPersistEnabled } from '@/lib/gemini';
 import { getTranslationProviderSettings, type TranslationProviderId } from '@/lib/translation';
 import { ExportSection } from '@/components/projects/ExportSection';
-import type { ContainerWidth } from '@/lib/container-width';
+import { CONTAINER_WIDTH_KEY, type ContainerWidth } from '@/lib/container-width';
 import {
+  DEV_BRANCH_CHIP_KEY,
   GLOSSARY_SELECTED_LOCALE_KEY,
   GLOSSARY_ENFORCEMENT_KEY,
   NAV_SKIP_TRANSLATED_KEY,
+  SPEECH_ENABLED_KEY,
+  TRANSLATE_ENABLED_KEY,
 } from '@/lib/constants/storage-keys';
 
 export interface BackupSectionProps {
@@ -63,10 +67,10 @@ export interface BackupSectionProps {
 
 export function BackupSection({
   projectId,
-  containerWidth = 'xl',
-  branchChipEnabled = true,
-  speechEnabled = true,
-  translateEnabled = true,
+  containerWidth,
+  branchChipEnabled,
+  speechEnabled,
+  translateEnabled,
   onContainerWidthChange,
   onBranchChipEnabledChange,
   onSpeechEnabledChange,
@@ -75,6 +79,31 @@ export function BackupSection({
 }: BackupSectionProps) {
   const { t } = useTranslation();
   const isDevelopment = import.meta.env.DEV;
+  const [storedContainerWidth, setStoredContainerWidth] = useLocalStorage<ContainerWidth>({
+    key: CONTAINER_WIDTH_KEY,
+    defaultValue: 'xl',
+    getInitialValueInEffect: false,
+  });
+  const [storedBranchChipEnabled, setStoredBranchChipEnabled] = useLocalStorage<boolean>({
+    key: DEV_BRANCH_CHIP_KEY,
+    defaultValue: true,
+    getInitialValueInEffect: false,
+  });
+  const [storedSpeechEnabled, setStoredSpeechEnabled] = useLocalStorage<boolean>({
+    key: SPEECH_ENABLED_KEY,
+    defaultValue: true,
+    getInitialValueInEffect: false,
+  });
+  const [storedTranslateEnabled, setStoredTranslateEnabled] = useLocalStorage<boolean>({
+    key: TRANSLATE_ENABLED_KEY,
+    defaultValue: true,
+    getInitialValueInEffect: false,
+  });
+
+  const resolvedContainerWidth = containerWidth ?? storedContainerWidth;
+  const resolvedBranchChipEnabled = branchChipEnabled ?? storedBranchChipEnabled;
+  const resolvedSpeechEnabled = speechEnabled ?? storedSpeechEnabled;
+  const resolvedTranslateEnabled = translateEnabled ?? storedTranslateEnabled;
 
   const projectName = useEditorStore((state) => state.projectName);
   const setProjectName = useEditorStore((state) => state.setProjectName);
@@ -102,6 +131,38 @@ export function BackupSection({
 
   const settingsImportResetRef = useRef<() => void>(null);
   const translationMemoryImportResetRef = useRef<(() => void) | null>(null);
+
+  const handleContainerWidthChange = useCallback(
+    (width: ContainerWidth) => {
+      setStoredContainerWidth(width);
+      onContainerWidthChange?.(width);
+    },
+    [onContainerWidthChange, setStoredContainerWidth],
+  );
+
+  const handleBranchChipEnabledChange = useCallback(
+    (enabled: boolean) => {
+      setStoredBranchChipEnabled(enabled);
+      onBranchChipEnabledChange?.(enabled);
+    },
+    [onBranchChipEnabledChange, setStoredBranchChipEnabled],
+  );
+
+  const handleSpeechEnabledChange = useCallback(
+    (enabled: boolean) => {
+      setStoredSpeechEnabled(enabled);
+      onSpeechEnabledChange?.(enabled);
+    },
+    [onSpeechEnabledChange, setStoredSpeechEnabled],
+  );
+
+  const handleTranslateEnabledChange = useCallback(
+    (enabled: boolean) => {
+      setStoredTranslateEnabled(enabled);
+      onTranslateEnabledChange?.(enabled);
+    },
+    [onTranslateEnabledChange, setStoredTranslateEnabled],
+  );
 
   // --- Settings file export/import ---
 
@@ -158,10 +219,10 @@ export function BackupSection({
             glossaryLocale,
             glossaryEnforcementEnabled,
             navSkipTranslated,
-            containerWidth,
-            branchChipEnabled: isDevelopment ? branchChipEnabled : undefined,
-            speechEnabled,
-            translateEnabled,
+            containerWidth: resolvedContainerWidth,
+            branchChipEnabled: isDevelopment ? resolvedBranchChipEnabled : undefined,
+            speechEnabled: resolvedSpeechEnabled,
+            translateEnabled: resolvedTranslateEnabled,
           },
         },
         { includeApiKey },
@@ -187,25 +248,32 @@ export function BackupSection({
           : t('Settings exported without your saved translation credentials.'),
       });
     },
-    [branchChipEnabled, containerWidth, isDevelopment, speechEnabled, translateEnabled, t],
+    [
+      isDevelopment,
+      resolvedBranchChipEnabled,
+      resolvedContainerWidth,
+      resolvedSpeechEnabled,
+      resolvedTranslateEnabled,
+      t,
+    ],
   );
 
   const applyImportedSettings = useCallback(
     (file: AppSettingsFile, includeApiKey: boolean) => {
       const applied = applyAppSettingsFile(file, { includeApiKey });
 
-      onContainerWidthChange?.(applied.preferences.containerWidth);
+      handleContainerWidthChange(applied.preferences.containerWidth);
 
       if (isDevelopment && typeof applied.preferences.branchChipEnabled === 'boolean') {
-        onBranchChipEnabledChange?.(applied.preferences.branchChipEnabled);
+        handleBranchChipEnabledChange(applied.preferences.branchChipEnabled);
       }
 
       if (typeof applied.preferences.speechEnabled === 'boolean') {
-        onSpeechEnabledChange?.(applied.preferences.speechEnabled);
+        handleSpeechEnabledChange(applied.preferences.speechEnabled);
       }
 
       if (typeof applied.preferences.translateEnabled === 'boolean') {
-        onTranslateEnabledChange?.(applied.preferences.translateEnabled);
+        handleTranslateEnabledChange(applied.preferences.translateEnabled);
       }
 
       // If glossary locale changed, clear existing glossary
@@ -228,12 +296,12 @@ export function BackupSection({
       });
     },
     [
+      handleBranchChipEnabledChange,
+      handleContainerWidthChange,
+      handleSpeechEnabledChange,
+      handleTranslateEnabledChange,
       isDevelopment,
-      onBranchChipEnabledChange,
-      onContainerWidthChange,
       onGlossaryCleared,
-      onSpeechEnabledChange,
-      onTranslateEnabledChange,
       t,
     ],
   );

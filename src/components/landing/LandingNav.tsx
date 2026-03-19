@@ -94,7 +94,8 @@ export function LandingNav({
 
         {/* Mobile menu button */}
         <button
-          className="flex items-center md:hidden"
+          type="button"
+          className="flex items-center justify-self-end md:hidden"
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label={t('Toggle menu')}
         >
@@ -133,10 +134,12 @@ export function LandingNav({
             )}
             <div className="flex flex-col gap-3 border-t border-border-subtle pt-4">
               <div className="flex items-center gap-3">
-                <LanguageSwitcher currentLang={currentLang} />
+                <LanguageSwitcher currentLang={currentLang} align="start" />
                 <button
+                  type="button"
                   onClick={toggleColorScheme}
                   className="flex h-8 w-8 items-center justify-center rounded-md text-text-secondary hover:bg-surface-2"
+                  aria-label={isDark ? t('Switch to light mode') : t('Switch to dark mode')}
                 >
                   {isDark ? <Sun size={16} /> : <Moon size={16} />}
                 </button>

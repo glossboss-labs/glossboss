@@ -11,9 +11,11 @@ function langHref(lang: string): string {
 export function LanguageSwitcher({
   currentLang,
   size = 'sm',
+  align = 'end',
 }: {
   currentLang: string;
   size?: 'sm' | 'base';
+  align?: 'start' | 'end';
 }) {
   const { setLanguage } = useTranslation();
   const [open, setOpen] = useState(false);
@@ -35,6 +37,7 @@ export function LanguageSwitcher({
   return (
     <div ref={ref} className="relative">
       <button
+        type="button"
         onClick={() => setOpen(!open)}
         className={cn(
           'flex items-center gap-1.5 text-text-secondary transition-colors hover:text-text-primary',
@@ -47,7 +50,12 @@ export function LanguageSwitcher({
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full z-50 mt-2 min-w-[140px] overflow-hidden rounded-lg border border-border-subtle bg-surface-0 py-1 shadow-lg">
+        <div
+          className={cn(
+            'absolute top-full z-50 mt-2 min-w-[140px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-lg border border-border-subtle bg-surface-0 py-1 shadow-lg',
+            align === 'start' ? 'left-0' : 'right-0',
+          )}
+        >
           {APP_LANGUAGE_OPTIONS.map((option) => (
             <Link
               key={option.value}

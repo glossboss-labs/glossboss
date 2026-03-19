@@ -3,9 +3,9 @@
  * Authenticated users see a "Dashboard" link instead of sign-in CTAs.
  *
  * Accepts an optional `lang` prop for language-specific routes (e.g. /nl).
- * When a language is specified, the landing page is wrapped in a scoped
- * TranslationProvider so all content renders in that language — making the
- * page crawlable by bots at its own URL.
+ * The landing page always renders inside a scoped TranslationProvider so the
+ * URL, not persisted app preferences, determines the visible landing language.
+ * This keeps / as English and preserves crawlable localized pages for bots.
  */
 
 import { Center, Loader } from '@mantine/core';
@@ -24,14 +24,11 @@ export default function LandingGuard({ lang }: { lang?: AppLanguage }) {
     );
   }
 
-  // If a specific language is requested, wrap in a scoped provider
-  if (lang) {
-    return (
-      <TranslationProvider initialLanguage={lang}>
-        <Landing lang={lang} isAuthenticated={isAuthenticated} />
-      </TranslationProvider>
-    );
-  }
+  const landingLanguage: AppLanguage = lang ?? 'en';
 
-  return <Landing isAuthenticated={isAuthenticated} />;
+  return (
+    <TranslationProvider initialLanguage={landingLanguage}>
+      <Landing lang={landingLanguage} isAuthenticated={isAuthenticated} />
+    </TranslationProvider>
+  );
 }

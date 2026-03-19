@@ -19,6 +19,7 @@ import {
   ActionIcon,
   Tooltip,
 } from '@mantine/core';
+import { useLocalStorage } from '@mantine/hooks';
 import { Check, AlertCircle, Play } from 'lucide-react';
 import {
   clearTtsSettings,
@@ -38,6 +39,7 @@ import {
   type TtsVoiceSummary,
 } from '@/lib/tts';
 import { useTranslation } from '@/lib/app-language';
+import { SPEECH_ENABLED_KEY } from '@/lib/constants/storage-keys';
 
 export interface SpeechSectionProps {
   speechEnabled?: boolean;
@@ -46,6 +48,13 @@ export interface SpeechSectionProps {
 
 export function SpeechSection({ speechEnabled = true, onSpeechEnabledChange }: SpeechSectionProps) {
   const { t } = useTranslation();
+  const [storedSpeechEnabled, setStoredSpeechEnabled] = useLocalStorage<boolean>({
+    key: SPEECH_ENABLED_KEY,
+    defaultValue: true,
+    getInitialValueInEffect: false,
+  });
+  const isSpeechControlled = typeof onSpeechEnabledChange === 'function';
+  const resolvedSpeechEnabled = isSpeechControlled ? speechEnabled : storedSpeechEnabled;
 
   const [ttsProvider, setTtsProvider] = useState<TtsProviderId>('browser');
   const [ttsApiKey, setTtsApiKey] = useState('');
@@ -275,8 +284,12 @@ export function SpeechSection({ speechEnabled = true, onSpeechEnabledChange }: S
       <Switch
         label={t('Enable speech playback')}
         description={t('When disabled, all speak buttons are hidden from the editor.')}
-        checked={speechEnabled}
-        onChange={(e) => onSpeechEnabledChange?.(e.currentTarget.checked)}
+        checked={resolvedSpeechEnabled}
+        onChange={(e) => {
+          const enabled = e.currentTarget.checked;
+          setStoredSpeechEnabled(enabled);
+          onSpeechEnabledChange?.(enabled);
+        }}
       />
 
       <Text size="sm" c="dimmed">
