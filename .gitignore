@@ -9,6 +9,7 @@ supabase/.temp/
 coverage/
 .wrangler/
 package-lock.json
+.plans/
 
 # Playwright
 /test-results/
