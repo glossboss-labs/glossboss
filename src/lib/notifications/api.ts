@@ -12,11 +12,12 @@ function supabase() {
 }
 
 const NOTIFICATIONS_LIMIT = 50;
+const NOTIFICATION_SELECT = 'id, recipient_id, type, data, read_at, created_at';
 
 export async function listNotifications(): Promise<NotificationRow[]> {
   const { data, error } = await supabase()
     .from('notifications')
-    .select('*')
+    .select(NOTIFICATION_SELECT)
     .order('created_at', { ascending: false })
     .limit(NOTIFICATIONS_LIMIT);
 

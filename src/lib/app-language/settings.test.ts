@@ -5,6 +5,7 @@ import {
   APP_LANGUAGE_OPTIONS,
   clearAppLanguage,
   detectPreferredAppLanguage,
+  ensureAppLanguageCatalog,
   getAppLanguage,
   normalizeAppLanguage,
   saveAppLanguage,
@@ -57,7 +58,9 @@ describe('app language settings', () => {
     expect(localStorage.getItem(APP_LANGUAGE_STORAGE_KEY)).toBeNull();
   });
 
-  it('reads Dutch translations from the PO catalog and interpolates values', () => {
+  it('reads Dutch translations from the PO catalog and interpolates values', async () => {
+    await ensureAppLanguageCatalog('nl');
+
     expect(translateAppMessage('nl', 'Settings')).toBe('Instellingen');
     expect(translateAppMessage('nl', 'Confirm')).toBe('Bevestigen');
     expect(translateAppMessage('nl', 'Failed to read the file.')).toBe(

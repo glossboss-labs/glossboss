@@ -8,21 +8,12 @@
  * This keeps / as English and preserves crawlable localized pages for bots.
  */
 
-import { Center, Loader } from '@mantine/core';
 import { useAuth } from '@/hooks/use-auth';
 import { TranslationProvider, type AppLanguage } from '@/lib/app-language';
 import Landing from './Landing';
 
 export default function LandingGuard({ lang }: { lang?: AppLanguage }) {
-  const { isAuthenticated, loading } = useAuth();
-
-  if (loading) {
-    return (
-      <Center h="100vh">
-        <Loader size="lg" />
-      </Center>
-    );
-  }
+  const { isAuthenticated } = useAuth();
 
   const landingLanguage: AppLanguage = lang ?? 'en';
 

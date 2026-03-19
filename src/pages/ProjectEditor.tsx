@@ -11,6 +11,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useParams, Link } from 'react-router';
 import { Box, Container, Stack, Group, Text, Button, Center, Loader, Alert } from '@mantine/core';
 import { ArrowLeft, AlertCircle } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 import { AnimatedStateSwitch } from '@/components/ui';
 import { useTranslation } from '@/lib/app-language';
 import { EditorHeader, EditorWorkspace, EmptyState, PresenceAvatars } from '@/components/editor';
@@ -21,7 +22,7 @@ import { IndexPageDialogs } from './index/IndexPageDialogs';
 import { IndexPageNotifications } from './index/IndexPageNotifications';
 import { useEditorStore } from '@/stores/editor-store';
 import type { MachineTranslationMeta } from '@/stores/editor-store';
-import { getProject, getProjectLanguage, getProjectEntries } from '@/lib/projects/api';
+import { useProjectEditorPage } from '@/lib/projects/queries';
 import {
   dbEntryToPOEntry,
   dbEntryToMTMeta,
@@ -47,129 +48,92 @@ export default function ProjectEditor() {
   const { id, languageId } = useParams<{ id: string; languageId: string }>();
   const { t } = useTranslation();
   const adapterRef = useRef<SupabaseStorageAdapter | null>(null);
-
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [project, setProject] = useState<ProjectRow | null>(null);
-  const [language, setLanguage] = useState<ProjectLanguageRow | null>(null);
+  const [hydratedKey, setHydratedKey] = useState<string | null>(null);
+  const queryKey = id && languageId ? `${id}:${languageId}` : null;
 
   const loadFile = useEditorStore((s) => s.loadFile);
   const setProjectName = useEditorStore((s) => s.setProjectName);
   const restoreReviewEntries = useEditorStore((s) => s.restoreReviewEntries);
+  const { data, isLoading, error: queryError } = useProjectEditorPage(id, languageId);
+  const project = data?.project ?? null;
+  const language = data?.language ?? null;
 
-  // Load project + language from Supabase into the editor store
   useEffect(() => {
-    if (!id || !languageId) return;
+    setHydratedKey(null);
+  }, [queryKey]);
+
+  // Load project + language from query cache into the editor store
+  useEffect(() => {
+    if (!id || !languageId || !project || !language) return;
 
     let cancelled = false;
 
-    async function load() {
-      try {
-        const [proj, lang, dbEntries] = await Promise.all([
-          getProject(id!),
-          getProjectLanguage(languageId!),
-          getProjectEntries(languageId!),
-        ]);
+    const dbEntries = data.entries;
+    recordRecentProject(project.id, project.name, `/projects/${id}/languages/${languageId}`);
 
-        if (cancelled) return;
+    const poEntries = dbEntries.map((row, i) => dbEntryToPOEntry(row, i));
+    const poHeader = dbLanguageToHeader(language);
+    const poFile: POFile = {
+      filename: language.source_filename ?? `${project.name}-${language.locale}.po`,
+      header: poHeader ?? {},
+      entries: poEntries,
+      charset: 'UTF-8',
+    };
 
-        if (!proj) {
-          setError(t('Project not found'));
-          setLoading(false);
-          return;
-        }
+    const adapter = new SupabaseStorageAdapter(id, languageId);
+    adapterRef.current = adapter;
+    setStorageAdapter(adapter);
 
-        if (!lang) {
-          setError(t('Language not found'));
-          setLoading(false);
-          return;
-        }
+    loadFile(poFile, project.source_format === 'i18next' ? 'i18next' : undefined);
+    setProjectName(project.name);
 
-        setProject(proj);
-        setLanguage(lang);
-        recordRecentProject(proj.id, proj.name, `/projects/${id}/languages/${languageId}`);
+    if (!poFile.header.language && language.locale) {
+      useEditorStore.setState((state) => ({
+        header: { ...state.header, language: language.locale },
+      }));
+    }
 
-        const poEntries = dbEntries.map((row, i) => dbEntryToPOEntry(row, i));
-        const poHeader = dbLanguageToHeader(lang);
-        const poFile: POFile = {
-          filename: lang.source_filename ?? `${proj.name}-${lang.locale}.po`,
-          header: poHeader ?? {},
-          entries: poEntries,
-          charset: 'UTF-8',
-        };
-
-        // Switch to cloud adapter
-        const adapter = new SupabaseStorageAdapter(id!, languageId!);
-        adapterRef.current = adapter;
-        setStorageAdapter(adapter);
-
-        // Load into editor store — same store the Index page uses
-        loadFile(poFile, proj.source_format === 'i18next' ? 'i18next' : undefined);
-
-        // Override project name with the actual cloud project name
-        setProjectName(proj.name);
-
-        // Ensure the header has a language field for TM scoping
-        if (!poFile.header.language && lang.locale) {
-          useEditorStore.setState((state) => ({
-            header: { ...state.header, language: lang.locale },
-          }));
-        }
-
-        // Restore MT metadata
-        const mtMeta = new Map<string, MachineTranslationMeta>();
-        const mtIds = new Set<string>();
-        for (let i = 0; i < dbEntries.length; i++) {
-          const meta = dbEntryToMTMeta(dbEntries[i]!);
-          if (meta) {
-            mtMeta.set(poEntries[i]!.id, meta);
-            mtIds.add(poEntries[i]!.id);
-          }
-        }
-        if (mtMeta.size > 0) {
-          useEditorStore.setState({
-            machineTranslationMeta: mtMeta,
-            machineTranslatedIds: mtIds,
-          });
-        }
-
-        // Restore review entries
-        const reviewMap = new Map<string, ReviewEntryState>();
-        for (let i = 0; i < dbEntries.length; i++) {
-          const review = dbEntryToReviewState(dbEntries[i]!);
-          if (review.status !== 'draft' || review.comments.length > 0) {
-            reviewMap.set(poEntries[i]!.id, review);
-          }
-        }
-        if (reviewMap.size > 0) {
-          restoreReviewEntries(reviewMap);
-        }
-
-        // Initialize repo sync store from DB language record
-        if (lang.repo_provider && lang.repo_owner && lang.repo_name) {
-          useRepoSyncStore.getState().setConnection({
-            provider: lang.repo_provider,
-            owner: lang.repo_owner,
-            repo: lang.repo_name,
-            branch: lang.repo_branch ?? lang.repo_default_branch ?? 'main',
-            filePath: lang.repo_file_path ?? '',
-            baseSha: '',
-            defaultBranch: lang.repo_default_branch ?? 'main',
-          });
-        } else {
-          useRepoSyncStore.getState().clearConnection();
-        }
-
-        setLoading(false);
-      } catch (err) {
-        if (!cancelled) {
-          setError(err instanceof Error ? err.message : t('Failed to load project'));
-          setLoading(false);
-        }
+    const mtMeta = new Map<string, MachineTranslationMeta>();
+    const mtIds = new Set<string>();
+    for (let i = 0; i < dbEntries.length; i++) {
+      const meta = dbEntryToMTMeta(dbEntries[i]!);
+      if (meta) {
+        mtMeta.set(poEntries[i]!.id, meta);
+        mtIds.add(poEntries[i]!.id);
       }
     }
 
-    void load();
+    const reviewMap = new Map<string, ReviewEntryState>();
+    for (let i = 0; i < dbEntries.length; i++) {
+      const review = dbEntryToReviewState(dbEntries[i]!);
+      if (review.status !== 'draft' || review.comments.length > 0) {
+        reviewMap.set(poEntries[i]!.id, review);
+      }
+    }
+
+    useEditorStore.setState({
+      machineTranslationMeta: mtMeta,
+      machineTranslatedIds: mtIds,
+    });
+    restoreReviewEntries(reviewMap);
+
+    if (language.repo_provider && language.repo_owner && language.repo_name) {
+      useRepoSyncStore.getState().setConnection({
+        provider: language.repo_provider,
+        owner: language.repo_owner,
+        repo: language.repo_name,
+        branch: language.repo_branch ?? language.repo_default_branch ?? 'main',
+        filePath: language.repo_file_path ?? '',
+        baseSha: '',
+        defaultBranch: language.repo_default_branch ?? 'main',
+      });
+    } else {
+      useRepoSyncStore.getState().clearConnection();
+    }
+
+    if (!cancelled) {
+      setHydratedKey(queryKey);
+    }
 
     return () => {
       cancelled = true;
@@ -180,9 +144,21 @@ export default function ProjectEditor() {
       setStorageAdapter(new LocalStorageAdapter());
       useRepoSyncStore.getState().clearConnection();
     };
-  }, [id, languageId, loadFile, setProjectName, restoreReviewEntries, t]);
+  }, [
+    data,
+    id,
+    language,
+    languageId,
+    loadFile,
+    project,
+    queryKey,
+    restoreReviewEntries,
+    setProjectName,
+  ]);
 
-  const stateKey = loading ? 'loading' : error || !project || !language ? 'error' : 'editor';
+  const error = queryError ? ((queryError as Error).message ?? t('Failed to load project')) : null;
+  const loading = isLoading || !project || !language || hydratedKey !== queryKey;
+  const stateKey = loading ? 'loading' : error ? 'error' : 'editor';
 
   return (
     <AnimatedStateSwitch stateKey={stateKey}>
@@ -229,17 +205,14 @@ function ProjectEditorLoaded({
   useRepoDbSync(language.id);
 
   // Load org settings for the cascade (org → project → user)
-  const [orgSettings, setOrgSettings] = useState<OrgSettingsRow | null>(null);
-  useEffect(() => {
-    if (!project.organization_id) return;
-    let cancelled = false;
-    getOrgSettings(project.organization_id).then((settings) => {
-      if (!cancelled) setOrgSettings(settings);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [project.organization_id]);
+  const { data: orgSettings = null } = useQuery<OrgSettingsRow | null>({
+    queryKey: project.organization_id
+      ? ['organizations', project.organization_id, 'settings']
+      : ['organizations', 'settings', 'none'],
+    queryFn: () => getOrgSettings(project.organization_id!),
+    enabled: Boolean(project.organization_id),
+    staleTime: 60_000,
+  });
 
   const {
     containerWidth,

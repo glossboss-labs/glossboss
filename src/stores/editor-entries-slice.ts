@@ -76,6 +76,24 @@ export interface MachineTranslationMeta {
 /** Supported file formats */
 export type FileFormat = 'po' | 'i18next';
 
+interface FilteredEntriesCache {
+  entries: POEntry[];
+  filterQuery: string;
+  activeFilters: Map<FilterType, FilterState>;
+  dirtyEntryIds: Set<string>;
+  glossaryAnalysis: Map<string, GlossaryAnalysisResult>;
+  qaReports: Map<string, QAEntryReport>;
+  upstreamDeltaEntryIds: Set<string>;
+  machineTranslatedIds: Set<string>;
+  manualEditIds: Set<string>;
+  reviewEntries: Map<string, ReviewEntryState>;
+  sortField: SortField;
+  sortDirection: SortDirection;
+  result: POEntry[];
+}
+
+let filteredEntriesCache: FilteredEntriesCache | null = null;
+
 // ---------------------------------------------------------------------------
 // State & Actions
 // ---------------------------------------------------------------------------
@@ -910,6 +928,24 @@ export const createEditorEntriesSlice: StateCreator<FullStore, [], [], EditorEnt
       sortDirection,
     } = get();
 
+    if (
+      filteredEntriesCache &&
+      filteredEntriesCache.entries === entries &&
+      filteredEntriesCache.filterQuery === filterQuery &&
+      filteredEntriesCache.activeFilters === activeFilters &&
+      filteredEntriesCache.dirtyEntryIds === dirtyEntryIds &&
+      filteredEntriesCache.glossaryAnalysis === glossaryAnalysis &&
+      filteredEntriesCache.qaReports === qaReports &&
+      filteredEntriesCache.upstreamDeltaEntryIds === upstreamDeltaEntryIds &&
+      filteredEntriesCache.machineTranslatedIds === machineTranslatedIds &&
+      filteredEntriesCache.manualEditIds === manualEditIds &&
+      filteredEntriesCache.reviewEntries === reviewEntries &&
+      filteredEntriesCache.sortField === sortField &&
+      filteredEntriesCache.sortDirection === sortDirection
+    ) {
+      return filteredEntriesCache.result;
+    }
+
     let filtered = entries;
 
     const includeFilters: FilterType[] = [];
@@ -983,6 +1019,22 @@ export const createEditorEntriesSlice: StateCreator<FullStore, [], [], EditorEnt
         })
         .map(({ entry }) => entry);
     }
+
+    filteredEntriesCache = {
+      entries,
+      filterQuery,
+      activeFilters,
+      dirtyEntryIds,
+      glossaryAnalysis,
+      qaReports,
+      upstreamDeltaEntryIds,
+      machineTranslatedIds,
+      manualEditIds,
+      reviewEntries,
+      sortField,
+      sortDirection,
+      result: filtered,
+    };
 
     return filtered;
   },

@@ -29,6 +29,7 @@ import {
   useMantineTheme,
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'motion/react';
 import {
   ArrowLeft,
@@ -49,10 +50,6 @@ import {
 import { staggerPageVariants, fadeVariants, buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
 import {
-  getProject,
-  getProjectLanguages,
-  listProjectMembers,
-  listProjectInvites,
   updateProject,
   deleteProject,
   removeProjectMember,
@@ -75,7 +72,13 @@ import { ProjectTranslationTab } from '@/components/projects/ProjectTranslationT
 import { ConfirmModal, AnimatedStateSwitch, AnimatedTabPanel } from '@/components/ui';
 import { getOrgSettings } from '@/lib/organizations/api';
 import type { OrgSettingsRow } from '@/lib/organizations/types';
-import { useDeleteLanguage } from '@/lib/projects/queries';
+import {
+  projectKeys,
+  useDeleteLanguage,
+  useProject,
+  useProjectLanguages,
+  useProjectSettingsPage,
+} from '@/lib/projects/queries';
 
 const MotionDiv = motion.div;
 
@@ -90,14 +93,24 @@ export default function ProjectSettings() {
   const activeTab = searchParams.get('tab') || 'general';
   const { isAdmin, isManager } = useProjectRole(id);
   const deleteLanguageMutation = useDeleteLanguage();
+  const queryClient = useQueryClient();
+  const {
+    data: baseProject = null,
+    isLoading: projectLoading,
+    error: projectError,
+  } = useProject(id);
+  const { data: baseLanguages = [], isLoading: languagesLoading } = useProjectLanguages(id);
+  const {
+    data: settingsData,
+    isLoading: pageLoading,
+    error: pageError,
+  } = useProjectSettingsPage(id);
 
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [project, setProject] = useState<ProjectRow | null>(null);
   const [languages, setLanguages] = useState<ProjectLanguageRow[]>([]);
   const [members, setMembers] = useState<ProjectMemberWithProfile[]>([]);
   const [invites, setInvites] = useState<ProjectInviteRow[]>([]);
-  const [orgSettings, setOrgSettings] = useState<OrgSettingsRow | null>(null);
 
   // Edit state
   const [editName, setEditName] = useState('');
@@ -111,7 +124,6 @@ export default function ProjectSettings() {
   const [deleting, setDeleting] = useState(false);
   const [leaveLoading, setLeaveLoading] = useState(false);
   const [addLanguageOpen, setAddLanguageOpen] = useState(false);
-  const [refreshKey, setRefreshKey] = useState(0);
 
   const myMembership = useMemo(
     () => (user ? members.find((m) => m.user_id === user.id) : undefined),
@@ -119,53 +131,47 @@ export default function ProjectSettings() {
   );
 
   useEffect(() => {
-    if (!id) return;
-    let cancelled = false;
+    if (!baseProject) return;
 
-    async function load() {
-      try {
-        const [proj, langs, mems, invs] = await Promise.all([
-          getProject(id!),
-          getProjectLanguages(id!),
-          listProjectMembers(id!),
-          listProjectInvites(id!).catch(() => [] as ProjectInviteRow[]),
-        ]);
-        if (cancelled) return;
-        if (!proj) {
-          setError(t('Project not found'));
-          setLoading(false);
-          return;
-        }
-        setProject(proj);
-        setLanguages(langs);
-        setMembers(mems);
-        setInvites(invs);
-        setEditName(proj.name);
-        setEditDescription(proj.description);
-        setEditWebsite(proj.website ?? '');
-        setEditVisibility(proj.visibility);
-        setEditPublicRole(proj.public_role);
-        // Load org settings if project belongs to an org
-        if (proj.organization_id) {
-          getOrgSettings(proj.organization_id)
-            .then((s) => {
-              if (!cancelled) setOrgSettings(s);
-            })
-            .catch(() => {});
-        }
-        setLoading(false);
-      } catch (err) {
-        if (cancelled) return;
-        setError(err instanceof Error ? err.message : t('Failed to load project'));
-        setLoading(false);
-      }
+    setProject(baseProject);
+    setEditName(baseProject.name);
+    setEditDescription(baseProject.description);
+    setEditWebsite(baseProject.website ?? '');
+    setEditVisibility(baseProject.visibility);
+    setEditPublicRole(baseProject.public_role);
+  }, [baseProject]);
+
+  useEffect(() => {
+    setLanguages(baseLanguages);
+  }, [baseLanguages]);
+
+  useEffect(() => {
+    if (!settingsData) return;
+
+    setMembers(settingsData.members);
+    setInvites(settingsData.invites);
+
+    if (settingsData.project) {
+      setProject(settingsData.project);
+      setEditName(settingsData.project.name);
+      setEditDescription(settingsData.project.description);
+      setEditWebsite(settingsData.project.website ?? '');
+      setEditVisibility(settingsData.project.visibility);
+      setEditPublicRole(settingsData.project.public_role);
     }
+    if (settingsData.languages.length > 0) {
+      setLanguages(settingsData.languages);
+    }
+  }, [settingsData]);
 
-    void load();
-    return () => {
-      cancelled = true;
-    };
-  }, [id, t, refreshKey]);
+  const { data: orgSettings = null } = useQuery<OrgSettingsRow | null>({
+    queryKey: project?.organization_id
+      ? ['organizations', project.organization_id, 'settings']
+      : ['organizations', 'settings', 'none'],
+    queryFn: () => getOrgSettings(project!.organization_id!),
+    enabled: Boolean(project?.organization_id),
+    staleTime: 60_000,
+  });
 
   const handleTabChange = (tab: string | null) => {
     if (tab) setSearchParams({ tab }, { replace: true });
@@ -229,6 +235,12 @@ export default function ProjectSettings() {
     [deleteLanguageMutation, id, t],
   );
 
+  const queryErrorMessage =
+    projectError || pageError
+      ? (((projectError ?? pageError) as Error).message ?? t('Failed to load project'))
+      : null;
+  const loading = (projectLoading || languagesLoading || pageLoading) && !project;
+
   const handleUnlinkRepo = useCallback(
     async (languageId: string) => {
       try {
@@ -266,7 +278,13 @@ export default function ProjectSettings() {
     setLanguages((prev) => prev.map((l) => (l.id === updated.id ? updated : l)));
   }, []);
 
-  const stateKey = loading ? 'loading' : error && !project ? 'error' : project ? 'data' : 'empty';
+  const stateKey = loading
+    ? 'loading'
+    : (error ?? queryErrorMessage) && !project
+      ? 'error'
+      : project
+        ? 'data'
+        : 'empty';
 
   return (
     <Box maw={960}>
@@ -275,10 +293,10 @@ export default function ProjectSettings() {
           <Center py={80}>
             <Loader size="lg" />
           </Center>
-        ) : error && !project ? (
+        ) : (error ?? queryErrorMessage) && !project ? (
           <>
             <Alert icon={<AlertCircle size={16} />} color="red" variant="light">
-              {error}
+              {error ?? queryErrorMessage}
             </Alert>
             <Button component={Link} to="/dashboard" variant="light" mt="md">
               {t('Back to dashboard')}
@@ -885,7 +903,9 @@ export default function ProjectSettings() {
             wpSlug={project.wp_slug}
             onLanguageAdded={() => {
               setAddLanguageOpen(false);
-              setRefreshKey((k) => k + 1);
+              void queryClient.invalidateQueries({
+                queryKey: projectKeys.settingsPage(project.id),
+              });
             }}
           />
 
