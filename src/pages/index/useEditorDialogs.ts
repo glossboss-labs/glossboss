@@ -69,7 +69,7 @@ export function useEditorDialogs() {
   }, []);
 
   const handleFeedbackSubmitted = useCallback((result: FeedbackIssueSuccess) => {
-    setFeedbackSuccess({ issueNumber: result.issueNumber, issueUrl: result.issueUrl });
+    setFeedbackSuccess({ referenceId: result.referenceId });
     setFeedbackError(null);
     window.setTimeout(() => setFeedbackSuccess(null), 5000);
   }, []);

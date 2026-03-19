@@ -27,15 +27,15 @@ msgstr ""
 msgid "+{{count}} more"
 msgstr ""
 
-#: src/pages/PrivacyPage.tsx:354
+#: src/pages/PrivacyPage.tsx:356
 msgid "- Database, authentication, edge functions (US)"
 msgstr ""
 
-#: src/pages/PrivacyPage.tsx:358
+#: src/pages/PrivacyPage.tsx:360
 msgid "- Hosting, CDN, DNS, bot protection, analytics proxy (Global)"
 msgstr ""
 
-#: src/pages/PrivacyPage.tsx:370
+#: src/pages/PrivacyPage.tsx:372
 msgid "- OAuth provider, feedback storage (US)"
 msgstr ""
 
@@ -46,11 +46,11 @@ msgid ""
 " text content are captured."
 msgstr ""
 
-#: src/pages/PrivacyPage.tsx:366
+#: src/pages/PrivacyPage.tsx:368
 msgid "- Product analytics (EU - Frankfurt)"
 msgstr ""
 
-#: src/pages/PrivacyPage.tsx:362
+#: src/pages/PrivacyPage.tsx:364
 msgid "- Subscription billing (EU)"
 msgstr ""
 
@@ -62,27 +62,27 @@ msgid ""
 "of your translations or any personal data."
 msgstr ""
 
-#: src/pages/PrivacyPage.tsx:309
+#: src/pages/PrivacyPage.tsx:311
 msgid "- disable analytics by enabling Do Not Track in your browser."
 msgstr ""
 
-#: src/pages/PrivacyPage.tsx:313
+#: src/pages/PrivacyPage.tsx:315
 msgid "- disable optional features (cloud sync, translation providers) at any time."
 msgstr ""
 
-#: src/pages/PrivacyPage.tsx:305
+#: src/pages/PrivacyPage.tsx:307
 msgid "- download a machine-readable export of your data."
 msgstr ""
 
-#: src/pages/PrivacyPage.tsx:293
+#: src/pages/PrivacyPage.tsx:295
 msgid "- export all your data as JSON from Settings."
 msgstr ""
 
-#: src/pages/PrivacyPage.tsx:301
+#: src/pages/PrivacyPage.tsx:303
 msgid "- permanently delete your account and all associated data from Settings."
 msgstr ""
 
-#: src/pages/PrivacyPage.tsx:297
+#: src/pages/PrivacyPage.tsx:299
 msgid "- update your profile information in Settings."
 msgstr ""
 
@@ -123,7 +123,7 @@ msgstr ""
 msgid "1. The Service"
 msgstr ""
 
-#: src/pages/PrivacyPage.tsx:348
+#: src/pages/PrivacyPage.tsx:350
 msgid "10. Sub-processors"
 msgstr ""
 
@@ -135,7 +135,7 @@ msgstr ""
 msgid "100 rows"
 msgstr ""
 
-#: src/pages/PrivacyPage.tsx:375
+#: src/pages/PrivacyPage.tsx:377
 msgid "11. Changes to this policy"
 msgstr ""
 
@@ -211,7 +211,7 @@ msgstr ""
 msgid "6. Refunds"
 msgstr ""
 
-#: src/pages/PrivacyPage.tsx:287
+#: src/pages/PrivacyPage.tsx:289
 msgid "6. Your rights"
 msgstr ""
 
@@ -223,11 +223,11 @@ msgstr ""
 msgid "7. Data handling"
 msgstr ""
 
-#: src/pages/PrivacyPage.tsx:318
+#: src/pages/PrivacyPage.tsx:320
 msgid "7. Your controls"
 msgstr ""
 
-#: src/pages/PrivacyPage.tsx:330
+#: src/pages/PrivacyPage.tsx:332
 msgid "8. Cookies"
 msgstr ""
 
@@ -235,7 +235,7 @@ msgstr ""
 msgid "8. Service availability"
 msgstr ""
 
-#: src/pages/PrivacyPage.tsx:339
+#: src/pages/PrivacyPage.tsx:341
 msgid "9. Children"
 msgstr ""
 
@@ -311,7 +311,7 @@ msgstr ""
 msgid "Accept invite"
 msgstr ""
 
-#: src/pages/PrivacyPage.tsx:292
+#: src/pages/PrivacyPage.tsx:294
 msgid "Access"
 msgstr ""
 
@@ -650,7 +650,7 @@ msgstr ""
 msgid "Automatically open a PR after committing"
 msgstr ""
 
-#: src/pages/PrivacyPage.tsx:326
+#: src/pages/PrivacyPage.tsx:328
 msgid "Avoid entering an email address when sending feedback."
 msgstr ""
 
@@ -1080,7 +1080,7 @@ msgstr ""
 msgid "Clear fuzzy selected"
 msgstr ""
 
-#: src/pages/PrivacyPage.tsx:325
+#: src/pages/PrivacyPage.tsx:327
 msgid "Clear local drafts and caches by removing browser storage for this site."
 msgstr ""
 
@@ -1088,7 +1088,7 @@ msgstr ""
 msgid "Clear memory"
 msgstr ""
 
-#: src/pages/PrivacyPage.tsx:323
+#: src/pages/PrivacyPage.tsx:325
 msgid "Clear saved API credentials from Settings."
 msgstr ""
 
@@ -1164,7 +1164,7 @@ msgstr ""
 msgid "Cloud sync"
 msgstr ""
 
-#: src/pages/PrivacyPage.tsx:357
+#: src/pages/PrivacyPage.tsx:359
 msgid "Cloudflare Inc."
 msgstr ""
 
@@ -1329,7 +1329,7 @@ msgstr ""
 msgid "Consider downloading a backup first."
 msgstr ""
 
-#: src/pages/PrivacyPage.tsx:384
+#: src/pages/PrivacyPage.tsx:386
 #: src/pages/TermsPage.tsx:260
 msgid "Contact"
 msgstr ""
@@ -1602,7 +1602,7 @@ msgstr ""
 msgid "Data exported successfully."
 msgstr ""
 
-#: src/pages/PrivacyPage.tsx:304
+#: src/pages/PrivacyPage.tsx:306
 msgid "Data portability"
 msgstr ""
 
@@ -1690,7 +1690,7 @@ msgstr ""
 msgid "Delete your account"
 msgstr ""
 
-#: src/pages/PrivacyPage.tsx:321
+#: src/pages/PrivacyPage.tsx:323
 msgid "Delete your account and all data permanently from Settings."
 msgstr ""
 
@@ -1745,7 +1745,7 @@ msgstr ""
 msgid "Directory listing is unavailable."
 msgstr ""
 
-#: src/pages/PrivacyPage.tsx:324
+#: src/pages/PrivacyPage.tsx:326
 msgid "Disable cloud sync to keep all settings local to your browser."
 msgstr ""
 
@@ -2094,7 +2094,7 @@ msgstr ""
 msgid "Enter {{field}}..."
 msgstr ""
 
-#: src/pages/PrivacyPage.tsx:300
+#: src/pages/PrivacyPage.tsx:302
 msgid "Erasure"
 msgstr ""
 
@@ -2185,7 +2185,7 @@ msgstr ""
 msgid "Export TMX"
 msgstr ""
 
-#: src/pages/PrivacyPage.tsx:322
+#: src/pages/PrivacyPage.tsx:324
 msgid "Export all your data as JSON from Settings."
 msgstr ""
 
@@ -2534,7 +2534,7 @@ msgstr ""
 msgid "Feedback could not be submitted at this time."
 msgstr ""
 
-#: src/pages/index/IndexPageNotifications.tsx:195
+#: src/pages/index/IndexPageNotifications.tsx:188
 msgid "Feedback failed"
 msgstr ""
 
@@ -2624,7 +2624,7 @@ msgstr ""
 msgid "For individuals"
 msgstr ""
 
-#: src/pages/PrivacyPage.tsx:387
+#: src/pages/PrivacyPage.tsx:389
 msgid "For privacy inquiries, data requests, or concerns:"
 msgstr ""
 
@@ -2833,7 +2833,7 @@ msgstr ""
 msgid "GitHub"
 msgstr ""
 
-#: src/pages/PrivacyPage.tsx:369
+#: src/pages/PrivacyPage.tsx:371
 msgid "GitHub Inc."
 msgstr ""
 
@@ -2884,7 +2884,7 @@ msgid ""
 "en source."
 msgstr ""
 
-#: src/pages/PrivacyPage.tsx:333
+#: src/pages/PrivacyPage.tsx:335
 msgid ""
 "GlossBoss does not use tracking cookies. Authentication state is managed via"
 " Supabase's session tokens stored in local storage. Analytics (PostHog) runs"
@@ -3469,7 +3469,7 @@ msgstr ""
 msgid "Last updated"
 msgstr ""
 
-#: src/pages/PrivacyPage.tsx:396
+#: src/pages/PrivacyPage.tsx:398
 #: src/pages/TermsPage.tsx:273
 msgid "Last updated: March 2026"
 msgstr ""
@@ -4259,7 +4259,7 @@ msgstr ""
 msgid "OK:"
 msgstr ""
 
-#: src/pages/PrivacyPage.tsx:308
+#: src/pages/PrivacyPage.tsx:310
 msgid "Object"
 msgstr ""
 
@@ -4325,10 +4325,6 @@ msgstr ""
 #: src/components/editor/SourceCodeViewer.tsx:179
 #: src/components/editor/SourceCodeViewer.tsx:187
 msgid "Open in Trac"
-msgstr ""
-
-#: src/pages/index/IndexPageNotifications.tsx:178
-msgid "Open issue"
 msgstr ""
 
 #: src/pages/Dashboard.tsx:345
@@ -4736,7 +4732,7 @@ msgstr ""
 
 #: src/pages/PrivacyPage.tsx:147
 #: src/pages/PrivacyPage.tsx:248
-#: src/pages/PrivacyPage.tsx:361
+#: src/pages/PrivacyPage.tsx:363
 #: src/pages/TermsPage.tsx:116
 msgid "Polar.sh"
 msgstr ""
@@ -4773,7 +4769,7 @@ msgstr ""
 msgid "PostHog"
 msgstr ""
 
-#: src/pages/PrivacyPage.tsx:365
+#: src/pages/PrivacyPage.tsx:367
 msgid "PostHog Inc."
 msgstr ""
 
@@ -5142,13 +5138,17 @@ msgstr ""
 msgid "Reconnect"
 msgstr ""
 
-#: src/pages/PrivacyPage.tsx:296
+#: src/pages/PrivacyPage.tsx:298
 msgid "Rectification"
 msgstr ""
 
 #: src/components/onboarding/PlanStep.tsx:295
 #: src/components/onboarding/PlanStep.tsx:348
 msgid "Redirecting..."
+msgstr ""
+
+#: src/pages/index/IndexPageNotifications.tsx:169
+msgid "Reference: {{referenceId}}"
 msgstr ""
 
 #: src/components/editor/EditorInspector.tsx:710
@@ -5359,7 +5359,7 @@ msgstr ""
 msgid "Restore draft"
 msgstr ""
 
-#: src/pages/PrivacyPage.tsx:312
+#: src/pages/PrivacyPage.tsx:314
 msgid "Restrict processing"
 msgstr ""
 
@@ -6229,8 +6229,8 @@ msgstr ""
 
 #: src/components/feedback/FeedbackModal.tsx:414
 msgid ""
-"Submissions may create a GitHub issue and can include your optional contact "
-"email for follow-up. See"
+"Submissions are stored in our internal product systems and can include your "
+"optional contact email for follow-up. See"
 msgstr ""
 
 #: src/pages/PrivacyPage.tsx:149
@@ -6251,7 +6251,7 @@ msgstr ""
 msgid "Supabase"
 msgstr ""
 
-#: src/pages/PrivacyPage.tsx:353
+#: src/pages/PrivacyPage.tsx:355
 msgid "Supabase Inc."
 msgstr ""
 
@@ -6418,7 +6418,7 @@ msgid "Thai"
 msgstr ""
 
 #: src/pages/index/IndexPageNotifications.tsx:165
-msgid "Thanks. Issue #{issueNumber} was created."
+msgid "Thanks. Your feedback was submitted."
 msgstr ""
 
 #: src/pages/TermsPage.tsx:234
@@ -6442,7 +6442,7 @@ msgid ""
 "eded to deliver the functionality you use."
 msgstr ""
 
-#: src/pages/PrivacyPage.tsx:342
+#: src/pages/PrivacyPage.tsx:344
 msgid ""
 "The Service is not directed at children under 16. We do not knowingly collec"
 "t personal information from children. If you believe a child has provided us"
@@ -7011,7 +7011,7 @@ msgstr ""
 msgid "Under 5,000"
 msgstr ""
 
-#: src/pages/PrivacyPage.tsx:289
+#: src/pages/PrivacyPage.tsx:291
 msgid "Under GDPR and similar privacy laws, you have the right to:"
 msgstr ""
 
@@ -7394,7 +7394,7 @@ msgid ""
 "titutes acceptance of the updated terms."
 msgstr ""
 
-#: src/pages/PrivacyPage.tsx:378
+#: src/pages/PrivacyPage.tsx:380
 msgid ""
 "We may update this policy from time to time. Material changes will be commun"
 "icated via email or in-app notice at least 14 days before they take effect. "
@@ -7417,7 +7417,7 @@ msgstr ""
 msgid "We use"
 msgstr ""
 
-#: src/pages/PrivacyPage.tsx:350
+#: src/pages/PrivacyPage.tsx:352
 msgid "We use the following sub-processors to provide the Service:"
 msgstr ""
 
@@ -7806,8 +7806,8 @@ msgstr ""
 
 #: src/pages/PrivacyPage.tsx:282
 msgid ""
-"are stored as GitHub issues and retained indefinitely for product improvemen"
-"t."
+"are stored in our internal product systems and retained indefinitely for pro"
+"duct improvement."
 msgstr ""
 
 #: src/components/settings/BillingSection.tsx:647
