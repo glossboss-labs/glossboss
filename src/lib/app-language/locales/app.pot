@@ -286,9 +286,9 @@ msgstr ""
 #: src/components/organizations/SharedCredentialsTab.tsx:310
 #: src/components/settings/CustomProviderCard.tsx:219
 #: src/components/settings/LlmProviderCard.tsx:266
-#: src/components/settings/SpeechSection.tsx:417
-#: src/components/settings/TranslationSection.tsx:428
-#: src/components/settings/TranslationSection.tsx:580
+#: src/components/settings/SpeechSection.tsx:430
+#: src/components/settings/TranslationSection.tsx:443
+#: src/components/settings/TranslationSection.tsx:595
 msgid "API key"
 msgstr ""
 
@@ -298,9 +298,9 @@ msgstr ""
 
 #: src/components/settings/CustomProviderCard.tsx:90
 #: src/components/settings/LlmProviderCard.tsx:134
-#: src/components/settings/SpeechSection.tsx:162
-#: src/components/settings/TranslationSection.tsx:160
-#: src/components/settings/TranslationSection.tsx:206
+#: src/components/settings/SpeechSection.tsx:171
+#: src/components/settings/TranslationSection.tsx:171
+#: src/components/settings/TranslationSection.tsx:217
 msgid "API key is valid!"
 msgstr ""
 
@@ -434,7 +434,7 @@ msgstr ""
 msgid "Afrikaans"
 msgstr ""
 
-#: src/components/settings/TranslationSection.tsx:376
+#: src/components/settings/TranslationSection.tsx:391
 msgid "After you get a key, expand the provider card below and paste it in."
 msgstr ""
 
@@ -652,12 +652,12 @@ msgstr ""
 msgid "Azerbaijani"
 msgstr ""
 
-#: src/components/settings/TranslationSection.tsx:538
+#: src/components/settings/TranslationSection.tsx:553
 #: src/pages/PrivacyPage.tsx:163
 msgid "Azure Translator"
 msgstr ""
 
-#: src/components/settings/TranslationSection.tsx:557
+#: src/components/settings/TranslationSection.tsx:572
 msgid "Azure Translator offers 2 million characters/month free."
 msgstr ""
 
@@ -802,7 +802,7 @@ msgstr ""
 msgid "Browse files manually"
 msgstr ""
 
-#: src/components/settings/SpeechSection.tsx:302
+#: src/components/settings/SpeechSection.tsx:315
 msgid "Browser"
 msgstr ""
 
@@ -849,7 +849,7 @@ msgstr ""
 #: src/components/projects/AddLanguageModal.tsx:445
 #: src/components/projects/SaveToCloudModal.tsx:158
 #: src/components/settings/AccountSection.tsx:286
-#: src/components/settings/BackupSection.tsx:581
+#: src/components/settings/BackupSection.tsx:649
 #: src/components/settings/DeleteAccountSection.tsx:140
 #: src/components/ui/ConfirmModal.tsx:39
 #: src/components/ui/PromptModal.tsx:35
@@ -985,13 +985,13 @@ msgstr ""
 msgid "Choose visible columns"
 msgstr ""
 
-#: src/components/settings/BackupSection.tsx:570
+#: src/components/settings/BackupSection.tsx:638
 msgid ""
 "Choose whether to export saved translation credentials or keep the settings "
 "file free of credentials."
 msgstr ""
 
-#: src/components/settings/BackupSection.tsx:567
+#: src/components/settings/BackupSection.tsx:635
 msgid ""
 "Choose whether to import the saved translation credentials or keep the curre"
 "nt credentials saved in this browser."
@@ -1056,7 +1056,7 @@ msgstr ""
 msgid "Clear local drafts and caches by removing browser storage for this site."
 msgstr ""
 
-#: src/components/settings/BackupSection.tsx:490
+#: src/components/settings/BackupSection.tsx:558
 msgid "Clear memory"
 msgstr ""
 
@@ -1072,7 +1072,7 @@ msgstr ""
 msgid "Cleared fuzzy on {{count}} row(s)."
 msgstr ""
 
-#: src/components/settings/BackupSection.tsx:400
+#: src/components/settings/BackupSection.tsx:468
 msgid "Cleared translation memory for this project."
 msgstr ""
 
@@ -1102,7 +1102,7 @@ msgstr ""
 msgid "Close QA summary"
 msgstr ""
 
-#: src/components/settings/BackupSection.tsx:552
+#: src/components/settings/BackupSection.tsx:620
 msgid "Close credential prompt"
 msgstr ""
 
@@ -1209,7 +1209,7 @@ msgstr ""
 
 #: src/components/settings/CustomProviderCard.tsx:152
 #: src/components/settings/LlmProviderCard.tsx:222
-#: src/components/settings/TranslationSection.tsx:280
+#: src/components/settings/TranslationSection.tsx:291
 msgid "Configured"
 msgstr ""
 
@@ -1431,7 +1431,7 @@ msgstr ""
 msgid "Create pull request"
 msgstr ""
 
-#: src/components/settings/TranslationSection.tsx:563
+#: src/components/settings/TranslationSection.tsx:578
 msgid "Create resource"
 msgstr ""
 
@@ -1543,7 +1543,7 @@ msgstr ""
 #: src/components/AppSidebar.tsx:432
 #: src/components/editor/EmptyState.tsx:221
 #: src/components/landing/LandingNav.tsx:75
-#: src/components/landing/LandingNav.tsx:149
+#: src/components/landing/LandingNav.tsx:152
 #: src/pages/OrgSettings.tsx:278
 msgid "Dashboard"
 msgstr ""
@@ -1570,12 +1570,12 @@ msgstr ""
 msgid "Decline"
 msgstr ""
 
-#: src/components/settings/TranslationSection.tsx:386
+#: src/components/settings/TranslationSection.tsx:401
 #: src/pages/PrivacyPage.tsx:157
 msgid "DeepL"
 msgstr ""
 
-#: src/components/settings/TranslationSection.tsx:342
+#: src/components/settings/TranslationSection.tsx:357
 msgid "DeepL Free"
 msgstr ""
 
@@ -1591,7 +1591,7 @@ msgstr ""
 #: src/components/organizations/OrgTranslationTab.tsx:236
 #: src/components/settings/CustomProviderCard.tsx:131
 #: src/components/settings/LlmProviderCard.tsx:202
-#: src/components/settings/TranslationSection.tsx:260
+#: src/components/settings/TranslationSection.tsx:271
 msgid "Default provider"
 msgstr ""
 
@@ -1902,7 +1902,7 @@ msgstr ""
 msgid "ElevenLabs quota reached."
 msgstr ""
 
-#: src/components/settings/SpeechSection.tsx:485
+#: src/components/settings/SpeechSection.tsx:498
 msgid ""
 "ElevenLabs quota reached. Switch back to Browser playback or wait for the ne"
 "xt provider reset."
@@ -1950,11 +1950,11 @@ msgstr ""
 msgid "Empty project"
 msgstr ""
 
-#: src/components/settings/TranslationSection.tsx:307
+#: src/components/settings/TranslationSection.tsx:318
 msgid "Enable machine translation"
 msgstr ""
 
-#: src/components/settings/SpeechSection.tsx:276
+#: src/components/settings/SpeechSection.tsx:285
 msgid "Enable speech playback"
 msgstr ""
 
@@ -1966,7 +1966,7 @@ msgstr ""
 msgid "Encoding"
 msgstr ""
 
-#: src/components/settings/TranslationSection.tsx:609
+#: src/components/settings/TranslationSection.tsx:624
 msgid "Endpoint"
 msgstr ""
 
@@ -2025,19 +2025,19 @@ msgstr ""
 msgid "Enter your API key"
 msgstr ""
 
-#: src/components/settings/TranslationSection.tsx:581
+#: src/components/settings/TranslationSection.tsx:596
 msgid "Enter your Azure Translator API key"
 msgstr ""
 
-#: src/components/settings/TranslationSection.tsx:429
+#: src/components/settings/TranslationSection.tsx:444
 msgid "Enter your DeepL API key"
 msgstr ""
 
-#: src/components/settings/TranslationSection.tsx:409
+#: src/components/settings/TranslationSection.tsx:424
 msgid "Enter your DeepL API key to enable machine translation. Get a free key at"
 msgstr ""
 
-#: src/components/settings/SpeechSection.tsx:418
+#: src/components/settings/SpeechSection.tsx:431
 msgid "Enter your ElevenLabs API key"
 msgstr ""
 
@@ -2128,11 +2128,11 @@ msgstr ""
 msgid "Explore"
 msgstr ""
 
-#: src/components/settings/BackupSection.tsx:458
+#: src/components/settings/BackupSection.tsx:526
 msgid "Export JSON"
 msgstr ""
 
-#: src/components/settings/BackupSection.tsx:466
+#: src/components/settings/BackupSection.tsx:534
 msgid "Export TMX"
 msgstr ""
 
@@ -2152,7 +2152,7 @@ msgstr ""
 msgid "Export project"
 msgstr ""
 
-#: src/components/settings/BackupSection.tsx:511
+#: src/components/settings/BackupSection.tsx:579
 msgid "Export settings"
 msgstr ""
 
@@ -2170,7 +2170,7 @@ msgstr ""
 msgid "Export the entire cloud project as a ZIP archive. Choose what to include:"
 msgstr ""
 
-#: src/components/settings/BackupSection.tsx:599
+#: src/components/settings/BackupSection.tsx:667
 msgid "Export without credentials"
 msgstr ""
 
@@ -2184,7 +2184,7 @@ msgid ""
 "a PR. Done."
 msgstr ""
 
-#: src/components/settings/BackupSection.tsx:408
+#: src/components/settings/BackupSection.tsx:476
 msgid ""
 "Export your saved preferences to a JSON backup file, or restore them into th"
 "is browser. Translation memory is managed separately below."
@@ -2196,7 +2196,7 @@ msgid ""
 "ion memory here."
 msgstr ""
 
-#: src/components/settings/BackupSection.tsx:503
+#: src/components/settings/BackupSection.tsx:571
 msgid ""
 "Exports translation provider preferences, provider-specific settings, glossa"
 "ry options, navigation behavior, display width, and development-only toggles"
@@ -2239,9 +2239,9 @@ msgstr ""
 
 #: src/components/settings/CustomProviderCard.tsx:95
 #: src/components/settings/LlmProviderCard.tsx:147
-#: src/components/settings/SpeechSection.tsx:174
-#: src/components/settings/TranslationSection.tsx:167
-#: src/components/settings/TranslationSection.tsx:216
+#: src/components/settings/SpeechSection.tsx:183
+#: src/components/settings/TranslationSection.tsx:178
+#: src/components/settings/TranslationSection.tsx:227
 msgid "Failed to connect"
 msgstr ""
 
@@ -2285,7 +2285,7 @@ msgstr ""
 msgid "Failed to fetch source"
 msgstr ""
 
-#: src/components/settings/BackupSection.tsx:380
+#: src/components/settings/BackupSection.tsx:448
 msgid "Failed to import translation memory."
 msgstr ""
 
@@ -2591,11 +2591,11 @@ msgstr ""
 msgid "Forgot password?"
 msgstr ""
 
-#: src/components/settings/TranslationSection.tsx:476
+#: src/components/settings/TranslationSection.tsx:491
 msgid "Formal"
 msgstr ""
 
-#: src/components/settings/TranslationSection.tsx:466
+#: src/components/settings/TranslationSection.tsx:481
 msgid "Formality"
 msgstr ""
 
@@ -2616,7 +2616,7 @@ msgstr ""
 msgid "Free"
 msgstr ""
 
-#: src/components/settings/TranslationSection.tsx:457
+#: src/components/settings/TranslationSection.tsx:472
 msgid "Free API"
 msgstr ""
 
@@ -2750,8 +2750,8 @@ msgstr ""
 msgid "Get API key"
 msgstr ""
 
-#: src/components/settings/TranslationSection.tsx:353
-#: src/components/settings/TranslationSection.tsx:370
+#: src/components/settings/TranslationSection.tsx:368
+#: src/components/settings/TranslationSection.tsx:385
 msgid "Get a free API key"
 msgstr ""
 
@@ -2764,7 +2764,7 @@ msgstr ""
 
 #: src/components/landing/FinalCTA.tsx:28
 #: src/components/landing/LandingNav.tsx:89
-#: src/components/landing/LandingNav.tsx:160
+#: src/components/landing/LandingNav.tsx:163
 #: src/components/settings/BillingSection.tsx:583
 msgid "Get started free"
 msgstr ""
@@ -3020,7 +3020,7 @@ msgstr ""
 msgid "Go to project"
 msgstr ""
 
-#: src/components/settings/TranslationSection.tsx:359
+#: src/components/settings/TranslationSection.tsx:374
 #: src/pages/PrivacyPage.tsx:169
 msgid "Google Gemini"
 msgstr ""
@@ -3152,7 +3152,7 @@ msgstr ""
 msgid "Import a translation export by project slug"
 msgstr ""
 
-#: src/components/settings/BackupSection.tsx:615
+#: src/components/settings/BackupSection.tsx:683
 msgid "Import credentials"
 msgstr ""
 
@@ -3162,19 +3162,19 @@ msgid ""
 "ample file."
 msgstr ""
 
-#: src/components/settings/BackupSection.tsx:480
+#: src/components/settings/BackupSection.tsx:548
 msgid "Import memory"
 msgstr ""
 
-#: src/components/settings/BackupSection.tsx:547
+#: src/components/settings/BackupSection.tsx:615
 msgid "Import saved credentials?"
 msgstr ""
 
-#: src/components/settings/BackupSection.tsx:521
+#: src/components/settings/BackupSection.tsx:589
 msgid "Import settings"
 msgstr ""
 
-#: src/components/settings/BackupSection.tsx:372
+#: src/components/settings/BackupSection.tsx:440
 msgid "Imported {{count}} translation memory entries."
 msgstr ""
 
@@ -3196,15 +3196,15 @@ msgstr ""
 msgid "Include API credentials in sync"
 msgstr ""
 
-#: src/components/settings/BackupSection.tsx:616
+#: src/components/settings/BackupSection.tsx:684
 msgid "Include credentials"
 msgstr ""
 
-#: src/components/settings/BackupSection.tsx:548
+#: src/components/settings/BackupSection.tsx:616
 msgid "Include saved credentials?"
 msgstr ""
 
-#: src/components/settings/BackupSection.tsx:559
+#: src/components/settings/BackupSection.tsx:627
 msgid ""
 "Including saved translation credentials will store them in plain text inside"
 " the exported JSON file."
@@ -3220,7 +3220,7 @@ msgstr ""
 msgid "Indonesian"
 msgstr ""
 
-#: src/components/settings/TranslationSection.tsx:475
+#: src/components/settings/TranslationSection.tsx:490
 msgid "Informal"
 msgstr ""
 
@@ -3318,7 +3318,7 @@ msgstr ""
 msgid "Kazakh"
 msgstr ""
 
-#: src/components/settings/BackupSection.tsx:598
+#: src/components/settings/BackupSection.tsx:666
 msgid "Keep current key"
 msgstr ""
 
@@ -3332,9 +3332,9 @@ msgstr ""
 
 #: src/components/settings/CustomProviderCard.tsx:229
 #: src/components/settings/LlmProviderCard.tsx:276
-#: src/components/settings/SpeechSection.tsx:427
-#: src/components/settings/TranslationSection.tsx:438
-#: src/components/settings/TranslationSection.tsx:590
+#: src/components/settings/SpeechSection.tsx:440
+#: src/components/settings/TranslationSection.tsx:453
+#: src/components/settings/TranslationSection.tsx:605
 msgid "Key saved"
 msgstr ""
 
@@ -3516,17 +3516,17 @@ msgstr ""
 msgid "Load a small example WordPress plugin PO file (Hello Dolly)"
 msgstr ""
 
-#: src/components/settings/BackupSection.tsx:392
+#: src/components/settings/BackupSection.tsx:460
 msgid "Load a translation file before clearing project translation memory."
 msgstr ""
 
-#: src/components/settings/BackupSection.tsx:424
+#: src/components/settings/BackupSection.tsx:492
 msgid ""
 "Load a translation file before managing translation memory so GlossBoss can "
 "scope entries to the active target language."
 msgstr ""
 
-#: src/components/settings/BackupSection.tsx:306
+#: src/components/settings/BackupSection.tsx:374
 msgid ""
 "Load a translation file first so GlossBoss knows which target language to us"
 "e."
@@ -3559,8 +3559,8 @@ msgstr ""
 msgid "Load glossary"
 msgstr ""
 
-#: src/components/settings/SpeechSection.tsx:499
-#: src/components/settings/SpeechSection.tsx:528
+#: src/components/settings/SpeechSection.tsx:512
+#: src/components/settings/SpeechSection.tsx:541
 msgid "Load voices by testing your key"
 msgstr ""
 
@@ -3689,7 +3689,7 @@ msgstr ""
 msgid "Maltese"
 msgstr ""
 
-#: src/components/settings/BackupSection.tsx:421
+#: src/components/settings/BackupSection.tsx:489
 msgid ""
 "Manage reusable approved translations for the current project. Import merges"
 " into the active project scope."
@@ -3898,7 +3898,7 @@ msgstr ""
 msgid "No account found — invite link created in Invites tab."
 msgstr ""
 
-#: src/components/settings/BackupSection.tsx:442
+#: src/components/settings/BackupSection.tsx:510
 msgid "No active project"
 msgstr ""
 
@@ -4107,7 +4107,7 @@ msgstr ""
 msgid "No translation files found in this repository."
 msgstr ""
 
-#: src/components/settings/BackupSection.tsx:317
+#: src/components/settings/BackupSection.tsx:385
 msgid "No translation memory entries are stored for this project yet."
 msgstr ""
 
@@ -4144,7 +4144,7 @@ msgstr ""
 
 #: src/components/settings/CustomProviderCard.tsx:156
 #: src/components/settings/LlmProviderCard.tsx:226
-#: src/components/settings/TranslationSection.tsx:284
+#: src/components/settings/TranslationSection.tsx:295
 msgid "Not configured"
 msgstr ""
 
@@ -4209,7 +4209,7 @@ msgid ""
 "may have multiple paid accounts."
 msgstr ""
 
-#: src/components/settings/BackupSection.tsx:576
+#: src/components/settings/BackupSection.tsx:644
 msgid "Only include credentials on personal, trusted devices."
 msgstr ""
 
@@ -4551,7 +4551,7 @@ msgid ""
 " your own API key."
 msgstr ""
 
-#: src/components/settings/TranslationSection.tsx:334
+#: src/components/settings/TranslationSection.tsx:349
 msgid ""
 "Pick any provider below — all offer free tiers, and setup takes about 2 minu"
 "tes."
@@ -4574,7 +4574,7 @@ msgstr ""
 msgid "Play source"
 msgstr ""
 
-#: src/components/settings/SpeechSection.tsx:283
+#: src/components/settings/SpeechSection.tsx:296
 msgid ""
 "Play strings with either browser voices or ElevenLabs. Browser playback stay"
 "s free and local. ElevenLabs uses your own API key through a protected proxy"
@@ -4586,7 +4586,7 @@ msgstr ""
 msgid "Play translation"
 msgstr ""
 
-#: src/components/settings/SpeechSection.tsx:311
+#: src/components/settings/SpeechSection.tsx:324
 msgid "Playback rate"
 msgstr ""
 
@@ -4615,12 +4615,12 @@ msgid "Please enter a new password."
 msgstr ""
 
 #: src/components/settings/LlmProviderCard.tsx:123
-#: src/components/settings/SpeechSection.tsx:140
-#: src/components/settings/TranslationSection.tsx:150
+#: src/components/settings/SpeechSection.tsx:149
+#: src/components/settings/TranslationSection.tsx:161
 msgid "Please enter an API key"
 msgstr ""
 
-#: src/components/settings/TranslationSection.tsx:195
+#: src/components/settings/TranslationSection.tsx:206
 msgid "Please enter an API key and region"
 msgstr ""
 
@@ -4715,10 +4715,10 @@ msgstr ""
 msgid "Preview diff"
 msgstr ""
 
-#: src/components/settings/SpeechSection.tsx:347
-#: src/components/settings/SpeechSection.tsx:375
-#: src/components/settings/SpeechSection.tsx:513
-#: src/components/settings/SpeechSection.tsx:542
+#: src/components/settings/SpeechSection.tsx:360
+#: src/components/settings/SpeechSection.tsx:388
+#: src/components/settings/SpeechSection.tsx:526
+#: src/components/settings/SpeechSection.tsx:555
 msgid "Preview voice"
 msgstr ""
 
@@ -4751,7 +4751,7 @@ msgstr ""
 msgid "Privacy"
 msgstr ""
 
-#: src/components/settings/TranslationSection.tsx:321
+#: src/components/settings/TranslationSection.tsx:336
 #: src/pages/PrivacyPage.tsx:12
 #: src/pages/TermsPage.tsx:156
 #: src/pages/auth/Signup.tsx:178
@@ -4771,7 +4771,7 @@ msgstr ""
 msgid "Pro"
 msgstr ""
 
-#: src/components/settings/TranslationSection.tsx:458
+#: src/components/settings/TranslationSection.tsx:473
 msgid "Pro API"
 msgstr ""
 
@@ -4842,8 +4842,8 @@ msgstr ""
 #: src/components/projects/CreateProjectModal.tsx:604
 #: src/components/projects/ProjectSettingsTab.tsx:80
 #: src/components/projects/SaveToCloudModal.tsx:129
-#: src/components/settings/BackupSection.tsx:431
-#: src/components/settings/BackupSection.tsx:435
+#: src/components/settings/BackupSection.tsx:499
+#: src/components/settings/BackupSection.tsx:503
 #: src/pages/ProjectSettings.tsx:396
 msgid "Project name"
 msgstr ""
@@ -4918,7 +4918,7 @@ msgstr ""
 
 #: src/components/organizations/SharedCredentialsTab.tsx:296
 #: src/components/repo-sync/RepoSyncModal.tsx:826
-#: src/components/settings/SpeechSection.tsx:292
+#: src/components/settings/SpeechSection.tsx:305
 msgid "Provider"
 msgstr ""
 
@@ -5048,7 +5048,7 @@ msgstr ""
 msgid "Recommended"
 msgstr ""
 
-#: src/components/settings/TranslationSection.tsx:338
+#: src/components/settings/TranslationSection.tsx:353
 msgid "Recommended for getting started:"
 msgstr ""
 
@@ -5087,7 +5087,7 @@ msgstr ""
 msgid "Refresh glossary after applying this update"
 msgstr ""
 
-#: src/components/settings/TranslationSection.tsx:599
+#: src/components/settings/TranslationSection.tsx:614
 msgid "Region"
 msgstr ""
 
@@ -5109,9 +5109,9 @@ msgstr ""
 
 #: src/components/settings/CustomProviderCard.tsx:185
 #: src/components/settings/LlmProviderCard.tsx:256
-#: src/components/settings/SpeechSection.tsx:403
-#: src/components/settings/TranslationSection.tsx:417
-#: src/components/settings/TranslationSection.tsx:569
+#: src/components/settings/SpeechSection.tsx:416
+#: src/components/settings/TranslationSection.tsx:432
+#: src/components/settings/TranslationSection.tsx:584
 msgid "Remember API key across sessions"
 msgstr ""
 
@@ -5123,14 +5123,14 @@ msgstr ""
 #: src/components/projects/ProjectMembersTab.tsx:241
 #: src/components/settings/CustomProviderCard.tsx:298
 #: src/components/settings/LlmProviderCard.tsx:349
-#: src/components/settings/TranslationSection.tsx:499
-#: src/components/settings/TranslationSection.tsx:637
+#: src/components/settings/TranslationSection.tsx:514
+#: src/components/settings/TranslationSection.tsx:652
 #: src/pages/OrgSettings.tsx:430
 #: src/pages/OrgSettingsPage.tsx:608
 msgid "Remove"
 msgstr ""
 
-#: src/components/settings/SpeechSection.tsx:448
+#: src/components/settings/SpeechSection.tsx:461
 msgid "Remove saved key"
 msgstr ""
 
@@ -5420,10 +5420,10 @@ msgstr ""
 #: src/components/settings/AccountSection.tsx:278
 #: src/components/settings/CustomProviderCard.tsx:294
 #: src/components/settings/LlmProviderCard.tsx:345
-#: src/components/settings/SpeechSection.tsx:388
-#: src/components/settings/SpeechSection.tsx:444
-#: src/components/settings/TranslationSection.tsx:495
-#: src/components/settings/TranslationSection.tsx:633
+#: src/components/settings/SpeechSection.tsx:401
+#: src/components/settings/SpeechSection.tsx:457
+#: src/components/settings/TranslationSection.tsx:510
+#: src/components/settings/TranslationSection.tsx:648
 msgid "Save"
 msgstr ""
 
@@ -5638,12 +5638,12 @@ msgstr ""
 msgid "Service"
 msgstr ""
 
-#: src/components/settings/TranslationSection.tsx:448
+#: src/components/settings/TranslationSection.tsx:463
 msgid "Service tier"
 msgstr ""
 
 #: src/components/settings/LlmProviderCard.tsx:364
-#: src/components/settings/TranslationSection.tsx:652
+#: src/components/settings/TranslationSection.tsx:667
 msgid "Session usage: {{count}} characters"
 msgstr ""
 
@@ -5653,8 +5653,8 @@ msgstr ""
 
 #: src/components/settings/CustomProviderCard.tsx:173
 #: src/components/settings/LlmProviderCard.tsx:243
-#: src/components/settings/TranslationSection.tsx:404
-#: src/components/settings/TranslationSection.tsx:552
+#: src/components/settings/TranslationSection.tsx:419
+#: src/components/settings/TranslationSection.tsx:567
 msgid "Set as default"
 msgstr ""
 
@@ -5694,33 +5694,33 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
-#: src/components/settings/BackupSection.tsx:186
+#: src/components/settings/BackupSection.tsx:247
 msgid "Settings exported with your saved translation credentials."
 msgstr ""
 
-#: src/components/settings/BackupSection.tsx:187
+#: src/components/settings/BackupSection.tsx:248
 msgid "Settings exported without your saved translation credentials."
 msgstr ""
 
-#: src/components/settings/BackupSection.tsx:500
+#: src/components/settings/BackupSection.tsx:568
 msgid "Settings file"
 msgstr ""
 
-#: src/components/settings/BackupSection.tsx:227
+#: src/components/settings/BackupSection.tsx:295
 msgid ""
 "Settings imported without changing your current saved translation credential"
 "s."
 msgstr ""
 
-#: src/components/settings/BackupSection.tsx:226
+#: src/components/settings/BackupSection.tsx:294
 msgid "Settings imported, including your saved translation credentials."
 msgstr ""
 
 #: src/components/settings/CustomProviderCard.tsx:106
 #: src/components/settings/LlmProviderCard.tsx:158
-#: src/components/settings/SpeechSection.tsx:215
-#: src/components/settings/TranslationSection.tsx:179
-#: src/components/settings/TranslationSection.tsx:227
+#: src/components/settings/SpeechSection.tsx:224
+#: src/components/settings/TranslationSection.tsx:190
+#: src/components/settings/TranslationSection.tsx:238
 msgid "Settings saved!"
 msgstr ""
 
@@ -5839,7 +5839,7 @@ msgstr ""
 #: src/components/auth/UserMenu.tsx:53
 #: src/components/editor/EmptyState.tsx:243
 #: src/components/landing/LandingNav.tsx:83
-#: src/components/landing/LandingNav.tsx:154
+#: src/components/landing/LandingNav.tsx:157
 #: src/pages/auth/Login.tsx:144
 #: src/pages/auth/Signup.tsx:115
 msgid "Sign in"
@@ -6003,8 +6003,8 @@ msgid ""
 "u"
 msgstr ""
 
-#: src/components/settings/SpeechSection.tsx:332
-#: src/components/settings/SpeechSection.tsx:498
+#: src/components/settings/SpeechSection.tsx:345
+#: src/components/settings/SpeechSection.tsx:511
 msgid "Source voice"
 msgstr ""
 
@@ -6181,12 +6181,14 @@ msgstr ""
 #: src/components/AppHeader.tsx:50
 #: src/components/AppSidebar.tsx:519
 #: src/components/landing/LandingNav.tsx:66
+#: src/components/landing/LandingNav.tsx:142
 msgid "Switch to dark mode"
 msgstr ""
 
 #: src/components/AppHeader.tsx:50
 #: src/components/AppSidebar.tsx:519
 #: src/components/landing/LandingNav.tsx:66
+#: src/components/landing/LandingNav.tsx:142
 msgid "Switch to light mode"
 msgstr ""
 
@@ -6255,7 +6257,7 @@ msgstr ""
 
 #: src/components/projects/CreateProjectModal.tsx:656
 #: src/components/projects/SaveToCloudModal.tsx:145
-#: src/components/settings/BackupSection.tsx:446
+#: src/components/settings/BackupSection.tsx:514
 msgid "Target: {{language}}"
 msgstr ""
 
@@ -6302,9 +6304,9 @@ msgstr ""
 
 #: src/components/settings/CustomProviderCard.tsx:291
 #: src/components/settings/LlmProviderCard.tsx:342
-#: src/components/settings/SpeechSection.tsx:441
-#: src/components/settings/TranslationSection.tsx:492
-#: src/components/settings/TranslationSection.tsx:626
+#: src/components/settings/SpeechSection.tsx:454
+#: src/components/settings/TranslationSection.tsx:507
+#: src/components/settings/TranslationSection.tsx:641
 msgid "Test connection"
 msgstr ""
 
@@ -6460,7 +6462,7 @@ msgid ""
 "cts in this org. Use them for tone, style, or terminology guidance."
 msgstr ""
 
-#: src/components/settings/TranslationSection.tsx:301
+#: src/components/settings/TranslationSection.tsx:312
 msgid ""
 "These settings apply to the local editor. Cloud projects can override the pr"
 "ovider in Project Settings."
@@ -6513,7 +6515,7 @@ msgstr ""
 msgid "This invite link is invalid or has expired."
 msgstr ""
 
-#: src/components/settings/SpeechSection.tsx:245
+#: src/components/settings/SpeechSection.tsx:254
 msgid "This is a preview of the selected voice."
 msgstr ""
 
@@ -6525,7 +6527,7 @@ msgstr ""
 msgid "This setting is enforced by your organization and cannot be changed."
 msgstr ""
 
-#: src/components/settings/BackupSection.tsx:558
+#: src/components/settings/BackupSection.tsx:626
 msgid "This settings file contains saved translation credentials in plain text."
 msgstr ""
 
@@ -6581,7 +6583,7 @@ msgstr ""
 msgid "Toggle details for {{entry}}"
 msgstr ""
 
-#: src/components/landing/LandingNav.tsx:99
+#: src/components/landing/LandingNav.tsx:100
 msgid "Toggle menu"
 msgstr ""
 
@@ -6701,15 +6703,15 @@ msgstr ""
 
 #: src/components/editor/EditorInspector.tsx:704
 #: src/components/projects/ExportSection.tsx:204
-#: src/components/settings/BackupSection.tsx:417
+#: src/components/settings/BackupSection.tsx:485
 msgid "Translation memory"
 msgstr ""
 
-#: src/components/settings/BackupSection.tsx:345
+#: src/components/settings/BackupSection.tsx:413
 msgid "Translation memory exported as JSON."
 msgstr ""
 
-#: src/components/settings/BackupSection.tsx:346
+#: src/components/settings/BackupSection.tsx:414
 msgid "Translation memory exported as TMX."
 msgstr ""
 
@@ -6733,7 +6735,7 @@ msgstr ""
 msgid "Translation provider saved."
 msgstr ""
 
-#: src/components/settings/TranslationSection.tsx:327
+#: src/components/settings/TranslationSection.tsx:342
 msgid "Translation providers"
 msgstr ""
 
@@ -6756,7 +6758,7 @@ msgstr ""
 msgid "Translation text"
 msgstr ""
 
-#: src/components/settings/TranslationSection.tsx:317
+#: src/components/settings/TranslationSection.tsx:332
 msgid ""
 "Translation text is sent to your selected provider for processing. Data proc"
 "essing regions vary by provider. No translation data is stored by GlossBoss "
@@ -6779,8 +6781,8 @@ msgstr ""
 msgid "Translation usage:"
 msgstr ""
 
-#: src/components/settings/SpeechSection.tsx:360
-#: src/components/settings/SpeechSection.tsx:527
+#: src/components/settings/SpeechSection.tsx:373
+#: src/components/settings/SpeechSection.tsx:540
 msgid "Translation voice"
 msgstr ""
 
@@ -6871,11 +6873,11 @@ msgstr ""
 msgid "Ukrainian"
 msgstr ""
 
-#: src/components/settings/BackupSection.tsx:279
+#: src/components/settings/BackupSection.tsx:347
 msgid "Unable to import the selected settings file."
 msgstr ""
 
-#: src/components/settings/BackupSection.tsx:289
+#: src/components/settings/BackupSection.tsx:357
 msgid "Unable to read the selected settings file."
 msgstr ""
 
@@ -7098,13 +7100,13 @@ msgstr ""
 msgid "Usable for real work, improving fast."
 msgstr ""
 
-#: src/components/settings/SpeechSection.tsx:478
+#: src/components/settings/SpeechSection.tsx:491
 msgid ""
 "Usage is above 90%. ElevenLabs playback will stop once the provider quota is"
 " exhausted."
 msgstr ""
 
-#: src/components/settings/SpeechSection.tsx:87
+#: src/components/settings/SpeechSection.tsx:96
 msgid "Usage loaded from the last successful check."
 msgstr ""
 
@@ -7118,8 +7120,8 @@ msgid ""
 "se or bypasses rate limits."
 msgstr ""
 
-#: src/components/settings/SpeechSection.tsx:333
-#: src/components/settings/SpeechSection.tsx:361
+#: src/components/settings/SpeechSection.tsx:346
+#: src/components/settings/SpeechSection.tsx:374
 msgid "Use browser default"
 msgstr ""
 
@@ -7368,17 +7370,17 @@ msgstr ""
 msgid "When disabled, all settings are stored locally in this browser only."
 msgstr ""
 
-#: src/components/settings/SpeechSection.tsx:277
+#: src/components/settings/SpeechSection.tsx:286
 msgid "When disabled, all speak buttons are hidden from the editor."
 msgstr ""
 
-#: src/components/settings/TranslationSection.tsx:308
+#: src/components/settings/TranslationSection.tsx:319
 msgid ""
 "When disabled, all translate buttons and the bulk translation toolbar are hi"
 "dden."
 msgstr ""
 
-#: src/components/settings/SpeechSection.tsx:404
+#: src/components/settings/SpeechSection.tsx:417
 msgid ""
 "When enabled, your key is stored in localStorage and survives browser restar"
 "ts. Disable on shared or untrusted devices."
@@ -7612,7 +7614,7 @@ msgstr ""
 msgid "You've been invited to join an organization as {{role}}."
 msgstr ""
 
-#: src/components/settings/SpeechSection.tsx:396
+#: src/components/settings/SpeechSection.tsx:409
 msgid ""
 "Your ElevenLabs API key is kept in this browser tab by default and will be c"
 "leared when you close the tab. Enable \"Remember API key\" below to persist "
@@ -7688,8 +7690,8 @@ msgstr ""
 msgid "cached"
 msgstr ""
 
-#: src/components/settings/SpeechSection.tsx:471
-#: src/components/settings/TranslationSection.tsx:523
+#: src/components/settings/SpeechSection.tsx:484
+#: src/components/settings/TranslationSection.tsx:538
 msgid "characters"
 msgstr ""
 
@@ -8049,7 +8051,7 @@ msgstr ""
 msgid "{{count}} selected"
 msgstr ""
 
-#: src/components/settings/BackupSection.tsx:441
+#: src/components/settings/BackupSection.tsx:509
 msgid "{{count}} stored entries"
 msgstr ""
 
@@ -8207,11 +8209,11 @@ msgstr ""
 msgid "{{used}} of {{limit}} characters this billing period"
 msgstr ""
 
-#: src/components/settings/TranslationSection.tsx:345
+#: src/components/settings/TranslationSection.tsx:360
 msgid "— 500,000 characters/month, best general quality"
 msgstr ""
 
-#: src/components/settings/TranslationSection.tsx:362
+#: src/components/settings/TranslationSection.tsx:377
 msgid "— generous free tier, best for context-aware translation"
 msgstr ""
 

@@ -174,3 +174,18 @@ if (!window.ResizeObserver) {
     disconnect() {}
   };
 }
+
+if (!window.IntersectionObserver) {
+  window.IntersectionObserver = class IntersectionObserver {
+    readonly root = null;
+    readonly rootMargin = '';
+    readonly thresholds = [0];
+
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+    takeRecords(): IntersectionObserverEntry[] {
+      return [];
+    }
+  };
+}

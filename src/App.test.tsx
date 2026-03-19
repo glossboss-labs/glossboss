@@ -4,9 +4,11 @@ import { MemoryRouter } from 'react-router';
 import App from './App';
 import { AppProviders } from './providers';
 import { AppErrorBoundary } from '@/components/AppErrorBoundary';
+import { APP_LANGUAGE_STORAGE_KEY } from '@/lib/app-language';
 
 describe('App problem states', () => {
   afterEach(() => {
+    localStorage.clear();
     vi.restoreAllMocks();
   });
 
@@ -48,5 +50,35 @@ describe('App problem states', () => {
     expect(screen.getByRole('button', { name: 'Reload page' })).toBeInTheDocument();
 
     consoleErrorSpy.mockRestore();
+  });
+
+  it('keeps the root landing page in English even when Dutch is saved in storage', async () => {
+    localStorage.setItem(APP_LANGUAGE_STORAGE_KEY, 'nl');
+
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <AppProviders>
+          <App />
+        </AppProviders>
+      </MemoryRouter>,
+    );
+
+    expect(await screen.findAllByRole('link', { name: 'Get started free' })).not.toHaveLength(0);
+    expect(screen.queryAllByRole('link', { name: 'Gratis aan de slag' })).toHaveLength(0);
+  });
+
+  it('renders localized landing routes in their route language instead of saved storage', async () => {
+    localStorage.setItem(APP_LANGUAGE_STORAGE_KEY, 'en');
+
+    render(
+      <MemoryRouter initialEntries={['/nl']}>
+        <AppProviders>
+          <App />
+        </AppProviders>
+      </MemoryRouter>,
+    );
+
+    expect(await screen.findAllByRole('link', { name: 'Gratis aan de slag' })).not.toHaveLength(0);
+    expect(screen.queryAllByRole('link', { name: 'Get started free' })).toHaveLength(0);
   });
 });
