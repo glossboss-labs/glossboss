@@ -30,6 +30,7 @@ const OrgSettings = lazy(() => import('@/pages/OrgSettings'));
 const OrgSettingsPage = lazy(() => import('@/pages/OrgSettingsPage'));
 const Settings = lazy(() => import('@/pages/Settings'));
 const Index = lazy(() => import('@/pages/Index'));
+const PricingPage = lazy(() => import('@/pages/PricingPage'));
 const Invite = lazy(() => import('@/pages/Invite'));
 const ProjectInvite = lazy(() => import('@/pages/ProjectInvite'));
 const LicensePage = lazy(() => import('@/pages/LicensePage'));
@@ -61,6 +62,7 @@ export default function App() {
         <Route path="/license" element={<LicensePage />} />
         <Route path="/terms" element={<TermsPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/pricing" element={<PricingPage />} />
 
         {/* Auth routes (no shell) */}
         <Route path="/login" element={<Login />} />
