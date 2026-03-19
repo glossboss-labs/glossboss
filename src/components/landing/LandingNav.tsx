@@ -22,7 +22,7 @@ export function LandingNav({
 
   const navLinks = [
     { label: t('Features'), href: '/#features' },
-    { label: t('Pricing'), href: '/#pricing' },
+    { label: t('Pricing'), href: '/pricing' },
     { label: t('Roadmap'), href: '/roadmap' },
   ];
 

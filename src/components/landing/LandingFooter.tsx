@@ -12,7 +12,7 @@ const footerLinks = {
     title: msgid('Product'),
     links: [
       { label: msgid('Features'), href: '/#features' },
-      { label: msgid('Pricing'), href: '/#pricing' },
+      { label: msgid('Pricing'), href: '/pricing' },
       { label: msgid('Roadmap'), href: '/roadmap' },
       { label: msgid('Explore'), href: '/explore' },
     ],

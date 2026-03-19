@@ -21,6 +21,7 @@ import {
 import { motion, useInView, useMotionValue, useSpring } from 'motion/react';
 import { AlertCircle, Search, Globe, Languages, FileText, Users, TrendingUp } from 'lucide-react';
 import { staggerPageVariants, fadeVariants } from '@/lib/motion';
+import { SeoMeta } from '@/components/SeoMeta';
 import { AnimatedStateSwitch } from '@/components/ui';
 import { useTranslation, msgid } from '@/lib/app-language';
 import { sortProjects, type ProjectSortOption } from '@/lib/utils/sorting';
@@ -43,6 +44,10 @@ const SORT_LABELS: Record<SortOption, string> = {
   'most-complete': msgid('Most complete'),
   'least-complete': msgid('Least complete'),
 };
+const META_TITLE = msgid('Explore Open-Source Translation Projects — GlossBoss');
+const META_DESCRIPTION = msgid(
+  'Browse public GlossBoss translation projects, languages, contributors, and completion progress.',
+);
 
 interface PlatformStats {
   totalStrings: number;
@@ -223,6 +228,7 @@ export default function Explore() {
 
   return (
     <>
+      <SeoMeta title={t(META_TITLE)} description={t(META_DESCRIPTION)} canonicalPath="/explore" />
       <MotionDiv variants={staggerPageVariants} initial="hidden" animate="visible">
         {/* Hero header */}
         <MotionDiv variants={fadeVariants}>

@@ -1,11 +1,31 @@
 import { execSync } from 'node:child_process';
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { defineConfig, type Plugin } from 'vite-plus';
 
 const SITE_URL = 'https://glossboss.ink';
+const ROUTE_HTML_SNAPSHOTS = [
+  {
+    path: '/explore',
+    title: 'Explore Open-Source Translation Projects — GlossBoss',
+    description:
+      'Browse public GlossBoss translation projects, languages, contributors, and completion progress.',
+  },
+  {
+    path: '/editor',
+    title: 'Free Online PO Editor for PO, POT and JSON — GlossBoss',
+    description:
+      'Open PO, POT, and i18next JSON files in your browser and translate them with the free local editor. No account required.',
+  },
+  {
+    path: '/pricing',
+    title: 'Pricing for Translation Teams — GlossBoss',
+    description:
+      'Compare GlossBoss plans for cloud translation projects, collaboration, repository sync, and pay-as-you-go usage.',
+  },
+] as const;
 
 const packageJson = JSON.parse(
   readFileSync(new URL('./package.json', import.meta.url), 'utf-8'),
@@ -105,9 +125,8 @@ function sitemapGenerator(): Plugin {
     { path: '/', changefreq: 'weekly', priority: '1.0', multilingual: true },
     { path: '/explore', changefreq: 'daily', priority: '0.8', multilingual: false },
     { path: '/editor', changefreq: 'weekly', priority: '0.7', multilingual: false },
+    { path: '/pricing', changefreq: 'weekly', priority: '0.7', multilingual: false },
     { path: '/roadmap', changefreq: 'weekly', priority: '0.6', multilingual: false },
-    { path: '/signup', changefreq: 'monthly', priority: '0.5', multilingual: false },
-    { path: '/login', changefreq: 'monthly', priority: '0.4', multilingual: false },
     { path: '/privacy', changefreq: 'monthly', priority: '0.3', multilingual: false },
     { path: '/terms', changefreq: 'monthly', priority: '0.3', multilingual: false },
     { path: '/translate', changefreq: 'monthly', priority: '0.3', multilingual: false },
@@ -167,6 +186,76 @@ function sitemapGenerator(): Plugin {
         fileName: 'sitemap.xml',
         source: lines.join('\n'),
       });
+    },
+  };
+}
+
+function escapeHtml(value: string): string {
+  return value
+    .replaceAll('&', '&amp;')
+    .replaceAll('"', '&quot;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;');
+}
+
+function applyRouteSeoSnapshot(html: string, route: (typeof ROUTE_HTML_SNAPSHOTS)[number]): string {
+  const canonicalUrl = `${SITE_URL}${route.path}`;
+  return html
+    .replace(/<title>.*?<\/title>/s, `<title>${escapeHtml(route.title)}</title>`)
+    .replace(
+      /<meta[^>]*name="description"[^>]*content="[^"]*"[^>]*\/>/,
+      `<meta name="description" content="${escapeHtml(route.description)}" />`,
+    )
+    .replace(
+      /<link rel="canonical" href="[^"]*"\s*\/>/,
+      `<link rel="canonical" href="${canonicalUrl}" />`,
+    )
+    .replace(
+      /<meta[^>]*property="og:url"[^>]*content="[^"]*"[^>]*\/>/,
+      `<meta property="og:url" content="${canonicalUrl}" />`,
+    )
+    .replace(
+      /<meta[^>]*property="og:title"[^>]*content="[^"]*"[^>]*\/>/,
+      `<meta property="og:title" content="${escapeHtml(route.title)}" />`,
+    )
+    .replace(
+      /<meta[^>]*property="og:description"[^>]*content="[^"]*"[^>]*\/>/,
+      `<meta property="og:description" content="${escapeHtml(route.description)}" />`,
+    )
+    .replace(
+      /<meta[^>]*name="twitter:title"[^>]*content="[^"]*"[^>]*\/>/,
+      `<meta name="twitter:title" content="${escapeHtml(route.title)}" />`,
+    )
+    .replace(
+      /<meta[^>]*name="twitter:description"[^>]*content="[^"]*"[^>]*\/>/,
+      `<meta name="twitter:description" content="${escapeHtml(route.description)}" />`,
+    )
+    .replace(/\n\s*<link rel="alternate" hreflang="[^"]+" href="[^"]*" \/>/g, '');
+}
+
+function routeHtmlSnapshots(): Plugin {
+  let outDir = path.resolve(import.meta.dirname, 'dist');
+
+  return {
+    name: 'route-html-snapshots',
+    apply: 'build',
+    configResolved(config) {
+      outDir = path.resolve(config.root, config.build.outDir);
+    },
+    closeBundle() {
+      const indexPath = path.join(outDir, 'index.html');
+      if (!existsSync(indexPath)) return;
+
+      const indexHtml = readFileSync(indexPath, 'utf-8');
+      for (const route of ROUTE_HTML_SNAPSHOTS) {
+        const routeDir = path.join(outDir, route.path.slice(1));
+        mkdirSync(routeDir, { recursive: true });
+        writeFileSync(
+          path.join(routeDir, 'index.html'),
+          applyRouteSeoSnapshot(indexHtml, route),
+          'utf-8',
+        );
+      }
     },
   };
 }
@@ -240,7 +329,15 @@ export default defineConfig({
     },
     dedupe: ['react', 'react-dom', 'react-router'],
   },
-  plugins: [staticPages(), fontPreload(), seoMeta(), sitemapGenerator(), tailwindcss(), react()],
+  plugins: [
+    staticPages(),
+    fontPreload(),
+    seoMeta(),
+    sitemapGenerator(),
+    routeHtmlSnapshots(),
+    tailwindcss(),
+    react(),
+  ],
   define: {
     __APP_VERSION__: JSON.stringify(appVersion),
     __GIT_BRANCH__: JSON.stringify(gitBranch),
