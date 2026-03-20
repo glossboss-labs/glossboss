@@ -869,7 +869,7 @@ msgstr "Alle bestanden doorbladeren"
 msgid "Browse files manually"
 msgstr "Bestanden handmatig doorbladeren"
 
-#: src/pages/Explore.tsx:49
+#: src/pages/Explore.tsx:50
 msgid ""
 "Browse public GlossBoss translation projects, languages, contributors, and c"
 "ompletion progress."
@@ -1283,7 +1283,7 @@ msgstr "Commitbericht"
 msgid "Commit prefix"
 msgstr "Commit-prefix"
 
-#: src/pages/PricingPage.tsx:7
+#: src/pages/PricingPage.tsx:8
 msgid ""
 "Compare GlossBoss plans for cloud translation projects, collaboration, repos"
 "itory sync, and pay-as-you-go usage."
@@ -1852,7 +1852,7 @@ msgstr "Wijzigingen weggooien en huidig veld verlaten"
 msgid "Disconnect"
 msgstr "Verbinding verbreken"
 
-#: src/pages/Explore.tsx:220
+#: src/pages/Explore.tsx:226
 msgid "Discover and contribute to public translation projects"
 msgstr "Ontdek openbare vertaalprojecten en draag eraan bij"
 
@@ -2041,6 +2041,10 @@ msgstr ""
 #: src/components/auth/UserMenu.tsx:127
 msgid "Editor tour"
 msgstr "Editor tour"
+
+#: src/pages/Index.tsx:21
+msgid "Editor — GlossBoss"
+msgstr ""
 
 #: src/pages/PrivacyPage.tsx:174
 msgid "ElevenLabs"
@@ -2275,13 +2279,17 @@ msgstr "Verloopt op {{date}}"
 #: src/components/AppHeader.tsx:96
 #: src/components/AppSidebar.tsx:452
 #: src/components/landing/LandingFooter.tsx:17
-#: src/pages/Explore.tsx:218
+#: src/pages/Explore.tsx:224
 #: src/pages/ProjectDetail.tsx:323
 msgid "Explore"
 msgstr "Ontdek"
 
 #: src/pages/Explore.tsx:48
 msgid "Explore Open-Source Translation Projects — GlossBoss"
+msgstr ""
+
+#: src/pages/Explore.tsx:49
+msgid "Explore — GlossBoss"
 msgstr ""
 
 #: src/components/settings/BackupSection.tsx:526
@@ -2527,7 +2535,7 @@ msgstr "Kan het project niet laden"
 msgid "Failed to load project metadata."
 msgstr "Kan de projectmetadata niet laden."
 
-#: src/pages/Explore.tsx:148
+#: src/pages/Explore.tsx:149
 msgid "Failed to load projects"
 msgstr "Kan de projecten niet laden"
 
@@ -2775,7 +2783,7 @@ msgid "Formality"
 msgstr "Formaliteit"
 
 #: src/components/projects/ProjectSettingsTab.tsx:130
-#: src/pages/Explore.tsx:339
+#: src/pages/Explore.tsx:345
 #: src/pages/ProjectSettings.tsx:532
 msgid "Format"
 msgstr "Formaat"
@@ -2811,7 +2819,7 @@ msgstr "Gratis voor individuen. Upgrade wanneer je teamfuncties nodig hebt."
 msgid "Free plan"
 msgstr "Gratis abonnement"
 
-#: src/pages/Landing.tsx:22
+#: src/pages/Landing.tsx:23
 msgid ""
 "Free, open-source translation editor for PO, POT, and i18next JSON files. AI"
 " translation from DeepL, OpenAI, Claude, Gemini, Mistral, DeepSeek & Azure w"
@@ -2980,6 +2988,10 @@ msgstr "GitLab-instantie URL"
 #: src/components/projects/ProjectTranslationTab.tsx:126
 msgid "Global default ({{provider}})"
 msgstr "Globale standaard ({{provider}})"
+
+#: src/pages/Landing.tsx:22
+msgid "GlossBoss"
+msgstr ""
 
 #: src/pages/PrivacyPage.tsx:16
 msgid ""
@@ -3629,7 +3641,7 @@ msgstr "Label"
 #: src/components/editor/HeaderEditor.tsx:222
 #: src/components/landing/LandingFooter.tsx:117
 #: src/components/settings/GlossarySection.tsx:284
-#: src/pages/Explore.tsx:349
+#: src/pages/Explore.tsx:355
 msgid "Language"
 msgstr "Taal"
 
@@ -4320,7 +4332,7 @@ msgid "No projects in this organization yet"
 msgstr "Nog geen projecten in deze organisatie"
 
 #: src/pages/Dashboard.tsx:383
-#: src/pages/Explore.tsx:370
+#: src/pages/Explore.tsx:376
 msgid "No projects match your search"
 msgstr "Geen projecten komen overeen met je zoekopdracht"
 
@@ -4328,7 +4340,7 @@ msgstr "Geen projecten komen overeen met je zoekopdracht"
 msgid "No projects yet"
 msgstr "Nog geen projecten"
 
-#: src/pages/Explore.tsx:277
+#: src/pages/Explore.tsx:283
 msgid "No public projects yet"
 msgstr "Nog geen openbare projecten"
 
@@ -5078,6 +5090,10 @@ msgstr "Prijzen"
 
 #: src/pages/PricingPage.tsx:6
 msgid "Pricing for Translation Teams — GlossBoss"
+msgstr ""
+
+#: src/pages/PricingPage.tsx:7
+msgid "Pricing — GlossBoss"
 msgstr ""
 
 #: src/components/settings/BillingSection.tsx:688
@@ -5857,7 +5873,7 @@ msgid "Search projects..."
 msgstr "Projecten zoeken..."
 
 #: src/pages/Dashboard.tsx:364
-#: src/pages/Explore.tsx:329
+#: src/pages/Explore.tsx:335
 msgid "Search projects…"
 msgstr "Projecten zoeken…"
 
@@ -6273,7 +6289,7 @@ msgstr "Signalen"
 msgid "Signed in with GitHub"
 msgstr "Ingelogd met GitHub"
 
-#: src/pages/auth/Callback.tsx:94
+#: src/pages/auth/Callback.tsx:150
 msgid "Signing you in..."
 msgstr "Bezig met inloggen..."
 
@@ -8380,7 +8396,7 @@ msgid "just now"
 msgstr "zojuist"
 
 #: src/components/landing/StatsCounters.tsx:47
-#: src/pages/Explore.tsx:248
+#: src/pages/Explore.tsx:254
 #: src/pages/OrgSettings.tsx:487
 #: src/pages/OrgSettingsPage.tsx:761
 msgid "languages"
@@ -8392,7 +8408,7 @@ msgid "member"
 msgstr "lid"
 
 #: src/components/landing/StatsCounters.tsx:46
-#: src/pages/Explore.tsx:243
+#: src/pages/Explore.tsx:249
 msgid "members"
 msgstr "leden"
 
@@ -8460,7 +8476,7 @@ msgstr "project"
 
 #: src/components/auth/UserMenu.tsx:98
 #: src/components/settings/BillingSection.tsx:651
-#: src/pages/Explore.tsx:238
+#: src/pages/Explore.tsx:244
 msgid "projects"
 msgstr "projecten"
 
@@ -8501,7 +8517,7 @@ msgid "strings"
 msgstr "strings"
 
 #: src/components/landing/StatsCounters.tsx:44
-#: src/pages/Explore.tsx:233
+#: src/pages/Explore.tsx:239
 msgid "strings translated"
 msgstr "strings vertaald"
 
@@ -8612,7 +8628,7 @@ msgid "{{count}} hours ago"
 msgstr "{{count}} uur geleden"
 
 #: src/components/projects/ProjectCard.tsx:88
-#: src/pages/Explore.tsx:306
+#: src/pages/Explore.tsx:312
 #: src/pages/ProjectDetail.tsx:462
 #: src/pages/ProjectDetail.tsx:499
 msgid "{{count}} languages"
@@ -8650,7 +8666,7 @@ msgstr "{{count}} van {{limit}} projecten"
 msgid "{{count}} of {{limit}} strings stored"
 msgstr "{{count}} van {{limit}} strings opgeslagen"
 
-#: src/pages/Explore.tsx:292
+#: src/pages/Explore.tsx:298
 msgid "{{count}} projects"
 msgstr "{{count}} projecten"
 
@@ -8671,7 +8687,7 @@ msgstr "{{count}} geselecteerd"
 msgid "{{count}} stored entries"
 msgstr "{{count}} opgeslagen items"
 
-#: src/pages/Explore.tsx:298
+#: src/pages/Explore.tsx:304
 msgid "{{count}} strings"
 msgstr "{{count}} strings"
 
@@ -8754,7 +8770,7 @@ msgstr "{{name}} is lid geworden van {{org}}"
 msgid "{{name}} joined {{project}}"
 msgstr "{{name}} is lid geworden van {{project}}"
 
-#: src/pages/Explore.tsx:313
+#: src/pages/Explore.tsx:319
 msgid "{{pct}}% translated"
 msgstr "{{pct}}% vertaald"
 

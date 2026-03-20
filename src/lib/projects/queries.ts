@@ -17,6 +17,8 @@ import {
   createProject as apiCreateProject,
   deleteProject as apiDeleteProject,
   createProjectLanguage as apiCreateProjectLanguage,
+  getProjectLanguageByLocale as apiGetProjectLanguageByLocale,
+  updateProjectLanguage as apiUpdateProjectLanguage,
   deleteProjectLanguage as apiDeleteProjectLanguage,
   cloneLanguageEntries as apiCloneLanguageEntries,
   syncProjectEntries,
@@ -25,6 +27,7 @@ import {
   type ProjectEditorPageData,
   type ProjectSettingsPageData,
 } from './api';
+import { createOrReuseInitialProjectLanguage } from './initial-language';
 import type {
   ProjectInsert,
   ProjectLanguageInsert,
@@ -166,10 +169,17 @@ export function useCreateProject() {
       let languageId: string | null = null;
 
       if (languageInsert) {
-        const language = await apiCreateProjectLanguage({
-          ...languageInsert,
-          project_id: project.id,
-        });
+        const language = await createOrReuseInitialProjectLanguage(
+          {
+            ...languageInsert,
+            project_id: project.id,
+          },
+          {
+            createLanguage: apiCreateProjectLanguage,
+            getLanguageByLocale: apiGetProjectLanguageByLocale,
+            updateLanguage: apiUpdateProjectLanguage,
+          },
+        );
         languageId = language.id;
 
         if (entries && entries.length > 0) {

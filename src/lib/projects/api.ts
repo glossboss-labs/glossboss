@@ -248,6 +248,25 @@ export async function getProjectLanguage(languageId: string): Promise<ProjectLan
   return data;
 }
 
+export async function getProjectLanguageByLocale(
+  projectId: string,
+  locale: string,
+): Promise<ProjectLanguageRow | null> {
+  const { data, error } = await supabase()
+    .from('project_languages')
+    .select(PROJECT_LANGUAGE_SELECT)
+    .eq('project_id', projectId)
+    .eq('locale', locale)
+    .maybeSingle();
+
+  if (error) {
+    if (error.code === 'PGRST116') return null;
+    throw error;
+  }
+
+  return data;
+}
+
 export async function createProjectLanguage(
   insert: ProjectLanguageInsert,
 ): Promise<ProjectLanguageRow> {

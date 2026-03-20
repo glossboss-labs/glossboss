@@ -24,6 +24,24 @@ function buildOnboardingPath(): string {
   return '/onboarding';
 }
 
+function readHashSessionTokens(): {
+  accessToken: string | null;
+  refreshToken: string | null;
+  type: string | null;
+} {
+  const params = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+  return {
+    accessToken: params.get('access_token'),
+    refreshToken: params.get('refresh_token'),
+    type: params.get('type'),
+  };
+}
+
+function clearCallbackHash(): void {
+  const cleanUrl = `${window.location.pathname}${window.location.search}`;
+  window.history.replaceState(window.history.state, document.title, cleanUrl);
+}
+
 export default function Callback() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -43,14 +61,43 @@ export default function Callback() {
       return returnPath;
     }
 
-    function handleAuthenticated() {
+    let completed = false;
+
+    async function handleAuthenticated() {
+      if (completed) return;
+      completed = true;
       trackEvent('login_succeeded', { method: 'github' });
-      void resolveDestination().then((dest) => {
-        navigate(dest, { replace: true });
-      });
+      const dest = await resolveDestination();
+      navigate(dest, { replace: true });
     }
 
     const client = getSupabaseClient('Auth');
+
+    async function bootstrapHashSession() {
+      const { accessToken, refreshToken, type } = readHashSessionTokens();
+      if (!accessToken || !refreshToken) {
+        return false;
+      }
+
+      const { error } = await client.auth.setSession({
+        access_token: accessToken,
+        refresh_token: refreshToken,
+      });
+      if (error) {
+        return false;
+      }
+
+      clearCallbackHash();
+
+      if (type === 'recovery') {
+        completed = true;
+        navigate('/reset-password', { replace: true });
+        return true;
+      }
+
+      await handleAuthenticated();
+      return true;
+    }
 
     // Listen for the auth state change that signals the code exchange completed.
     const {
@@ -68,9 +115,10 @@ export default function Callback() {
     // Fallback: if the session is already present (e.g. the listener fired
     // before we subscribed), navigate immediately.
     client.auth.getSession().then(({ data }) => {
+      if (completed) return;
       if (data.session) {
         subscription.unsubscribe();
-        handleAuthenticated();
+        void handleAuthenticated();
       }
     });
 
@@ -80,6 +128,14 @@ export default function Callback() {
       subscription.unsubscribe();
       navigate('/login', { replace: true });
     }, 15_000);
+
+    void bootstrapHashSession().then((handled) => {
+      if (!handled) {
+        return;
+      }
+      clearTimeout(timeout);
+      subscription.unsubscribe();
+    });
 
     return () => {
       clearTimeout(timeout);

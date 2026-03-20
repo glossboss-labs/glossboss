@@ -11,6 +11,12 @@ coverage/
 package-lock.json
 .plans/
 
+# Crypto material
+*.pem
+*.key
+*.p12
+*.pfx
+
 # Playwright
 /test-results/
 /playwright-report/

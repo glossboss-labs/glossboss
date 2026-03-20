@@ -7,7 +7,11 @@
 
 import { create } from 'zustand';
 import type { Session, User, AuthError } from '@supabase/supabase-js';
-import { isCloudBackendConfigured, getSupabaseClient } from '@/lib/supabase/client';
+import {
+  getSupabaseAuthStorageKey,
+  getSupabaseClient,
+  isCloudBackendConfigured,
+} from '@/lib/supabase/client';
 import {
   signUpWithEmail,
   signInWithEmail,
@@ -43,9 +47,49 @@ export interface AuthActions {
   clearError: () => void;
 }
 
+function isPersistedSession(value: unknown): value is Session {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    typeof (value as { access_token?: unknown }).access_token === 'string' &&
+    typeof (value as { refresh_token?: unknown }).refresh_token === 'string' &&
+    typeof (value as { expires_at?: unknown }).expires_at === 'number'
+  );
+}
+
+export function readPersistedAuthSession(
+  storage: Pick<Storage, 'getItem'> | undefined = typeof window !== 'undefined'
+    ? window.localStorage
+    : undefined,
+  storageKey = getSupabaseAuthStorageKey(),
+): Pick<AuthState, 'session' | 'user'> {
+  if (!storage || !storageKey) {
+    return { session: null, user: null };
+  }
+
+  try {
+    const raw = storage.getItem(storageKey);
+    if (!raw) {
+      return { session: null, user: null };
+    }
+
+    const parsed = JSON.parse(raw) as unknown;
+    if (!isPersistedSession(parsed)) {
+      return { session: null, user: null };
+    }
+
+    const session = parsed as Session;
+    return { session, user: session.user ?? null };
+  } catch {
+    return { session: null, user: null };
+  }
+}
+
+const hydratedAuthState = readPersistedAuthSession();
+
 export const useAuthStore = create<AuthState & AuthActions>()((set) => ({
-  session: null,
-  user: null,
+  session: hydratedAuthState.session,
+  user: hydratedAuthState.user,
   loading: true,
   error: null,
 

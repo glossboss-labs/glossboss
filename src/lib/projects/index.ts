@@ -29,6 +29,7 @@ export {
   deleteProject,
   getProjectLanguages,
   getProjectLanguage,
+  getProjectLanguageByLocale,
   createProjectLanguage,
   updateProjectLanguage,
   deleteProjectLanguage,

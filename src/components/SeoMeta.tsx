@@ -20,11 +20,13 @@ function ensureLink(selector: string, create: () => HTMLLinkElement): HTMLLinkEl
 
 export function SeoMeta({
   title,
+  browserTitle,
   description,
   canonicalPath,
   robots,
 }: {
   title: string;
+  browserTitle?: string;
   description: string;
   canonicalPath: string;
   robots?: string;
@@ -32,7 +34,7 @@ export function SeoMeta({
   useEffect(() => {
     const canonicalUrl = new URL(canonicalPath, SITE_URL).toString();
 
-    document.title = title;
+    document.title = browserTitle ?? title;
 
     const descriptionMeta = ensureMeta('meta[name="description"]', () => {
       const meta = document.createElement('meta');
@@ -91,7 +93,7 @@ export function SeoMeta({
       });
       robotsMeta.setAttribute('content', robots);
     }
-  }, [canonicalPath, description, robots, title]);
+  }, [browserTitle, canonicalPath, description, robots, title]);
 
   return null;
 }
