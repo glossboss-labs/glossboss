@@ -39,6 +39,19 @@ export function isCloudBackendConfigured(): boolean {
   return Boolean(getSupabaseUrl() && getSupabaseAnonKey());
 }
 
+export function getSupabaseAuthStorageKey(): string | undefined {
+  const supabaseUrl = getSupabaseUrl();
+  if (!supabaseUrl) return undefined;
+
+  try {
+    const { hostname } = new URL(supabaseUrl);
+    const projectRef = hostname.split('.')[0];
+    return projectRef ? `sb-${projectRef}-auth-token` : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 let clientInstance: SupabaseClient | null = null;
 let clientCacheKey: string | null = null;
 
@@ -60,7 +73,11 @@ function resolveClientConfig(featureLabel: string): { url: string; anonKey: stri
 
 export function createClient(featureLabel: string): SupabaseClient {
   const { url, anonKey } = resolveClientConfig(featureLabel);
-  return createSupabaseJsClient(url, anonKey);
+  return createSupabaseJsClient(url, anonKey, {
+    auth: {
+      detectSessionInUrl: false,
+    },
+  });
 }
 
 export function getSupabaseClient(featureLabel: string): SupabaseClient {
@@ -68,7 +85,11 @@ export function getSupabaseClient(featureLabel: string): SupabaseClient {
   const nextCacheKey = `${url}::${anonKey}`;
 
   if (!clientInstance || clientCacheKey !== nextCacheKey) {
-    clientInstance = createSupabaseJsClient(url, anonKey);
+    clientInstance = createSupabaseJsClient(url, anonKey, {
+      auth: {
+        detectSessionInUrl: false,
+      },
+    });
     clientCacheKey = nextCacheKey;
   }
 

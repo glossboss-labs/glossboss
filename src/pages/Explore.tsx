@@ -46,6 +46,7 @@ const SORT_LABELS: Record<SortOption, string> = {
   'least-complete': msgid('Least complete'),
 };
 const META_TITLE = msgid('Explore Open-Source Translation Projects — GlossBoss');
+const BROWSER_TITLE = msgid('Explore — GlossBoss');
 const META_DESCRIPTION = msgid(
   'Browse public GlossBoss translation projects, languages, contributors, and completion progress.',
 );
@@ -205,7 +206,12 @@ export default function Explore() {
 
   return (
     <>
-      <SeoMeta title={t(META_TITLE)} description={t(META_DESCRIPTION)} canonicalPath="/explore" />
+      <SeoMeta
+        title={t(META_TITLE)}
+        browserTitle={t(BROWSER_TITLE)}
+        description={t(META_DESCRIPTION)}
+        canonicalPath="/explore"
+      />
       <MotionDiv variants={staggerPageVariants} initial="hidden" animate="visible">
         {/* Hero header */}
         <MotionDiv variants={fadeVariants}>

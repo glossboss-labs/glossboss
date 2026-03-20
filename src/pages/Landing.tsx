@@ -19,6 +19,7 @@ import {
 import { SeoMeta } from '@/components/SeoMeta';
 
 const META_TITLE = msgid('GlossBoss — Open-Source Translation Platform');
+const BROWSER_TITLE = msgid('GlossBoss');
 const META_DESCRIPTION = msgid(
   'Free, open-source translation editor for PO, POT, and i18next JSON files. AI translation from DeepL, OpenAI, Claude, Gemini, Mistral, DeepSeek & Azure with real-time collaboration and GitHub/GitLab sync.',
 );
@@ -38,6 +39,7 @@ export default function Landing({
     <div className="min-h-screen bg-surface-0">
       <SeoMeta
         title={t(META_TITLE)}
+        browserTitle={t(BROWSER_TITLE)}
         description={t(META_DESCRIPTION)}
         canonicalPath={canonicalPath}
       />

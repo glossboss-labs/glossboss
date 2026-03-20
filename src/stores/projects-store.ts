@@ -17,10 +17,13 @@ import {
   createProject as apiCreateProject,
   deleteProject as apiDeleteProject,
   createProjectLanguage as apiCreateProjectLanguage,
+  getProjectLanguageByLocale as apiGetProjectLanguageByLocale,
+  updateProjectLanguage as apiUpdateProjectLanguage,
   deleteProjectLanguage as apiDeleteProjectLanguage,
   cloneLanguageEntries as apiCloneLanguageEntries,
   syncProjectEntries,
 } from '@/lib/projects/api';
+import { createOrReuseInitialProjectLanguage } from '@/lib/projects/initial-language';
 import type { POEntry } from '@/lib/po/types';
 
 export interface ProjectsState {
@@ -75,10 +78,17 @@ export const useProjectsStore = create<ProjectsState & ProjectsActions>()((set, 
 
     // Create first language + entries (if provided)
     if (languageInsert) {
-      const language = await apiCreateProjectLanguage({
-        ...languageInsert,
-        project_id: project.id,
-      });
+      const language = await createOrReuseInitialProjectLanguage(
+        {
+          ...languageInsert,
+          project_id: project.id,
+        },
+        {
+          createLanguage: apiCreateProjectLanguage,
+          getLanguageByLocale: apiGetProjectLanguageByLocale,
+          updateLanguage: apiUpdateProjectLanguage,
+        },
+      );
       languageId = language.id;
 
       if (entries && entries.length > 0) {

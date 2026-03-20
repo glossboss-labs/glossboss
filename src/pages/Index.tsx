@@ -8,6 +8,7 @@
 import { useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router';
 import { Box, Container, Stack } from '@mantine/core';
+import { msgid } from '@/lib/app-language';
 import { EmptyState, EditorHeader, EditorWorkspace } from '@/components/editor';
 import { SeoMeta } from '@/components/SeoMeta';
 import { IndexPageBanners } from './index/IndexPageBanners';
@@ -17,6 +18,7 @@ import { useIndexPageController } from './index/useIndexPageController';
 import { useEditorTour } from '@/hooks/use-editor-tour';
 
 const META_TITLE = 'Free Online PO Editor for PO, POT and JSON — GlossBoss';
+const BROWSER_TITLE = msgid('Editor — GlossBoss');
 const META_DESCRIPTION =
   'Open PO, POT, and i18next JSON files in your browser and translate them with the free local editor. No account required.';
 
@@ -48,7 +50,12 @@ export default function Index() {
 
   return (
     <Box {...dragAreaProps} style={{ minHeight: '100vh', position: 'relative' }}>
-      <SeoMeta title={META_TITLE} description={META_DESCRIPTION} canonicalPath="/editor" />
+      <SeoMeta
+        title={META_TITLE}
+        browserTitle={BROWSER_TITLE}
+        description={META_DESCRIPTION}
+        canonicalPath="/editor"
+      />
       <IndexPageNotifications {...notificationsProps} />
 
       <Box component="main">
