@@ -9,8 +9,9 @@ import { motion } from 'motion/react';
 import { Trash2 } from 'lucide-react';
 import { buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
-import { updateProject, deleteProject } from '@/lib/projects/api';
+import { updateProject } from '@/lib/projects/api';
 import type { ProjectRow } from '@/lib/projects/types';
+import { useDeleteProject } from '@/lib/projects/queries';
 import { ConfirmModal } from '@/components/ui';
 
 interface ProjectSettingsTabProps {
@@ -30,6 +31,7 @@ export function ProjectSettingsTab({
 }: ProjectSettingsTabProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const deleteProjectMutation = useDeleteProject();
 
   const [editName, setEditName] = useState(project.name);
   const [editDescription, setEditDescription] = useState(project.description);
@@ -58,14 +60,14 @@ export function ProjectSettingsTab({
   const handleDelete = useCallback(async () => {
     setDeleting(true);
     try {
-      await deleteProject(project.id);
+      await deleteProjectMutation.mutateAsync(project.id);
       setConfirmDeleteOpen(false);
       void navigate('/dashboard');
     } catch (err) {
       onError(err instanceof Error ? err.message : t('Failed to delete project'));
       setDeleting(false);
     }
-  }, [project.id, navigate, onError, t]);
+  }, [deleteProjectMutation, project.id, navigate, onError, t]);
 
   return (
     <Stack gap="lg">

@@ -57,7 +57,11 @@ import { formatRelative } from '@/lib/utils/date';
 import { sortLanguages, type LangSortOption } from '@/lib/utils/sorting';
 import { useQueryClient } from '@tanstack/react-query';
 import { removeProjectMember, joinPublicProject, getProjectEntryPreview } from '@/lib/projects/api';
-import type { ProjectMemberWithProfile, ProjectInviteRow } from '@/lib/projects/types';
+import type {
+  ProjectMemberWithProfile,
+  ProjectInviteRow,
+  ProjectWithLanguages,
+} from '@/lib/projects/types';
 import {
   projectKeys,
   useProject,
@@ -167,13 +171,17 @@ export default function ProjectDetail() {
     setLeaveLoading(true);
     try {
       await removeProjectMember(myMembership.id);
+      queryClient.setQueryData<ProjectWithLanguages[]>(projectKeys.all, (old) =>
+        old ? old.filter((p) => p.id !== id) : [],
+      );
+      void queryClient.invalidateQueries({ queryKey: projectKeys.all });
       setConfirmLeaveOpen(false);
       void navigate('/dashboard');
     } catch (err) {
       setError(err instanceof Error ? err.message : t('Failed to leave project'));
       setLeaveLoading(false);
     }
-  }, [myMembership, navigate, t]);
+  }, [id, myMembership, navigate, queryClient, t]);
 
   const handleJoinProject = useCallback(async () => {
     if (!user || !id) return;

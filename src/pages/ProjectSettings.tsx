@@ -49,17 +49,13 @@ import {
 } from 'lucide-react';
 import { staggerPageVariants, fadeVariants, buttonStates } from '@/lib/motion';
 import { useTranslation } from '@/lib/app-language';
-import {
-  updateProject,
-  deleteProject,
-  removeProjectMember,
-  updateProjectLanguage,
-} from '@/lib/projects/api';
+import { updateProject, removeProjectMember, updateProjectLanguage } from '@/lib/projects/api';
 import type {
   ProjectRow,
   ProjectLanguageRow,
   ProjectMemberWithProfile,
   ProjectInviteRow,
+  ProjectWithLanguages,
 } from '@/lib/projects/types';
 import { useProjectRole } from '@/hooks/use-project-role';
 import { useAuth } from '@/hooks/use-auth';
@@ -74,6 +70,7 @@ import { getOrgSettings } from '@/lib/organizations/api';
 import type { OrgSettingsRow } from '@/lib/organizations/types';
 import {
   projectKeys,
+  useDeleteProject,
   useDeleteLanguage,
   useProject,
   useProjectLanguages,
@@ -92,6 +89,7 @@ export default function ProjectSettings() {
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = searchParams.get('tab') || 'general';
   const { isAdmin, isManager } = useProjectRole(id);
+  const deleteProjectMutation = useDeleteProject();
   const deleteLanguageMutation = useDeleteLanguage();
   const queryClient = useQueryClient();
   const {
@@ -200,27 +198,31 @@ export default function ProjectSettings() {
     if (!project) return;
     setDeleting(true);
     try {
-      await deleteProject(project.id);
+      await deleteProjectMutation.mutateAsync(project.id);
       setConfirmDeleteOpen(false);
       void navigate('/dashboard');
     } catch (err) {
       setError(err instanceof Error ? err.message : t('Failed to delete project'));
       setDeleting(false);
     }
-  }, [project, navigate, t]);
+  }, [deleteProjectMutation, project, navigate, t]);
 
   const handleLeave = useCallback(async () => {
     if (!myMembership) return;
     setLeaveLoading(true);
     try {
       await removeProjectMember(myMembership.id);
+      queryClient.setQueryData<ProjectWithLanguages[]>(projectKeys.all, (old) =>
+        old ? old.filter((p) => p.id !== id) : [],
+      );
+      void queryClient.invalidateQueries({ queryKey: projectKeys.all });
       setConfirmLeaveOpen(false);
       void navigate('/dashboard');
     } catch (err) {
       setError(err instanceof Error ? err.message : t('Failed to leave project'));
       setLeaveLoading(false);
     }
-  }, [myMembership, navigate, t]);
+  }, [id, myMembership, navigate, queryClient, t]);
 
   const handleDeleteLanguage = useCallback(
     async (languageId: string) => {

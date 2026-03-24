@@ -117,6 +117,11 @@ export function useDeleteOrganization() {
       queryClient.setQueryData<OrganizationRow[]>(organizationKeys.all, (old) =>
         old ? old.filter((o) => o.id !== id) : [],
       );
+
+      void queryClient.invalidateQueries({ queryKey: organizationKeys.all });
+      void queryClient.invalidateQueries({
+        predicate: ({ queryKey }) => Array.isArray(queryKey) && queryKey[0] === 'organizations',
+      });
     },
   });
 }
