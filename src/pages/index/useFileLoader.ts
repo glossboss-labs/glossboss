@@ -18,6 +18,8 @@ import { getBundledExamplePo } from '@/lib/example-po';
 import { useTranslation } from '@/lib/app-language';
 import { useEditorStore, useSourceStore } from '@/stores';
 import { debugLog } from '@/lib/debug';
+import type { XLIFFEntryMeta } from '@/lib/xliff';
+import type { ReviewEntryState } from '@/lib/review';
 import { getFileExtension, isSupportedExtension } from '@/lib/po';
 import type { POEntry } from '@/lib/po';
 import type { PendingDraft } from './types';
@@ -69,6 +71,22 @@ export interface FileLoaderActions {
     summary: { added: number; removed: number; changed: number; metaUpdated: number };
     refreshGlossary: boolean;
   }) => Promise<void>;
+}
+
+/**
+ * Apply review states from Weglot XLIFF metadata.
+ * quality="Manual" → approved, quality="Automatic" → draft (default).
+ */
+function applyXliffReviewStates(entryMeta: Map<string, XLIFFEntryMeta>): void {
+  const reviewMap = new Map<string, ReviewEntryState>();
+  for (const [entryId, meta] of entryMeta) {
+    if (meta.quality === 'Manual') {
+      reviewMap.set(entryId, { status: 'approved', comments: [], history: [] });
+    }
+  }
+  if (reviewMap.size > 0) {
+    useEditorStore.getState().restoreReviewEntries(reviewMap);
+  }
 }
 
 interface UseFileLoaderOptions {
@@ -176,20 +194,24 @@ export function useFileLoader({
         setShowWarnings(true);
       }
 
-      if (format === 'i18next') {
-        loadFile(poFile, 'i18next');
-        debugLog(`[i18next] Parsed ${poFile.entries.length} entries from ${file.name}`);
-      } else {
-        const existingDraft = loadDraft(file.name);
-
-        if (existingDraft && existingDraft.dirtyEntryIds.length > 0) {
-          setPendingDraft({ draft: existingDraft, filename: file.name });
-        }
-
-        loadFile(poFile);
-        applyDetectedWordPressProject(poFile.header, file.name);
-        trackEvent('file_opened', { format: 'po', entries: poFile.entries.length });
+      const existingDraft = loadDraft(file.name);
+      if (existingDraft && existingDraft.dirtyEntryIds.length > 0) {
+        setPendingDraft({ draft: existingDraft, filename: file.name });
       }
+
+      loadFile(poFile, format, outcome.result.csvVariant);
+
+      if (format === 'po') {
+        applyDetectedWordPressProject(poFile.header, file.name);
+      }
+
+      // Apply review states from Weglot XLIFF quality attributes
+      if (outcome.result.xliffEntryMeta?.size) {
+        applyXliffReviewStates(outcome.result.xliffEntryMeta);
+      }
+
+      trackEvent('file_opened', { format, entries: poFile.entries.length });
+      debugLog(`[${format}] Parsed ${poFile.entries.length} entries from ${file.name}`);
     },
     [applyDetectedWordPressProject, clearUpstreamDeltaEntries, loadFile],
   );
@@ -216,10 +238,14 @@ export function useFileLoader({
         setShowWarnings(true);
       }
 
-      loadFile(poFile, format === 'i18next' ? 'i18next' : undefined);
+      loadFile(poFile, format, outcome.result.csvVariant);
 
-      if (format !== 'i18next') {
+      if (format === 'po') {
         applyDetectedWordPressProject(poFile.header, repoFilename);
+      }
+
+      if (outcome.result.xliffEntryMeta?.size) {
+        applyXliffReviewStates(outcome.result.xliffEntryMeta);
       }
     },
     [applyDetectedWordPressProject, loadFile],
@@ -316,10 +342,14 @@ export function useFileLoader({
           setShowWarnings(true);
         }
 
-        loadFile(poFile, format === 'i18next' ? 'i18next' : undefined);
+        loadFile(poFile, format, outcome.result.csvVariant);
 
-        if (format !== 'i18next') {
+        if (format === 'po') {
           applyDetectedWordPressProject(poFile.header, name);
+        }
+
+        if (outcome.result.xliffEntryMeta?.size) {
+          applyXliffReviewStates(outcome.result.xliffEntryMeta);
         }
 
         setUrlInput('');
@@ -503,7 +533,9 @@ export function useFileLoader({
 
       if (!isSupportedExtension(ext)) {
         setDragError(
-          t('Invalid file type: .{{ext}}. Please drop a .po, .pot, or .json file.', { ext }),
+          t('Invalid file type: .{{ext}}. Please drop a .po, .pot, .json, .csv, or .xliff file.', {
+            ext,
+          }),
         );
         return;
       }

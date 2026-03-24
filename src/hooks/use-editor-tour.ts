@@ -70,7 +70,7 @@ function getEmptySteps(t: T): DriveStep[] {
       popover: {
         title: t('Upload a file'),
         description: t(
-          'Drop a translation file here to get started. Works with .po, .pot, and .json — the standard formats for WordPress, React, and most i18n frameworks.',
+          'Drop a translation file here to get started. Works with .po, .pot, .json, .csv, and .xliff — the standard formats for WordPress, React, website translation platforms, and most i18n frameworks.',
         ),
         side: 'bottom',
         align: 'center',

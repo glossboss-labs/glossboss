@@ -62,6 +62,7 @@ import {
   removeOrgMember,
   updateOrganization,
   deleteOrganization,
+  transferOrganizationOwnership,
   createInvite,
   revokeInvite,
 } from '@/lib/organizations/api';
@@ -77,6 +78,7 @@ import { AnimatedStateSwitch, AnimatedTabPanel, ConfirmModal, RoleBadge } from '
 import { OrgTranslationTab } from '@/components/organizations/OrgTranslationTab';
 import { SharedCredentialsTab } from '@/components/organizations/SharedCredentialsTab';
 import { useOrganizationBySlug, useOrgSettingsPage } from '@/lib/organizations/queries';
+import { CreateProjectModal } from '@/components/projects/CreateProjectModal';
 
 const MotionDiv = motion.div;
 
@@ -120,14 +122,18 @@ export default function OrgSettingsPage() {
   // Confirm state
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [confirmLeaveOpen, setConfirmLeaveOpen] = useState(false);
+  const [confirmTransferOpen, setConfirmTransferOpen] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [transferTarget, setTransferTarget] = useState<OrgMemberWithProfile | null>(null);
 
   const myMembership = useMemo(
     () => (user ? members.find((m) => m.user_id === user.id) : undefined),
     [user, members],
   );
   const isAdmin = myMembership?.role === 'owner' || myMembership?.role === 'admin';
-  const isOwner = myMembership?.role === 'owner';
+  const isOwner = myMembership?.role === 'owner' || org?.owner_id === user?.id;
+  const canLeaveOrganization = !isOwner && members.length > 1;
 
   useEffect(() => {
     if (!baseOrg) return;
@@ -247,8 +253,43 @@ export default function OrgSettingsPage() {
     }
   }, [org, navigate, t]);
 
+  const handleTransferOwnership = useCallback(async () => {
+    if (!org || !transferTarget) return;
+    setActionLoading(true);
+    try {
+      await transferOrganizationOwnership(org.id, transferTarget.user_id);
+      setMembers((prev) =>
+        prev.map((member) => {
+          if (member.user_id === transferTarget.user_id) {
+            return { ...member, role: 'owner' };
+          }
+          if (member.user_id === user?.id && member.role === 'owner') {
+            return { ...member, role: 'admin' };
+          }
+          return member;
+        }),
+      );
+      setOrg((prev) => (prev ? { ...prev, owner_id: transferTarget.user_id } : prev));
+      setConfirmTransferOpen(false);
+      setTransferTarget(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t('Failed to transfer ownership'));
+    } finally {
+      setActionLoading(false);
+    }
+  }, [org, t, transferTarget, user?.id]);
+
   const handleLeaveOrg = useCallback(async () => {
     if (!myMembership) return;
+
+    if (!canLeaveOrganization) {
+      setConfirmLeaveOpen(false);
+      if (isOwner) {
+        setConfirmDeleteOpen(true);
+      }
+      return;
+    }
+
     setActionLoading(true);
     try {
       await removeOrgMember(myMembership.id);
@@ -258,7 +299,7 @@ export default function OrgSettingsPage() {
       setError(err instanceof Error ? err.message : t('Failed to leave organization'));
       setActionLoading(false);
     }
-  }, [myMembership, navigate, t]);
+  }, [canLeaveOrganization, isOwner, myMembership, navigate, t]);
 
   const stateKey = loading ? 'loading' : (error ?? queryErrorMessage) && !org ? 'error' : 'data';
 
@@ -520,6 +561,10 @@ export default function OrgSettingsPage() {
                                       isAdmin &&
                                       member.role !== 'owner' &&
                                       member.user_id !== user?.id;
+                                    const canTransferOwnership =
+                                      isOwner &&
+                                      member.user_id !== user?.id &&
+                                      member.role !== 'owner';
                                     return (
                                       <MotionDiv key={member.id} variants={contentVariants}>
                                         <Paper withBorder p="sm">
@@ -566,6 +611,20 @@ export default function OrgSettingsPage() {
                                                     </ActionIcon>
                                                   </Menu.Target>
                                                   <Menu.Dropdown>
+                                                    {canTransferOwnership && (
+                                                      <>
+                                                        <Menu.Item
+                                                          leftSection={<Shield size={14} />}
+                                                          onClick={() => {
+                                                            setTransferTarget(member);
+                                                            setConfirmTransferOpen(true);
+                                                          }}
+                                                        >
+                                                          {t('Transfer ownership')}
+                                                        </Menu.Item>
+                                                        {canModify && <Menu.Divider />}
+                                                      </>
+                                                    )}
                                                     {member.role !== 'admin' && (
                                                       <Menu.Item
                                                         leftSection={<Shield size={14} />}
@@ -706,10 +765,9 @@ export default function OrgSettingsPage() {
                               <Group justify="flex-end">
                                 <motion.div {...buttonStates}>
                                   <Button
-                                    component={Link}
-                                    to="/dashboard"
                                     variant="light"
                                     leftSection={<FolderOpen size={14} />}
+                                    onClick={() => setCreateModalOpen(true)}
                                   >
                                     {t('Create project')}
                                   </Button>
@@ -843,7 +901,13 @@ export default function OrgSettingsPage() {
                                       color="orange"
                                       variant="outline"
                                       leftSection={<LogOut size={14} />}
-                                      onClick={() => setConfirmLeaveOpen(true)}
+                                      onClick={() => {
+                                        if (canLeaveOrganization) {
+                                          setConfirmLeaveOpen(true);
+                                          return;
+                                        }
+                                        setConfirmDeleteOpen(true);
+                                      }}
                                     >
                                       {t('Leave organization')}
                                     </Button>
@@ -871,6 +935,35 @@ export default function OrgSettingsPage() {
               )}
               confirmLabel={t('Delete organization')}
               variant="danger"
+              loading={actionLoading}
+            />
+
+            <CreateProjectModal
+              opened={createModalOpen}
+              onClose={() => setCreateModalOpen(false)}
+              initialOrganizationId={org?.id ?? null}
+            />
+
+            <ConfirmModal
+              opened={confirmTransferOpen}
+              onClose={() => {
+                setConfirmTransferOpen(false);
+                setTransferTarget(null);
+              }}
+              onConfirm={() => void handleTransferOwnership()}
+              title={t('Transfer ownership')}
+              message={t(
+                'Are you sure you want to transfer ownership of "{{name}}" to {{member}}? You will become an admin.',
+                {
+                  name: org.name,
+                  member:
+                    transferTarget?.profiles.full_name ??
+                    transferTarget?.profiles.email ??
+                    t('this member'),
+                },
+              )}
+              confirmLabel={t('Transfer ownership')}
+              variant="warning"
               loading={actionLoading}
             />
 

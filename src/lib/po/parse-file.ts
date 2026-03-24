@@ -1,7 +1,7 @@
 /**
  * File Parsing Utilities
  *
- * Shared parsing pipeline for PO/POT/JSON files from any source
+ * Shared parsing pipeline for PO/POT/JSON/CSV/XLIFF files from any source
  * (file upload, repository, URL). Extracted from the editor controller
  * for reuse in project creation and other import flows.
  */
@@ -10,8 +10,11 @@ import type { POEntry, POFile, ParseIssue } from './types';
 import { parsePOFileWithDiagnostics } from './parser';
 import { detectAndDecode, type SupportedEncoding } from './encoding';
 import { parseI18nextJSON, isI18nextContent } from '@/lib/i18next';
+import { parseCSVTranslationFile, isCSVTranslationContent, detectCSVVariant } from '@/lib/csv';
+import { parseXLIFF, isXLIFFContent, type XLIFFEntryMeta } from '@/lib/xliff';
 import { applySourceFile } from './source-file';
 import type { FileFormat } from '@/stores/editor-store';
+import type { CSVVariant } from '@/lib/csv';
 
 export interface EncodingInfo {
   encoding: SupportedEncoding;
@@ -23,6 +26,9 @@ export interface ParsedFileResult {
   file: POFile;
   format: FileFormat;
   encoding?: EncodingInfo;
+  csvVariant?: CSVVariant;
+  /** Per-entry metadata from Weglot XLIFF (quality, type, url, etc.) */
+  xliffEntryMeta?: Map<string, XLIFFEntryMeta>;
   warnings: ParseIssue[];
 }
 
@@ -30,7 +36,7 @@ export type ParseFileOutcome =
   | { ok: true; result: ParsedFileResult }
   | { ok: false; errors: ParseIssue[] };
 
-const VALID_EXTENSIONS = new Set(['po', 'pot', 'json']);
+const VALID_EXTENSIONS = new Set(['po', 'pot', 'json', 'csv', 'xliff', 'xlf']);
 
 /** Get the lowercase file extension from a filename. */
 export function getFileExtension(filename: string): string | undefined {
@@ -56,7 +62,7 @@ export async function parseUploadedFile(file: File): Promise<ParseFileOutcome> {
         {
           severity: 'error',
           code: 'INVALID_SYNTAX',
-          message: `Invalid file type: .${ext ?? ''}. Please upload a .po, .pot, or .json file.`,
+          message: `Invalid file type: .${ext ?? ''}. Please upload a .po, .pot, .json, .csv, .xliff, or .xlf file.`,
         },
       ],
     };
@@ -66,6 +72,16 @@ export async function parseUploadedFile(file: File): Promise<ParseFileOutcome> {
     if (ext === 'json') {
       const text = await file.text();
       return parseJsonContent(text, file.name);
+    }
+
+    if (ext === 'csv') {
+      const text = await file.text();
+      return parseCsvContent(text, file.name);
+    }
+
+    if (ext === 'xliff' || ext === 'xlf') {
+      const text = await file.text();
+      return parseXliffContent(text, file.name);
     }
 
     // PO/POT: detect encoding from raw binary
@@ -100,6 +116,14 @@ export function parseFileContent(content: string, filename: string): ParseFileOu
 
   if (ext === 'json' || isI18nextContent(content)) {
     return parseJsonContent(content, filename);
+  }
+
+  if (ext === 'csv' || isCSVTranslationContent(content)) {
+    return parseCsvContent(content, filename);
+  }
+
+  if (ext === 'xliff' || ext === 'xlf' || isXLIFFContent(content)) {
+    return parseXliffContent(content, filename);
   }
 
   return parsePoContent(content, filename);
@@ -146,6 +170,68 @@ function parsePoContent(
   }
 
   return { ok: true, result: { file: result.file, format: 'po', encoding, warnings } };
+}
+
+function parseCsvContent(text: string, filename: string): ParseFileOutcome {
+  try {
+    const file = parseCSVTranslationFile(text, filename);
+    if (file.entries.length === 0) {
+      return {
+        ok: false,
+        errors: [
+          {
+            severity: 'error',
+            code: 'NO_ENTRIES',
+            message: 'CSV file contains no translation entries.',
+          },
+        ],
+      };
+    }
+
+    // Detect variant from the first row's headers
+    const firstLine = text.replace(/^\uFEFF/, '').split(/\r?\n/)[0] ?? '';
+    const headers = firstLine.split(',').map((h) => h.trim().replace(/^"|"$/g, '').toLowerCase());
+    const variant = detectCSVVariant(headers);
+
+    return { ok: true, result: { file, format: 'csv', csvVariant: variant, warnings: [] } };
+  } catch (error) {
+    return {
+      ok: false,
+      errors: [
+        {
+          severity: 'error',
+          code: 'INVALID_SYNTAX',
+          message: error instanceof Error ? error.message : 'Failed to parse CSV file.',
+        },
+      ],
+    };
+  }
+}
+
+function parseXliffContent(text: string, filename: string): ParseFileOutcome {
+  try {
+    const { file, entryMeta } = parseXLIFF(text, filename);
+    return {
+      ok: true,
+      result: {
+        file,
+        format: 'xliff',
+        xliffEntryMeta: entryMeta.size > 0 ? entryMeta : undefined,
+        warnings: [],
+      },
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      errors: [
+        {
+          severity: 'error',
+          code: 'INVALID_SYNTAX',
+          message: error instanceof Error ? error.message : 'Failed to parse XLIFF file.',
+        },
+      ],
+    };
+  }
 }
 
 // ── Source file helpers ───────────────────────────────────────

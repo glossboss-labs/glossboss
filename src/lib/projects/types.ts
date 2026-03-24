@@ -19,7 +19,7 @@ export interface ProjectRow {
   public_role: 'viewer' | 'translator' | 'reviewer';
   source_language: string | null;
   target_language: string | null;
-  source_format: 'po' | 'i18next';
+  source_format: 'po' | 'i18next' | 'csv' | 'xliff';
   source_filename: string | null;
   po_header: Record<string, string> | null;
   wp_project_type: 'plugin' | 'theme' | null;

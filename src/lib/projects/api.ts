@@ -55,6 +55,28 @@ const PROJECT_SELECT = [
   'updated_at',
 ].join(', ');
 
+const LEGACY_PROJECT_SELECT = [
+  'id',
+  'owner_id',
+  'organization_id',
+  'name',
+  'description',
+  'visibility',
+  'source_language',
+  'target_language',
+  'source_format',
+  'source_filename',
+  'po_header',
+  'stats_total',
+  'stats_translated',
+  'stats_fuzzy',
+  'stats_untranslated',
+  'created_at',
+  'updated_at',
+].join(', ');
+
+const PROJECT_SELECT_VARIANTS = [PROJECT_SELECT, LEGACY_PROJECT_SELECT] as const;
+
 const PROJECT_LANGUAGE_SELECT = [
   'id',
   'project_id',
@@ -87,11 +109,155 @@ const PROJECT_LANGUAGE_SELECT = [
   'updated_at',
 ].join(', ');
 
+const LEGACY_PROJECT_LANGUAGE_SELECT = [
+  'id',
+  'project_id',
+  'locale',
+  'source_filename',
+  'po_header',
+  'wp_locale',
+  'repo_provider',
+  'repo_owner',
+  'repo_name',
+  'repo_branch',
+  'repo_file_path',
+  'repo_default_branch',
+  'stats_total',
+  'stats_translated',
+  'stats_fuzzy',
+  'stats_untranslated',
+  'created_at',
+  'updated_at',
+].join(', ');
+
+const PROJECT_LANGUAGE_SELECT_VARIANTS = [
+  PROJECT_LANGUAGE_SELECT,
+  LEGACY_PROJECT_LANGUAGE_SELECT,
+] as const;
+
 const PROJECT_MEMBER_SELECT = 'id, project_id, user_id, role, created_at, updated_at';
 const PROJECT_INVITE_SELECT =
   'id, project_id, email, role, token, invited_by, accepted_at, accepted_by, expires_at, created_at';
 const PROJECT_ENTRY_SELECT =
   'id, project_id, language_id, entry_index, msgctxt, msgid, msgid_plural, msgstr, msgstr_plural, flags, translator_comments, extracted_comments, file_references, previous_msgid, previous_msgctxt, review_status, review_comments, review_history, mt_provider, mt_used_glossary, mt_glossary_mode, mt_context_used, mt_timestamp, created_at, updated_at';
+
+interface PostgrestErrorLike {
+  code?: string;
+  details?: string;
+  hint?: string;
+  message?: string;
+  status?: number;
+}
+
+function shouldRetryWithLegacySelect(error: unknown): error is PostgrestErrorLike {
+  if (!error || typeof error !== 'object') return false;
+
+  const candidate = error as PostgrestErrorLike;
+  const combined = [candidate.message, candidate.details, candidate.hint]
+    .filter((value): value is string => typeof value === 'string' && value.length > 0)
+    .join(' ')
+    .toLowerCase();
+
+  return (
+    candidate.status === 400 ||
+    candidate.code === '42703' ||
+    candidate.code === 'PGRST204' ||
+    combined.includes('column') ||
+    combined.includes('schema cache') ||
+    combined.includes('could not find')
+  );
+}
+
+function normalizeProject(row: Partial<ProjectRow>): ProjectRow {
+  return {
+    id: row.id ?? '',
+    owner_id: row.owner_id ?? '',
+    organization_id: row.organization_id ?? null,
+    name: row.name ?? '',
+    description: row.description ?? '',
+    website: row.website ?? '',
+    visibility: row.visibility ?? 'private',
+    public_role: row.public_role ?? 'viewer',
+    source_language: row.source_language ?? null,
+    target_language: row.target_language ?? null,
+    source_format: row.source_format ?? 'po',
+    source_filename: row.source_filename ?? null,
+    po_header: row.po_header ?? null,
+    wp_project_type: row.wp_project_type ?? null,
+    wp_slug: row.wp_slug ?? null,
+    wp_track: row.wp_track ?? null,
+    stats_total: row.stats_total ?? 0,
+    stats_translated: row.stats_translated ?? 0,
+    stats_fuzzy: row.stats_fuzzy ?? 0,
+    stats_untranslated: row.stats_untranslated ?? 0,
+    created_at: row.created_at ?? '',
+    updated_at: row.updated_at ?? '',
+  };
+}
+
+function normalizeProjectLanguage(row: Partial<ProjectLanguageRow>): ProjectLanguageRow {
+  return {
+    id: row.id ?? '',
+    project_id: row.project_id ?? '',
+    locale: row.locale ?? '',
+    source_filename: row.source_filename ?? null,
+    po_header: row.po_header ?? null,
+    wp_locale: row.wp_locale ?? null,
+    repo_provider: row.repo_provider ?? null,
+    repo_owner: row.repo_owner ?? null,
+    repo_name: row.repo_name ?? null,
+    repo_branch: row.repo_branch ?? null,
+    repo_file_path: row.repo_file_path ?? null,
+    repo_default_branch: row.repo_default_branch ?? null,
+    glossary_source: row.glossary_source ?? null,
+    glossary_url: row.glossary_url ?? null,
+    glossary_repo_provider: row.glossary_repo_provider ?? null,
+    glossary_repo_owner: row.glossary_repo_owner ?? null,
+    glossary_repo_name: row.glossary_repo_name ?? null,
+    glossary_repo_branch: row.glossary_repo_branch ?? null,
+    glossary_repo_file_path: row.glossary_repo_file_path ?? null,
+    glossary_repo_default_branch: row.glossary_repo_default_branch ?? null,
+    glossary_enforcement: row.glossary_enforcement ?? false,
+    translation_provider: row.translation_provider ?? null,
+    translation_instructions: row.translation_instructions ?? '',
+    stats_total: row.stats_total ?? 0,
+    stats_translated: row.stats_translated ?? 0,
+    stats_fuzzy: row.stats_fuzzy ?? 0,
+    stats_untranslated: row.stats_untranslated ?? 0,
+    created_at: row.created_at ?? '',
+    updated_at: row.updated_at ?? '',
+  };
+}
+
+async function runProjectSelect<T>(
+  build: (select: string) => Promise<{ data: T | null; error: PostgrestErrorLike | null }>,
+): Promise<{ data: T | null; error: PostgrestErrorLike | null }> {
+  let lastError: PostgrestErrorLike | null = null;
+
+  for (const select of PROJECT_SELECT_VARIANTS) {
+    const result = await build(select);
+    if (!result.error) return result;
+    lastError = result.error;
+    if (!shouldRetryWithLegacySelect(result.error)) return result;
+  }
+
+  return { data: null, error: lastError };
+}
+
+async function runProjectLanguageSelect<T>(
+  build: (select: string) => Promise<{ data: T | null; error: PostgrestErrorLike | null }>,
+): Promise<{ data: T | null; error: PostgrestErrorLike | null }> {
+  let lastError: PostgrestErrorLike | null = null;
+
+  for (const select of PROJECT_LANGUAGE_SELECT_VARIANTS) {
+    const result = await build(select);
+    if (!result.error) return result;
+    lastError = result.error;
+    if (!shouldRetryWithLegacySelect(result.error)) return result;
+  }
+
+  return { data: null, error: lastError };
+}
 
 // ── Projects ─────────────────────────────────────────────────
 
@@ -104,49 +270,68 @@ export async function listProjects(): Promise<ProjectWithLanguages[]> {
   // Inner-join on project_members so only projects the current user belongs
   // to are returned.  Without this, the public-read RLS policy for unlisted
   // projects causes other users' unlisted projects to leak into the list.
-  const joined = await supabase()
-    .from('projects')
-    .select(
-      `${PROJECT_SELECT}, project_languages(${PROJECT_LANGUAGE_SELECT}), project_members!inner(user_id)`,
-    )
-    .eq('project_members.user_id', user.id)
-    .order('updated_at', { ascending: false });
-
-  if (!joined.error) {
-    return (joined.data ?? []).map(({ project_members: _pm, ...p }) => p) as ProjectWithLanguages[];
-  }
-
-  // Fallback: projects-only if PostgREST schema cache hasn't picked up
-  // the project_languages relationship yet.
-  const { data, error } = await supabase()
-    .from('projects')
-    .select(`${PROJECT_SELECT}, project_members!inner(user_id)`)
-    .eq('project_members.user_id', user.id)
-    .order('updated_at', { ascending: false });
+  const { data, error } = await runProjectSelect((select) =>
+    supabase()
+      .from('projects')
+      .select(`${select}, project_members!inner(user_id)`)
+      .eq('project_members.user_id', user.id)
+      .order('updated_at', { ascending: false }),
+  );
 
   if (error) throw error;
-  return (data ?? []).map(({ project_members: _pm, ...p }) => ({
-    ...p,
-    project_languages: [],
-  })) as ProjectWithLanguages[];
+
+  const projects = ((data ?? []) as Array<Record<string, unknown>>).map(
+    ({ project_members: _pm, ...project }) => normalizeProject(project as Partial<ProjectRow>),
+  );
+
+  if (projects.length === 0) return [];
+
+  const { data: languages, error: languagesError } = await runProjectLanguageSelect((select) =>
+    supabase()
+      .from('project_languages')
+      .select(select)
+      .in(
+        'project_id',
+        projects.map((project) => project.id),
+      ),
+  );
+
+  if (languagesError) {
+    return projects.map((project) => ({ ...project, project_languages: [] }));
+  }
+
+  const languagesByProjectId = new Map<string, ProjectLanguageRow[]>();
+  for (const language of languages ?? []) {
+    const normalized = normalizeProjectLanguage(language as Partial<ProjectLanguageRow>);
+    const existing = languagesByProjectId.get(normalized.project_id) ?? [];
+    existing.push(normalized);
+    languagesByProjectId.set(normalized.project_id, existing);
+  }
+
+  return projects.map((project) => ({
+    ...project,
+    project_languages: languagesByProjectId.get(project.id) ?? [],
+  }));
 }
 
 export async function getProject(id: string): Promise<ProjectRow | null> {
-  const { data, error } = await supabase()
-    .from('projects')
-    .select(PROJECT_SELECT)
-    .eq('id', id)
-    .single();
+  const { data, error } = await runProjectSelect((select) =>
+    supabase().from('projects').select(select).eq('id', id).single(),
+  );
 
   if (error) {
     if (error.code === 'PGRST116') return null; // not found
     throw error;
   }
-  return data;
+  return data ? normalizeProject(data as Partial<ProjectRow>) : null;
 }
 
 export async function createProject(project: ProjectInsert): Promise<ProjectRow> {
-  const { data, error } = await supabase().from('projects').insert(project).select().single();
+  const { data, error } = await supabase()
+    .from('projects')
+    .insert(project)
+    .select(PROJECT_SELECT)
+    .single();
 
   if (error) throw error;
   return data;
@@ -157,7 +342,7 @@ export async function updateProject(id: string, updates: ProjectUpdate): Promise
     .from('projects')
     .update(updates)
     .eq('id', id)
-    .select()
+    .select(PROJECT_SELECT)
     .single();
 
   if (error) throw error;
@@ -172,44 +357,39 @@ export async function deleteProject(id: string): Promise<void> {
 
 /** List public projects visible on /explore (excludes unlisted). */
 export async function listPublicProjects(): Promise<ProjectWithLanguages[]> {
-  const joined = await supabase()
-    .from('projects')
-    .select(`${PROJECT_SELECT}, project_languages(${PROJECT_LANGUAGE_SELECT})`)
-    .eq('visibility', 'public')
-    .order('updated_at', { ascending: false });
-
-  if (!joined.error) {
-    return (joined.data ?? []) as ProjectWithLanguages[];
-  }
-
-  const { data, error } = await supabase()
-    .from('projects')
-    .select(PROJECT_SELECT)
-    .eq('visibility', 'public')
-    .order('updated_at', { ascending: false });
+  const { data, error } = await runProjectSelect((select) =>
+    supabase()
+      .from('projects')
+      .select(select)
+      .eq('visibility', 'public')
+      .order('updated_at', { ascending: false }),
+  );
 
   if (error) throw error;
 
-  const projects = data ?? [];
+  const projects = ((data ?? []) as ProjectRow[]).map((project) => normalizeProject(project));
   if (projects.length === 0) return [];
 
-  const { data: languages, error: languagesError } = await supabase()
-    .from('project_languages')
-    .select(PROJECT_LANGUAGE_SELECT)
-    .in(
-      'project_id',
-      projects.map((project) => project.id),
-    );
+  const { data: languages, error: languagesError } = await runProjectLanguageSelect((select) =>
+    supabase()
+      .from('project_languages')
+      .select(select)
+      .in(
+        'project_id',
+        projects.map((project) => project.id),
+      ),
+  );
 
   if (languagesError) {
-    return projects.map((p) => ({ ...p, project_languages: [] }) as ProjectWithLanguages);
+    return projects.map((project) => ({ ...project, project_languages: [] }));
   }
 
   const languagesByProjectId = new Map<string, ProjectLanguageRow[]>();
   for (const language of languages ?? []) {
-    const existing = languagesByProjectId.get(language.project_id) ?? [];
-    existing.push(language);
-    languagesByProjectId.set(language.project_id, existing);
+    const normalized = normalizeProjectLanguage(language as Partial<ProjectLanguageRow>);
+    const existing = languagesByProjectId.get(normalized.project_id) ?? [];
+    existing.push(normalized);
+    languagesByProjectId.set(normalized.project_id, existing);
   }
 
   return projects.map(
@@ -224,47 +404,51 @@ export async function listPublicProjects(): Promise<ProjectWithLanguages[]> {
 // ── Project Languages ────────────────────────────────────────
 
 export async function getProjectLanguages(projectId: string): Promise<ProjectLanguageRow[]> {
-  const { data, error } = await supabase()
-    .from('project_languages')
-    .select(PROJECT_LANGUAGE_SELECT)
-    .eq('project_id', projectId)
-    .order('created_at', { ascending: true });
+  const { data, error } = await runProjectLanguageSelect((select) =>
+    supabase()
+      .from('project_languages')
+      .select(select)
+      .eq('project_id', projectId)
+      .order('created_at', { ascending: true }),
+  );
 
   if (error) throw error;
-  return data ?? [];
+  return ((data ?? []) as ProjectLanguageRow[]).map((language) =>
+    normalizeProjectLanguage(language),
+  );
 }
 
 export async function getProjectLanguage(languageId: string): Promise<ProjectLanguageRow | null> {
-  const { data, error } = await supabase()
-    .from('project_languages')
-    .select(PROJECT_LANGUAGE_SELECT)
-    .eq('id', languageId)
-    .single();
+  const { data, error } = await runProjectLanguageSelect((select) =>
+    supabase().from('project_languages').select(select).eq('id', languageId).single(),
+  );
 
   if (error) {
     if (error.code === 'PGRST116') return null;
     throw error;
   }
-  return data;
+  return data ? normalizeProjectLanguage(data as Partial<ProjectLanguageRow>) : null;
 }
 
 export async function getProjectLanguageByLocale(
   projectId: string,
   locale: string,
 ): Promise<ProjectLanguageRow | null> {
-  const { data, error } = await supabase()
-    .from('project_languages')
-    .select(PROJECT_LANGUAGE_SELECT)
-    .eq('project_id', projectId)
-    .eq('locale', locale)
-    .maybeSingle();
+  const { data, error } = await runProjectLanguageSelect((select) =>
+    supabase()
+      .from('project_languages')
+      .select(select)
+      .eq('project_id', projectId)
+      .eq('locale', locale)
+      .maybeSingle(),
+  );
 
   if (error) {
     if (error.code === 'PGRST116') return null;
     throw error;
   }
 
-  return data;
+  return data ? normalizeProjectLanguage(data as Partial<ProjectLanguageRow>) : null;
 }
 
 export async function createProjectLanguage(
@@ -575,7 +759,11 @@ export async function listProjectInvites(projectId: string): Promise<ProjectInvi
 }
 
 export async function createProjectInvite(insert: ProjectInviteInsert): Promise<ProjectInviteRow> {
-  const { data, error } = await supabase().from('project_invites').insert(insert).select().single();
+  const { data, error } = await supabase()
+    .from('project_invites')
+    .insert(insert)
+    .select(PROJECT_INVITE_SELECT)
+    .single();
 
   if (error) throw error;
   return data;
@@ -613,24 +801,45 @@ export async function getProjectInviteByToken(token: string): Promise<ProjectInv
 // ── Org Projects ────────────────────────────────────────────
 
 export async function listOrgProjects(orgId: string): Promise<ProjectWithLanguages[]> {
-  const joined = await supabase()
-    .from('projects')
-    .select(`${PROJECT_SELECT}, project_languages(${PROJECT_LANGUAGE_SELECT})`)
-    .eq('organization_id', orgId)
-    .order('updated_at', { ascending: false });
-
-  if (!joined.error) {
-    return (joined.data ?? []) as ProjectWithLanguages[];
-  }
-
-  const { data, error } = await supabase()
-    .from('projects')
-    .select(PROJECT_SELECT)
-    .eq('organization_id', orgId)
-    .order('updated_at', { ascending: false });
+  const { data, error } = await runProjectSelect((select) =>
+    supabase()
+      .from('projects')
+      .select(select)
+      .eq('organization_id', orgId)
+      .order('updated_at', { ascending: false }),
+  );
 
   if (error) throw error;
-  return (data ?? []).map((p) => ({ ...p, project_languages: [] }) as ProjectWithLanguages);
+
+  const projects = ((data ?? []) as ProjectRow[]).map((project) => normalizeProject(project));
+  if (projects.length === 0) return [];
+
+  const { data: languages, error: languagesError } = await runProjectLanguageSelect((select) =>
+    supabase()
+      .from('project_languages')
+      .select(select)
+      .in(
+        'project_id',
+        projects.map((project) => project.id),
+      ),
+  );
+
+  if (languagesError) {
+    return projects.map((project) => ({ ...project, project_languages: [] }));
+  }
+
+  const languagesByProjectId = new Map<string, ProjectLanguageRow[]>();
+  for (const language of languages ?? []) {
+    const normalized = normalizeProjectLanguage(language as Partial<ProjectLanguageRow>);
+    const existing = languagesByProjectId.get(normalized.project_id) ?? [];
+    existing.push(normalized);
+    languagesByProjectId.set(normalized.project_id, existing);
+  }
+
+  return projects.map((project) => ({
+    ...project,
+    project_languages: languagesByProjectId.get(project.id) ?? [],
+  }));
 }
 
 export interface ProjectEditorPageData {

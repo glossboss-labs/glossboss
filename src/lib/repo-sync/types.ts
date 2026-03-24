@@ -134,7 +134,7 @@ export const DEFAULT_SYNC_SETTINGS: RepoSyncSettings = {
 };
 
 /** Locale file extensions we can open */
-export const LOCALE_FILE_EXTENSIONS = ['.po', '.pot', '.json'] as const;
+export const LOCALE_FILE_EXTENSIONS = ['.po', '.pot', '.json', '.csv', '.xliff', '.xlf'] as const;
 
 /** Check if a filename is a recognized locale file */
 export function isLocaleFile(filename: string): boolean {

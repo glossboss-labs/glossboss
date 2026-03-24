@@ -227,9 +227,11 @@ export function useAddLanguage() {
 
       return language.id;
     },
-    onSuccess: (_data, { projectId }) => {
+    onSettled: async (_data, _error, { projectId }) => {
       void queryClient.invalidateQueries({ queryKey: projectKeys.all });
+      void queryClient.invalidateQueries({ queryKey: projectKeys.detail(projectId) });
       void queryClient.invalidateQueries({ queryKey: projectKeys.languages(projectId) });
+      void queryClient.invalidateQueries({ queryKey: projectKeys.settingsPage(projectId) });
     },
   });
 }

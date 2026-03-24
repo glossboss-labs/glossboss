@@ -12,6 +12,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router';
 import {
+  Badge,
   Stack,
   Tooltip,
   UnstyledButton,
@@ -201,7 +202,7 @@ function NavItem({
   return button;
 }
 
-/** A single usage row with label, value, bar, and tooltip. */
+/** A single usage row with label, badge, bar, and tooltip. */
 function UsageRow({
   label,
   current,
@@ -215,10 +216,9 @@ function UsageRow({
   tooltip: string;
   color?: string;
 }) {
+  const { t } = useTranslation();
   const isUnlimited = limit === Infinity;
-  const pct = isUnlimited
-    ? Math.min(current > 0 ? 8 : 0, 100)
-    : Math.min(100, (current / limit) * 100);
+  const pct = isUnlimited ? 100 : Math.min(100, (current / limit) * 100);
   const barColor = !isUnlimited && pct >= 90 ? 'red' : !isUnlimited && pct >= 70 ? 'yellow' : color;
 
   return (
@@ -228,11 +228,17 @@ function UsageRow({
           <Text size="xs" c="dimmed">
             {label}
           </Text>
-          <Text size="xs" c="dimmed" className="gb-tabular-nums">
-            {current.toLocaleString()}/{isUnlimited ? '∞' : limit.toLocaleString()}
-          </Text>
+          {isUnlimited ? (
+            <Badge variant="light" color={barColor} size="xs" tt="uppercase">
+              {t('Unlimited')}
+            </Badge>
+          ) : (
+            <Badge variant="light" color={barColor} size="xs" className="gb-tabular-nums">
+              {current.toLocaleString()}/{limit.toLocaleString()}
+            </Badge>
+          )}
         </Group>
-        <Progress value={pct} size={4} radius="xl" color={barColor} />
+        <Progress value={pct} size={3} radius="xl" color={barColor} />
       </Box>
     </Tooltip>
   );
@@ -274,7 +280,7 @@ function ProviderUsageRow({
       ? `${session.tokenCount.toLocaleString()} tok`
       : hasData
         ? `${session.characterCount.toLocaleString()} chars`
-        : t('ready');
+        : t('Ready');
   const tip =
     session.tokenCount > 0
       ? t('{{tokens}} tokens · {{chars}} chars · {{count}} requests', {
@@ -296,11 +302,11 @@ function ProviderUsageRow({
           <Text size="xs" c="dimmed">
             {label}
           </Text>
-          <Text size="xs" c="dimmed" className="gb-tabular-nums">
+          <Badge variant="light" color="violet" size="xs" className="gb-tabular-nums">
             {stat}
-          </Text>
+          </Badge>
         </Group>
-        <Progress value={hasData ? 8 : 0} size={4} radius="xl" color="violet" />
+        <Progress value={hasData ? 8 : 0} size={3} radius="xl" color="violet" />
       </Box>
     </Tooltip>
   );
@@ -346,7 +352,7 @@ function SidebarUsageBars({
   }, []);
 
   return (
-    <Stack gap="xs" px={12} py={8}>
+    <Stack gap={6} px={12} py={2}>
       <UsageRow
         label={t('Projects')}
         current={projectCount}
@@ -656,7 +662,11 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
 
               {/* Usage bars */}
               {!collapsed && !subLoading && (
-                <SidebarUsageBars projects={projects} limits={limits} t={t} />
+                <>
+                  <Divider my={4} />
+                  <SidebarUsageBars projects={projects} limits={limits} t={t} />
+                  <Divider my={4} />
+                </>
               )}
 
               <NavItem

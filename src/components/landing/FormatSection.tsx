@@ -21,6 +21,23 @@ const jsonExample = `{
   }
 }`;
 
+const csvExample = `word_type,source_language,target_language,source_word,target_word,is_translated
+title,en,de,"Home Page","Startseite",1
+p,en,de,"Welcome to our site","Willkommen auf unserer Seite",1
+a,en,de,"Learn more","Mehr erfahren",1`;
+
+const xliffExample = `<xliff version="1.2">
+  <file source-language="en"
+        target-language="de">
+    <body>
+      <trans-unit id="1">
+        <source>Add to cart</source>
+        <target>In den Warenkorb</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>`;
+
 function CodeBlock({ title, code }: { title: string; code: string }) {
   return (
     <div className="overflow-hidden rounded-lg border border-border-subtle bg-surface-0 shadow-sm">
@@ -46,15 +63,15 @@ export function FormatSection() {
             {t('Every format, one editor')}
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-lg text-text-secondary">
-            {t(
-              'Edit gettext PO/POT files and i18next JSON resources in the same familiar interface.',
-            )}
+            {t('Edit PO/POT, i18next JSON, CSV, and XLIFF files in the same familiar interface.')}
           </p>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
           <CodeBlock title="translations.po" code={poExample} />
           <CodeBlock title="en/translation.json" code={jsonExample} />
+          <CodeBlock title="translations.csv" code={csvExample} />
+          <CodeBlock title="translations.xliff" code={xliffExample} />
         </div>
       </div>
     </section>

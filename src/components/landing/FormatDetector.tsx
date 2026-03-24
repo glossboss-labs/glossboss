@@ -10,14 +10,14 @@ interface DetectionResult {
   filename: string;
 }
 
-const SUPPORTED_EXTENSIONS = new Set(['.po', '.pot', '.json']);
-const COMING_SOON_EXTENSIONS = new Set(['.xliff', '.xlf', '.csv']);
+const SUPPORTED_EXTENSIONS = new Set(['.po', '.pot', '.json', '.xliff', '.xlf', '.csv']);
+const COMING_SOON_EXTENSIONS = new Set<string>();
 
 const messages: Record<ResultKind, string> = {
   supported: msgid('GlossBoss supports this format!'),
   'coming-soon': msgid("Coming soon — we're working on this format"),
   unsupported: msgid(
-    "This format isn't supported yet. GlossBoss works with PO, POT, and i18next JSON files.",
+    "This format isn't supported yet. GlossBoss works with PO, POT, JSON, CSV, and XLIFF files.",
   ),
 };
 
@@ -122,7 +122,7 @@ export function FormatDetector() {
                   {t('Drop a file to check compatibility, or click to browse')}
                 </p>
                 <p className="mt-2 text-xs text-text-tertiary">
-                  {t('.po, .pot, .json, .xliff, .csv, or any file')}
+                  {t('.po, .pot, .json, .csv, .xliff, or any file')}
                 </p>
               </motion.div>
             ) : (

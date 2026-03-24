@@ -89,19 +89,25 @@ export function EmptyState({
             <Title order={2}>{t('Upload a translation file to start')}</Title>
             <Text ta="center" maw={400} style={{ color: 'var(--gb-text-secondary)' }}>
               {t(
-                'Drag and drop a .po, .pot, or .json file — or click to browse. Always free, no account needed.',
+                'Drag and drop a .po, .pot, .json, .csv, or .xliff file — or click to browse. Always free, no account needed.',
               )}
             </Text>
           </Stack>
           <Group gap="xs">
             <Badge variant="light" color="blue">
-              .po
+              .PO
             </Badge>
             <Badge variant="light" color="blue">
-              .pot
+              .POT
             </Badge>
             <Badge variant="light" color="blue">
-              .json
+              .JSON
+            </Badge>
+            <Badge variant="light" color="blue">
+              .CSV
+            </Badge>
+            <Badge variant="light" color="blue">
+              .XLIFF
             </Badge>
           </Group>
           <Group
@@ -112,8 +118,8 @@ export function EmptyState({
             onClick={(e: React.MouseEvent) => e.stopPropagation()}
           >
             <TextInput
-              placeholder={t('Paste a .po file URL')}
-              aria-label={t('PO file URL')}
+              placeholder={t('Paste a translation file URL')}
+              aria-label={t('Translation file URL')}
               value={urlInput}
               onChange={(e) => onUrlInputChange(e.currentTarget.value)}
               onKeyDown={(e: KeyboardEvent) => {

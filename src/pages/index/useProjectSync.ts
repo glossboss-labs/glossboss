@@ -5,6 +5,8 @@ import { batchAnalyzeTranslations, syncGlossaryToDeepL } from '@/lib/glossary';
 import { cleanupExpiredDrafts, deleteDraft, saveDraft } from '@/lib/storage';
 import { serializePOFile, mergePotIntoPo, parseUploadedFile, type POEntry } from '@/lib/po';
 import { serializeToI18next } from '@/lib/i18next';
+import { serializeToCSV } from '@/lib/csv';
+import { serializeToXLIFF } from '@/lib/xliff';
 import { trackEvent } from '@/lib/analytics';
 import { getActiveTranslationProvider, TRANSLATION_PROVIDER_CAPABILITIES } from '@/lib/translation';
 import { createTranslationMemoryScope, isApprovedTranslationEntry } from '@/lib/translation-memory';
@@ -20,6 +22,7 @@ interface UseProjectSyncOptions {
   header: import('@/lib/po').POHeader | null;
   entries: POEntry[];
   sourceFormat: FileFormat;
+  csvVariant: import('@/lib/csv').CSVVariant | null;
   projectName: string | null;
   dirtyEntryIds: Set<string>;
   machineTranslatedIds: Set<string>;
@@ -41,6 +44,7 @@ export function useProjectSync({
   header,
   entries,
   sourceFormat,
+  csvVariant,
   projectName,
   dirtyEntryIds,
   machineTranslatedIds,
@@ -235,18 +239,32 @@ export function useProjectSync({
   }
 
   const performDownloadAs = useCallback(
-    (format: FileFormat) => {
+    (format: FileFormat, overrideCsvVariant?: import('@/lib/csv').CSVVariant) => {
       if (!filename || entries.length === 0) return;
 
       let content: string;
       let downloadFilename: string;
       let mimeType: string;
 
+      const extPattern = /\.(po|pot|json|csv|xliff|xlf)$/i;
+
       if (format === 'i18next') {
         content = serializeToI18next(entries);
-        downloadFilename = filename.replace(/\.(po|pot|json)$/i, '.json');
+        downloadFilename = filename.replace(extPattern, '.json');
         if (!downloadFilename.endsWith('.json')) downloadFilename += '.json';
         mimeType = 'application/json;charset=utf-8';
+      } else if (format === 'csv') {
+        content = serializeToCSV(entries, header ?? {}, {
+          variant: overrideCsvVariant ?? csvVariant ?? 'generic',
+        });
+        downloadFilename = filename.replace(extPattern, '.csv');
+        if (!downloadFilename.endsWith('.csv')) downloadFilename += '.csv';
+        mimeType = 'text/csv;charset=utf-8';
+      } else if (format === 'xliff') {
+        content = serializeToXLIFF(entries, header ?? {});
+        downloadFilename = filename.replace(extPattern, '.xliff');
+        if (!downloadFilename.endsWith('.xliff')) downloadFilename += '.xliff';
+        mimeType = 'application/xliff+xml;charset=utf-8';
       } else {
         content = serializePOFile(
           {
@@ -257,7 +275,7 @@ export function useProjectSync({
           },
           { updateRevisionDate: true },
         );
-        downloadFilename = filename.replace(/\.json$/i, '.po');
+        downloadFilename = filename.replace(extPattern, '.po');
         if (!downloadFilename.endsWith('.po') && !downloadFilename.endsWith('.pot')) {
           downloadFilename += '.po';
         }
@@ -276,7 +294,7 @@ export function useProjectSync({
       URL.revokeObjectURL(url);
 
       trackEvent('file_exported', {
-        format: downloadFilename.endsWith('.json') ? 'i18next' : 'po',
+        format,
         size: blob.size,
       });
       setDownloadSuccess({
@@ -290,17 +308,17 @@ export function useProjectSync({
       setLastAutoSave(null);
       markAsSaved();
     },
-    [entries, filename, header, markAsSaved, setIsFromDraft],
+    [entries, filename, header, csvVariant, markAsSaved, setIsFromDraft],
   );
 
   const handleDownloadAs = useCallback(
-    (format: FileFormat) => {
+    (format: FileFormat, csvVariantOverride?: import('@/lib/csv').CSVVariant) => {
       if (qaSummary.totalIssues > 0) {
         setPendingExportFormat(format);
         return;
       }
 
-      performDownloadAs(format);
+      performDownloadAs(format, csvVariantOverride);
     },
     [performDownloadAs, qaSummary.totalIssues],
   );
