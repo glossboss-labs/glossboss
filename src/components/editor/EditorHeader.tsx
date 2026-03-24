@@ -57,7 +57,7 @@ export interface EditorHeaderProps {
   sourceFormat: FileFormat;
 
   onDownload: () => void;
-  onDownloadAs: (format: FileFormat) => void;
+  onDownloadAs: (format: FileFormat, csvVariantOverride?: 'weglot') => void;
   onPotUpload: (file: File | null) => void;
 
   /** Callback when a source language file is selected. */
@@ -137,7 +137,11 @@ export function EditorHeader({
           </div>
 
           {/* File menu */}
-          <FileButton onChange={onFileUpload} accept=".po,.pot,.json" resetRef={fileResetRef}>
+          <FileButton
+            onChange={onFileUpload}
+            accept=".po,.pot,.json,.csv,.xliff,.xlf"
+            resetRef={fileResetRef}
+          >
             {(props) => <button {...props} ref={fileInputRef} style={{ display: 'none' }} />}
           </FileButton>
 
@@ -192,6 +196,21 @@ export function EditorHeader({
                 >
                   {t('Download as JSON')}
                 </Menu.Item>
+                <Menu.Item leftSection={<Download size={14} />} onClick={() => onDownloadAs('csv')}>
+                  {t('Download as CSV')}
+                </Menu.Item>
+                <Menu.Item
+                  leftSection={<Download size={14} />}
+                  onClick={() => onDownloadAs('csv', 'weglot')}
+                >
+                  {t('Download as Weglot (CSV)')}
+                </Menu.Item>
+                <Menu.Item
+                  leftSection={<Download size={14} />}
+                  onClick={() => onDownloadAs('xliff')}
+                >
+                  {t('Download as XLIFF')}
+                </Menu.Item>
                 <Menu.Divider />
                 <FileButton onChange={onPotUpload} accept=".pot">
                   {(props) => (
@@ -201,7 +220,10 @@ export function EditorHeader({
                   )}
                 </FileButton>
                 {showSourceFileOption && !sourceFilename && onSourceFileUpload && (
-                  <FileButton onChange={onSourceFileUpload} accept=".po,.pot,.json">
+                  <FileButton
+                    onChange={onSourceFileUpload}
+                    accept=".po,.pot,.json,.csv,.xliff,.xlf"
+                  >
                     {(props) => (
                       <Menu.Item leftSection={<Languages size={14} />} {...props}>
                         {t('Upload source language file…')}

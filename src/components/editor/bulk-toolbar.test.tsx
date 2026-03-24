@@ -134,7 +134,6 @@ describe('bulk action toolbar', () => {
       screen.queryByRole('button', { name: /auto translate selected/i }),
     ).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /clear fuzzy selected/i })).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /mark fuzzy selected/i })).not.toBeInTheDocument();
   });
 
   it('hides glossary check when glossary is not loaded', () => {
@@ -148,14 +147,14 @@ describe('bulk action toolbar', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('shows mark fuzzy for selected non-fuzzy rows and hides clear fuzzy', () => {
+  it('does not show manual fuzzy actions for selected non-fuzzy rows', () => {
     useEditorStore.getState().loadFile(makeFile([makeEntry('a', { msgstr: 'Done' })]));
     useEditorStore.getState().setSelectedEntries(['a']);
 
     renderWithMantine(<TranslateToolbar glossary={null} />);
 
-    expect(screen.getByRole('button', { name: /mark fuzzy selected/i })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /clear fuzzy selected/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /mark fuzzy selected/i })).not.toBeInTheDocument();
   });
 
   it('uses EN source language for bulk translation when glossary is enabled and source is auto', async () => {

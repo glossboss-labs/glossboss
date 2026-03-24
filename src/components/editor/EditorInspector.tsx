@@ -523,21 +523,15 @@ export function ReviewPanel({
         </Text>
       )}
 
-      {translationStatus !== 'untranslated' && (
+      {translationStatus === 'fuzzy' && (
         <Group>
           <Button
             size="xs"
             variant="default"
             disabled={isRemoteLocked}
-            onClick={() => {
-              if (translationStatus === 'fuzzy') {
-                clearFuzzyBatch([entry.id]);
-              } else {
-                addFuzzyBatch([entry.id]);
-              }
-            }}
+            onClick={() => clearFuzzyBatch([entry.id])}
           >
-            {translationStatus === 'fuzzy' ? t('Clear fuzzy flag') : t('Mark as fuzzy')}
+            {t('Clear fuzzy flag')}
           </Button>
         </Group>
       )}

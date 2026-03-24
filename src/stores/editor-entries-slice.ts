@@ -74,7 +74,10 @@ export interface MachineTranslationMeta {
 }
 
 /** Supported file formats */
-export type FileFormat = 'po' | 'i18next';
+export type FileFormat = 'po' | 'i18next' | 'csv' | 'xliff';
+
+/** CSV sub-variant for round-trip fidelity */
+export type CSVVariant = 'generic' | 'weglot';
 
 interface FilteredEntriesCache {
   entries: POEntry[];
@@ -107,6 +110,9 @@ export interface EditorEntriesState {
 
   /** Source file format (for export) */
   sourceFormat: FileFormat;
+
+  /** CSV sub-variant when sourceFormat is 'csv' (for round-trip export) */
+  csvVariant: CSVVariant | null;
 
   /** File header metadata */
   header: POHeader | null;
@@ -167,7 +173,7 @@ export interface EditorEntriesState {
 }
 
 export interface EditorEntriesActions {
-  loadFile: (file: POFile, format?: FileFormat) => void;
+  loadFile: (file: POFile, format?: FileFormat, csvVariant?: CSVVariant) => void;
   setProjectName: (projectName: string) => void;
   updateEntry: (entryId: string, msgstr: string) => void;
   updateEntryPlural: (entryId: string, msgstrPlural: string[]) => void;
@@ -244,6 +250,7 @@ export const entriesInitialState: EditorEntriesState = {
   projectName: 'Untitled project',
   filename: null,
   sourceFormat: 'po',
+  csvVariant: null,
   header: null,
   entries: [],
   sourceFilename: null,
@@ -402,11 +409,12 @@ export const createEditorEntriesSlice: StateCreator<FullStore, [], [], EditorEnt
 ) => ({
   ...entriesInitialState,
 
-  loadFile: (file: POFile, format: FileFormat = 'po') => {
+  loadFile: (file: POFile, format: FileFormat = 'po', csvVar?: CSVVariant) => {
     set((state) => ({
       projectName: deriveProjectName(file.header, file.filename),
       filename: file.filename,
       sourceFormat: format,
+      csvVariant: csvVar ?? null,
       sourceFilename: null,
       header: file.header,
       entries: file.entries,

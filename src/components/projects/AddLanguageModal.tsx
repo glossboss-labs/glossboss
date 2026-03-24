@@ -33,6 +33,8 @@ import { RepoSyncModal } from '@/components/repo-sync/RepoSyncModal';
 import { useAddLanguage } from '@/lib/projects/queries';
 import { syncProjectEntries } from '@/lib/projects/api';
 import type { ProjectLanguageRow } from '@/lib/projects/types';
+import { detectLimitError, getLimitErrorMessage } from '@/lib/billing/errors';
+import { isProjectLanguageLocaleConflict } from '@/lib/projects/initial-language';
 
 interface AddLanguageModalProps {
   opened: boolean;
@@ -242,8 +244,16 @@ export function AddLanguageModal({
       handleClose();
       onLanguageAdded();
     } catch (err) {
-      const message =
-        err && typeof err === 'object' && 'message' in err
+      if (isProjectLanguageLocaleConflict(err)) {
+        handleClose();
+        onLanguageAdded();
+        return;
+      }
+
+      const limitResource = detectLimitError(err);
+      const message = limitResource
+        ? t(getLimitErrorMessage(limitResource))
+        : err && typeof err === 'object' && 'message' in err
           ? String((err as { message: string }).message)
           : t('Failed to add language');
       setCreateError(message);
@@ -260,6 +270,7 @@ export function AddLanguageModal({
     projectId,
     sourceType,
     t,
+    handleClose,
   ]);
 
   const cloneOptions = existingLanguages.map((lang) => ({
@@ -361,7 +372,7 @@ export function AddLanguageModal({
               </Group>
               <FileButton
                 onChange={(f) => void handleFileUpload(f)}
-                accept=".po,.pot,.json"
+                accept=".po,.pot,.json,.csv,.xliff,.xlf"
                 resetRef={fileResetRef}
               >
                 {(props) => (

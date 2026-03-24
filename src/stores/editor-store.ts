@@ -33,6 +33,7 @@ export type {
   SortDirection,
   MachineTranslationMeta,
   FileFormat,
+  CSVVariant,
 } from './editor-entries-slice';
 
 export type { EditorSelectionState, EditorSelectionActions } from './editor-selection-slice';

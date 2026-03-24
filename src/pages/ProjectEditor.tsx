@@ -84,7 +84,7 @@ export default function ProjectEditor() {
     adapterRef.current = adapter;
     setStorageAdapter(adapter);
 
-    loadFile(poFile, project.source_format === 'i18next' ? 'i18next' : undefined);
+    loadFile(poFile, project.source_format as import('@/stores/editor-store').FileFormat);
     setProjectName(project.name);
 
     if (!poFile.header.language && language.locale) {

@@ -276,7 +276,7 @@ export function CreateProjectModal({ opened, onClose }: CreateProjectModalProps)
             visibility: visibility as 'private' | 'public' | 'unlisted',
             source_language: header.language ?? null,
             target_language: header.language ?? null,
-            source_format: format === 'i18next' ? 'i18next' : 'po',
+            source_format: format,
             source_filename: importedFile.originalFilename,
             po_header: header as Record<string, string>,
             wp_project_type: importedFile.wpProjectType ?? null,
@@ -317,7 +317,7 @@ export function CreateProjectModal({ opened, onClose }: CreateProjectModalProps)
             visibility: visibility as 'private' | 'public' | 'unlisted',
             source_language: sourceLanguage || null,
             target_language: null,
-            source_format: sourceFormat as 'po' | 'i18next',
+            source_format: sourceFormat as FileFormat,
             source_filename: null,
             po_header: null,
             wp_project_type: null,
@@ -453,7 +453,7 @@ export function CreateProjectModal({ opened, onClose }: CreateProjectModalProps)
                 </Group>
                 <FileButton
                   onChange={(f) => void handleFileUpload(f)}
-                  accept=".po,.pot,.json"
+                  accept=".po,.pot,.json,.csv,.xliff,.xlf"
                   resetRef={fileResetRef}
                 >
                   {(props) => (
@@ -632,6 +632,8 @@ export function CreateProjectModal({ opened, onClose }: CreateProjectModalProps)
                   data={[
                     { value: 'po', label: 'PO (gettext)' },
                     { value: 'i18next', label: 'i18next JSON' },
+                    { value: 'csv', label: 'CSV' },
+                    { value: 'xliff', label: 'XLIFF 1.2' },
                   ]}
                   value={sourceFormat}
                   onChange={(v) => setSourceFormat(v ?? 'po')}

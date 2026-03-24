@@ -4,7 +4,7 @@
     <img src="public/glossboss-combined-dark.svg" alt="GlossBoss" height="48" />
   </picture>
   <br />
-  A translation platform for gettext <code>.po</code> / <code>.pot</code> files and i18next JSON resources — edit, translate, and collaborate in the browser.
+  A translation platform for gettext <code>.po</code> / <code>.pot</code>, i18next JSON, CSV, and XLIFF files — edit, translate, and collaborate in the browser.
 </p>
 
 <p align="center">
@@ -19,7 +19,7 @@
 
 ### Editor
 
-- **Edit** gettext `.po` / `.pot` files and i18next JSON resources in the browser
+- **Edit** gettext `.po` / `.pot`, i18next JSON, CSV, and XLIFF files in the browser
 - **Translate** entries and batches through [DeepL](https://www.deepl.com/), [Azure Translator](https://azure.microsoft.com/en-us/products/ai-services/ai-translator), or [Gemini](https://ai.google.dev/) — switch providers at any time
 - **Translation memory** — reuse approved translations across files with exact and fuzzy matching, import / export as JSON or TMX
 - **QA checks** — catch broken placeholders, mismatched HTML tags, ICU variable drift, glossary conflicts, and more before export

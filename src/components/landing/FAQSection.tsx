@@ -8,13 +8,13 @@ const faqs = [
   {
     q: msgid('Is GlossBoss really free?'),
     a: msgid(
-      'The local editor is free with no limits — open any PO, POT, or JSON file and translate without an account. Cloud features like saved projects, team collaboration, and repo sync start with a free tier (1 project, 5,000 strings) and scale from there.',
+      'The local editor is free with no limits — open any PO, POT, JSON, CSV, or XLIFF file and translate without an account. Cloud features like saved projects, team collaboration, and repo sync start with a free tier (1 project, 5,000 strings) and scale from there.',
     ),
   },
   {
     q: msgid('What file formats does it support?'),
     a: msgid(
-      'GlossBoss supports gettext PO/POT files and i18next JSON resources. These cover WordPress plugins and themes, React and JavaScript apps, and most open-source projects.',
+      'GlossBoss supports gettext PO/POT files, i18next JSON, CSV (including Weglot exports), and XLIFF 1.2. These cover WordPress plugins and themes, React and JavaScript apps, website translation platforms, and most open-source projects.',
     ),
   },
   {

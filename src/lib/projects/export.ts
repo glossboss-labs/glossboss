@@ -14,6 +14,8 @@ import { getProject, getProjectLanguages, getProjectEntries } from './api';
 import { dbEntryToPOEntry, dbLanguageToHeader } from './conversions';
 import { serializePOFile } from '@/lib/po';
 import { serializeToI18next } from '@/lib/i18next';
+import { serializeToCSV } from '@/lib/csv';
+import { serializeToXLIFF } from '@/lib/xliff';
 import type { POEntry } from '@/lib/po/types';
 import type { MachineTranslationMeta } from '@/stores/editor-store';
 import { dbEntryToMTMeta, dbEntryToReviewState } from './conversions';
@@ -56,7 +58,7 @@ interface EditorStateExport {
   version: 1;
   exportedAt: string;
   projectName: string;
-  sourceFormat: 'po' | 'i18next';
+  sourceFormat: 'po' | 'i18next' | 'csv' | 'xliff';
   languages: LanguageStateSnapshot[];
 }
 
@@ -95,11 +97,27 @@ export async function exportProject(
 
       const filename = lang.source_filename ?? `${project.name}-${lang.locale}.po`;
 
+      const extPattern = /\.(po|pot|json|csv|xliff|xlf)$/i;
+
       if (project.source_format === 'i18next') {
         const content = serializeToI18next(poEntries);
-        const jsonFilename = filename.replace(/\.(po|pot)$/i, '.json');
+        const jsonFilename = filename.replace(extPattern, '.json');
         zip.file(
           `translations/${jsonFilename.endsWith('.json') ? jsonFilename : jsonFilename + '.json'}`,
+          content,
+        );
+      } else if (project.source_format === 'csv') {
+        const content = serializeToCSV(poEntries, header ?? {});
+        const csvFilename = filename.replace(extPattern, '.csv');
+        zip.file(
+          `translations/${csvFilename.endsWith('.csv') ? csvFilename : csvFilename + '.csv'}`,
+          content,
+        );
+      } else if (project.source_format === 'xliff') {
+        const content = serializeToXLIFF(poEntries, header ?? {});
+        const xliffFilename = filename.replace(extPattern, '.xliff');
+        zip.file(
+          `translations/${xliffFilename.endsWith('.xliff') ? xliffFilename : xliffFilename + '.xliff'}`,
           content,
         );
       } else {
@@ -227,7 +245,7 @@ export async function exportProject(
 export function exportEditorSnapshot(state: {
   projectName: string;
   filename: string | null;
-  sourceFormat: 'po' | 'i18next';
+  sourceFormat: 'po' | 'i18next' | 'csv' | 'xliff';
   header: Record<string, string> | null;
   entries: POEntry[];
   machineTranslationMeta: Map<string, MachineTranslationMeta>;

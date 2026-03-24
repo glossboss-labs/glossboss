@@ -66,7 +66,7 @@ export function SaveToCloudModal({ opened, onClose }: SaveToCloudModalProps) {
           visibility: visibility as 'private' | 'public' | 'unlisted',
           source_language: header?.language ?? null,
           target_language: header?.language ?? null,
-          source_format: sourceFormat === 'i18next' ? 'i18next' : 'po',
+          source_format: sourceFormat,
           source_filename: filename,
           po_header: header as Record<string, string> | null,
           wp_project_type: null,

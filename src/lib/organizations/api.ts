@@ -71,7 +71,11 @@ export async function getOrganizationBySlug(slug: string): Promise<OrganizationR
 }
 
 export async function createOrganization(insert: OrganizationInsert): Promise<OrganizationRow> {
-  const { data, error } = await supabase().from('organizations').insert(insert).select().single();
+  const { data, error } = await supabase()
+    .from('organizations')
+    .insert(insert)
+    .select(ORGANIZATION_SELECT)
+    .single();
 
   if (error) throw error;
   return data;
@@ -85,7 +89,7 @@ export async function updateOrganization(
     .from('organizations')
     .update(updates)
     .eq('id', id)
-    .select()
+    .select(ORGANIZATION_SELECT)
     .single();
 
   if (error) throw error;
@@ -94,6 +98,18 @@ export async function updateOrganization(
 
 export async function deleteOrganization(id: string): Promise<void> {
   const { error } = await supabase().from('organizations').delete().eq('id', id);
+
+  if (error) throw error;
+}
+
+export async function transferOrganizationOwnership(
+  orgId: string,
+  newOwnerUserId: string,
+): Promise<void> {
+  const { error } = await supabase().rpc('transfer_org_ownership', {
+    p_org_id: orgId,
+    p_new_owner_user_id: newOwnerUserId,
+  });
 
   if (error) throw error;
 }
@@ -134,7 +150,7 @@ export async function addOrgMember(
   const { data, error } = await supabase()
     .from('organization_members')
     .insert({ organization_id: orgId, user_id: userId, role })
-    .select()
+    .select(ORGANIZATION_MEMBER_SELECT)
     .single();
 
   if (error) throw error;
@@ -146,7 +162,7 @@ export async function updateOrgMemberRole(memberId: string, role: OrgRole): Prom
     .from('organization_members')
     .update({ role })
     .eq('id', memberId)
-    .select()
+    .select(ORGANIZATION_MEMBER_SELECT)
     .single();
 
   if (error) throw error;
@@ -174,7 +190,11 @@ export async function listInvites(orgId: string): Promise<InviteRow[]> {
 }
 
 export async function createInvite(insert: InviteInsert): Promise<InviteRow> {
-  const { data, error } = await supabase().from('invites').insert(insert).select().single();
+  const { data, error } = await supabase()
+    .from('invites')
+    .insert(insert)
+    .select(ORGANIZATION_INVITE_SELECT)
+    .single();
 
   if (error) throw error;
   return data;
@@ -239,7 +259,7 @@ export async function upsertOrgSettings(
       },
       { onConflict: 'organization_id' },
     )
-    .select()
+    .select(ORGANIZATION_SETTINGS_SELECT)
     .single();
 
   if (error) throw error;

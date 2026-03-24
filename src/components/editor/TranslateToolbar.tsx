@@ -9,7 +9,7 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { Group, Button, Text, Stack, Alert, Tooltip } from '@mantine/core';
 import { motion, AnimatePresence } from 'motion/react';
-import { Zap, Square, RefreshCw, CheckCheck, RotateCcw } from 'lucide-react';
+import { Zap, Square, RefreshCw, CheckCheck } from 'lucide-react';
 import { useTranslation } from '@/lib/app-language';
 import { trackEvent } from '@/lib/analytics';
 import { useEditorStore } from '@/stores';
@@ -208,7 +208,6 @@ export function TranslateToolbar({
     () => selectedEntries.filter((entry) => entry.flags.includes('fuzzy')).length,
     [selectedEntries],
   );
-  const selectedNonFuzzyCount = selectedEntries.length - selectedFuzzyCount;
 
   const selectedReviewApprovedCount = useMemo(
     () => selectedEntries.filter((entry) => getReviewEntry(entry.id).status === 'approved').length,
@@ -592,15 +591,6 @@ export function TranslateToolbar({
     );
   }, [clearFuzzyBatch, selectedEntryIds, selectedFuzzyCount, t]);
 
-  const handleMarkFuzzySelected = useCallback(() => {
-    addFuzzyBatch(Array.from(selectedEntryIds));
-    setBulkActionMessage(
-      selectedNonFuzzyCount > 0
-        ? t('Marked {{count}} row(s) as fuzzy.', { count: selectedNonFuzzyCount })
-        : t('No selected rows available to mark as fuzzy.'),
-    );
-  }, [addFuzzyBatch, selectedEntryIds, selectedNonFuzzyCount, t]);
-
   const handleApproveSelected = useCallback(() => {
     if (selectedEntries.length === 0) return;
     const fuzzyEntryIds = selectedEntries
@@ -854,32 +844,6 @@ export function TranslateToolbar({
                         aria-label={t('Clear fuzzy selected')}
                       >
                         {t('Clear fuzzy ({{count}})', { count: selectedFuzzyCount })}
-                      </Button>
-                    </Tooltip>
-                  </MotionDiv>
-                )}
-              </AnimatePresence>
-
-              <AnimatePresence mode="popLayout">
-                {selectedNonFuzzyCount > 0 && (
-                  <MotionDiv
-                    key="mark-fuzzy-selected"
-                    layout
-                    variants={badgeVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="exit"
-                  >
-                    <Tooltip label={t('Mark selected rows as fuzzy')}>
-                      <Button
-                        size="xs"
-                        variant="light"
-                        color="yellow"
-                        leftSection={<RotateCcw size={14} />}
-                        onClick={handleMarkFuzzySelected}
-                        aria-label={t('Mark fuzzy selected')}
-                      >
-                        {t('Mark fuzzy ({{count}})', { count: selectedNonFuzzyCount })}
                       </Button>
                     </Tooltip>
                   </MotionDiv>
