@@ -7,6 +7,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   Stack,
   Group,
@@ -54,7 +55,6 @@ import { useTranslation } from '@/lib/app-language';
 import {
   updateOrgMemberRole,
   removeOrgMember,
-  deleteOrganization,
   transferOrganizationOwnership,
   createInvite,
   revokeInvite,
@@ -68,7 +68,12 @@ import type {
 import { useAuth } from '@/hooks/use-auth';
 import { AnimatedStateSwitch, AnimatedTabPanel, ConfirmModal, RoleBadge } from '@/components/ui';
 import type { ProjectWithLanguages } from '@/lib/projects/types';
-import { useOrganizationBySlug, useOrgSettingsPage } from '@/lib/organizations/queries';
+import {
+  organizationKeys,
+  useDeleteOrganization,
+  useOrganizationBySlug,
+  useOrgSettingsPage,
+} from '@/lib/organizations/queries';
 import { CreateProjectModal } from '@/components/projects/CreateProjectModal';
 
 const MotionDiv = motion.div;
@@ -83,11 +88,13 @@ export default function OrgSettings() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const {
     data: baseOrg = null,
     isLoading: orgLoading,
     error: orgError,
   } = useOrganizationBySlug(slug);
+  const deleteOrganizationMutation = useDeleteOrganization();
   const { data: settingsData, isLoading: pageLoading, error: pageError } = useOrgSettingsPage(slug);
 
   const [error, setError] = useState<string | null>(null);
@@ -192,14 +199,14 @@ export default function OrgSettings() {
     if (!org) return;
     setActionLoading(true);
     try {
-      await deleteOrganization(org.id);
+      await deleteOrganizationMutation.mutateAsync(org.id);
       setConfirmDeleteOpen(false);
       void navigate('/dashboard');
     } catch (err) {
       setError(err instanceof Error ? err.message : t('Failed to delete organization'));
       setActionLoading(false);
     }
-  }, [org, navigate, t]);
+  }, [deleteOrganizationMutation, org, navigate, t]);
 
   const handleTransferOwnership = useCallback(async () => {
     if (!org || !transferTarget) return;
@@ -241,13 +248,17 @@ export default function OrgSettings() {
     setActionLoading(true);
     try {
       await removeOrgMember(myMembership.id);
+      queryClient.setQueryData<OrganizationRow[]>(organizationKeys.all, (old) =>
+        old ? old.filter((item) => item.id !== org?.id) : [],
+      );
+      void queryClient.invalidateQueries({ queryKey: organizationKeys.all });
       setConfirmLeaveOpen(false);
       void navigate('/dashboard');
     } catch (err) {
       setError(err instanceof Error ? err.message : t('Failed to leave organization'));
       setActionLoading(false);
     }
-  }, [canLeaveOrganization, isOwner, myMembership, navigate, t]);
+  }, [canLeaveOrganization, isOwner, myMembership, navigate, org?.id, queryClient, t]);
 
   const handleRevokeInvite = useCallback(
     async (inviteId: string) => {

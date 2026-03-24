@@ -200,10 +200,20 @@ export function useDeleteProject() {
   return useMutation<void, Error, string>({
     mutationFn: apiDeleteProject,
     onSuccess: (_data, id) => {
-      // Optimistic removal from cache
       queryClient.setQueryData<ProjectWithLanguages[]>(projectKeys.all, (old) =>
         old ? old.filter((p) => p.id !== id) : [],
       );
+      queryClient.setQueryData<ProjectWithLanguages[]>(projectKeys.public, (old) =>
+        old ? old.filter((p) => p.id !== id) : [],
+      );
+      queryClient.removeQueries({ queryKey: projectKeys.detail(id) });
+      queryClient.removeQueries({ queryKey: projectKeys.languages(id) });
+      queryClient.removeQueries({ queryKey: projectKeys.members(id) });
+      queryClient.removeQueries({ queryKey: projectKeys.invites(id) });
+      queryClient.removeQueries({ queryKey: projectKeys.settingsPage(id) });
+
+      void queryClient.invalidateQueries({ queryKey: projectKeys.all });
+      void queryClient.invalidateQueries({ queryKey: projectKeys.public });
     },
   });
 }
